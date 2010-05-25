@@ -1,7 +1,10 @@
 
 
-* CentOS 5.4 
---------------
+~~~ CDR-Stats Requirements ~~~
+
+
+* Add repository on CentOS 5.4 
+--------------------------------
 	i386:
 		rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-3.noarch.rpm
 		
@@ -10,8 +13,19 @@
 
 
 * Install Git 
---------------
+---------------
 	yum install git
+
+
+* Install django
+------------------
+    http://www.djangoproject.com/download/
+    
+    First, download Django-1.2.1.tar.gz. Then:
+
+        tar xzvf Django-1.2.1.tar.gz
+        cd Django-1.2.1
+        sudo python setup.py install
 
 
 * django-debug-toolbar
@@ -32,8 +46,15 @@
 	svn checkout http://django-dilla.googlecode.com/svn/trunk/dilla dilla
 	
 
+* Extra dependencies 
+----------------------
+    Jquery
+    JqueryUI
+    Jquery.dnd
+    jquery.contextmenu
+    
+    
 
-Jquery
-JqueryUI
-Jquery.dnd
-jquery.contextmenu
+
+
+
