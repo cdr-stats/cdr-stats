@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import permalink
 
 class CDR(models.Model):
-    acctid = models.IntegerField(primary_key=True)
+    acctid = models.PositiveIntegerField(primary_key=True, db_column = 'acctid')
     src = models.CharField(max_length=80)
     dst = models.CharField(max_length=80)
     calldate = models.DateTimeField()
@@ -41,6 +41,9 @@ class CDR(models.Model):
 		#	'email':{
 		#		'generator':'generate_EmailField', #can point to a callable, which must return the desired value. If this is a string, it looks for a method in the dilla.py file.
 		#	},
+		    'acctid':{
+		        'integer_range':(1, 2147483647)
+		    },
 			'src':{
 				'generator':None, #can point to a callable, which must return the desired value. If this is a string, it looks for a method in the dilla.py file.
 				'generator_wants_extras':False, #whether or not to pass this "field extra" hash item to the callable
