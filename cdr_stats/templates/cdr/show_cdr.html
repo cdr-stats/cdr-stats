@@ -1,0 +1,73 @@
+{% extends "cdr/master.html" %}
+
+{% block extra_head %}
+
+<script type="text/javascript">
+jQuery(document).ready(function(){ 
+
+  $("#general-listing").jqGrid({
+    url:'/json/cdr/?set=general',
+    datatype: 'json',
+    mtype: 'GET',
+    height: '100%',
+    //width: '100%',
+    colNames:['acctid','src', 'dst', 'calldate', 'clid', 'dcontext', 'channel', 'dstchannel', 'lastapp', 'lastdata', 'duration', 'billsec', 'disposition', 'amaflags', 'accountcode', 'uniqueid', 'userfield'],
+    colModel :[ 
+      {name:'acctid', index:'acctid', width:70}, 
+      {name:'src', index:'src', width:70, search:true, stype:'text' }, 
+      {name:'dst', index:'dst', width:100}, 
+      {name:'calldate', index:'calldate', width:100}, 
+      {name:'clid', index:'clid', width:100}, 
+      {name:'dcontext', index:'dcontext', width:100}, 
+      {name:'channel', index:'channel', width:100}, 
+      {name:'dstchannel', index:'dstchannel', width:100}, 
+      {name:'lastapp', index:'lastapp', width:100}, 
+      {name:'lastdata', index:'lastdata', width:100}, 
+      {name:'duration', index:'duration', width:100}, 
+      {name:'billsec', index:'billsec', width:100}, 
+      {name:'disposition', index:'disposition', width:100}, 
+      {name:'amaflags', index:'amaflags', width:100}, 
+      {name:'accountcode', index:'accountcode', width:100}, 
+      {name:'uniqueid', index:'uniqueid', width:100}, 
+      {name:'userfield', index:'userfield', width:100},
+    ],
+    
+    rowNum:10,
+    rowList:[10,100,1000],
+	autowidth: true,
+    pager: 'general-pager',
+    sortname: 'acctid', sortorder: 'desc',
+    viewrecords: true,
+    caption: 'CDR Listing',
+    multipleSearch:true,
+  }).navGrid('#general-pager',{view:true, edit:false,add:false,del:false}, 
+		{}, // use default settings for edit
+		{}, // use default settings for add
+		{},  // delete instead that del:false we need this
+		{multipleSearch : true}, // enable the advanced searching
+		{closeOnEscape : true} /* allow the view dialog to be closed when user press ESC key*/
+	);
+}); 
+</script>
+
+{% endblock %}
+
+{% block content %}
+<div id="cdr-container" class='tabcontainer'>
+
+
+    <div id='general-info'>
+        
+        <table id="general-info-grid"></table>
+        <div id="general-info-pager" class="scroll"></div>
+        
+        <table id="general-listing"></table>
+		<div id="general-pager"></div>
+
+
+    </div>
+
+</div>
+
+
+{% endblock %}

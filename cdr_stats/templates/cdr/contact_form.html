@@ -1,0 +1,41 @@
+<html>
+<head>
+    <title>Contact us</title>
+
+    <style type="text/css">
+    ul.errorlist {
+        margin: 0;
+        padding: 0;
+    }
+    .errorlist li {
+        background-color: #EEEEEE;
+        color: red;
+        display: block;
+        font-size: 10px;
+        margin: 0 0 3px;
+        padding: 4px 5px;
+    }
+</style>
+
+</head>
+<body>
+    <h1>Contact us <img src="{{MEDIA_URL}}erp/icons/accept.png"/></h1>
+
+    
+
+
+    {% if form.errors %}
+        <p style="color: red;">
+            Please correct the error{{ form.errors|pluralize }} below.
+        </p>
+    {% endif %}
+
+    <form action="" method="post">
+        <table>
+            {{ form.as_table }}
+        </table>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
+
