@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+<head>
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+<center><h1>Customer Login</h1></center>
+<table align=center>
+<tr>
+<td align=center>
+{% if error %}
+<p><i>{{ error }}</i></p>
+{% endif %}
+</td></tr>
+<tr><td>
+<form action="." method="POST">
+{{ form.as_p }}
+<div align=right><input type="submit" value="Submit" /></div>
+</form>
+</td></tr></table>
+</body>
+</html>
+

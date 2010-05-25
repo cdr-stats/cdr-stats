@@ -1,0 +1,96 @@
+     ___________________________________________________________________________________________________________________________________________________________________
+
+CDR-Stats : INSTALLATION GUIDE 
+
+    1. Get Ready
+         1. Important note about distributions
+         2. Default passwords and access info (READ THIS!)
+         3. Pre-required software packages
+         
+    2. Installation
+         1. Step 1: Download and unpack source code
+         2. Step 2: Prepare the Database
+         ...
+
+     ___________________________________________________________________________________________________________________________________________________________________
+
+
+
+
+Install dependencies :
+- django 1.2
+- yum install sqlite-devel.x86_64 sqlite.x86_6
+- easy_install pysqlite
+- yum install mod_python
+
+
+Set Permission on Sqlite DB
+********************************************************* 
+chmod -R 777 database
+
+create the database then :
+    python manage.py syncdb
+
+Create Super User 
+********************************************************* 
+python manage.py createsuperuser --username=admin --email=areski@gmail.com
+
+
+Test with :
+- python manage.py runserver 0.0.0.0:8000
+
+
+
+Add Admin Media path
+********************************************************* 
+cd ressources
+ln -s /usr/lib/pymodules/python2.6/django/contrib/admin/media/ admin
+edit settings.py
+ADMIN_MEDIA_PREFIX = '/resources/admin/'
+
+
+Apache Configuration
+********************************************************* 
+
+vim /etc/apache2/sites-enabled/cdr_stats.conf
+
+Copy the following :
+
+Listen *:8000
+
+<VirtualHost *:8000>
+        DocumentRoot /usr/share/django_app/cdr_stats/
+        ErrorLog /usr/share/django_app/err-cdr_stats.log
+
+        <Location "/">
+                SetHandler mod_python
+                PythonHandler django.core.handlers.modpython
+                PythonPath "['/usr/share/django_app/cdr_stats/', '/usr/share/django_app/'] + sys.path"
+                SetEnv DJANGO_SETTINGS_MODULE cdr_stats.settings
+                PythonDebug On
+        </Location>
+
+        <location "/media">
+                SetHandler None
+        </location>
+
+</VirtualHost>
+
+
+
+Configure settings.py with your Database
+********************************************************* 
+
+edit this section :
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': os.path.dirname(os.path.abspath( __file__ )) + '/database/local.db',                      # Or path to database file if using sqlite3.
+        'USER': '',                      # Not used with sqlite3.
+        'PASSWORD': '',                  # Not used with sqlite3.
+        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+    }
+}
+
