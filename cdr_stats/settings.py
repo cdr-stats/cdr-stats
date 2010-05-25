@@ -69,6 +69,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'cdr_stats.urls'
@@ -81,6 +82,12 @@ TEMPLATE_DIRS = (
     os.path.join( APPLICATION_DIR, 'templates' ), 
 )
 
+INTERNAL_IPS = ('127.0.0.1')
+
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS': False,
+}
+
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -92,5 +99,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'cdr',
-    #'dilla',
+    'dilla',
+    'debug_toolbar',
 )
