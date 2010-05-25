@@ -28,10 +28,12 @@ def show_cdr(request):
            context_instance = RequestContext(request))
            
            
+def login(request):
+    return render_to_response('cdr/login.html')
 
 def index(request):
-    client_list = Client.objects.all()
-    return render_to_response('cdr/index.html', {'client_list': client_list})
+    cdr_list = CDR.objects.all()
+    return render_to_response('cdr/index.html', {'cdr_list': cdr_list})
 
 
 

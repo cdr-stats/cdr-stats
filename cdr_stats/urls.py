@@ -10,10 +10,14 @@ admin.autodiscover()
 
 
 urlpatterns = patterns('',
+    
+    # redirect
+    ('^$', 'django.views.generic.simple.redirect_to', {'url': '/cdr/'}),
+
     # Example:
     # (r'^stats/', include('stats.foo.urls')),
     #( r'^/resources/(?P<path>.*)$', 'django.views.static.serve',  { 'document_root': settings.MEDIA_ROOT } ),
-	(r'^projects/cdr/', include('cdr.urls')),
+	(r'^cdr/', include('cdr.urls')),
 	
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
