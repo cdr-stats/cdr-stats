@@ -26,14 +26,15 @@ def grid_config(request):
 def show_cdr(request):
     return render_to_response('cdr/show_cdr.html', None,
            context_instance = RequestContext(request))
-           
-           
-def login(request):
-    return render_to_response('cdr/login.html')
 
+def login(request):
+    return render_to_response('cdr/login.html', None,
+           context_instance = RequestContext(request))
+           
 def index(request):
-    cdr_list = CDR.objects.all()
-    return render_to_response('cdr/index.html', {'cdr_list': cdr_list})
+    return render_to_response('cdr/index.html', None,
+           context_instance = RequestContext(request))
+
 
 
 

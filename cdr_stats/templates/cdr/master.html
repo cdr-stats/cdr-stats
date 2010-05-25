@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="{{MEDIA_URL}}/css/style.css" type="text/css" media="screen, projection">    
 
     <link rel="stylesheet" type="text/css" media="screen" href="{{MEDIA_URL}}/css/ui.jqgrid.css">
+    
+    <link rel="stylesheet" type="text/css" media="screen" href="{{MEDIA_URL}}/css/ui.jqdock.css">
 
     <!--[if lt IE 8]><link rel="stylesheet" href="resources/css/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
 
@@ -18,6 +20,7 @@
     <link type="text/css" media="screen" href="src/css/ui.multiselect.css" rel="stylesheet"/> 
     
     <script type="text/javascript" src="{{MEDIA_URL}}/js/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="{{MEDIA_URL}}/js/jquery.jqDock.min.js"></script>
     <script type="text/javascript" src="{{MEDIA_URL}}/js/jquery-ui-1.8.1.custom.min.js"></script>
 
     <script src="{{MEDIA_URL}}/js/i18n/grid.locale-en.js" type="text/javascript"></script>
@@ -36,7 +39,20 @@
 	<script src="{{MEDIA_URL}}/_js/jquery.contextMenu.js" type="text/javascript"></script>
 	<link href="{{MEDIA_URL}}/_js/jquery.contextMenu.css" rel="stylesheet" type="text/css" />
     
-    </head><body>
+</head>
+<body>
+
+<div id='page'> 
+	<div id='menu'> 
+		<a href="../show_cdr/"><img src='{{MEDIA_URL}}/icons/edit-find-6.png' title='Search CDRs' alt='' /></a>
+		<a href="../show_cdr/"><img src='{{MEDIA_URL}}/icons/office-chart-line.png' title='Analyze CDRs' alt='' /> </a>
+		<a href="../show_cdr/"><img src='{{MEDIA_URL}}/icons/office-chart-bar-stacked.png' title='Daily Traffic' alt='' /></a>
+		<a href="../show_cdr/"><img src='{{MEDIA_URL}}/icons/office-chart-pie.png' title='Monthly Traffic' alt='' /></a>
+		<a href="../index/"><img src='{{MEDIA_URL}}/icons/help-about-2.png' title='Info' alt='' /> </a>
+	</div> 	
+</div>
+
+
 
 {% block extra_head %}
 {{ extra_head }}
@@ -48,24 +64,37 @@ $(function(){
     $('.tabs').tabs();
     $("#accordion").accordion({ header: "h3" });
     $(".tabcontainer").tabs({debug: true});
-    //$('#nav1').droppy();
 });
 </script>
 
 
 
+<script type="text/javascript">
+jQuery(document).ready(function($){
+  // set up the options to be used for jqDock...
+var dockOptions =
+    { align: 'top' // horizontal menu, with expansion DOWN from a fixed TOP edge
+    , labels: true  // add labels (defaults to 'bc')
+    };
+  // ...and apply...
+  $('#menu').jqDock(dockOptions);
+});
+
+jQuery(document).ready(function($){
+	// set a click handler on all items (children) within #menu...
+	$('#menu1').children().click(function(event){
+			alert("You clicked '"+(this.title||$(this).parent().find('.jqDockLabel').text()||'')+"' <"+this.tagName.toUpperCase()+">");
+			this.blur();
+			return false;
+		});
+});
+</script>
+
 
 <div class="container mainbox">
 
-    <div class="span-24" valign="middle">
-            <h1 align="center">CDR Stats</h1>
-        <ul id="nav">
-            <li><a href="/show_cdr/">Show CDR Reports</a></li>
-            <li><a href="/monthly_report/">Monthly Report</a></li>
-            <li><a href="/call_traffic/">Analyze call traffice</a></li>
-        </ul>
-    </div>
-
+    <h1 align="center">CDR Stats</h1>
+    
     <div class="span-24">
     {% block content %}
     {{ content }}

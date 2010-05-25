@@ -38,5 +38,9 @@ urlpatterns = patterns('',
 	(r'^json/cdr/$',   'cdr.views.json_cdr'),
 	(r'^show_cdr/$',   'cdr.views.show_cdr'),
 	
+	# Pages
+	(r'^login/$',   'cdr.views.login'),
+	(r'^index/$',   'cdr.views.index'),
+	
 )
 
