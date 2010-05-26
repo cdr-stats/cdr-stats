@@ -1,6 +1,18 @@
 
 
- - Graph report
- - debugger
+~~~ TODO List ~~~
+
+
+ - Graph report - integrate Visualize Chart (http://www.filamentgroup.com/lab/update_to_jquery_visualize_accessible_charts_with_html5_from_designing_with)
+ 
+ - build pluggable module
+ 
+ - Search with Jqgrid :
+   http://www.trirand.com/blog/jqgrid/jqgrid37/jqgrid.html
+   http://www.trirand.net/demoaspnet.aspx
+   Add toolbar search and multisearch together 
+   
+ - Export Csv, XML, etc...
+ 
  
  

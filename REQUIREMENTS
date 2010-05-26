@@ -44,7 +44,30 @@
 ----------------
 	To generate Data :
 	svn checkout http://django-dilla.googlecode.com/svn/trunk/dilla dilla
+
+
+* Flot 
+-------------
+    Flot is a pure Javascript plotting library for jQuery (http://code.google.com/p/flot/)
+    
+	svn checkout http://flot.googlecode.com/svn/trunk/ flot
+
+
+* EnhanceJS
+-------------
+    
+    http://code.google.com/p/enhancejs/
+    this is already included	
 	
+
+* django-extensions
+-----------------------
+	svn checkout http://django-command-extensions.googlecode.com/svn/trunk/ django-command-extensions
+	then install,
+    sudo python setup.py install
+    
+    # very useful to generate graph :
+    
 
 * Extra dependencies 
 ----------------------

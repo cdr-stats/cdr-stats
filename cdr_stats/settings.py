@@ -101,4 +101,8 @@ INSTALLED_APPS = (
     'cdr',
     'dilla',
     'debug_toolbar',
+    'django_extensions',
 )
+
+
+
