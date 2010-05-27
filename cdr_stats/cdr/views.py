@@ -23,6 +23,10 @@ def grid_config(request):
     return HttpResponse(grid.get_config(), mimetype="application/json")
 
 
+def show_graph(request):
+    return render_to_response('cdr/show_graph.html', None,
+           context_instance = RequestContext(request))
+
 def show_cdr(request):
     return render_to_response('cdr/show_cdr.html', None,
            context_instance = RequestContext(request))
