@@ -1,0 +1,39 @@
+{% extends "cdr/master.html" %}
+
+{% block extra_head %}
+
+<script type="text/javascript">
+$(function () {
+    $.getJSON("{% url grid_config %}", function(data){
+        $("#mygrid")
+            .jqGrid(data)
+            .navGrid('#pager', 
+                {add: false, edit: false, del: false, view: true},
+        {}, // edit options
+        {}, // add options
+        {}, // del options 
+        { multipleSearch:true, closeOnEscape:true }, // search options 
+        { jqModal:false, closeOnEscape:true} // view options 
+        ).filterToolbar({stringResult: true,searchOnEnter : false});
+    });
+});
+</script>
+
+{% endblock %}
+
+{% block content %}
+<div id="cdr-container" class='tabcontainer'>
+
+
+    <div id='general-info'>
+                
+        <table id="mygrid"></table>
+		<div id="pager"></div>
+
+
+    </div>
+
+</div>
+
+
+{% endblock %}
