@@ -26,6 +26,9 @@ def show_jqgrid(request):
     return render_to_response('cdr/show_jqgrid.html', None,
            context_instance = RequestContext(request))
 
+def show_graph(request):
+    return render_to_response('cdr/show_graph.html', None,
+           context_instance = RequestContext(request))
 
 
 def login(request):

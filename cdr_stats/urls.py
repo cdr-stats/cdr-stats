@@ -38,6 +38,8 @@ urlpatterns = patterns('',
 	(r'^show_jqgrid/$',   'cdr.views.show_jqgrid'),
 	
 	
+	(r'^show_graph_examples/$',   'cdr.views.show_graph'),
+	
 	# Pages
 	(r'^login/$',   'cdr.views.login'),
 	(r'^index/$',   'cdr.views.index'),
