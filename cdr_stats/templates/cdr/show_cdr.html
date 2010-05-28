@@ -35,8 +35,10 @@ jQuery(document).ready(function(){
     rowNum:10,
     rowList:[10,50,100,500],
 	autowidth: true,
+    loadonce:true,
     pager: 'general-pager',
-    sortname: 'acctid', sortorder: 'desc',
+    sortname: 'acctid', 
+    sortorder: 'desc',
     viewrecords: true,
     caption: 'CDR Listing',
     multipleSearch:true,
@@ -46,7 +48,7 @@ jQuery(document).ready(function(){
 		{},  // delete instead that del:false we need this
 		{multipleSearch : true}, // enable the advanced searching
 		{closeOnEscape : true} /* allow the view dialog to be closed when user press ESC key*/
-	);
+	).filterToolbar({stringResult: true,searchOnEnter : true});
 }); 
 </script>
 
