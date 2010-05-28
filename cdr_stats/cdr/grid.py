@@ -12,5 +12,5 @@ class ExampleGrid(JqGrid):
     colmodel_overrides = {
         'acctid': { 'editable': False, 'width':50 },
     }
-
+    
 
