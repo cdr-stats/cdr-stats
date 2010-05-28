@@ -34,9 +34,9 @@ urlpatterns = patterns('',
     
     url (r'^examplegrid/$', grid_handler, name='grid_handler'),
 	url (r'^examplegrid/cfg/$', grid_config, name='grid_config'),
-		
-	(r'^json/cdr/$',   'cdr.views.json_cdr'),
-	(r'^show_cdr/$',   'cdr.views.show_cdr'),
+	
+	(r'^show_jqgrid/$',   'cdr.views.show_jqgrid'),
+	
 	
 	# Pages
 	(r'^login/$',   'cdr.views.login'),

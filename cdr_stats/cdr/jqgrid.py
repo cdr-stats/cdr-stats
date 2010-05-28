@@ -202,9 +202,9 @@ class JqGrid(object):
             'jsonReader': { 'repeatitems': False  },
             'rowNum': 10,
             'rowList': [10, 25, 50, 100],
-            'sortname': 'id',
+            #'sortname': 'id',
             'viewrecords': True,
-            'sortorder': "asc",
+            #'sortorder': "asc",
             'pager': self.pager_id,
             'altRows': True,
             'gridview': True,
@@ -214,7 +214,7 @@ class JqGrid(object):
             #'multiselect': True,
             #'toolbar': [False, 'bottom'],
             #'userData': None,
-            #'rownumbers': False,
+            #'rownumbers': True,
         }
         return config
 
@@ -265,3 +265,6 @@ class JqGrid(object):
             'editable': True
         }
         return colmodel
+        
+
+
