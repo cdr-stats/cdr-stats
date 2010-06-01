@@ -69,6 +69,15 @@
     # very useful to generate graph :
     
 
+* python-dateutil
+-------------------
+    Go to http://labix.org/python-dateutil and install the last package
+    last package on date :
+    http://labix.org/download/python-dateutil/python-dateutil-1.5.tar.gz
+    tar -xvzf python-dateutil-1.5.tar.gz ; cd python-dateutil-1.5/    
+    sudo python setup.py install
+
+
 * Extra dependencies 
 ----------------------
     Jquery
