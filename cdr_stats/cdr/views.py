@@ -126,6 +126,7 @@ def show_graph(request):
                              'comp_months':comp_months,
                              'calls_min':calls_min,
                             })
+
         return render_to_response('cdr/show_graph.html', variables,
                context_instance = RequestContext(request))
 
