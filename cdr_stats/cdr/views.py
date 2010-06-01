@@ -15,6 +15,7 @@ import calendar
 from cdr_stats.helpers import json_encode
 
 
+
 # Create your views here.
 
 def grid_handler(request):
@@ -118,7 +119,7 @@ def show_graph(request):
     if kwargs:
         select_data = {"subdate": """strftime('%%m/%%d/%%Y', calldate)"""}
         calls_min = CDR.objects.filter(**kwargs).extra(select=select_data).values('subdate').annotate(Sum('duration'))
-    
+
         variables = RequestContext(request,
                             {'form': form,
                              'result':'min',
