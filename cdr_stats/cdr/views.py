@@ -13,6 +13,7 @@ import calendar
 from cdr_stats.helpers import json_encode
 
 
+
 # Create your views here.
 
 def grid_handler(request):
@@ -114,14 +115,12 @@ def show_graph(request):
         kwargs[ 'calldate__range' ] = (start_date,end_date)
 
     if kwargs:
-        calls_min = CDR.objects.filter(**kwargs).values('calldate','duration').order_by('calldate')#aggregate(Sum('duration'))
-        #for n in calls_min:
-        #    print n['duration']
-         #   print datetime.strptime(n['calldate'], '%m')
-            #if datetime.strptime(n['calldate']):
-
-        #calls_min = calls_min['duration__sum']
-    
+        select_data = {"subdate": """strftime('%%m/%%d/%%Y', calldate)"""}
+        calls_min = CDR.objects.filter(**kwargs).extra(select=select_data).values('subdate').annotate(Sum('duration'))
+        
+        print(calls_min)
+        print connection.queries
+        
         variables = RequestContext(request,
                             {'form': form,
                              'calls_min':calls_min,
