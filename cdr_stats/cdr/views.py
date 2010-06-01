@@ -8,6 +8,8 @@ from cdr.forms import *
 from cdr.models import *
 from grid import ExampleGrid
 from datetime import *
+from time import *
+from dateutil import parser
 from dateutil.relativedelta import *
 import calendar
 from cdr_stats.helpers import json_encode
@@ -114,16 +116,13 @@ def show_graph(request):
         kwargs[ 'calldate__range' ] = (start_date,end_date)
 
     if kwargs:
-        calls_min = CDR.objects.filter(**kwargs).values('calldate','duration').order_by('calldate')#aggregate(Sum('duration'))
-        #for n in calls_min:
-        #    print n['duration']
-         #   print datetime.strptime(n['calldate'], '%m')
-            #if datetime.strptime(n['calldate']):
-
-        #calls_min = calls_min['duration__sum']
+        select_data = {"subdate": """strftime('%%m/%%d/%%Y', calldate)"""}
+        calls_min = CDR.objects.filter(**kwargs).extra(select=select_data).values('subdate').annotate(Sum('duration'))
     
         variables = RequestContext(request,
                             {'form': form,
+                             'result':'min',
+                             'comp_months':comp_months,
                              'calls_min':calls_min,
                             })
         return render_to_response('cdr/show_graph.html', variables,

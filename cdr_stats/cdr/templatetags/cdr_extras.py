@@ -104,7 +104,14 @@ floatformat2.is_safe = True
 def percent(value):
     return str(round(value * 100, 2)) + " %"
 
-
+@register.filter()
+def month_name(value,arg):
+    total_time = time_in_min(arg,'min')
+    no = int(value[0:2])
+    year = value[6:10]
+    month_dict = {1:"Jan",2:"Feb",3:"Mar",4:"Apr", 5:"May",6:"Jun",7:"Jul",8:"Aug",9:"Sep",10:"Oct",11:"Nov",12:"Dec"}
+    m_name = month_dict[no]
+    return str(m_name) + " " + year + " " + total_time + " min"
 
 
 register.filter('row', row)
@@ -116,3 +123,4 @@ register.filter('time_in_min', time_in_min)
 register.filter('display_2bill', display_2bill)
 register.filter('floatformat2', floatformat2)
 register.filter('percent', percent)
+register.filter('month_name', month_name)

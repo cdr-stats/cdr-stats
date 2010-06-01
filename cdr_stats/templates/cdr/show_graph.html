@@ -30,7 +30,7 @@
 
 <table width=100% border=1>
 {% if calls_min %}
-  <caption>Pie Chart</caption>
+  <caption>Traffic Last {{comp_months}} Months</caption>
 	<thead>
 		<tr>
 			<td></td>
@@ -41,9 +41,9 @@
 <tbody>
   <tr class="tr_class">
        <th scope="row">
-           {{ call.calldate }}
+           {{ call.subdate|month_name:call.duration__sum }}
        </th>
-       <td>{{ call.duration }}</td>
+       <td>{{ call.duration__sum }}</td>
        
    </tr>
 </tbody>

@@ -1,6 +1,7 @@
 from cdr.models import *
 from datetime import *
 import calendar
+import time
 from random import *
 import string
 
