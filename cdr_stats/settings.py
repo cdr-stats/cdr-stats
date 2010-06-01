@@ -102,6 +102,7 @@ INSTALLED_APPS = (
     'dilla',
     'debug_toolbar',
     'django_extensions',
+    'dateutil',
 )
 
 

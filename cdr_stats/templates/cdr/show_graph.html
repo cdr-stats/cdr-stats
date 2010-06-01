@@ -1,5 +1,5 @@
 {% extends "cdr/master.html" %}
-
+{% load cdr_extras %}
 {% block extra_header %}
     <link href="{{MEDIA_URL}}/css/Visualize/basic.css" type="text/css" rel="stylesheet" />
     <link href="{{MEDIA_URL}}/css/Visualize/visualize.css" type="text/css" rel="stylesheet" />
@@ -13,55 +13,74 @@
 
 {% block content %}
 
-<table>
+<form method="GET" action="." enctype="multipart/form-data">
+<div align=center style="text-align:left;border: solid #000;margin:0% 30% 5% 25%;">
+       <p>{{ form.from_month_year.label }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.from_month_year }}&nbsp;&nbsp;{{ form.comp_months.label }}&nbsp;{{ form.comp_months }}
+       </p>
+       <p>{{ form.destination.label }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.destination }}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.destination_type|removetags:"ul li"|safe }}
+       </p>
+       <p>{{ form.source.label }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.source }}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.source_type|removetags:"ul li"|safe }}
+       </p>
+       <p>{{ form.channel.label }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel }}
+       </p>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="Search" />&nbsp;<input type="reset" value="Clear">
+</div>
+
+</form>
+
+<table width=100% border=1>
+{% if calls_min %}
+  <caption>Pie Chart</caption>
+	<thead>
+		<tr>
+			<td></td>
+			<th scope="col">Duration</th>
+		</tr>
+	</thead>
+  {% for call in calls_min %}
+<tbody>
+  <tr class="tr_class">
+       <th scope="row">
+           {{ call.calldate }}
+       </th>
+       <td>{{ call.duration }}</td>
+       
+   </tr>
+</tbody>
+    {% endfor %}
+   
+{% else %}
+  <tr><td align=center>No Record(s) found.</td></tr>
+{% endif %}
+</table>
+
+
+
+
+<table width=100%>
 	<caption>2009 Employee Sales by Department</caption>
 	<thead>
 		<tr>
 			<td></td>
-			<th scope="col">food</th>
-			<th scope="col">auto</th>
-			<th scope="col">household</th>
-			<th scope="col">furniture</th>
-			<th scope="col">kitchen</th>
-			<th scope="col">bath</th>
+			<th scope="col">Duration</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
 			<th scope="row">Mary</th>
 			<td>190</td>
-			<td>160</td>
-			<td>40</td>
-			<td>120</td>
-			<td>30</td>
-			<td>70</td>
 		</tr>
 		<tr>
 			<th scope="row">Tom</th>
 			<td>3</td>
-			<td>40</td>
-			<td>30</td>
-			<td>45</td>
-			<td>35</td>
-			<td>49</td>
 		</tr>
 		<tr>
 			<th scope="row">Brad</th>
 			<td>10</td>
-			<td>180</td>
-			<td>10</td>
-			<td>85</td>
-			<td>25</td>
-			<td>79</td>
 		</tr>
 		<tr>
 			<th scope="row">Kate</th>
 			<td>40</td>
-			<td>80</td>
-			<td>90</td>
-			<td>25</td>
-			<td>15</td>
-			<td>119</td>
 		</tr>		
 	</tbody>
 </table>
@@ -70,10 +89,10 @@
 <script type="text/javascript">
         $(function(){
             $('table').visualize({type: 'pie', height: '300px', width: '420px'});
-	        $('table').visualize({type: 'bar', width: '420px'});
-	        $('table').visualize({type: 'area', width: '420px'});
-	        $('table').visualize({type: 'line', width: '420px'});
+	      //  $('table').visualize({type: 'bar', width: '420px'});
+	        //$('table').visualize({type: 'area', width: '420px'});
+	       // $('table').visualize({type: 'line', width: '420px'});
         });
     </script>
-    
+
 {% endblock %}
