@@ -1,4 +1,5 @@
 from django.core.mail import send_mail
+from django.db import connection
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
@@ -12,6 +13,8 @@ from time import *
 from dateutil import parser
 from dateutil.relativedelta import *
 import calendar
+import operator
+from operator import *
 from cdr_stats.helpers import json_encode
 
 
@@ -100,7 +103,8 @@ def show_graph(request):
         if comp_months != '':
             from_day = validate_days(from_year,from_month,31)
             end_date = datetime(from_year, from_month, from_day)
-            start_date= end_date+relativedelta(months=-int(comp_months),days=+1)
+            cp_month=int(comp_months)+1
+            start_date= end_date+relativedelta(months=-int(cp_month),days=+relative_days(from_day,from_year))
             kwargs[ 'calldate__range' ] = (start_date,end_date)
     
     form = MonthLoadSearchForm(initial={'from_month_year':from_month_year,'comp_months':comp_months,'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,})
@@ -111,18 +115,67 @@ def show_graph(request):
         from_year=tday.year
         from_month= tday.month
         from_day = validate_days(tday.year,tday.month,31)
-
+        comp_months=2
+        cp_month=comp_months+1
         end_date = datetime(from_year, from_month, from_day)
-        start_date= end_date+relativedelta(months=-2,days=+1)
+        start_date= end_date+relativedelta(months=-int(cp_month),days=+relative_days(from_day,from_year))
         kwargs[ 'calldate__range' ] = (start_date,end_date)
 
+    
+    total_month_list = []
+    e_month=int(end_date.month)
+    e_year=int(end_date.year)
+    for i in range(cp_month):
+        if  e_month <= 12:
+            total_month_list.append((e_month,e_year))
+            e_month=e_month-1
+            if e_month==0:
+                e_month=12
+                e_year=e_year-1
+
+   
+    
     if kwargs:
-        select_data = {"subdate": """strftime('%%m/%%d/%%Y', calldate)"""}
+        select_data = {"subdate": "strftime('%%m/%%d/%%Y', calldate)"}
         calls_min = CDR.objects.filter(**kwargs).extra(select=select_data).values('subdate').annotate(Sum('duration'))
+
+        total_record = []
+        m_list = []
+        r_list = []
+        n_list = []
+        
+        #print sorted(total_month_list, key=lambda total_month: total_month[1])
+        print sorted(total_month_list, key=itemgetter(1), reverse=True)
+        
+        x=0
+        for a in total_month_list:
+            m_list.append((total_month_list[x][0]))
+            x=x+1
+        
+        y=0
+        for b in calls_min:
+            r_list.append((int(b['subdate'][0:2])))
+            y=y+1
+        
+        for c in m_list:
+            if c in r_list:
+                continue
+            else:
+                n_list.append((c))
+                
+        x=0
+        for j in total_month_list:
+            if total_month_list[x][0] in n_list :
+                total_record.append((total_month_list[x][0],total_month_list[x][1],0))
+            x=x+1
+        
+        for j in calls_min:
+            total_record.append(( int(j['subdate'][0:2]),int(j['subdate'][6:10]),j['duration__sum']))
 
         variables = RequestContext(request,
                             {'form': form,
                              'result':'min',
+                             'total_record':total_record,#sorted(total_record, key=lambda total: total[0]),
                              'comp_months':comp_months,
                              'calls_min':calls_min,
                             })

@@ -27,6 +27,10 @@
 </div>
 
 </form>
+{% for month in total_month_list %}
+{{month.1}}
+{% endfor %}
+
 
 <table width=100% border=1>
 {% if calls_min %}
@@ -37,18 +41,25 @@
 			<th scope="col">Duration</th>
 		</tr>
 	</thead>
-  {% for call in calls_min %}
+
+
+
+{% for call in total_record %}
 <tbody>
-  <tr class="tr_class">
+
+{% if call.0 %}
+
+<tr class="tr_class">
        <th scope="row">
-           {{ call.subdate|month_name:call.duration__sum }}
+           {{ call.0|month_name:call.1 }} {{ call.2|time_in_min:"min"}}
        </th>
-       <td>{{ call.duration__sum }}</td>
-       
+       <td>{{ call.2 }}</td>
    </tr>
+
+{% endif %}
 </tbody>
-    {% endfor %}
-   
+{% endfor %}
+
 {% else %}
   <tr><td align=center>No Record(s) found.</td></tr>
 {% endif %}

@@ -5,6 +5,28 @@ import time
 from random import *
 import string
 
+def relative_days(from_day,from_year):
+    if from_day == 30:
+        relative_days=2
+        return relative_days
+    elif from_day == 31:
+        relative_days=1
+        return relative_days
+    else:
+        if calendar.isleap(from_year) == 'false':
+            relative_days=2
+        else:
+            relative_days=1
+        return relative_days
+
+def uniq(inlist):
+    # order preserving
+    uniques = []
+    for item in inlist:
+        if item not in uniques:
+            uniques.append(item)
+    return uniques
+
 def get_unique_id():
     """get unique id"""
     length=8
