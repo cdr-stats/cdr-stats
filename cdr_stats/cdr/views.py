@@ -172,10 +172,11 @@ def show_graph(request):
         for j in calls_min:
             total_record.append(( int(j['subdate'][0:2]),int(j['subdate'][6:10]),j['duration__sum']))
 
+        #print sorted(total_record, key=lambda total: total[1])
         variables = RequestContext(request,
                             {'form': form,
                              'result':'min',
-                             'total_record':total_record,#sorted(total_record, key=lambda total: total[0]),
+                             'total_record':sorted(total_record, key=lambda total: total[0]),
                              'comp_months':comp_months,
                              'calls_min':calls_min,
                             })
