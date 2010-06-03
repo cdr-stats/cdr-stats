@@ -32,7 +32,7 @@
 {% endfor %}
 
 
-<table width=100% border=1>
+<table width=100%>
 {% if calls_min %}
   <caption>Traffic Last {{comp_months}} Months</caption>
 	<thead>
@@ -42,26 +42,22 @@
 		</tr>
 	</thead>
 
+    <tbody>
+    {% for call in total_record %}
+        {% if call.0 %}
+        <tr class="tr_class">
+               <th scope="row">
+                   {{ call.0|month_name:call.1 }} {{ call.2|time_in_min:"min"}}
+               </th>
+               <td>{{ call.2 }}</td>
+           </tr>
 
-
-{% for call in total_record %}
-<tbody>
-
-{% if call.0 %}
-
-<tr class="tr_class">
-       <th scope="row">
-           {{ call.0|month_name:call.1 }} {{ call.2|time_in_min:"min"}}
-       </th>
-       <td>{{ call.2 }}</td>
-   </tr>
-
-{% endif %}
-</tbody>
-{% endfor %}
-
+        {% endif %}
+    {% endfor %}
+    </tbody>
+    
 {% else %}
-  <tr><td align=center>No Record(s) found.</td></tr>
+    <tr><td align=center>No Record(s) found.</td></tr>
 {% endif %}
 </table>
 

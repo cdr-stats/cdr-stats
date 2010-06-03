@@ -42,7 +42,7 @@
 		</tr>
 	</thead>
     <tbody>
-    <tr class="tr_class" height="10">
+    <tr class="tr_class">
            <th scope="row">
                Call per hour
            </th>
@@ -50,6 +50,7 @@
            <td>{{ call.1 }}</td>
            {% endfor %}       
     </tr>
+    
     {% else %}
       <tr><td align=center>No Record(s) found.</td></tr>
     {% endif %}
