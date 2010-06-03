@@ -172,10 +172,11 @@ def show_graph(request):
         for j in calls_min:
             total_record.append(( int(j['subdate'][0:2]),int(j['subdate'][6:10]),j['duration__sum']))
 
+        #print sorted(total_record, key=lambda total: total[1])
         variables = RequestContext(request,
                             {'form': form,
                              'result':'min',
-                             'total_record':total_record,#sorted(total_record, key=lambda total: total[0]),
+                             'total_record':sorted(total_record, key=lambda total: total[0]),
                              'comp_months':comp_months,
                              'calls_min':calls_min,
                             })
@@ -183,6 +184,114 @@ def show_graph(request):
         return render_to_response('cdr/show_graph.html', variables,
                context_instance = RequestContext(request))
 
+def show_graph_by_hour(request):
+    kwargs = {}
+    if request.method == 'GET':
+        if "from_month_year" in request.GET:
+            from_day        = int(request.GET['from_day'])            
+            from_month_year = request.GET['from_month_year']
+            from_year       = int(request.GET['from_month_year'][0:4])
+            from_month      = int(request.GET['from_month_year'][5:7])
+        else:
+            from_day        = ''
+            from_month_year = ''
+            from_year       = ''
+            from_month      = ''
+
+        if "destination" in request.GET:
+            destination = request.GET['destination']
+        else:
+            destination = ''
+
+        if "destination_type" in request.GET:
+            destination_type = request.GET['destination_type']
+        else:
+            destination_type = ''
+
+        if destination != '':
+            if destination_type == '1':
+                kwargs[ 'dst__exact' ] = destination
+            if destination_type == '2':
+                kwargs[ 'dst__startswith' ] = destination
+            if destination_type == '3':
+                kwargs[ 'dst__contains' ] = destination
+            if destination_type == '4':
+                kwargs[ 'dst__endswith' ] = destination
+
+        if "source" in request.GET:
+            source = request.GET['source']
+        else:
+            source = ''
+
+        if "source_type" in request.GET:
+            source_type = request.GET['source_type']
+        else:
+            source_type = ''
+
+        if source != '':
+            if source_type == '1':
+                kwargs[ 'src__exact' ] = source
+            if source_type == '2':
+                kwargs[ 'src__startswith' ] = source
+            if source_type == '3':
+                kwargs[ 'src__contains' ] = source
+            if source_type == '4':
+                kwargs[ 'src__endswith' ] = source
+
+        if "channel" in request.GET:
+            channel = request.GET['channel']
+        else:
+            channel = ''
+
+        if channel!='':
+            kwargs[ 'channel' ] = channel
+
+        if from_day != '':
+            start_date = datetime(from_year,from_month,from_day,0,0,0,0)
+            end_date = datetime(from_year,from_month,from_day,23,59,59,999999)
+            kwargs[ 'calldate__range' ] = (start_date,end_date)
+
+    
+    form = DailyLoadSearchForm(initial={'from_day':from_day,'from_month_year':from_month_year,'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,})
+
+    if len(kwargs) == 0:
+        tday=datetime.today()
+        from_day = validate_days(tday.year,tday.month,tday.day)
+        form = DailyLoadSearchForm(initial={'from_day':tday.day,'from_month_year':from_month_year,'destination':destination,'destination_type':1,'source':source,'source_type':1,'channel':channel,})
+        from_year=tday.year
+        from_month= tday.month
+        start_date = datetime(from_year,from_month,from_day,0,0,0,0)
+        end_date = datetime(from_year,from_month,from_day,23,59,59,999999)
+        kwargs[ 'calldate__range' ] = (start_date,end_date)
+
+    if kwargs:
+        select_data = {"called_time": "strftime('%%H', calldate)"}#/%%M/%%S
+        calls_in_day = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('calldate'))#.order_by('-calldate')#
+        total_record = []
+        if calls_in_day.count()!=0:
+            total_record = []
+            list_of_hour = []
+            for i in calls_in_day:
+                list_of_hour.append((int(i['called_time'])))
+                #print list_of_hour
+                
+            for i in range(0,24):
+                if i not in list_of_hour:
+                    total_record.append((i,0))
+
+            for i in calls_in_day:
+                total_record.append((int(i['called_time']),int(i['calldate__count']) ))
+
+        variables = RequestContext(request,
+                            {'form': form,
+                             'result':'min',
+                             'report_date':start_date,
+                             'total_record':sorted(total_record, key=lambda total: total[0]),
+                             'calls_in_day':calls_in_day,
+                            })
+
+        return render_to_response('cdr/show_graph_by_hour.html', variables,
+               context_instance = RequestContext(request))
 
 def login(request):
     return render_to_response('cdr/login.html', None,

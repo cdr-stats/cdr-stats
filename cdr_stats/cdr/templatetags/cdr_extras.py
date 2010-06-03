@@ -63,13 +63,13 @@ def time_in_min(value,arg):
         if arg == 'min':
             min = int(value / 60)
             sec = int(value % 60)
-            return str(str(min) + ":" + str(sec))
+            return str(str(min) + ":" + str(sec) + " min")
         else:
             min = int(value / 60)
             min = (min * 60)
             sec = int(value % 60)
             total_sec = min + sec
-            return str(total_sec)
+            return str(total_sec + " sec")
     else:
         return str("0:0 min")
 
@@ -117,14 +117,7 @@ def month_int(value):
 @register.filter()
 def month_name(value,arg):
     month_dict = {1:"Jan",2:"Feb",3:"Mar",4:"Apr", 5:"May",6:"Jun",7:"Jul",8:"Aug",9:"Sep",10:"Oct",11:"Nov",12:"Dec"}
-    #if arg != 0:
-    #    total_time = time_in_min(arg,'min')
-    #    no = value
-    #    year = "2010"
-    #if arg == 0:
-    #    total_time = "0"
     no=int(value)
-    #    year="2010"# + " " + total_time + " min"
     m_name = month_dict[no]
     return str(m_name) + " " + str(arg)
 

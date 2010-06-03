@@ -39,6 +39,7 @@ urlpatterns = patterns('',
 	
 	
 	(r'^show_graph_examples/$',   'cdr.views.show_graph'),
+    (r'^show_graph_by_hour/$',   'cdr.views.show_graph_by_hour'),
 	
 	# Pages
 	(r'^login/$',   'cdr.views.login'),
