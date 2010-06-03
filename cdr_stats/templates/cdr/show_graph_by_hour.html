@@ -29,67 +29,38 @@
 
 </form>
 
-<table width=100% border=1>
+
+<table id="table_load_hour" width="100%" border="1" align="center">
 {% if total_record %}
   <caption>Load By Hour</caption>
 	<thead>
 		<tr>
 			<td></td>
-			<th scope="col">List of Hours</th>
+			{% for call in total_record %}
+			    <th scope="col">{{ call.0 }}</th>
+			{% endfor %}
 		</tr>
 	</thead>
-<tbody>
-{% for call in total_record %}
-<tr class="tr_class">
-       <th scope="row">
-           {{ call.0 }}
-       </th>
-       <td>{{ call.1 }}</td>
-   </tr>
-{% endfor %}
+    <tbody>
+    <tr class="tr_class" height="10">
+           <th scope="row">
+               Call per hour
+           </th>
+           {% for call in total_record %}
+           <td>{{ call.1 }}</td>
+           {% endfor %}       
+    </tr>
+    {% else %}
+      <tr><td align=center>No Record(s) found.</td></tr>
+    {% endif %}
 
-{% else %}
-  <tr><td align=center>No Record(s) found.</td></tr>
-{% endif %}
-
-</tbody>
+    </tbody>
 </table>
-
-<table width=100%>
-	<caption>2009 Employee Sales by Department</caption>
-	<thead>
-		<tr>
-			<td></td>
-			<th scope="col">Duration</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<th scope="row">Mary</th>
-			<td>190</td>
-            
-		</tr>
-		<tr>
-			<th scope="row">Tom</th>
-			<td>3</td>
-
-		</tr>
-		<tr>
-			<th scope="row">Brad</th>
-			<td>10</td>
-		</tr>
-		<tr>
-			<th scope="row">Kate</th>
-			<td>40</td>
-		</tr>
-	</tbody>
-</table>
-
 
 <script type="text/javascript">
     $(function(){
        // $('table').visualize({type: 'pie', height: '300px', width: '420px'});
-       $('table').visualize({type: 'bar', width: '420px'});
+       $('#table_load_hour').visualize({type: 'bar', width: '800px', align: '0'});
         //$('table').visualize({type: 'area', width: '420px'});
        // $('table').visualize({type: 'line', width: '420px'});
     });
