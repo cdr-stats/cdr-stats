@@ -138,17 +138,14 @@ def show_graph_by_month(request):
    
     
     if kwargs:
-        select_data = {"subdate": "strftime('%%m/%%d/%%Y', calldate)"}
+        select_data = {"subdate": "strftime('%%m/%%Y', calldate)"}
         calls_min = CDR.objects.filter(**kwargs).extra(select=select_data).values('subdate').annotate(Sum('duration'))
-
+        
         total_record = []
         m_list = []
         r_list = []
         n_list = []
-        
-        #print sorted(total_month_list, key=lambda total_month: total_month[1])
-        print sorted(total_month_list, key=itemgetter(1), reverse=True)
-        
+                
         x=0
         for a in total_month_list:
             m_list.append((total_month_list[x][0]))
@@ -169,16 +166,17 @@ def show_graph_by_month(request):
         for j in total_month_list:
             if total_month_list[x][0] in n_list :
                 total_record.append((total_month_list[x][0],total_month_list[x][1],0))
+
             x=x+1
         
         for j in calls_min:
-            total_record.append(( int(j['subdate'][0:2]),int(j['subdate'][6:10]),j['duration__sum']))
+            total_record.append(( int(j['subdate'][0:2]),int(j['subdate'][3:7]),j['duration__sum']))
 
         #print sorted(total_record, key=lambda total: total[1])
         variables = RequestContext(request,
                             {'form': form,
                              'result':'min',
-                             'total_record':sorted(total_record, key=lambda total: total[0]),
+                             'total_record':sorted(total_record, key=lambda total: total[1]),
                              'comp_months':comp_months,
                              'calls_min':calls_min,
                             })
