@@ -172,7 +172,7 @@ def show_graph_by_month(request):
         for j in calls_min:
             total_record.append(( int(j['subdate'][0:2]),int(j['subdate'][3:7]),j['duration__sum']))
 
-        #print sorted(total_record, key=lambda total: total[1])
+        print sorted(total_record, key=lambda total: total[1])
         variables = RequestContext(request,
                             {'form': form,
                              'result':'min',
