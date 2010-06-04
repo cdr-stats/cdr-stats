@@ -172,7 +172,7 @@ def show_graph_by_month(request):
         for j in calls_min:
             total_record.append(( int(j['subdate'][0:2]),int(j['subdate'][3:7]),j['duration__sum']))
 
-        print sorted(total_record, key=lambda total: total[1])
+        #print sorted(total_record, key=lambda total: total[1])
         variables = RequestContext(request,
                             {'form': form,
                              'result':'min',
@@ -370,8 +370,7 @@ def show_graph_by_hour(request):
             start_date= end_date+relativedelta(days=-int(comp_days))
             start_date = datetime(start_date.year, start_date.month, start_date.day,0,0,0,0)
             end_date = datetime(end_date.year, end_date.month, end_date.day,23,59,59,999999)
-            #print start_date
-            #print end_date
+
             kwargs[ 'calldate__range' ] = (start_date,end_date)
 
 
@@ -392,9 +391,12 @@ def show_graph_by_hour(request):
         kwargs[ 'calldate__range' ] = (start_date,end_date)
 
     if kwargs:
-        select_data = {"called_time": "strftime('%%m/%%d/%%Y/%%H/%%M', calldate)"}#/%%M/%%S
-        calls_in_day = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('calldate'))#.order_by('-calldate')#
-
+        select_data = {"called_time": "strftime('%%m/%%d/%%Y/%%H/%%M', calldate)"}#/%%M/%%S        
+        if graph_view == '1':
+            calls_in_day = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('calldate'))#.order_by('-calldate')#
+        else:
+            calls_in_day = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Sum('duration'))
+        
         record_dates = []
         total_record = []
         total_call_count = []
@@ -403,8 +405,13 @@ def show_graph_by_hour(request):
         for i in calls_in_day:
             if datetime(int(i['called_time'][6:10]),int(i['called_time'][0:2]),int(i['called_time'][3:5])) in dateList:
                 record_dates.append(( i['called_time'][6:10]+'-'+i['called_time'][0:2]+'-'+i['called_time'][3:5] ))
-                total_record.append(( i['called_time'], i['calldate__count']))
-                total_call_count.append((i['calldate__count']))
+                if graph_view == '1':
+                    total_record.append(( i['called_time'], i['calldate__count']))
+                    total_call_count.append((i['calldate__count']))
+                else:
+                    total_record.append(( i['called_time'], i['duration__sum']))
+                    total_call_count.append((i['duration__sum']))
+
         
         record_dates=list(set(record_dates))
 
@@ -419,8 +426,12 @@ def show_graph_by_hour(request):
                     string_date = i['called_time'][6:10]+'-'+i['called_time'][0:2]+'-'+i['called_time'][3:5]
                     if string_date == rd:
                         list_of_hour.append(int((i['called_time'][11:13])))
-                        list_of_count.append((int(i['called_time'][11:13]),i['calldate__count']))
-                        l_o_c[int(i['called_time'][11:13])]=i['calldate__count']
+                        if graph_view == '1':
+                            list_of_count.append((int(i['called_time'][11:13]),i['calldate__count']))
+                            l_o_c[int(i['called_time'][11:13])]=i['calldate__count']
+                        else:
+                            list_of_count.append((int(i['called_time'][11:13]),i['duration__sum']))
+                            l_o_c[int(i['called_time'][11:13])]=i['duration__sum']
 
                 x=0
                 for j in range(0,24):
@@ -449,12 +460,14 @@ def show_graph_by_hour(request):
             y =  str(i)
             datelist_final.append(( y[0:4]+'-'+y[5:7]+'-'+y[8:10] ))
 
-        
+        if graph_view == '2':
+            graph_view = ''
         variables = RequestContext(request,
                             {'form': form,
                              'result':'min',
                              'record_dates':datelist_final,
                              'total_hour':range(0,24),
+                             'graph_view':graph_view,
                              'call_count_range':call_count_range,
                              'total_record':sorted(total_record_final, key=lambda total: total[0]),
                              'calls_in_day':calls_in_day,

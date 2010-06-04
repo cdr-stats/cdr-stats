@@ -50,8 +50,11 @@
 
                     {% ifequal call.0 dt %}
 
- 
+                            {% if graph_view %}
                             <td>{{call.2}}</td>
+                             {% else %}
+                             <td>{{call.2|conv_min}}</td>
+                             {% endif %}
                        
 
                     {% endifequal %}

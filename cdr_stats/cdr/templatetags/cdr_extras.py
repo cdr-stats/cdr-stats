@@ -73,7 +73,14 @@ def time_in_min(value,arg):
     else:
         return str("0:0 min")
 
-
+@register.filter()
+def conv_min(value):
+    if int(value)!=0:
+        min = int(value / 60)
+        sec = int(value % 60)
+        return str(str(min)+":"+str(sec))
+    else:
+        return value
 
 
 @register.filter()
@@ -127,6 +134,7 @@ register.filter('mul', mul)
 register.filter('subtract', subtract)
 register.filter('adjust_for_pagination', adjust_for_pagination)
 register.filter('div', div)
+register.filter('conv_min', conv_min)
 register.filter('time_in_min', time_in_min)
 register.filter('display_2bill', display_2bill)
 register.filter('floatformat2', floatformat2)
