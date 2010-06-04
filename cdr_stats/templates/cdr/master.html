@@ -64,9 +64,10 @@
 		    $(this).removeClass("ui-state-hover"); 
 	    }
     );
-  });
-  
+  });  
 </script>
+<center>
+
 
 <a href="../show_jqgrid/" class="fg-button ui-state-default ui-corner-all">Search CDRs</a>
 <a href="../show_graph_by_hour/" class="fg-button ui-state-default ui-corner-all">Analyze CDRs</a>
@@ -88,7 +89,7 @@
 
 <div class="container mainbox">
 
-    <h1 align="center">CDR Stats</h1>
+    <h1 align="center"><img src="{{MEDIA_URL}}/icons/office-chart-area.png" height="90"/><img class="logo_asteriskstat" src="{{MEDIA_URL}}/logo/asterisk-stat.png"/></h1>
     
     <div class="span-24">
     {% block content %}

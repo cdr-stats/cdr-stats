@@ -6,16 +6,17 @@
     margin-right: auto;
 }
 
-#table_load_hour {
-	display: none;
-	margin-left: auto;
-    margin-right: auto;
+
+body {
+    font-size: 62.5%;
+}
+body {
+    font-family: 'Segoe UI', Frutiger, Tahoma, Helvetica, 'Helvetica Neue', Arial, sans-serif;
 }
 
-.visualize{
-    left: 250px;
+.logo_asteriskstat{
+    margin:40px 0 0 0;
 }
-
 
 #footer {
     top : 70px;
