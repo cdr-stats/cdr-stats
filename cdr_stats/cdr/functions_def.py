@@ -38,6 +38,14 @@ def comp_month_range():
     COMP_MONTH_LIST= ( (6,'- 6 months'),(5,'- 5 months'),(4,'- 4 months'),(3,'- 3 months'),(2,'- 2 months'),(1,'- 1 months'), )
     return COMP_MONTH_LIST
 
+def comp_day_range():
+    COMP_DAY_LIST= ( (4,'- 4 days'),(3,'- 3 days'),(2,'- 2 days'),(1,'- 1 day'),)
+    return COMP_DAY_LIST
+
+def date_range(start, end):
+    r = (end+timedelta(days=1)-start).days
+    return [start+timedelta(days=i) for i in range(r)]
+
 def day_range():
     DAYS = range(1,32)
     days = map(lambda x:(x,x),DAYS)

@@ -1,0 +1,70 @@
+{% extends "cdr/master.html" %}
+{% load cdr_extras %}
+{% block extra_header %}
+    <link href="{{MEDIA_URL}}/css/Visualize/basic.css" type="text/css" rel="stylesheet" />
+    <link href="{{MEDIA_URL}}/css/Visualize/visualize.css" type="text/css" rel="stylesheet" />
+    <link href="{{MEDIA_URL}}/css/Visualize/visualize-light.css" type="text/css" rel="stylesheet" />
+
+	<script type="text/javascript" src="{{MEDIA_URL}}/js/Visualize/excanvas.js"></script>
+	<script type="text/javascript" src="{{MEDIA_URL}}/js/Visualize/visualize.jQuery.js"></script>
+
+
+{% endblock %}
+
+{% block content %}
+
+<form method="GET" action="." enctype="multipart/form-data">
+
+<div align=center style="text-align:left;border: solid #000;margin:0% 30% 5% 25%;">
+       <p>{{ form.from_month_year.label }}&nbsp;&nbsp;{{ form.from_day }}&nbsp;{{ form.from_month_year }}&nbsp;&nbsp;
+       </p>
+       <p>{{ form.destination.label }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.destination }}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.destination_type|removetags:"ul li"|safe }}
+       </p>
+       <p>{{ form.source.label }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.source }}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.source_type|removetags:"ul li"|safe }}
+       </p>
+       <p>{{ form.channel.label }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel }}
+       </p>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="Search" />&nbsp;<input type="reset" value="Clear">
+</div>
+
+</form>
+
+
+<table id="table_load_hour" width="100%" border="1" align="center">
+{% if total_record %}
+  <caption>Load By Hour</caption>
+	<thead>
+		<tr>
+			<td></td>
+			{% for call in total_record %}
+			    <th scope="col">{{ call.0 }}</th>
+			{% endfor %}
+		</tr>
+	</thead>
+    <tbody>
+    <tr class="tr_class">
+           <th scope="row">
+               Call per hour
+           </th>
+           {% for call in total_record %}
+           <td>{{ call.1 }}</td>
+           {% endfor %}       
+    </tr>
+    
+    {% else %}
+      <tr><td align=center>No Record(s) found.</td></tr>
+    {% endif %}
+
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    $(function(){
+       // $('table').visualize({type: 'pie', height: '300px', width: '420px'});
+       $('#table_load_hour').visualize({type: 'bar', width: '800px', align: '0'});
+        //$('table').visualize({type: 'area', width: '420px'});
+       // $('table').visualize({type: 'line', width: '420px'});
+    });
+</script>
+
+{% endblock %}

@@ -16,7 +16,7 @@
 <form method="GET" action="." enctype="multipart/form-data">
 
 <div align=center style="text-align:left;border: solid #000;margin:0% 30% 5% 25%;">
-       <p>{{ form.from_month_year.label }}&nbsp;&nbsp;{{ form.from_day }}&nbsp;{{ form.from_month_year }}&nbsp;&nbsp;
+       <p>{{ form.from_month_year.label }}&nbsp;&nbsp;{{ form.from_day }}&nbsp;{{ form.from_month_year }}&nbsp;&nbsp;{{form.comp_days.label}}&nbsp;{{form.comp_days}}
        </p>
        <p>{{ form.destination.label }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.destination }}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.destination_type|removetags:"ul li"|safe }}
        </p>
@@ -24,46 +24,111 @@
        </p>
        <p>{{ form.channel.label }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel }}
        </p>
+       <p>{{ form.graph_view.label }}&nbsp;&nbsp;{{ form.graph_view }}</p>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="Search" />&nbsp;<input type="reset" value="Clear">
 </div>
 
 </form>
 
-
-<table id="table_load_hour" width="100%" border="1" align="center">
+<table width=100% border=1>
 {% if total_record %}
   <caption>Load By Hour</caption>
 	<thead>
-		<tr>
-			<td></td>
-			{% for call in total_record %}
-			    <th scope="col">{{ call.0 }}</th>
-			{% endfor %}
+		<tr><td></td>
+        {% for hour in total_hour%}
+        <td>{{hour}}</td>
+        {% endfor %}
 		</tr>
 	</thead>
-    <tbody>
-    <tr class="tr_class">
-           <th scope="row">
-               Call per hour
-           </th>
-           {% for call in total_record %}
-           <td>{{ call.1 }}</td>
-           {% endfor %}       
-    </tr>
-    
-    {% else %}
-      <tr><td align=center>No Record(s) found.</td></tr>
-    {% endif %}
+<tbody>
+{% for dt in record_dates%}
+<tr class="tr_class">
+		<th scope="col">{{ dt }}</th>
 
-    </tbody>
+                {% for call in total_record %}
+
+                    {% ifequal call.0 dt %}
+
+ 
+                            <td>{{call.2}}</td>
+                       
+
+                    {% endifequal %}
+
+                {% endfor %}
+
+</tr>
+{% endfor %}
+<!--
+{% for call in total_record %}
+<tr class="tr_class">
+       <th scope="row">
+           {{ call.1 }}
+       </th>
+       <td>{{ call.0 }}</td>
+   </tr>
+{% endfor %}
+-->
+{% else %}
+  <tr><td align=center>No Record(s) found.</td></tr>
+{% endif %}
+
+</tbody>
 </table>
+
+
+<table width=100%>
+	<caption>2009 Employee Sales by Department</caption>
+	<thead>
+		<tr>
+			<td></td>
+			<th scope="col">Duration</th>
+            <th scope="col">Duration</th>
+<th scope="col">Duration</th>
+<th scope="col">Duration</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<th scope="row">Mary</th>
+			<td>190</td>
+            <td>40</td>
+            <td>3</td>
+            <td>10</td>
+
+		</tr>
+		<tr>
+			<th scope="row">Tom</th>
+			<td>3</td>
+             <td>190</td>
+             <td>40</td>
+             <td>10</td>
+
+		</tr>
+		<tr>
+			<th scope="row">Brad</th>
+			<td>10</td>
+            <td>190</td>
+            <td>40</td>
+            <td>3</td>
+		</tr>
+		<tr>
+			<th scope="row">Kate</th>
+			<td>40</td>
+            <td>190</td>
+            <td>3</td>
+            <td>10</td>
+		</tr>
+	</tbody>
+</table>
+
 
 <script type="text/javascript">
     $(function(){
        // $('table').visualize({type: 'pie', height: '300px', width: '420px'});
-       $('#table_load_hour').visualize({type: 'bar', width: '800px', align: '0'});
-        //$('table').visualize({type: 'area', width: '420px'});
-       // $('table').visualize({type: 'line', width: '420px'});
+       //$('table').visualize({type: 'bar', width: '420px'});
+       // $('table').visualize({type: 'area', width: '420px'});
+        $('table').visualize({type: 'line', width: '420px'});
     });
 </script>
 
