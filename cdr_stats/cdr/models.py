@@ -56,6 +56,10 @@ class CDR(models.Model):
 				'spaces':False, #if Char/TextField, whether or not to allow spaces
 				'word_count':1, #if Char/TextField, the number of words to generate
 			},
+			'calldate':{
+				'day_delta': 5, #The day delta to generate the date, minus today
+				'hour_delta': 24, #The day delta to generate the date, minus the current hour
+			},
 		}
 
 
