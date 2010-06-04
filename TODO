@@ -2,9 +2,13 @@
 
 ~~~ TODO List ~~~
 
- - build pluggable module
- 
+
  - Export Csv, XML, etc...
+
+ - Login page : without login in, the only page you can see is http://127.0.0.1:8000/index/
+   there is a login option there, it should be the only page where we can login 
+
+ - build pluggable module
  
  - jquery datepicker integrate for From-date and To-Date Criteria
  
