@@ -12,7 +12,7 @@
  
  - jquery datepicker integrate for From-date and To-Date Criteria
  
- - concurrent calls
+ - concurrent calls : reproduce the logic from http://projects.colsolgrp.net/projects/list_files/concurrentcalls
  
  - Pretty CSS Form :
     / http://www.smashingmagazine.com/2006/11/11/css-based-forms-modern-solutions/
