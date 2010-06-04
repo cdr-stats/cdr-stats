@@ -1,23 +1,60 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html lang="en">
-<head>
-    <title>{% block title %}{% endblock %}</title>
-</head>
-<body>
-<center><h1>Customer Login</h1></center>
-<table align=center>
-<tr>
-<td align=center>
-{% if error %}
-<p><i>{{ error }}</i></p>
+
+<script type="text/javascript">
+      $(function(){
+        
+        $('#buttonlogin').click(function(){
+          $("#requestlogin").animate({ height: 'show', opacity: 'show' }, 'slow');
+        });
+        $('#buttonlogout').click(function(){
+          $('#logout').submit();
+        });
+      });
+</script>
+    
+    
+{% block login %}
+  <div id="openlogin" style="text-align: right;">
+    
+    {% if user.is_authenticated %}
+    <button id="buttonlogout" class="ui-button ui-button-icon-only ui-widget ui-state-default ui-corner-all" title="Button">
+        <span class="ui-button-icon-primary ui-icon ui-icon-unlocked"></span>
+        <span class="ui-button-text">Logout</span>
+    </button>
+    <form id="logout" action="/conf/" method="post">
+      <input type="hidden" name="action" value="logout" />
+    </form>
+
+    {% else %}
+    <button id="buttonlogin" class="ui-button ui-button-icon-only ui-widget ui-state-default ui-corner-all" title="Button">
+        <span class="ui-button-icon-primary ui-icon ui-icon-locked"></span>
+        <span class="ui-button-text">Login</span>
+    </button>
+    {% endif %}
+
+  </div>
+
+   <div id="requestlogin" style="margin: 10px; padding: 10px;  width: 400px; height: 30px; margin-left: 70%; display: none;" class="ui-widget ui-widget-content ui-corner-all">
+     <form action="/login/" method="post">
+         {% for field in loginform %}
+            <div class="fieldWrapper" style="float : left; margin: 5px;">
+                {{ field.errors }}
+                {{ field.label_tag }}: {{ field }}
+            </div>
+        {% endfor %}
+         <input type="submit" value="login" class="ui-state-default ui-corner-all" style="margin: 5px;">
+     </form>
+    </div>
+
+{% if errorlogin %}
+    <div class="ui-widget">
+        <div class="ui-state-error ui-corner-all" style="margin: 10px; padding: 0pt 0.7em;">
+            <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
+            <strong>Alert:</strong> Error login !</p>
+        </div>
+    </div>
 {% endif %}
-</td></tr>
-<tr><td>
-<form action="." method="POST">
-{{ form.as_p }}
-<div align=right><input type="submit" value="Submit" /></div>
-</form>
-</td></tr></table>
-</body>
-</html>
+
+
+{% endblock login %}
+
 

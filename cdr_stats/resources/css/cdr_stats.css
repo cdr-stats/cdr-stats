@@ -1,5 +1,11 @@
 
 
+#table_load_hour, #table_call_hour, #table_call_month  {
+	display: none;
+	margin-left: auto;
+    margin-right: auto;
+}
+
 #table_load_hour {
 	display: none;
 	margin-left: auto;
@@ -7,6 +13,27 @@
 }
 
 .visualize{
-    left: 200px;
+    left: 250px;
 }
+
+
+#footer {
+    top : 70px;
+    height: 50px;
+    position: relative;
+    text-align: center;
+    color : #555555;
+}
+
+.fg-button { 
+   outline: 0; 
+   margin:0 4px 0 0; 
+   padding: .8em 1.5em; 
+   text-decoration:none !important; 
+   cursor:pointer; 
+   position: relative; 
+   text-align: center; 
+   zoom: 1; 
+}
+
 

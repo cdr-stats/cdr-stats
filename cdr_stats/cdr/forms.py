@@ -36,4 +36,6 @@ class CompareCallSearchForm(forms.Form):
     channel = forms.CharField(label=u'CHANNEL',widget=forms.TextInput(attrs={'size': 15}))
     graph_view=forms.ChoiceField(label=u'graph',choices=((1,'Number of calls by hours'),(2,'Minutes by hours')))
 
-
+class loginForm(forms.Form):
+    user = forms.CharField(max_length=40, label='Login', required=True, widget=forms.TextInput(attrs={'size':'10'}))
+    password = forms.CharField(max_length=40, label='password', required=True, widget=forms.PasswordInput(attrs={'size':'10'}))

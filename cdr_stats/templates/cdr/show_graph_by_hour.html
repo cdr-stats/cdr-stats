@@ -1,4 +1,5 @@
 {% extends "cdr/master.html" %}
+
 {% load cdr_extras %}
 {% block extra_header %}
     <link href="{{MEDIA_URL}}/css/Visualize/basic.css" type="text/css" rel="stylesheet" />
@@ -30,7 +31,7 @@
 
 </form>
 
-<table width=100% border=1>
+<table id="table_call_hour" width=100% border=1>
 {% if total_record %}
   <caption>Number of calls by Hours</caption>
 	<thead>
@@ -68,50 +69,6 @@
 </tbody>
 </table>
 
-<table width=100%>
-	<caption>2009 Employee Sales by Department</caption>
-	<thead>
-		<tr>
-			<td></td>
-			<th scope="col">Duration</th>
-            <th scope="col">Duration</th>
-<th scope="col">Duration</th>
-<th scope="col">Duration</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<th scope="row">Mary</th>
-			<td>190</td>
-            <td>40</td>
-            <td>3</td>
-            <td>10</td>
-
-		</tr>
-		<tr>
-			<th scope="row">Tom</th>
-			<td>3</td>
-             <td>190</td>
-             <td>40</td>
-             <td>10</td>
-
-		</tr>
-		<tr>
-			<th scope="row">Brad</th>
-			<td>10</td>
-            <td>190</td>
-            <td>40</td>
-            <td>3</td>
-		</tr>
-		<tr>
-			<th scope="row">Kate</th>
-			<td>40</td>
-            <td>190</td>
-            <td>3</td>
-            <td>10</td>
-		</tr>
-	</tbody>
-</table>
 
 
 <script type="text/javascript">
@@ -119,8 +76,10 @@
        // $('table').visualize({type: 'pie', height: '300px', width: '420px'});
        //$('table').visualize({type: 'bar', width: '420px'});
        // $('table').visualize({type: 'area', width: '420px'});
-        $('table').visualize({type: 'line', width: '420px'});
+        $('table').visualize({type: 'line', width: '700px'});
     });
 </script>
 
 {% endblock %}
+
+

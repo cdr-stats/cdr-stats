@@ -468,8 +468,48 @@ def show_graph_by_hour(request):
 def login(request):
     return render_to_response('cdr/login.html', None,
            context_instance = RequestContext(request))
-           
+
 def index(request):
+    template = 'cdr/index.html'
+    
+    errorlogin = False
+
+    if request.method == 'POST':
+        try:
+            action = request.POST['action']
+        except (KeyError):
+            action = "login"
+        
+        if action=="logout":
+            logout(request)
+        else:
+            loginform = loginForm(request.POST)
+            if loginform.is_valid():
+                cd = loginform.cleaned_data
+                user = authenticate(username=cd['user'], password=cd['password'])
+                if user is not None:
+                    if user.is_active:
+                        login(request, user)
+                        # Redirect to a success page.
+                    else:
+                        # Return a 'disabled account' error message
+                        errorlogin = True
+                else:
+                    # Return an 'invalid login' error message.
+                    errorlogin = True
+
+    loginform = loginForm()
+
+    data = {
+        'loginform' : loginform,
+        'errorlogin' : errorlogin,
+        #'is_authenticated' : request.user.is_authenticated()
+    }
+    
+    return render_to_response(template, data,
+           context_instance = RequestContext(request))
+       
+def index2(request):
     return render_to_response('cdr/index.html', None,
            context_instance = RequestContext(request))
 
