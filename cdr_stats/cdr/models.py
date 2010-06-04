@@ -1,6 +1,19 @@
 from django.db import models
 from django.db.models import permalink
 
+
+DISPOSITION = (
+    (1, 'ANSWER'),
+    (2, 'BUSY'),
+    (3, 'NOANSWER'),
+    (4, 'CANCEL'),
+    (5, 'CONGESTION'),
+    (6, 'CHANUNAVAIL'),
+    (7, 'DONTCALL'),
+    (8, 'TORTURE'),
+    (9, 'INVALIDARGS'),
+)
+
 class CDR(models.Model):
     acctid = models.PositiveIntegerField(primary_key=True, db_column = 'acctid')
     src = models.CharField(max_length=80)
@@ -11,25 +24,27 @@ class CDR(models.Model):
     channel = models.CharField(max_length=80)
     dstchannel = models.CharField(max_length=80)
     lastapp = models.CharField(max_length=80)
-    lastdata = models.CharField(max_length=80)
+    #lastdata = models.CharField(max_length=80)
     duration = models.PositiveIntegerField()
     billsec = models.PositiveIntegerField()
-    disposition = models.PositiveIntegerField()
+    disposition = models.PositiveIntegerField(choices=DISPOSITION)
     amaflags = models.PositiveIntegerField()
     accountcode = models.PositiveIntegerField()
     uniqueid = models.CharField(max_length=32)
     userfield = models.CharField(max_length=80)
-    test = models.CharField(max_length=80)
-
+    #test = models.CharField(max_length=80)
+    
+        
     class Meta:
         db_table = 'cdr'
         # Only in trunk 1.1 managed = False     # The database is normally already created
 
     def __unicode__(self):
         return "%s -> %s" % (self.src,self.dst)
+        
 
     def get_list(self):
-        return [(self.acctid, self.src, self.dst, self.calldate, self.clid, self.dcontext, self.channel, self.dstchannel, self.lastapp, self.lastdata, self.duration, self.billsec, self.disposition, self.amaflags, self.accountcode, self.uniqueid, self.userfield, self.test)]
+        return [(self.acctid, self.src, self.dst, self.calldate, self.clid, self.dcontext, self.channel, self.dstchannel, self.lastapp, self.lastdata, self.duration, self.billsec, self.get_disposition_display(), self.amaflags, self.accountcode, self.uniqueid, self.userfield, self.test)]
     
     @permalink
     def get_absolute_url(self):
@@ -43,6 +58,9 @@ class CDR(models.Model):
 		#	},
 		    'acctid':{
 		        'integer_range':(1, 2147483647)
+		    },
+		    'disposition':{
+		        'integer_range':(1, 9)
 		    },
 			'src':{
 				'generator':None, #can point to a callable, which must return the desired value. If this is a string, it looks for a method in the dilla.py file.
