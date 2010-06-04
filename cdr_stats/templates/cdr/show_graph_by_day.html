@@ -1,14 +1,8 @@
 {% extends "cdr/master.html" %}
 {% load cdr_extras %}
+
 {% block extra_header %}
-    <link href="{{MEDIA_URL}}/css/Visualize/basic.css" type="text/css" rel="stylesheet" />
-    <link href="{{MEDIA_URL}}/css/Visualize/visualize.css" type="text/css" rel="stylesheet" />
-    <link href="{{MEDIA_URL}}/css/Visualize/visualize-light.css" type="text/css" rel="stylesheet" />
-
-	<script type="text/javascript" src="{{MEDIA_URL}}/js/Visualize/excanvas.js"></script>
-	<script type="text/javascript" src="{{MEDIA_URL}}/js/Visualize/visualize.jQuery.js"></script>
-
-
+    {% include "cdr/visualize_header.html" %}
 {% endblock %}
 
 {% block content %}
@@ -60,10 +54,7 @@
 
 <script type="text/javascript">
     $(function(){
-       // $('table').visualize({type: 'pie', height: '300px', width: '420px'});
-       $('#table_load_hour').visualize({type: 'bar', width: '800px', align: '0'});
-        //$('table').visualize({type: 'area', width: '420px'});
-       // $('table').visualize({type: 'line', width: '420px'});
+       $('#table_load_hour').visualize({type: 'bar', width: '700px', align: '0'});
     });
 </script>
 

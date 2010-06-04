@@ -1,12 +1,40 @@
 
 
-#table_load_hour {
+#table_load_hour, #table_call_hour, #table_call_month  {
 	display: none;
 	margin-left: auto;
     margin-right: auto;
 }
 
-.visualize{
-    left: 200px;
+
+body {
+    font-size: 62.5%;
 }
+body {
+    font-family: 'Segoe UI', Frutiger, Tahoma, Helvetica, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.logo_asteriskstat{
+    margin:40px 0 0 0;
+}
+
+#footer {
+    top : 70px;
+    height: 50px;
+    position: relative;
+    text-align: center;
+    color : #555555;
+}
+
+.fg-button { 
+   outline: 0; 
+   margin:0 4px 0 0; 
+   padding: .8em 1.5em; 
+   text-decoration:none !important; 
+   cursor:pointer; 
+   position: relative; 
+   text-align: center; 
+   zoom: 1; 
+}
+
 

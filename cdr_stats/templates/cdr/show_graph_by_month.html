@@ -1,14 +1,8 @@
 {% extends "cdr/master.html" %}
 {% load cdr_extras %}
+
 {% block extra_header %}
-    <link href="{{MEDIA_URL}}/css/Visualize/basic.css" type="text/css" rel="stylesheet" />
-    <link href="{{MEDIA_URL}}/css/Visualize/visualize.css" type="text/css" rel="stylesheet" />
-    <link href="{{MEDIA_URL}}/css/Visualize/visualize-light.css" type="text/css" rel="stylesheet" />
-    
-	<script type="text/javascript" src="{{MEDIA_URL}}/js/Visualize/excanvas.js"></script>		
-	<script type="text/javascript" src="{{MEDIA_URL}}/js/Visualize/visualize.jQuery.js"></script>		
-	
-    
+    {% include "cdr/visualize_header.html" %}
 {% endblock %}
 
 {% block content %}
@@ -32,7 +26,7 @@
 {% endfor %}
 
 
-<table width=100%>
+<table id="table_call_month" width=100%>
 {% if calls_min %}
   <caption>Traffic Last {{comp_months}} Months</caption>
 	<thead>
@@ -64,41 +58,9 @@
 
 
 
-<table width=100%>
-	<caption>2009 Employee Sales by Department</caption>
-	<thead>
-		<tr>
-			<td></td>
-			<th scope="col">Duration</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<th scope="row">Mary</th>
-			<td>190</td>
-		</tr>
-		<tr>
-			<th scope="row">Tom</th>
-			<td>3</td>
-		</tr>
-		<tr>
-			<th scope="row">Brad</th>
-			<td>10</td>
-		</tr>
-		<tr>
-			<th scope="row">Kate</th>
-			<td>40</td>
-		</tr>		
-	</tbody>
-</table>
-
-
 <script type="text/javascript">
     $(function(){
-        $('table').visualize({type: 'pie', height: '300px', width: '420px'});
-      //  $('table').visualize({type: 'bar', width: '420px'});
-        //$('table').visualize({type: 'area', width: '420px'});
-       // $('table').visualize({type: 'line', width: '420px'});
+        $('table').visualize({type: 'pie', height: '300px', width: '620px'});
     });
 </script>
 
