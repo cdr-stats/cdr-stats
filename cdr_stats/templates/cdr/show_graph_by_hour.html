@@ -32,11 +32,12 @@
 
 <table width=100% border=1>
 {% if total_record %}
-  <caption>Load By Hour</caption>
+  <caption>Number of calls by Hours</caption>
 	<thead>
-		<tr><td></td>
+		<tr>
+        <td></td>
         {% for hour in total_hour%}
-        <td>{{hour}}</td>
+        <th scope="col">{{hour}}</td>
         {% endfor %}
 		</tr>
 	</thead>
@@ -59,23 +60,13 @@
 
 </tr>
 {% endfor %}
-<!--
-{% for call in total_record %}
-<tr class="tr_class">
-       <th scope="row">
-           {{ call.1 }}
-       </th>
-       <td>{{ call.0 }}</td>
-   </tr>
-{% endfor %}
--->
+
 {% else %}
   <tr><td align=center>No Record(s) found.</td></tr>
 {% endif %}
 
 </tbody>
 </table>
-
 
 <table width=100%>
 	<caption>2009 Employee Sales by Department</caption>
