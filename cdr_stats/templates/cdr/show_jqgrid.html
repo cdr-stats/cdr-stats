@@ -13,15 +13,68 @@ $(function () {
         {}, // add options
         {}, // del options 
         { multipleSearch:true, closeOnEscape:true }, // search options 
-        { jqModal:false, closeOnEscape:true} // view options 
+        { jqModal:true, closeOnEscape:true} // view options
         ).filterToolbar({stringResult: true,searchOnEnter : false});
     });
 });
+
 </script>
 
 {% endblock %}
 
 {% block content %}
+<form method="GET" action="." enctype="multipart/form-data">
+<table width=70% border=1>
+    <tr>
+        <td>{{ form.selection_of_month_day }}</td>
+        <td>{{ form.from_chk_month }}&nbsp;{{ form.from_month_year_1.label }}&nbsp;
+            {{ form.from_month_year_1 }}
+            <br/>
+            {{ form.from_chk_day }}&nbsp;{{ form.from_day.label }}&nbsp;{{ form.from_day_1.label }}&nbsp;
+            {{ form.from_day }}&nbsp;{{ form.from_month_year_2 }}
+        </td>
+        <td>&nbsp;</td>
+        <td>{{ form.to_chk_month }}&nbsp;{{ form.to_month_year_1.label }}&nbsp;
+            &nbsp;{{ form.to_month_year_1 }}
+            <br/>
+            {{ form.to_chk_day }}
+            {{ form.to_day.label }}&nbsp;&nbsp;{{ form.to_day }}&nbsp;{{ form.to_month_year_2 }}
+        </td>
+    </tr>
+    <tr>
+        <td>{{ form.destination.label }}</td>
+        <td>{{ form.destination }}</td>
+        <td>&nbsp;</td>
+        <td>{{ form.destination_type|removetags:"ul li"|safe }}</td>
+    </tr>
+    <tr>
+        <td>{{ form.source.label }}</td>
+        <td>{{ form.source }}</td>
+        <td>&nbsp;</td>
+        <td>{{ form.source_type|removetags:"ul li"|safe }}</td>
+    </tr>
+    <tr>
+        <td>{{ form.channel.label }}</td>
+        <td>{{ form.channel }}</td>
+        <td>&nbsp;</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>{{ form.duration_1.label }}</td>
+        <td>{{ form.duration_1 }}&nbsp;{{ form.duration_1_type|removetags:"ul li"|safe }}</td>
+        <td>&nbsp;</td>
+        <td>{{ form.duration_2 }}&nbsp;{{ form.duration_2_type|removetags:"ul li"|safe }}</td>
+    </tr>
+    <tr>
+        <td>{{form.result.label}}</td>
+        <td>{{form.result|removetags:"ul li"|safe}}</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;<td>
+    </tr>
+    <tr><td align=center colspan=4><input type="submit" value="Search" />&nbsp;<input type="reset" value="Clear"></td></tr>
+</table>
+</form>
+<p>&nbsp;</p>
 <div id="cdr-container" class='tabcontainer'>
 
 
