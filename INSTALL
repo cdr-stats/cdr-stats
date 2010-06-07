@@ -12,6 +12,8 @@ Install dependencies :
     - yum install sqlite-devel.x86_64 sqlite.x86_6
     - easy_install pysqlite
     - yum install mod_python
+    
+    Please read the "REQUIREMENTS" file to install all dependencies!
 
 
 
