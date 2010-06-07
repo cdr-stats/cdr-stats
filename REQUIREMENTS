@@ -1,35 +1,46 @@
 
 
-~~~ CDR-Stats Requirements ~~~
+     ___________________________________________________________________________________________________________________________________________________________________
+
+                                                                        CDR-Stats : REQUIREMENTS
+     ___________________________________________________________________________________________________________________________________________________________________
+
 
 
 * Add repository on CentOS 5.4 
 --------------------------------
+
 	i386:
 		rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-3.noarch.rpm
-		
 	x86_64:
 		rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/x86_64/epel-release-5-3.noarch.rpm
 
 
+
 * Install Git 
 ---------------
+
 	yum install git
+
 
 
 * Install django
 ------------------
+
     http://www.djangoproject.com/download/
     
-    First, download Django-1.2.1.tar.gz. Then:
-
+    First, download Django-1.2.1.tar.gz. 
+    
+    Then,
         tar xzvf Django-1.2.1.tar.gz
         cd Django-1.2.1
         sudo python setup.py install
 
 
+
 * django-debug-toolbar
 ------------------------
+
 	download :
 	git clone http://github.com/robhudson/django-debug-toolbar.git
 	
@@ -40,28 +51,18 @@
 	sudo rm -rf build/ dist django_debug_toolbar.egg-info/
 
 
-* django-dilla
+
+* django-dilla 
 ----------------
-	To generate Data :
+
+    inside the cdr-stats directory :
 	svn checkout http://django-dilla.googlecode.com/svn/trunk/dilla dilla
 
 
-* Flot 
--------------
-    Flot is a pure Javascript plotting library for jQuery (http://code.google.com/p/flot/)
-    
-	svn checkout http://flot.googlecode.com/svn/trunk/ flot
-
-
-* EnhanceJS
--------------
-    
-    http://code.google.com/p/enhancejs/
-    this is already included	
-	
 
 * django-extensions
 -----------------------
+
 	svn checkout http://django-command-extensions.googlecode.com/svn/trunk/ django-command-extensions
 	then install,
     sudo python setup.py install
@@ -69,24 +70,37 @@
     # very useful to generate graph :
     
 
+
 * python-dateutil
 -------------------
+
     Go to http://labix.org/python-dateutil and install the last package
+    
     last package on date :
-    http://labix.org/download/python-dateutil/python-dateutil-1.5.tar.gz
-    tar -xvzf python-dateutil-1.5.tar.gz ; cd python-dateutil-1.5/    
-    sudo python setup.py install
+        http://labix.org/download/python-dateutil/python-dateutil-1.5.tar.gz
+        tar -xvzf python-dateutil-1.5.tar.gz ; cd python-dateutil-1.5/    
+        sudo python setup.py install
+
 
 
 * Extra dependencies 
 ----------------------
+    
+    this is already included
+    
     Jquery
     JqueryUI
     Jquery.dnd
     jquery.contextmenu
     jqdock (http://www.wizzud.com/jqDock/)
     
+
+
+* EnhanceJS
+-------------
     
+    this is already included	
+    http://code.google.com/p/enhancejs/    
 
 
 
