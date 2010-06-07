@@ -36,7 +36,7 @@ from django.utils.encoding import smart_str
 from django.http import Http404
 #from util.json import json_encode
 from cdr_stats.helpers import json_encode
-
+from cdr.models import CDR
 
 class JqGrid(object):
     queryset = None
@@ -48,7 +48,7 @@ class JqGrid(object):
     url = None
     caption = None
     colmodel_overrides = {}
-
+    
     def get_queryset(self, request):
         if hasattr(self, 'queryset') and self.queryset is not None:
             queryset = self.queryset._clone()
@@ -57,6 +57,7 @@ class JqGrid(object):
         else:
             raise ImproperlyConfigured("No queryset or model defined.")
         self.queryset = queryset
+        
         return self.queryset
 
     def get_model(self):
@@ -67,6 +68,7 @@ class JqGrid(object):
             self.model = model
         else:
             raise ImproperlyConfigured("No queryset or model defined.")
+        
         return model
 
     def get_items(self, request):
@@ -229,7 +231,7 @@ class JqGrid(object):
 
     def get_config(self, as_json=True):
         config = self.get_default_config()
-        config.update({
+        config.update({        
             'url': self.get_url(),
             'caption': self.get_caption(),
             'colModel': self.get_colmodels(),
