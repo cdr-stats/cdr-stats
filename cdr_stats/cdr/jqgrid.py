@@ -51,13 +51,13 @@ class JqGrid(object):
     
     def get_queryset(self, request):
         if hasattr(self, 'queryset') and self.queryset is not None:
-            queryset = self.queryset._clone()
+            queryset = self.queryset._clone()        
         elif hasattr(self, 'model') and self.model is not None:
             queryset = self.model.objects.values(*self.get_field_names())
         else:
             raise ImproperlyConfigured("No queryset or model defined.")
-        self.queryset = queryset
-        
+
+        self.queryset = queryset        
         return self.queryset
 
     def get_model(self):
@@ -196,7 +196,7 @@ class JqGrid(object):
         })
 
     def get_default_config(self):
-        config = {
+        config = {'mtype':'GET',
             'datatype': 'json',
             'autowidth': True,
             'forcefit': True,
@@ -234,7 +234,7 @@ class JqGrid(object):
         config.update({        
             'url': self.get_url(),
             'caption': self.get_caption(),
-            'colModel': self.get_colmodels(),
+            'colModel': self.get_colmodels(),            
         })
         if as_json:
             config = json_encode(config)

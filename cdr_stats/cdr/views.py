@@ -21,34 +21,94 @@ from cdr_stats.helpers import json_encode
 
 
 # Create your views here.
-
-def grid_handler(request):
-    # handles pagination, sorting and searching
-    grid = ExampleGrid()
-    return HttpResponse(grid.get_json(request), mimetype="application/json")
-
-def grid_config(request):
-    # build a config suitable to pass to jqgrid constructor   
-    grid = ExampleGrid()
-    grid.queryset  = CDR.objects.values('calldate','channel', 'src','clid', 'dst','disposition','duration').filter(duration='15')
-    return HttpResponse(grid.get_config(), mimetype="application/json")
-
-def show_jqgrid(request):
+def grid_para_value(request):
     kwargs = {}
+    print request.GET
     if request.method == 'GET':
-        if "from_month_year" in request.GET:
-            from_month_year = request.GET['from_month_year']
-            from_year       = int(request.GET['from_month_year'][0:4])
-            from_month      = int(request.GET['from_month_year'][5:7])
-        else:
-            from_month_year = ''
-            from_year       = ''
-            from_month      = ''
 
-        if "comp_months" in request.GET:
-            comp_months = request.GET['comp_months']
-        else:
-            comp_months = ''
+        if "selection_of_month_day" in request.GET:
+
+            if request.GET["selection_of_month_day"] == '1':
+
+                if "from_chk_month" in request.GET:
+                    from_chk_month    = 'on'
+                    from_month_year_1 = request.GET['from_month_year_1']
+                    from_year_1       = int(request.GET['from_month_year_1'][0:4])
+                    from_month_1      = int(request.GET['from_month_year_1'][5:7])
+                    from_day_1        = int('1')
+                    start_date        = datetime(from_year_1,from_month_1,from_day_1,0,0,0,0)
+                else:
+                    from_chk_month    = ''
+                    from_month_year_1 = ''
+                    from_year_1       = ''
+                    from_month_1      = ''
+                    from_day_1        = ''
+                    start_date        = ''
+                if "to_chk_month" in request.GET:
+                    to_chk_month       = 'on'
+                    to_month_year_1    = request.GET['to_month_year_1']
+                    to_year_1          = int(request.GET['to_month_year_1'][0:4])
+                    to_month_1         = int(request.GET['to_month_year_1'][5:7])
+                    to_day_1           = validate_days(to_year_1,to_month_1,32)
+                    end_date           = datetime(to_year_1,to_month_1,to_day_1,23,59,59,999999)
+                else:
+                    to_chk_month       = ''
+                    to_month_year_1    = ''
+                    to_year_1          = ''
+                    to_month_1         = ''
+                    to_day_1           = ''
+                    end_date           = ''
+
+                if from_chk_month == 'on' and to_chk_month == 'on':
+                    kwargs[ 'calldate__range' ] = (start_date, end_date)
+                if from_chk_month == 'on' and to_chk_month != 'on' :
+                    kwargs[ 'calldate__gte' ] = start_date
+                if to_chk_month == 'on' and from_chk_month != 'on':
+                    kwargs[ 'calldate__lte' ] = end_date
+
+
+            if request.GET["selection_of_month_day"]=='2':
+
+                if "from_chk_day" in request.GET:
+                    from_chk_day      = 'on'
+                    from_day_2        = int(request.GET['from_day'])
+                    from_month_year_2 = request.GET['from_month_year_2']
+                    from_year_2       = int(request.GET['from_month_year_2'][0:4])
+                    from_month_2      = int(request.GET['from_month_year_2'][5:7])
+                    from_day_2        = validate_days(from_year_2,from_month_2,from_day_2)
+                    start_date        = datetime(from_year_2,from_month_2,from_day_2,0,0,0,0)
+                else:
+                    from_chk_day      = ''
+                    from_day          = ''
+                    from_month_year_2 = ''
+                    from_year_2       = ''
+                    from_month_2      = ''
+                    from_day_2        = ''
+                    start_date        = ''
+
+                if "to_chk_day" in request.GET:
+                    to_chk_day       = 'on'
+                    to_day_2         = int(request.GET['to_day'])
+                    to_month_year_2  = request.GET['to_month_year_2']
+                    to_year_2        = int(request.GET['to_month_year_2'][0:4])
+                    to_month_2       = int(request.GET['to_month_year_2'][5:7])
+                    to_day_2         = validate_days(to_year_2,to_month_2,to_day_2)
+                    end_date         = datetime(to_year_2,to_month_2,to_day_2,23,59,59,999999)
+                else:
+                    to_chk_day       = ''
+                    to_day           = ''
+                    to_month_year_2  = ''
+                    to_year_2        = ''
+                    to_month_2       = ''
+                    to_day_2         = ''
+                    end_date         = ''
+
+                if from_chk_day == 'on' and to_chk_day == 'on':
+                    kwargs[ 'calldate__range' ] = (start_date, end_date)
+                if from_chk_day == 'on' and to_chk_day != 'on' :
+                    kwargs[ 'calldate__gte' ] = start_date
+                if to_chk_day == 'on' and from_chk_day != 'on':
+                    kwargs[ 'calldate__lte' ] = end_date
 
         if "destination" in request.GET:
             destination = request.GET['destination']
@@ -62,13 +122,13 @@ def show_jqgrid(request):
 
         if destination != '':
             if destination_type == '1':
-                kwargs[ 'dst__exact' ] = destination
+                kwargs[ 'dst__exact' ]      = destination
             if destination_type == '2':
                 kwargs[ 'dst__startswith' ] = destination
             if destination_type == '3':
-                kwargs[ 'dst__contains' ] = destination
+                kwargs[ 'dst__contains' ]   = destination
             if destination_type == '4':
-                kwargs[ 'dst__endswith' ] = destination
+                kwargs[ 'dst__endswith' ]   = destination
 
         if "source" in request.GET:
             source = request.GET['source']
@@ -82,13 +142,13 @@ def show_jqgrid(request):
 
         if source != '':
             if source_type == '1':
-                kwargs[ 'src__exact' ] = source
+                kwargs[ 'src__exact' ]      = source
             if source_type == '2':
                 kwargs[ 'src__startswith' ] = source
             if source_type == '3':
-                kwargs[ 'src__contains' ] = source
+                kwargs[ 'src__contains' ]   = source
             if source_type == '4':
-                kwargs[ 'src__endswith' ] = source
+                kwargs[ 'src__endswith' ]   = source
 
         if "channel" in request.GET:
             channel = request.GET['channel']
@@ -97,14 +157,324 @@ def show_jqgrid(request):
 
         if channel!='':
             kwargs[ 'channel' ] = channel
-            
-    #form = CdrSearchForm(initial={'from_month_year_1':from_month_year_1,'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,})
+
+        if "duration_1" in request.GET:
+            duration_1 = request.GET['duration_1']
+        else:
+            duration_1 = ''
+
+        if "duration_1_type" in request.GET:
+            duration_1_type = request.GET['duration_1_type']
+        else:
+            duration_1_type = ''
+
+        if duration_1 !='':
+            if duration_1_type == '1':
+                kwargs[ 'duration__gt' ]  = duration_1
+            if duration_1_type == '2':
+                kwargs[ 'duration__gte']  = duration_1
+            if duration_1_type == '3':
+                kwargs[ 'duration']       = duration_1
+            if duration_1_type == '4':
+                kwargs[ 'duration__lt']   = duration_1
+            if duration_1_type == '5':
+                kwargs[ 'duration__lte']  = duration_1
+
+        if "duration_2" in request.GET:
+            duration_2 = request.GET['duration_2']
+        else:
+            duration_2 = ''
+
+        if "duration_2_type" in request.GET:
+            duration_2_type = request.GET['duration_2_type']
+        else:
+            duration_2_type = ''
+
+        if duration_2 !='':
+            if duration_2_type == '1':
+                kwargs[ 'duration__gt' ]  = duration_2
+            if duration_2_type == '2':
+                kwargs[ 'duration__gte']  = duration_2
+            if duration_2_type == '3':
+                kwargs[ 'duration__lt']   = duration_2
+            if duration_2_type == '4':
+                kwargs[ 'duration__lte']  = duration_2
+
+
     if len(kwargs) == 0:
-        form = CdrSearchForm(initial={})
+        queryset = CDR.objects.values('calldate','channel', 'src','clid', 'dst','disposition','duration').all().order_by('-calldate')
+    else:
+        queryset = CDR.objects.values('calldate','channel', 'src','clid', 'dst','disposition','duration').filter(**kwargs).order_by('-calldate')
+    #print queryset
+    #exit()
+    return queryset
+
+
+def grid_handler(request):
+    # handles pagination, sorting and searching
+    grid = ExampleGrid()
+
+    # To add dynamic query set
+    grid.queryset  = grid_para_value(request)
+
+    return HttpResponse(grid.get_json(request), mimetype="application/json")
+
+
+
+def grid_config(request):
+    # build a config suitable to pass to jqgrid constructor
+    grid = ExampleGrid()
+
+    # To add dynamic query set
+    grid.queryset  = grid_para_value(request)
+
+    return HttpResponse(grid.get_config(), mimetype="application/json")
+
+def show_jqgrid(request):
+    kwargs = {}
+    if request.method == 'GET':
+        if "selection_of_month_day" in request.GET:
+            selection_of_month_day = request.GET["selection_of_month_day"]
+
+            if request.GET["selection_of_month_day"] == '1':
+                if "from_chk_month" in request.GET:
+                    from_chk_month    = 'on'
+                    from_month_year_1 = request.GET['from_month_year_1']
+                    from_year_1       = int(request.GET['from_month_year_1'][0:4])
+                    from_month_1      = int(request.GET['from_month_year_1'][5:7])
+                    from_day_1        = int('1')
+                    start_date        = datetime(from_year_1,from_month_1,from_day_1,0,0,0,0)
+                else:
+                    from_chk_month    = ''
+                    from_month_year_1 = ''
+                    from_year_1       = ''
+                    from_month_1      = ''
+                    from_day_1        = ''
+                    start_date        = ''
+                if "to_chk_month" in request.GET:
+                    to_chk_month       = 'on'
+                    to_month_year_1    = request.GET['to_month_year_1']
+                    to_year_1          = int(request.GET['to_month_year_1'][0:4])
+                    to_month_1         = int(request.GET['to_month_year_1'][5:7])
+                    to_day_1           = validate_days(to_year_1,to_month_1,32)
+                    end_date           = datetime(to_year_1,to_month_1,to_day_1,23,59,59,999999)
+                else:
+                    to_chk_month       = ''
+                    to_month_year_1    = ''
+                    to_year_1          = ''
+                    to_month_1         = ''
+                    to_day_1           = ''
+                    end_date           = ''
+
+                from_chk_day      = ''
+                from_month_year_2 = ''
+                from_day_2        = ''
+                from_month_2      = ''
+                from_year_2       = ''
+                to_chk_day        = ''
+                to_month_year_2   = ''
+                to_day_2          = ''
+                to_month_2        = ''
+                to_year_2         = ''
+
+
+                if from_chk_month == 'on' and to_chk_month == 'on':
+                    kwargs[ 'calldate__range' ] = (start_date, end_date)
+                if from_chk_month == 'on' and to_chk_month != 'on' :
+                    kwargs[ 'calldate__gte' ] = start_date
+                if to_chk_month == 'on' and from_chk_month != 'on':
+                    kwargs[ 'calldate__lte' ] = end_date
+                    
+            elif request.GET["selection_of_month_day"] == '2':
+                if "from_chk_day" in request.GET:
+                    from_chk_day      = 'on'
+                    from_day_2        = int(request.GET['from_day'])
+                    from_month_year_2 = request.GET['from_month_year_2']
+                    from_year_2       = int(request.GET['from_month_year_2'][0:4])
+                    from_month_2      = int(request.GET['from_month_year_2'][5:7])
+                    from_day_2        = validate_days(from_year_2,from_month_2,from_day_2)
+                    start_date        = datetime(from_year_2,from_month_2,from_day_2,0,0,0,0)
+                else:
+                    from_chk_day      = ''
+                    from_day          = ''
+                    from_month_year_2 = ''
+                    from_year_2       = ''
+                    from_month_2      = ''
+                    from_day_2        = ''
+                    start_date        = ''
+
+                if "to_chk_day" in request.GET:
+                    to_chk_day       = 'on'
+                    to_day_2         = int(request.GET['to_day'])
+                    to_month_year_2  = request.GET['to_month_year_2']
+                    to_year_2        = int(request.GET['to_month_year_2'][0:4])
+                    to_month_2       = int(request.GET['to_month_year_2'][5:7])
+                    to_day_2         = validate_days(to_year_2,to_month_2,to_day_2)
+                    end_date         = datetime(to_year_2,to_month_2,to_day_2,23,59,59,999999)
+                else:
+                    to_chk_day       = ''
+                    to_day           = ''
+                    to_month_year_2  = ''
+                    to_year_2        = ''
+                    to_month_2       = ''
+                    to_day_2         = ''
+                    end_date         = ''
+
+                if from_chk_day == 'on' and to_chk_day == 'on':
+                    kwargs[ 'calldate__range' ] = (start_date, end_date)
+                if from_chk_day == 'on' and to_chk_day != 'on' :
+                    kwargs[ 'calldate__gte' ] = start_date
+                if to_chk_day == 'on' and from_chk_day != 'on':
+                    kwargs[ 'calldate__lte' ] = end_date
+
+                from_chk_month    = ''
+                from_month_year_1 = ''
+                from_day_1        = ''
+                from_month_1      = ''
+                from_year_1       = ''
+                to_chk_month      = ''
+                to_month_year_1   = ''
+                to_day_1          = ''
+                to_month_1        = ''
+                to_year_1         = ''
+
+            else:
+                from_chk_day      = ''
+                from_month_year_2 = ''
+                from_day_2        = ''
+                from_month_2      = ''
+                from_year_2       = ''
+                to_chk_day        = ''
+                to_month_year_2   = ''
+                to_day_2          = ''
+                to_month_2        = ''
+                to_year_2         = ''
+                from_chk_month    = ''
+                from_month_year_1 = ''
+                from_day_1        = ''
+                from_month_1      = ''
+                from_year_1       = ''
+                to_chk_month      = ''
+                to_month_year_1   = ''
+                to_day_1          = ''
+                to_month_1        = ''
+                to_year_1         = ''
+
+        else:
+            selection_of_month_day = ''
+
+
+        if "destination" in request.GET:
+            destination = request.GET['destination']
+        else:
+            destination = ''
+
+        if "destination_type" in request.GET:
+            destination_type = request.GET['destination_type']
+        else:
+            destination_type = ''
+
+        if destination != '':
+            if destination_type == '1':
+                kwargs[ 'dst__exact' ]      = destination
+            if destination_type == '2':
+                kwargs[ 'dst__startswith' ] = destination
+            if destination_type == '3':
+                kwargs[ 'dst__contains' ]   = destination
+            if destination_type == '4':
+                kwargs[ 'dst__endswith' ]   = destination
+
+        if "source" in request.GET:
+            source = request.GET['source']
+        else:
+            source = ''
+
+        if "source_type" in request.GET:
+            source_type = request.GET['source_type']
+        else:
+            source_type = ''
+
+        if source != '':
+            if source_type == '1':
+                kwargs[ 'src__exact' ]      = source
+            if source_type == '2':
+                kwargs[ 'src__startswith' ] = source
+            if source_type == '3':
+                kwargs[ 'src__contains' ]   = source
+            if source_type == '4':
+                kwargs[ 'src__endswith' ]   = source
+        
+
+        if "channel" in request.GET:
+            channel = request.GET['channel']
+        else:
+            channel = ''
+
+        if "duration_1" in request.GET:
+            duration_1 = request.GET['duration_1']
+        else:
+            duration_1 = ''
+
+        if "duration_1_type" in request.GET:
+            duration_1_type = request.GET['duration_1_type']
+        else:
+            duration_1_type = ''
+
+        if duration_1 !='':
+            if duration_1_type == '1':
+                kwargs[ 'duration__gt' ]  = duration_1
+            if duration_1_type == '2':
+                kwargs[ 'duration__gte']  = duration_1
+            if duration_1_type == '3':
+                kwargs[ 'duration']       = duration_1
+            if duration_1_type == '4':
+                kwargs[ 'duration__lt']   = duration_1
+            if duration_1_type == '5':
+                kwargs[ 'duration__lte']  = duration_1
+        else:
+            duration_1_type = '3'
+
+
+        if "duration_2" in request.GET:
+            duration_2 = request.GET['duration_2']
+        else:
+            duration_2 = ''
+
+        if "duration_2_type" in request.GET:
+            duration_2_type = request.GET['duration_2_type']
+        else:
+            duration_2_type = ''
+
+        if duration_2 !='':
+            if duration_2_type == '1':
+                kwargs[ 'duration__gt' ]  = duration_2
+            if duration_2_type == '2':
+                kwargs[ 'duration__gte']  = duration_2
+            if duration_2_type == '3':
+                kwargs[ 'duration__lt']   = duration_2
+            if duration_2_type == '4':
+                kwargs[ 'duration__lte']  = duration_2
+        else:
+            duration_2_type = '3'
+
+        if "result" in request.GET:
+            result = request.GET['result']
+        else:
+            result = ''
+
+        
     
-    variables = RequestContext(request,
-                               { 'form': form,
-                               })
+    if len(kwargs) == 0:
+        form = CdrSearchForm(initial={'selection_of_month_day':1,'destination_type':1,'source_type':1,'duration_1_type':3,'duration_2_type':3,'result':1})
+    else:
+        form = CdrSearchForm(initial={'selection_of_month_day':selection_of_month_day,'from_chk_month':from_chk_month,'from_month_year_1':from_month_year_1,'to_chk_month':to_chk_month,'to_month_year_1':to_month_year_1,'from_chk_day':from_chk_day,'from_day':from_day_2,'from_month_year_2':from_month_year_2,'to_chk_day':to_chk_day,'to_day':to_day_2,'to_month_year_2':to_month_year_2,'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,'duration_1':duration_1,'duration_1_type':duration_1_type,'duration_2':duration_2,'duration_2_type':duration_2_type,'result':result})
+
+
+    #grid = ExampleGrid()
+    #grid_para_value(request)
+
+    variables = RequestContext(request, { 'form': form, })
+    
     return render_to_response('cdr/show_jqgrid.html', variables,
            context_instance = RequestContext(request))
 
