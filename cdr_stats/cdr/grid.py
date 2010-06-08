@@ -4,7 +4,7 @@ from jqgrid import JqGrid
 
 class ExampleGrid(JqGrid):
     #model = CDR # could also be a queryset
-    #queryset = CDR.objects.values('calldate','channel', 'src','clid', 'dst','disposition','duration').filter(duration='30')
+    #queryset = CDR.objects.values('calldate','channel', 'src','clid', 'dst','disposition','duration').all()#filter(duration='30')
     fields = ['calldate','channel', 'src','clid', 'dst','disposition','duration'] # optional
     #url = reverse('grid_handler')
     url = 'http://127.0.0.1:8000/examplegrid/'

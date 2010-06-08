@@ -42,32 +42,8 @@ $(function () {
         </td>
     </tr>
     <tr>
-        <td>{{ form.destination.label }}</td>
-        <td>{{ form.destination }}</td>
         <td>&nbsp;</td>
-        <td>{{ form.destination_type|removetags:"ul li"|safe }}</td>
-    </tr>
-    <tr>
-        <td>{{ form.source.label }}</td>
-        <td>{{ form.source }}</td>
-        <td>&nbsp;</td>
-        <td>{{ form.source_type|removetags:"ul li"|safe }}</td>
-    </tr>
-    <tr>
-        <td>{{ form.channel.label }}</td>
-        <td>{{ form.channel }}</td>
-        <td>&nbsp;</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>{{ form.duration_1.label }}</td>
-        <td>{{ form.duration_1 }}&nbsp;{{ form.duration_1_type|removetags:"ul li"|safe }}</td>
-        <td>&nbsp;</td>
-        <td>{{ form.duration_2 }}&nbsp;{{ form.duration_2_type|removetags:"ul li"|safe }}</td>
-    </tr>
-    <tr>
-        <td>{{form.result.label}}</td>
-        <td>{{form.result|removetags:"ul li"|safe}}</td>
+        <td>{{form.result.label}}&nbsp;{{form.result|removetags:"ul li"|safe}}</td>
         <td>&nbsp;</td>
     </tr>
     <tr><td align=center colspan=4><input type="submit" value="Search" />&nbsp;<input type="reset" value="Clear"></td></tr>
