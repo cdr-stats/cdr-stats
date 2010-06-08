@@ -24,7 +24,7 @@ $(function () {
 
 {% block content %}
 <form method="GET" action="." enctype="multipart/form-data">
-<table width=70% border=1>
+<table width=70% border=1 cellspacing=0 cellpadding=0>
     <tr>
         <td>{{ form.selection_of_month_day }}</td>
         <td>{{ form.from_chk_month }}&nbsp;{{ form.from_month_year_1.label }}&nbsp;
@@ -69,7 +69,6 @@ $(function () {
         <td>{{form.result.label}}</td>
         <td>{{form.result|removetags:"ul li"|safe}}</td>
         <td>&nbsp;</td>
-        <td>&nbsp;<td>
     </tr>
     <tr><td align=center colspan=4><input type="submit" value="Search" />&nbsp;<input type="reset" value="Clear"></td></tr>
 </table>

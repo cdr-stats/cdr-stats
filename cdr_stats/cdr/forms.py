@@ -45,7 +45,6 @@ class CdrSearchForm(forms.Form):
     to_chk_month = forms.BooleanField(label="",required=True)
     to_month_year_1 = forms.ChoiceField(label=u'To :',choices=month_year_range())
 
-    #selection_of_day = forms.BooleanField(label=u"Selection of the day",required=False)
     from_chk_day = forms.BooleanField(label=u"",required=False)
     from_day = forms.ChoiceField(label=u'From :',choices=day_range())
     from_month_year_2= forms.ChoiceField(label=u'',choices=month_year_range())
@@ -68,7 +67,7 @@ class CdrSearchForm(forms.Form):
     duration_2 = forms.CharField(label=u'',widget=forms.TextInput(attrs={'size': 15}))
     duration_2_type = forms.TypedChoiceField(coerce=bool,choices=((1, '>'), (2, '>='), (3, '<='),(4, '<')),widget=forms.RadioSelect)
 
-    result = forms.TypedChoiceField(label=u'RESULT:',coerce=bool,choices=(('min', 'Minutes'), ('sec', 'Seconds')),widget=forms.RadioSelect)
+    result = forms.TypedChoiceField(label=u'RESULT:',coerce=bool,choices=((1, 'Minutes'), (2, 'Seconds')),widget=forms.RadioSelect)
     
 class loginForm(forms.Form):
     user = forms.CharField(max_length=40, label='Login', required=True, widget=forms.TextInput(attrs={'size':'10'}))
