@@ -3,7 +3,7 @@ from cdr.models import CDR
 from jqgrid import JqGrid
 
 class ExampleGrid(JqGrid):
-    #model = CDR # could also be a queryset
+    model = CDR # could also be a queryset
     #queryset = CDR.objects.values('calldate','channel', 'src','clid', 'dst','disposition','duration').all()#filter(duration='30')
     fields = ['calldate','channel', 'src','clid', 'dst','disposition','duration'] # optional
     #url = reverse('grid_handler')
@@ -17,6 +17,5 @@ class ExampleGrid(JqGrid):
         'dst'        :{'label':'Destination', 'width':50 },
         'disposition':{'label':'Disposition', 'width':50 },
         'duration'   :{'label':'Duration', 'width':50  },
-
     }
 

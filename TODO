@@ -24,7 +24,7 @@
  
  - check on firefox css : http://localhost:8000/show_graph_by_month/
  
- - CDR-Stats News
+ - CDR-Stats News : create a function to get news 
  
  - Info page : License AGPL, Author & Copyright, News
  

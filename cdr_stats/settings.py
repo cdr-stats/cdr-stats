@@ -82,7 +82,7 @@ TEMPLATE_DIRS = (
     os.path.join( APPLICATION_DIR, 'templates' ), 
 )
 
-INTERNAL_IPS = ('127.0.0.2')
+INTERNAL_IPS = ('127.0.0.1', '127.0.0.2')
 
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,

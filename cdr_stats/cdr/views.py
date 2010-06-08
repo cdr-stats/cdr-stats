@@ -40,7 +40,7 @@ def grid_config(request):
     
     return HttpResponse(grid.get_config(), mimetype="application/json")
 
-def show_jqgrid(request):
+def show_cdr(request):
     kwargs = {}
     if request.method == 'GET':
 
@@ -186,16 +186,18 @@ def show_jqgrid(request):
     #select_data = {"duration": "strftime('%%M', duration)"}.extra(select=select_data)
 
     if len(kwargs) == 0:
-        request.session['cdr_queryset'] = CDR.objects.values('calldate','channel', 'src','clid', 'dst','disposition','duration').all().order_by('-calldate')
+        request.session['cdr_queryset'] = CDR.objects.values('calldate', 'channel', 'src', 'clid', 'dst', 'disposition', 'duration').all().order_by('-calldate')
         form = CdrSearchForm(initial={'selection_of_month_day':1,'result':1})
     else:
-        request.session['cdr_queryset'] = CDR.objects.values('calldate','channel', 'src','clid', 'dst','disposition','duration').filter(**kwargs).order_by('-calldate')
+        request.session['cdr_queryset'] = CDR.objects.values('calldate', 'channel', 'src', 'clid', 'dst', 'disposition', 'duration').filter(**kwargs).order_by('-calldate')
         form = CdrSearchForm(initial={'selection_of_month_day':selection_of_month_day,'from_chk_month':from_chk_month,'from_month_year_1':from_month_year_1,'to_chk_month':to_chk_month,'to_month_year_1':to_month_year_1,'from_chk_day':from_chk_day,'from_day':from_day_2,'from_month_year_2':from_month_year_2,'to_chk_day':to_chk_day,'to_day':to_day_2,'to_month_year_2':to_month_year_2,'result':result})
 
     variables = RequestContext(request, { 'form': form, })
     
     return render_to_response('cdr/show_jqgrid.html', variables,
            context_instance = RequestContext(request))
+
+
 
 def show_graph_by_month(request):
     kwargs = {}

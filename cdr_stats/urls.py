@@ -35,12 +35,12 @@ urlpatterns = patterns('',
     url (r'^examplegrid/$', grid_handler, name='grid_handler'),
 	url (r'^examplegrid/cfg/$', grid_config, name='grid_config'),
 	
-	(r'^show_jqgrid/$',   'cdr.views.show_jqgrid'),
+	(r'^show_cdr/$',   'cdr.views.show_cdr'),
 	
 	
-	(r'^show_graph_by_month/$',   'cdr.views.show_graph_by_month'),
-    (r'^show_graph_by_day/$',   'cdr.views.show_graph_by_day'),
-    (r'^show_graph_by_hour/$',   'cdr.views.show_graph_by_hour'),
+	(r'^show_stats_by_month/$',   'cdr.views.show_graph_by_month'),
+    (r'^show_stats_by_day/$',   'cdr.views.show_graph_by_day'),
+    (r'^show_stats_by_hour/$',   'cdr.views.show_graph_by_hour'),
 	
 	# Pages
 	(r'^login/$',   'cdr.views.login'),
