@@ -8,8 +8,6 @@
  - Login page : without login in, the only page you can see is http://127.0.0.1:8000/index/
    there is a login option there, it should be the only page where we can login 
 
- - build pluggable module
- 
  - jquery datepicker integrate for From-date and To-Date Criteria
  
  - concurrent calls : reproduce the logic from http://projects.colsolgrp.net/projects/list_files/concurrentcalls
@@ -29,4 +27,9 @@
  - CDR-Stats News
  
  - Info page : License AGPL, Author & Copyright, News
+ 
+ - Internationalization
+ 
+ - build pluggable module
+ 
  

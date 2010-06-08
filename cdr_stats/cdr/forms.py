@@ -6,35 +6,35 @@ from django.forms import *
 from django.contrib import *
 from django.contrib.admin.widgets import *
 
-class MonthLoadSearchForm(forms.Form):
-    from_month_year= forms.ChoiceField(label=u'SELECT MONTH',choices=month_year_range())
-    comp_months = forms.ChoiceField(label=u'Number of months to compare',choices=comp_month_range())
-    destination = forms.CharField(label=u'DESTINATION',widget=forms.TextInput(attrs={'size': 15}))
-    destination_type = forms.TypedChoiceField(coerce=bool,choices=((1, 'Exact'), (2, 'Begins with'), (3, 'Contains'), (4, 'Ends with')),widget=forms.RadioSelect)
-    source = forms.CharField(label=u'SOURCE',widget=forms.TextInput(attrs={'size': 15}))
-    source_type = forms.TypedChoiceField(coerce=bool,choices=((1, 'Exact'), (2, 'Begins with'), (3, 'Contains'), (4, 'Ends with')),widget=forms.RadioSelect)
-    channel = forms.CharField(label=u'CHANNEL',widget=forms.TextInput(attrs={'size': 15}))
-    
-class DailyLoadSearchForm(forms.Form):
-    from_day = forms.ChoiceField(label=u'From',choices=day_range())
-    from_month_year= forms.ChoiceField(label=u'SELECT MONTH',choices=month_year_range())
-    comp_months = forms.ChoiceField(label=u'Number of months to compare',choices=comp_month_range())
+
+class CdrSearchForm(forms.Form):
     destination = forms.CharField(label=u'DESTINATION',widget=forms.TextInput(attrs={'size': 15}))
     destination_type = forms.TypedChoiceField(coerce=bool,choices=((1, 'Exact'), (2, 'Begins with'), (3, 'Contains'), (4, 'Ends with')),widget=forms.RadioSelect)
     source = forms.CharField(label=u'SOURCE',widget=forms.TextInput(attrs={'size': 15}))
     source_type = forms.TypedChoiceField(coerce=bool,choices=((1, 'Exact'), (2, 'Begins with'), (3, 'Contains'), (4, 'Ends with')),widget=forms.RadioSelect)
     channel = forms.CharField(label=u'CHANNEL',widget=forms.TextInput(attrs={'size': 15}))
 
-class CompareCallSearchForm(forms.Form):
-    from_day = forms.ChoiceField(label=u'From',choices=day_range())
+
+class MonthLoadSearchForm(CdrSearchForm):
     from_month_year= forms.ChoiceField(label=u'SELECT MONTH',choices=month_year_range())
+    comp_months = forms.ChoiceField(label=u'Number of months to compare',choices=comp_month_range())
+    def __init__(self, *args, **kwargs):
+        super(MonthLoadSearchForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['from_month_year', 'comp_months', 'destination', 'destination_type', 'source', 'source_type', 'channel']
+
+
+class DailyLoadSearchForm(CdrSearchForm):
+    from_day = forms.ChoiceField(label=u'From',choices=day_range())
+    from_month_year= forms.ChoiceField(label=u'SELECT DAY',choices=month_year_range())
+    comp_months = forms.ChoiceField(label=u'Number of months to compare',choices=comp_month_range())
+    
+
+class CompareCallSearchForm(CdrSearchForm):
+    from_day = forms.ChoiceField(label=u'From',choices=day_range())
+    from_month_year= forms.ChoiceField(label=u'SELECT DAY',choices=month_year_range())
     comp_days = forms.ChoiceField(label=u'Number of days to compare',choices=comp_day_range())
-    destination = forms.CharField(label=u'DESTINATION',widget=forms.TextInput(attrs={'size': 15}))
-    destination_type = forms.TypedChoiceField(coerce=bool,choices=((1, 'Exact'), (2, 'Begins with'), (3, 'Contains'), (4, 'Ends with')),widget=forms.RadioSelect)
-    source = forms.CharField(label=u'SOURCE',widget=forms.TextInput(attrs={'size': 15}))
-    source_type = forms.TypedChoiceField(coerce=bool,choices=((1, 'Exact'), (2, 'Begins with'), (3, 'Contains'), (4, 'Ends with')),widget=forms.RadioSelect)
-    channel = forms.CharField(label=u'CHANNEL',widget=forms.TextInput(attrs={'size': 15}))
     graph_view=forms.ChoiceField(label=u'graph',choices=((1,'Number of calls by hours'),(2,'Minutes by hours')))
+
 
 class CdrSearchForm(forms.Form):
     selection_of_month_day = forms.TypedChoiceField(coerce=bool,choices=((1, 'Selection of the month'), (2, 'Selection of the day'), ),widget=forms.RadioSelect)
@@ -52,7 +52,11 @@ class CdrSearchForm(forms.Form):
     to_month_year_2 = forms.ChoiceField(label=u'',choices=month_year_range())
 
     result = forms.TypedChoiceField(label=u'RESULT:',coerce=bool,choices=((1, 'Minutes'), (2, 'Seconds')),widget=forms.RadioSelect)
+
     
 class loginForm(forms.Form):
     user = forms.CharField(max_length=40, label='Login', required=True, widget=forms.TextInput(attrs={'size':'10'}))
     password = forms.CharField(max_length=40, label='password', required=True, widget=forms.PasswordInput(attrs={'size':'10'}))
+    
+    
+    
