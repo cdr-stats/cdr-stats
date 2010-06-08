@@ -24,5 +24,9 @@
  
  - Import from csv file
  
- - check on firefox css : http://88.208.208.210:8000/show_graph_by_month/
+ - check on firefox css : http://localhost:8000/show_graph_by_month/
+ 
+ - CDR-Stats News
+ 
+ - Info page : License AGPL, Author & Copyright, News
  
