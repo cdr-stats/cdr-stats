@@ -675,10 +675,8 @@ def index(request):
     news = news_handler.read()
     news = nl2br(news)
     news = string.split(news, '<br />')
-
     news_array = {}
     value = {}
-
     for newsweb in news:
         value = string.split(newsweb, '|')
         if len(value[0]) > 1 :
@@ -686,19 +684,20 @@ def index(request):
 
     news_final = []
     info = {}
-
     for k in news_array:
         link = k[int(k.find("http://")-1):len(k)]
         info = k[0:int(k.find("http://")-1)]
         info = string.split(k, ' - ')
         news_final.append((info[0],info[1],news_array[k]))
+
+    news_final.reverse()
     
     news_handler.close()
 
     data = {
         'loginform' : loginform,
         'errorlogin' : errorlogin,
-        'news':news_final.reverse(),
+        'news':news_final,
         #'is_authenticated' : request.user.is_authenticated()
     }
     
