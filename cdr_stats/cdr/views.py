@@ -18,7 +18,7 @@ import operator
 import string 
 from operator import *
 from cdr_stats.helpers import json_encode
-
+import urllib
 
 # Create your views here.
 
@@ -671,9 +671,34 @@ def index(request):
 
     loginform = loginForm()
 
+    news_handler = urllib.urlopen('http://cdr-stats.org/news.php')
+    news = news_handler.read()
+    news = nl2br(news)
+    news = string.split(news, '<br />')
+
+    news_array = {}
+    value = {}
+
+    for newsweb in news:
+        value = string.split(newsweb, '|')
+        if len(value[0]) > 1 :
+            news_array[value[0]]=value[1]
+
+    news_final = []
+    info = {}
+
+    for k in news_array:
+        link = k[int(k.find("http://")-1):len(k)]
+        info = k[0:int(k.find("http://")-1)]
+        info = string.split(k, ' - ')
+        news_final.append((info[0],info[1],news_array[k]))
+    
+    news_handler.close()
+
     data = {
         'loginform' : loginform,
         'errorlogin' : errorlogin,
+        'news':news_final.reverse(),
         #'is_authenticated' : request.user.is_authenticated()
     }
     

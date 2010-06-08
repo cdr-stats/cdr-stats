@@ -19,6 +19,12 @@ def relative_days(from_day,from_year):
             relative_days=1
         return relative_days
 
+def nl2br(s):
+    return '<br />'.join(s.split('\n'))
+
+def reverseString(s):
+    return s[::-1]
+
 def uniq(inlist):
     # order preserving
     uniques = []

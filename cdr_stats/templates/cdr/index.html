@@ -25,6 +25,17 @@ Support is available by the hour or by the day. We can also do customization.<br
 Please email <a href="mailto:sales@star2billing.com">sales@star2billing.com</a> for more information
 <br/><br/>
 
+<h2>News :</h2>
+<hr/>
+{% if news %}
+
+{% for rc in news %}
+{{rc.0}}  <a href="{{rc.1}}">{{rc.1}}</a> {{rc.2}}<br/>
+{% endfor %}
+
+{% endif %}
+
+<br/><br/>
 
 <h2>Contact :</h2>
 <hr/>
