@@ -267,6 +267,3 @@ class JqGrid(object):
             'editable': True
         }
         return colmodel
-        
-
-

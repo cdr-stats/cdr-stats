@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from django.core.mail import send_mail
 from django.db import connection
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
@@ -16,10 +15,10 @@ from dateutil.relativedelta import *
 import calendar
 from sets import *
 import operator
-import string 
+import string
 from operator import *
 from cdr_stats.helpers import json_encode
-import urllib
+
 
 # Create your views here.
 
@@ -29,7 +28,7 @@ def grid_handler(request):
 
     # To add dynamic query set
     grid.queryset  = request.session['cdr_queryset']
-    
+
     return HttpResponse(grid.get_json(request), mimetype="application/json")
 
 def grid_config(request):
@@ -38,7 +37,7 @@ def grid_config(request):
 
     # To add dynamic query set
     grid.queryset  = request.session['cdr_queryset']
-    
+
     return HttpResponse(grid.get_config(), mimetype="application/json")
 
 def show_cdr(request):
@@ -178,11 +177,7 @@ def show_cdr(request):
             else:
                 selection_of_month_day = ''
 
-
-            if "result" in request.GET:
-                result = request.GET['result']
-            else:
-                result = ''
+            result = variable_value(request,'result')
 
         request.session['cdr_queryset'] = ''
         #select_data = {"duration": "strftime('%%M', duration)"}.extra(select=select_data)
@@ -216,20 +211,12 @@ def show_graph_by_month(request):
                 from_year       = ''
                 from_month      = ''
 
-            if "comp_months" in request.GET:
-                comp_months = request.GET['comp_months']
-            else:
-                comp_months = ''
-
-            if "destination" in request.GET:
-                destination = request.GET['destination']
-            else:
-                destination = ''
-
-            if "destination_type" in request.GET:
-                destination_type = request.GET['destination_type']
-            else:
-                destination_type = ''
+            comp_months = variable_value(request,'comp_months')
+            destination = variable_value(request,'destination')
+            destination_type = variable_value(request,'destination_type')
+            source = variable_value(request,'source')
+            source_type = variable_value(request,'source_type')
+            channel = variable_value(request,'channel')
 
             if destination != '':
                 if destination_type == '1':
@@ -241,16 +228,6 @@ def show_graph_by_month(request):
                 if destination_type == '4':
                     kwargs[ 'dst__endswith' ] = destination
 
-            if "source" in request.GET:
-                source = request.GET['source']
-            else:
-                source = ''
-
-            if "source_type" in request.GET:
-                source_type = request.GET['source_type']
-            else:
-                source_type = ''
-
             if source != '':
                 if source_type == '1':
                     kwargs[ 'src__exact' ] = source
@@ -260,11 +237,6 @@ def show_graph_by_month(request):
                     kwargs[ 'src__contains' ] = source
                 if source_type == '4':
                     kwargs[ 'src__endswith' ] = source
-
-            if "channel" in request.GET:
-                channel = request.GET['channel']
-            else:
-                channel = ''
 
             if channel!='':
                 kwargs[ 'channel' ] = channel
@@ -301,8 +273,6 @@ def show_graph_by_month(request):
                 if e_month==0:
                     e_month=12
                     e_year=e_year-1
-
-
 
         if kwargs:
             select_data = {"subdate": "strftime('%%m/%%Y', calldate)"}
@@ -368,15 +338,11 @@ def show_graph_by_day(request):
                 from_year       = ''
                 from_month      = ''
 
-            if "destination" in request.GET:
-                destination = request.GET['destination']
-            else:
-                destination = ''
-
-            if "destination_type" in request.GET:
-                destination_type = request.GET['destination_type']
-            else:
-                destination_type = ''
+            destination = variable_value(request,'destination')
+            destination_type = variable_value(request,'destination_type')
+            source = variable_value(request,'source')
+            source_type = variable_value(request,'source_type')
+            channel = variable_value(request,'channel')
 
             if destination != '':
                 if destination_type == '1':
@@ -388,16 +354,6 @@ def show_graph_by_day(request):
                 if destination_type == '4':
                     kwargs[ 'dst__endswith' ] = destination
 
-            if "source" in request.GET:
-                source = request.GET['source']
-            else:
-                source = ''
-
-            if "source_type" in request.GET:
-                source_type = request.GET['source_type']
-            else:
-                source_type = ''
-
             if source != '':
                 if source_type == '1':
                     kwargs[ 'src__exact' ] = source
@@ -407,11 +363,6 @@ def show_graph_by_day(request):
                     kwargs[ 'src__contains' ] = source
                 if source_type == '4':
                     kwargs[ 'src__endswith' ] = source
-
-            if "channel" in request.GET:
-                channel = request.GET['channel']
-            else:
-                channel = ''
 
             if channel!='':
                 kwargs[ 'channel' ] = channel
@@ -437,7 +388,9 @@ def show_graph_by_day(request):
         if kwargs:
             select_data = {"called_time": "strftime('%%H', calldate)"}#/%%M/%%S
             calls_in_day = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('calldate'))#.order_by('-calldate')#
+
             total_record = []
+
             if calls_in_day.count()!=0:
                 total_record = []
                 list_of_hour = []
@@ -466,6 +419,7 @@ def show_graph_by_day(request):
         return HttpResponseRedirect('/')
 
 
+
 def show_graph_by_hour(request):
     if request.user.is_authenticated() == True:
         kwargs = {}
@@ -481,20 +435,13 @@ def show_graph_by_hour(request):
                 from_year       = ''
                 from_month      = ''
 
-            if "comp_days" in request.GET:
-                comp_days = request.GET['comp_days']
-            else:
-                comp_days = ''
-
-            if "destination" in request.GET:
-                destination = request.GET['destination']
-            else:
-                destination = ''
-
-            if "destination_type" in request.GET:
-                destination_type = request.GET['destination_type']
-            else:
-                destination_type = ''
+            comp_days = variable_value(request,'comp_days')
+            destination = variable_value(request,'destination')
+            destination_type = variable_value(request,'destination_type')
+            source = variable_value(request,'source')
+            source_type = variable_value(request,'source_type')
+            channel = variable_value(request,'channel')
+            graph_view = variable_value(request,'graph_view')
 
             if destination != '':
                 if destination_type == '1':
@@ -506,16 +453,6 @@ def show_graph_by_hour(request):
                 if destination_type == '4':
                     kwargs[ 'dst__endswith' ] = destination
 
-            if "source" in request.GET:
-                source = request.GET['source']
-            else:
-                source = ''
-
-            if "source_type" in request.GET:
-                source_type = request.GET['source_type']
-            else:
-                source_type = ''
-
             if source != '':
                 if source_type == '1':
                     kwargs[ 'src__exact' ] = source
@@ -526,18 +463,8 @@ def show_graph_by_hour(request):
                 if source_type == '4':
                     kwargs[ 'src__endswith' ] = source
 
-            if "channel" in request.GET:
-                channel = request.GET['channel']
-            else:
-                channel = ''
-
             if channel!='':
                 kwargs[ 'channel' ] = channel
-
-            if "graph_view" in request.GET:
-                graph_view = request.GET['graph_view']
-            else:
-                graph_view = ''
 
             if from_day != '':
                 end_date = datetime(from_year, from_month, from_day)
@@ -651,7 +578,7 @@ def show_graph_by_hour(request):
                    context_instance = RequestContext(request))
     else:
         return HttpResponseRedirect('/')
-               
+
 def login_view(request):
     template = 'cdr/index.html'
     errorlogin = ''
@@ -688,34 +615,10 @@ def login_view(request):
     }
     return render_to_response(template, data,context_instance = RequestContext(request))
 
+
 def logout_view(request):
 	logout(request)
 	return HttpResponseRedirect('/')
-
-def get_news():
-    news_handler = urllib.urlopen('http://cdr-stats.org/news.php')
-    news = news_handler.read()
-    news = nl2br(news)
-    news = string.split(news, '<br />')
-    news_array = {}
-    value = {}
-    for newsweb in news:
-        value = string.split(newsweb, '|')
-        if len(value[0]) > 1 :
-            news_array[value[0]]=value[1]
-
-    news_final = []
-    info = {}
-    for k in news_array:
-        link = k[int(k.find("http://")-1):len(k)]
-        info = k[0:int(k.find("http://")-1)]
-        info = string.split(k, ' - ')
-        news_final.append((info[0],info[1],news_array[k]))
-
-    news_final.reverse()
-    news_handler.close()
-    return news_final
-
 
 def index(request):
     template = 'cdr/index.html'
@@ -729,8 +632,4 @@ def index(request):
     }
     return render_to_response(template, data,
            context_instance = RequestContext(request))
-       
-
-
-
 
