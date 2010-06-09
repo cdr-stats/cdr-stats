@@ -5,13 +5,11 @@
 
  - Export Csv
 
- - display news in a table with 2 different color for rom
-
- - jquery datepicker integrate for From-date and To-Date Criteria
-  
- - check on firefox css : http://localhost:8000/show_graph_by_month/
+ - New summary per day on http://127.0.0.1:8000/show_cdr/
+   display the summary as on this screenshot http://www.areski.net/asterisk-stat-v2/screenshot/screenshot01.png
+   Date : "Total duration" : bar to represent the size (this could be a div): ACT (Average Call Time)  
  
- - Info page : License AGPL, Author & Copyright, News
+ - jquery datepicker integrate for From-date and To-Date Criteria
  
  - Internationalization
  
