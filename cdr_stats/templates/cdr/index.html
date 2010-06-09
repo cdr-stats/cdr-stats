@@ -1,47 +1,126 @@
 {% extends "cdr/master.html" %}
 
 {% block extra_head %}
+  <script>
+  $(document).ready(function() {
+    $("#accordion").accordion({ autoHeight: false,  clearStyle: true  });
+  });
+  </script>
 {% endblock %}
+
+
 {% block content %}
 
 
-<br/>
-This is the open source application  that allows you to browse and analyze your CDRs (Call Details Record): <br>
-<a target="_blank" href="http://github.com/areski/cdr-stats">http://github.com/areski/cdr-stats</a>
 
 
 <br/><br/>
 
 
-<h2>Download :</h2>
-<hr/>
+<div id="accordeon-container">
+<div id="accordion">
+	<h3><a href="#">Info</a></h3>
+	<div>
+		<p>
+		<br/>
+		CDR-Stats is an open source application that allows you to browse and analyze your CDRs (Call Details Record). <br>
+		Different reporting tools are provided : 
+		<ul>
+		    <li>Monthly Report : <br/>summarize your monthly traffic and allow you to have a monthly vision of your traffic load.</li>
+		    <li>Analyze CDR : This report allows you to compare your traffic with previous day and study the volum variation on your server</li>
+		    <li>Daily Traffic : give you a day by day vision and let you see how many calls are running each hours</li>
+		</ul>
+        <a target="_blank" href="http://github.com/areski/cdr-stats">http://github.com/areski/cdr-stats</a>
+        <br/><br/><br/>
 
-- Go to <a target="_blank" href="http://github.com/areski/cdr-stats">http://github.com/areski/cdr-stats</a> and download the last stable release.
-<br/><br/>
+        <img src='{{MEDIA_URL}}/icons/help-about-2.png' title="Info" alt="Info" width="110" class="info-icon"/>
+        
+        <br/><br/>
 
-<h2>Support :</h2>
-<hr/>
-Support is available by the hour or by the day. We can also do customization.<br/><br/>
-Please email <a href="mailto:sales@star2billing.com">sales@star2billing.com</a> for more information
-<br/><br/>
+		</p>
+	</div>
+	<h3><a href="#">Download</a></h3>
+	<div>
+		<p>
 
-<h2>News :</h2>
-<hr/>
-{% if news %}
+        Please visit  <a target="_blank" href="http://www.cdr-stats.org/">http://www.cdr-stats.org/</a> <br/>
+        and download the last stable release.
+        <br/><br/><br/>
+        
+        <a href="http://www.cdr-stats.org/" target="_blank" ><img src='{{MEDIA_URL}}/icons/system-log-out-4.png' title="Download" alt="Download" width="110" class="info-icon"/></a>
+        
+        <br/><br/>
 
-{% for rc in news %}
-{{rc.0}}  <a href="{{rc.1}}">{{rc.1}}</a> {{rc.2}}<br/>
-{% endfor %}
+        
+		</p>
+	</div>
+	<h3><a href="#">Support</a></h3>
+	<div>
+		<p>
+        
+        Star2Billing S.L. offers consultancy including installation, training and customisation on all of its products, and CDR-Stats is no exception.<br/><br/>
 
-{% endif %}
+        Purchasing consultancy is a good way to help support the development of CDR-Stats, and from the customer’s point of view can speed the time 
+        of deployment, leaving them free to concentrate on more profitable and productive tasks.<br/><br/>
 
-<br/><br/>
+        Contact us at <a href="mailto:sales@star2billing.com">sales@star2billing.com</a> for more information<br/><br/>
+		
+		<a href="mailto:sales@star2billing.com"><img src='{{MEDIA_URL}}/icons/system-help-3.png' title="Support" alt="Support" width="110" class="info-icon"/></a>
+		
+		
+	</div>
+	<h3><a href="#">News</a></h3>
+	<div>
+		<p>
+		
+        {% if news %}
 
-<h2>Contact :</h2>
-<hr/>
-Author : Arezqui Belaid <br/>
-<a href="mailto:areski@gmail.com"><img src='{{MEDIA_URL}}/icons/kontact-4.png' title='Contact' alt='' /> </a>
+        {% for rc in news %}
+        {{rc.0}}  <a href="{{rc.1}}">{{rc.1}}</a> {{rc.2}}<br/>
+        {% endfor %}
+
+        {% endif %}
+
+        <br/><br/>
+        
+        <img src='{{MEDIA_URL}}/icons/knewsticker-2.png' title='News' alt="News" width="110" class="info-icon"/>
+        
+		</p>
+	</div>
+	
+	<h3><a href="#">Licensing</a></h3>
+	<div>
+		<p>
+		
+        <b><i>CDR-Stats is licensed under <a href="http://www.fsf.org/licensing/licenses/agpl-3.0.html" target="_blank">AGPL 3</a>.</i></b>
+		<br><a href="http://www.fsf.org/licensing/licenses/agpl-3.0.html" target="_blank"><img src="{{MEDIA_URL}}/icons/agplv3-88x31.png" class="info-icon"></a>
+
+        <br/><br/>
+	</div>
+	
+	<h3><a href="#">Contact Us</a></h3>
+	<div>
+		<p>
+		
+        Star2Billing S.L. was formed to provide commercial support, installation and training to telecommunications companies that wished to deploy A2Billing.<br/><br/>
+
+        A2Billing is both a Telecoms Switch and a Billing Platform for those wishing to deploy telecoms services such as VoIP, calling cards and callback, 
+        as well as a variety of other products. Please see <a href="http://www.star2billing.com">http://www.star2billing.com</a> for more details.<br/><br/>
+
+        CDR-Stats is the latest piece of software development from the Star2Billing stable, and is a complete ground up re-write of the famous Asterisk-Stat,  
+        which has been around for over 7 years as a CDR viewer and analyser for Asterisk, and has been included in FreePBX to view and analyse CDR.<br/><br/>
+
+        <a href="mailto:sales@star2billing.com"><img src='{{MEDIA_URL}}/icons/kontact-4.png' title="Contact" alt="Contact" width="110" class="info-icon"/></a>
+        
+		</p>
+
+        <br/><br/>
+	</div>
+</div>
+</div>
 
 
-<br/><br/><br/><br/>
+
+
+
 {% endblock %}

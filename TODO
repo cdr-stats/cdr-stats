@@ -3,14 +3,19 @@
 ~~~ TODO List ~~~
 
 
- - Export Csv, XML, etc...
+ - Export Csv
 
- - Login page : without login in, the only page you can see is http://127.0.0.1:8000/index/
-   there is a login option there, it should be the only page where we can login 
+ - display news in a table with 2 different color for rom
 
  - jquery datepicker integrate for From-date and To-Date Criteria
+  
+ - check on firefox css : http://localhost:8000/show_graph_by_month/
  
- - concurrent calls : reproduce the logic from http://projects.colsolgrp.net/projects/list_files/concurrentcalls
+ - Info page : License AGPL, Author & Copyright, News
+ 
+ - Internationalization
+ 
+ - build pluggable module
  
  - Pretty CSS Form :
     / http://www.smashingmagazine.com/2006/11/11/css-based-forms-modern-solutions/
@@ -19,17 +24,7 @@
     http://www.greepit.com/2010/05/customizable-html-form-builder-pform/
     http://www.formee.org/
     http://www.phpform.org/
- 
- - Import from csv file
- 
- - check on firefox css : http://localhost:8000/show_graph_by_month/
- 
- - CDR-Stats News : create a function to get news 
- 
- - Info page : License AGPL, Author & Copyright, News
- 
- - Internationalization
- 
- - build pluggable module
+
+ - concurrent calls : reproduce the logic from http://projects.colsolgrp.net/projects/list_files/concurrentcalls
  
  

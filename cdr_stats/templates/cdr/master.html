@@ -25,8 +25,8 @@
     <script src="{{MEDIA_URL}}/js/i18n/grid.locale-en.js" type="text/javascript"></script>
     <script src="{{MEDIA_URL}}/js/jquery.jqGrid.min.js" type="text/javascript"></script>
 	
-	<script src="{{MEDIA_URL}}/_js/jquery.layout.js" type="text/javascript"></script> 
-	<script src="{{MEDIA_URL}}/_js/i18n/grid.locale-en.js" type="text/javascript"></script> 
+	<script src="{{MEDIA_URL}}/js/jquery.layout.js" type="text/javascript"></script> 
+	<script src="{{MEDIA_URL}}/js/i18n/grid.locale-en.js" type="text/javascript"></script> 
 	<script type="text/javascript"> 
 		$.jgrid.no_legacy_api = true;
 		$.jgrid.useJSON = true;
@@ -66,14 +66,16 @@
     );
   });  
 </script>
-<center>
 
 
-<a href="../show_cdr/" class="fg-button ui-state-default ui-corner-all">Search CDRs</a>
-<a href="../show_stats_by_hour/" class="fg-button ui-state-default ui-corner-all">Analyze CDRs</a>
-<a href="../show_stats_by_day/" class="fg-button ui-state-default ui-corner-all">Daily Traffic</a>
-<a href="../show_stats_by_month/" class="fg-button ui-state-default ui-corner-all">Monthly Traffic</a>
-<a href="../" class="fg-button ui-state-default ui-priority-secondary ui-corner-all">Info</a>
+<div id="main-menu-container">
+    <a href="../show_cdr/" class="fg-button ui-state-default ui-corner-all">Search CDRs</a>
+    <a href="../show_stats_by_hour/" class="fg-button ui-state-default ui-corner-all">Analyze CDRs</a>
+    <a href="../show_stats_by_day/" class="fg-button ui-state-default ui-corner-all">Daily Traffic</a>
+    <a href="../show_stats_by_month/" class="fg-button ui-state-default ui-corner-all">Monthly Traffic</a>
+    <a href="../" class="fg-button ui-state-default ui-priority-secondary ui-corner-all">Info</a>
+</div>
+
 
 <script type="text/javascript">
       $(function(){
@@ -85,7 +87,7 @@
         });
       });
 </script>
-
+<div id="menu-container">
 
 <div class="container mainbox">
 

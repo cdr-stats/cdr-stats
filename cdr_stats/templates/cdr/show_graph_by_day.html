@@ -23,9 +23,9 @@
 
 </form>
 
-
+<div id="graph-container">
 <table id="table_load_hour" width="100%" border="1" align="center">
-{% if total_record %}
+  {% if total_record %}
   <caption>Load By Hour</caption>
 	<thead>
 		<tr>
@@ -35,6 +35,7 @@
 			{% endfor %}
 		</tr>
 	</thead>
+	
     <tbody>
     <tr class="tr_class">
            <th scope="row">
@@ -48,9 +49,11 @@
     {% else %}
       <tr><td align=center>No Record(s) found.</td></tr>
     {% endif %}
-
     </tbody>
+    
 </table>
+</div>
+
 
 <script type="text/javascript">
     $(function(){

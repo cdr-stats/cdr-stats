@@ -70,7 +70,11 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    #'cdr.profiling.DatabaseProfilerMiddleware',
+    'cdr.colorsql.ColorSQLMiddleware',
 )
+
+PROFILING = 'prof'
 
 ROOT_URLCONF = 'cdr_stats.urls'
 
@@ -103,20 +107,11 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'django_extensions',
     'dateutil',
-    'devserver',
 )
 
 
-DEVSERVER_MODULES = (
-    'devserver.modules.sql.SQLRealTimeModule',
-    'devserver.modules.sql.SQLSummaryModule',
-    'devserver.modules.profile.ProfileSummaryModule',
-
-    # Modules not enabled by default
-    'devserver.modules.ajax.AjaxDumpModule',
-    'devserver.modules.profile.MemoryUseModule',
-    'devserver.modules.cache.CacheSummaryModule',
-)
+LOG_COLORSQL_ENABLE = True
+LOG_COLORSQL_VERBOSE = True
 
 
 

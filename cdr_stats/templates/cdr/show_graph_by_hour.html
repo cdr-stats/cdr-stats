@@ -25,9 +25,15 @@
 
 </form>
 
+
+
+
+<div id="graph-container">
 <table id="table_call_hour" width=100% border=1>
-{% if total_record %}
-  <caption>Number of calls by Hours</caption>
+
+  {% if total_record %}
+    <caption>Number of calls by Hours</caption>
+    
 	<thead>
 		<tr>
         <td></td>
@@ -36,36 +42,34 @@
         {% endfor %}
 		</tr>
 	</thead>
-<tbody>
-{% for dt in record_dates%}
-<tr class="tr_class">
-		<th scope="col">{{ dt }}</th>
+    <tbody>
+    {% for dt in record_dates%}
+    <tr class="tr_class">
+		    <th scope="col">{{ dt }}</th>
 
-                {% for call in total_record %}
+                    {% for call in total_record %}
 
-                    {% ifequal call.0 dt %}
+                        {% ifequal call.0 dt %}
 
-                            {% if graph_view %}
-                            <td>{{call.2}}</td>
-                             {% else %}
-                             <td>{{call.2|conv_min}}</td>
-                             {% endif %}
-                       
+                                {% if graph_view %}
+                                <td>{{call.2}}</td>
+                                 {% else %}
+                                 <td>{{call.2|conv_min}}</td>
+                                 {% endif %}
 
-                    {% endifequal %}
+                        {% endifequal %}
 
-                {% endfor %}
+                    {% endfor %}
+    </tr>
+    {% endfor %}
 
-</tr>
-{% endfor %}
-
-{% else %}
-  <tr><td align=center>No Record(s) found.</td></tr>
-{% endif %}
-
-</tbody>
+    {% else %}
+      <tr><td align=center>No Record(s) found.</td></tr>
+    {% endif %}
+    </tbody>
+    
 </table>
-
+</div>
 
 
 <script type="text/javascript">

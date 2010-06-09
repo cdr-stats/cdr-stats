@@ -82,13 +82,6 @@
         sudo python setup.py install
 
 
-* django-devserver
-----------------------
-
-    inside the cdr-stats directory :
-    git clone http://github.com/dcramer/django-devserver
-
-
 * Extra dependencies 
 ----------------------
     
