@@ -15,7 +15,7 @@ from dateutil.relativedelta import *
 import calendar
 from sets import *
 import operator
-import string 
+import string
 from operator import *
 from cdr_stats.helpers import json_encode
 
@@ -28,7 +28,7 @@ def grid_handler(request):
 
     # To add dynamic query set
     grid.queryset  = request.session['cdr_queryset']
-    
+
     return HttpResponse(grid.get_json(request), mimetype="application/json")
 
 def grid_config(request):
@@ -37,7 +37,7 @@ def grid_config(request):
 
     # To add dynamic query set
     grid.queryset  = request.session['cdr_queryset']
-    
+
     return HttpResponse(grid.get_config(), mimetype="application/json")
 
 def show_cdr(request):
@@ -434,8 +434,8 @@ def show_graph_by_hour(request):
                 from_month_year = ''
                 from_year       = ''
                 from_month      = ''
-            
-            comp_days = variable_value(request,'comp_days')            
+
+            comp_days = variable_value(request,'comp_days')
             destination = variable_value(request,'destination')
             destination_type = variable_value(request,'destination_type')
             source = variable_value(request,'source')
@@ -578,7 +578,7 @@ def show_graph_by_hour(request):
                    context_instance = RequestContext(request))
     else:
         return HttpResponseRedirect('/')
-               
+
 def login_view(request):
     template = 'cdr/index.html'
     errorlogin = ''
@@ -619,8 +619,17 @@ def login_view(request):
 def logout_view(request):
 	logout(request)
 	return HttpResponseRedirect('/')
-       
 
-
-
+def index(request):
+    template = 'cdr/index.html'
+    errorlogin = ''
+    loginform = loginForm()
+    data = {
+        'loginform' : loginform,
+        'errorlogin' : errorlogin,
+        'news':get_news(),
+        #'is_authenticated' : request.user.is_authenticated()
+    }
+    return render_to_response(template, data,
+           context_instance = RequestContext(request))
 
