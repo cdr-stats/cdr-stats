@@ -161,7 +161,7 @@ class ColorSQLMiddleware:
 
         ttime = 0.0
         for q in connection.queries:
-            time = float(q['duration'])
+            time = float(q['time'])
             ttime = ttime + time
             if qtimewarn < time:
                 verbose = True
@@ -177,7 +177,7 @@ class ColorSQLMiddleware:
 
         i = 0
         for q in connection.queries:
-            time = float(q['duration'])
+            time = float(q['time'])
 
             if verbose or timewarn <= ttime or countwarn <= count:
                 sql = q['sql']
