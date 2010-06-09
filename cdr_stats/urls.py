@@ -43,7 +43,8 @@ urlpatterns = patterns('',
     (r'^show_stats_by_hour/$',   'cdr.views.show_graph_by_hour'),
 	
 	# Pages
-	(r'^login/$',   'cdr.views.login'),
+	(r'^login/$',   'cdr.views.login_view'),
+    (r'^logout/$',  'cdr.views.logout_view'),
 	(r'^index/$',   'cdr.views.index'),
 	
 )

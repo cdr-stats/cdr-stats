@@ -20,7 +20,8 @@
         <span class="ui-button-icon-primary ui-icon ui-icon-unlocked"></span>
         <span class="ui-button-text">Logout</span>
     </button>
-    <form id="logout" action="/conf/" method="post">
+    <form id="logout" action="/logout/" method="post">
+    {% csrf_token %}
       <input type="hidden" name="action" value="logout" />
     </form>
 
@@ -35,6 +36,7 @@
 
    <div id="requestlogin" style="margin: 10px; padding: 10px;  width: 400px; height: 30px; margin-left: 70%; display: none;" class="ui-widget ui-widget-content ui-corner-all">
      <form action="/login/" method="post">
+         {% csrf_token %}
          {% for field in loginform %}
             <div class="fieldWrapper" style="float : left; margin: 5px;">
                 {{ field.errors }}
@@ -49,7 +51,7 @@
     <div class="ui-widget">
         <div class="ui-state-error ui-corner-all" style="margin: 10px; padding: 0pt 0.7em;">
             <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
-            <strong>Alert:</strong> Error login !</p>
+            <strong>Alert:</strong> <!--Error login--> {{ errorlogin }}</p>
         </div>
     </div>
 {% endif %}
