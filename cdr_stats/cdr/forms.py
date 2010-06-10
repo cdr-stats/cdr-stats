@@ -52,6 +52,7 @@ class CdrSearchForm(forms.Form):
     to_month_year_2 = forms.ChoiceField(label=u'',choices=month_year_range())
 
     result = forms.TypedChoiceField(label=u'RESULT:',coerce=bool,choices=((1, 'Minutes'), (2, 'Seconds')),widget=forms.RadioSelect)
+    export_csv_queryset = forms.CharField(widget=forms.HiddenInput) 
 
     
 class loginForm(forms.Form):

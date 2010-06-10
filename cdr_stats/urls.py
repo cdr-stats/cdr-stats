@@ -36,7 +36,7 @@ urlpatterns = patterns('',
 	url (r'^examplegrid/cfg/$', grid_config, name='grid_config'),
 	
 	(r'^show_cdr/$',   'cdr.views.show_cdr'),
-	
+   
 	
 	(r'^show_stats_by_month/$',   'cdr.views.show_graph_by_month'),
     (r'^show_stats_by_day/$',   'cdr.views.show_graph_by_day'),
