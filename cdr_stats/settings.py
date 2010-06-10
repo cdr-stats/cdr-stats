@@ -74,15 +74,12 @@ MIDDLEWARE_CLASSES = (
     'cdr.colorsql.ColorSQLMiddleware',
 )
 
-PROFILING = 'prof'
-
 ROOT_URLCONF = 'cdr_stats.urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    #'/home/areski/public_html/django/django_templates'
     os.path.join( APPLICATION_DIR, 'templates' ), 
 )
 

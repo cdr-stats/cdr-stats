@@ -1,6 +1,6 @@
 import sys
 from django.db import connection
-from time import *
+#from time import *
 
 class ColorSQLMiddleware:
     """
@@ -161,7 +161,11 @@ class ColorSQLMiddleware:
 
         ttime = 0.0
         for q in connection.queries:
-            time = float(q['time'])
+            if q.has_key('time') :
+                time = float(q['time'])
+            else :
+                time = float(q['duration'])
+            
             ttime = ttime + time
             if qtimewarn < time:
                 verbose = True
@@ -170,14 +174,17 @@ class ColorSQLMiddleware:
         if timewarn <= ttime or countwarn <= count:
             verbose = True
 
-        if verbose:
-            print "\033[0;30;1m"
-            print "-" * 70,
-            print "\033[0m"
+        #if verbose:
+            #print "\033[0;30;1m"
+            #print "-" * 70,
+            #print "\033[0m"
 
         i = 0
         for q in connection.queries:
-            time = float(q['time'])
+            if q.has_key('time') :
+                time = float(q['time'])
+            else :
+                time = float(q['duration'])
 
             if verbose or timewarn <= ttime or countwarn <= count:
                 sql = q['sql']
@@ -214,10 +221,13 @@ class ColorSQLMiddleware:
             ccolor = "\033[33;1m"
         if countwarn > count:
             ccolor = "\033[30;1m"
-
-        print "%s %.3fs \033[30;1m| %s%d queries\033[0m" % ( tcolor, time, ccolor, count )
-        sys.stdout.write( "\033[0;30;1m" )
-        print "-" * 70,
-        print "\033[0m"
+        
+        if (count > 0) :
+            print "%s %.3fs \033[30;1m| %s%d queries\033[0m" % ( tcolor, time, ccolor, count )
+            sys.stdout.write( "\033[0;30;1m" )
+            print "-" * 70,
+            print "\033[0m"
 
         return response
+        
+        
