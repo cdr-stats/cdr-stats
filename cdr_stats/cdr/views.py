@@ -197,13 +197,7 @@ def show_cdr(request):
     variables = RequestContext(request, { 'form': form,
                                           'queryset': request.session['cdr_queryset'],
                                         })
-                                        
-    export_csv_queryset = variable_value(request,'export_csv_queryset')
-    #print export_csv_queryset
-    if export_csv_queryset == '1':
-        print export_to_csv(request)
-        
-        
+                                             
     return render_to_response('cdr/show_jqgrid.html', variables,
            context_instance = RequestContext(request))
 
@@ -212,13 +206,12 @@ def export_to_csv(request):
     response = HttpResponse(mimetype='text/csv')
     # force download.
     response['Content-Disposition'] = 'attachment;filename=export.csv'
-
     # the csv writer
     writer = csv.writer(response)
-    qs = CDR.objects.all()#request.session['cdr_queryset']
+    qs = request.session['cdr_queryset']
+    writer.writerow(['Calldate', 'Channel', 'Source', 'Clid','Destination','Disposition','Duration'])
     for cdr in qs:
-        writer.writerow([cdr.calldate, cdr.duration])
-    print response
+        writer.writerow([cdr['calldate'], cdr['channel'], cdr['src'], cdr['clid'], cdr['dst'], cdr['disposition'], cdr['duration']])
     return response
 
 

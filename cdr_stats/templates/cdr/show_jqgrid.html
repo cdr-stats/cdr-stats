@@ -23,14 +23,6 @@ $(function () {
 {% endblock %}
 
 {% block content %}
-<script type = "text/javascript">
-
-function change() {
-document.getElementById("id_export_csv_queryset").value = 1;
-alert('shrneik')
-}
-</script>
-
 <form method="GET" name="search_cdr" action="." enctype="multipart/form-data">
 <table width=70% border=1 cellspacing=0 cellpadding=0 align=center>
     <tr>
@@ -56,11 +48,6 @@ alert('shrneik')
     </tr>
     <tr><td align=center colspan=4><input type="submit" value="Search" />&nbsp;<input type="reset" value="Clear"></td></tr>
 </table>
-<table width=30% border=1 cellspacing=0 cellpadding=0 align=center>
-<tr>{{form.export_csv_queryset}}
-    <td align=center><a href="." onclick="change();document.search_cdr.submit();">Export CSV file</a></td>
-</tr>
-</table>
 </form>
 
 
@@ -78,6 +65,11 @@ alert('shrneik')
     </div>
 
 </div>
-
+<p>&nbsp;</p>
+<table width=30% border=0 cellspacing=0 cellpadding=0 align=center>
+<tr>
+    <td align=center><a href="/export_csv/" target="_blank" >Export CSV file</a></td>
+</tr>
+</table>
 
 {% endblock %}
