@@ -21,7 +21,7 @@ import csv, codecs
 from django.db.models.loading import get_model
 from operator import *
 from cdr_stats.helpers import json_encode
-
+from uni_form.helpers import FormHelper, Submit, Reset
 
 # Create your views here.
 
@@ -634,13 +634,47 @@ def logout_view(request):
 	return HttpResponseRedirect('/')
 
 
+def form_test(request):
+    template = 'cdr/index2.html'
+    
+    # Create the form
+    form = LayoutTestForm()
+    
+    
+    data = {
+        'testform' : form,
+        #'is_authenticated' : request.user.is_authenticated()
+    }
+    return render_to_response(template, data,
+           context_instance = RequestContext(request))
+
+
 def index(request):
     template = 'cdr/index.html'
     errorlogin = ''
     loginform = loginForm()
+    
+    # Create the form
+    form = MonthLoadSearchForm()
+
+    # create a formHelper
+    helper = FormHelper()
+
+    # Add in a class and id
+    helper.form_id = 'this-form-rocks'
+    helper.form_class = 'search'
+
+    # add in a submit and reset button
+    submit = Submit('search','search this site')
+    helper.add_input(submit)
+    reset = Reset('reset','reset button')
+    helper.add_input(reset)
+    helper.use_csrf_protection = True
+    
     data = {
         'loginform' : loginform,
-        'testform' : MonthLoadSearchForm(),
+        'testform' : form,
+        'testformhelper' : helper,
         'errorlogin' : errorlogin,
         'news':get_news(),
         #'is_authenticated' : request.user.is_authenticated()

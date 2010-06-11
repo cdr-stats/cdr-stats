@@ -61,6 +61,12 @@ body {
     margin-right: auto;
 }
 
+.search-form{ 
+    width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .info-icon{ 
     margin-left: 40%;
     border: 0;

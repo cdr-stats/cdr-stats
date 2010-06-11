@@ -1,0 +1,21 @@
+{% extends "cdr/master.html" %}
+
+{% load uni_form_tags %}
+
+
+
+{% block content %}
+
+
+<div class="search-form">
+{% with form.helper as helper %}
+    {% uni_form testform helper %}
+{% endwith %}
+</div>
+
+<br/><br/>
+
+
+
+
+{% endblock %}

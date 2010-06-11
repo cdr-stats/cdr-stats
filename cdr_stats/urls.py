@@ -48,5 +48,6 @@ urlpatterns = patterns('',
     (r'^logout/$',  'cdr.views.logout_view'),
 	(r'^index/$',   'cdr.views.index'),
 	
+	(r'^form/$',   'cdr.views.form_test'),
 )
 

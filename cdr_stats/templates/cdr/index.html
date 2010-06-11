@@ -14,9 +14,11 @@
 {% block content %}
 
 
-<form action="" method="post" class="uniForm">
-{{ testform|as_uni_form }}
-</form>
+<div class="search-form">
+{% with form.helper as helper %}
+    {% uni_form testform testformhelper %}
+{% endwith %}
+</div>
 
 <br/><br/>
 

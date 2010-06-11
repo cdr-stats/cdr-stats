@@ -6,6 +6,52 @@ from django.forms import *
 from django.contrib import *
 from django.contrib.admin.widgets import *
 
+from uni_form.helpers import FormHelper, Submit, Reset
+from uni_form.helpers import Layout, Fieldset, Row, HTML
+
+
+class LayoutTestForm(forms.Form):
+
+    is_company = forms.CharField(label="company", required=False, widget=forms.CheckboxInput())
+    email = forms.CharField(label="email", max_length=30, required=True, widget=forms.TextInput())
+    password1 = forms.CharField(label="password", max_length=30, required=True, widget=forms.PasswordInput())
+    password2 = forms.CharField(label="re-enter password", max_length=30, required=True, widget=forms.PasswordInput())
+    first_name = forms.CharField(label="first name", max_length=30, required=True, widget=forms.TextInput())
+    last_name = forms.CharField(label="last name", max_length=30, required=True, widget=forms.TextInput())
+    
+    # Attach a formHelper to your forms class.
+    helper = FormHelper()
+    
+    # Create some HTML that you want in the page.
+    # Yes, in real life your CSS would be cached, but this is just a simple example.
+    style = """
+    <style>
+        .formRow {
+            color: red;
+        }
+    </style>
+
+    """
+    # create the layout object
+    layout = Layout(
+                    # first fieldset shows the company
+                    Fieldset('', 'is_company'),
+
+                    # second fieldset shows the contact info
+                    Fieldset('Contact details',
+                            HTML(style),
+                            'email',
+                            Row('password1','password2'),
+                            'first_name',
+                            'last_name',
+                             )
+                    )
+
+    helper.add_layout(layout)
+
+    submit = Submit('add','Add this contact')
+    helper.add_input(submit)
+
 
 class CdrSearchForm(forms.Form):
     destination = forms.CharField(label=u'DESTINATION',widget=forms.TextInput(attrs={'size': 15}))
