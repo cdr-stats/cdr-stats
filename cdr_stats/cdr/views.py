@@ -25,24 +25,6 @@ from cdr_stats.helpers import json_encode
 
 # Create your views here.
 
-def grid_handler(request):
-    # handles pagination, sorting and searching
-    grid = ExampleGrid()
-
-    # To add dynamic query set
-    grid.queryset  = request.session['cdr_queryset']
-
-    return HttpResponse(grid.get_json(request), mimetype="application/json")
-
-def grid_config(request):
-    # build a config suitable to pass to jqgrid constructor
-    grid = ExampleGrid()
-
-    # To add dynamic query set
-    grid.queryset  = request.session['cdr_queryset']
-
-    return HttpResponse(grid.get_config(), mimetype="application/json")
-
 @login_required
 def show_cdr(request): 
     kwargs = {}
@@ -180,26 +162,61 @@ def show_cdr(request):
         else:
             selection_of_month_day = ''
 
-        result = variable_value(request,'result')
-        
-
+    result = variable_value(request,'result')
+    if result == '':
+        result = '1'
     request.session['cdr_queryset'] = ''
-    #select_data = {"duration": "strftime('%%M', duration)"}.extra(select=select_data)
-
+    select_data = {"calldate": "strftime('%%Y-%%m-%%d', calldate)"}
     if len(kwargs) == 0:
         request.session['cdr_queryset'] = CDR.objects.values('calldate', 'channel', 'src', 'clid', 'dst', 'disposition', 'duration').all().order_by('-calldate')
-        form = CdrSearchForm(initial={'selection_of_month_day':1,'result':1,'export_csv_queryset':'0'})
+        total_data = CDR.objects.extra(select=select_data).values('calldate').annotate(Count('calldate')).annotate(Sum('duration')).annotate(Avg('duration')).order_by('-calldate')
+        form = CdrSearchForm(initial={'selection_of_month_day':1,'result':result,'export_csv_queryset':'0'})
     else:
         request.session['cdr_queryset'] = CDR.objects.values('calldate', 'channel', 'src', 'clid', 'dst', 'disposition', 'duration').filter(**kwargs).order_by('-calldate')
+        total_data = CDR.objects.extra(select=select_data).values('calldate').filter(**kwargs).annotate(Count('calldate')).annotate(Sum('duration')).annotate(Avg('duration')).order_by('-calldate')
         form = CdrSearchForm(initial={'selection_of_month_day':selection_of_month_day,'from_chk_month':from_chk_month,'from_month_year_1':from_month_year_1,'to_chk_month':to_chk_month,'to_month_year_1':to_month_year_1,'from_chk_day':from_chk_day,'from_day':from_day_2,'from_month_year_2':from_month_year_2,'to_chk_day':to_chk_day,'to_day':to_day_2,'to_month_year_2':to_month_year_2,'result':result,'export_csv_queryset':'0'})
-
+    
+    if result == '1':
+        for i in request.session['cdr_queryset']:
+            i['duration'] = int_convert_to_minute(int(i['duration']))
+    
+    #print request.session['cdr_queryset']
         
+    max_duration = max([x['duration__sum'] for x in total_data])
+    print max_duration
+    total_duration = sum([x['duration__sum'] for x in total_data])
+    total_calls = sum([x['calldate__count'] for x in total_data])
+    total_avg_duration = (sum([x['duration__avg'] for x in total_data]))/total_data.count()    
+
     variables = RequestContext(request, { 'form': form,
                                           'queryset': request.session['cdr_queryset'],
+                                          'total_data':total_data,
+                                          'total_duration':total_duration,
+                                          'total_calls':total_calls,
+                                          'total_avg_duration':total_avg_duration,
+                                          'max_duration':max_duration,
                                         })
                                              
     return render_to_response('cdr/show_jqgrid.html', variables,
            context_instance = RequestContext(request))
+
+def grid_handler(request):
+    # handles pagination, sorting and searching
+    grid = ExampleGrid()
+
+    # To add dynamic query set
+    grid.queryset  = request.session['cdr_queryset']
+
+    return HttpResponse(grid.get_json(request), mimetype="application/json")
+
+def grid_config(request):
+    # build a config suitable to pass to jqgrid constructor
+    grid = ExampleGrid()
+
+    # To add dynamic query set
+    grid.queryset  = request.session['cdr_queryset']
+
+    return HttpResponse(grid.get_config(), mimetype="application/json")
 
 def export_to_csv(request):
     # get the response object, this can be used as a stream.
