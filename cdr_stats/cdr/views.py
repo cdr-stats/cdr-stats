@@ -613,16 +613,20 @@ def logout_view(request):
 	logout(request)
 	return HttpResponseRedirect('/')
 
+
 def index(request):
     template = 'cdr/index.html'
     errorlogin = ''
     loginform = loginForm()
     data = {
         'loginform' : loginform,
+        'testform' : MonthLoadSearchForm(),
         'errorlogin' : errorlogin,
         'news':get_news(),
         #'is_authenticated' : request.user.is_authenticated()
     }
     return render_to_response(template, data,
            context_instance = RequestContext(request))
+
+
 

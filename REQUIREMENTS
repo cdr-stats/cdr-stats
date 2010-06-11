@@ -81,18 +81,11 @@
         tar -xvzf python-dateutil-1.5.tar.gz ; cd python-dateutil-1.5/    
         sudo python setup.py install
 
-
-* Extra dependencies 
+* Django-uni-form
 ----------------------
-    
-    this is already included
-    
-    Jquery
-    JqueryUI
-    Jquery.dnd
-    jquery.contextmenu
-    jqdock (http://www.wizzud.com/jqDock/)
-    
+
+    install :
+    sudo easy_install django-uni-form
 
 
 * EnhanceJS

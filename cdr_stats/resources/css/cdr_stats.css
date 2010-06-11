@@ -9,9 +9,9 @@
 
 body {
     font-size: 62.5%;
-}
-body {
     font-family: 'Segoe UI', Frutiger, Tahoma, Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    //background: #ECECEC;
+    //color: #666;
 }
 
 .logo_cdrstat{
@@ -64,5 +64,9 @@ body {
 .info-icon{ 
     margin-left: 40%;
     border: 0;
+}
+
+.header-top {
+    //background: transparent url('/resources/images/sb_header_back.png') repeat-x 0px 0px;
 }
 

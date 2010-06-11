@@ -1,5 +1,7 @@
 {% extends "cdr/master.html" %}
 
+{% load uni_form_tags %}
+
 {% block extra_head %}
   <script>
   $(document).ready(function() {
@@ -12,7 +14,9 @@
 {% block content %}
 
 
-
+<form action="" method="post" class="uniForm">
+{{ testform|as_uni_form }}
+</form>
 
 <br/><br/>
 
