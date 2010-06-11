@@ -70,7 +70,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    #'cdr.profiling.DatabaseProfilerMiddleware',
     'cdr.colorsql.ColorSQLMiddleware',
 )
 
@@ -104,6 +103,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'django_extensions',
     'dateutil',
+    'uni_form',
 )
 
 
