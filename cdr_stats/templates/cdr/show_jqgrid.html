@@ -23,8 +23,8 @@ $(function () {
 {% endblock %}
 
 {% block content %}
-<form method="GET" action="." enctype="multipart/form-data">
-<table width=70% border=1 cellspacing=0 cellpadding=0>
+<form method="GET" name="search_cdr" action="." enctype="multipart/form-data">
+<table width=70% border=1 cellspacing=0 cellpadding=0 align=center>
     <tr>
         <td>{{ form.selection_of_month_day }}</td>
         <td>{{ form.from_chk_month }}&nbsp;{{ form.from_month_year_1.label }}&nbsp;
@@ -49,6 +49,9 @@ $(function () {
     <tr><td align=center colspan=4><input type="submit" value="Search" />&nbsp;<input type="reset" value="Clear"></td></tr>
 </table>
 </form>
+
+
+
 <p>&nbsp;</p>
 <div id="cdr-container" class='tabcontainer'>
 
@@ -62,6 +65,11 @@ $(function () {
     </div>
 
 </div>
-
+<p>&nbsp;</p>
+<table width=30% border=0 cellspacing=0 cellpadding=0 align=center>
+<tr>
+    <td align=center><a href="/export_csv/" target="_blank" >Export CSV file</a></td>
+</tr>
+</table>
 
 {% endblock %}

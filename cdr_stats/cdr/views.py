@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import connection
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render_to_response
 from django.db.models import *
 from django.template.context import RequestContext
@@ -17,6 +17,8 @@ import calendar
 from sets import *
 import operator
 import string
+import csv, codecs
+from django.db.models.loading import get_model
 from operator import *
 from cdr_stats.helpers import json_encode
 
@@ -42,7 +44,7 @@ def grid_config(request):
     return HttpResponse(grid.get_config(), mimetype="application/json")
 
 @login_required
-def show_cdr(request):
+def show_cdr(request): 
     kwargs = {}
     if request.method == 'GET':
 
@@ -179,21 +181,39 @@ def show_cdr(request):
             selection_of_month_day = ''
 
         result = variable_value(request,'result')
+        
 
     request.session['cdr_queryset'] = ''
     #select_data = {"duration": "strftime('%%M', duration)"}.extra(select=select_data)
 
     if len(kwargs) == 0:
         request.session['cdr_queryset'] = CDR.objects.values('calldate', 'channel', 'src', 'clid', 'dst', 'disposition', 'duration').all().order_by('-calldate')
-        form = CdrSearchForm(initial={'selection_of_month_day':1,'result':1})
+        form = CdrSearchForm(initial={'selection_of_month_day':1,'result':1,'export_csv_queryset':'0'})
     else:
         request.session['cdr_queryset'] = CDR.objects.values('calldate', 'channel', 'src', 'clid', 'dst', 'disposition', 'duration').filter(**kwargs).order_by('-calldate')
-        form = CdrSearchForm(initial={'selection_of_month_day':selection_of_month_day,'from_chk_month':from_chk_month,'from_month_year_1':from_month_year_1,'to_chk_month':to_chk_month,'to_month_year_1':to_month_year_1,'from_chk_day':from_chk_day,'from_day':from_day_2,'from_month_year_2':from_month_year_2,'to_chk_day':to_chk_day,'to_day':to_day_2,'to_month_year_2':to_month_year_2,'result':result})
+        form = CdrSearchForm(initial={'selection_of_month_day':selection_of_month_day,'from_chk_month':from_chk_month,'from_month_year_1':from_month_year_1,'to_chk_month':to_chk_month,'to_month_year_1':to_month_year_1,'from_chk_day':from_chk_day,'from_day':from_day_2,'from_month_year_2':from_month_year_2,'to_chk_day':to_chk_day,'to_day':to_day_2,'to_month_year_2':to_month_year_2,'result':result,'export_csv_queryset':'0'})
 
-    variables = RequestContext(request, { 'form': form, })
-
+        
+    variables = RequestContext(request, { 'form': form,
+                                          'queryset': request.session['cdr_queryset'],
+                                        })
+                                             
     return render_to_response('cdr/show_jqgrid.html', variables,
            context_instance = RequestContext(request))
+
+def export_to_csv(request):
+    # get the response object, this can be used as a stream.
+    response = HttpResponse(mimetype='text/csv')
+    # force download.
+    response['Content-Disposition'] = 'attachment;filename=export.csv'
+    # the csv writer
+    writer = csv.writer(response)
+    qs = request.session['cdr_queryset']
+    writer.writerow(['Calldate', 'Channel', 'Source', 'Clid','Destination','Disposition','Duration'])
+    for cdr in qs:
+        writer.writerow([cdr['calldate'], cdr['channel'], cdr['src'], cdr['clid'], cdr['dst'], cdr['disposition'], cdr['duration']])
+    return response
+
 
 
 @login_required
