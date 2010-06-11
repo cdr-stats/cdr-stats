@@ -129,3 +129,8 @@ def nl2br(s):
 
 def reverseString(s):
     return s[::-1]
+
+def int_convert_to_minute(value):
+    min = int(int(value) / 60)
+    sec = int(int(value) % 60)
+    return "%02d" % min + ":" + "%02d" % sec

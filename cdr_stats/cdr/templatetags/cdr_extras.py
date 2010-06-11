@@ -63,7 +63,7 @@ def time_in_min(value,arg):
         if arg == 'min':
             min = int(value / 60)
             sec = int(value % 60)
-            return str(str(min) + ":" + str(sec) + " min")
+            return "%02d" % min + ":" + "%02d" % sec + "min"
         else:
             min = int(value / 60)
             min = (min * 60)
@@ -78,10 +78,9 @@ def conv_min(value):
     if int(value)!=0:
         min = int(value / 60)
         sec = int(value % 60)
-        return str(str(min)+":"+str(sec))
+        return "%02d" % min + ":" + "%02d" % sec
     else:
         return value
-
 
 @register.filter()
 def display_2bill(value,currency):
@@ -128,6 +127,13 @@ def month_name(value,arg):
     m_name = month_dict[no]
     return str(m_name) + " " + str(arg)
 
+@register.filter()
+def cal_width(value,arg):
+    #width = (value/arg)+200
+    #if width == 0:
+    #    width == 1
+    return value
+
 
 register.filter('row', row)
 register.filter('mul', mul)
@@ -141,3 +147,4 @@ register.filter('floatformat2', floatformat2)
 register.filter('percent', percent)
 register.filter('month_int', month_int)
 register.filter('month_name', month_name)
+register.filter('cal_width', cal_width)
