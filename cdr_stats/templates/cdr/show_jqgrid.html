@@ -71,7 +71,7 @@ $(function () {
     <td align=left>Total</td>
 </tr>
 </table>
-<table width=50% border=1 cellspacing=0 cellpadding=0 align=center>
+<table width=50% border=1 cellspacing=0 cellpadding=1 align=center>
 <tr>
     <td align=center>&nbsp;</td>
     <td align=center clospan="4">Asterisk Minutes</td>
@@ -87,7 +87,7 @@ $(function () {
 <tr>
     <td align=right>{{td.calldate}}</td>
     <td align=center>{{td.duration__sum|conv_min}}</td>
-    <td align=left><img src="{{MEDIA_URL}}/images/spacer.png" width="{{td.duration__sum|cal_width:max_duration}}" style="vertical-align:center;" height="10"/></td>
+    <td align=left><img src="{{MEDIA_URL}}/images/spacer.png" width="{{td.duration__sum|cal_width:max_duration}}px" style="vertical-align:center;" height="10"/></td>
     <td align=center>{{td.calldate__count}}</td>
     <td align=center>{{td.duration__avg|conv_min}}</td>
 </tr>
