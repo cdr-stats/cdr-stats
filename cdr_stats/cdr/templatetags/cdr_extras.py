@@ -128,11 +128,9 @@ def month_name(value,arg):
     return str(m_name) + " " + str(arg)
 
 @register.filter()
-def cal_width(value,arg):
-    #width = (value/arg)+200
-    #if width == 0:
-    #    width == 1
-    return value
+def cal_width(value,max):
+    width = (value/float(max))*200
+    return width
 
 
 register.filter('row', row)
