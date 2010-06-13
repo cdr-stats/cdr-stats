@@ -71,7 +71,7 @@ def time_in_min(value,arg):
             total_sec = min + sec
             return str(total_sec + " sec")
     else:
-        return str("0:0 min")
+        return str("00:00 min")
 
 @register.filter()
 def conv_min(value):
@@ -80,7 +80,7 @@ def conv_min(value):
         sec = int(value % 60)
         return "%02d" % min + ":" + "%02d" % sec
     else:
-        return value
+        return "00:00"
 
 @register.filter()
 def display_2bill(value,currency):
