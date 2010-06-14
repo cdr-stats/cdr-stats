@@ -1,5 +1,5 @@
 {% extends "cdr/master.html" %}
-
+{% load i18n %}
 {% load uni_form_tags %}
 
 {% block extra_head %}
@@ -13,22 +13,15 @@
 
 {% block content %}
 
-
-<div class="search-form">
-{% with form.helper as helper %}
-    {% uni_form testform testformhelper %}
-{% endwith %}
-</div>
-
 <br/><br/>
 
 
 <div id="accordeon-container">
 <div id="accordion">
-	<h3><a href="#">Info</a></h3>
+	<h3><a href="#">{% blocktrans %} Info {% endblocktrans %}</a></h3>
 	<div>
 		<p>
-		<br/>
+		<br/>{% blocktrans %}
 		<a href="http://www.cdr-stats.org/" target="_blank" >CDR-Stats</a> is an open source application that allows you to browse and analyze your CDRs (Call Details Record). <br>
 		Different reporting tools are provided : 
 		<ul>
@@ -39,7 +32,7 @@
 		<br/>
 
         <a href="http://www.cdr-stats.org/" target="_blank" ><img src='{{MEDIA_URL}}/icons/help-about-2.png' title="Info" alt="Info" width="110" class="info-icon"/></a>
-        
+        {% endblocktrans %}
         <br/><br/>
 
 		</p>

@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 from cdr.views import *
-
+from django.conf.urls.i18n import *
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -25,6 +25,8 @@ urlpatterns = patterns('',
 	
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
+
+    (r'^i18n/', include('django.conf.urls.i18n')),
     
     ( r'^resources/(?P<path>.*)$',
       'django.views.static.serve',
