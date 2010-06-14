@@ -1,12 +1,11 @@
 {% extends "cdr/master.html" %}
 {% load cdr_extras %}
-
+`
 {% block extra_header %}
     {% include "cdr/visualize_header.html" %}
 {% endblock %}
 
 {% block content %}
-
 <form method="GET" action="." enctype="multipart/form-data">
 <div align=center style="text-align:left;border: solid #000;margin:0% 30% 5% 25%;">
        <p>{{ form.from_month_year.label }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.from_month_year }}&nbsp;&nbsp;{{ form.comp_months.label }}&nbsp;{{ form.comp_months }}
