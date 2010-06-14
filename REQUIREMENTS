@@ -30,6 +30,7 @@
     http://www.djangoproject.com/download/
     
     First, download Django-1.2.1.tar.gz. 
+        wget wget http://www.djangoproject.com/download/1.2.1/tarball/
     
     Then,
         tar xzvf Django-1.2.1.tar.gz
@@ -42,19 +43,19 @@
 ------------------------
 
 	download :
-	git clone http://github.com/robhudson/django-debug-toolbar.git
+	    wget http://github.com/robhudson/django-debug-toolbar/tarball/0.8.2
 	
 	install :
-	cd django-debug-toolbar
-	python setup.py bdist
-	sudo python setup.py install
-	sudo rm -rf build/ dist django_debug_toolbar.egg-info/
+	    tar -xvzf robhudson-django-debug-toolbar-0.8.2-0-g55b5a77.tar.gz 
+	    cd robhudson-django-debug-toolbar-55b5a77/
+	    sudo python setup.py install
+	    sudo rm -rf build/ dist django_debug_toolbar.egg-info/
 
 
 
 * django-dilla 
 ----------------
-
+    
     inside the cdr-stats directory :
 	svn checkout http://django-dilla.googlecode.com/svn/trunk/dilla dilla
 
@@ -63,23 +64,23 @@
 * django-extensions
 -----------------------
 
-	svn checkout http://django-command-extensions.googlecode.com/svn/trunk/ django-command-extensions
-	then install,
-    sudo python setup.py install
-    
-    # very useful to generate graph :
-    
+	Download sources :
+	    svn checkout http://django-command-extensions.googlecode.com/svn/trunk/ django-command-extensions
+	
+	Then install:
+        sudo python setup.py install
+        
+        # very useful to generate graph :
+            # Create a PNG image file called my_project_visualized.png with application grouping
+            python `manage.py graph_models -a -g -o my_project_visualized.png
 
 
 * python-dateutil
 -------------------
 
-    Go to http://labix.org/python-dateutil and install the last package
-    
-    last package on date :
-        http://labix.org/download/python-dateutil/python-dateutil-1.5.tar.gz
-        tar -xvzf python-dateutil-1.5.tar.gz ; cd python-dateutil-1.5/    
-        sudo python setup.py install
+    Install :
+        easy_install-2.6 DateUtils
+
 
 * Django-uni-form
 ----------------------
