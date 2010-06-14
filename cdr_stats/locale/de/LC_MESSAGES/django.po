@@ -1,0 +1,70 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-06-14 17:54+0530\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+#: cdr/views.py:695
+msgid "Welcome to my site."
+msgstr ""
+
+#: templates/cdr/index.html:30
+msgid " Info "
+msgstr " Info "
+
+#: templates/cdr/index.html:33
+#, python-format
+msgid ""
+"\n"
+"\t\t<a href=\"http://www.cdr-stats.org/\" target=\"_blank\" >CDR-Stats</a> "
+"is an open source application that allows you to browse and analyze your "
+"CDRs (Call Details Record). <br>\n"
+"\t\tDifferent reporting tools are provided : \n"
+"\t\t<ul>\n"
+"\t\t    <li>Monthly Report : <br/>summarize your monthly traffic and allow "
+"you to have a monthly vision of your traffic load.</li>\n"
+"\t\t    <li>Analyze CDR : This report allows you to compare your traffic "
+"with previous day and study the volum variation on your server</li>\n"
+"\t\t    <li>Daily Traffic : give you a day by day vision and let you see how "
+"many calls are running each hours</li>\n"
+"\t\t</ul>\n"
+"\t\t<br/>\n"
+"\n"
+"        <a href=\"http://www.cdr-stats.org/\" target=\"_blank\" ><img src='%"
+"(MEDIA_URL)s/icons/help-about-2.png' title=\"Info\" alt=\"Info\" width=\"110"
+"\" class=\"info-icon\"/></a>\n"
+"        "
+msgstr ""
+"\n"
+"\t\t<a href=\"http://www.cdr-stats.org/\" target=\"_blank\" >CDR-Statistik</"
+"a> ist ein Open-Source-Anwendung, die Sie durchsuchen und analysieren Sie "
+"Ihre CDRs (Call Details Record) ermöglicht."
+"Verschiedene Reporting-Tools stehen zur Verfügung:\n"
+"\t\t<ul>\n"
+"\t\t    <li> Monatlicher Bericht: <br/>Zusammenfassend Ihre monatlichen "
+"Traffic und erlauben Ihnen, eine Vision von Ihrem monatlichen Verkehrslast "
+"haben.</li>\n"
+"\t\t    <li>Analysieren CDR : Dieser Bericht ermöglicht es Ihnen, Ihren "
+"Traffic zum Vortag vergleichen und untersuchen die volum Variation auf Ihrem "
+"Server</li>\n"
+"\t\t    <li> Täglicher Traffic : geben Sie eine Vision von Tag zu Tag und "
+"lassen Sie sehen, wie viele Anrufe laufen jede Stunde</li>\n"
+"\t\t</ul>\n"
+"\t\t<br/>\n"
+"\n"
+"        <a href=\"http://www.cdr-stats.org/\" target=\"_blank\" ><img src='%"
+"(MEDIA_URL)s/icons/help-about-2.png' title=\"Info\" alt=\"Info\" width=\"110"
+"\" class=\"info-icon\"/></a>"
