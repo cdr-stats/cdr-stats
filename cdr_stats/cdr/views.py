@@ -23,6 +23,15 @@ from operator import *
 from cdr_stats.helpers import json_encode
 from uni_form.helpers import FormHelper, Submit, Reset
 
+
+try:
+    from django.views.decorators.csrf import csrf_exempt
+except ImportError:
+    def csrf_exempt(func):
+        return func
+
+
+
 # Create your views here.
 def grid_handler(request):
     # handles pagination, sorting and searching
@@ -33,6 +42,7 @@ def grid_handler(request):
 
     return HttpResponse(grid.get_json(request), mimetype="application/json")
 
+
 def grid_config(request):
     # build a config suitable to pass to jqgrid constructor
     grid = ExampleGrid()
@@ -41,6 +51,7 @@ def grid_config(request):
     grid.queryset  = request.session['cdr_queryset']
 
     return HttpResponse(grid.get_config(), mimetype="application/json")
+
 
 @login_required
 def show_cdr(request): 
@@ -648,21 +659,6 @@ def logout_view(request):
 	return HttpResponseRedirect('/')
 
 
-def form_test(request):
-    template = 'cdr/index2.html'
-    
-    # Create the form
-    form = LayoutTestForm()
-    
-    
-    data = {
-        'testform' : form,
-        #'is_authenticated' : request.user.is_authenticated()
-    }
-    return render_to_response(template, data,
-           context_instance = RequestContext(request))
-
-
 def index(request):
     template = 'cdr/index.html'
     errorlogin = ''
@@ -697,4 +693,24 @@ def index(request):
            context_instance = RequestContext(request))
 
 
+
+
+def form_test(request):
+
+    # Create the form
+    if request.method == "POST":
+        form = MonthLoadSearchForm(request.POST)
+    else:
+        form = MonthLoadSearchForm()
+
+    template = 'cdr/index2.html'
+    
+    
+    data = {
+        'testform' : form,
+        #'is_authenticated' : request.user.is_authenticated()
+    }
+    
+    return render_to_response(template, data,
+           context_instance = RequestContext(request))
 
