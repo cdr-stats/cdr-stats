@@ -113,5 +113,11 @@ LOG_COLORSQL_VERBOSE = True
 
 LOGIN_URL = '/'
 
+gettext = lambda s: s
 
-
+LANGUAGES = (
+    ('en', gettext('English')),
+    ('fr', gettext('French')),
+    ('de', gettext('German')),    
+    ('es', gettext('Spanish')),
+)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-14 17:54+0530\n"
+"POT-Creation-Date: 2010-06-15 23:01+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,34 +16,124 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: cdr/views.py:695
-msgid "Welcome to my site."
-msgstr ""
-
-#: templates/cdr/index.html:30
+#: templates/cdr/index.html:21
 msgid " Info "
 msgstr ""
 
-#: templates/cdr/index.html:33
-#, python-format
+#: templates/cdr/index.html:25
+msgid ""
+"is an open source application that allows you to browse and analyze your "
+"CDRs (Call Details Record). "
+msgstr ""
+
+#: templates/cdr/index.html:26
+msgid "Different reporting tools are provided :"
+msgstr ""
+
+#: templates/cdr/index.html:28
+msgid ""
+"Monthly Report : summarize your monthly traffic and allow you to have a "
+"monthly vision of your traffic load."
+msgstr ""
+
+#: templates/cdr/index.html:29
+msgid ""
+"Analyze CDR : This report allows you to compare your traffic with previous "
+"day and study the volum variation on your server"
+msgstr ""
+
+#: templates/cdr/index.html:30
+msgid ""
+"Daily Traffic : give you a day by day vision and let you see how many calls "
+"are running each hours"
+msgstr ""
+
+#: templates/cdr/index.html:40
+msgid "Download"
+msgstr ""
+
+#: templates/cdr/index.html:43
 msgid ""
 "\n"
-"\t\t<a href=\"http://www.cdr-stats.org/\" target=\"_blank\" >CDR-Stats</a> "
-"is an open source application that allows you to browse and analyze your "
-"CDRs (Call Details Record). <br>\n"
-"\t\tDifferent reporting tools are provided : \n"
-"\t\t<ul>\n"
-"\t\t    <li>Monthly Report : <br/>summarize your monthly traffic and allow "
-"you to have a monthly vision of your traffic load.</li>\n"
-"\t\t    <li>Analyze CDR : This report allows you to compare your traffic "
-"with previous day and study the volum variation on your server</li>\n"
-"\t\t    <li>Daily Traffic : give you a day by day vision and let you see how "
-"many calls are running each hours</li>\n"
-"\t\t</ul>\n"
-"\t\t<br/>\n"
+"        Please visit  "
+msgstr ""
+
+#: templates/cdr/index.html:45
+msgid ""
 "\n"
-"        <a href=\"http://www.cdr-stats.org/\" target=\"_blank\" ><img src='%"
-"(MEDIA_URL)s/icons/help-about-2.png' title=\"Info\" alt=\"Info\" width=\"110"
-"\" class=\"info-icon\"/></a>\n"
+"        and download the last stable release."
+msgstr ""
+
+#: templates/cdr/index.html:56
+msgid "Support"
+msgstr ""
+
+#: templates/cdr/index.html:59
+msgid ""
+"\n"
+"        Star2Billing S.L. offers consultancy including installation, "
+"training and customisation on all of its products, and CDR-Stats is no "
+"exception.\n"
+"        "
+msgstr ""
+
+#: templates/cdr/index.html:63
+msgid ""
+"\n"
+"        Purchasing consultancy is a good way to help support the development "
+"of CDR-Stats, and from the customer's point of view can speed the time\n"
+"        of deployment, leaving them free to concentrate on more profitable "
+"and productive tasks.\n"
+"        "
+msgstr ""
+
+#: templates/cdr/index.html:68
+msgid ""
+"\n"
+"        Contact us at "
+msgstr ""
+
+#: templates/cdr/index.html:69
+msgid "for more information"
+msgstr ""
+
+#: templates/cdr/index.html:75
+msgid "News"
+msgstr ""
+
+#: templates/cdr/index.html:105
+msgid "Contact Us"
+msgstr ""
+
+#: templates/cdr/index.html:108
+msgid ""
+"\n"
+"        Star2Billing S.L. was formed to provide commercial support, "
+"installation and training to telecommunications companies that wished to "
+"deploy A2Billing.\n"
+"        "
+msgstr ""
+
+#: templates/cdr/index.html:112
+msgid ""
+"\n"
+"        A2Billing is both a Telecoms Switch and a Billing Platform for those "
+"wishing to deploy telecoms services such as VoIP, calling cards and "
+"callback, \n"
+"        as well as a variety of other products. Please see "
+msgstr ""
+
+#: templates/cdr/index.html:114
+msgid " for more details."
+msgstr ""
+
+#: templates/cdr/index.html:117
+msgid ""
+"\n"
+"        CDR-Stats is the latest piece of software development from the "
+"Star2Billing stable, and is a complete ground up re-write of the famous "
+"Asterisk-Stat,  \n"
+"        which has been around for over 7 years as a CDR viewer and analyser "
+"for Asterisk, and has been included in FreePBX to view and analyse CDR.\n"
 "        "
 msgstr ""

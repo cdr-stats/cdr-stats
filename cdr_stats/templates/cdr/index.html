@@ -21,28 +21,29 @@
 	<h3><a href="#">{% blocktrans %} Info {% endblocktrans %}</a></h3>
 	<div>
 		<p>
-		<br/>{% blocktrans %}
-		<a href="http://www.cdr-stats.org/" target="_blank" >CDR-Stats</a> is an open source application that allows you to browse and analyze your CDRs (Call Details Record). <br>
-		Different reporting tools are provided : 
+		<br/>
+		<a href="http://www.cdr-stats.org/" target="_blank" >CDR-Stats</a> {% blocktrans %}is an open source application that allows you to browse and analyze your CDRs (Call Details Record). {% endblocktrans %}<br>
+		{% blocktrans %}Different reporting tools are provided :{% endblocktrans %}
 		<ul>
-		    <li>Monthly Report : <br/>summarize your monthly traffic and allow you to have a monthly vision of your traffic load.</li>
-		    <li>Analyze CDR : This report allows you to compare your traffic with previous day and study the volum variation on your server</li>
-		    <li>Daily Traffic : give you a day by day vision and let you see how many calls are running each hours</li>
+		    <li>{% blocktrans %}Monthly Report : summarize your monthly traffic and allow you to have a monthly vision of your traffic load.{% endblocktrans %}</li>
+		    <li>{% blocktrans %}Analyze CDR : This report allows you to compare your traffic with previous day and study the volum variation on your server{% endblocktrans %}</li>
+		    <li>{% blocktrans %}Daily Traffic : give you a day by day vision and let you see how many calls are running each hours{% endblocktrans %}</li>
 		</ul>
 		<br/>
 
         <a href="http://www.cdr-stats.org/" target="_blank" ><img src='{{MEDIA_URL}}/icons/help-about-2.png' title="Info" alt="Info" width="110" class="info-icon"/></a>
-        {% endblocktrans %}
+        
         <br/><br/>
 
 		</p>
 	</div>
-	<h3><a href="#">Download</a></h3>
+	<h3><a href="#">{% blocktrans %}Download{% endblocktrans %}</a></h3>
 	<div>
 		<p>
-
-        Please visit  <a target="_blank" href="http://www.cdr-stats.org/">http://www.cdr-stats.org/</a> <br/>
-        and download the last stable release.
+        {% blocktrans %}
+        Please visit  {% endblocktrans %} <a target="_blank" href="http://www.cdr-stats.org/">http://www.cdr-stats.org/</a> <br/>
+        {% blocktrans %}
+        and download the last stable release.{% endblocktrans %}
         <br/><br/><br/>
         
         <a href="http://www.cdr-stats.org/" target="_blank" ><img src='{{MEDIA_URL}}/icons/system-log-out-4.png' title="Download" alt="Download" width="110" class="info-icon"/></a>
@@ -52,22 +53,26 @@
         
 		</p>
 	</div>
-	<h3><a href="#">Support</a></h3>
+	<h3><a href="#">{% blocktrans %}Support{% endblocktrans %}</a></h3>
 	<div>
 		<p>
-        
-        Star2Billing S.L. offers consultancy including installation, training and customisation on all of its products, and CDR-Stats is no exception.<br/><br/>
-
-        Purchasing consultancy is a good way to help support the development of CDR-Stats, and from the customer’s point of view can speed the time 
-        of deployment, leaving them free to concentrate on more profitable and productive tasks.<br/><br/>
-
-        Contact us at <a href="mailto:sales@star2billing.com">sales@star2billing.com</a> for more information<br/><br/>
+        {% blocktrans %}
+        Star2Billing S.L. offers consultancy including installation, training and customisation on all of its products, and CDR-Stats is no exception.
+        {% endblocktrans %}
+        <br/><br/>
+        {% blocktrans %}
+        Purchasing consultancy is a good way to help support the development of CDR-Stats, and from the customer's point of view can speed the time
+        of deployment, leaving them free to concentrate on more profitable and productive tasks.
+        {% endblocktrans %}
+        <br/><br/>
+        {% blocktrans %}
+        Contact us at {% endblocktrans %}<a href="mailto:sales@star2billing.com">sales@star2billing.com</a> {% blocktrans %}for more information{% endblocktrans %}<br/><br/>
 		
 		<a href="mailto:sales@star2billing.com"><img src='{{MEDIA_URL}}/icons/system-help-3.png' title="Support" alt="Support" width="110" class="info-icon"/></a>
 		
 		
 	</div>
-	<h3><a href="#">News</a></h3>
+	<h3><a href="#">{% blocktrans %}News{% endblocktrans %}</a></h3>
 	<div>
 		<p>
 		
@@ -97,17 +102,23 @@
         <br/><br/>
 	</div>
 	
-	<h3><a href="#">Contact Us</a></h3>
+	<h3><a href="#">{% blocktrans %}Contact Us{% endblocktrans %}</a></h3>
 	<div>
 		<p>
-		
-        Star2Billing S.L. was formed to provide commercial support, installation and training to telecommunications companies that wished to deploy A2Billing.<br/><br/>
-
+		{% blocktrans %}
+        Star2Billing S.L. was formed to provide commercial support, installation and training to telecommunications companies that wished to deploy A2Billing.
+        {% endblocktrans %}
+        <br/><br/>
+        {% blocktrans %}
         A2Billing is both a Telecoms Switch and a Billing Platform for those wishing to deploy telecoms services such as VoIP, calling cards and callback, 
-        as well as a variety of other products. Please see <a href="http://www.star2billing.com">http://www.star2billing.com</a> for more details.<br/><br/>
+        as well as a variety of other products. Please see {% endblocktrans %} <a href="http://www.star2billing.com">http://www.star2billing.com</a>{% blocktrans %} for more details.{% endblocktrans %}
 
+        <br/><br/>
+        {% blocktrans %}
         CDR-Stats is the latest piece of software development from the Star2Billing stable, and is a complete ground up re-write of the famous Asterisk-Stat,  
-        which has been around for over 7 years as a CDR viewer and analyser for Asterisk, and has been included in FreePBX to view and analyse CDR.<br/><br/>
+        which has been around for over 7 years as a CDR viewer and analyser for Asterisk, and has been included in FreePBX to view and analyse CDR.
+        {% endblocktrans %}
+        <br/><br/>
 
         <a href="mailto:sales@star2billing.com"><img src='{{MEDIA_URL}}/icons/kontact-4.png' title="Contact" alt="Contact" width="110" class="info-icon"/></a>
         
