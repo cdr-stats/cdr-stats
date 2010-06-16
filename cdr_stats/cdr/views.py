@@ -292,10 +292,10 @@ def show_graph_by_month(request):
             start_date= end_date+relativedelta(months=-int(cp_month),days=+relative_days(from_day,from_year))
             kwargs[ 'calldate__range' ] = (start_date,end_date)
 
-    form = MonthLoadSearchForm(initial={'from_month_year':from_month_year,'comp_months':comp_months,'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,})
+        form = MonthLoadSearchForm(initial={'from_month_year':from_month_year,'comp_months':comp_months,'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,})
 
     if len(kwargs) == 0:
-        form = MonthLoadSearchForm(initial={'from_month_year':from_month_year,'comp_months':2,'destination':destination,'destination_type':1,'source':source,'source_type':1,'channel':channel,})
+        form = MonthLoadSearchForm(initial={'comp_months':2,'destination_type':1,'source_type':1,})
         tday=datetime.today()
         from_year=tday.year
         from_month= tday.month
@@ -416,12 +416,12 @@ def show_graph_by_day(request):
             kwargs[ 'calldate__range' ] = (start_date,end_date)
 
 
-    form = DailyLoadSearchForm(initial={'from_day':from_day,'from_month_year':from_month_year,'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,})
+        form = DailyLoadSearchForm(initial={'from_day':from_day,'from_month_year':from_month_year,'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,})
 
     if len(kwargs) == 0:
         tday=datetime.today()
         from_day = validate_days(tday.year,tday.month,tday.day)
-        form = DailyLoadSearchForm(initial={'from_day':tday.day,'from_month_year':from_month_year,'destination':destination,'destination_type':1,'source':source,'source_type':1,'channel':channel,})
+        form = DailyLoadSearchForm(initial={'from_day':tday.day,'destination_type':1,'source_type':1,})
         from_year=tday.year
         from_month= tday.month
         start_date = datetime(from_year,from_month,from_day,0,0,0,0)
