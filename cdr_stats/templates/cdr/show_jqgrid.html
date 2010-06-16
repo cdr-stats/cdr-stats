@@ -48,40 +48,42 @@ $(function () {
 
 </div>
 <p>&nbsp;</p>
-<table width=50% border=1 cellspacing=0 cellpadding=0 align=center>
-<tr>
-    <td align=left>Total</td>
-</tr>
+
+
+
+<table class="gradient-style">
+    <caption>Call Details Report per day</caption>
+    <thead>
+    	<tr>
+            <th scope="col">Date</th>
+            <th scope="col">Duration</th>
+            <th scope="col">Graphic</th>
+            <th scope="col">Calls</th>
+            <th scope="col"><acronym title="Average Connection Time">ACT</acronym></th>
+        </tr>
+    </thead>
+    <tbody>    
+        {% for td in total_data %}
+        <tr>
+            <th scope="row">{{td.calldate}}</th>
+            <td>{{td.duration__sum|conv_min}}</td>
+            <td><img src="{{MEDIA_URL}}/images/spacer.png" width="{{td.duration__sum|cal_width:max_duration}}" style="vertical-align:center;" height="10"/></td>
+            <td>{{td.calldate__count}}</td>
+            <td>{{td.duration__avg|conv_min}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+    	<tr>
+            <th scope="row">Total</th>
+            <td>{{total_duration|conv_min}}</td>
+            <td></td>
+            <td>{{total_calls}}</td>
+            <td>{{total_avg_duration|conv_min}}</td>
+        </tr>
+    </tfoot>
 </table>
-<table width=50% border=1 cellspacing=0 cellpadding=1 align=center>
-<tr>
-    <td align=center>&nbsp;</td>
-    <td align=center clospan="4">Asterisk Minutes</td>
-</tr>
-<tr>
-    <td align=right>Date</td>
-    <td align=center>Duration</td>
-    <td align=center>Graphic</td>
-    <td align=center>Calls</td>
-    <td align=center><acronym title="Average Connection Time">ACT</acronym></td>
-</tr>
-{% for td in total_data %}
-<tr>
-    <td align=right>{{td.calldate}}</td>
-    <td align=center>{{td.duration__sum|conv_min}}</td>
-    <td align=left><img src="{{MEDIA_URL}}/images/spacer.png" width="{{td.duration__sum|cal_width:max_duration}}" style="vertical-align:center;" height="10"/></td>
-    <td align=center>{{td.calldate__count}}</td>
-    <td align=center>{{td.duration__avg|conv_min}}</td>
-</tr>
-{% endfor %}
-<tr>
-    <td align=right>Total</td>
-    <td align=center>{{total_duration|conv_min}}</td>
-    <td></td>
-    <td align=center>{{total_calls}}</td>
-    <td align=center>{{total_avg_duration|conv_min}}</td>
-</tr>
-</table>
+
 
 <p>&nbsp;</p>
 <table width=50% border=0 cellspacing=0 cellpadding=0 align=center>

@@ -52,7 +52,6 @@ def show_cdr(request):
     if request.method == 'GET':
         
         if "from_day" in request.GET:
-            print "------------------"
             # From
             from_day            = int(request.GET['from_day'])
             from_month_year     = request.GET['from_month_year']
