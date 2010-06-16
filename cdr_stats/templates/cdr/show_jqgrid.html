@@ -1,5 +1,7 @@
 {% extends "cdr/master.html" %}
 {% load cdr_extras %}
+{% load uni_form_tags %}
+
 {% block extra_head %}
 
 <script type="text/javascript">
@@ -23,32 +25,12 @@ $(function () {
 {% endblock %}
 
 {% block content %}
-<form method="GET" name="search_cdr" action="." enctype="multipart/form-data">
-<table width=70% border=1 cellspacing=0 cellpadding=0 align=center>
-    <tr>
-        <td>{{ form.selection_of_month_day }}</td>
-        <td>{{ form.from_chk_month }}&nbsp;{{ form.from_month_year_1.label }}&nbsp;
-            {{ form.from_month_year_1 }}
-            <br/>
-            {{ form.from_chk_day }}&nbsp;{{ form.from_day.label }}&nbsp;{{ form.from_day_1.label }}&nbsp;
-            {{ form.from_day }}&nbsp;{{ form.from_month_year_2 }}
-        </td>
-        <td>&nbsp;</td>
-        <td>{{ form.to_chk_month }}&nbsp;{{ form.to_month_year_1.label }}&nbsp;
-            &nbsp;{{ form.to_month_year_1 }}
-            <br/>
-            {{ form.to_chk_day }}
-            {{ form.to_day.label }}&nbsp;&nbsp;{{ form.to_day }}&nbsp;{{ form.to_month_year_2 }}
-        </td>
-    </tr>
-    <tr>
-        <td>&nbsp;</td>
-        <td>{{form.result.label}}&nbsp;{{form.result|removetags:"ul li"|safe}}</td>
-        <td>&nbsp;</td>
-    </tr>
-    <tr><td align=center colspan=4><input type="submit" value="Search" />&nbsp;<input type="reset" value="Clear"></td></tr>
-</table>
-</form>
+<div class="search-form">
+{% with form.helper as helper %}
+    {% uni_form form helper %}
+{% endwith %}
+</div>
+
 
 
 

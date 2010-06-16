@@ -3,25 +3,11 @@
 ~~~ TODO List ~~~
 
 
- - Export Csv
-
- - New summary per day on http://127.0.0.1:8000/show_cdr/
-   display the summary as on this screenshot http://www.areski.net/asterisk-stat-v2/screenshot/screenshot01.png
-   Date : "Total duration" : bar to represent the size (this could be a div): ACT (Average Call Time)  
- 
  - jquery datepicker integrate for From-date and To-Date Criteria
  
  - Internationalization
  
  - build pluggable module
- 
- - Pretty CSS Form :
-    / http://www.smashingmagazine.com/2006/11/11/css-based-forms-modern-solutions/
-    / http://designshack.co.uk/articles/10-css-form-examples
-    
-    http://www.greepit.com/2010/05/customizable-html-form-builder-pform/
-    http://www.formee.org/
-    http://www.phpform.org/
 
  - concurrent calls : reproduce the logic from http://projects.colsolgrp.net/projects/list_files/concurrentcalls
  

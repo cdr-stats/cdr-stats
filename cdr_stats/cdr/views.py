@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.db import connection
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render_to_response
 from django.db.models import *
@@ -22,13 +21,6 @@ from django.db.models.loading import get_model
 from operator import *
 from cdr_stats.helpers import json_encode
 from uni_form.helpers import FormHelper, Submit, Reset
-
-
-try:
-    from django.views.decorators.csrf import csrf_exempt
-except ImportError:
-    def csrf_exempt(func):
-        return func
 
 
 
@@ -55,141 +47,30 @@ def grid_config(request):
 
 @login_required
 def show_cdr(request): 
+
     kwargs = {}
     if request.method == 'GET':
+        
+        if "from_day" in request.GET:
+            print "------------------"
+            # From
+            from_day            = int(request.GET['from_day'])
+            from_month_year     = request.GET['from_month_year']
+            from_year           = int(request.GET['from_month_year'][0:4])
+            from_month          = int(request.GET['from_month_year'][5:7])
+            from_day            = validate_days(from_year, from_month, from_day)
+            start_date          = datetime(from_year, from_month, from_day, 0, 0, 0, 0)
 
-        if "selection_of_month_day" in request.GET:
-            selection_of_month_day = request.GET["selection_of_month_day"]
-
-            if request.GET["selection_of_month_day"] == '1':
-                if "from_chk_month" in request.GET:
-                    from_chk_month    = 'on'
-                    from_month_year_1 = request.GET['from_month_year_1']
-                    from_year_1       = int(request.GET['from_month_year_1'][0:4])
-                    from_month_1      = int(request.GET['from_month_year_1'][5:7])
-                    from_day_1        = int('1')
-                    start_date        = datetime(from_year_1,from_month_1,from_day_1,0,0,0,0)
-                else:
-                    from_chk_month    = ''
-                    from_month_year_1 = ''
-                    from_year_1       = ''
-                    from_month_1      = ''
-                    from_day_1        = ''
-                    start_date        = ''
-                if "to_chk_month" in request.GET:
-                    to_chk_month       = 'on'
-                    to_month_year_1    = request.GET['to_month_year_1']
-                    to_year_1          = int(request.GET['to_month_year_1'][0:4])
-                    to_month_1         = int(request.GET['to_month_year_1'][5:7])
-                    to_day_1           = validate_days(to_year_1,to_month_1,32)
-                    end_date           = datetime(to_year_1,to_month_1,to_day_1,23,59,59,999999)
-                else:
-                    to_chk_month       = ''
-                    to_month_year_1    = ''
-                    to_year_1          = ''
-                    to_month_1         = ''
-                    to_day_1           = ''
-                    end_date           = ''
-
-                from_chk_day      = ''
-                from_month_year_2 = ''
-                from_day_2        = ''
-                from_month_2      = ''
-                from_year_2       = ''
-                to_chk_day        = ''
-                to_month_year_2   = ''
-                to_day_2          = ''
-                to_month_2        = ''
-                to_year_2         = ''
-
-
-                if from_chk_month == 'on' and to_chk_month == 'on':
-                    kwargs[ 'calldate__range' ] = (start_date, end_date)
-                if from_chk_month == 'on' and to_chk_month != 'on' :
-                    kwargs[ 'calldate__gte' ] = start_date
-                if to_chk_month == 'on' and from_chk_month != 'on':
-                    kwargs[ 'calldate__lte' ] = end_date
-
-            elif request.GET["selection_of_month_day"] == '2':
-                if "from_chk_day" in request.GET:
-                    from_chk_day      = 'on'
-                    from_day_2        = int(request.GET['from_day'])
-                    from_month_year_2 = request.GET['from_month_year_2']
-                    from_year_2       = int(request.GET['from_month_year_2'][0:4])
-                    from_month_2      = int(request.GET['from_month_year_2'][5:7])
-                    from_day_2        = validate_days(from_year_2,from_month_2,from_day_2)
-                    start_date        = datetime(from_year_2,from_month_2,from_day_2,0,0,0,0)
-                else:
-                    from_chk_day      = ''
-                    from_day          = ''
-                    from_month_year_2 = ''
-                    from_year_2       = ''
-                    from_month_2      = ''
-                    from_day_2        = ''
-                    start_date        = ''
-
-                if "to_chk_day" in request.GET:
-                    to_chk_day       = 'on'
-                    to_day_2         = int(request.GET['to_day'])
-                    to_month_year_2  = request.GET['to_month_year_2']
-                    to_year_2        = int(request.GET['to_month_year_2'][0:4])
-                    to_month_2       = int(request.GET['to_month_year_2'][5:7])
-                    to_day_2         = validate_days(to_year_2,to_month_2,to_day_2)
-                    end_date         = datetime(to_year_2,to_month_2,to_day_2,23,59,59,999999)
-                else:
-                    to_chk_day       = ''
-                    to_day           = ''
-                    to_month_year_2  = ''
-                    to_year_2        = ''
-                    to_month_2       = ''
-                    to_day_2         = ''
-                    end_date         = ''
-
-                if from_chk_day == 'on' and to_chk_day == 'on':
-                    kwargs[ 'calldate__range' ] = (start_date, end_date)
-                if from_chk_day == 'on' and to_chk_day != 'on' :
-                    kwargs[ 'calldate__gte' ] = start_date
-                if to_chk_day == 'on' and from_chk_day != 'on':
-                    kwargs[ 'calldate__lte' ] = end_date
-
-                from_chk_month    = ''
-                from_month_year_1 = ''
-                from_day_1        = ''
-                from_month_1      = ''
-                from_year_1       = ''
-                to_chk_month      = ''
-                to_month_year_1   = ''
-                to_day_1          = ''
-                to_month_1        = ''
-                to_year_1         = ''
-
-            else:
-                from_chk_month    = ''
-                from_month_year_1 = ''
-                from_day_1        = ''
-                from_month_1      = ''
-                from_year_1       = ''
-                to_chk_month      = ''
-                to_month_year_1   = ''
-                to_day_1          = ''
-                to_month_1        = ''
-                to_year_1         = ''
-
-                from_chk_day      = ''
-                from_month_year_2 = ''
-                from_day_2        = ''
-                from_month_2      = ''
-                from_year_2       = ''
-                to_chk_day        = ''
-                to_month_year_2   = ''
-                to_day_2          = ''
-                to_month_2        = ''
-                to_year_2         = ''
-
-
-        else:
-            selection_of_month_day = ''
-
+            # To
+            to_day              = int(request.GET['to_day'])
+            to_month_year       = request.GET['to_month_year']
+            to_year             = int(request.GET['to_month_year'][0:4])
+            to_month            = int(request.GET['to_month_year'][5:7])
+            to_day              = validate_days(to_year, to_month, to_day)
+            end_date            = datetime(to_year, to_month, to_day, 23, 59, 59, 999999)
+            
+            kwargs[ 'calldate__range' ] = (start_date, end_date)
+    
     result = variable_value(request,'result')
     if result == '':
         result = '1'
@@ -199,11 +80,11 @@ def show_cdr(request):
     if len(kwargs) == 0:
         request.session['cdr_queryset'] = CDR.objects.values('calldate', 'channel', 'src', 'clid', 'dst', 'disposition', 'duration').all().order_by('-calldate')
         total_data = CDR.objects.extra(select=select_data).values('calldate').annotate(Count('calldate')).annotate(Sum('duration')).annotate(Avg('duration')).order_by('-calldate')
-        form = CdrSearchForm(initial={'selection_of_month_day':1,'result':result,'export_csv_queryset':'0'})
+        form = CdrSearchForm(initial={'result':result,'export_csv_queryset':'0'})
     else:
         request.session['cdr_queryset'] = CDR.objects.values('calldate', 'channel', 'src', 'clid', 'dst', 'disposition', 'duration').filter(**kwargs).order_by('-calldate')
         total_data = CDR.objects.extra(select=select_data).values('calldate').filter(**kwargs).annotate(Count('calldate')).annotate(Sum('duration')).annotate(Avg('duration')).order_by('-calldate')
-        form = CdrSearchForm(initial={'selection_of_month_day':selection_of_month_day,'from_chk_month':from_chk_month,'from_month_year_1':from_month_year_1,'to_chk_month':to_chk_month,'to_month_year_1':to_month_year_1,'from_chk_day':from_chk_day,'from_day':from_day_2,'from_month_year_2':from_month_year_2,'to_chk_day':to_chk_day,'to_day':to_day_2,'to_month_year_2':to_month_year_2,'result':result,'export_csv_queryset':'0'})
+        form = CdrSearchForm(initial={'from_day':from_day,'from_month_year':from_month_year,'to_day':to_day,'to_month_year':to_month_year,'result':result,'export_csv_queryset':'0'})
     
     if result == '1':
         for i in request.session['cdr_queryset']:

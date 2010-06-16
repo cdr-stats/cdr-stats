@@ -6,6 +6,7 @@ from random import *
 import string
 import urllib
 
+
 #related to date manipulation
 def relative_days(from_day,from_year):
     if from_day == 30:
@@ -21,6 +22,7 @@ def relative_days(from_day,from_year):
             relative_days=1
         return relative_days
 
+
 def uniq(inlist):
     # order preserving
     uniques = []
@@ -29,35 +31,42 @@ def uniq(inlist):
             uniques.append(item)
     return uniques
 
+
 def get_unique_id():
     """get unique id"""
     length=8
     chars="abcdefghijklmnopqrstuvwxyz1234567890"
     return ''.join([choice(chars) for i in range(length)])
 
+
 def comp_month_range():
     COMP_MONTH_LIST= ( (6,'- 6 months'),(5,'- 5 months'),(4,'- 4 months'),(3,'- 3 months'),(2,'- 2 months'),(1,'- 1 months'), )
     return COMP_MONTH_LIST
+
 
 def comp_day_range():
     COMP_DAY_LIST= ( (4,'- 4 days'),(3,'- 3 days'),(2,'- 2 days'),(1,'- 1 day'),)
     return COMP_DAY_LIST
 
+
 def date_range(start, end):
     r = (end+timedelta(days=1)-start).days
     return [start+timedelta(days=i) for i in range(r)]
+
 
 def day_range():
     DAYS = range(1,32)
     days = map(lambda x:(x,x),DAYS)
     return days
 
-def validate_days(year,month,day):
+
+def validate_days(year, month, day):
     total_days = calendar.monthrange(year,month)
     if day > total_days[1]:
         return total_days[1]
     else:
         return day
+
 
 def month_year_range():
     tday = datetime.today()
@@ -80,6 +89,7 @@ def month_year_range():
             sample_name_str = name + "-" + str_year
             m_list.append( (sample_str,sample_name_str) )
     return m_list
+
 
 # get news from http://cdr-stats.org/news.php
 def get_news():
@@ -106,6 +116,7 @@ def get_news():
     news_handler.close()
     return news_final
 
+
 #variable check with request
 def variable_value(request,field_name):
     if request.method == 'GET':
@@ -125,12 +136,17 @@ def variable_value(request,field_name):
 
 #related to string operation
 def nl2br(s):
-    return '<br />'.join(s.split('\n'))
+    return '<br/>'.join(s.split('\n'))
+
 
 def reverseString(s):
     return s[::-1]
+
 
 def int_convert_to_minute(value):
     min = int(int(value) / 60)
     sec = int(int(value) % 60)
     return "%02d" % min + ":" + "%02d" % sec
+
+
+

@@ -7,7 +7,7 @@ from django.contrib import *
 from django.contrib.admin.widgets import *
 from django.utils.translation import ugettext_lazy as _
 from uni_form.helpers import FormHelper, Submit, Reset
-from uni_form.helpers import Layout, Fieldset, Row, HTML
+from uni_form.helpers import Layout, Fieldset, Row, Column, HTML
 
 
 class LayoutTestForm(forms.Form):
@@ -116,20 +116,32 @@ class CompareCallSearchForm(CdrSearchForm):
 
 
 class CdrSearchForm(forms.Form):
-    selection_of_month_day = forms.TypedChoiceField(coerce=bool, required=False, choices=((1, 'Selection of the month'), (2, 'Selection of the day'), ),widget=forms.RadioSelect)
     
-    from_chk_month = forms.BooleanField(label="", required=False)
-    from_month_year_1= forms.ChoiceField(label=u'From :', required=False, choices=month_year_range())
-    to_chk_month = forms.BooleanField(label="", required=False)
-    to_month_year_1 = forms.ChoiceField(label=u'To :', required=False, choices=month_year_range())
-
-    from_chk_day = forms.BooleanField(label=u"", required=False)
     from_day = forms.ChoiceField(label=u'From :', required=False, choices=day_range())
-    from_month_year_2= forms.ChoiceField(label=u'', required=False, choices=month_year_range())
-    to_chk_day = forms.BooleanField(label="", required=True)
+    from_month_year = forms.ChoiceField(label=u'', required=False, choices=month_year_range())
     to_day = forms.ChoiceField(label=u'To :', required=False, choices=day_range())
-    to_month_year_2 = forms.ChoiceField(label=u'', required=False, choices=month_year_range())
+    to_month_year = forms.ChoiceField(label=u'', required=False, choices=month_year_range())
+    
     result = forms.TypedChoiceField(label=u'RESULT:', required=False, coerce=bool,choices=(('1', 'Minutes'), ('2', 'Seconds')),widget=forms.RadioSelect)
+    
+    # create the layout object
+    layout = Layout(
+                # second fieldset shows the contact info
+                Fieldset(
+                        'Search Options :',
+                        Column('from_day','from_month_year'),
+                        Column('to_day','to_month_year'),
+                        'result',
+                     )
+                )
+
+    # Attach a formHelper to your forms class.
+    helper = FormHelper()
+    helper.form_method = 'GET'
+    submit = Submit('search', 'Search')
+    helper.add_input(submit)
+    helper.use_csrf_protection = True
+    helper.add_layout(layout)
     
 class loginForm(forms.Form):
     user = forms.CharField(max_length=40, label='Login', required=True, widget=forms.TextInput(attrs={'size':'10'}))
