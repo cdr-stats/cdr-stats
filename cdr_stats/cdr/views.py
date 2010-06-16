@@ -49,8 +49,7 @@ def grid_config(request):
 def show_cdr(request): 
 
     kwargs = {}
-    if request.method == 'GET':
-        
+    if request.method == 'GET':        
         if "from_day" in request.GET:
             # From
             from_day            = int(request.GET['from_day'])
@@ -67,8 +66,23 @@ def show_cdr(request):
             to_month            = int(request.GET['to_month_year'][5:7])
             to_day              = validate_days(to_year, to_month, to_day)
             end_date            = datetime(to_year, to_month, to_day, 23, 59, 59, 999999)
-            
-            kwargs[ 'calldate__range' ] = (start_date, end_date)
+    
+    try:
+        from_day
+    except NameError:
+        #print "well, it WASN'T defined after all!"
+        tday = datetime.today()
+        from_day = 1
+        to_year = from_year = tday.year
+        to_month = from_month = tday.month
+        from_month_year = str(to_year) + '-' + str(to_month)
+        to_month_year = str(to_year) + '-' + str(to_month)
+        to_day = validate_days(tday.year,tday.month,31)
+        
+        start_date = datetime(from_year, from_month, from_day, 0, 0, 0, 0)
+        end_date = datetime(to_year, to_month, to_day)
+        
+    kwargs[ 'calldate__range' ] = (start_date, end_date)
     
     result = variable_value(request,'result')
     if result == '':
@@ -76,14 +90,10 @@ def show_cdr(request):
     request.session['cdr_queryset'] = ''
 
     select_data = {"calldate": "strftime('%%Y-%%m-%%d', calldate)"}
-    if len(kwargs) == 0:
-        request.session['cdr_queryset'] = CDR.objects.values('calldate', 'channel', 'src', 'clid', 'dst', 'disposition', 'duration').all().order_by('-calldate')
-        total_data = CDR.objects.extra(select=select_data).values('calldate').annotate(Count('calldate')).annotate(Sum('duration')).annotate(Avg('duration')).order_by('-calldate')
-        form = CdrSearchForm(initial={'result':result,'export_csv_queryset':'0'})
-    else:
-        request.session['cdr_queryset'] = CDR.objects.values('calldate', 'channel', 'src', 'clid', 'dst', 'disposition', 'duration').filter(**kwargs).order_by('-calldate')
-        total_data = CDR.objects.extra(select=select_data).values('calldate').filter(**kwargs).annotate(Count('calldate')).annotate(Sum('duration')).annotate(Avg('duration')).order_by('-calldate')
-        form = CdrSearchForm(initial={'from_day':from_day,'from_month_year':from_month_year,'to_day':to_day,'to_month_year':to_month_year,'result':result,'export_csv_queryset':'0'})
+    
+    request.session['cdr_queryset'] = CDR.objects.values('calldate', 'channel', 'src', 'clid', 'dst', 'disposition', 'duration').filter(**kwargs).order_by('-calldate')
+    total_data = CDR.objects.extra(select=select_data).values('calldate').filter(**kwargs).annotate(Count('calldate')).annotate(Sum('duration')).annotate(Avg('duration')).order_by('-calldate')
+    form = CdrSearchForm(initial={'from_day':from_day,'from_month_year':from_month_year,'to_day':to_day,'to_month_year':to_month_year,'result':result,'export_csv_queryset':'0'})
     
     if result == '1':
         for i in request.session['cdr_queryset']:
@@ -96,7 +106,7 @@ def show_cdr(request):
 
     variables = RequestContext(request, { 'form': form,
                                           'queryset': request.session['cdr_queryset'],
-                                          'total_data':total_data,
+                                          'total_data':total_data.reverse(),
                                           'total_duration':total_duration,
                                           'total_calls':total_calls,
                                           'total_avg_duration':total_avg_duration,
@@ -585,7 +595,7 @@ def form_test(request):
     else:
         form = MonthLoadSearchForm()
 
-    template = 'cdr/index2.html'
+    template = 'cdr/bluetrip.html'
     
     
     data = {

@@ -122,7 +122,7 @@ class CdrSearchForm(forms.Form):
     to_day = forms.ChoiceField(label=u'To :', required=False, choices=day_range())
     to_month_year = forms.ChoiceField(label=u'', required=False, choices=month_year_range())
     
-    result = forms.TypedChoiceField(label=u'RESULT:', required=False, coerce=bool,choices=(('1', 'Minutes'), ('2', 'Seconds')),widget=forms.RadioSelect)
+    result = forms.TypedChoiceField(label=u'Result:', required=False, coerce=bool,choices=(('1', 'Minutes'), ('2', 'Seconds')),widget=forms.RadioSelect)
     
     # create the layout object
     layout = Layout(
