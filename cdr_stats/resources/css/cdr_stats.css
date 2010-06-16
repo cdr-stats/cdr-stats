@@ -1,4 +1,7 @@
 
+img {
+    border: 0;
+}
 
 #table_load_hour, #table_call_hour, #table_call_month  {
 	display: none;
@@ -15,7 +18,7 @@ body {
 }
 
 .logo_cdrstat{
-    margin:40px 0 0 0;
+    margin:20px 0 0 0;
 }
 
 #footer {
@@ -38,7 +41,7 @@ body {
 }
 
 #main-menu-container{ 
-    width: 700px;
+    width: 570px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -53,6 +56,15 @@ body {
     width: 800px;
     margin-left: auto;
     margin-right: auto;
+}
+
+#export-container{ 
+    width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    color: #3079a9;
+    text-align: center;
+    border : 1px;
 }
 
 #cdr-container{ 
