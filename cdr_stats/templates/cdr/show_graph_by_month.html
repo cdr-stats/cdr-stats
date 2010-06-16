@@ -1,25 +1,21 @@
 {% extends "cdr/master.html" %}
 {% load cdr_extras %}
-`
+{% load uni_form_tags %}
+
 {% block extra_header %}
     {% include "cdr/visualize_header.html" %}
 {% endblock %}
 
 {% block content %}
-<form method="GET" action="." enctype="multipart/form-data">
-<div align=center style="text-align:left;border: solid #000;margin:0% 30% 5% 25%;">
-       <p>{{ form.from_month_year.label }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.from_month_year }}&nbsp;&nbsp;{{ form.comp_months.label }}&nbsp;{{ form.comp_months }}
-       </p>
-       <p>{{ form.destination.label }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.destination }}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.destination_type|removetags:"ul li"|safe }}
-       </p>
-       <p>{{ form.source.label }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.source }}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.source_type|removetags:"ul li"|safe }}
-       </p>
-       <p>{{ form.channel.label }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.channel }}
-       </p>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="Search" />&nbsp;<input type="reset" value="Clear">
+<div class="search-form">
+{% with form.helper as helper %}
+    {% uni_form form helper %}
+{% endwith %}
+
 </div>
 
-</form>
+<br/><br/>
+
 {% for month in total_month_list %}
 {{month.1}}
 {% endfor %}

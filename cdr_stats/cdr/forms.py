@@ -84,14 +84,35 @@ class MyForm(forms.Form):
 class DailyLoadSearchForm(CdrSearchForm):
     from_day = forms.ChoiceField(label=u'From', required=False, choices=day_range())
     from_month_year= forms.ChoiceField(label=u'Select day', required=False, choices=month_year_range())
-    comp_months = forms.ChoiceField(label=u'Number of months to compare', required=False, choices=comp_month_range())
+    
+    # Attach a formHelper to your forms class.
+    helper = FormHelper()
+
+    submit = Submit('search', 'Search')
+    helper.add_input(submit)
+    helper.use_csrf_protection = True
+
+    def __init__(self, *args, **kwargs):
+        super(DailyLoadSearchForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['from_day','from_month_year', 'destination', 'destination_type', 'source', 'source_type', 'channel']
     
 
 class CompareCallSearchForm(CdrSearchForm):
     from_day = forms.ChoiceField(label=u'From', required=False, choices=day_range())
     from_month_year= forms.ChoiceField(label=u'Select day', required=False, choices=month_year_range())
     comp_days = forms.ChoiceField(label=u'Number of days to compare', required=False, choices=comp_day_range())
-    graph_view=forms.ChoiceField(label=u'graph', required=False, choices=((1,'Number of calls by hours'),(2,'Minutes by hours')))
+    graph_view=forms.ChoiceField(label=u'Graph', required=False, choices=((1,'Number of calls by hours'),(2,'Minutes by hours')))
+
+    # Attach a formHelper to your forms class.
+    helper = FormHelper()
+
+    submit = Submit('search', 'Search')
+    helper.add_input(submit)
+    helper.use_csrf_protection = True
+
+    def __init__(self, *args, **kwargs):
+        super(CompareCallSearchForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['from_day','from_month_year','comp_days', 'destination', 'destination_type', 'source', 'source_type', 'channel','graph_view']
 
 
 class CdrSearchForm(forms.Form):

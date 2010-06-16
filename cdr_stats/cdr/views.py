@@ -245,11 +245,11 @@ def export_to_csv(request):
 def show_graph_by_month(request):
     
     kwargs = {}
-    if request.method == 'GET':
-        if "from_month_year" in request.GET:
-            from_month_year = request.GET['from_month_year']
-            from_year       = int(request.GET['from_month_year'][0:4])
-            from_month      = int(request.GET['from_month_year'][5:7])
+    if request.method == 'POST':
+        if "from_month_year" in request.POST:
+            from_month_year = request.POST['from_month_year']
+            from_year       = int(request.POST['from_month_year'][0:4])
+            from_month      = int(request.POST['from_month_year'][5:7])
         else:
             from_month_year = ''
             from_year       = ''
@@ -367,14 +367,14 @@ def show_graph_by_month(request):
 
 @login_required
 def show_graph_by_day(request):
-    
+
     kwargs = {}
-    if request.method == 'GET':
-        if "from_month_year" in request.GET:
-            from_day        = int(request.GET['from_day'])
-            from_month_year = request.GET['from_month_year']
-            from_year       = int(request.GET['from_month_year'][0:4])
-            from_month      = int(request.GET['from_month_year'][5:7])
+    if request.method == 'POST':
+        if "from_month_year" in request.POST:
+            from_day        = int(request.POST['from_day'])
+            from_month_year = request.POST['from_month_year']
+            from_year       = int(request.POST['from_month_year'][0:4])
+            from_month      = int(request.POST['from_month_year'][5:7])
         else:
             from_day        = ''
             from_month_year = ''
@@ -461,13 +461,14 @@ def show_graph_by_day(request):
 
 @login_required
 def show_graph_by_hour(request):
+
     kwargs = {}
-    if request.method == 'GET':
-        if "from_month_year" in request.GET:
-            from_day        = int(request.GET['from_day'])
-            from_month_year = request.GET['from_month_year']
-            from_year       = int(request.GET['from_month_year'][0:4])
-            from_month      = int(request.GET['from_month_year'][5:7])
+    if request.method == 'POST':
+        if "from_month_year" in request.POST:
+            from_day        = int(request.POST['from_day'])
+            from_month_year = request.POST['from_month_year']
+            from_year       = int(request.POST['from_month_year'][0:4])
+            from_month      = int(request.POST['from_month_year'][5:7])
         else:
             from_day        = ''
             from_month_year = ''
@@ -514,14 +515,15 @@ def show_graph_by_hour(request):
             kwargs[ 'calldate__range' ] = (start_date,end_date)
 
 
-    form = CompareCallSearchForm(initial={'from_day':from_day,'from_month_year':from_month_year,'comp_days':comp_days,'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,'graph_view':graph_view,})
+        form = CompareCallSearchForm(initial={'from_day':from_day,'from_month_year':from_month_year,'comp_days':comp_days,'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,'graph_view':graph_view,})
 
     if len(kwargs) == 0:
         tday=datetime.today()
         from_day = validate_days(tday.year,tday.month,tday.day)
-        form = CompareCallSearchForm(initial={'from_day':tday.day,'from_month_year':from_month_year,'comp_days':2,'destination':destination,'destination_type':1,'source':source,'source_type':1,'channel':channel,'graph_view':1})
+        form = CompareCallSearchForm(initial={'from_day':tday.day,'comp_days':2,'destination_type':1,'source_type':1,'graph_view':1})
         from_year=tday.year
         from_month= tday.month
+        graph_view = 1
 
         end_date = datetime(from_year, from_month, from_day)
         start_date= end_date+relativedelta(days=-2)
