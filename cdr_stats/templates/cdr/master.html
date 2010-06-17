@@ -121,9 +121,17 @@
 	    {% if errorlogin %}
             <div class="error">
                 <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
-                <strong>Alert : </strong> <!--Error login--> {{ errorlogin }}
+                <strong>Alert : </strong>  {{ errorlogin }}
             </div>
+        {% else %}
+            {% if not user.is_authenticated %}
+            <div class="error">
+                <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
+                <strong>Alert : </strong>  Please login by clicking on login button
+            </div>
+            {% endif %}
         {% endif %}
+
 		<br>
 	</div>
 	
