@@ -40,12 +40,6 @@ body {
    zoom: 1; 
 }
 
-#main-menu-container{ 
-    width: 570px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 #accordeon-container{ 
     width: 700px;
     margin-left: auto;
@@ -84,7 +78,4 @@ body {
     border: 0;
 }
 
-.header-top {
-    //background: transparent url('/resources/images/sb_header_back.png') repeat-x 0px 0px;
-}
 

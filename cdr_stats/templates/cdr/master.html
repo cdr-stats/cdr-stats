@@ -5,27 +5,33 @@
 
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <title>{% block title %}CDR Stats{% endblock %}</title>
+
+    <!-- bluetrip css -->
+    <link rel="stylesheet" href="{{MEDIA_URL}}/css/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="{{MEDIA_URL}}/css/blueprint/print.css" type="text/css" media="print" />
+    <!--[if IE]>
+    <link rel="stylesheet" href="{{MEDIA_URL}}/css/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
     
-    <link rel="stylesheet" href="{{MEDIA_URL}}/css/blueprint/screen.css" type="text/css" media="screen, projection">
-    <link rel="stylesheet" href="{{MEDIA_URL}}/css/blueprint/print.css" type="text/css" media="print">    
-    <link rel="stylesheet" href="{{MEDIA_URL}}/css/style.css" type="text/css" media="screen, projection">    
-
+    <link rel="stylesheet" href="{{MEDIA_URL}}/css/blueprint/plugins/buttons/screen.css" type="text/css" media="screen, projection" />
+    
+    <!-- jqgrid css -->
     <link rel="stylesheet" type="text/css" media="screen" href="{{MEDIA_URL}}/css/ui.jqgrid.css">
-    <link rel="stylesheet" type="text/css" media="screen" href="{{MEDIA_URL}}/css/ui.jqdock.css">
-
-    <!--[if lt IE 8]><link rel="stylesheet" href="resources/css/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
-
+    <!-- jquery UI css -->
     <link type="text/css" href="{{MEDIA_URL}}/css/cupertino/jquery-ui-1.8.1.custom.css" rel="stylesheet">  
     <link type="text/css" media="screen" href="{{MEDIA_URL}}/src/css/ui.multiselect.css" rel="stylesheet"/> 
+    
+    <!-- Custom css -->
     <link type="text/css" media="screen" href="{{MEDIA_URL}}/css/cdr_stats.css" rel="stylesheet"/> 
     <link type="text/css" media="screen" href="{{MEDIA_URL}}/css/gradient-table.css" rel="stylesheet"/> 
     
+    <!-- Javascript -->
     <script type="text/javascript" src="{{MEDIA_URL}}/js/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="{{MEDIA_URL}}/js/jquery-ui-1.8.1.custom.min.js"></script>
 
     <script src="{{MEDIA_URL}}/js/i18n/grid.locale-en.js" type="text/javascript"></script>
     <script src="{{MEDIA_URL}}/js/jquery.jqGrid.min.js" type="text/javascript"></script>
-	
+    	
 	<script src="{{MEDIA_URL}}/js/jquery.layout.js" type="text/javascript"></script> 
 	<script src="{{MEDIA_URL}}/js/i18n/grid.locale-en.js" type="text/javascript"></script> 
 	<script type="text/javascript"> 
@@ -44,19 +50,6 @@
     {{ extra_header }}
     {% endblock %}
     
-    
-</head>
-<body>
-<div class="header-top">
-
-    {% include "cdr/login.html" %}
-
-    {% block extra_head %}
-    {{ extra_head }}
-    {% endblock %}
-
-
-
     <script>
       $(document).ready(function() {
         $(".fg-button").hover(
@@ -67,21 +60,6 @@
 		        $(this).removeClass("ui-state-hover"); 
 	        }
         );
-      });  
-    </script>
-
-    <div id="main-menu-container">
-        <a href="../show_cdr/" class="fg-button ui-state-default ui-corner-all">Search CDRs</a>
-        <a href="../show_stats_by_hour/" class="fg-button ui-state-default ui-corner-all">Analyze CDRs</a>
-        <a href="../show_stats_by_day/" class="fg-button ui-state-default ui-corner-all">Daily Traffic</a>
-        <a href="../show_stats_by_month/" class="fg-button ui-state-default ui-corner-all">Monthly Traffic</a>
-        <a href="../" class="fg-button ui-state-default ui-priority-secondary ui-corner-all">Info</a>
-    </div>
-
-</div>
-
-<script type="text/javascript">
-      $(function(){
         $('#buttonlogin').click(function(){
           $("#requestlogin").animate({ height: 'show', opacity: 'show' }, 'slow');
         });
@@ -89,34 +67,74 @@
           $('#logout').submit();
         });
       });
-</script>
-<form action="/i18n/setlang/" method="post">{% csrf_token %}
-<input name="next" type="hidden" value="/" />
-<select name="language">
-{% for lang in LANGUAGES %}
-<option value="{{ lang.0 }}">{{ lang.1 }}</option>
-{% endfor %}
-</select>
-<input type="submit" value="Go" />
-</form>
-<div id="menu-container">
+    </script>
+   
+</head>
 
-<div class="container mainbox">
+<body>
 
-    <h1 align="center"><img src="{{MEDIA_URL}}/icons/office-chart-area.png" height="90"/><a href="http://www.cdr-stats.org/" target="_blank"><img class="logo_cdrstat" src="{{MEDIA_URL}}/logo/cdr-stat-small.png" border="0"/></a></h1>
+{% block extra_head %}
+    {{ extra_head }}
+{% endblock %}
+
+<div class="container">
     
-    <div class="span-24">
-    {% block content %}
-    {{ content }}
-    {% endblock %}
-    </div>
-
+	<div class="span-20">
+		<a href="http://www.cdr-stats.org/" target="_blank"><img class="logo_cdrstat" src="{{MEDIA_URL}}/logo/cdr-stat-small.png" border="0" height="70"/></a>
+	</div>
+	
+	<div class="span-4 last">
+	    <form action="/i18n/setlang/" method="post">{% csrf_token %}
+            <input name="next" type="hidden" value="/" />
+            <select name="language">
+            {% for lang in LANGUAGES %}
+            <option value="{{ lang.0 }}">{{ lang.1 }}</option>
+            {% endfor %}
+            </select>
+            <input type="submit" value="Go" />
+        </form>
+	</div>
+	
+	<div class="span-24 last">
+		<hr>
+	</div>
+	
+	<div class="span-16 prepend-4">
+		<div id="main-menu-container">
+            <a href="../show_cdr/" class="fg-button ui-state-default ui-corner-all">Search CDRs</a>
+            <a href="../show_stats_by_hour/" class="fg-button ui-state-default ui-corner-all">Analyze CDRs</a>
+            <a href="../show_stats_by_day/" class="fg-button ui-state-default ui-corner-all">Daily Traffic</a>
+            <a href="../show_stats_by_month/" class="fg-button ui-state-default ui-corner-all">Monthly Traffic</a>
+            <a href="../" class="fg-button ui-state-default ui-priority-secondary ui-corner-all">Info</a>
+        </div>
+	</div>
+	
+	<div class="span-4 last">
+		{% include "cdr/login.html" %}
+	</div>
+	
+	<div class="span-24 last">
+		<br>
+	</div>
+	
+	
+	<div class="span-24 last">
+		{% block content %}
+            {{ content }}
+        {% endblock %}
+	</div>
+	
+	<div class="span-24 last">
+	    <div id="footer">
+            Asterisk-Stat 3.0 (Swallowtail), CDR-Stats is software licensed under the 
+		    <a href="http://www.fsf.org/licensing/licenses/agpl-3.0.html" target="_blank">AGPL 3</a>. <br/>
+            Copyright (C) 2010 - Star2billing S.L. <a href="http://www.star2billing.com/" target="_blank">http://www.star2billing.com/</a>
+        </div>
+	</div>
+	
 </div>
 
 
-<div id="footer">
-Asterisk-Stat 3.0 (Swallowtail), CDR-Stats is software licensed under the <a href="http://www.fsf.org/licensing/licenses/agpl-3.0.html" target="_blank">AGPL 3</a>. <br/>
-Copyright (C) 2010 - Star2billing S.L. <a href="http://www.star2billing.com/" target="_blank">http://www.star2billing.com/</a>
-</div>
+</body>
+</html>
 
-</body></html>
