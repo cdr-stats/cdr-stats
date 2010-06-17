@@ -1,0 +1,21 @@
+    
+    <div id="openlogin" style="text-align: right;">
+        
+        {% if user.is_authenticated %}
+        <button id="buttonlogout" class="ui-button ui-button-icon-only ui-widget ui-state-default ui-corner-all" title="Button">
+            <span class="ui-button-icon-primary ui-icon ui-icon-unlocked"></span>
+            <span class="ui-button-text">Logout</span>
+        </button>
+        <form id="logout" action="/logout/" method="post">
+        {% csrf_token %}
+          <input type="hidden" name="action" value="logout" />
+        </form>
+
+        {% else %}
+        <button id="buttonlogin" class="ui-button ui-button-icon-only ui-widget ui-state-default ui-corner-all" title="Button">
+            <span class="ui-button-icon-primary ui-icon ui-icon-locked"></span>
+            <span class="ui-button-text">Login</span>
+        </button>
+        {% endif %}
+
+    </div>

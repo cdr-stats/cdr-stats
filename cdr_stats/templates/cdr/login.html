@@ -13,28 +13,7 @@
     
     
 {% block login %}
-  <div id="openlogin" style="text-align: right;">
-    
-    {% if user.is_authenticated %}
-    <button id="buttonlogout" class="ui-button ui-button-icon-only ui-widget ui-state-default ui-corner-all" title="Button">
-        <span class="ui-button-icon-primary ui-icon ui-icon-unlocked"></span>
-        <span class="ui-button-text">Logout</span>
-    </button>
-    <form id="logout" action="/logout/" method="post">
-    {% csrf_token %}
-      <input type="hidden" name="action" value="logout" />
-    </form>
-
-    {% else %}
-    <button id="buttonlogin" class="ui-button ui-button-icon-only ui-widget ui-state-default ui-corner-all" title="Button">
-        <span class="ui-button-icon-primary ui-icon ui-icon-locked"></span>
-        <span class="ui-button-text">Login</span>
-    </button>
-    {% endif %}
-
-  </div>
-
-   <div id="requestlogin" style="margin: 10px; padding: 10px;  width: 400px; height: 30px; margin-left: 70%; display: none;" class="ui-widget ui-widget-content ui-corner-all">
+   <div id="requestlogin" style="margin: 10px; padding: 10px;  width: 400px; height: 30px; margin-left: auto; display: none;" class="ui-widget ui-widget-content ui-corner-all">
      <form action="/login/" method="post">
          {% csrf_token %}
          {% for field in loginform %}
@@ -45,9 +24,7 @@
         {% endfor %}
          <input type="submit" value="login" class="ui-state-default ui-corner-all" style="margin: 5px;">
      </form>
-    </div>
-
-
+   </div>
 
 
 {% endblock login %}
