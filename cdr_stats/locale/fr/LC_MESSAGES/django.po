@@ -8,7 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
+<<<<<<< HEAD
 "POT-Creation-Date: 2010-06-17 18:02+0200\n"
+=======
+"POT-Creation-Date: 2010-06-17 21:34+0530\n"
+>>>>>>> 9b8e1bbbe760f87c8544ee7b82f4a6ed809ba72e
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,6 +41,7 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
+<<<<<<< HEAD
 #: cdr/models.py:7
 msgid "ANSWER"
 msgstr ""
@@ -81,16 +86,23 @@ msgstr "Utilisateur desactive"
 msgid "Invalid Login."
 msgstr "Nom d'utilisateur incorrect"
 
+=======
+>>>>>>> 9b8e1bbbe760f87c8544ee7b82f4a6ed809ba72e
 #: templates/cdr/index.html:21
-msgid " Info "
+msgid "Info"
 msgstr ""
 
 #: templates/cdr/index.html:25
+#, fuzzy
 msgid ""
 "is an open source application that allows you to browse and analyze your "
-"CDRs (Call Details Record). "
+"CDRs (Call Details Record)."
 msgstr ""
+<<<<<<< HEAD
 "est une application open source qui vous permet de parcourir et d'analyser "
+=======
+"Est une application open source qui vous permet de parcourir et d'analyser "
+>>>>>>> 9b8e1bbbe760f87c8544ee7b82f4a6ed809ba72e
 "votreCDR (Call Details Record)."
 
 #: templates/cdr/index.html:26
@@ -126,32 +138,28 @@ msgid "Download"
 msgstr "Télécharger"
 
 #: templates/cdr/index.html:43
-msgid ""
-"\n"
-"        Please visit  "
+#, fuzzy
+msgid "Please visit"
 msgstr ""
 "\n"
 "        S'il vous plaît visitez"
 
-#: templates/cdr/index.html:45
-msgid ""
-"\n"
-"        and download the last stable release."
+#: templates/cdr/index.html:44
+#, fuzzy
+msgid "and download the last stable release."
 msgstr ""
 "\n"
 "        Et télécharger la dernière version stable."
 
-#: templates/cdr/index.html:56
+#: templates/cdr/index.html:54
 msgid "Support"
 msgstr "Soutien"
 
-#: templates/cdr/index.html:59
+#: templates/cdr/index.html:57
+#, fuzzy
 msgid ""
-"\n"
-"        Star2Billing S.L. offers consultancy including installation, "
-"training and customisation on all of its products, and CDR-Stats is no "
-"exception.\n"
-"        "
+"Star2Billing S.L. offers consultancy including installation, training and "
+"customisation on all of its products, and CDR-Stats is no exception."
 msgstr ""
 "\n"
 "        Star2Billing S.L. offre de conseil y compris l'installation, La "
@@ -159,6 +167,7 @@ msgstr ""
 "Stats est pasexception.\n"
 "        "
 
+<<<<<<< HEAD
 #: templates/cdr/index.html:63
 msgid ""
 "\n"
@@ -185,24 +194,30 @@ msgstr ""
 "        Contactez-nous au "
 
 #: templates/cdr/index.html:69
+=======
+#: templates/cdr/index.html:62
+#, fuzzy
+msgid "Contact us at"
+msgstr "Contactez-nous"
+
+#: templates/cdr/index.html:62
+>>>>>>> 9b8e1bbbe760f87c8544ee7b82f4a6ed809ba72e
 msgid "for more information"
 msgstr "Pour plus d'informations"
 
-#: templates/cdr/index.html:75
+#: templates/cdr/index.html:68
 msgid "News"
 msgstr "Nouvelles"
 
-#: templates/cdr/index.html:105
+#: templates/cdr/index.html:98
 msgid "Contact Us"
 msgstr "Contactez-nous"
 
-#: templates/cdr/index.html:108
+#: templates/cdr/index.html:101
+#, fuzzy
 msgid ""
-"\n"
-"        Star2Billing S.L. was formed to provide commercial support, "
-"installation and training to telecommunications companies that wished to "
-"deploy A2Billing.\n"
-"        "
+"Star2Billing S.L. was formed to provide commercial support, installation and "
+"training to telecommunications companies that wished to deploy A2Billing."
 msgstr ""
 "\n"
 "        Star2Billing S.L. a été créé pour fournir un soutien commercial, "
@@ -210,6 +225,7 @@ msgstr ""
 "souhaitentA2Billing déployer.\n"
 "        "
 
+<<<<<<< HEAD
 #: templates/cdr/index.html:112
 msgid ""
 "\n"
@@ -246,3 +262,65 @@ msgstr ""
 "l'analyseurPour Asterisk, et a été inclus dans FreePBX pour afficher et "
 "analyser les CDR. \n"
 "        "
+=======
+#: templates/cdr/index.html:104
+#, fuzzy
+msgid "for more details."
+msgstr " Pour plus de détails."
+
+#~ msgid ""
+#~ "\n"
+#~ "        Purchasing consultancy is a good way to help support the "
+#~ "development of CDR-Stats, and from the customer's point of view can speed "
+#~ "the time\n"
+#~ "        of deployment, leaving them free to concentrate on more "
+#~ "profitable and productive tasks.\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "        Conseil d'achat est un bon moyen pour aider à soutenir le "
+#~ "développementDe CDR-Stats, et du point de vue du client peut accélérer le "
+#~ "temps \n"
+#~ "De déploiement, les laissant libres de se concentrer sur la rentabilitéEt "
+#~ "productive tâches. \n"
+#~ "        "
+
+#~ msgid ""
+#~ "\n"
+#~ "        Contact us at "
+#~ msgstr ""
+#~ "\n"
+#~ "        Contactez-nous au "
+
+#~ msgid ""
+#~ "\n"
+#~ "        A2Billing is both a Telecoms Switch and a Billing Platform for "
+#~ "those wishing to deploy telecoms services such as VoIP, calling cards and "
+#~ "callback, \n"
+#~ "        as well as a variety of other products. Please see "
+#~ msgstr ""
+#~ "\n"
+#~ "        A2Billing est à la fois un commutateur de télécommunications et "
+#~ "une plateforme de facturation pour lesDésireux de déployer des services "
+#~ "de télécommunications tels que la VoIP, cartes de visite et deRappel, \n"
+#~ "Ainsi qu'une variété d'autres produits. S'il vous plaît voir"
+
+#~ msgid ""
+#~ "\n"
+#~ "        CDR-Stats is the latest piece of software development from the "
+#~ "Star2Billing stable, and is a complete ground up re-write of the famous "
+#~ "Asterisk-Stat,  \n"
+#~ "        which has been around for over 7 years as a CDR viewer and "
+#~ "analyser for Asterisk, and has been included in FreePBX to view and "
+#~ "analyse CDR.\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "        CDR-Stats est le dernier morceau de développement de logiciels de "
+#~ "la Star2Billing stable, et est un sol complet jusqu'à réécrire de la "
+#~ "fameuse Asterisk-Stat, \n"
+#~ "        Qui a été autour depuis plus de 7 ans en tant que lecteur CDR et "
+#~ "de l'analyseurPour Asterisk, et a été inclus dans FreePBX pour afficher "
+#~ "et analyser les CDR. \n"
+#~ "        "
+>>>>>>> 9b8e1bbbe760f87c8544ee7b82f4a6ed809ba72e
