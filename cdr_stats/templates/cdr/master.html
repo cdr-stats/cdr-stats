@@ -113,7 +113,13 @@
 		{% include "cdr/login.html" %}
 	</div>
 	
-	<div class="span-24 last">
+	<div class="span-14 prepend-4 append-6 last">
+	    {% if errorlogin %}
+            <div class="error">
+                <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
+                <strong>Alert : </strong> <!--Error login--> {{ errorlogin }}
+            </div>
+        {% endif %}
 		<br>
 	</div>
 	
