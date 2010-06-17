@@ -18,7 +18,7 @@ class LayoutTestForm(forms.Form):
     password2 = forms.CharField(label="re-enter password", max_length=30, required=True, widget=forms.PasswordInput())
     first_name = forms.CharField(label="first name", max_length=30, required=True, widget=forms.TextInput())
     last_name = forms.CharField(label="last name", max_length=30, required=True, widget=forms.TextInput())
-    source_type = forms.TypedChoiceField(coerce=bool,choices=((1, 'Exact'), (2, 'Begins with'), (3, 'Contains'), (4, 'Ends with')),widget=forms.RadioSelect)
+    source_type = forms.TypedChoiceField(coerce=bool,choices=((1, 'Equals'), (2, 'Begins with'), (3, 'Contains'), (4, 'Ends with')),widget=forms.RadioSelect)
     
     # Attach a formHelper to your forms class.
     helper = FormHelper()
@@ -46,9 +46,9 @@ class LayoutTestForm(forms.Form):
 
 class CdrSearchForm(forms.Form):
     destination = forms.CharField(label=u'Destination', required=False, widget=forms.TextInput(attrs={'size': 15}))
-    destination_type = forms.TypedChoiceField(coerce=bool, required=False, choices=((1, 'Exact'), (2, 'Begins with'), (3, 'Contains'), (4, 'Ends with')),widget=forms.RadioSelect)
+    destination_type = forms.TypedChoiceField(coerce=bool, required=False, choices=((1, 'Equals'), (2, 'Begins with'), (3, 'Contains'), (4, 'Ends with')),widget=forms.RadioSelect)
     source = forms.CharField(label=u'Source', required=False, widget=forms.TextInput(attrs={'size': 15}))
-    source_type = forms.TypedChoiceField(coerce=bool, required=False, choices=((1, 'Exact'), (2, 'Begins with'), (3, 'Contains'), (4, 'Ends with')),widget=forms.RadioSelect)
+    source_type = forms.TypedChoiceField(coerce=bool, required=False, choices=((1, 'Equals'), (2, 'Begins with'), (3, 'Contains'), (4, 'Ends with')),widget=forms.RadioSelect)
     channel = forms.CharField(label=u'Channel', required=False, widget=forms.TextInput(attrs={'size': 15}))
 
 

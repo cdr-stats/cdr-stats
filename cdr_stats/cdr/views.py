@@ -24,7 +24,10 @@ from uni_form.helpers import FormHelper, Submit, Reset
 from django.utils.translation import gettext as _
 
 
+
+
 # Create your views here.
+@login_required
 def grid_handler(request):
     # handles pagination, sorting and searching
     grid = ExampleGrid()
@@ -34,7 +37,7 @@ def grid_handler(request):
 
     return HttpResponse(grid.get_json(request), mimetype="application/json")
 
-
+@login_required
 def grid_config(request):
     # build a config suitable to pass to jqgrid constructor
     grid = ExampleGrid()
@@ -581,7 +584,7 @@ def index(request):
     reset = Reset('reset','reset button')
     helper.add_input(reset)
     helper.use_csrf_protection = True
-    
+
     data = {
         'loginform' : loginform,
         'testform' : form,

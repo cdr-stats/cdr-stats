@@ -5,6 +5,7 @@ from cdr.views import *
 
 urlpatterns = patterns('',
     (r'^$', 'cdr.views.index'),
-    #url (r'^examplegrid/$', grid_handler, name='grid_handler'),
+    
+    #url (r'^examplegrid/$', grid_handler, name='grid_handler2'),
 )
 

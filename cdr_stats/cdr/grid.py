@@ -1,14 +1,13 @@
-from django.core.urlresolvers import reverse
 from cdr.models import CDR
-from jqgrid import JqGrid
+from jqgrid import *
+from cdr.views import *
 from django.utils.translation import gettext as _
+
 
 class ExampleGrid(JqGrid):
     model = CDR # could also be a queryset
     #queryset = CDR.objects.values('calldate','channel', 'src','clid', 'dst','disposition','duration').all()#filter(duration='30')
     fields = ['calldate','channel', 'src','clid', 'dst','disposition','duration'] # optional
-    #url = reverse('grid_handler')
-    url = 'http://127.0.0.1:8000/examplegrid/'
     caption = _('Call Detail Records') # optional
     colmodel_overrides = {
         'calldate'   :{'label': _('Call Date'), 'width':50 },

@@ -37,6 +37,7 @@ from django.http import Http404
 #from util.json import json_encode
 from cdr_stats.helpers import json_encode
 from cdr.models import CDR
+from django.core.urlresolvers import reverse
 
 class JqGrid(object):
     queryset = None
@@ -221,7 +222,8 @@ class JqGrid(object):
         return config
 
     def get_url(self):
-        return self.url
+        #return self.url
+        return reverse('grid_handler')
 
     def get_caption(self):
         if self.caption is None:
@@ -231,7 +233,7 @@ class JqGrid(object):
 
     def get_config(self, as_json=True):
         config = self.get_default_config()
-        config.update({        
+        config.update({
             'url': self.get_url(),
             'caption': self.get_caption(),
             'colModel': self.get_colmodels(),            
