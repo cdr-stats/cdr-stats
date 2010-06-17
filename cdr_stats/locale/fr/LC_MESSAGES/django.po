@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-15 23:12+0530\n"
+"POT-Creation-Date: 2010-06-17 21:34+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,17 +17,38 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n>1;\n"
 
+#: settings.py:119
+msgid "English"
+msgstr ""
+
+#: settings.py:120
+msgid "French"
+msgstr ""
+
+#: settings.py:121
+msgid "German"
+msgstr ""
+
+#: settings.py:122
+msgid "Spanish"
+msgstr ""
+
+#: cdr/forms.py:72
+msgid "Title"
+msgstr ""
+
 #: templates/cdr/index.html:21
-msgid " Info "
+msgid "Info"
 msgstr ""
 
 #: templates/cdr/index.html:25
+#, fuzzy
 msgid ""
 "is an open source application that allows you to browse and analyze your "
-"CDRs (Call Details Record). "
+"CDRs (Call Details Record)."
 msgstr ""
-"Est une application open source qui vous permet de parcourir et d'analyser votre"
-"CDR (Call Details Record)."
+"Est une application open source qui vous permet de parcourir et d'analyser "
+"votreCDR (Call Details Record)."
 
 #: templates/cdr/index.html:26
 msgid "Different reporting tools are provided :"
@@ -38,144 +59,145 @@ msgid ""
 "Monthly Report : summarize your monthly traffic and allow you to have a "
 "monthly vision of your traffic load."
 msgstr ""
-"Rapport mensuel: résumer votre trafic mensuel et vous permettra d'avoir un"
-"La vision mensuel de votre charge de trafic."
+"Rapport mensuel: résumer votre trafic mensuel et vous permettra d'avoir unLa "
+"vision mensuel de votre charge de trafic."
 
 #: templates/cdr/index.html:29
 msgid ""
 "Analyze CDR : This report allows you to compare your traffic with previous "
 "day and study the volum variation on your server"
 msgstr ""
-"Analyser CDR: Ce rapport vous permet de comparer le trafic avec le précédent"
-"Jour et étudier la variation volum sur votre serveur"
+"Analyser CDR: Ce rapport vous permet de comparer le trafic avec le "
+"précédentJour et étudier la variation volum sur votre serveur"
 
 #: templates/cdr/index.html:30
 msgid ""
 "Daily Traffic : give you a day by day vision and let you see how many calls "
 "are running each hours"
 msgstr ""
-"Trafic quotidien: vous donner une vision de jour en jour et vous permettent de voir combien d'appels"
-"Sont en cours d'exécution de chaque heures"
+"Trafic quotidien: vous donner une vision de jour en jour et vous permettent "
+"de voir combien d'appelsSont en cours d'exécution de chaque heures"
 
 #: templates/cdr/index.html:40
 msgid "Download"
 msgstr "Télécharger"
 
 #: templates/cdr/index.html:43
-msgid ""
-"\n"
-"        Please visit  "
+#, fuzzy
+msgid "Please visit"
 msgstr ""
 "\n"
 "        S'il vous plaît visitez"
 
-#: templates/cdr/index.html:45
-msgid ""
-"\n"
-"        and download the last stable release."
+#: templates/cdr/index.html:44
+#, fuzzy
+msgid "and download the last stable release."
 msgstr ""
 "\n"
 "        Et télécharger la dernière version stable."
 
-#: templates/cdr/index.html:56
+#: templates/cdr/index.html:54
 msgid "Support"
 msgstr "Soutien"
 
-#: templates/cdr/index.html:59
+#: templates/cdr/index.html:57
+#, fuzzy
 msgid ""
-"\n"
-"        Star2Billing S.L. offers consultancy including installation, "
-"training and customisation on all of its products, and CDR-Stats is no "
-"exception.\n"
-"        "
+"Star2Billing S.L. offers consultancy including installation, training and "
+"customisation on all of its products, and CDR-Stats is no exception."
 msgstr ""
 "\n"
-"        Star2Billing S.L. offre de conseil y compris l'installation, "
-"La formation et de personnalisation sur l'ensemble de ses produits, et le CDR-Stats est pas"
-"exception.\n"
+"        Star2Billing S.L. offre de conseil y compris l'installation, La "
+"formation et de personnalisation sur l'ensemble de ses produits, et le CDR-"
+"Stats est pasexception.\n"
 "        "
 
-#: templates/cdr/index.html:63
-msgid ""
-"\n"
-"        Purchasing consultancy is a good way to help support the development "
-"of CDR-Stats, and from the customer's point of view can speed the time\n"
-"        of deployment, leaving them free to concentrate on more profitable "
-"and productive tasks.\n"
-"        "
-msgstr ""
-"\n"
-"        Conseil d'achat est un bon moyen pour aider à soutenir le développement"
-"De CDR-Stats, et du point de vue du client peut accélérer le temps \n"
-"De déploiement, les laissant libres de se concentrer sur la rentabilité"
-"Et productive tâches. \n"
-"        "
+#: templates/cdr/index.html:62
+#, fuzzy
+msgid "Contact us at"
+msgstr "Contactez-nous"
 
-#: templates/cdr/index.html:68
-msgid ""
-"\n"
-"        Contact us at "
-msgstr ""
-"\n"
-"        Contactez-nous au "
-#: templates/cdr/index.html:69
+#: templates/cdr/index.html:62
 msgid "for more information"
 msgstr "Pour plus d'informations"
 
-#: templates/cdr/index.html:75
+#: templates/cdr/index.html:68
 msgid "News"
 msgstr "Nouvelles"
 
-#: templates/cdr/index.html:105
+#: templates/cdr/index.html:98
 msgid "Contact Us"
 msgstr "Contactez-nous"
 
-#: templates/cdr/index.html:108
+#: templates/cdr/index.html:101
+#, fuzzy
 msgid ""
-"\n"
-"        Star2Billing S.L. was formed to provide commercial support, "
-"installation and training to telecommunications companies that wished to "
-"deploy A2Billing.\n"
-"        "
+"Star2Billing S.L. was formed to provide commercial support, installation and "
+"training to telecommunications companies that wished to deploy A2Billing."
 msgstr ""
 "\n"
 "        Star2Billing S.L. a été créé pour fournir un soutien commercial, "
-"Installation et de formation pour les entreprises de télécommunications qui souhaitent"
-"A2Billing déployer.\n"
+"Installation et de formation pour les entreprises de télécommunications qui "
+"souhaitentA2Billing déployer.\n"
 "        "
 
-#: templates/cdr/index.html:112
-msgid ""
-"\n"
-"        A2Billing is both a Telecoms Switch and a Billing Platform for those "
-"wishing to deploy telecoms services such as VoIP, calling cards and "
-"callback, \n"
-"        as well as a variety of other products. Please see "
-msgstr ""
-"\n"
-"        A2Billing est à la fois un commutateur de télécommunications et une plateforme de facturation pour les"
-"Désireux de déployer des services de télécommunications tels que la VoIP, cartes de visite et de"
-"Rappel, \n"
-"Ainsi qu'une variété d'autres produits. S'il vous plaît voir"
-
-#: templates/cdr/index.html:114
-msgid " for more details."
+#: templates/cdr/index.html:104
+#, fuzzy
+msgid "for more details."
 msgstr " Pour plus de détails."
 
-#: templates/cdr/index.html:117
-msgid ""
-"\n"
-"        CDR-Stats is the latest piece of software development from the "
-"Star2Billing stable, and is a complete ground up re-write of the famous "
-"Asterisk-Stat,  \n"
-"        which has been around for over 7 years as a CDR viewer and analyser "
-"for Asterisk, and has been included in FreePBX to view and analyse CDR.\n"
-"        "
-msgstr ""
-"\n"
-"        CDR-Stats est le dernier morceau de développement de logiciels de la "
-"Star2Billing stable, et est un sol complet jusqu'à réécrire de la fameuse "
-"Asterisk-Stat, \n"
-"        Qui a été autour depuis plus de 7 ans en tant que lecteur CDR et de l'analyseur"
-"Pour Asterisk, et a été inclus dans FreePBX pour afficher et analyser les CDR. \n"
-"        "
+#~ msgid ""
+#~ "\n"
+#~ "        Purchasing consultancy is a good way to help support the "
+#~ "development of CDR-Stats, and from the customer's point of view can speed "
+#~ "the time\n"
+#~ "        of deployment, leaving them free to concentrate on more "
+#~ "profitable and productive tasks.\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "        Conseil d'achat est un bon moyen pour aider à soutenir le "
+#~ "développementDe CDR-Stats, et du point de vue du client peut accélérer le "
+#~ "temps \n"
+#~ "De déploiement, les laissant libres de se concentrer sur la rentabilitéEt "
+#~ "productive tâches. \n"
+#~ "        "
+
+#~ msgid ""
+#~ "\n"
+#~ "        Contact us at "
+#~ msgstr ""
+#~ "\n"
+#~ "        Contactez-nous au "
+
+#~ msgid ""
+#~ "\n"
+#~ "        A2Billing is both a Telecoms Switch and a Billing Platform for "
+#~ "those wishing to deploy telecoms services such as VoIP, calling cards and "
+#~ "callback, \n"
+#~ "        as well as a variety of other products. Please see "
+#~ msgstr ""
+#~ "\n"
+#~ "        A2Billing est à la fois un commutateur de télécommunications et "
+#~ "une plateforme de facturation pour lesDésireux de déployer des services "
+#~ "de télécommunications tels que la VoIP, cartes de visite et deRappel, \n"
+#~ "Ainsi qu'une variété d'autres produits. S'il vous plaît voir"
+
+#~ msgid ""
+#~ "\n"
+#~ "        CDR-Stats is the latest piece of software development from the "
+#~ "Star2Billing stable, and is a complete ground up re-write of the famous "
+#~ "Asterisk-Stat,  \n"
+#~ "        which has been around for over 7 years as a CDR viewer and "
+#~ "analyser for Asterisk, and has been included in FreePBX to view and "
+#~ "analyse CDR.\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "        CDR-Stats est le dernier morceau de développement de logiciels de "
+#~ "la Star2Billing stable, et est un sol complet jusqu'à réécrire de la "
+#~ "fameuse Asterisk-Stat, \n"
+#~ "        Qui a été autour depuis plus de 7 ans en tant que lecteur CDR et "
+#~ "de l'analyseurPour Asterisk, et a été inclus dans FreePBX pour afficher "
+#~ "et analyser les CDR. \n"
+#~ "        "
