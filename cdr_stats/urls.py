@@ -35,7 +35,7 @@ urlpatterns = patterns('',
     # Jqgrid
     
     url (r'^examplegrid/$', grid_handler, name='grid_handler'),
-	url (r'^examplegrid/cfg/$', grid_config, name='grid_config'),
+    url (r'^examplegrid/cfg/$', grid_config, name='grid_config'),
 	
 	(r'^show_cdr/$',   'cdr.views.show_cdr'),
     (r'^export_csv/$',   'cdr.views.export_to_csv'),
