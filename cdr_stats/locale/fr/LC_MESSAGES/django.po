@@ -26,7 +26,7 @@ msgid ""
 "is an open source application that allows you to browse and analyze your "
 "CDRs (Call Details Record). "
 msgstr ""
-"Est une application open source qui vous permet de parcourir et d'analyser votre"
+"est une application open source qui vous permet de parcourir et d'analyser votre"
 "CDR (Call Details Record)."
 
 #: templates/cdr/index.html:26
