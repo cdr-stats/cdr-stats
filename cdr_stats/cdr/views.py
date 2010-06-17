@@ -98,11 +98,17 @@ def show_cdr(request):
     if result == '1':
         for i in request.session['cdr_queryset']:
             i['duration'] = int_convert_to_minute(int(i['duration']))
-    
-    max_duration = max([x['duration__sum'] for x in total_data])
-    total_duration = sum([x['duration__sum'] for x in total_data])
-    total_calls = sum([x['calldate__count'] for x in total_data])
-    total_avg_duration = (sum([x['duration__avg'] for x in total_data]))/total_data.count()    
+
+    if total_data.count() != 0:
+        max_duration = max([x['duration__sum'] for x in total_data])
+        total_duration = sum([x['duration__sum'] for x in total_data])
+        total_calls = sum([x['calldate__count'] for x in total_data])
+        total_avg_duration = (sum([x['duration__avg'] for x in total_data]))/total_data.count()
+    else:
+        max_duration = 0
+        total_duration = 0
+        total_calls = 0
+        total_avg_duration = 0
 
     variables = RequestContext(request, { 'form': form,
                                           'queryset': request.session['cdr_queryset'],
