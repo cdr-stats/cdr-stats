@@ -1,6 +1,7 @@
 from django.core.urlresolvers import reverse
 from cdr.models import CDR
 from jqgrid import JqGrid
+from django.utils.translation import gettext as _
 
 class ExampleGrid(JqGrid):
     model = CDR # could also be a queryset
@@ -8,14 +9,14 @@ class ExampleGrid(JqGrid):
     fields = ['calldate','channel', 'src','clid', 'dst','disposition','duration'] # optional
     #url = reverse('grid_handler')
     url = 'http://127.0.0.1:8000/examplegrid/'
-    caption = 'Call Detail Records' # optional
+    caption = _('Call Detail Records') # optional
     colmodel_overrides = {
-        'calldate'   :{'label':'Call Date', 'width':50 },
-        'channel'    :{'label':'Channel', 'width':50  },
-        'src'        :{'label':'Source', 'width':50  },
-        'clid'       :{'label':'Clid', 'width':50  },
-        'dst'        :{'label':'Destination', 'width':50 },
-        'disposition':{'label':'Disposition', 'width':50 },
-        'duration'   :{'label':'Duration', 'width':50  },
+        'calldate'   :{'label': _('Call Date'), 'width':50 },
+        'channel'    :{'label': _('Channel'), 'width':50  },
+        'src'        :{'label': _('Source'), 'width':50  },
+        'clid'       :{'label': _('Clid'), 'width':50  },
+        'dst'        :{'label': _('Destination'), 'width':50 },
+        'disposition':{'label': _('Disposition'), 'width':50 },
+        'duration'   :{'label': _('Duration'), 'width':50  },
     }
 

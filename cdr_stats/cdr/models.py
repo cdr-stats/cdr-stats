@@ -1,17 +1,18 @@
 from django.db import models
 from django.db.models import permalink
+from django.utils.translation import gettext_lazy as _
 
 
 DISPOSITION = (
-    (1, 'ANSWER'),
-    (2, 'BUSY'),
-    (3, 'NOANSWER'),
-    (4, 'CANCEL'),
-    (5, 'CONGESTION'),
-    (6, 'CHANUNAVAIL'),
-    (7, 'DONTCALL'),
-    (8, 'TORTURE'),
-    (9, 'INVALIDARGS'),
+    (1, _('ANSWER')),
+    (2, _('BUSY')),
+    (3, _('NOANSWER')),
+    (4, _('CANCEL')),
+    (5, _('CONGESTION')),
+    (6, _('CHANUNAVAIL')),
+    (7, _('DONTCALL')),
+    (8, _('TORTURE')),
+    (9, _('INVALIDARGS')),
 )
 
 class CDR(models.Model):

@@ -21,7 +21,7 @@ from django.db.models.loading import get_model
 from operator import *
 from cdr_stats.helpers import json_encode
 from uni_form.helpers import FormHelper, Submit, Reset
-
+from django.utils.translation import gettext as _
 
 
 # Create your views here.
@@ -537,12 +537,15 @@ def login_view(request):
                         # Redirect to a success page.
                     else:
                         # Return a 'disabled account' error message
-                        errorlogin = 'Disabled Account' #True
+                        errorlogin = _('Disabled Account') #True
                 else:
                     # Return an 'invalid login' error message.
-                    errorlogin = 'Invalid Login.'#True
+                    errorlogin = _('Invalid Login.') #True
             else:
                 return HttpResponseRedirect('/')
+    else :
+        loginform = None;
+
     data = {
         'loginform' : loginform,
         'errorlogin' : errorlogin,
@@ -585,7 +588,6 @@ def index(request):
         'testformhelper' : helper,
         'errorlogin' : errorlogin,
         'news':get_news(),
-        #'is_authenticated' : request.user.is_authenticated()
     }
     return render_to_response(template, data,
            context_instance = RequestContext(request))
