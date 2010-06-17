@@ -78,4 +78,10 @@ body {
     border: 0;
 }
 
+a {color:#17598A;}
+a:focus, a:hover {color:#2779AA;}
+
+body, .ui-widget-header  {
+    color:#17598A;
+}
 
