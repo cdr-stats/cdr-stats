@@ -3,7 +3,7 @@
 CDR-Stats 
 -----------
 
-    CDR-Stats is a CDR viewer for Asterisk Call Data Records. It allows you to 
+    CDR-Stats is a CDR viewer for Asterisk/Freeswitch Call Data Records. It allows you to 
     interrogate your CDR to provide reports and statistics via a simple to 
     use, yet powerful, web interface.
 
@@ -38,4 +38,8 @@ Support
     
     
     
+Translation
+-------------
     
+    We are using myGengo to ease the translation >
+    http://mygengo.com/string/p/cdr-stats-1/

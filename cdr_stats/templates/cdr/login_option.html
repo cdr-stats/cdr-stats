@@ -1,3 +1,4 @@
+{% load i18n %}
     
     <div id="openlogin" style="text-align: right;">
         
@@ -14,7 +15,7 @@
         {% else %}
         <button id="buttonlogin" class="ui-button ui-button-icon-only ui-widget ui-state-default ui-corner-all" title="Button">
             <span class="ui-button-icon-primary ui-icon ui-icon-locked"></span>
-            <span class="ui-button-text">Login</span>
+            <span class="ui-button-text">{% trans "Login"  %}</span>
         </button>
         {% endif %}
 

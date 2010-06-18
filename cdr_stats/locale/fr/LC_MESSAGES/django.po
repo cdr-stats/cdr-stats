@@ -1,5 +1,5 @@
 # CDR-Stats - PO File
-# Copyright (C) 2010 - Star2Billing S.L. 
+# Copyright (C) 2010 - Star2Billing S.L.
 # This file is distributed under the same license as the CDR-Stats application.
 # Areski Belaid <areski@gmail.com>, 2010.
 #
@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-18 13:55+0200\n"
+"POT-Creation-Date: 2010-06-18 15:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Areski Belaid <areski@gmail.com>\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -18,268 +18,387 @@ msgstr ""
 
 #: settings.py:119
 msgid "English"
-msgstr ""
+msgstr "Anglais"
 
 #: settings.py:120
 msgid "French"
-msgstr ""
+msgstr "Français"
 
 #: settings.py:121
 msgid "Spanish"
-msgstr ""
+msgstr "Espagnol"
 
 #: cdr/forms.py:16 cdr/grid.py:17
 msgid "Destination"
-msgstr ""
+msgstr "Destination"
 
 #: cdr/forms.py:18 cdr/forms.py:22
 msgid "Equals"
-msgstr ""
+msgstr "Egale"
 
 #: cdr/forms.py:18 cdr/forms.py:22
 msgid "Begins with"
-msgstr ""
+msgstr "Commence par"
 
 #: cdr/forms.py:18 cdr/forms.py:22
 msgid "Contains"
-msgstr ""
+msgstr "Contient"
 
 #: cdr/forms.py:18 cdr/forms.py:22
 msgid "Ends with"
-msgstr ""
+msgstr "Termine par"
 
 #: cdr/forms.py:20 cdr/grid.py:15
 msgid "Source"
-msgstr ""
+msgstr "Source"
 
 #: cdr/forms.py:29
 msgid "Select month"
-msgstr ""
+msgstr "Sélectionner le mois"
 
 #: cdr/forms.py:30
 msgid "Number of months to compare"
-msgstr ""
+msgstr "Nombre de mois a comparer"
 
 #: cdr/forms.py:35 cdr/forms.py:52 cdr/forms.py:72 cdr/forms.py:105
 msgid "Search"
-msgstr ""
+msgstr "Recherche"
 
 #: cdr/forms.py:46
 msgid "From"
-msgstr ""
+msgstr "À partir de"
 
 #: cdr/forms.py:47 cdr/forms.py:64
 msgid "Select day"
-msgstr ""
+msgstr "Choisissez le jour"
 
 #: cdr/forms.py:65
 msgid "Number of days to compare"
-msgstr ""
+msgstr "Nombre de jours a comparer"
 
 #: cdr/forms.py:66
 msgid "Graph"
-msgstr ""
+msgstr "Graphique"
 
 #: cdr/forms.py:67
 msgid "Number of calls by hours"
-msgstr ""
+msgstr "Nombre d&#39;appels selon les heures"
 
 #: cdr/forms.py:67
 msgid "Minutes by hours"
-msgstr ""
+msgstr "Minutes par heures"
 
 #: cdr/forms.py:83
 msgid "From :"
-msgstr ""
+msgstr "De:"
 
 #: cdr/forms.py:85
 msgid "To :"
-msgstr ""
+msgstr "Pour:"
 
 #: cdr/forms.py:88
 msgid "Result:"
-msgstr ""
+msgstr "Résultat:"
 
 #: cdr/forms.py:89
 msgid "Minutes"
-msgstr ""
+msgstr "Minutes"
 
 #: cdr/forms.py:89
 msgid "Seconds"
-msgstr ""
+msgstr "Secondes"
 
 #: cdr/forms.py:95
 msgid "Search Options :"
-msgstr ""
+msgstr "Options de recherche:"
 
-#: cdr/forms.py:113
+#: cdr/forms.py:113 templates/cdr/login_option.html:18
 msgid "Login"
-msgstr ""
+msgstr "Login"
 
 #: cdr/forms.py:114
 msgid "password"
-msgstr ""
+msgstr "mot de passe"
 
 #: cdr/functions_def.py:44
 msgid "months"
-msgstr ""
+msgstr "mois"
 
 #: cdr/functions_def.py:45
 msgid "month"
-msgstr ""
+msgstr "mois"
 
 #: cdr/functions_def.py:51
 msgid "days"
-msgstr ""
+msgstr "jours"
 
 #: cdr/functions_def.py:52
 msgid "day"
-msgstr ""
+msgstr "jour"
 
 #: cdr/grid.py:11
 msgid "Call Detail Records"
-msgstr ""
+msgstr "Call Detail Records"
 
 #: cdr/grid.py:13
 msgid "Call Date"
-msgstr ""
+msgstr "Date"
 
 #: cdr/grid.py:14
 msgid "Channel"
-msgstr ""
+msgstr "Channel"
 
 #: cdr/grid.py:16
 msgid "Clid"
-msgstr ""
+msgstr "CLID"
 
 #: cdr/grid.py:18
 msgid "Disposition"
-msgstr ""
+msgstr "Disposition"
 
-#: cdr/grid.py:19
+#: cdr/grid.py:19 templates/cdr/show_graph_by_month.html:32
+#: templates/cdr/show_jqgrid.html:55
 msgid "Duration"
-msgstr ""
+msgstr "Durée"
 
 #: cdr/models.py:7
 msgid "ANSWER"
-msgstr ""
+msgstr "ANSWER"
 
 #: cdr/models.py:8
 msgid "BUSY"
-msgstr ""
+msgstr "BUSY"
 
 #: cdr/models.py:9
 msgid "NOANSWER"
-msgstr ""
+msgstr "NOANSWER"
 
 #: cdr/models.py:10
 msgid "CANCEL"
-msgstr ""
+msgstr "CANCEL"
 
 #: cdr/models.py:11
 msgid "CONGESTION"
-msgstr ""
+msgstr "CONGESTION"
 
 #: cdr/models.py:12
 msgid "CHANUNAVAIL"
-msgstr ""
+msgstr "CHANUNAVAIL"
 
 #: cdr/models.py:13
 msgid "DONTCALL"
-msgstr ""
+msgstr "DONTCALL"
 
 #: cdr/models.py:14
 msgid "TORTURE"
-msgstr ""
+msgstr "TORTURE"
 
 #: cdr/models.py:15
 msgid "INVALIDARGS"
-msgstr ""
+msgstr "INVALIDARGS"
 
 #: cdr/views.py:543
 msgid "Disabled Account"
-msgstr ""
+msgstr "Compte désactivé"
 
 #: cdr/views.py:546
 msgid "Invalid Login."
-msgstr ""
+msgstr "Nom d utilisateur incorrect."
 
-#: templates/cdr/index.html:21
+#: templates/cdr/index.html:21 templates/cdr/master.html:111
 msgid "Info"
-msgstr ""
+msgstr "Info"
 
 #: templates/cdr/index.html:25
 msgid ""
 "is an open source application that allows you to browse and analyze your "
 "CDRs (Call Details Record)."
 msgstr ""
+"est une application open source qui vous permet de parcourir et d&#39;"
+"analyser vos CDR (Call Details Record)."
 
 #: templates/cdr/index.html:26
 msgid "Different reporting tools are provided :"
-msgstr ""
+msgstr "Différents outils de reporting sont fournis:"
 
 #: templates/cdr/index.html:28
 msgid ""
 "Monthly Report : summarize your monthly traffic and allow you to have a "
 "monthly vision of your traffic load."
 msgstr ""
+"Rapport mensuel: résumer votre trafic mensuel et vous permettra d&#39;avoir "
+"une vision mensuel de votre charge de trafic."
 
 #: templates/cdr/index.html:29
 msgid ""
 "Analyze CDR : This report allows you to compare your traffic with previous "
 "day and study the volum variation on your server"
 msgstr ""
+"Analyser CDR: Ce rapport vous permet de comparer le trafic avec le jour "
+"précédent et étude de la variation volum sur votre serveur"
 
 #: templates/cdr/index.html:30
 msgid ""
 "Daily Traffic : give you a day by day vision and let you see how many calls "
 "are running each hours"
 msgstr ""
+"Trafic quotidien: vous donner une vision de jour en jour et vous permettent "
+"de voir combien d&#39;appels sont en cours d&#39;exécution chaque heures"
 
 #: templates/cdr/index.html:40
 msgid "Download"
-msgstr ""
+msgstr "Télécharger"
 
 #: templates/cdr/index.html:43
 msgid "Please visit"
-msgstr ""
+msgstr "S&#39;il vous plaît visitez"
 
 #: templates/cdr/index.html:44
 msgid "and download the last stable release."
-msgstr ""
+msgstr "et télécharger la dernière version stable."
 
 #: templates/cdr/index.html:54
 msgid "Support"
-msgstr ""
+msgstr "Support"
 
 #: templates/cdr/index.html:57
 msgid ""
 "Star2Billing S.L. offers consultancy including installation, training and "
 "customisation on all of its products, and CDR-Stats is no exception."
 msgstr ""
+"Star2Billing SL offre de des services de consultances y compris l&#39;"
+"installation, la formation et la personnalisation sur l&#39;ensemble de ses "
+"produits, CDR-Stats ne fait pas exception."
 
-#: templates/cdr/index.html:62
+#: templates/cdr/index.html:59
+msgid ""
+"Purchasing consultancy is a good way to help support the development of CDR-"
+"Stats, and from the customer's point of view can speed the time of "
+"deployment, leaving them free to concentrate on more profitable and "
+"productive tasks."
+msgstr ""
+"La demande de nos services de consultance est un bon moyen pour aider à "
+"soutenir le développement de la CDR-Stats, et du point de vue du client peut "
+"accélérer le temps de déploiement, les laissant libres de se concentrer sur "
+"des tâches plus rentable et productive."
+
+#: templates/cdr/index.html:61
 msgid "Contact us at"
-msgstr ""
+msgstr "Contactez-nous a"
 
-#: templates/cdr/index.html:62
+#: templates/cdr/index.html:61
 msgid "for more information"
-msgstr ""
+msgstr "Pour plus d&#39;informations"
 
-#: templates/cdr/index.html:68
+#: templates/cdr/index.html:67
 msgid "News"
-msgstr ""
+msgstr "Nouvelles"
 
-#: templates/cdr/index.html:98
+#: templates/cdr/index.html:87
+msgid "Licensing"
+msgstr "Licence"
+
+#: templates/cdr/index.html:91
+msgid "CDR-Stats is licensed under"
+msgstr "CDR-Stats est sous licence"
+
+#: templates/cdr/index.html:97
 msgid "Contact Us"
-msgstr ""
+msgstr "Contactez-nous"
 
-#: templates/cdr/index.html:101
+#: templates/cdr/index.html:100
 msgid ""
 "Star2Billing S.L. was formed to provide commercial support, installation and "
 "training to telecommunications companies that wished to deploy A2Billing."
 msgstr ""
+"Star2Billing SL a été créé pour fournir un soutien commercial et technique;"
+"et egalement des formations pour entreprises en télécommunications qui "
+"souhaitent déployer A2Billing."
 
-#: templates/cdr/index.html:104
+#: templates/cdr/index.html:103
 msgid "for more details."
-msgstr ""
+msgstr "Pour plus de détails."
+
+#: templates/cdr/master.html:107
+msgid "Search CDRs"
+msgstr "Recherche de CRDs"
+
+#: templates/cdr/master.html:108
+msgid "Analyze CDRs"
+msgstr "Analyser CDR"
+
+#: templates/cdr/master.html:109
+msgid "Daily Traffic"
+msgstr "Trafic quotidien"
+
+#: templates/cdr/master.html:110
+msgid "Monthly Traffic"
+msgstr "Trafic mensuel"
+
+#: templates/cdr/master.html:133
+msgid "Alert"
+msgstr "Alerte"
+
+#: templates/cdr/master.html:133
+msgid "Please login by clicking on login button"
+msgstr "S&#39;il vous plaît enregistrer-vous en cliquant sur le bouton connexion"
+
+#: templates/cdr/master.html:150
+msgid "CDR-Stats is software licensed under the "
+msgstr "CDR-Stats est un logiciel sous la licence"
+
+#: templates/cdr/show_graph_by_day.html:25
+msgid "Load By Hour"
+msgstr "Charge par heure"
+
+#: templates/cdr/show_graph_by_day.html:38
+msgid "Call per hour"
+msgstr "Appel à l&#39;heure"
+
+#: templates/cdr/show_graph_by_day.html:46
+#: templates/cdr/show_graph_by_hour.html:57
+#: templates/cdr/show_graph_by_month.html:51
+msgid "No Record(s) found."
+msgstr "Aucun enregistrement(s) trouvé."
+
+#: templates/cdr/show_graph_by_hour.html:25
+msgid "Number of calls by Hours"
+msgstr "Nombre d&#39;appels par heures"
+
+#: templates/cdr/show_graph_by_month.html:28
+#, python-format
+msgid "Traffic Last %(comp_months)s Months"
+msgstr "Trafic des %(comp_months)s Derniers Mois"
+
+#: templates/cdr/show_jqgrid.html:51
+msgid "Call Details Report per day"
+msgstr "Détailes des appels par jour"
+
+#: templates/cdr/show_jqgrid.html:54
+msgid "Date"
+msgstr "Date"
+
+#: templates/cdr/show_jqgrid.html:56
+msgid "Graphic"
+msgstr "Graphique"
+
+#: templates/cdr/show_jqgrid.html:57
+msgid "Calls"
+msgstr "Appels"
+
+#: templates/cdr/show_jqgrid.html:58
+msgid "Average Connection Time"
+msgstr "Moyenne du temps d&#39;Appel"
+
+#: templates/cdr/show_jqgrid.html:58
+msgid "ACT"
+msgstr "MTA"
+
+#: templates/cdr/show_jqgrid.html:74
+msgid "Total"
+msgstr "Total"
+
+#: templates/cdr/show_jqgrid.html:85
+msgid "Export CSV file"
+msgstr "Exporter en ficher CSV"
+

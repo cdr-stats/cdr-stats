@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-18 13:36+0200\n"
+"POT-Creation-Date: 2010-06-18 15:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Areski Belaid <areski@gmail.com>\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -24,10 +24,6 @@ msgid "French"
 msgstr ""
 
 #: settings.py:121
-msgid "German"
-msgstr ""
-
-#: settings.py:122
 msgid "Spanish"
 msgstr ""
 
@@ -115,7 +111,7 @@ msgstr ""
 msgid "Search Options :"
 msgstr ""
 
-#: cdr/forms.py:113
+#: cdr/forms.py:113 templates/cdr/login_option.html:18
 msgid "Login"
 msgstr ""
 
@@ -159,7 +155,8 @@ msgstr ""
 msgid "Disposition"
 msgstr ""
 
-#: cdr/grid.py:19
+#: cdr/grid.py:19 templates/cdr/show_graph_by_month.html:32
+#: templates/cdr/show_jqgrid.html:55
 msgid "Duration"
 msgstr ""
 
@@ -207,7 +204,7 @@ msgstr ""
 msgid "Invalid Login."
 msgstr ""
 
-#: templates/cdr/index.html:21
+#: templates/cdr/index.html:21 templates/cdr/master.html:111
 msgid "Info"
 msgstr ""
 
@@ -261,28 +258,127 @@ msgid ""
 "customisation on all of its products, and CDR-Stats is no exception."
 msgstr ""
 
-#: templates/cdr/index.html:62
+#: templates/cdr/index.html:59
+msgid ""
+"Purchasing consultancy is a good way to help support the development of CDR-"
+"Stats, and from the customer's point of view can speed the time of "
+"deployment, leaving them free to concentrate on more profitable and "
+"productive tasks."
+msgstr ""
+
+#: templates/cdr/index.html:61
 msgid "Contact us at"
 msgstr ""
 
-#: templates/cdr/index.html:62
+#: templates/cdr/index.html:61
 msgid "for more information"
 msgstr ""
 
-#: templates/cdr/index.html:68
+#: templates/cdr/index.html:67
 msgid "News"
 msgstr ""
 
-#: templates/cdr/index.html:98
+#: templates/cdr/index.html:87
+msgid "Licensing"
+msgstr ""
+
+#: templates/cdr/index.html:91
+msgid "CDR-Stats is licensed under"
+msgstr ""
+
+#: templates/cdr/index.html:97
 msgid "Contact Us"
 msgstr ""
 
-#: templates/cdr/index.html:101
+#: templates/cdr/index.html:100
 msgid ""
 "Star2Billing S.L. was formed to provide commercial support, installation and "
 "training to telecommunications companies that wished to deploy A2Billing."
 msgstr ""
 
-#: templates/cdr/index.html:104
+#: templates/cdr/index.html:103
 msgid "for more details."
+msgstr ""
+
+#: templates/cdr/master.html:107
+msgid "Search CDRs"
+msgstr ""
+
+#: templates/cdr/master.html:108
+msgid "Analyze CDRs"
+msgstr ""
+
+#: templates/cdr/master.html:109
+msgid "Daily Traffic"
+msgstr ""
+
+#: templates/cdr/master.html:110
+msgid "Monthly Traffic"
+msgstr ""
+
+#: templates/cdr/master.html:133
+msgid "Alert"
+msgstr ""
+
+#: templates/cdr/master.html:133
+msgid "Please login by clicking on login button"
+msgstr ""
+
+#: templates/cdr/master.html:150
+msgid "CDR-Stats is software licensed under the "
+msgstr ""
+
+#: templates/cdr/show_graph_by_day.html:25
+msgid "Load By Hour"
+msgstr ""
+
+#: templates/cdr/show_graph_by_day.html:38
+msgid "Call per hour"
+msgstr ""
+
+#: templates/cdr/show_graph_by_day.html:46
+#: templates/cdr/show_graph_by_hour.html:57
+#: templates/cdr/show_graph_by_month.html:51
+msgid "No Record(s) found."
+msgstr ""
+
+#: templates/cdr/show_graph_by_hour.html:25
+msgid "Number of calls by Hours"
+msgstr ""
+
+#: templates/cdr/show_graph_by_month.html:28
+#, python-format
+msgid "Traffic Last %(comp_months)s Months"
+msgstr ""
+
+#: templates/cdr/show_jqgrid.html:51
+msgid "Call Details Report per day"
+msgstr ""
+
+#: templates/cdr/show_jqgrid.html:54
+msgid "Date"
+msgstr ""
+
+#: templates/cdr/show_jqgrid.html:56
+msgid "Graphic"
+msgstr ""
+
+#: templates/cdr/show_jqgrid.html:57
+msgid "Calls"
+msgstr ""
+
+#: templates/cdr/show_jqgrid.html:58
+msgid "Average Connection Time"
+msgstr ""
+
+#: templates/cdr/show_jqgrid.html:58
+msgid "ACT"
+msgstr ""
+
+#: templates/cdr/show_jqgrid.html:74
+msgid "Total"
+msgstr ""
+
+#: templates/cdr/show_jqgrid.html:85
+msgid "Export CSV file"
 msgstr ""

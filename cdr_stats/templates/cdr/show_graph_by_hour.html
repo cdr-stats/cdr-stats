@@ -1,4 +1,5 @@
 {% extends "cdr/master.html" %}
+{% load i18n %}
 {% load cdr_extras %}
 {% load uni_form_tags %}
 
@@ -21,13 +22,13 @@
 <table id="table_call_hour" width=100% border=1>
 
   {% if total_record %}
-    <caption>Number of calls by Hours</caption>
+    <caption>{% trans "Number of calls by Hours"  %}</caption>
     
 	<thead>
 		<tr>
         <td></td>
         {% for hour in total_hour%}
-        <th scope="col">{{hour}}</td>
+        <th scope="col">{{hour}}</th>
         {% endfor %}
 		</tr>
 	</thead>
@@ -53,7 +54,7 @@
     {% endfor %}
 
     {% else %}
-      <tr><td align=center>No Record(s) found.</td></tr>
+      <tr><td align=center>{% trans "No Record(s) found."  %}</td></tr>
     {% endif %}
     </tbody>
     

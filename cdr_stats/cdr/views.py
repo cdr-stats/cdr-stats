@@ -595,25 +595,3 @@ def index(request):
     return render_to_response(template, data,
            context_instance = RequestContext(request))
 
-
-
-
-def form_test(request):
-
-    # Create the form
-    if request.method == "POST":
-        form = MonthLoadSearchForm(request.POST)
-    else:
-        form = MonthLoadSearchForm()
-
-    template = 'cdr/bluetrip.html'
-    
-    
-    data = {
-        'testform' : form,
-        #'is_authenticated' : request.user.is_authenticated()
-    }
-    
-    return render_to_response(template, data,
-           context_instance = RequestContext(request))
-

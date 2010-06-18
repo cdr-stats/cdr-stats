@@ -1,4 +1,5 @@
 {% extends "cdr/master.html" %}
+{% load i18n %}
 {% load cdr_extras %}
 {% load uni_form_tags %}
 
@@ -31,17 +32,13 @@ $(function () {
 </div>
 
 
-
-
 <p>&nbsp;</p>
 <div id="cdr-container" class='tabcontainer'>
-
 
     <div id='general-info'>
                 
         <table id="mygrid"></table>
 		<div id="pager"></div>
-
 
     </div>
 
@@ -51,14 +48,14 @@ $(function () {
 
 
 <table class="gradient-style">
-    <caption>Call Details Report per day</caption>
+    <caption>{% trans "Call Details Report per day"  %}</caption>
     <thead>
     	<tr>
-            <th scope="col">Date</th>
-            <th scope="col">Duration</th>
-            <th scope="col">Graphic</th>
-            <th scope="col">Calls</th>
-            <th scope="col"><acronym title="Average Connection Time">ACT</acronym></th>
+            <th scope="col">{% trans "Date"  %}</th>
+            <th scope="col">{% trans "Duration"  %}</th>
+            <th scope="col">{% trans "Graphic"  %}</th>
+            <th scope="col">{% trans "Calls"  %}</th>
+            <th scope="col"><acronym title="{% trans "Average Connection Time"  %}">{% trans "ACT"  %}</acronym></th>
         </tr>
     </thead>
     <tbody>    
@@ -74,7 +71,7 @@ $(function () {
     </tbody>
     <tfoot>
     	<tr>
-            <th scope="row">Total</th>
+            <th scope="row">{% trans "Total"  %}</th>
             <td>{{total_duration|conv_min}}</td>
             <td></td>
             <td>{{total_calls}}</td>
@@ -85,8 +82,8 @@ $(function () {
 
 
 <div id='export-container'>
-    Export CSV file <br/>
-    <a href="/export_csv/" target="_blank"><img src='{{MEDIA_URL}}/icons/x-office-spreadsheet.png' title="Support" alt="Support" width="75"/></a>
+    {% trans "Export CSV file"  %} <br/>
+    <a href="/export_csv/" target="_blank"><img src='{{MEDIA_URL}}/icons/x-office-spreadsheet.png' width="75"/></a>
 </div>
 
 {% endblock %}

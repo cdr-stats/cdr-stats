@@ -1,3 +1,4 @@
+{% load i18n %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}">
@@ -103,11 +104,11 @@
 	
 	<div class="span-16 prepend-4">
 		<div id="main-menu-container">
-            <a href="../show_cdr/" class="fg-button ui-state-default ui-corner-all">Search CDRs</a>
-            <a href="../show_stats_by_hour/" class="fg-button ui-state-default ui-corner-all">Analyze CDRs</a>
-            <a href="../show_stats_by_day/" class="fg-button ui-state-default ui-corner-all">Daily Traffic</a>
-            <a href="../show_stats_by_month/" class="fg-button ui-state-default ui-corner-all">Monthly Traffic</a>
-            <a href="../" class="fg-button ui-state-default ui-priority-secondary ui-corner-all">Info</a>
+            <a href="../show_cdr/" class="fg-button ui-state-default ui-corner-all">{% trans "Search CDRs"  %}</a>
+            <a href="../show_stats_by_hour/" class="fg-button ui-state-default ui-corner-all">{% trans "Analyze CDRs"  %}</a>
+            <a href="../show_stats_by_day/" class="fg-button ui-state-default ui-corner-all">{% trans "Daily Traffic"  %}</a>
+            <a href="../show_stats_by_month/" class="fg-button ui-state-default ui-corner-all">{% trans "Monthly Traffic"  %}</a>
+            <a href="../" class="fg-button ui-state-default ui-priority-secondary ui-corner-all">{% trans "Info"  %}</a>
         </div>
 	</div>
 	
@@ -129,7 +130,7 @@
             {% if not user.is_authenticated %}
             <div class="error">
                 <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
-                <strong>Alert : </strong>  Please login by clicking on login button
+                <strong>{% trans "Alert"  %} : </strong>  {% trans "Please login by clicking on login button"  %}
             </div>
             {% endif %}
         {% endif %}
@@ -146,7 +147,7 @@
 	
 	<div class="span-24 last">
 	    <div id="footer">
-            Asterisk-Stat 3.0 (Swallowtail), CDR-Stats is software licensed under the 
+            Asterisk-Stat 3.0 (Swallowtail), {% trans "CDR-Stats is software licensed under the "  %}
 		    <a href="http://www.fsf.org/licensing/licenses/agpl-3.0.html" target="_blank">AGPL 3</a>. <br/>
             Copyright (C) 2010 - Star2billing S.L. <a href="http://www.star2billing.com/" target="_blank">http://www.star2billing.com/</a>
         </div>

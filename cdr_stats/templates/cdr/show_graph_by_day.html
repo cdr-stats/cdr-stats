@@ -1,4 +1,5 @@
 {% extends "cdr/master.html" %}
+{% load i18n %}
 {% load cdr_extras %}
 {% load uni_form_tags %}
 
@@ -21,7 +22,7 @@
 <div id="graph-container">
 <table id="table_load_hour" width="100%" border="1" align="center">
   {% if total_record %}
-  <caption>Load By Hour</caption>
+  <caption>{% trans "Load By Hour"  %}</caption>
 	<thead>
 		<tr>
 			<td></td>
@@ -34,7 +35,7 @@
     <tbody>
     <tr class="tr_class">
            <th scope="row">
-               Call per hour
+               {% trans "Call per hour"  %}
            </th>
            {% for call in total_record %}
            <td>{{ call.1 }}</td>
@@ -42,7 +43,7 @@
     </tr>
     
     {% else %}
-      <tr><td align=center>No Record(s) found.</td></tr>
+      <tr><td align=center>{% trans "No Record(s) found."  %}</td></tr>
     {% endif %}
     </tbody>
     

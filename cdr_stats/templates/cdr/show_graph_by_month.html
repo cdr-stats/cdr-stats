@@ -1,4 +1,6 @@
 {% extends "cdr/master.html" %}
+{% load i18n %}
+
 {% load cdr_extras %}
 {% load uni_form_tags %}
 
@@ -23,11 +25,11 @@
 <div id="graph-container">
 <table id="table_call_month" width=100%>
 {% if calls_min %}
-  <caption>Traffic Last {{comp_months}} Months</caption>
+  <caption>{% blocktrans %}Traffic Last {{comp_months}} Months{% endblocktrans %}</caption>
 	<thead>
 		<tr>
 			<td></td>
-			<th scope="col">Duration</th>
+			<th scope="col">{% trans "Duration"  %}</th>
 		</tr>
 	</thead>
 
@@ -46,7 +48,7 @@
     </tbody>
     
 {% else %}
-    <tr><td align=center>No Record(s) found.</td></tr>
+    <tr><td align=center>{% trans "No Record(s) found."  %}</td></tr>
 {% endif %}
 </table>
 </div>
