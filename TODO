@@ -5,10 +5,6 @@
 
  - jquery datepicker integrate for From-date and To-Date Criteria
  
- - Internationalization
- 
- - build pluggable module
-
  - concurrent calls : reproduce the logic from http://projects.colsolgrp.net/projects/list_files/concurrentcalls
  
  
