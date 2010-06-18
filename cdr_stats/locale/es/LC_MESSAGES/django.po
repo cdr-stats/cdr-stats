@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-18 15:23+0200\n"
+"POT-Creation-Date: 2010-06-18 17:42+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Areski Belaid <areski@gmail.com>\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -213,7 +213,9 @@ msgstr "Info"
 msgid ""
 "is an open source application that allows you to browse and analyze your "
 "CDRs (Call Details Record)."
-msgstr "es una aplicación de código abierto que le permite navegar y analizar los CDRs (Detalles de Llamadas)."
+msgstr ""
+"es una aplicación de código abierto que le permite navegar y analizar los "
+"CDRs (Detalles de Llamadas)."
 
 #: templates/cdr/index.html:26
 msgid "Different reporting tools are provided :"
@@ -223,19 +225,25 @@ msgstr "Diferentes herramientas par ver los resultados:"
 msgid ""
 "Monthly Report : summarize your monthly traffic and allow you to have a "
 "monthly vision of your traffic load."
-msgstr "Informe Mensual: un resumen de su tráfico mensual y le permitirá tener una visión mensual de su carga."
+msgstr ""
+"Informe Mensual: un resumen de su tráfico mensual y le permitirá tener una "
+"visión mensual de su carga."
 
 #: templates/cdr/index.html:29
 msgid ""
 "Analyze CDR : This report allows you to compare your traffic with previous "
 "day and study the volum variation on your server"
-msgstr "Analizar CDR: Este informe le permite comparar el tráfico de su día anterior y de estudiar la variación de volume en su servidor"
+msgstr ""
+"Analizar CDR: Este informe le permite comparar el tráfico de su día anterior "
+"y de estudiar la variación de volume en su servidor"
 
 #: templates/cdr/index.html:30
 msgid ""
 "Daily Traffic : give you a day by day vision and let you see how many calls "
 "are running each hours"
-msgstr "Tráfico diario: da una visión día a día y permite ver las llamadas que se ejecuta cada hora"
+msgstr ""
+"Tráfico diario: da una visión día a día y permite ver las llamadas que se "
+"ejecuta cada hora"
 
 #: templates/cdr/index.html:40
 msgid "Download"
@@ -257,7 +265,10 @@ msgstr "Apoyo"
 msgid ""
 "Star2Billing S.L. offers consultancy including installation, training and "
 "customisation on all of its products, and CDR-Stats is no exception."
-msgstr "Star2Billing SL ofrece servicios de consultoría que incluyen la instalación, formación y personalización en todos sus productos, y el CDR Stats-no tambiem."
+msgstr ""
+"Star2Billing SL ofrece servicios de consultoría que incluyen la instalación, "
+"formación y personalización en todos sus productos, y el CDR Stats-no "
+"tambiem."
 
 #: templates/cdr/index.html:59
 msgid ""
@@ -265,7 +276,11 @@ msgid ""
 "Stats, and from the customer's point of view can speed the time of "
 "deployment, leaving them free to concentrate on more profitable and "
 "productive tasks."
-msgstr "Pedir consultoría es una buena manera de ayudar a apoyar el desarrollo de CDR-Stats, y desde el punto de vista del consumidor puede acelerar el tiempo de despliegue, dejándolos libres para concentrarse en tareas más rentables y productivas."
+msgstr ""
+"Pedir consultoría es una buena manera de ayudar a apoyar el desarrollo de "
+"CDR-Stats, y desde el punto de vista del consumidor puede acelerar el tiempo "
+"de despliegue, dejándolos libres para concentrarse en tareas más rentables y "
+"productivas."
 
 #: templates/cdr/index.html:61
 msgid "Contact us at"
@@ -295,11 +310,33 @@ msgstr "Contáctenos"
 msgid ""
 "Star2Billing S.L. was formed to provide commercial support, installation and "
 "training to telecommunications companies that wished to deploy A2Billing."
-msgstr "Star2Billing SL fue creado para offrecer soporte comercial, instalación y formación a empresas de telecomunicaciones que deseen implementar A2Billing."
+msgstr ""
+"Star2Billing SL fue creado para offrecer soporte comercial, instalación y "
+"formación a empresas de telecomunicaciones que deseen implementar A2Billing."
 
-#: templates/cdr/index.html:103
+#: templates/cdr/index.html:102
+msgid ""
+"A2Billing is both a Telecoms Switch and a Billing Platform for those wishing "
+"to deploy telecoms services such as VoIP, calling cards and callback, as "
+"well as a variety of other products. Please see"
+msgstr "A2Billing es a la vez un Telecoms Switch y un programa "
+"de facturación para aquellos que desean implementar servicios de telecomunicaciones " 
+"tales como VoIP, tarjetas de prepago y callback, como así como una variedad "
+"de otros productos. Por favor, consulte"
+
+#: templates/cdr/index.html:102
 msgid "for more details."
 msgstr "para más detalles."
+
+#: templates/cdr/index.html:105
+msgid ""
+"CDR-Stats is the latest piece of software development from the Star2Billing "
+"stable, and is a complete ground up re-write of the famous Asterisk-Stat, "
+"which has been around for over 7 years as a CDR viewer and analyser for "
+"Asterisk, and has been included in FreePBX to view and analyse CDR."
+msgstr "CDR-Stats es la última pieza de software de Star2Billing "
+", y es un  nuevo Asterisk-Stat, que ha existido por más de 7 años como un visor de CDR "
+"y se ha incluido en FreePBX para ver y analizar CDR."
 
 #: templates/cdr/master.html:107
 msgid "Search CDRs"
@@ -365,8 +402,8 @@ msgid "Graphic"
 msgstr "Gráfico"
 
 #: templates/cdr/show_jqgrid.html:57
-msgid "Llamadas"
-msgstr "Pide"
+msgid "Calls"
+msgstr ""
 
 #: templates/cdr/show_jqgrid.html:58
 msgid "Average Connection Time"
@@ -384,3 +421,5 @@ msgstr "Total"
 msgid "Export CSV file"
 msgstr "Exportar en un archivo CSV"
 
+#~ msgid "Llamadas"
+#~ msgstr "Pide"

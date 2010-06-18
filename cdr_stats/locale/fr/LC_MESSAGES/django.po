@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-18 15:17+0200\n"
+"POT-Creation-Date: 2010-06-18 17:42+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Areski Belaid <areski@gmail.com>\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -288,7 +288,7 @@ msgstr "Contactez-nous a"
 
 #: templates/cdr/index.html:61
 msgid "for more information"
-msgstr "Pour plus d&#39;informations"
+msgstr "pour plus d&#39;informations"
 
 #: templates/cdr/index.html:67
 msgid "News"
@@ -315,9 +315,30 @@ msgstr ""
 "et egalement des formations pour entreprises en télécommunications qui "
 "souhaitent déployer A2Billing."
 
-#: templates/cdr/index.html:103
+#: templates/cdr/index.html:102
+msgid ""
+"A2Billing is both a Telecoms Switch and a Billing Platform for those wishing "
+"to deploy telecoms services such as VoIP, calling cards and callback, as "
+"well as a variety of other products. Please see"
+msgstr "A2Billing est à la fois un commutateur de télécommunications et une "
+"plateforme de facturation pour ceux qui souhaitent de déployer des services "
+"de télécommunications en VoIP, tel que les cartes prépayé et les systemes de callback "
+"et d'autres produits. S'il vous plaît, visitez "
+
+#: templates/cdr/index.html:102
 msgid "for more details."
-msgstr "Pour plus de détails."
+msgstr "pour plus de détails."
+
+#: templates/cdr/index.html:105
+msgid ""
+"CDR-Stats is the latest piece of software development from the Star2Billing "
+"stable, and is a complete ground up re-write of the famous Asterisk-Stat, "
+"which has been around for over 7 years as a CDR viewer and analyser for "
+"Asterisk, and has been included in FreePBX to view and analyse CDR."
+msgstr "CDR-Stats est la derniere piede de développement logiciel fournit par Star2Billing, "
+"il s agit d une nouvelle réécriture du célèbre Asterisk-Stat, "
+"qui a existé depuis plus de 7 ans en tant que CDR Analyseur pour "
+"Asterisk, Il a été inclus dans FreePBX pour afficher et analyser les CDRs."
 
 #: templates/cdr/master.html:107
 msgid "Search CDRs"
@@ -341,7 +362,8 @@ msgstr "Alerte"
 
 #: templates/cdr/master.html:133
 msgid "Please login by clicking on login button"
-msgstr "S&#39;il vous plaît enregistrer-vous en cliquant sur le bouton connexion"
+msgstr ""
+"S&#39;il vous plaît enregistrer-vous en cliquant sur le bouton connexion"
 
 #: templates/cdr/master.html:150
 msgid "CDR-Stats is software licensed under the "
@@ -401,4 +423,3 @@ msgstr "Total"
 #: templates/cdr/show_jqgrid.html:85
 msgid "Export CSV file"
 msgstr "Exporter en ficher CSV"
-
