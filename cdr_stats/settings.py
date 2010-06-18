@@ -117,7 +117,8 @@ gettext = lambda s: s
 
 LANGUAGES = (
     ('en', gettext('English')),
-    ('fr', gettext('French')),
-    ('de', gettext('German')),    
+    ('fr', gettext('French')),  
     ('es', gettext('Spanish')),
 )
+
+

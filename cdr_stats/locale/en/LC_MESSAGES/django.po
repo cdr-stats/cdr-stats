@@ -1,21 +1,16 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# CDR-Stats - PO File
+# Copyright (C) 2010 - Star2Billing S.L. 
+# This file is distributed under the same license as the CDR-Stats application.
+# Areski Belaid <areski@gmail.com>, 2010.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-<<<<<<< HEAD
-"POT-Creation-Date: 2010-06-17 17:56+0200\n"
-=======
-"POT-Creation-Date: 2010-06-17 21:34+0530\n"
->>>>>>> 9b8e1bbbe760f87c8544ee7b82f4a6ed809ba72e
+"POT-Creation-Date: 2010-06-18 13:36+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: Areski Belaid <areski@gmail.com>\n"
+"Language-Team: Areski Belaid <areski@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -36,11 +31,138 @@ msgstr ""
 msgid "Spanish"
 msgstr ""
 
-#: cdr/forms.py:72
-msgid "Title"
+#: cdr/forms.py:16 cdr/grid.py:17
+msgid "Destination"
 msgstr ""
 
-<<<<<<< HEAD
+#: cdr/forms.py:18 cdr/forms.py:22
+msgid "Equals"
+msgstr ""
+
+#: cdr/forms.py:18 cdr/forms.py:22
+msgid "Begins with"
+msgstr ""
+
+#: cdr/forms.py:18 cdr/forms.py:22
+msgid "Contains"
+msgstr ""
+
+#: cdr/forms.py:18 cdr/forms.py:22
+msgid "Ends with"
+msgstr ""
+
+#: cdr/forms.py:20 cdr/grid.py:15
+msgid "Source"
+msgstr ""
+
+#: cdr/forms.py:29
+msgid "Select month"
+msgstr ""
+
+#: cdr/forms.py:30
+msgid "Number of months to compare"
+msgstr ""
+
+#: cdr/forms.py:35 cdr/forms.py:52 cdr/forms.py:72 cdr/forms.py:105
+msgid "Search"
+msgstr ""
+
+#: cdr/forms.py:46
+msgid "From"
+msgstr ""
+
+#: cdr/forms.py:47 cdr/forms.py:64
+msgid "Select day"
+msgstr ""
+
+#: cdr/forms.py:65
+msgid "Number of days to compare"
+msgstr ""
+
+#: cdr/forms.py:66
+msgid "Graph"
+msgstr ""
+
+#: cdr/forms.py:67
+msgid "Number of calls by hours"
+msgstr ""
+
+#: cdr/forms.py:67
+msgid "Minutes by hours"
+msgstr ""
+
+#: cdr/forms.py:83
+msgid "From :"
+msgstr ""
+
+#: cdr/forms.py:85
+msgid "To :"
+msgstr ""
+
+#: cdr/forms.py:88
+msgid "Result:"
+msgstr ""
+
+#: cdr/forms.py:89
+msgid "Minutes"
+msgstr ""
+
+#: cdr/forms.py:89
+msgid "Seconds"
+msgstr ""
+
+#: cdr/forms.py:95
+msgid "Search Options :"
+msgstr ""
+
+#: cdr/forms.py:113
+msgid "Login"
+msgstr ""
+
+#: cdr/forms.py:114
+msgid "password"
+msgstr ""
+
+#: cdr/functions_def.py:44
+msgid "months"
+msgstr ""
+
+#: cdr/functions_def.py:45
+msgid "month"
+msgstr ""
+
+#: cdr/functions_def.py:51
+msgid "days"
+msgstr ""
+
+#: cdr/functions_def.py:52
+msgid "day"
+msgstr ""
+
+#: cdr/grid.py:11
+msgid "Call Detail Records"
+msgstr ""
+
+#: cdr/grid.py:13
+msgid "Call Date"
+msgstr ""
+
+#: cdr/grid.py:14
+msgid "Channel"
+msgstr ""
+
+#: cdr/grid.py:16
+msgid "Clid"
+msgstr ""
+
+#: cdr/grid.py:18
+msgid "Disposition"
+msgstr ""
+
+#: cdr/grid.py:19
+msgid "Duration"
+msgstr ""
+
 #: cdr/models.py:7
 msgid "ANSWER"
 msgstr ""
@@ -77,8 +199,14 @@ msgstr ""
 msgid "INVALIDARGS"
 msgstr ""
 
-=======
->>>>>>> 9b8e1bbbe760f87c8544ee7b82f4a6ed809ba72e
+#: cdr/views.py:543
+msgid "Disabled Account"
+msgstr ""
+
+#: cdr/views.py:546
+msgid "Invalid Login."
+msgstr ""
+
 #: templates/cdr/index.html:21
 msgid "Info"
 msgstr ""
