@@ -70,8 +70,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'cdr.colorsql.ColorSQLMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
+    #'cdr.colorsql.ColorSQLMiddleware',
 )
 
 ROOT_URLCONF = 'cdr_stats.urls'
@@ -83,7 +83,7 @@ TEMPLATE_DIRS = (
     os.path.join( APPLICATION_DIR, 'templates' ), 
 )
 
-INTERNAL_IPS = ('127.0.0.1', '127.0.0.2')
+INTERNAL_IPS = ('127.0.0.1')
 
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
@@ -101,7 +101,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'cdr',
     'dilla',
-    'debug_toolbar',
+    #'debug_toolbar',
     'django_extensions',
     'dateutil',
     'uni_form',
