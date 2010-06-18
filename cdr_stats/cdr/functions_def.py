@@ -101,7 +101,8 @@ def get_news():
     news_handler = urllib.urlopen('http://cdr-stats.org/news.php')
     news = news_handler.read()
     news = nl2br(news)
-    news = string.split(news, '<br />')
+    news = string.split(news, '<br/>')
+    
     news_array = {}
     value = {}
     for newsweb in news:
