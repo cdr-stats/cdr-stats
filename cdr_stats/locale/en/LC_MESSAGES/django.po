@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-18 15:17+0200\n"
+"POT-Creation-Date: 2010-06-18 18:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Areski Belaid <areski@gmail.com>\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -296,8 +296,23 @@ msgid ""
 "training to telecommunications companies that wished to deploy A2Billing."
 msgstr ""
 
-#: templates/cdr/index.html:103
+#: templates/cdr/index.html:102
+msgid ""
+"A2Billing is both a Telecoms Switch and a Billing Platform for those wishing "
+"to deploy telecoms services such as VoIP, calling cards and callback, as "
+"well as a variety of other products. Please see"
+msgstr ""
+
+#: templates/cdr/index.html:102
 msgid "for more details."
+msgstr ""
+
+#: templates/cdr/index.html:105
+msgid ""
+"CDR-Stats is the latest piece of software development from the Star2Billing "
+"stable, and is a complete ground up re-write of the famous Asterisk-Stat, "
+"which has been around for over 7 years as a CDR viewer and analyser for "
+"Asterisk, and has been included in FreePBX to view and analyse CDR."
 msgstr ""
 
 #: templates/cdr/master.html:107
