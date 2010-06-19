@@ -160,25 +160,13 @@ def show_graph_by_month(request):
         source_type = variable_value(request,'source_type')
         channel = variable_value(request,'channel')
 
-        if destination != '':
-            if destination_type == '1':
-                kwargs[ 'dst__exact' ] = destination
-            if destination_type == '2':
-                kwargs[ 'dst__startswith' ] = destination
-            if destination_type == '3':
-                kwargs[ 'dst__contains' ] = destination
-            if destination_type == '4':
-                kwargs[ 'dst__endswith' ] = destination
+        dst = source_desti_field_chk(destination,destination_type,'dst')
+        for i in dst:
+            kwargs[i] = dst[i]
 
-        if source != '':
-            if source_type == '1':
-                kwargs[ 'src__exact' ] = source
-            if source_type == '2':
-                kwargs[ 'src__startswith' ] = source
-            if source_type == '3':
-                kwargs[ 'src__contains' ] = source
-            if source_type == '4':
-                kwargs[ 'src__endswith' ] = source
+        src = source_desti_field_chk(source,source_type,'src')
+        for i in src:
+            kwargs[i] = src[i]
 
         if channel!='':
             kwargs[ 'channel' ] = channel
@@ -280,25 +268,13 @@ def show_graph_by_day(request):
         source_type = variable_value(request,'source_type')
         channel = variable_value(request,'channel')
 
-        if destination != '':
-            if destination_type == '1':
-                kwargs[ 'dst__exact' ] = destination
-            if destination_type == '2':
-                kwargs[ 'dst__startswith' ] = destination
-            if destination_type == '3':
-                kwargs[ 'dst__contains' ] = destination
-            if destination_type == '4':
-                kwargs[ 'dst__endswith' ] = destination
+        dst = source_desti_field_chk(destination,destination_type,'dst')
+        for i in dst:
+            kwargs[i] = dst[i]
 
-        if source != '':
-            if source_type == '1':
-                kwargs[ 'src__exact' ] = source
-            if source_type == '2':
-                kwargs[ 'src__startswith' ] = source
-            if source_type == '3':
-                kwargs[ 'src__contains' ] = source
-            if source_type == '4':
-                kwargs[ 'src__endswith' ] = source
+        src = source_desti_field_chk(source,source_type,'src')
+        for i in src:
+            kwargs[i] = src[i]
 
         if channel!='':
             kwargs[ 'channel' ] = channel
@@ -374,26 +350,14 @@ def show_graph_by_hour(request):
         source_type = variable_value(request,'source_type')
         channel = variable_value(request,'channel')
         graph_view = variable_value(request,'graph_view')
-
-        if destination != '':
-            if destination_type == '1':
-                kwargs[ 'dst__exact' ] = destination
-            if destination_type == '2':
-                kwargs[ 'dst__startswith' ] = destination
-            if destination_type == '3':
-                kwargs[ 'dst__contains' ] = destination
-            if destination_type == '4':
-                kwargs[ 'dst__endswith' ] = destination
-
-        if source != '':
-            if source_type == '1':
-                kwargs[ 'src__exact' ] = source
-            if source_type == '2':
-                kwargs[ 'src__startswith' ] = source
-            if source_type == '3':
-                kwargs[ 'src__contains' ] = source
-            if source_type == '4':
-                kwargs[ 'src__endswith' ] = source
+        
+        dst = source_desti_field_chk(destination,destination_type,'dst')
+        for i in dst:
+            kwargs[i] = dst[i]
+       
+        src = source_desti_field_chk(source,source_type,'src')
+        for i in src:
+            kwargs[i] = src[i]
 
         if channel!='':
             kwargs[ 'channel' ] = channel

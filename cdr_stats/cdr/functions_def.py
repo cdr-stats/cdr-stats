@@ -138,6 +138,21 @@ def variable_value(request,field_name):
 
     return field_name
 
+#source_type/destination_type filed check with request
+def source_desti_field_chk(base_field,base_field_type,field_name):
+    kwargs = {}
+    if base_field != '':
+        if base_field_type == '1':
+            kwargs[field_name + '__exact']      = base_field
+        if base_field_type == '2':
+            kwargs[field_name + '__startswith'] = base_field
+        if base_field_type == '3':
+            kwargs[field_name + '__contains']   = base_field
+        if base_field_type == '4':
+            kwargs[field_name + '__endswith']   = base_field
+
+    return kwargs
+
 
 #related to string operation
 def nl2br(s):
