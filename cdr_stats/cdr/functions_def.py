@@ -1,12 +1,11 @@
+from django.utils.translation import gettext as _
 from cdr.models import *
 from datetime import *
-import calendar
-import time
 from random import *
+import calendar
 import string
 import urllib
-from django.utils.translation import gettext as _
-
+import time
 
 #related to date manipulation
 def relative_days(from_day,from_year):
