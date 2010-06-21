@@ -9,20 +9,19 @@ from cdr.forms import *
 from cdr.models import *
 from grid import ExampleGrid
 from datetime import *
-import time
 from dateutil import parser
 from dateutil.relativedelta import *
-import calendar
 from sets import *
-import operator
-import string
-import csv, codecs
 from django.db.models.loading import get_model
 from operator import *
 from cdr_stats.helpers import json_encode
 from uni_form.helpers import FormHelper, Submit, Reset
 from django.utils.translation import gettext as _
-
+import calendar
+import time
+import operator
+import string
+import csv, codecs
 
 
 
@@ -161,25 +160,13 @@ def show_graph_by_month(request):
         source_type = variable_value(request,'source_type')
         channel = variable_value(request,'channel')
 
-        if destination != '':
-            if destination_type == '1':
-                kwargs[ 'dst__exact' ] = destination
-            if destination_type == '2':
-                kwargs[ 'dst__startswith' ] = destination
-            if destination_type == '3':
-                kwargs[ 'dst__contains' ] = destination
-            if destination_type == '4':
-                kwargs[ 'dst__endswith' ] = destination
+        dst = source_desti_field_chk(destination,destination_type,'dst')
+        for i in dst:
+            kwargs[i] = dst[i]
 
-        if source != '':
-            if source_type == '1':
-                kwargs[ 'src__exact' ] = source
-            if source_type == '2':
-                kwargs[ 'src__startswith' ] = source
-            if source_type == '3':
-                kwargs[ 'src__contains' ] = source
-            if source_type == '4':
-                kwargs[ 'src__endswith' ] = source
+        src = source_desti_field_chk(source,source_type,'src')
+        for i in src:
+            kwargs[i] = src[i]
 
         if channel!='':
             kwargs[ 'channel' ] = channel
@@ -187,22 +174,22 @@ def show_graph_by_month(request):
         if comp_months != '':
             from_day = validate_days(from_year,from_month,31)
             end_date = datetime(from_year, from_month, from_day)
-            cp_month=int(comp_months)+1
-            start_date= end_date+relativedelta(months=-int(cp_month),days=+relative_days(from_day,from_year))
+            cp_month = int(comp_months) + 1
+            start_date= end_date + relativedelta(months = -int(cp_month), days = +relative_days(from_day,from_year))
             kwargs[ 'calldate__range' ] = (start_date,end_date)
 
         form = MonthLoadSearchForm(initial={'from_month_year':from_month_year,'comp_months':comp_months,'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,})
 
     if len(kwargs) == 0:
         form = MonthLoadSearchForm(initial={'comp_months':2,'destination_type':1,'source_type':1,})
-        tday=datetime.today()
-        from_year=tday.year
-        from_month= tday.month
-        from_day = validate_days(tday.year,tday.month,31)
-        comp_months=2
-        cp_month=comp_months+1
+        tday = datetime.today()
+        from_year = tday.year
+        from_month = tday.month
+        from_day = validate_days(from_year,from_month,31)
+        comp_months = 2
+        cp_month = comp_months + 1
         end_date = datetime(from_year, from_month, from_day)
-        start_date= end_date+relativedelta(months=-int(cp_month),days=+relative_days(from_day,from_year))
+        start_date = end_date + relativedelta(months = -int(cp_month), days = +relative_days(from_day,from_year))
         kwargs[ 'calldate__range' ] = (start_date,end_date)
 
 
@@ -210,7 +197,7 @@ def show_graph_by_month(request):
     e_month=int(end_date.month)
     e_year=int(end_date.year)
     for i in range(cp_month):
-        if  e_month <= 12:
+        if e_month <= 12:
             total_month_list.append((e_month,e_year))
             e_month=e_month-1
             if e_month==0:
@@ -218,7 +205,7 @@ def show_graph_by_month(request):
                 e_year=e_year-1
 
     if kwargs:
-        select_data = {"subdate": "strftime('%%m/%%Y', calldate)"}
+        select_data = {"subdate": "strftime('%%m-%%Y', calldate)"}
         calls_min = CDR.objects.filter(**kwargs).extra(select=select_data).values('subdate').annotate(Sum('duration'))
 
         total_record = []
@@ -231,22 +218,17 @@ def show_graph_by_month(request):
             m_list.append((total_month_list[x][0]))
             x=x+1
 
-        y=0
         for b in calls_min:
             r_list.append((int(b['subdate'][0:2])))
-            y=y+1
-
+            
         for c in m_list:
-            if c in r_list:
-                continue
-            else:
+            if c not in r_list:
                 n_list.append((c))
-
+                
         x=0
         for j in total_month_list:
             if total_month_list[x][0] in n_list :
                 total_record.append((total_month_list[x][0],total_month_list[x][1],0))
-
             x=x+1
 
         for j in calls_min:
@@ -260,7 +242,7 @@ def show_graph_by_month(request):
                              'comp_months':comp_months,
                              'calls_min':calls_min,
                             })
-
+                            
         return render_to_response('cdr/show_graph_by_month.html', variables,
                context_instance = RequestContext(request))
 
@@ -286,25 +268,13 @@ def show_graph_by_day(request):
         source_type = variable_value(request,'source_type')
         channel = variable_value(request,'channel')
 
-        if destination != '':
-            if destination_type == '1':
-                kwargs[ 'dst__exact' ] = destination
-            if destination_type == '2':
-                kwargs[ 'dst__startswith' ] = destination
-            if destination_type == '3':
-                kwargs[ 'dst__contains' ] = destination
-            if destination_type == '4':
-                kwargs[ 'dst__endswith' ] = destination
+        dst = source_desti_field_chk(destination,destination_type,'dst')
+        for i in dst:
+            kwargs[i] = dst[i]
 
-        if source != '':
-            if source_type == '1':
-                kwargs[ 'src__exact' ] = source
-            if source_type == '2':
-                kwargs[ 'src__startswith' ] = source
-            if source_type == '3':
-                kwargs[ 'src__contains' ] = source
-            if source_type == '4':
-                kwargs[ 'src__endswith' ] = source
+        src = source_desti_field_chk(source,source_type,'src')
+        for i in src:
+            kwargs[i] = src[i]
 
         if channel!='':
             kwargs[ 'channel' ] = channel
@@ -338,7 +308,6 @@ def show_graph_by_day(request):
             list_of_hour = []
             for i in calls_in_day:
                 list_of_hour.append((int(i['called_time'])))
-                #print list_of_hour
 
             for i in range(0,24):
                 if i not in list_of_hour:
@@ -381,26 +350,14 @@ def show_graph_by_hour(request):
         source_type = variable_value(request,'source_type')
         channel = variable_value(request,'channel')
         graph_view = variable_value(request,'graph_view')
-
-        if destination != '':
-            if destination_type == '1':
-                kwargs[ 'dst__exact' ] = destination
-            if destination_type == '2':
-                kwargs[ 'dst__startswith' ] = destination
-            if destination_type == '3':
-                kwargs[ 'dst__contains' ] = destination
-            if destination_type == '4':
-                kwargs[ 'dst__endswith' ] = destination
-
-        if source != '':
-            if source_type == '1':
-                kwargs[ 'src__exact' ] = source
-            if source_type == '2':
-                kwargs[ 'src__startswith' ] = source
-            if source_type == '3':
-                kwargs[ 'src__contains' ] = source
-            if source_type == '4':
-                kwargs[ 'src__endswith' ] = source
+        
+        dst = source_desti_field_chk(destination,destination_type,'dst')
+        for i in dst:
+            kwargs[i] = dst[i]
+       
+        src = source_desti_field_chk(source,source_type,'src')
+        for i in src:
+            kwargs[i] = src[i]
 
         if channel!='':
             kwargs[ 'channel' ] = channel
