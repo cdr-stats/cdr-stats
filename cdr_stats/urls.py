@@ -47,6 +47,7 @@ urlpatterns = patterns('',
 	(r'^login/$',   'cdr.views.login_view'),
     (r'^logout/$',  'cdr.views.logout_view'),
 	(r'^index/$',   'cdr.views.index'),
+	(r'^pleaselog/$',   'cdr.views.pleaselog'),
 	
 )
 

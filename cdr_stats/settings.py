@@ -118,7 +118,7 @@ INSTALLED_APPS = (
 LOG_COLORSQL_ENABLE = True
 LOG_COLORSQL_VERBOSE = True
 
-LOGIN_URL = '/'
+LOGIN_URL = '/pleaselog/'
 
 gettext = lambda s: s
 

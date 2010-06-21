@@ -509,7 +509,7 @@ def login_view(request):
     data = {
         'loginform' : loginform,
         'errorlogin' : errorlogin,
-        'news':get_news(),
+        'news' : get_news(),
         'is_authenticated' : request.user.is_authenticated()
     }
     return render_to_response(template, data,context_instance = RequestContext(request))
@@ -520,36 +520,31 @@ def logout_view(request):
 	return HttpResponseRedirect('/')
 
 
+
 def index(request):
-    
     template = 'cdr/index.html'
     errorlogin = ''
     loginform = loginForm()
     
-    # Create the form
-    form = MonthLoadSearchForm()
-
-    # create a formHelper
-    helper = FormHelper()
-
-    # Add in a class and id
-    helper.form_id = 'this-form-rocks'
-    helper.form_class = 'search'
-
-    # add in a submit and reset button
-    submit = Submit('search','search this site')
-    helper.add_input(submit)
-    reset = Reset('reset','reset button')
-    helper.add_input(reset)
-    helper.use_csrf_protection = True
-
     data = {
         'loginform' : loginform,
-        'testform' : form,
-        'testformhelper' : helper,
         'errorlogin' : errorlogin,
-        'news':get_news(),
+        'news' : get_news(),
     }
     return render_to_response(template, data,
            context_instance = RequestContext(request))
+
+
+def pleaselog(request):
+    template = 'cdr/index.html'
+    loginform = loginForm()
+    
+    data = {
+        'loginform' : loginform,
+        'notlogged' : True,
+        'news' : get_news(),
+    }
+    return render_to_response(template, data,
+           context_instance = RequestContext(request))
+
 

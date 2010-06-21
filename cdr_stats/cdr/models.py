@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import permalink
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 
 
 DISPOSITION = (
@@ -37,7 +38,7 @@ class CDR(models.Model):
     
         
     class Meta:
-        db_table = 'cdr'
+        db_table = getattr(settings, 'CDR_TABLE_NAME', 'cdr' )
         # Only in trunk 1.1 managed = False     # The database is normally already created
 
     def __unicode__(self):

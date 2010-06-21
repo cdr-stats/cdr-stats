@@ -127,7 +127,7 @@
                 <strong>Alert : </strong>  {{ errorlogin }}
             </div>
         {% else %}
-            {% if not user.is_authenticated %}
+            {% if notlogged %}
             <div class="error">
                 <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
                 <strong>{% trans "Alert"  %} : </strong>  {% trans "Please login by clicking on login button"  %}
