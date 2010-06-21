@@ -91,7 +91,8 @@ def show_cdr(request):
         result = '1'
     request.session['cdr_queryset'] = ''
 
-    select_data = {"calldate": "strftime('%%Y-%%m-%%d', calldate)"}
+    #select_data = {"calldate": "strftime('%%Y-%%m-%%d', calldate)"}
+    select_data = {"calldate": "SUBSTR(calldate,1,10)"}
     
     request.session['cdr_queryset'] = CDR.objects.values('calldate', 'channel', 'src', 'clid', 'dst', 'disposition', 'duration').filter(**kwargs).order_by('-calldate')
     total_data = CDR.objects.extra(select=select_data).values('calldate').filter(**kwargs).annotate(Count('calldate')).annotate(Sum('duration')).annotate(Avg('duration')).order_by('-calldate')
@@ -205,7 +206,7 @@ def show_graph_by_month(request):
                 e_year=e_year-1
 
     if kwargs:
-        select_data = {"subdate": "strftime('%%m-%%Y', calldate)"}
+        select_data = {"subdate": "SUBSTR(calldate,1,7)"}
         calls_min = CDR.objects.filter(**kwargs).extra(select=select_data).values('subdate').annotate(Sum('duration'))
 
         total_record = []
@@ -219,7 +220,7 @@ def show_graph_by_month(request):
             x=x+1
 
         for b in calls_min:
-            r_list.append((int(b['subdate'][0:2])))
+            r_list.append((int(b['subdate'][6:8])))
             
         for c in m_list:
             if c not in r_list:
@@ -232,7 +233,7 @@ def show_graph_by_month(request):
             x=x+1
 
         for j in calls_min:
-            total_record.append(( int(j['subdate'][0:2]),int(j['subdate'][3:7]),j['duration__sum']))
+            total_record.append(( int(j['subdate'][6:8]),int(j['subdate'][0:4]),j['duration__sum']))
 
         #print sorted(total_record, key=lambda total: total[1])
         variables = RequestContext(request,
@@ -298,7 +299,7 @@ def show_graph_by_day(request):
         kwargs[ 'calldate__range' ] = (start_date,end_date)
 
     if kwargs:
-        select_data = {"called_time": "strftime('%%H', calldate)"}#/%%M/%%S
+        select_data = {"called_time": "SUBSTR(calldate,12,2)"} # get Hour
         calls_in_day = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('calldate'))#.order_by('-calldate')#
 
         total_record = []
@@ -331,6 +332,8 @@ def show_graph_by_day(request):
 def show_graph_by_hour(request):
 
     kwargs = {}
+    graph_view = '1'
+    
     if request.method == 'POST':
         if "from_month_year" in request.POST:
             from_day        = int(request.POST['from_day'])
@@ -374,12 +377,11 @@ def show_graph_by_hour(request):
         form = CompareCallSearchForm(initial={'from_day':from_day,'from_month_year':from_month_year,'comp_days':comp_days,'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,'graph_view':graph_view,})
 
     if len(kwargs) == 0:
-        tday=datetime.today()
+        tday = datetime.today()
         from_day = validate_days(tday.year,tday.month,tday.day)
-        form = CompareCallSearchForm(initial={'from_day':tday.day,'comp_days':2,'destination_type':1,'source_type':1,'graph_view':1})
+        form = CompareCallSearchForm(initial={'from_day':tday.day,'comp_days':2,'destination_type':1,'source_type':1,'graph_view':graph_view})
         from_year=tday.year
         from_month= tday.month
-        graph_view = 1
 
         end_date = datetime(from_year, from_month, from_day)
         start_date= end_date+relativedelta(days=-2)
@@ -389,7 +391,7 @@ def show_graph_by_hour(request):
         kwargs[ 'calldate__range' ] = (start_date,end_date)
 
     if kwargs:
-        select_data = {"called_time": "strftime('%%m/%%d/%%Y/%%H/%%M', calldate)"}#/%%M/%%S
+        select_data = {"called_time": "SUBSTR(calldate,1,16)"} # Date without seconds
         if graph_view == '1':
             calls_in_day = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('calldate'))#.order_by('-calldate')#
         else:
@@ -401,8 +403,8 @@ def show_graph_by_hour(request):
         dateList = date_range( datetime(start_date.year, start_date.month,start_date.day), datetime(end_date.year, end_date.month, end_date.day))
 
         for i in calls_in_day:
-            if datetime(int(i['called_time'][6:10]),int(i['called_time'][0:2]),int(i['called_time'][3:5])) in dateList:
-                record_dates.append(( i['called_time'][6:10]+'-'+i['called_time'][0:2]+'-'+i['called_time'][3:5] ))
+            if datetime(int(i['called_time'][0:4]),int(i['called_time'][5:7]),int(i['called_time'][8:10])) in dateList:
+                record_dates.append(( i['called_time'][0:4]+'-'+i['called_time'][5:7]+'-'+i['called_time'][8:10] ))
                 if graph_view == '1':
                     total_record.append(( i['called_time'], i['calldate__count']))
                     total_call_count.append((i['calldate__count']))
@@ -410,7 +412,7 @@ def show_graph_by_hour(request):
                     total_record.append(( i['called_time'], i['duration__sum']))
                     total_call_count.append((i['duration__sum']))
 
-
+        
         record_dates=list(set(record_dates))
 
         if calls_in_day.count()!=0:
@@ -421,7 +423,7 @@ def show_graph_by_hour(request):
                 list_of_count= []
                 l_o_c= {}
                 for i in calls_in_day:
-                    string_date = i['called_time'][6:10]+'-'+i['called_time'][0:2]+'-'+i['called_time'][3:5]
+                    string_date = i['called_time'][0:4]+'-'+i['called_time'][5:7]+'-'+i['called_time'][8:10]
                     if string_date == rd:
                         list_of_hour.append(int((i['called_time'][11:13])))
                         if graph_view == '1':
@@ -457,9 +459,7 @@ def show_graph_by_hour(request):
         for i in dateList:
             y =  str(i)
             datelist_final.append(( y[0:4]+'-'+y[5:7]+'-'+y[8:10] ))
-
-        if graph_view == '2':
-            graph_view = ''
+        
         variables = RequestContext(request,
                             {'form': form,
                              'result':'min',
@@ -521,6 +521,7 @@ def logout_view(request):
 
 
 def index(request):
+    
     template = 'cdr/index.html'
     errorlogin = ''
     loginform = loginForm()
