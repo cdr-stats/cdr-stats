@@ -79,7 +79,7 @@
 -------------------
 
     Install :
-        easy_install-2.6 DateUtils
+        sudo easy_install DateUtils
 
 
 * Django-uni-form

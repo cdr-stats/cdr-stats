@@ -96,8 +96,9 @@ Configure your Database :
 Update Admin Media path :
 -----------------------
 
-    cd ressources
-    ln -s /usr/lib/pymodules/python2.6/django/contrib/admin/media/ admin
+    cd resources
+    #ln -s /usr/lib/pymodules/python2.4/django/contrib/admin/media/ admin
+    ln -s /usr/lib/python2.4/site-packages/django/contrib/admin/media/ admin
 
     edit settings.py :
     ADMIN_MEDIA_PREFIX = '/resources/admin/'

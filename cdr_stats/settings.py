@@ -25,6 +25,13 @@ DATABASES = {
     }
 }
 
+CDR_TABLE_NAME = 'cdr' # Name of the table containing the Asterisk/FreeSwitch CDR
+
+# Only the Asterisk CDR table is supported at the moment, 
+# but Freeswitch and other platform will be soon
+VOIP_PLATFORM = 'asterisk' # asterisk, freeswitch
+
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -102,7 +109,7 @@ INSTALLED_APPS = (
     'cdr',
     'dilla',
     #'debug_toolbar',
-    'django_extensions',
+    #'django_extensions',
     'dateutil',
     'uni_form',
 )
