@@ -5,8 +5,8 @@ APPLICATION_DIR = os.path.dirname( globals()[ '__file__' ] )
 
 
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+DEBUG = False
+TEMPLATE_DEBUG = False
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -16,14 +16,6 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'asterisk',                      # Or path to database file if using sqlite3.
-        'USER': 'root',                      # Not used with sqlite3.
-        'PASSWORD': 'password',                  # Not used with sqlite3.
-        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-    },
-    'default2': {
         'ENGINE': 'sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': os.path.dirname(os.path.abspath( __file__ )) + '/database/local.db',                      # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
@@ -86,7 +78,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'cdr.colorsql.ColorSQLMiddleware',
+    #'cdr.colorsql.ColorSQLMiddleware',
 )
 
 ROOT_URLCONF = 'cdr_stats.urls'
@@ -115,7 +107,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'cdr',
-    'dilla',
+    #'dilla',
     #'debug_toolbar',
     #'django_extensions',
     'dateutil',
