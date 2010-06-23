@@ -26,7 +26,7 @@ class CDR(models.Model):
     channel = models.CharField(max_length=80)
     dstchannel = models.CharField(max_length=80)
     lastapp = models.CharField(max_length=80)
-    #lastdata = models.CharField(max_length=80)
+    lastdata = models.CharField(max_length=80)
     duration = models.PositiveIntegerField()
     billsec = models.PositiveIntegerField()
     disposition = models.PositiveIntegerField(choices=DISPOSITION)
