@@ -22,15 +22,22 @@
 	<div>
 		<p>
 		<br/>
-		<a href="http://www.cdr-stats.org/" target="_blank" >CDR-Stats</a> {% trans "is an open source application that allows you to browse and analyze your CDRs (Call Details Record)." %}<br>
+		
+		<a href="http://www.cdr-stats.org/" target="_blank" >CDR-Stats</a> {% trans "is an application that allows you to browse and analyze CDR (Call Details Records)." %}<br>
 		{% trans "Different reporting tools are provided :" %}
 		<ul>
-		    <li>{% trans "Monthly Report : summarize your monthly traffic and allow you to have a monthly vision of your traffic load." %}</li>
-		    <li>{% trans "Analyze CDR : This report allows you to compare your traffic with previous day and study the volum variation on your server" %}</li>
-		    <li>{% trans "Daily Traffic : give you a day by day vision and let you see how many calls are running each hours" %}</li>
+		    <li>{% trans "Search CDR: Search, filter, display and export CDR." %}</li>
+		    <li>{% trans "Monthly Report: Summarise and compare call traffic history month on month." %}</li>
+		    <li>{% trans "Analyze CDR : Analyse and compare call volumes with the previous day’s traffic." %}</li>
+		    <li>{% trans "Daily Traffic : Graph and filter traffic loads by hour during the day." %}</li>
 		</ul>
-		<br/>
-
+        <br/>
+        {% trans "CDR-Stats is Free Software released under the AGPL. " %} <br/>
+        {% trans "Support, alternative licensing and consultancy is available from " %} 
+        <a target="_blank" href="http://www.star2billing.com">http://www.star2billing.com</a>
+        <br/>
+        <br/>
+        
         <a href="http://www.cdr-stats.org/" target="_blank" ><img src='{{MEDIA_URL}}/icons/help-about-2.png' title="Info" alt="Info" width="110" class="info-icon"/></a>
         
         <br/><br/>
@@ -87,10 +94,12 @@
 	<h3><a href="#">{% trans "Licensing" %}</a></h3>
 	<div>
 		<p>
-		
-        {% trans "CDR-Stats is licensed under" %} <a href="http://www.fsf.org/licensing/licenses/agpl-3.0.html" target="_blank">AGPL 3</a>.<br/>
+        {% trans "CDR-Stats is licensed under" %} <a href="http://www.fsf.org/licensing/licenses/agpl-3.0.html" target="_blank">AGPL 3</a>,
+        {% trans "however an alternative license can be purchased if the AGPL license is not suitable for your requirements. See " %} 
+        <a target="_blank" href="http://www.cdr-stats.org/">http://www.cdr-stats.org/</a>
+        <br/>
 		<br><a href="http://www.fsf.org/licensing/licenses/agpl-3.0.html" target="_blank"><img src="{{MEDIA_URL}}/icons/agplv3-155x51.png" class="info-icon"></a>
-
+        
         <br/><br/>
 	</div>
 	
@@ -99,7 +108,7 @@
 		<p>
 		{% trans "Star2Billing S.L. was formed to provide commercial support, installation and training to telecommunications companies that wished to deploy A2Billing." %}
         <br/><br/>
-        {% trans "A2Billing is both a Telecoms Switch and a Billing Platform for those wishing to deploy telecoms services such as VoIP, calling cards and callback, as well as a variety of other products. Please see" %} <a href="http://www.star2billing.com">http://www.star2billing.com</a> {% trans "for more details." %}
+        {% trans "A2Billing is both a Telecoms Switch and a Billing Platform for those wishing to deploy telecoms services such as VoIP, calling cards and callback, as well as a variety of other products. Please see" %} <a target="_blank" href="http://www.star2billing.com">http://www.star2billing.com</a> {% trans "for more details." %}
 
         <br/><br/>
         {% trans "CDR-Stats is the latest piece of software development from the Star2Billing stable, and is a complete ground up re-write of the famous Asterisk-Stat, which has been around for over 7 years as a CDR viewer and analyser for Asterisk, and has been included in FreePBX to view and analyse CDR." %}
