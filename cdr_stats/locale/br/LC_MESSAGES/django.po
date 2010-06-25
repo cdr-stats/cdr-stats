@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
-"Report-Msgid-Bugs-To: areski@gmail.com\n"
-"POT-Creation-Date: 2010-06-24 10:48:56\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-06-25 18:24+0200\n"
 "PO-Revision-Date: 2010-06-24 10:48:56\n"
 "Last-Translator: vinicius@tofalando.com\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -16,17 +16,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: settings.py:119
+#: settings.py:126
 msgid "English"
 msgstr "Inglês"
 
-#: settings.py:120
+#: settings.py:127
 msgid "French"
 msgstr "Francês"
 
-#: settings.py:121
+#: settings.py:128
 msgid "Spanish"
 msgstr "Espanhol"
+
+#: settings.py:129
+msgid "Brazilian"
+msgstr ""
 
 #: cdr/forms.py:16 cdr/grid.py:17
 msgid "Destination"
@@ -52,12 +56,14 @@ msgstr "Termina com"
 msgid "Source"
 msgstr "Origem"
 
-#: cdr/forms.py:29
-msgid "Select month"
+#: cdr/forms.py:29 cdr/forms.py:47 cdr/forms.py:64
+#, fuzzy
+msgid "Select Month"
 msgstr "Selecione o mes"
 
 #: cdr/forms.py:30
-msgid "Number of months to compare"
+#, fuzzy
+msgid "Months to Compare"
 msgstr "Número de meses para comparar"
 
 #: cdr/forms.py:35 cdr/forms.py:52 cdr/forms.py:72 cdr/forms.py:105
@@ -65,27 +71,27 @@ msgid "Search"
 msgstr "Pesquisar"
 
 #: cdr/forms.py:46
-msgid "From"
-msgstr "De"
-
-#: cdr/forms.py:47 cdr/forms.py:64
-msgid "Select day"
+#, fuzzy
+msgid "Select Day"
 msgstr "Selecione o dia"
 
 #: cdr/forms.py:65
-msgid "Number of days to compare"
+#, fuzzy
+msgid "Days to Compare"
 msgstr "Número de días para comparar"
 
 #: cdr/forms.py:66
 msgid "Graph"
 msgstr "Gráfico"
 
-#: templates/cdr/show_graph_by_hour.html:25
-msgid "Number of calls by Hours"
-msgstr "Número de chamadas por horas"
+#: cdr/forms.py:67 templates/cdr/show_graph_by_hour.html:26
+#, fuzzy
+msgid "Calls per Hour"
+msgstr "Chamadas por hora"
 
-#: cdr/forms.py:67
-msgid "Minutes by hours"
+#: cdr/forms.py:67 templates/cdr/show_graph_by_hour.html:28
+#, fuzzy
+msgid "Minutes per Hour"
 msgstr "Minutos por hora"
 
 #: cdr/forms.py:83
@@ -120,19 +126,19 @@ msgstr "Login"
 msgid "password"
 msgstr "senha"
 
-#: cdr/functions_def.py:44
+#: cdr/functions_def.py:43
 msgid "months"
 msgstr "mes"
 
-#: cdr/functions_def.py:45
+#: cdr/functions_def.py:44
 msgid "month"
 msgstr "mes"
 
-#: cdr/functions_def.py:51
+#: cdr/functions_def.py:62
 msgid "days"
 msgstr "dias"
 
-#: cdr/functions_def.py:52
+#: cdr/functions_def.py:63
 msgid "day"
 msgstr "dia"
 
@@ -161,47 +167,47 @@ msgstr "Disposição"
 msgid "Duration"
 msgstr "Duração"
 
-#: cdr/models.py:7
+#: cdr/models.py:8
 msgid "ANSWER"
 msgstr "ATENDIDA"
 
-#: cdr/models.py:8
+#: cdr/models.py:9
 msgid "BUSY"
 msgstr "OCUPADA"
 
-#: cdr/models.py:9
+#: cdr/models.py:10
 msgid "NOANSWER"
 msgstr "NÃO ATENDIDA"
 
-#: cdr/models.py:10
+#: cdr/models.py:11
 msgid "CANCEL"
 msgstr "CANCELADA"
 
-#: cdr/models.py:11
+#: cdr/models.py:12
 msgid "CONGESTION"
 msgstr "CONGESTIONADA"
 
-#: cdr/models.py:12
+#: cdr/models.py:13
 msgid "CHANUNAVAIL"
 msgstr "CANAL NÃO DISPONÍVEL"
 
-#: cdr/models.py:13
+#: cdr/models.py:14
 msgid "DONTCALL"
 msgstr "NÃO LIGA"
 
-#: cdr/models.py:14
+#: cdr/models.py:15
 msgid "TORTURE"
 msgstr "TORTURE"
 
-#: cdr/models.py:15
+#: cdr/models.py:16
 msgid "INVALIDARGS"
 msgstr "ARGUMENTOS INVÁLIDOS"
 
-#: cdr/views.py:543
+#: cdr/views.py:500
 msgid "Disabled Account"
 msgstr "Conta desativada"
 
-#: cdr/views.py:546
+#: cdr/views.py:503
 msgid "Invalid Login."
 msgstr "Usuário inválido."
 
@@ -209,66 +215,140 @@ msgstr "Usuário inválido."
 msgid "Info"
 msgstr "Info"
 
-#: templates/cdr/index.html:100
-msgid ""
-"Star2Billing S.L. was formed to provide commercial support, installation and "
-"training to telecommunications companies that wished to deploy A2Billing."
-msgstr "Star2Billing SL foi criado para oferecer suporte comercial, instalação e treinamento de empresas de telecomunicações que desejam implementar o A2Billing."
-
 #: templates/cdr/index.html:26
+msgid ""
+"is an application that allows you to browse and analyse CDR (Call Detail "
+"Records)."
+msgstr ""
+
+#: templates/cdr/index.html:27
 msgid "Different reporting tools are provided :"
 msgstr "Diferentes ferramentas de relatórios disponíveis:"
 
-#: templates/cdr/index.html:40
+#: templates/cdr/index.html:29
+msgid "Search CDR: Search, filter, display and export CDR."
+msgstr ""
+
+#: templates/cdr/index.html:30
+msgid ""
+"Monthly Report: Summarise and compare call traffic history month on month."
+msgstr ""
+
+#: templates/cdr/index.html:31
+msgid ""
+"Analyse CDR : Analyse and compare call volumes with the previous day’s "
+"traffic."
+msgstr ""
+
+#: templates/cdr/index.html:32
+msgid "Daily Traffic : Graph and filter traffic loads by hour during the day."
+msgstr ""
+
+#: templates/cdr/index.html:35
+#, fuzzy
+msgid "CDR-Stats is Free Software released under the AGPL. "
+msgstr "CDR-Stats é um software licenciado sobre"
+
+#: templates/cdr/index.html:36
+msgid "Support, alternative licensing and consultancy is available from "
+msgstr ""
+
+#: templates/cdr/index.html:47
 msgid "Download"
 msgstr "Download"
 
-#: templates/cdr/index.html:43
+#: templates/cdr/index.html:50
 msgid "Please visit"
 msgstr "Por favor, visite"
 
-#: templates/cdr/index.html:44
+#: templates/cdr/index.html:51
 msgid "and download the last stable release."
 msgstr "fazer downlaod da última versão estável."
 
-#: templates/cdr/index.html:54
+#: templates/cdr/index.html:61
 msgid "Support"
 msgstr "Suporte"
 
-#: templates/cdr/index.html:61
+#: templates/cdr/index.html:64
+msgid ""
+"Star2Billing S.L. offers consultancy including installation, training and "
+"customisation on all of its products, and CDR-Stats is no exception."
+msgstr ""
+
+#: templates/cdr/index.html:66
+msgid ""
+"Purchasing consultancy is a good way to help support the development of CDR-"
+"Stats, and from the customer's point of view can speed the time of "
+"deployment, leaving them free to concentrate on more profitable and "
+"productive tasks."
+msgstr ""
+
+#: templates/cdr/index.html:68
 msgid "Contact us at"
 msgstr "Fale conosco"
 
-#: templates/cdr/index.html:61
+#: templates/cdr/index.html:68
 msgid "for more information"
 msgstr "para mais informacões"
 
-#: templates/cdr/index.html:67
+#: templates/cdr/index.html:74
 msgid "News"
 msgstr "Noticias"
 
-#: templates/cdr/index.html:87
+#: templates/cdr/index.html:94
 msgid "Licensing"
 msgstr "Licensas"
 
-#: templates/cdr/index.html:91
+#: templates/cdr/index.html:97
 msgid "CDR-Stats is licensed under"
 msgstr "CDR-Stats está licenciado sobre"
 
-#: templates/cdr/index.html:97
+#: templates/cdr/index.html:98
+msgid ""
+"however an alternative license can be purchased if the AGPL license is not "
+"suitable for your requirements. See "
+msgstr ""
+
+#: templates/cdr/index.html:106
 msgid "Contact Us"
 msgstr "Fale conosco"
 
-#: templates/cdr/index.html:103
+#: templates/cdr/index.html:109
+msgid ""
+"Star2Billing S.L. was formed to provide commercial support, installation and "
+"training to telecommunications companies that wished to deploy A2Billing."
+msgstr ""
+"Star2Billing SL foi criado para oferecer suporte comercial, instalação e "
+"treinamento de empresas de telecomunicações que desejam implementar o "
+"A2Billing."
+
+#: templates/cdr/index.html:111
+msgid ""
+"A2Billing is both a Telecoms Switch and a Billing Platform for those wishing "
+"to deploy telecoms services such as VoIP, calling cards and callback, as "
+"well as a variety of other products. Please see"
+msgstr ""
+
+#: templates/cdr/index.html:111
 msgid "for more details."
 msgstr "para mais detalhes."
 
+#: templates/cdr/index.html:114
+msgid ""
+"CDR-Stats is the latest piece of software development from the Star2Billing "
+"stable, and is a complete ground up re-write of the famous Asterisk-Stat, "
+"which has been around for over 7 years as a CDR viewer and analyser for "
+"Asterisk, and has been included in FreePBX to view and analyse CDR."
+msgstr ""
+
 #: templates/cdr/master.html:107
-msgid "Search CDRs"
+#, fuzzy
+msgid "Search CDR"
 msgstr "Pesquisar CDRs"
 
 #: templates/cdr/master.html:108
-msgid "Analyze CDRs"
+#, fuzzy
+msgid "Analyse CDR"
 msgstr "Analizar CDRs"
 
 #: templates/cdr/master.html:109
@@ -292,15 +372,13 @@ msgid "CDR-Stats is software licensed under the "
 msgstr "CDR-Stats é um software licenciado sobre"
 
 #: templates/cdr/show_graph_by_day.html:25
-msgid "Load By Hour"
-msgstr "Carga por hora"
-
 #: templates/cdr/show_graph_by_day.html:38
-msgid "Call per hour"
+#, fuzzy
+msgid "Calls by Hour"
 msgstr "Chamadas por hora"
 
 #: templates/cdr/show_graph_by_day.html:46
-#: templates/cdr/show_graph_by_hour.html:57
+#: templates/cdr/show_graph_by_hour.html:62
 #: templates/cdr/show_graph_by_month.html:51
 msgid "No Record(s) found."
 msgstr "Nenhum Registro encontrado."
@@ -311,7 +389,8 @@ msgid "Traffic Last %(comp_months)s Months"
 msgstr "Tráfego do(s) ultimo(s) %(comp_months)s mes(es)"
 
 #: templates/cdr/show_jqgrid.html:51
-msgid "Call Details Report per day"
+#, fuzzy
+msgid "Call Detail Report by Day"
 msgstr "Detalhes de Chamadas por dia"
 
 #: templates/cdr/show_jqgrid.html:54
@@ -342,3 +421,11 @@ msgstr "Total"
 msgid "Export CSV file"
 msgstr "Exportar para um arquivo CSV"
 
+#~ msgid "From"
+#~ msgstr "De"
+
+#~ msgid "Number of calls by Hours"
+#~ msgstr "Número de chamadas por horas"
+
+#~ msgid "Load By Hour"
+#~ msgstr "Carga por hora"
