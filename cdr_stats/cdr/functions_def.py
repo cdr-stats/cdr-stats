@@ -42,14 +42,32 @@ def get_unique_id():
 def comp_month_range():
     word_months = _("months")
     word_month = _("month")
-    COMP_MONTH_LIST= ( (6,'- 6 '+word_months),(5,'- 5 '+word_months),(4,'- 4 '+word_months),(3,'- 3 '+word_months),(2,'- 2 '+word_months),(1,'- 1 '+word_month), )
+    COMP_MONTH_LIST= ( (12,'- 12 '+word_months),
+                        (11,'- 11 '+word_months),
+                        (10,'- 10 '+word_months),
+                        (9,'- 9 '+word_months),
+                        (8,'- 8 '+word_months),
+                        (7,'- 7 '+word_months),
+                        (6,'- 6 '+word_months),
+                        (5,'- 5 '+word_months),
+                        (4,'- 4 '+word_months),
+                        (3,'- 3 '+word_months),
+                        (2,'- 2 '+word_months),
+                        (1,'- 1 '+word_month), 
+                       )
     return COMP_MONTH_LIST
 
 
 def comp_day_range():
     word_days = _("days")
     word_day = _("day")
-    COMP_DAY_LIST= ( (4,'- 4 '+word_days),(3,'- 3 '+word_days),(2,'- 2 '+word_day),(1,'- 1 '+word_day),)
+    COMP_DAY_LIST= ( (7,'- 7 '+word_days),
+                     (6,'- 6 '+word_days),
+                     (5,'- 5 '+word_days),
+                     (4,'- 4 '+word_days),
+                     (3,'- 3 '+word_days),
+                     (2,'- 2 '+word_days),
+                     (1,'- 1 '+word_day),)
     return COMP_DAY_LIST
 
 

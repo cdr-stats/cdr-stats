@@ -26,8 +26,8 @@ class CdrSearchForm(forms.Form):
 
 class MonthLoadSearchForm(CdrSearchForm):
 
-    from_month_year= forms.ChoiceField(label=_('Select month'), required=False, choices=month_year_range())
-    comp_months = forms.ChoiceField(label=_('Number of months to compare'), required=False, choices=comp_month_range())
+    from_month_year= forms.ChoiceField(label=_('Select Month'), required=False, choices=month_year_range())
+    comp_months = forms.ChoiceField(label=_('Months to Compare'), required=False, choices=comp_month_range())
     
     # Attach a formHelper to your forms class.
     helper = FormHelper()
@@ -43,8 +43,8 @@ class MonthLoadSearchForm(CdrSearchForm):
 
 class DailyLoadSearchForm(CdrSearchForm):
 
-    from_day = forms.ChoiceField(label=_('From'), required=False, choices=day_range())
-    from_month_year= forms.ChoiceField(label=_('Select day'), required=False, choices=month_year_range())
+    from_day = forms.ChoiceField(label=_('Select Day'), required=False, choices=day_range())
+    from_month_year= forms.ChoiceField(label=_('Select Month'), required=False, choices=month_year_range())
     
     # Attach a formHelper to your forms class.
     helper = FormHelper()
@@ -60,11 +60,11 @@ class DailyLoadSearchForm(CdrSearchForm):
 
 class CompareCallSearchForm(CdrSearchForm):
 
-    from_day = forms.ChoiceField(label='From', required=False, choices=day_range())
-    from_month_year= forms.ChoiceField(label=_('Select day'), required=False, choices=month_year_range())
-    comp_days = forms.ChoiceField(label=_('Number of days to compare'), required=False, choices=comp_day_range())
+    from_day = forms.ChoiceField(label='Select Day', required=False, choices=day_range())
+    from_month_year= forms.ChoiceField(label=_('Select Month'), required=False, choices=month_year_range())
+    comp_days = forms.ChoiceField(label=_('Days to Compare'), required=False, choices=comp_day_range())
     graph_view=forms.ChoiceField(label=_('Graph'), required=False,
-            choices=((1, _('Number of calls by hours')), (2,_('Minutes by hours'))))
+            choices=((1, _('Calls per Hour')), (2,_('Minutes per Hour'))))
     
     # Attach a formHelper to your forms class.
     helper = FormHelper()

@@ -22,7 +22,7 @@
 <div id="graph-container">
 <table id="table_load_hour" width="100%" border="1" align="center">
   {% if total_record %}
-  <caption>{% trans "Load By Hour"  %}</caption>
+  <caption>{% trans "Calls by Hour"  %}</caption>
 	<thead>
 		<tr>
 			<td></td>
@@ -35,7 +35,7 @@
     <tbody>
     <tr class="tr_class">
            <th scope="row">
-               {% trans "Call per hour"  %}
+               {% trans "Calls by Hour"  %}
            </th>
            {% for call in total_record %}
            <td>{{ call.1 }}</td>
