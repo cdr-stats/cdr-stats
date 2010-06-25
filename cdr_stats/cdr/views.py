@@ -135,7 +135,7 @@ def export_to_csv(request):
     qs = request.session['cdr_queryset']
     writer.writerow(['Calldate', 'Channel', 'Source', 'Clid','Destination','Disposition','Duration'])
     for cdr in qs:
-        writer.writerow([cdr['calldate'], cdr['channel'], cdr['src'], cdr['clid'], cdr['dst'], cdr['disposition'], cdr['duration']])
+        writer.writerow([cdr['calldate'], cdr['channel'].encode("utf-8"), cdr['src'].encode("utf-8"), cdr['clid'].encode("utf-8"), cdr['dst'].encode("utf-8"), cdr['disposition'].encode("utf-8"), cdr['duration'].encode("utf-8")])
     return response
 
 
