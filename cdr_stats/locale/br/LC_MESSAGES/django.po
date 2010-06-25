@@ -1,0 +1,344 @@
+# CDR-Stats - PO File
+# Copyright (C) 2010 - Star2Billing S.L. 
+# This file is distributed under the same license as the CDR-Stats application.
+# Areski Belaid <areski@gmail.com>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: CDR-Stats 1.0\n"
+"Report-Msgid-Bugs-To: areski@gmail.com\n"
+"POT-Creation-Date: 2010-06-24 10:48:56\n"
+"PO-Revision-Date: 2010-06-24 10:48:56\n"
+"Last-Translator: vinicius@tofalando.com\n"
+"Language-Team: Areski Belaid <areski@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: settings.py:119
+msgid "English"
+msgstr "Inglês"
+
+#: settings.py:120
+msgid "French"
+msgstr "Francês"
+
+#: settings.py:121
+msgid "Spanish"
+msgstr "Espanhol"
+
+#: cdr/forms.py:16 cdr/grid.py:17
+msgid "Destination"
+msgstr "Destino"
+
+#: cdr/forms.py:18 cdr/forms.py:22
+msgid "Equals"
+msgstr "Igual a"
+
+#: cdr/forms.py:18 cdr/forms.py:22
+msgid "Begins with"
+msgstr "Começa com"
+
+#: cdr/forms.py:18 cdr/forms.py:22
+msgid "Contains"
+msgstr "Contém"
+
+#: cdr/forms.py:18 cdr/forms.py:22
+msgid "Ends with"
+msgstr "Termina com"
+
+#: cdr/forms.py:20 cdr/grid.py:15
+msgid "Source"
+msgstr "Origem"
+
+#: cdr/forms.py:29
+msgid "Select month"
+msgstr "Selecione o mes"
+
+#: cdr/forms.py:30
+msgid "Number of months to compare"
+msgstr "Número de meses para comparar"
+
+#: cdr/forms.py:35 cdr/forms.py:52 cdr/forms.py:72 cdr/forms.py:105
+msgid "Search"
+msgstr "Pesquisar"
+
+#: cdr/forms.py:46
+msgid "From"
+msgstr "De"
+
+#: cdr/forms.py:47 cdr/forms.py:64
+msgid "Select day"
+msgstr "Selecione o dia"
+
+#: cdr/forms.py:65
+msgid "Number of days to compare"
+msgstr "Número de días para comparar"
+
+#: cdr/forms.py:66
+msgid "Graph"
+msgstr "Gráfico"
+
+#: templates/cdr/show_graph_by_hour.html:25
+msgid "Number of calls by Hours"
+msgstr "Número de chamadas por horas"
+
+#: cdr/forms.py:67
+msgid "Minutes by hours"
+msgstr "Minutos por hora"
+
+#: cdr/forms.py:83
+msgid "From :"
+msgstr "De:"
+
+#: cdr/forms.py:85
+msgid "To :"
+msgstr "Para:"
+
+#: cdr/forms.py:88
+msgid "Result:"
+msgstr "Resultados:"
+
+#: cdr/forms.py:89
+msgid "Minutes"
+msgstr "Minutos"
+
+#: cdr/forms.py:89
+msgid "Seconds"
+msgstr "Segundos"
+
+#: cdr/forms.py:95
+msgid "Search Options :"
+msgstr "Opções de pesquisa:"
+
+#: cdr/forms.py:113 templates/cdr/login_option.html:18
+msgid "Login"
+msgstr "Login"
+
+#: cdr/forms.py:114
+msgid "password"
+msgstr "senha"
+
+#: cdr/functions_def.py:44
+msgid "months"
+msgstr "mes"
+
+#: cdr/functions_def.py:45
+msgid "month"
+msgstr "mes"
+
+#: cdr/functions_def.py:51
+msgid "days"
+msgstr "dias"
+
+#: cdr/functions_def.py:52
+msgid "day"
+msgstr "dia"
+
+#: cdr/grid.py:11
+msgid "Call Detail Records"
+msgstr "Detalhes de ligações"
+
+#: cdr/grid.py:13
+msgid "Call Date"
+msgstr "Data da Ligação"
+
+#: cdr/grid.py:14
+msgid "Channel"
+msgstr "Canal"
+
+#: cdr/grid.py:16
+msgid "Clid"
+msgstr "CLID"
+
+#: cdr/grid.py:18
+msgid "Disposition"
+msgstr "Disposição"
+
+#: cdr/grid.py:19 templates/cdr/show_graph_by_month.html:32
+#: templates/cdr/show_jqgrid.html:55
+msgid "Duration"
+msgstr "Duração"
+
+#: cdr/models.py:7
+msgid "ANSWER"
+msgstr "ATENDIDA"
+
+#: cdr/models.py:8
+msgid "BUSY"
+msgstr "OCUPADA"
+
+#: cdr/models.py:9
+msgid "NOANSWER"
+msgstr "NÃO ATENDIDA"
+
+#: cdr/models.py:10
+msgid "CANCEL"
+msgstr "CANCELADA"
+
+#: cdr/models.py:11
+msgid "CONGESTION"
+msgstr "CONGESTIONADA"
+
+#: cdr/models.py:12
+msgid "CHANUNAVAIL"
+msgstr "CANAL NÃO DISPONÍVEL"
+
+#: cdr/models.py:13
+msgid "DONTCALL"
+msgstr "NÃO LIGA"
+
+#: cdr/models.py:14
+msgid "TORTURE"
+msgstr "TORTURE"
+
+#: cdr/models.py:15
+msgid "INVALIDARGS"
+msgstr "ARGUMENTOS INVÁLIDOS"
+
+#: cdr/views.py:543
+msgid "Disabled Account"
+msgstr "Conta desativada"
+
+#: cdr/views.py:546
+msgid "Invalid Login."
+msgstr "Usuário inválido."
+
+#: templates/cdr/index.html:21 templates/cdr/master.html:111
+msgid "Info"
+msgstr "Info"
+
+#: templates/cdr/index.html:100
+msgid ""
+"Star2Billing S.L. was formed to provide commercial support, installation and "
+"training to telecommunications companies that wished to deploy A2Billing."
+msgstr "Star2Billing SL foi criado para oferecer suporte comercial, instalação e treinamento de empresas de telecomunicações que desejam implementar o A2Billing."
+
+#: templates/cdr/index.html:26
+msgid "Different reporting tools are provided :"
+msgstr "Diferentes ferramentas de relatórios disponíveis:"
+
+#: templates/cdr/index.html:40
+msgid "Download"
+msgstr "Download"
+
+#: templates/cdr/index.html:43
+msgid "Please visit"
+msgstr "Por favor, visite"
+
+#: templates/cdr/index.html:44
+msgid "and download the last stable release."
+msgstr "fazer downlaod da última versão estável."
+
+#: templates/cdr/index.html:54
+msgid "Support"
+msgstr "Suporte"
+
+#: templates/cdr/index.html:61
+msgid "Contact us at"
+msgstr "Fale conosco"
+
+#: templates/cdr/index.html:61
+msgid "for more information"
+msgstr "para mais informacões"
+
+#: templates/cdr/index.html:67
+msgid "News"
+msgstr "Noticias"
+
+#: templates/cdr/index.html:87
+msgid "Licensing"
+msgstr "Licensas"
+
+#: templates/cdr/index.html:91
+msgid "CDR-Stats is licensed under"
+msgstr "CDR-Stats está licenciado sobre"
+
+#: templates/cdr/index.html:97
+msgid "Contact Us"
+msgstr "Fale conosco"
+
+#: templates/cdr/index.html:103
+msgid "for more details."
+msgstr "para mais detalhes."
+
+#: templates/cdr/master.html:107
+msgid "Search CDRs"
+msgstr "Pesquisar CDRs"
+
+#: templates/cdr/master.html:108
+msgid "Analyze CDRs"
+msgstr "Analizar CDRs"
+
+#: templates/cdr/master.html:109
+msgid "Daily Traffic"
+msgstr "Tráfego diário"
+
+#: templates/cdr/master.html:110
+msgid "Monthly Traffic"
+msgstr "Tráfego Mensal"
+
+#: templates/cdr/master.html:133
+msgid "Alert"
+msgstr "Alerta"
+
+#: templates/cdr/master.html:133
+msgid "Please login by clicking on login button"
+msgstr "Por favor, autentique-se clicando no botão Login"
+
+#: templates/cdr/master.html:150
+msgid "CDR-Stats is software licensed under the "
+msgstr "CDR-Stats é um software licenciado sobre"
+
+#: templates/cdr/show_graph_by_day.html:25
+msgid "Load By Hour"
+msgstr "Carga por hora"
+
+#: templates/cdr/show_graph_by_day.html:38
+msgid "Call per hour"
+msgstr "Chamadas por hora"
+
+#: templates/cdr/show_graph_by_day.html:46
+#: templates/cdr/show_graph_by_hour.html:57
+#: templates/cdr/show_graph_by_month.html:51
+msgid "No Record(s) found."
+msgstr "Nenhum Registro encontrado."
+
+#: templates/cdr/show_graph_by_month.html:28
+#, python-format
+msgid "Traffic Last %(comp_months)s Months"
+msgstr "Tráfego do(s) ultimo(s) %(comp_months)s mes(es)"
+
+#: templates/cdr/show_jqgrid.html:51
+msgid "Call Details Report per day"
+msgstr "Detalhes de Chamadas por dia"
+
+#: templates/cdr/show_jqgrid.html:54
+msgid "Date"
+msgstr "Data"
+
+#: templates/cdr/show_jqgrid.html:56
+msgid "Graphic"
+msgstr "Gráfico"
+
+#: templates/cdr/show_jqgrid.html:57
+msgid "Calls"
+msgstr "Chamadas"
+
+#: templates/cdr/show_jqgrid.html:58
+msgid "Average Connection Time"
+msgstr "Tempo médio de conexão"
+
+#: templates/cdr/show_jqgrid.html:58
+msgid "ACT"
+msgstr "ACT"
+
+#: templates/cdr/show_jqgrid.html:74
+msgid "Total"
+msgstr "Total"
+
+#: templates/cdr/show_jqgrid.html:85
+msgid "Export CSV file"
+msgstr "Exportar para um arquivo CSV"
+

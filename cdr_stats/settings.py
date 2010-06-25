@@ -5,8 +5,8 @@ APPLICATION_DIR = os.path.dirname( globals()[ '__file__' ] )
 
 
 
-DEBUG = False
-TEMPLATE_DEBUG = False
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -22,7 +22,7 @@ DATABASES = {
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-    }
+    },
 }
 
 CDR_TABLE_NAME = 'cdr' # Name of the table containing the Asterisk/FreeSwitch CDR
@@ -125,7 +125,8 @@ gettext = lambda s: s
 LANGUAGES = (
     ('en', gettext('English')),
     ('fr', gettext('French')),  
-    ('es', gettext('Spanish')),
+    ('es', gettext('Spanish')),  
+    ('br', gettext('Brazilian')),
 )
 
 
