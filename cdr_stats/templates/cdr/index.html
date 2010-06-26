@@ -73,22 +73,17 @@
 	</div>
 	<h3><a href="#">{% trans "News" %}</a></h3>
 	<div>
-		<p>
-		
-        {% if news %}
-
-        {% for rc in news %}
-        {{rc.0}}  <a href="{{rc.1}}">{{rc.1}}</a> {{rc.2}}<br/>
-        <hr>
-        {% endfor %}
-
+		{% if news %}
+            {% for rc in news %}
+            {{rc.0}}  <a href="{{rc.1}}">{{rc.1}}</a> {{rc.2}}
+            <hr>
+            {% endfor %}
         {% endif %}
 
         <br/><br/>
         
         <img src='{{MEDIA_URL}}/icons/knewsticker-2.png' title='News' alt="News" width="110" class="info-icon"/>
         
-		</p>
 	</div>
 	
 	<h3><a href="#">{% trans "Licensing" %}</a></h3>

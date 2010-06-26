@@ -115,28 +115,34 @@ def month_year_range():
 
 # get news from http://cdr-stats.org/news.php
 def get_news():
-    news_handler = urllib.urlopen('http://cdr-stats.org/news.php')
-    news = news_handler.read()
-    news = nl2br(news)
-    news = string.split(news, '<br/>')
     
-    news_array = {}
-    value = {}
-    for newsweb in news:
-        value = string.split(newsweb, '|')
-        if len(value[0]) > 1 :
-            news_array[value[0]]=value[1]
-
     news_final = []
-    info = {}
-    for k in news_array:
-        link = k[int(k.find("http://")-1):len(k)]
-        info = k[0:int(k.find("http://")-1)]
-        info = string.split(k, ' - ')
-        news_final.append((info[0],info[1],news_array[k]))
+    try :
+        news_handler = urllib.urlopen('http://www.cdr-stats.org/news.php')
+        news = news_handler.read()
+        news = nl2br(news)
+        news = string.split(news, '<br/>')
+        
+        news_array = {}
+        value = {}
+        for newsweb in news:
+            value = string.split(newsweb, '|')
+            if len(value[0]) > 1 :
+                news_array[value[0]]=value[1]
 
-    news_final.reverse()
-    news_handler.close()
+        info = {}
+        for k in news_array:
+            link = k[int(k.find("http://")-1):len(k)]
+            info = k[0:int(k.find("http://")-1)]
+            info = string.split(k, ' - ')
+            news_final.append((info[0],info[1],news_array[k]))
+
+        news_handler.close()
+    except IndexError:
+        pass
+    except IOError:
+        pass
+        
     return news_final
 
 
