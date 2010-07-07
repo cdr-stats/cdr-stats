@@ -301,6 +301,7 @@ def show_graph_by_day(request):
     if kwargs:
         select_data = {"called_time": "SUBSTR(calldate,12,2)"} # get Hour
         calls_in_day = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('calldate'))#.order_by('-calldate')#
+        #calls_in_day = CDR.objects.filter(**kwargs).extra(select={'hour': "django_date_trunc('hour', %s.calldate)" % CDR._meta.db_table}).values('hour').annotate(Count('calldate'))#.order_by('-calldate')#
 
         total_record = []
 

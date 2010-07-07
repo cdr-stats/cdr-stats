@@ -4,6 +4,10 @@
 
  - Result minutes / seconds
 
+ - Search by account code
+ 
+ - Display Disposition
+
  - jquery datepicker integrate for From-date and To-Date Criteria
  
  - concurrent calls : reproduce the logic from http://projects.colsolgrp.net/projects/list_files/concurrentcalls

@@ -5,8 +5,8 @@ APPLICATION_DIR = os.path.dirname( globals()[ '__file__' ] )
 
 
 
-DEBUG = False
-TEMPLATE_DEBUG = False
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -78,7 +78,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
-    #'cdr.colorsql.ColorSQLMiddleware',
+    'cdr.colorsql.ColorSQLMiddleware',
 )
 
 ROOT_URLCONF = 'cdr_stats.urls'
@@ -107,7 +107,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'cdr',
-    #'dilla',
+    'dilla',
     #'debug_toolbar',
     #'django_extensions',
     'dateutil',
