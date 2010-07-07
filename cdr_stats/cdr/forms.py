@@ -108,6 +108,33 @@ class CdrSearchForm(forms.Form):
     helper.add_layout(layout)
 
 
+class ConcurrentCallForm(forms.Form):
+
+    from_day = forms.ChoiceField(label=_('From :'), required=False, choices=day_range())
+    from_month_year = forms.ChoiceField(label='', required=False, choices=month_year_range())
+    to_day = forms.ChoiceField(label=_('To :'), required=False, choices=day_range())
+    to_month_year = forms.ChoiceField(label='', required=False, choices=month_year_range())
+    channel = forms.CharField(label='Channel', required=False, widget=forms.TextInput(attrs={'size': 15}))
+    
+    # create the layout object
+    layout = Layout(
+                Fieldset(
+                        _('Search Options :'),
+                        Column('from_day','from_month_year'),
+                        Column('to_day','to_month_year'),
+                        Column('channel'),
+                     )
+                )
+
+    # Attach a formHelper to your forms class.
+    helper = FormHelper()
+    helper.form_method = 'GET'
+    submit = Submit('search', _('Search'))
+    helper.add_input(submit)
+    helper.use_csrf_protection = True
+    helper.add_layout(layout)
+    
+
 class loginForm(forms.Form):
 
     user = forms.CharField(max_length=40, label=_('Login'), required=True, widget=forms.TextInput(attrs={'size':'10'}))

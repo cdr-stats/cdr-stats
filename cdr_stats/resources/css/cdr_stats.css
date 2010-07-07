@@ -3,7 +3,7 @@ img {
     border: 0;
 }
 
-#table_load_hour, #table_call_hour, #table_call_month  {
+#table_load_hour, #table_call_hour, #table_call_month, #table_concurrent_call   {
 	display: none;
 	margin-left: auto;
     margin-right: auto;

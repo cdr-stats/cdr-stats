@@ -516,6 +516,154 @@ def login_view(request):
     return render_to_response(template, data,context_instance = RequestContext(request))
 
 
+@login_required
+def show_concurrent_calls(request):
+
+    kwargs = {}
+    graph_view = '1'
+    
+    if request.method == 'POST':
+        if "from_month_year" in request.POST:
+            from_day        = int(request.POST['from_day'])
+            from_month_year = request.POST['from_month_year']
+            from_year       = int(request.POST['from_month_year'][0:4])
+            from_month      = int(request.POST['from_month_year'][5:7])
+        else:
+            from_day        = ''
+            from_month_year = ''
+            from_year       = ''
+            from_month      = ''
+
+        trunk = variable_value(request,'trunk')
+        
+        if channel != '':
+            kwargs[ 'channel' ] = channel
+
+        if from_day != '':
+            end_date = datetime(from_year, from_month, from_day)
+            start_date= end_date+relativedelta(days=-int(comp_days))
+            start_date = datetime(start_date.year, start_date.month, start_date.day,0,0,0,0)
+            end_date = datetime(end_date.year, end_date.month, end_date.day,23,59,59,999999)
+
+            kwargs[ 'calldate__range' ] = (start_date,end_date)
+
+
+        form = ConcurrentCallForm(initial={'from_day':from_day,'from_month_year':from_month_year,'channel':channel,})
+
+    if len(kwargs) == 0:
+        tday = datetime.today()
+        from_day = validate_days(tday.year,tday.month,tday.day)
+        form = ConcurrentCallForm(initial={'from_day':tday.day})
+        from_year=tday.year
+        from_month= tday.month
+
+        end_date = datetime(from_year, from_month, from_day)
+        start_date= end_date+relativedelta(days=-2)
+        start_date = datetime(start_date.year, start_date.month, start_date.day,0,0,0,0)
+        end_date = datetime(end_date.year, end_date.month, end_date.day,23,59,59,999999)
+
+        kwargs[ 'calldate__range' ] = (start_date,end_date)
+
+    if kwargs:
+        if graph_view == '1':
+            calls_in_day = CDR.objects.filter(**kwargs).values('calldate','duration')#.order_by('-calldate')#
+
+        calls = {}
+
+        # Populate the calls array
+        for data in calls_in_day:
+            start_call = int(data[ 'calldate' ].strftime("%Y%m%d%H%M"))
+            end_call = int((data[ 'calldate' ] + timedelta(seconds=data['duration'])).strftime("%Y%m%d%H%M"))
+            if start_call in calls.keys():
+                calls[start_call].append({'load': 1, 'calldate': data['calldate'], 'duration':data['duration']})
+            else:
+                calls[start_call] = [{'load': 1, 'calldate': data['calldate'], 'duration':data['duration']}]
+
+            if end_call in calls.keys():
+                calls[end_call].append({'load': -1, 'calldate': data['calldate'], 'duration':data['duration']})
+            else:
+                calls[end_call] = [{'load': -1, 'calldate': data['calldate'], 'duration':data['duration']}]
+
+        
+        aux = {}
+        # Sort the $calls array by its keys.
+        for i in range(len(calls)):
+           aux[sorted(calls.keys())[i]] = calls[sorted(calls.keys())[i]]
+        calls = aux
+        
+        # Initialize some variables which will be used in processing the concurrent calls
+        concurrent_calls = {}
+        loadP = 0
+        loadN = 0
+        total_call_count = 0
+        num_calls = 0
+
+        for timestamp in calls:
+            index_array = calls[timestamp]
+            if int(len(index_array)) > 0:
+                for call_detail in index_array:
+                    if call_detail['load'] > 0:
+                        loadP += 1
+                    else:
+                        loadN += 1
+                
+                if loadP > 1:
+                    num_calls = loadP
+                    if loadN > loadP:
+                        num_calls = loadN - loadP
+                elif loadN > 1:
+                    num_calls = loadN
+                
+                if int(str(timestamp)[0:10]) in concurrent_calls:
+                    concurrent_calls[int(str(timestamp)[0:10])] = num_calls
+                else:
+                    concurrent_calls[int(str(timestamp)[0:10])] = num_calls
+                if total_call_count < int(len(index_array)):
+                    total_call_count = int(len(index_array))
+        call_count_range=range(0,total_call_count)
+        call_count_range.reverse()
+        
+
+        dates = date_range(start_date,end_date)
+        
+        dateList = []
+        datelist_final = []
+        for i in dates:
+            for j in range(0,24):
+                if len(str(j)) <= 1:
+                    j = '0' + str(j)
+                else:
+                    j = str(j)
+                    
+                dateList.append(int(i.strftime("%Y%m%d") + j))
+            datelist_final.append(( i.strftime("%Y-%m-%d") ))
+            
+        
+        total_record_final = []
+        for i in dateList:
+            y =  str(i)
+            if i in concurrent_calls.keys():
+                total_record_final.append((y[0:4]+'-'+y[4:6]+'-'+y[6:8], int(y[8:10]), concurrent_calls[i]))
+            else:
+                total_record_final.append((y[0:4]+'-'+y[4:6]+'-'+y[6:8], int(y[8:10]), 0))
+        
+        
+        variables = RequestContext(request,
+                            {'form': form,
+                             'result':'min',
+                             'record_dates':datelist_final,
+                             'total_hour':range(0,24),
+                             'graph_view':graph_view,
+                             'call_count_range':call_count_range,
+                             'total_record':sorted(total_record_final, key=lambda total: total[0]),
+                             'calls_in_day':calls_in_day,
+                            })
+
+    return render_to_response('cdr/show_graph_concurrent_calls.html', variables,
+           context_instance = RequestContext(request))
+
+
+
 def logout_view(request):
 	logout(request)
 	return HttpResponseRedirect('/')
