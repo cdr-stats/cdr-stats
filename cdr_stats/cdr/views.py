@@ -135,7 +135,7 @@ def export_to_csv(request):
     qs = request.session['cdr_queryset']
     writer.writerow(['Calldate', 'Channel', 'Source', 'Clid','Destination','Disposition','Duration'])
     for cdr in qs:
-        writer.writerow([cdr['calldate'], cdr['channel'].encode("utf-8"), cdr['src'].encode("utf-8"), cdr['clid'].encode("utf-8"), cdr['dst'].encode("utf-8"), cdr['disposition'].encode("utf-8"), cdr['duration'].encode("utf-8")])
+        writer.writerow([cdr['calldate'], cdr['channel'].encode("utf-8"), cdr['src'].encode("utf-8"), cdr['clid'].encode("utf-8"), cdr['dst'].encode("utf-8"), cdr['disposition'], cdr['duration'].encode("utf-8")])
     return response
 
 
@@ -474,7 +474,210 @@ def show_graph_by_hour(request):
 
         return render_to_response('cdr/show_graph_by_hour.html', variables,
                context_instance = RequestContext(request))
+
+@login_required
+def show_concurrent_calls(request):
+
+    kwargs = {}
+    graph_view = '1'
     
+    if request.method == 'GET':        
+        channel = variable_value(request,'channel')
+        result = variable_value(request,'result')
+   
+        if channel != '':
+            kwargs[ 'channel' ] = channel
+                
+        if result == '':
+            result = '1'
+    
+    now = datetime.now()
+    last_day = {1:31, 2:28, 3:31, 4:30, 5:31, 6:30, 7:31, 8:31, 9:30, 10:31, 11:30, 12:31}
+    if(result == '1'):
+        start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
+        end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 0)
+    elif(result == '2'):
+        start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0) - relativedelta(days=1)
+        end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 0) - relativedelta(days=1)
+    elif(result == '3'):
+        start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0) - relativedelta(days=7)
+        end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 0)
+    elif(result == '4'):
+        start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0) - relativedelta(days=14)
+        end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 0) - relativedelta(days=7)
+    elif(result == '5'):
+        start_date = datetime(now.year, now.month, 1, 0, 0, 0, 0)
+        end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 0)
+    elif(result == '6'):
+        start_date = datetime(now.year, now.month, 1, 0, 0, 0, 0) - relativedelta(months=1)
+        end_date = datetime(now.year, now.month, last_day[now.month], 23, 59, 59, 0) - relativedelta(months=1)
+    
+
+    kwargs[ 'calldate__range' ] = (start_date,end_date)
+
+    form = ConcurrentCallForm(initial={'channel':channel,'result':result})
+
+    if kwargs:
+        calls_in_day = CDR.objects.filter(**kwargs).values('calldate','duration').order_by('calldate')
+        calls = {}
+
+        # Populate the calls array
+        for data in calls_in_day:
+            start_call = int(data[ 'calldate' ].strftime("%Y%m%d%H%M%S"))
+            end_call = int((data[ 'calldate' ] + timedelta(seconds=data['duration'])).strftime("%Y%m%d%H%M%S"))
+            if start_call in calls.keys():
+                calls[start_call].append({'load': 1, 'calldate': data['calldate'], 'duration':data['duration']})
+            else:
+                calls[start_call] = [{'load': 1, 'calldate': data['calldate'], 'duration':data['duration']}]
+
+            if end_call in calls.keys():
+                calls[end_call].append({'load': -1, 'calldate': data['calldate'], 'duration':data['duration']})
+            else:
+                calls[end_call] = [{'load': -1, 'calldate': data['calldate'], 'duration':data['duration']}]
+
+
+
+        aux = {}
+        # Sort the $calls array by its keys.
+        for i in range(len(calls)):
+           aux[sorted(calls.keys())[i]] = calls[sorted(calls.keys())[i]]
+        calls = aux
+        
+        # Initialize some variables which will be used in processing the concurrent calls
+        concurrent_calls = {}
+        total_call_count = 0
+        
+        #call_detail = []
+        calls_ok = []
+        calls = {}
+        time_calls = {}
+        last_time = 0
+        
+        for data in calls_in_day:
+            starttime = data['calldate']            
+            int_starttime = int(starttime.strftime("%Y%m%d%H%M%S"))
+            
+            if int_starttime in time_calls.keys():
+                time_calls[int_starttime] += 1
+            else:
+                time_calls[int_starttime] = 1
+        
+        for data in calls_in_day:
+            starttime = data['calldate']
+            endtime = starttime + timedelta(seconds=data['duration'])
+            
+            int_starttime = int(starttime.strftime("%Y%m%d%H%M%S"))
+            int_endtime = int(endtime.strftime("%Y%m%d%H%M%S"))
+
+            if int_starttime > last_time:
+                for time in range(int_starttime, int_endtime):
+                    if int(result) < 5:
+                        if time in time_calls.keys():
+                            if str(time)[0:10] in concurrent_calls.keys():
+                                if time == int_starttime:
+                                    concurrent_calls[str(time)[0:10]] += time_calls[time] - 1
+                                else:
+                                    concurrent_calls[str(time)[0:10]] += time_calls[time]
+                            else:
+                                if time == int_starttime:
+                                    concurrent_calls[str(time)[0:10]] = time_calls[time] - 1
+                                else:
+                                    concurrent_calls[str(time)[0:10]] = time_calls[time]
+                    else:
+                        if time in time_calls.keys():
+                            if str(time)[0:8] in concurrent_calls.keys():
+                                if time == int_starttime:
+                                    concurrent_calls[str(time)[0:8]] += time_calls[time] - 1
+                                else:
+                                    concurrent_calls[str(time)[0:8]] += time_calls[time]
+                            else:
+                                if time == int_starttime:
+                                    concurrent_calls[str(time)[0:8]] = time_calls[time] - 1
+                                else:
+                                    concurrent_calls[str(time)[0:8]] = time_calls[time]
+                last_time = int_endtime
+        
+
+        for data in concurrent_calls:
+            total_call_count += concurrent_calls[data]
+        call_count_range=range(0,total_call_count)
+        call_count_range.reverse()
+        
+        dates = date_range(start_date,end_date)
+        
+        
+        dateList = []
+        datelist_final = []
+
+        if result == '5':
+            for i in range(1,now.day+1):
+                if len(str(i)) <= 1:
+                    j = '0' + str(i)
+                else:
+                    j = str(i)
+                dateList.append(int(str(now.strftime("%Y%m") + j)))
+            datelist_final.append(( now.strftime("%Y-%m") ))
+        elif result == '6':
+            for i in range(1,start_date.day+1):
+                if len(str(i)) <= 1:
+                    j = '0' + str(i)
+                else:
+                    j = str(i)
+                dateList.append(int(str(start_date.strftime("%Y%m") + j)))
+            datelist_final.append(( start_date.strftime("%Y-%m") ))
+        else:
+            for i in dates:
+                for j in range(0,24):
+                    if len(str(j)) <= 1:
+                        j = '0' + str(j)
+                    else:
+                        j = str(j)
+                        
+                    dateList.append(int(i.strftime("%Y%m%d") + j))
+                datelist_final.append(( i.strftime("%Y-%m-%d") ))
+            
+        total_record_final = []
+        if int(result) < 5:
+            for i in dateList:
+                y =  str(i)[0:10]
+                if y in concurrent_calls.keys():
+                    total_record_final.append((y[0:4]+'-'+y[4:6]+'-'+y[6:8], int(y[8:10]), concurrent_calls[y]))
+                else:
+                    total_record_final.append((y[0:4]+'-'+y[4:6]+'-'+y[6:8], int(y[8:10]), 0))
+        else:
+            for i in dateList:
+                y =  str(i)[0:8]
+                if y in concurrent_calls.keys():
+                    total_record_final.append((y[0:4]+'-'+y[4:6], int(y[6:8]), concurrent_calls[y]))
+                else:
+                    total_record_final.append((y[0:4]+'-'+y[4:6], int(y[6:8]), 0))                
+                
+        if result == '5':
+            total_hour = range(1,now.day+1)
+        elif result == '6':
+            total_hour = range(1,last_day[start_date.month])
+        else:
+            total_hour = range(0,24)
+
+        if int(result) < 5:
+            graph_by = _('Hours')
+        else:
+            graph_by = _('Days')
+        variables = RequestContext(request,
+                            {'form': form,
+                             'result':'min',
+                             'record_dates':datelist_final,
+                             'total_hour':total_hour,
+                             'graph_view':graph_view,
+                             'call_count_range':call_count_range,
+                             'total_record':sorted(total_record_final, key=lambda total: total[0]),
+                             'calls_in_day':calls_in_day,
+                             'graph_by':graph_by,
+                            })
+
+    return render_to_response('cdr/show_graph_concurrent_calls.html', variables,
+           context_instance = RequestContext(request))
+
 
 def login_view(request):
     template = 'cdr/index.html'
@@ -514,154 +717,6 @@ def login_view(request):
         'is_authenticated' : request.user.is_authenticated()
     }
     return render_to_response(template, data,context_instance = RequestContext(request))
-
-
-@login_required
-def show_concurrent_calls(request):
-
-    kwargs = {}
-    graph_view = '1'
-    
-    if request.method == 'POST':
-        if "from_month_year" in request.POST:
-            from_day        = int(request.POST['from_day'])
-            from_month_year = request.POST['from_month_year']
-            from_year       = int(request.POST['from_month_year'][0:4])
-            from_month      = int(request.POST['from_month_year'][5:7])
-        else:
-            from_day        = ''
-            from_month_year = ''
-            from_year       = ''
-            from_month      = ''
-
-        trunk = variable_value(request,'trunk')
-        
-        if channel != '':
-            kwargs[ 'channel' ] = channel
-
-        if from_day != '':
-            end_date = datetime(from_year, from_month, from_day)
-            start_date= end_date+relativedelta(days=-int(comp_days))
-            start_date = datetime(start_date.year, start_date.month, start_date.day,0,0,0,0)
-            end_date = datetime(end_date.year, end_date.month, end_date.day,23,59,59,999999)
-
-            kwargs[ 'calldate__range' ] = (start_date,end_date)
-
-
-        form = ConcurrentCallForm(initial={'from_day':from_day,'from_month_year':from_month_year,'channel':channel,})
-
-    if len(kwargs) == 0:
-        tday = datetime.today()
-        from_day = validate_days(tday.year,tday.month,tday.day)
-        form = ConcurrentCallForm(initial={'from_day':tday.day})
-        from_year=tday.year
-        from_month= tday.month
-
-        end_date = datetime(from_year, from_month, from_day)
-        start_date= end_date+relativedelta(days=-2)
-        start_date = datetime(start_date.year, start_date.month, start_date.day,0,0,0,0)
-        end_date = datetime(end_date.year, end_date.month, end_date.day,23,59,59,999999)
-
-        kwargs[ 'calldate__range' ] = (start_date,end_date)
-
-    if kwargs:
-        if graph_view == '1':
-            calls_in_day = CDR.objects.filter(**kwargs).values('calldate','duration')#.order_by('-calldate')#
-
-        calls = {}
-
-        # Populate the calls array
-        for data in calls_in_day:
-            start_call = int(data[ 'calldate' ].strftime("%Y%m%d%H%M"))
-            end_call = int((data[ 'calldate' ] + timedelta(seconds=data['duration'])).strftime("%Y%m%d%H%M"))
-            if start_call in calls.keys():
-                calls[start_call].append({'load': 1, 'calldate': data['calldate'], 'duration':data['duration']})
-            else:
-                calls[start_call] = [{'load': 1, 'calldate': data['calldate'], 'duration':data['duration']}]
-
-            if end_call in calls.keys():
-                calls[end_call].append({'load': -1, 'calldate': data['calldate'], 'duration':data['duration']})
-            else:
-                calls[end_call] = [{'load': -1, 'calldate': data['calldate'], 'duration':data['duration']}]
-
-        
-        aux = {}
-        # Sort the $calls array by its keys.
-        for i in range(len(calls)):
-           aux[sorted(calls.keys())[i]] = calls[sorted(calls.keys())[i]]
-        calls = aux
-        
-        # Initialize some variables which will be used in processing the concurrent calls
-        concurrent_calls = {}
-        loadP = 0
-        loadN = 0
-        total_call_count = 0
-        num_calls = 0
-
-        for timestamp in calls:
-            index_array = calls[timestamp]
-            if int(len(index_array)) > 0:
-                for call_detail in index_array:
-                    if call_detail['load'] > 0:
-                        loadP += 1
-                    else:
-                        loadN += 1
-                
-                if loadP > 1:
-                    num_calls = loadP
-                    if loadN > loadP:
-                        num_calls = loadN - loadP
-                elif loadN > 1:
-                    num_calls = loadN
-                
-                if int(str(timestamp)[0:10]) in concurrent_calls:
-                    concurrent_calls[int(str(timestamp)[0:10])] = num_calls
-                else:
-                    concurrent_calls[int(str(timestamp)[0:10])] = num_calls
-                if total_call_count < int(len(index_array)):
-                    total_call_count = int(len(index_array))
-        call_count_range=range(0,total_call_count)
-        call_count_range.reverse()
-        
-
-        dates = date_range(start_date,end_date)
-        
-        dateList = []
-        datelist_final = []
-        for i in dates:
-            for j in range(0,24):
-                if len(str(j)) <= 1:
-                    j = '0' + str(j)
-                else:
-                    j = str(j)
-                    
-                dateList.append(int(i.strftime("%Y%m%d") + j))
-            datelist_final.append(( i.strftime("%Y-%m-%d") ))
-            
-        
-        total_record_final = []
-        for i in dateList:
-            y =  str(i)
-            if i in concurrent_calls.keys():
-                total_record_final.append((y[0:4]+'-'+y[4:6]+'-'+y[6:8], int(y[8:10]), concurrent_calls[i]))
-            else:
-                total_record_final.append((y[0:4]+'-'+y[4:6]+'-'+y[6:8], int(y[8:10]), 0))
-        
-        
-        variables = RequestContext(request,
-                            {'form': form,
-                             'result':'min',
-                             'record_dates':datelist_final,
-                             'total_hour':range(0,24),
-                             'graph_view':graph_view,
-                             'call_count_range':call_count_range,
-                             'total_record':sorted(total_record_final, key=lambda total: total[0]),
-                             'calls_in_day':calls_in_day,
-                            })
-
-    return render_to_response('cdr/show_graph_concurrent_calls.html', variables,
-           context_instance = RequestContext(request))
-
 
 
 def logout_view(request):

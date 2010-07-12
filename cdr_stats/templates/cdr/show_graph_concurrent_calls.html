@@ -23,9 +23,9 @@
 
   {% if total_record %}
     <caption>{% ifequal graph_view 1 %}
-                {% trans "Number of concurrent calls by Hours"  %}
+                {% trans "Number of concurrent calls by"  %} {{ graph_by }}
              {% else %}
-                {% trans "Concurrent Calls by hours"  %}
+                {% trans "Concurrent Calls by"  %} {{ graph_by }}
              {% endifequal %}
    </caption>
     
@@ -70,7 +70,7 @@
 <script type="text/javascript">
     $(function(){
        // $('table').visualize({type: 'pie', height: '300px', width: '420px'});
-       //$('table').visualize({type: 'bar', width: '420px'});
+       // $('table').visualize({type: 'bar', width: '420px'});
        // $('table').visualize({type: 'area', width: '420px'});
         $('table').visualize({type: 'line', width: '700px'});
     });

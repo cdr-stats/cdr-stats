@@ -95,7 +95,7 @@ class CdrSearchForm(forms.Form):
                         _('Search Options :'),
                         Column('from_day','from_month_year'),
                         Column('to_day','to_month_year'),
-                        'result',
+                        Column('result'),
                      )
                 )
 
@@ -109,20 +109,19 @@ class CdrSearchForm(forms.Form):
 
 
 class ConcurrentCallForm(forms.Form):
-
-    from_day = forms.ChoiceField(label=_('From :'), required=False, choices=day_range())
-    from_month_year = forms.ChoiceField(label='', required=False, choices=month_year_range())
-    to_day = forms.ChoiceField(label=_('To :'), required=False, choices=day_range())
-    to_month_year = forms.ChoiceField(label='', required=False, choices=month_year_range())
+    result = forms.TypedChoiceField( label='Result', required=True, coerce=bool, empty_value=1,
+                choices = (('1', _('Today')), ('2', _('Yestarday')), ('3', _('This Week')), ('4', _('Last Week')), ('5', _('This Month')), ('6', _('Last Month'))),widget=forms.RadioSelect)
+                
     channel = forms.CharField(label='Channel', required=False, widget=forms.TextInput(attrs={'size': 15}))
+    
     
     # create the layout object
     layout = Layout(
+                # second fieldset shows the contact info
                 Fieldset(
                         _('Search Options :'),
-                        Column('from_day','from_month_year'),
-                        Column('to_day','to_month_year'),
-                        Column('channel'),
+                        'result',
+                        'channel',
                      )
                 )
 
@@ -133,7 +132,6 @@ class ConcurrentCallForm(forms.Form):
     helper.add_input(submit)
     helper.use_csrf_protection = True
     helper.add_layout(layout)
-    
 
 class loginForm(forms.Form):
 
