@@ -207,7 +207,7 @@ window['_pr_isIE6'] = function () {
           ];
       var pattern = '(?:^^|[+-]';
       for (var i = 0; i < preceders.length; ++i) {
-        pattern += '|' + preceders[i].replace(/([^=<>:&a-z])/g, '\\$1');
+        pattern += '|' + preceders[i].replace(/([^=<>:&a-z])/g, '\\$$$1');
       }
       pattern += ')\\s*';  // matches at end, and matches empty string
       return pattern;
@@ -221,7 +221,7 @@ window['_pr_isIE6'] = function () {
   // Define regexps here so that the interpreter doesn't have to create an
   // object each time the function containing them is called.
   // The language spec requires a new object created even if you don't access
-  // the $1 members.
+  // the $$$1 members.
   var pr_amp = /&/g;
   var pr_lt = /</g;
   var pr_gt = />/g;
@@ -321,7 +321,7 @@ window['_pr_isIE6'] = function () {
         for (var child = node.firstChild; child; child = child.nextSibling) {
           normalizedHtml(child, out);
         }
-        if (node.firstChild || !/^(?:br|link|img)$/.test(name)) {
+        if (node.firstChild || !/^(?:br|link|img)$$$/.test(name)) {
           out.push('<\/', name, '>');
         }
         break;
@@ -581,7 +581,7 @@ window['_pr_isIE6'] = function () {
       if (isRawContent(node)) {
         content = textToHtml(content);
       } else if (!isPreformatted(node, content)) {
-        content = content.replace(/(<br\s*\/?>)[\r\n]+/g, '$1')
+        content = content.replace(/(<br\s*\/?>)[\r\n]+/g, '$$$1')
             .replace(/(?:[\r\n]+[ \t]*)+/g, ' ');
       }
       return content;
@@ -730,7 +730,7 @@ window['_pr_isIE6'] = function () {
     return !!tag
         // First canonicalize the representation of attributes
         .replace(/\s(\w+)\s*=\s*(?:\"([^\"]*)\"|'([^\']*)'|(\S+))/g,
-                 ' $1="$2$3$4"')
+                 ' $$$1="$$$2$$$3$$$4"')
         // Then look for the attribute we want.
         .match(/[cC][lL][aA][sS][sS]=\"[^\"]*\bnocode\b/);
   }
@@ -764,7 +764,7 @@ window['_pr_isIE6'] = function () {
     *
     * Style is a style constant like PR_PLAIN, or can be a string of the
     * form 'lang-FOO', where FOO is a language extension describing the
-    * language of the portion of the token in $1 after pattern executes.
+    * language of the portion of the token in $$$1 after pattern executes.
     * E.g., if style is 'lang-lisp', and group 1 contains the text
     * '(hello (world))', then that portion of the token will be passed to the
     * registered lisp handler for formatting.
@@ -946,24 +946,24 @@ window['_pr_isIE6'] = function () {
     if (options['tripleQuotedStrings']) {
       // '''multi-line-string''', 'single-line-string', and double-quoted
       shortcutStylePatterns.push(
-          [PR_STRING,  /^(?:\'\'\'(?:[^\'\\]|\\[\s\S]|\'{1,2}(?=[^\']))*(?:\'\'\'|$)|\"\"\"(?:[^\"\\]|\\[\s\S]|\"{1,2}(?=[^\"]))*(?:\"\"\"|$)|\'(?:[^\\\']|\\[\s\S])*(?:\'|$)|\"(?:[^\\\"]|\\[\s\S])*(?:\"|$))/,
+          [PR_STRING,  /^(?:\'\'\'(?:[^\'\\]|\\[\s\S]|\'{1,2}(?=[^\']))*(?:\'\'\'|$$$)|\"\"\"(?:[^\"\\]|\\[\s\S]|\"{1,2}(?=[^\"]))*(?:\"\"\"|$$$)|\'(?:[^\\\']|\\[\s\S])*(?:\'|$$$)|\"(?:[^\\\"]|\\[\s\S])*(?:\"|$$$))/,
            null, '\'"']);
     } else if (options['multiLineStrings']) {
       // 'multi-line-string', "multi-line-string"
       shortcutStylePatterns.push(
-          [PR_STRING,  /^(?:\'(?:[^\\\']|\\[\s\S])*(?:\'|$)|\"(?:[^\\\"]|\\[\s\S])*(?:\"|$)|\`(?:[^\\\`]|\\[\s\S])*(?:\`|$))/,
+          [PR_STRING,  /^(?:\'(?:[^\\\']|\\[\s\S])*(?:\'|$$$)|\"(?:[^\\\"]|\\[\s\S])*(?:\"|$$$)|\`(?:[^\\\`]|\\[\s\S])*(?:\`|$$$))/,
            null, '\'"`']);
     } else {
       // 'single-line-string', "single-line-string"
       shortcutStylePatterns.push(
           [PR_STRING,
-           /^(?:\'(?:[^\\\'\r\n]|\\.)*(?:\'|$)|\"(?:[^\\\"\r\n]|\\.)*(?:\"|$))/,
+           /^(?:\'(?:[^\\\'\r\n]|\\.)*(?:\'|$$$)|\"(?:[^\\\"\r\n]|\\.)*(?:\"|$$$))/,
            null, '"\'']);
     }
     if (options['verbatimStrings']) {
       // verbatim-string-literal production from the C# grammar.  See issue 93.
       fallthroughStylePatterns.push(
-          [PR_STRING, /^@\"(?:[^\"]|\"\")*(?:\"|$)/, null]);
+          [PR_STRING, /^@\"(?:[^\"]|\"\")*(?:\"|$$$)/, null]);
     }
     if (options['hashComments']) {
       if (options['cStyleComments']) {
@@ -982,7 +982,7 @@ window['_pr_isIE6'] = function () {
     if (options['cStyleComments']) {
       fallthroughStylePatterns.push([PR_COMMENT, /^\/\/[^\r\n]*/, null]);
       fallthroughStylePatterns.push(
-          [PR_COMMENT, /^\/\*[\s\S]*?(?:\*\/|$)/, null]);
+          [PR_COMMENT, /^\/\*[\s\S]*?(?:\*\/|$$$)/, null]);
     }
     if (options['regexLiterals']) {
       var REGEX_LITERAL = (
@@ -995,7 +995,7 @@ window['_pr_isIE6'] = function () {
           // escape sequences (\x5C),
           +    '|\\x5C[\\s\\S]'
           // or non-nesting character sets (\x5B\x5D);
-          +    '|\\x5B(?:[^\\x5C\\x5D]|\\x5C[\\s\\S])*(?:\\x5D|$))+'
+          +    '|\\x5B(?:[^\\x5C\\x5D]|\\x5C[\\s\\S])*(?:\\x5D|$$$))+'
           // finally closed by a /.
           + '/');
       fallthroughStylePatterns.push(
@@ -1004,7 +1004,7 @@ window['_pr_isIE6'] = function () {
            ]);
     }
 
-    var keywords = options['keywords'].replace(/^\s+|\s+$/g, '');
+    var keywords = options['keywords'].replace(/^\s+|\s+$$$/g, '');
     if (keywords.length) {
       fallthroughStylePatterns.push(
           [PR_KEYWORD,
@@ -1014,9 +1014,9 @@ window['_pr_isIE6'] = function () {
     shortcutStylePatterns.push([PR_PLAIN,       /^\s+/, null, ' \r\n\t\xA0']);
     fallthroughStylePatterns.push(
         // TODO(mikesamuel): recognize non-latin letters and numerals in idents
-        [PR_LITERAL,     /^@[a-z_$][a-z_$@0-9]*/i, null],
-        [PR_TYPE,        /^@?[A-Z]+[a-z][A-Za-z_$@0-9]*/, null],
-        [PR_PLAIN,       /^[a-z_$][a-z_$@0-9]*/i, null],
+        [PR_LITERAL,     /^@[a-z_$$$][a-z_$$$@0-9]*/i, null],
+        [PR_TYPE,        /^@?[A-Z]+[a-z][A-Za-z_$$$@0-9]*/, null],
+        [PR_PLAIN,       /^[a-z_$$$][a-z_$$$@0-9]*/i, null],
         [PR_LITERAL,
          new RegExp(
              '^(?:'
@@ -1030,7 +1030,7 @@ window['_pr_isIE6'] = function () {
              // with an optional modifier like UL for unsigned long
              + '[a-z]*', 'i'),
          null, '0123456789'],
-        [PR_PUNCTUATION, /^.[^\s\w\.$@\'\"\`\/\#]*/, null]);
+        [PR_PUNCTUATION, /^.[^\s\w\.$$$@\'\"\`\/\#]*/, null]);
 
     return createSimpleLexer(shortcutStylePatterns, fallthroughStylePatterns);
   }
@@ -1074,7 +1074,7 @@ window['_pr_isIE6'] = function () {
     var adjacentSpaceRe = /([\r\n ]) /g;
     var startOrSpaceRe = /(^| ) /gm;
     var newlineRe = /\r\n?|\n/g;
-    var trailingSpaceRe = /[ \r\n]$/;
+    var trailingSpaceRe = /[ \r\n]$$$/;
     var lastWasSpace = true;  // the last text chunk emitted ended with a space.
 
     // A helper function that is responsible for opening sections of decoration
@@ -1101,7 +1101,7 @@ window['_pr_isIE6'] = function () {
             tabExpander(sourceText.substring(outputIdx, sourceIdx)))
             .replace(lastWasSpace
                      ? startOrSpaceRe
-                     : adjacentSpaceRe, '$1&nbsp;');
+                     : adjacentSpaceRe, '$$$1&nbsp;');
         // Keep track of whether we need to escape space at the beginning of the
         // next chunk.
         lastWasSpace = trailingSpaceRe.test(htmlChunk);
@@ -1198,11 +1198,11 @@ window['_pr_isIE6'] = function () {
           [],
           [
            [PR_PLAIN,       /^[^<?]+/],
-           [PR_DECLARATION, /^<!\w[^>]*(?:>|$)/],
-           [PR_COMMENT,     /^<\!--[\s\S]*?(?:-\->|$)/],
+           [PR_DECLARATION, /^<!\w[^>]*(?:>|$$$)/],
+           [PR_COMMENT,     /^<\!--[\s\S]*?(?:-\->|$$$)/],
            // Unescaped content in an unknown language
-           ['lang-',        /^<\?([\s\S]+?)(?:\?>|$)/],
-           ['lang-',        /^<%([\s\S]+?)(?:%>|$)/],
+           ['lang-',        /^<\?([\s\S]+?)(?:\?>|$$$)/],
+           ['lang-',        /^<%([\s\S]+?)(?:%>|$$$)/],
            [PR_PUNCTUATION, /^(?:<[%?]|[%?]>)/],
            ['lang-',        /^<xmp\b[^>]*>([\s\S]+?)<\/xmp\b[^>]*>/i],
            // Unescaped content in javascript.  (Or possibly vbscript).
@@ -1219,7 +1219,7 @@ window['_pr_isIE6'] = function () {
            [PR_ATTRIB_VALUE, /^(?:\"[^\"]*\"?|\'[^\']*\'?)/, null, '\"\'']
            ],
           [
-           [PR_TAG,          /^^<\/?[a-z](?:[\w.:-]*\w)?|\/?>$/i],
+           [PR_TAG,          /^^<\/?[a-z](?:[\w.:-]*\w)?|\/?>$$$/i],
            [PR_ATTRIB_NAME,  /^(?!style[\s=]|on)[a-z](?:[\w:-]*\w)?/i],
            ['lang-uq.val',   /^=\s*([^>\'\"\s]*(?:[^>\'\"\s\/]|\/(?=\s)))/],
            [PR_PUNCTUATION,  /^[=<>\/]+/],
@@ -1382,7 +1382,7 @@ window['_pr_isIE6'] = function () {
             // fetch the content as a snippet of properly escaped HTML.
             // Firefox adds newlines at the end.
             var content = getInnerHtml(cs);
-            content = content.replace(/(?:\r\n?|\n)$/, '');
+            content = content.replace(/(?:\r\n?|\n)$$$/, '');
 
             // do the pretty printing
             prettyPrintingJob = {

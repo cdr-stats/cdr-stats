@@ -678,6 +678,7 @@ def show_concurrent_calls(request):
     return render_to_response('cdr/show_graph_concurrent_calls.html', variables,
            context_instance = RequestContext(request))
 
+@login_required
 def show_global_report(request):
     template = 'cdr/show_global_report.html'
     

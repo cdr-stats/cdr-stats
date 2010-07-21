@@ -148,7 +148,7 @@ var HumbleFinance = {
      */
     buildDOM: function () {
         
-        var container = $(this.id);
+        var container = $$$(this.id);
 
         // Build DOM element
         this.containers.price = new Element('div', {id: 'priceGraph', style: 'width: 100%; height: 240px;'});
@@ -621,7 +621,7 @@ var HumbleFinance = {
         var ymax = bounds.ymax;
         
         var p = Flotr.draw(
-            $('priceGraph'),
+            $$$('priceGraph'),
             [data],
             {
                 lines: {show: true, fill: true, fillOpacity: .1, lineWidth: 1},
@@ -652,7 +652,7 @@ var HumbleFinance = {
         var ymax = bounds.ymax;
 
         var v = Flotr.draw(
-            $('volumeGraph'),
+            $$$('volumeGraph'),
             [data],
             {
                 bars: {show: true, 'barWidth': .5, 'fill': true, 'lineWidth': 2, 'fillOpacity': 1},
@@ -683,7 +683,7 @@ var HumbleFinance = {
         var ymax = bounds.ymax;
         
         var p = Flotr.draw(
-            $('summaryGraph'),
+            $$$('summaryGraph'),
             [data],
             {
                 lines: {show: true, fill: true, fillOpacity: .1, lineWidth: 1},
