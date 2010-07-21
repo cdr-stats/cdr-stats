@@ -481,7 +481,7 @@ def show_concurrent_calls(request):
     kwargs = {}
     graph_view = '1'
     
-    if request.method == 'GET':        
+    if request.method == 'POST':        
         channel = variable_value(request,'channel')
         result = variable_value(request,'result')
    
@@ -678,6 +678,32 @@ def show_concurrent_calls(request):
     return render_to_response('cdr/show_graph_concurrent_calls.html', variables,
            context_instance = RequestContext(request))
 
+def show_global_report(request):
+    template = 'cdr/show_global_report.html'
+    
+    kwargs = {}
+    
+    now = datetime.now()
+    start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0) - relativedelta(years=1)
+    end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 0)
+    
+    kwargs[ 'calldate__range' ] = (start_date,end_date)    
+    select_data = {"calldate": "SUBSTR(calldate,1,10)"}
+    calls = CDR.objects.filter(**kwargs).extra(select=select_data).values('calldate').annotate(Sum('duration')).annotate(Avg('duration')).annotate(Count('calldate')).order_by('calldate')
+    
+    total_data = []
+    i = 0    
+    for data in calls:
+        time = datetime(int(data['calldate'][0:4]), int(data['calldate'][5:7]), int(data['calldate'][8:10]), 0, 0, 0, 0)
+        date = _(time.strftime("%B")) + " " + str(time.day) + ", " + str(time.year)
+        total_data.append({'count':i, 'day':time.day, 'month':time.month, 'date':date , 'calldate__count':data['calldate__count'], 'duration__sum':data['duration__sum'], 'duration__avg':data['duration__avg']})
+        i += 1
+
+    debug = total_data
+    data = {
+        'total_data': total_data,
+    }
+    return render_to_response(template, data,context_instance = RequestContext(request))
 
 def login_view(request):
     template = 'cdr/index.html'

@@ -127,7 +127,7 @@ class ConcurrentCallForm(forms.Form):
 
     # Attach a formHelper to your forms class.
     helper = FormHelper()
-    helper.form_method = 'GET'
+    helper.form_method = 'POST'
     submit = Submit('search', _('Search'))
     helper.add_input(submit)
     helper.use_csrf_protection = True
