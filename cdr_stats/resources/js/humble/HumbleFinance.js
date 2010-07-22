@@ -136,7 +136,7 @@ var HumbleFinance = {
         var area = {
             x1: this.bounds.xmin, 
             y1: this.bounds.ymin, 
-            x2: this.bounds.xmax*0.25, 
+            x2: this.bounds.xmax, 
             y2: this.bounds.ymax
         };
         this.graphs.summary = this.summaryGraph(this.summaryData, this.bounds);
@@ -429,7 +429,7 @@ var HumbleFinance = {
      * @param integer x
      */
     zoom: function (x) {
-        
+
         var prevSelection = this.graphs.summary.prevSelection;
         var xAxis = this.graphs.summary.axes.x;
         var x1, x2, y1, y2;
@@ -441,8 +441,12 @@ var HumbleFinance = {
             y1 = 0;
             y2 = 0;
         } else {
-            x2 = xAxis.p2d(Math.max(prevSelection.first.x, prevSelection.second.x));
-            x1 = Math.max(x2 - Number(x), this.bounds.xmin);
+            x1 = xAxis.p2d(Math.min(prevSelection.first.x, prevSelection.second.x));
+            x2 = Math.min(x1 + Number(x), this.bounds.xmax);
+            if((x2-x1) < x) {
+                x1 = Math.max(x1 - Math.abs(x-(x2-x1)), 0);
+            }
+            
             y1 = prevSelection.first.y;
             y2 = prevSelection.second.y;
         }
@@ -453,7 +457,6 @@ var HumbleFinance = {
             x2: x2,
             y2: y2
         };
-        
         this.graphs.summary.setSelection(area);
     },
     

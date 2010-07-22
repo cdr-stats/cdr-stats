@@ -10,21 +10,20 @@
 
 {% block content %}
 
-
 <script type="text/javascript">
 
 var jsonData = [
 {% for td in total_data %}
-    {date:'{{ td.date }}', day:{{td.day}}, month:{{td.month}},calls:{{td.calldate__count}}, duration:'{{td.duration__sum|conv_min}}', act:'{{td.duration__avg|conv_min}}'},
+    {date:'{{ td.date }}', year:{{td.year}},day:{{td.day}}, month:{{td.month}},calls:{{td.calldate__count}}, duration:'{{td.duration__sum|conv_min}}', act:'{{td.duration__avg|conv_min}}'},
 {% endfor %}
 ];
 
-var priceData = [
+var callData = [
 {% for td in total_data %}
     [{{td.count}} , {{td.calldate__count}}],
 {% endfor %}
 ];
-var volumeData = [
+var durationData = [
 {% for td in total_data %}
     [{{td.count}} , {{td.duration__sum}}],
 {% endfor %}
@@ -63,33 +62,29 @@ Event.observe(document, 'dom:loaded', function() {
             return false;
         }
         x = Math.floor(n)
-        var data = jsonData[x].month+'/'+jsonData[x].day;
+        var data = jsonData[x].year;
         
         return data;
     };
-    
-    HumbleFinance.init('finance', priceData, volumeData, summaryData);
+
+    HumbleFinance.init('finance', callData, durationData, summaryData);
 });
 </script>
-
-
-
 
 <div id="finance">
 	<div id="labels">
 	    <div id="financeTitle">Report Global</div>
 	    <div id="time">
-	        <a onclick="HumbleFinance.zoom(5);">1 week</a>
-	        <a onclick="HumbleFinance.zoom(21);">1 month</a>
-	        <a onclick="HumbleFinance.zoom(65);">3 months</a>
-	        <a onclick="HumbleFinance.zoom(127);">6 months</a>
-	        <a onclick="HumbleFinance.zoom(254);">1 year</a>
+	        <a onclick="HumbleFinance.zoom(7);">1 week</a>
+	        <a onclick="HumbleFinance.zoom(30);">1 month</a>
+	        <a onclick="HumbleFinance.zoom(90);">3 months</a>
+	        <a onclick="HumbleFinance.zoom(180);">6 months</a>
+	        <a onclick="HumbleFinance.zoom(365);">1 year</a>
 	    </div>
 
 	    <div id="dateRange"></div>
 	</div>
 </div>
-
 
 
 {% endblock %}
