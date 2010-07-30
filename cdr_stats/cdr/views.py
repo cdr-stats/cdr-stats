@@ -480,6 +480,8 @@ def show_concurrent_calls(request):
 
     kwargs = {}
     graph_view = '1'
+    result = '1'
+    channel = ''
     
     if request.method == 'POST':        
         channel = variable_value(request,'channel')
