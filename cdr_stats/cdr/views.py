@@ -22,7 +22,7 @@ import time
 import operator
 import string
 import csv, codecs
-
+from operator import itemgetter
 
 
 # Create your views here.
@@ -475,6 +475,15 @@ def show_graph_by_hour(request):
         return render_to_response('cdr/show_graph_by_hour.html', variables,
                context_instance = RequestContext(request))
 
+def dictSort(d):
+    """ returns a dictionary sorted by keys """
+    our_list = d.items()
+    our_list.sort()
+    k = {}
+    for item in our_list:
+        k[item[0]] = item[1]
+    return k
+    
 @login_required
 def show_concurrent_calls(request):
     kwargs = {}
@@ -558,6 +567,17 @@ def show_concurrent_calls(request):
             else:
                 time_calls[int_starttime] = 1
         
+        # DeBUG
+        """
+        print calls_in_day
+        print time_calls
+        #print sorted(time_calls, key=time_calls)
+        keysorted = time_calls.items()
+        keysorted.sort( key=lambda time_calls:time_calls[0])
+        print keysorted
+        #print [(key, a[key]) for key in keys]
+        """
+        
         for data in calls_in_day:
             starttime = data['calldate']
             endtime = starttime + timedelta(seconds=data['duration'])
@@ -566,42 +586,32 @@ def show_concurrent_calls(request):
             int_endtime = int(endtime.strftime("%Y%m%d%H%M%S"))
 
             if int_starttime > last_time:
-                for time in range(int_starttime, int_endtime):
+                for time in range(int_starttime, int_endtime - 1):
                     if int(result) < 5:
                         if time in time_calls.keys():
                             if str(time)[0:10] in concurrent_calls.keys():
-                                if time == int_starttime:
-                                    concurrent_calls[str(time)[0:10]] += time_calls[time] - 1
-                                else:
-                                    concurrent_calls[str(time)[0:10]] += time_calls[time]
+                                concurrent_calls[str(time)[0:10]] += time_calls[time]
                             else:
-                                if time == int_starttime:
-                                    concurrent_calls[str(time)[0:10]] = time_calls[time] - 1
-                                else:
-                                    concurrent_calls[str(time)[0:10]] = time_calls[time]
+                                concurrent_calls[str(time)[0:10]] = time_calls[time]
                     else:
                         if time in time_calls.keys():
                             if str(time)[0:8] in concurrent_calls.keys():
-                                if time == int_starttime:
-                                    concurrent_calls[str(time)[0:8]] += time_calls[time] - 1
-                                else:
-                                    concurrent_calls[str(time)[0:8]] += time_calls[time]
+                                concurrent_calls[str(time)[0:8]] += time_calls[time]
                             else:
-                                if time == int_starttime:
-                                    concurrent_calls[str(time)[0:8]] = time_calls[time] - 1
-                                else:
-                                    concurrent_calls[str(time)[0:8]] = time_calls[time]
+                                concurrent_calls[str(time)[0:8]] = time_calls[time]
                 last_time = int_endtime
-        
 
+        maxconcurrent = 0
         for data in concurrent_calls:
             total_call_count += concurrent_calls[data]
+            if (concurrent_calls[data] > maxconcurrent):
+                maxconcurrent = concurrent_calls[data] 
+        
         call_count_range=range(0,total_call_count)
         call_count_range.reverse()
         
-        dates = date_range(start_date,end_date)
+        dates = date_range(start_date, end_date)
         dateList = []
-        datelist_final = []
         if result == '5':
             for i in range(1,now.day+1):
                 if len(str(i)) <= 1:
@@ -609,7 +619,6 @@ def show_concurrent_calls(request):
                 else:
                     j = str(i)
                 dateList.append(int(str(now.strftime("%Y%m") + j)))
-            datelist_final.append(( now.strftime("%Y-%m") ))
         elif result == '6':
             for i in range(1,end_date.day+1):
                 if len(str(i)) <= 1:
@@ -617,7 +626,6 @@ def show_concurrent_calls(request):
                 else:
                     j = str(i)
                 dateList.append(int(str(start_date.strftime("%Y%m") + j)))
-            datelist_final.append(( start_date.strftime("%Y-%m") ))
         else:
             for i in dates:
                 for j in range(0,24):
@@ -627,7 +635,6 @@ def show_concurrent_calls(request):
                         j = str(j)
                         
                     dateList.append(int(i.strftime("%Y%m%d") + j))
-                datelist_final.append(( i.strftime("%Y-%m-%d") ))
 
         total_record = {}
         if int(result) < 5:
@@ -672,13 +679,21 @@ def show_concurrent_calls(request):
             total_record_final += " label: \"" + dates + "\""
             total_record_final += "},"
         total_record_final += "]"
+        
+        tickSize = 1
+        if (maxconcurrent > 20):
+            tickSize = 5
+        elif (maxconcurrent > 100):
+            tickSize = 10
+        print "tickSize::"+ str(tickSize)
         variables = RequestContext(request,
                             {'form': form,
-                             'result':'min',
-                             'graph_view':graph_view,
-                             'total_record':total_record_final,
-                             'calls_in_day':calls_in_day,
-                             'graph_by':graph_by,
+                             'result': 'min',
+                             'graph_view': graph_view,
+                             'total_record': total_record_final,
+                             'calls_in_day': calls_in_day,
+                             'graph_by': graph_by,
+                             'tickSize': tickSize,
                             })
 
     return render_to_response('cdr/show_graph_concurrent_calls.html', variables,

@@ -18,6 +18,7 @@
 
 <br><br>
 
+{{total_record|safe}}
 <script id="source" language="javascript" type="text/javascript">
 $(function () {
 
@@ -33,7 +34,7 @@ $(function () {
                                 points: { show: true }
                             },
                     yaxis: {
-                                tickSize: 1,
+                                tickSize: {{tickSize|safe}},
                                 min: 0
                             },
                     xaxis: {
@@ -85,7 +86,7 @@ $(function () {
 
 <center>
     <h1>{% trans "Concurrent Calls by" %} {{graph_by}}</h1>
-    <div id="placeholder" style="width:600px;height:300px"></div>
+    <div id="placeholder" style="width:700px;height:300px"></div>
 </center>
     
     
