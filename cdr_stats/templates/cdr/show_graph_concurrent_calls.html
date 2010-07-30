@@ -18,64 +18,76 @@
 
 <br><br>
 
-<div id="graph-container">
-<table id="table_concurrent_call" width=100% border=1>
+<script id="source" language="javascript" type="text/javascript">
+$(function () {
 
-  {% if total_record %}
-    <caption>{% ifequal graph_view 1 %}
-                {% trans "Number of concurrent calls by"  %} {{ graph_by }}
-             {% else %}
-                {% trans "Concurrent Calls by"  %} {{ graph_by }}
-             {% endifequal %}
-   </caption>
-    
-	<thead>
-		<tr>
-        <td></td>
-        {% for hour in total_hour%}
-        <th scope="col">{{hour}}</th>
-        {% endfor %}
-		</tr>
-	</thead>
-    <tbody>
-    {% for dt in record_dates%}
-    <tr class="tr_class">
-		    <th scope="col">{{ dt }}</th>
+    var data = {{total_record|safe}}
 
-                    {% for call in total_record %}
-
-                        {% ifequal call.0 dt %}
-
-                                {% if graph_view %}
-                                <td>{{call.2}}</td>
-                                 {% else %}
-                                 <td>{{call.2|conv_min}}</td>
-                                 {% endif %}
-
-                        {% endifequal %}
-
-                    {% endfor %}
-    </tr>
-    {% endfor %}
-
-    {% else %}
-      <tr><td align=center>{% trans "No Record(s) found."  %}</td></tr>
-    {% endif %}
-    </tbody>
-    
-</table>
-</div>
+    var options = {
+                    legend: {
+                                position: "s",
+                                margin: -240
+                            },
+                    series: {
+                                lines: { show: true },
+                                points: { show: true }
+                            },
+                    yaxis: {
+                                tickSize: 1,
+                                min: 0
+                            },
+                    xaxis: {
+                                tickSize: 1
+                            },
+                    grid: {
+                                hoverable: true,
+                          },
+                  };
 
 
-<script type="text/javascript">
-    $(function(){
-       // $('table').visualize({type: 'pie', height: '300px', width: '420px'});
-       // $('table').visualize({type: 'bar', width: '420px'});
-       // $('table').visualize({type: 'area', width: '420px'});
-        $('table').visualize({type: 'line', width: '700px'});
+    var plot = $.plot($("#placeholder"), data, options);
+
+    function showTooltip(x, y, contents) {
+        $('<div id="tooltip">' + contents + '</div>').css( {
+            position: 'absolute',
+            display: 'none',
+            top: y + 5,
+            left: x + 5,
+            border: '1px solid #aed0ea',
+            padding: '2px',
+            'background-color': '#d7ebf9',
+            opacity: 0.80
+        }).appendTo("body").fadeIn(200);
+    }
+
+    var previousPoint = null;
+    $("#placeholder").bind("plothover", function (event, pos, item) {
+        $("#x").text(pos.x.toFixed(2));
+        $("#y").text(pos.y.toFixed(2));
+
+            if (item) {
+                if (previousPoint != item.datapoint) {
+                    previousPoint = item.datapoint;
+                    
+                    $("#tooltip").remove();
+                    var x = item.datapoint[0].toFixed(2),
+                        y = item.datapoint[1].toFixed(2);
+                    
+                    showTooltip(item.pageX, item.pageY,
+                                "<b>" + item.series.label + "</b><br/>{{graph_by}}: " + Math.round(x) + "<br/> {% trans "Concurrent Calls" %}: " + Math.round(y));
+                }
+        }
     });
+
+});
 </script>
 
-{% endblock %}
 
+<center>
+    <h1>{% trans "Concurrent Calls by" %} {{graph_by}}</h1>
+    <div id="placeholder" style="width:600px;height:300px"></div>
+</center>
+    
+    
+{% endblock %}
 

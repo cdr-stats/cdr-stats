@@ -477,11 +477,8 @@ def show_graph_by_hour(request):
 
 @login_required
 def show_concurrent_calls(request):
-
     kwargs = {}
     graph_view = '1'
-    result = '1'
-    channel = ''
     
     if request.method == 'POST':        
         channel = variable_value(request,'channel')
@@ -490,11 +487,12 @@ def show_concurrent_calls(request):
         if channel != '':
             kwargs[ 'channel' ] = channel
                 
-        if result == '':
-            result = '1'
+    if ('result' not in vars()) or (result == ''):
+        result = '1'
+    if ('channel' not in vars()) or (channel == ''):
+        channel = ''
     
     now = datetime.now()
-    last_day = {1:31, 2:28, 3:31, 4:30, 5:31, 6:30, 7:31, 8:31, 9:30, 10:31, 11:30, 12:31}
     if(result == '1'):
         start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
         end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 0)
@@ -511,9 +509,8 @@ def show_concurrent_calls(request):
         start_date = datetime(now.year, now.month, 1, 0, 0, 0, 0)
         end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 0)
     elif(result == '6'):
-        start_date = datetime(now.year, now.month, 1, 0, 0, 0, 0) - relativedelta(months=1)
-        end_date = datetime(now.year, now.month, last_day[now.month], 23, 59, 59, 0) - relativedelta(months=1)
-    
+        start_date = datetime(now.year, int(now.month), 1, 0, 0, 0, 0) - relativedelta(months=1)
+        end_date = datetime(now.year, int(now.month), 1, 23, 59, 59, 0) - relativedelta(days=1)
 
     kwargs[ 'calldate__range' ] = (start_date,end_date)
 
@@ -536,9 +533,6 @@ def show_concurrent_calls(request):
                 calls[end_call].append({'load': -1, 'calldate': data['calldate'], 'duration':data['duration']})
             else:
                 calls[end_call] = [{'load': -1, 'calldate': data['calldate'], 'duration':data['duration']}]
-
-
-
         aux = {}
         # Sort the $calls array by its keys.
         for i in range(len(calls)):
@@ -606,11 +600,8 @@ def show_concurrent_calls(request):
         call_count_range.reverse()
         
         dates = date_range(start_date,end_date)
-        
-        
         dateList = []
         datelist_final = []
-
         if result == '5':
             for i in range(1,now.day+1):
                 if len(str(i)) <= 1:
@@ -620,7 +611,7 @@ def show_concurrent_calls(request):
                 dateList.append(int(str(now.strftime("%Y%m") + j)))
             datelist_final.append(( now.strftime("%Y-%m") ))
         elif result == '6':
-            for i in range(1,start_date.day+1):
+            for i in range(1,end_date.day+1):
                 if len(str(i)) <= 1:
                     j = '0' + str(i)
                 else:
@@ -637,42 +628,55 @@ def show_concurrent_calls(request):
                         
                     dateList.append(int(i.strftime("%Y%m%d") + j))
                 datelist_final.append(( i.strftime("%Y-%m-%d") ))
-            
-        total_record_final = []
+
+        total_record = {}
         if int(result) < 5:
             for i in dateList:
                 y =  str(i)[0:10]
                 if y in concurrent_calls.keys():
-                    total_record_final.append((y[0:4]+'-'+y[4:6]+'-'+y[6:8], int(y[8:10]), concurrent_calls[y]))
+                    if y[0:4]+'-'+y[4:6]+'-'+y[6:8] not in total_record.keys():
+                        total_record[y[0:4]+'-'+y[4:6]+'-'+y[6:8]] = {int(y[8:10]): concurrent_calls[y]}
+                    else:
+                        total_record[y[0:4]+'-'+y[4:6]+'-'+y[6:8]][int(y[8:10])] = concurrent_calls[y]
                 else:
-                    total_record_final.append((y[0:4]+'-'+y[4:6]+'-'+y[6:8], int(y[8:10]), 0))
+                    if y[0:4]+'-'+y[4:6]+'-'+y[6:8] not in total_record.keys():
+                        total_record[y[0:4]+'-'+y[4:6]+'-'+y[6:8]] = {int(y[8:10]): 0}
+                    else:
+                        total_record[y[0:4]+'-'+y[4:6]+'-'+y[6:8]][int(y[8:10])] = 0
         else:
             for i in dateList:
                 y =  str(i)[0:8]
+                month = _(datetime(int(y[0:4]), int(y[4:6]), int(y[6:8]), 0, 0, 0, 0).strftime("%B"))
                 if y in concurrent_calls.keys():
-                    total_record_final.append((y[0:4]+'-'+y[4:6], int(y[6:8]), concurrent_calls[y]))
+                    if month not in total_record.keys():
+                        total_record[month] = {int(y[6:8]): concurrent_calls[y]}
+                    else:
+                        total_record[month][int(y[6:8])] = concurrent_calls[y]
                 else:
-                    total_record_final.append((y[0:4]+'-'+y[4:6], int(y[6:8]), 0))                
-                
-        if result == '5':
-            total_hour = range(1,now.day+1)
-        elif result == '6':
-            total_hour = range(1,last_day[start_date.month])
-        else:
-            total_hour = range(0,24)
-
+                    if month not in total_record.keys():
+                        total_record[month] = {int(y[6:8]): 0}
+                    else:
+                        total_record[month][int(y[6:8])] = 0
         if int(result) < 5:
-            graph_by = _('Hours')
+            graph_by = _('Hour')
         else:
-            graph_by = _('Days')
+            graph_by = _('Day')
+            
+        total_record_final = "["
+        for dates in total_record:
+            total_record_final += "{"
+            total_record_final += "data: ["
+            for hours in total_record[dates]:
+                total_record_final += "[" + str(hours) + "," + str(total_record[dates][hours]) + "],"
+            total_record_final += "],"
+            total_record_final += " label: \"" + dates + "\""
+            total_record_final += "},"
+        total_record_final += "]"
         variables = RequestContext(request,
                             {'form': form,
                              'result':'min',
-                             'record_dates':datelist_final,
-                             'total_hour':total_hour,
                              'graph_view':graph_view,
-                             'call_count_range':call_count_range,
-                             'total_record':sorted(total_record_final, key=lambda total: total[0]),
+                             'total_record':total_record_final,
                              'calls_in_day':calls_in_day,
                              'graph_by':graph_by,
                             })
