@@ -684,25 +684,34 @@ def show_concurrent_calls(request):
 def show_global_report(request):
     template = 'cdr/show_global_report.html'
     
-    kwargs = {}
-    
-    now = datetime.now()
-    start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0) - relativedelta(years=1)
-    end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 0)
-    
-    kwargs[ 'calldate__range' ] = (start_date,end_date)    
     select_data = {"calldate": "SUBSTR(calldate,1,10)"}
-    calls = CDR.objects.filter(**kwargs).extra(select=select_data).values('calldate').annotate(Sum('duration')).annotate(Avg('duration')).annotate(Count('calldate')).order_by('calldate')
+    calls = CDR.objects.extra(select=select_data).values('calldate').annotate(Sum('duration')).annotate(Avg('duration')).annotate(Count('calldate')).order_by('calldate')
+
+    maxtime = datetime(int(calls[0]['calldate'][0:4]), int(calls[0]['calldate'][5:7]), int(calls[0]['calldate'][8:10]), 0, 0, 0, 0)
+    mintime = datetime(int(calls[0]['calldate'][0:4]), int(calls[0]['calldate'][5:7]), int(calls[0]['calldate'][8:10]), 0, 0, 0, 0)
+    calls_dict = {}
     
-    total_data = []
-    i = 0    
     for data in calls:
         time = datetime(int(data['calldate'][0:4]), int(data['calldate'][5:7]), int(data['calldate'][8:10]), 0, 0, 0, 0)
-        date = _(time.strftime("%B")) + " " + str(time.day) + ", " + str(time.year)
-        total_data.append({'count':i, 'day':time.day, 'month':time.month, 'date':date , 'calldate__count':data['calldate__count'], 'duration__sum':data['duration__sum'], 'duration__avg':data['duration__avg']})
+        if time > maxtime:
+            maxtime = time
+        elif time < mintime:
+            mintime = time
+        calls_dict[int(time.strftime("%Y%m%d"))] = {'calldate__count':data['calldate__count'], 'duration__sum':data['duration__sum'], 'duration__avg':data['duration__avg']}
+    dateList = date_range(mintime, maxtime)
+    
+    total_data = []
+    i = 0
+    for date in dateList:
+        inttime = int(date.strftime("%Y%m%d"))
+        name_date = _(date.strftime("%B")) + " " + str(date.day) + ", " + str(date.year)
+        
+        if inttime in calls_dict.keys():
+            total_data.append({'count':i, 'day':date.day, 'month':date.month, 'year':date.year, 'date':name_date , 'calldate__count':calls_dict[inttime]['calldate__count'], 'duration__sum':calls_dict[inttime]['duration__sum'], 'duration__avg':calls_dict[inttime]['duration__avg']})
+        else:
+            total_data.append({'count':i, 'day':date.day, 'month':date.month, 'year':date.year, 'date':name_date , 'calldate__count':0, 'duration__sum':0, 'duration__avg':0})
         i += 1
 
-    debug = total_data
     data = {
         'total_data': total_data,
     }
