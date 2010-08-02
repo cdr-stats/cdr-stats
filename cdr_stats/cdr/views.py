@@ -680,12 +680,11 @@ def show_concurrent_calls(request):
             total_record_final += "},"
         total_record_final += "]"
         
-        tickSize = 1
+        tickSize = 2
         if (maxconcurrent > 20):
             tickSize = 5
         elif (maxconcurrent > 100):
             tickSize = 10
-        print "tickSize::"+ str(tickSize)
         variables = RequestContext(request,
                             {'form': form,
                              'result': 'min',

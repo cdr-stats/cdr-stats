@@ -18,7 +18,7 @@
 
 <br><br>
 
-{{total_record|safe}}
+
 <script id="source" language="javascript" type="text/javascript">
 $(function () {
 
@@ -35,51 +35,23 @@ $(function () {
                             },
                     yaxis: {
                                 tickSize: {{tickSize|safe}},
-                                min: 0
+                                min: 0,
+                                tickDecimals: false
                             },
                     xaxis: {
-                                tickSize: 1
+                                tickSize: 1,
+                                tickDecimals: false
                             },
                     grid: {
                                 hoverable: true,
+                                xaxis: false
                           },
+                   tooltip: {
+                                formatter: '<center><b>%label</b></center>{{graph_by}}: %x.0<br>{% trans "Concurrent Calls" %}: %y.0'
+                   }
                   };
-
-
     var plot = $.plot($("#placeholder"), data, options);
-
-    function showTooltip(x, y, contents) {
-        $('<div id="tooltip">' + contents + '</div>').css( {
-            position: 'absolute',
-            display: 'none',
-            top: y + 5,
-            left: x + 5,
-            border: '1px solid #aed0ea',
-            padding: '2px',
-            'background-color': '#d7ebf9',
-            opacity: 0.80
-        }).appendTo("body").fadeIn(200);
-    }
-
-    var previousPoint = null;
-    $("#placeholder").bind("plothover", function (event, pos, item) {
-        $("#x").text(pos.x.toFixed(2));
-        $("#y").text(pos.y.toFixed(2));
-
-            if (item) {
-                if (previousPoint != item.datapoint) {
-                    previousPoint = item.datapoint;
-                    
-                    $("#tooltip").remove();
-                    var x = item.datapoint[0].toFixed(2),
-                        y = item.datapoint[1].toFixed(2);
-                    
-                    showTooltip(item.pageX, item.pageY,
-                                "<b>" + item.series.label + "</b><br/>{{graph_by}}: " + Math.round(x) + "<br/> {% trans "Concurrent Calls" %}: " + Math.round(y));
-                }
-        }
-    });
-
+    
 });
 </script>
 

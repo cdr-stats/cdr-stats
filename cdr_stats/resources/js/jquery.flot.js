@@ -38,10 +38,10 @@
         var series = [],
             options = {
                 // the color theme used for graphs
-                colors: ["#edc240", "#afd8f8", "#cb4b4b", "#4da74d", "#9440ed"],
+                colors: ["#D77728", "#3D6694", "#CB4B4B", "#4DA74D", "#B8504C", "#97B25C", "#745E8D", "#36859B", "#EDC240", "#819AC5", "#996D6C", "#A8C280" ],
                 legend: {
                     show: true,
-                    noColumns: 0, // number of colums in legend table
+                    noColumns: 1, // number of colums in legend table
                     labelFormatter: null, // fn: string -> string
                     labelBoxBorderColor: "#ccc", // border color for the little label boxes
                     container: null, // container (as jQuery object) to put legend in, null means default on top of graph
@@ -122,7 +122,18 @@
                     clickable: false,
                     hoverable: false,
                     autoHighlight: true, // highlight in case mouse is near
-                    mouseActiveRadius: 10 // how far the mouse can be away to activate an item
+                    mouseActiveRadius: 10, // how far the mouse can be away to activate an item
+                    xaxis: true,
+                    yaxis: true
+                },
+                tooltip: {
+                    enabled: true,
+                    top: 5,
+                    left: 5,
+                    borderColor: 'auto',
+                    backgroundColor: '#fff',
+                    opacity: 0.70,
+                    formatter: '%x = %y' // %label, %x, %y, %x.2
                 },
                 hooks: {}
             },
@@ -983,6 +994,7 @@
                     // spew out all possible ticks
                     var start = floorInBase(axis.min, axis.tickSize),
                         i = 0, v = Number.NaN, prev;
+                     
                     do {
                         prev = v;
                         v = start + i * axis.tickSize;
@@ -1175,24 +1187,29 @@
             ctx.lineWidth = 1;
             ctx.strokeStyle = options.grid.tickColor;
             ctx.beginPath();
-            var v, axis = axes.xaxis;
-            for (i = 0; i < axis.ticks.length; ++i) {
-                v = axis.ticks[i].v;
-                if (v <= axis.min || v >= axes.xaxis.max)
-                    continue;   // skip those lying on the axes
+            
+            if(options.grid.xaxis){
+                var v, axis = axes.xaxis;
+                for (i = 0; i < axis.ticks.length; ++i) {
+                    v = axis.ticks[i].v;
+                    if (v <= axis.min || v >= axes.xaxis.max)
+                        continue;   // skip those lying on the axes
 
-                ctx.moveTo(Math.floor(axis.p2c(v)) + ctx.lineWidth/2, 0);
-                ctx.lineTo(Math.floor(axis.p2c(v)) + ctx.lineWidth/2, plotHeight);
+                    ctx.moveTo(Math.floor(axis.p2c(v)) + ctx.lineWidth/2, 0);
+                    ctx.lineTo(Math.floor(axis.p2c(v)) + ctx.lineWidth/2, plotHeight);
+                }
             }
 
-            axis = axes.yaxis;
-            for (i = 0; i < axis.ticks.length; ++i) {
-                v = axis.ticks[i].v;
-                if (v <= axis.min || v >= axis.max)
-                    continue;
+            if(options.grid.yaxis){
+                axis = axes.yaxis;
+                for (i = 0; i < axis.ticks.length; ++i) {
+                    v = axis.ticks[i].v;
+                    if (v <= axis.min || v >= axis.max)
+                        continue;
 
-                ctx.moveTo(0, Math.floor(axis.p2c(v)) + ctx.lineWidth/2);
-                ctx.lineTo(plotWidth, Math.floor(axis.p2c(v)) + ctx.lineWidth/2);
+                    ctx.moveTo(0, Math.floor(axis.p2c(v)) + ctx.lineWidth/2);
+                    ctx.lineTo(plotWidth, Math.floor(axis.p2c(v)) + ctx.lineWidth/2);
+                }
             }
 
             axis = axes.x2axis;
@@ -1890,7 +1907,7 @@
                 pos = { pageX: event.pageX, pageY: event.pageY },
                 canvasX = event.pageX - offset.left - plotOffset.left,
                 canvasY = event.pageY - offset.top - plotOffset.top;
-
+            
             if (axes.xaxis.used)
                 pos.x = axes.xaxis.c2p(canvasX);
             if (axes.yaxis.used)
@@ -1921,6 +1938,8 @@
                     highlight(item.series, item.datapoint, eventname);
             }
             
+            toolTip(item)
+            
             placeholder.trigger(eventname, [ pos, item ]);
         }
 
@@ -1928,7 +1947,7 @@
             if (!redrawTimeout)
                 redrawTimeout = setTimeout(drawOverlay, 30);
         }
-
+        
         function drawOverlay() {
             redrawTimeout = null;
 
@@ -2045,6 +2064,78 @@
                 return gradient;
             }
         }
+
+        var previousPoint = null;
+        function toolTip(item) {
+       
+            if(!options.tooltip.enabled)
+                return false;
+             
+            if (item) {
+                if (previousPoint != item.datapoint) {
+                    previousPoint = item.datapoint;
+                    
+                    $("#tooltip").remove();
+                    var x = item.datapoint[0].toFixed(2),
+                        y = item.datapoint[1].toFixed(2);
+
+                    if(options.tooltip.borderColor == 'auto')
+                        borderColor = item.series.color
+                    else if(options.tooltip.borderColor != 'null')
+                        borderColor = options.tooltip.borderColor
+                    
+                    var contents = options.tooltip.formatter;
+                    
+                    
+                    var patt=/%[xy]\.\d{1,}/g
+                    var replaced = ""
+                    var contents = options.tooltip.formatter;
+                    var decimals = contents.match(patt)
+                    x = new Number(x);
+                    y = new Number(y);
+                    
+                    if(decimals){
+                        for (var i = 0; i < decimals.length; ++i) {
+                            if(decimals[i].match("[xy]") == "x")
+                                number = x.toFixed(new Number(decimals[i].match("[0-9]{1,}")))
+                            else if(decimals[i].match("[xy]") == "y")
+                                number = y.toFixed(new Number(decimals[i].match("[0-9]{1,}")))
+                            replaced = "%" + decimals[i].match("[xy]\.[0-9]{1,}")
+                            contents = contents.replace(replaced,number);
+                            //x.toFixed(new Number(decimals[i].match("[0-9]{1,}")))
+                            
+                        }
+                    }                         
+                    
+                    contents = contents.replace("%x",x);
+                    contents = contents.replace("%y",y);
+                    
+                    contents = contents.replace("%label",item.series.label);
+                    
+                    var css = {
+                        position: 'absolute',
+                        display: 'none',
+                        top: options.tooltip.top + item.pageY,
+                        left: options.tooltip.left + item.pageX,
+                        border: '3px solid ' + borderColor,
+                        padding: '3px',
+                        'background-color': options.tooltip.backgroundColor,
+                        opacity: options.tooltip.opacity,
+                        '-webkit-border-radius':  '10px',
+                        '-moz-border-radius':  '10px',
+                        'border-radius':  '10px'
+                    }
+            
+                    $('<div id="tooltip">' + contents + '</div>').css( css ).appendTo("body").fadeIn(200);
+                }
+            }
+            else {
+                $("#tooltip").remove();
+                previousPoint = null;            
+            }
+        }
+        
+        
     }
 
     $.plot = function(placeholder, data, options) {
