@@ -485,6 +485,7 @@ def dictSort(d):
     return k
     
 @login_required
+@login_required
 def show_concurrent_calls(request):
     kwargs = {}
     graph_view = '1'
@@ -529,32 +530,6 @@ def show_concurrent_calls(request):
         calls_in_day = CDR.objects.filter(**kwargs).values('calldate','duration').order_by('calldate')
         calls = {}
 
-        # Populate the calls array
-        for data in calls_in_day:
-            start_call = int(data[ 'calldate' ].strftime("%Y%m%d%H%M%S"))
-            end_call = int((data[ 'calldate' ] + timedelta(seconds=data['duration'])).strftime("%Y%m%d%H%M%S"))
-            if start_call in calls.keys():
-                calls[start_call].append({'load': 1, 'calldate': data['calldate'], 'duration':data['duration']})
-            else:
-                calls[start_call] = [{'load': 1, 'calldate': data['calldate'], 'duration':data['duration']}]
-
-            if end_call in calls.keys():
-                calls[end_call].append({'load': -1, 'calldate': data['calldate'], 'duration':data['duration']})
-            else:
-                calls[end_call] = [{'load': -1, 'calldate': data['calldate'], 'duration':data['duration']}]
-        aux = {}
-        # Sort the $calls array by its keys.
-        for i in range(len(calls)):
-           aux[sorted(calls.keys())[i]] = calls[sorted(calls.keys())[i]]
-        calls = aux
-        
-        # Initialize some variables which will be used in processing the concurrent calls
-        concurrent_calls = {}
-        total_call_count = 0
-        
-        #call_detail = []
-        calls_ok = []
-        calls = {}
         time_calls = {}
         last_time = 0
         
@@ -566,18 +541,8 @@ def show_concurrent_calls(request):
                 time_calls[int_starttime] += 1
             else:
                 time_calls[int_starttime] = 1
-        
-        # DeBUG
-        """
-        print calls_in_day
-        print time_calls
-        #print sorted(time_calls, key=time_calls)
-        keysorted = time_calls.items()
-        keysorted.sort( key=lambda time_calls:time_calls[0])
-        print keysorted
-        #print [(key, a[key]) for key in keys]
-        """
-        
+                
+        concurrent_calls = {}
         for data in calls_in_day:
             starttime = data['calldate']
             endtime = starttime + timedelta(seconds=data['duration'])
@@ -590,27 +555,26 @@ def show_concurrent_calls(request):
                     if int(result) < 5:
                         if time in time_calls.keys():
                             if str(time)[0:10] in concurrent_calls.keys():
-                                concurrent_calls[str(time)[0:10]] += time_calls[time]
+                                if concurrent_calls[str(time)[0:10]] < time_calls[time]:
+                                    concurrent_calls[str(time)[0:10]] = time_calls[time]
                             else:
                                 concurrent_calls[str(time)[0:10]] = time_calls[time]
                     else:
                         if time in time_calls.keys():
                             if str(time)[0:8] in concurrent_calls.keys():
-                                concurrent_calls[str(time)[0:8]] += time_calls[time]
+                                if concurrent_calls[str(time)[0:8]] < time_calls[time]:
+                                    concurrent_calls[str(time)[0:8]] = time_calls[time]
                             else:
                                 concurrent_calls[str(time)[0:8]] = time_calls[time]
                 last_time = int_endtime
 
         maxconcurrent = 0
-        for data in concurrent_calls:
-            total_call_count += concurrent_calls[data]
-            if (concurrent_calls[data] > maxconcurrent):
-                maxconcurrent = concurrent_calls[data] 
+        total_call_count = 0
+        for date in concurrent_calls:
+            if (concurrent_calls[date] > maxconcurrent):
+                maxconcurrent = concurrent_calls[date] 
         
-        call_count_range=range(0,total_call_count)
-        call_count_range.reverse()
-        
-        dates = date_range(start_date, end_date)
+        dates = date_range(start_date,end_date)
         dateList = []
         if result == '5':
             for i in range(1,now.day+1):
