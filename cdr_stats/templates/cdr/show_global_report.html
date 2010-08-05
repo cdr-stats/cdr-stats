@@ -43,7 +43,7 @@ Event.observe(document, 'dom:loaded', function() {
     HumbleFinance.trackFormatter = function (obj) {
         var x = Math.floor(obj.x);
         var data = jsonData[x];
-        var text = data.date + " Calls: " + data.calls + " Duration: " + data.duration + " ACT: " + data.act;
+        var text = data.date + " {% trans "Calls :"  %} " + data.calls + " {% trans "Duration :"  %} " + data.duration + " {% trans "ACT :"  %} " + data.act;
         
         return text;
     };
@@ -73,13 +73,13 @@ Event.observe(document, 'dom:loaded', function() {
 
 <div id="finance">
 	<div id="labels">
-	    <div id="financeTitle">Report Global</div>
+	    <div id="financeTitle">{% trans "Global Report"  %}</div>
 	    <div id="time">
-	        <a onclick="HumbleFinance.zoom(7);">1 week</a>
-	        <a onclick="HumbleFinance.zoom(30);">1 month</a>
-	        <a onclick="HumbleFinance.zoom(90);">3 months</a>
-	        <a onclick="HumbleFinance.zoom(180);">6 months</a>
-	        <a onclick="HumbleFinance.zoom(365);">1 year</a>
+	        <a onclick="HumbleFinance.zoom(7);">1 {% trans "week"  %}</a>
+	        <a onclick="HumbleFinance.zoom(30);">1 {% trans "month"  %}</a>
+	        <a onclick="HumbleFinance.zoom(90);">3 {% trans "months"  %}</a>
+	        <a onclick="HumbleFinance.zoom(180);">6 {% trans "months"  %}</a>
+	        <a onclick="HumbleFinance.zoom(365);">1 {% trans "year"  %}</a>
 	    </div>
 
 	    <div id="dateRange"></div>
