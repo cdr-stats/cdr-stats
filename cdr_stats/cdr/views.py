@@ -699,6 +699,54 @@ def show_global_report(request):
     }
     return render_to_response(template, data,context_instance = RequestContext(request))
 
+
+@login_required
+def show_dashboard(request):
+    template = 'cdr/show_dashboard.html'
+    debug = []
+    kwargs = {}
+    calls = ""
+    
+    now = datetime.now()
+    
+    start_date = datetime(now.year,now.month,now.day,0,0,0,0) - relativedelta(days=1)
+    end_date = datetime(now.year,now.month,now.day,23,59,59,999999) - relativedelta(days=1)
+    kwargs[ 'calldate__range' ] = (start_date,end_date)
+    
+    select_data = {"called_time": "SUBSTR(calldate,1,16)"} # Date without seconds
+    calls = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('calldate')).annotate(Sum('duration'))#.order_by('-calldate')#
+    
+    total_calls = 0
+    total_duration = 0
+    total_record_final = []
+    for data in calls:
+        hour = float(data['called_time'][11:13])
+        minute = math.ceil(float(data['called_time'][14:16])/60 * 100) / 100
+        time = hour + minute
+        total_record_final.append([str(time), data['calldate__count'], data['duration__sum']])
+        total_calls += data['calldate__count']
+        total_duration += data['duration__sum']
+    
+    ACT = math.floor(total_calls / 24)
+    ACD = math.floor(total_duration / total_calls)
+    
+    label = start_date.strftime('%m/%d/%Y')
+    
+    variables = RequestContext(request,
+                        {
+                         'label':label,
+                         'total_calls':total_calls,
+                         'total_duration':total_duration,
+                         'ACT':ACT,
+                         'ACD':ACD,
+                         'total_record':total_record_final,
+                         'debug':debug,
+                        })
+
+    return render_to_response(template, variables,
+           context_instance = RequestContext(request))
+
+
 def login_view(request):
     template = 'cdr/index.html'
     errorlogin = ''

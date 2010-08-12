@@ -1,0 +1,112 @@
+{% extends "cdr/master.html" %}
+{% load i18n %}
+{% load cdr_extras %}
+{% load uni_form_tags %}
+
+{% block extra_header %}
+    {% include "cdr/visualize_header.html" %}
+{% endblock %}
+
+{% block content %}
+
+<br/><br/>
+
+<script id="source" language="javascript" type="text/javascript">
+$(function () {
+
+    function Info(time,info){
+        data = [
+        {% for data in total_record %}
+            [{{data.0}},{{data.1}},{{data.2}}],
+        {% endfor %}];
+        
+        for(var i in data){
+            if(data[i][0] == time){
+                switch(info){
+                    case 0:
+                        return data[i][0];
+                    break;
+                    case 1:
+                        return data[i][1];
+                    break;
+                    case 2:
+                        return data[i][2];
+                    break;
+                    default:
+                        return data[i][0];
+                }
+            }
+        }
+    }
+
+    var data = [{
+                    data: [
+                        {% for data in total_record %}
+                            [{{data.0}},{{data.1}}],
+                        {% endfor %}
+                    ],
+                    label: '{{label}}'
+    }];
+
+    var options = {
+                    legend: {
+                                position: "se",
+                                margin: [-510,50]
+                          },
+                    series: {
+                                lines: { show: true },
+                                points: { show: true }
+                          },
+                    yaxis: {
+                                min: 0,
+                                tickDecimals: false
+                          },
+                    xaxis: {
+                                min: 0,
+                                max: 23,
+                                tickSize: 1,
+                                tickDecimals: false,
+                          },
+                    grid: {
+                                hoverable: true,
+                          },
+                    tooltip: {
+                                formatter: function(obj){
+                                    var time = obj.x;
+                                    var hour = (time.toString().split("."))[0];
+                                    var minute = Math.round(time * 60 - (hour * 60));
+                                    var output = '';
+                                    output += '<center><b>';
+                                    if(hour < 10){
+                                        output += '0';
+                                    }
+                                    output += hour + ':';
+                                    if(minute < 10){
+                                        output += '0';
+                                    }
+                                    output += minute + '</b></center>{% trans "Calls" %}: ' + Info(time,1) + '<br>{% trans "Duration" %}: ' + Info(time,2) + ' {% trans "secs" %}';
+                                    return output;
+                                },
+                          }
+                  };
+    var plot = $.plot($("#placeholder"), data, options);
+    
+});
+</script>
+
+    <h1>{% trans "Call Statistics" %}</h1>
+    <div id="placeholder" style="width:700px;height:300px"></div>
+
+<br/>
+<div class="span-6 last">
+<div style="height: 20px;color: #1b5582;font-size: small;font-weight: bold;background-color: #d7ebf9">Call Statistics</div>
+<font color="#000000" size="4"><b>{{total_calls}}</b</font> <font size="2">{% trans "Total Calls"%}</font><br/>
+<font color="#000000" size="4"><b>{{ACT}}</b</font> <font size="2">{% trans "Averange call per hour"%}</font><br/>
+<font color="#000000" size="4"><b>{{total_duration}}</b</font> <font size="2">{% trans "Total Duration"%}</font><br/>
+<font color="#000000" size="4"><b>{{ACD}}</b</font> <font size="2">{% trans "Averange call duration"%}</font>
+</div>
+
+
+{% endblock %}
+
+

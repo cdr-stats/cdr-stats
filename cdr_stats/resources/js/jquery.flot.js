@@ -133,7 +133,7 @@
                     borderColor: 'auto',
                     backgroundColor: '#fff',
                     opacity: 0.70,
-                    formatter: '%x = %y' // %label, %x, %y, %x.2
+                    formatter: null // %label, %x, %y, %x.2
                 },
                 hooks: {}
             },
@@ -2067,7 +2067,11 @@
 
         var previousPoint = null;
         function toolTip(item) {
-       
+
+            function formatter(obj) {
+                return obj.x;
+            };
+
             if(!options.tooltip.enabled)
                 return false;
              
@@ -2076,41 +2080,20 @@
                     previousPoint = item.datapoint;
                     
                     $("#tooltip").remove();
-                    var x = item.datapoint[0].toFixed(2),
-                        y = item.datapoint[1].toFixed(2);
+                    var x = item.datapoint[0],
+                        y = item.datapoint[1];
 
                     if(options.tooltip.borderColor == 'auto')
                         borderColor = item.series.color
                     else if(options.tooltip.borderColor != 'null')
                         borderColor = options.tooltip.borderColor
                     
-                    var contents = options.tooltip.formatter;
+                    obj = {'x': x, 'y':y, 'label':item.series.label}
                     
-                    
-                    var patt=/%[xy]\.\d{1,}/g
-                    var replaced = ""
-                    var contents = options.tooltip.formatter;
-                    var decimals = contents.match(patt)
-                    x = new Number(x);
-                    y = new Number(y);
-                    
-                    if(decimals){
-                        for (var i = 0; i < decimals.length; ++i) {
-                            if(decimals[i].match("[xy]") == "x")
-                                number = x.toFixed(new Number(decimals[i].match("[0-9]{1,}")))
-                            else if(decimals[i].match("[xy]") == "y")
-                                number = y.toFixed(new Number(decimals[i].match("[0-9]{1,}")))
-                            replaced = "%" + decimals[i].match("[xy]\.[0-9]{1,}")
-                            contents = contents.replace(replaced,number);
-                            //x.toFixed(new Number(decimals[i].match("[0-9]{1,}")))
-                            
-                        }
-                    }                         
-                    
-                    contents = contents.replace("%x",x);
-                    contents = contents.replace("%y",y);
-                    
-                    contents = contents.replace("%label",item.series.label);
+                    if(options.tooltip.formatter == null)
+                        var contents = formatter(obj);
+                    else
+                        var contents = options.tooltip.formatter(obj);
                     
                     var css = {
                         position: 'absolute',

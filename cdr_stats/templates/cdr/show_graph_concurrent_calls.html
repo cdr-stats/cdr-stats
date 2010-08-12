@@ -46,7 +46,9 @@ $(function () {
                                 xaxis: false
                           },
                    tooltip: {
-                                formatter: '<center><b>%label</b></center>{{graph_by}}: %x.0<br>{% trans "Concurrent Calls" %}: %y.0'
+                                formatter: function(obj){
+                                    return '<center><b>' + obj.label + '</b></center>{{graph_by}}: ' + obj.x + '<br>{% trans "Concurrent Calls" %}: ' + obj.y
+                                }
                    }
                   };
     var plot = $.plot($("#placeholder"), data, options);
