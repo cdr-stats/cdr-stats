@@ -77,7 +77,7 @@ class CDR(models.Model):
 				'word_count':1, #if Char/TextField, the number of words to generate
 			},
 			'calldate':{
-				'day_delta': 355, #The day delta to generate the date, minus today
+				'day_delta': 1, #The day delta to generate the date, minus today
 				'hour_delta': 24, #The day delta to generate the date, minus the current hour
 			},
 		}

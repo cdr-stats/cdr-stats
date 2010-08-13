@@ -728,7 +728,10 @@ def show_dashboard(request):
         total_duration += data['duration__sum']
     
     ACT = math.floor(total_calls / 24)
-    ACD = math.floor(total_duration / total_calls)
+    if total_calls==0:
+        ACD = 0
+    else:
+        ACD = math.floor(total_duration / total_calls)
     
     label = start_date.strftime('%m/%d/%Y')
     
