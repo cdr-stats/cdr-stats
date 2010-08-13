@@ -1,0 +1,42 @@
+
+@ Last version used of Plugin Flot for JQuery : 0.6
+
+
+LIST OF CHANGES ON THE ORIGINAL FLOT : http://code.google.com/p/flot/
+------------------------------------------------------------------------
+
+1)
+    - Date
+    	August 02, 2010
+    - Short description of the change
+        Add TollTip more colors and remove grid
+    - explain the modification
+        Added tooltip to where it can be added also equal the other options
+        Added more theme colors used for graphics
+        Added option to remove grid x or y
+    - lines and files that has been update
+        jquery.flot.js
+        @@ -41,1 +41,1 @@
+        @@ -144,1 +44,1 @@
+        @@ +126,2 @@
+        @@ +129,8 @@
+        @@ -1175,24 +1187,29 @@
+        @@ +1941,1 @@
+        @@ +2067,71 @@
+    - Author name / email
+ 
+2)
+    - Date
+        August 12, 2010
+    - Short description of the change
+        Change Tooltip
+    - explain the modification
+        Tooltip can be formatted through a function
+    - lines and files that has been update
+        @@ -136,1 +136,1 @@
+        @@ -2079,2 +2079,2 @@
+        @@ -2087,2 +2091,1 @@
+        @@ -2090,23 +2093,4 @@
+    - Author name / email
+    
+...
