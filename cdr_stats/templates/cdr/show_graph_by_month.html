@@ -7,7 +7,7 @@
 {% block extra_header %}
     {% include "cdr/visualize_header.html" %}
 {% endblock %}
-
+ 
 {% block content %}
 <div class="search-form">
 {% with form.helper as helper %}
@@ -17,48 +17,51 @@
 
 <br/><br/>
 
-{% for month in total_month_list %}
-{{month.1}}
-{% endfor %}
+<script language="javascript" type="text/javascript">
+$(function () {
 
-
-<div id="graph-container">
-<table id="table_call_month" width=100%>
-{% if calls_min %}
-  <caption>{% blocktrans %}Traffic Last {{comp_months}} Months{% endblocktrans %}</caption>
-	<thead>
-		<tr>
-			<td></td>
-			<th scope="col">{% trans "Duration"  %}</th>
-		</tr>
-	</thead>
-
-    <tbody>
+    var data = [
     {% for call in total_record %}
         {% if call.0 %}
-        <tr class="tr_class">
-               <th scope="row">
-                   {{ call.0|month_name:call.1 }} {{ call.2|time_in_min:"min"}}
-               </th>
-               <td>{{ call.2 }}</td>
-           </tr>
-
+            { label: '{{ call.0|month_name:call.1 }} {{ call.2|time_in_min:"min"}}', data: {{ call.2 }} },
         {% endif %}
     {% endfor %}
-    </tbody>
-    
-{% else %}
-    <tr><td align=center>{% trans "No Record(s) found."  %}</td></tr>
-{% endif %}
-</table>
-</div>
+    ];
 
+    var options = 
+    {
+        series: {
+            pie: { 
+                show: true,
+                radius: 1,
+                label: {
+                    show: true,
+                    radius: 3/4,
+                    formatter: function(label, series){
+                        return '<div style="font-size:12pt;text-align:center;padding:2px;color:white;">'+Math.round(series.percent)+'%</div>';
+                    },
+                    background: { opacity: 0.5 }
+                }
+            }
+        },
+        legend: {
+              show: true,
+            position: "se",
+            margin: [-310,50]
+        },
+        grid:{
+            borderWidth: 0,
+            hoverable: true,
+        }
+    }
 
-
-<script type="text/javascript">
-    $(function(){
-        $('table').visualize({type: 'pie', height: '300px', width: '620px'});
-    });
+    $.plot($("#placeholder"), data, options);
+});
 </script>
+
+<center>
+   <h1>{% blocktrans %}Traffic Last {{comp_months}} Months{% endblocktrans %}</h1>
+    <div id="placeholder" style="width:700px;height:300px"></div>
+</center>
 
 {% endblock %}

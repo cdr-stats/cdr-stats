@@ -13,48 +13,62 @@
 {% with form.helper as helper %}
     {% uni_form form helper %}
 {% endwith %}
-
 </div>
 
 <br/><br/>
 
+<script id="source" language="javascript" type="text/javascript">
+$(function () {
+    var data = [{
+                    data: [
+                            {% for call in total_record %}
+                                [ {{ call.0 }}, {{ call.1 }} ],
+                            {% endfor %}
+                    ],                    
+                    label: '{{report_date|date:"F j, Y"}}'
+    }];
 
-<div id="graph-container">
-<table id="table_load_hour" width="100%" border="1" align="center">
-  {% if total_record %}
-  <caption>{% trans "Calls by Hour"  %}</caption>
-	<thead>
-		<tr>
-			<td></td>
-			{% for call in total_record %}
-			    <th scope="col">{{ call.0 }}</th>
-			{% endfor %}
-		</tr>
-	</thead>
-	
-    <tbody>
-    <tr class="tr_class">
-           <th scope="row">
-               {% trans "Calls by Hour"  %}
-           </th>
-           {% for call in total_record %}
-           <td>{{ call.1 }}</td>
-           {% endfor %}       
-    </tr>
+    var options = {
+                    legend: {
+                                position: "se",
+                                margin: [-510,50]
+                          },
+                    series: {
+                                bars: { show: true },
+                          },
+                    yaxis: {
+                                min: 0,
+                                tickDecimals: false
+                          },
+                    xaxis: {
+                                min: 0,
+                                max: 24,
+                                tickSize: 1,
+                                tickDecimals: false,
+                                tickFormatter:
+                                    function (x) { 
+                                        if(x < 24)
+                                            return "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + x;
+                                        else
+                                            return "";
+                                    }
+                          },
+                    grid: {
+                                hoverable: true,
+                                xaxis: false
+                          },
+                    tooltip: {
+                                enabled: false
+                          }
+                  };
+    var plot = $.plot($("#placeholder"), data, options);
     
-    {% else %}
-      <tr><td align=center>{% trans "No Record(s) found."  %}</td></tr>
-    {% endif %}
-    </tbody>
-    
-</table>
-</div>
-
-
-<script type="text/javascript">
-    $(function(){
-       $('#table_load_hour').visualize({type: 'bar', width: '700px', align: '0'});
-    });
+});
 </script>
+
+<center>
+    <h1>{% trans "Load By Hour" %}</h1>
+    <div id="placeholder" style="width:700px;height:300px"></div>
+</center>
 
 {% endblock %}

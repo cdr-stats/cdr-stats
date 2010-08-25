@@ -18,63 +18,104 @@
 
 <br/><br/>
 
-<div id="graph-container">
-<table id="table_call_hour" width=100% border=1>
+<script id="source" language="javascript" type="text/javascript">
+$(function () {
 
-  {% if total_record %}
-    <caption>{% ifequal graph_view 1 %}
-                {% trans "Calls per Hour"  %}
-             {% else %}
-                {% trans "Minutes per Hour"  %}
-             {% endifequal %}
-   </caption>
-    
-	<thead>
-		<tr>
-        <td></td>
-        {% for hour in total_hour%}
-        <th scope="col">{{hour}}</th>
-        {% endfor %}
-		</tr>
-	</thead>
-    <tbody>
-    {% for dt in record_dates%}
-    <tr class="tr_class">
-		    <th scope="col">{{ dt }}</th>
+    function Info(date,time,info){
+        data = [
+        {% for data in total_record %}
+            ['{{data.0}}',{{data.1}},{{data.2}}],
+        {% endfor %}];
 
-                    {% for call in total_record %}
+        for(var i in data){
+            if(data[i][0] == date){
+                
+                switch(info){
+                    case 0:
+                        return data[i][0];
+                    break;
+                    case 1:
+                        if(time < 10)
+                            time = '0' + time;
+                        return time + ':00';
+                    break;
+                    case 2:
+                        if(data[i][1] == time)
+                            return data[i][2];
+                    break;
+                    default:
+                        return data[i][0];
+                }
+            }
+        }
+    }
 
-                        {% ifequal call.0 dt %}
-
-                                {% if graph_view %}
-                                <td>{{call.2}}</td>
-                                 {% else %}
-                                 <td>{{call.2|conv_min}}</td>
-                                 {% endif %}
-
-                        {% endifequal %}
-
+    var data = [
+                    {% for dt in total_record %}
+                        {% ifchanged dt.0 %}
+                            {
+                                label: '{{dt.0}}',
+                                data: [
+                                        {% for call in total_record %}
+                                            {% ifequal dt.0 call.0 %}
+                                                [{{call.1}},{{call.2}}],
+                                            {% endifequal %}
+                                        {% endfor %}
+                                    ],
+                            },
+                        {% endifchanged %}
                     {% endfor %}
-    </tr>
-    {% endfor %}
-
-    {% else %}
-      <tr><td align=center>{% trans "No Record(s) found."  %}</td></tr>
-    {% endif %}
-    </tbody>
+                ];
     
-</table>
-</div>
 
 
-<script type="text/javascript">
-    $(function(){
-       // $('table').visualize({type: 'pie', height: '300px', width: '420px'});
-       //$('table').visualize({type: 'bar', width: '420px'});
-       // $('table').visualize({type: 'area', width: '420px'});
-        $('table').visualize({type: 'line', width: '700px'});
-    });
+    var options = {
+                    legend: {
+                                position: "se",
+                                margin: [-510,50]
+                          },
+                    series: {
+                                lines: { show: true },
+                                points: { show: true }
+                          },
+                    yaxis: {
+                                min: 0,
+                                tickDecimals: false
+                          },
+                    xaxis: {
+                                min: 0,
+                                max: 23,
+                                tickSize: 1,
+                                tickDecimals: false,
+                          },
+                    grid: {
+                                hoverable: true,
+                                xaxis: false
+                          },
+                    tooltip: {
+                                formatter: function(obj){
+                                    var time = obj.x;
+                                    var date = obj.label;
+                                    output = '<center><b>' + date + '</b></center>{% trans "Hour" %}: ' + Info(date,time,1) + '<br>';
+                                    
+                                    output += {% if graph_view == '1' %}
+                                                    '{% trans "Calls" %}: ' + Info(date,time,2);
+                                              {% else %}
+                                                    '{% trans "Minutes" %}: ' + Info(date,time,2) + ' min';
+                                              {% endif %}
+                                    return output;
+                                },
+                          }
+                  };
+    var plot = $.plot($("#placeholder"), data, options);
+    
+});
 </script>
+
+<center>
+    <h1>{% trans "Call Statistics" %}</h1>
+    <div id="placeholder" style="width:700px;height:300px"></div>
+</center>
 
 {% endblock %}
 

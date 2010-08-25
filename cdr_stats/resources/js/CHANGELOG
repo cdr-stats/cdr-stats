@@ -19,7 +19,7 @@ LIST OF CHANGES ON THE ORIGINAL FLOT : http://code.google.com/p/flot/
         @@ -1175,24 +1187,29 @@
         @@ +1941,1 @@
         @@ +2067,71 @@
-    - Author :
+    - Author : Vinicius Correa [vinicius@tofalando.com.br]
  
 2) Change Tooltip - August 12, 2010
     - Details :
@@ -29,5 +29,5 @@ LIST OF CHANGES ON THE ORIGINAL FLOT : http://code.google.com/p/flot/
         @@ -2079,2 +2079,2 @@
         @@ -2087,2 +2091,1 @@
         @@ -2090,23 +2093,4 @@
-    - Author :
+    - Author : Vinicius Correa [vinicius@tofalando.com.br]
     
