@@ -20,40 +20,71 @@
 <script language="javascript" type="text/javascript">
 $(function () {
 
-    var data = [
-    {% for call in total_record %}
-        {% if call.0 %}
-            { label: '{{ call.0|month_name:call.1 }} {{ call.2|time_in_min:"min"}}', data: {{ call.2 }} },
-        {% endif %}
-    {% endfor %}
-    ];
-
-    var options = 
-    {
-        series: {
-            pie: { 
-                show: true,
-                radius: 1,
-                label: {
-                    show: true,
-                    radius: 3/4,
-                    formatter: function(label, series){
-                        return '<div style="font-size:12pt;text-align:center;padding:2px;color:white;">'+Math.round(series.percent)+'%</div>';
-                    },
-                    background: { opacity: 0.5 }
-                }
-            }
-        },
-        legend: {
-              show: true,
-            position: "se",
-            margin: [-310,50]
-        },
-        grid:{
-            borderWidth: 0,
-            hoverable: true,
-        }
+    function MonthName(m,type){
+        var short_month = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+        var month = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+        if(type == 0)
+            return short_month[m-1];
+        else
+            return month[m-1];
     }
+
+    var data = [    {% for year in total_record %}
+                        {% ifchanged year.1 %}
+                            {
+                                label: '{{year.1}}',
+                                data: [
+                                        {% for call in total_record %}
+                                            {% ifequal year.1 call.1 %}
+                                                [{{call.0}},{{call.2}}],
+                                            {% endifequal %}
+                                        {% endfor %}
+                                    ],
+                            },
+                        {% endifchanged %}
+                    {% endfor %}
+                ];
+
+    var options = {
+                    legend: {
+                                position: "se",
+                                margin: [-510,50]
+                          },
+                    series: {
+                                bars: { show: true },
+                          },
+                    yaxis: {
+                                min: 0,
+                                tickDecimals: false
+                          },
+                    xaxis: {
+                                min: 1,
+                                max: 13,
+                                tickSize: 1,
+                                tickDecimals: false,
+                                tickFormatter:
+                                    function (x) { 
+                                        var output = '';
+                                        if(x < 13){
+                                            for(var i=0; i < 15; i++)
+                                                output += "&nbsp;";
+                                            output += MonthName(x, 0);
+                                        }
+                                        return output;
+                                    }
+                          },
+                    grid: {
+                                hoverable: true,
+                                xaxis: false
+                          },
+                    tooltip: {
+                                formatter: function(obj){
+                                    output = '';
+                                    output += '<center><b>' + MonthName(obj.x, 1) + ', ' + obj.label + '</b></center>{% trans "Calls" %}: ' + obj.y;
+                                    return output;
+                                },
+                          }
+                  };
 
     $.plot($("#placeholder"), data, options);
 });

@@ -25,6 +25,19 @@ import csv, codecs
 from operator import itemgetter
 
 
+DISPOSITION = (
+    (1, _('ANSWER')),
+    (2, _('BUSY')),
+    (3, _('NOANSWER')),
+    (4, _('CANCEL')),
+    (5, _('CONGESTION')),
+    (6, _('CHANUNAVAIL')),
+    (7, _('DONTCALL')),
+    (8, _('TORTURE')),
+    (9, _('INVALIDARGS')),
+)
+
+
 # Create your views here.
 @login_required
 def grid_handler(request):
@@ -94,14 +107,26 @@ def show_cdr(request):
     #select_data = {"calldate": "strftime('%%Y-%%m-%%d', calldate)"}
     select_data = {"calldate": "SUBSTR(calldate,1,10)"}
     
-    request.session['cdr_queryset'] = CDR.objects.values('calldate', 'channel', 'src', 'clid', 'dst', 'disposition', 'duration', 'accountcode').filter(**kwargs).order_by('-calldate')
+    queryset = CDR.objects.values('calldate', 'channel', 'src', 'clid', 'dst', 'disposition', 'duration', 'accountcode').filter(**kwargs).order_by('-calldate')
     total_data = CDR.objects.extra(select=select_data).values('calldate').filter(**kwargs).annotate(Count('calldate')).annotate(Sum('duration')).annotate(Avg('duration')).order_by('-calldate')
     form = CdrSearchForm(initial={'from_day':from_day,'from_month_year':from_month_year,'to_day':to_day,'to_month_year':to_month_year,'result':result,'export_csv_queryset':'0'})
     
+    count = 0
     if result == '1':
-        for i in request.session['cdr_queryset']:
-            i['duration'] = int_convert_to_minute(int(i['duration']))
-
+        for i in queryset:
+            queryset[count]['duration'] = int_convert_to_minute(int(i['duration']))
+            count +=1
+    
+    count = 0
+    for i in queryset:
+        for d in DISPOSITION:
+            if d[0] == i['disposition']:
+                disposition = d[1]
+        queryset[count]['disposition'] = disposition
+        count +=1
+    
+    request.session['cdr_queryset'] = queryset
+    
     if total_data.count() != 0:
         max_duration = max([x['duration__sum'] for x in total_data])
         total_duration = sum([x['duration__sum'] for x in total_data])

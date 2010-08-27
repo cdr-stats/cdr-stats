@@ -52,13 +52,13 @@ class JqGrid(object):
     
     def get_queryset(self, request):
         if hasattr(self, 'queryset') and self.queryset is not None:
-            queryset = self.queryset._clone()        
+            queryset = self.queryset
         elif hasattr(self, 'model') and self.model is not None:
             queryset = self.model.objects.values(*self.get_field_names())
         else:
             raise ImproperlyConfigured("No queryset or model defined.")
 
-        self.queryset = queryset        
+        self.queryset = queryset
         return self.queryset
 
     def get_model(self):
