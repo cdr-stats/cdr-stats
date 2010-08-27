@@ -64,38 +64,26 @@ def grid_config(request):
 def show_cdr(request): 
 
     kwargs = {}
-    if request.method == 'GET':        
-        if "from_day" in request.GET:
+    if request.method == 'GET':
+        if "from_date" in request.GET:
             # From
-            from_day            = int(request.GET['from_day'])
-            from_month_year     = request.GET['from_month_year']
-            from_year           = int(request.GET['from_month_year'][0:4])
-            from_month          = int(request.GET['from_month_year'][5:7])
-            from_day            = validate_days(from_year, from_month, from_day)
-            start_date          = datetime(from_year, from_month, from_day, 0, 0, 0, 0)
+            from_date            = request.GET['from_date']
+            start_date          = datetime(int(from_date[-4:]), int(from_date[:2]), int(from_date[3:5]), 0, 0, 0, 0)
 
             # To
-            to_day              = int(request.GET['to_day'])
-            to_month_year       = request.GET['to_month_year']
-            to_year             = int(request.GET['to_month_year'][0:4])
-            to_month            = int(request.GET['to_month_year'][5:7])
-            to_day              = validate_days(to_year, to_month, to_day)
-            end_date            = datetime(to_year, to_month, to_day, 23, 59, 59, 999999)
+            to_date              = request.GET['to_date']
+            end_date            = datetime(int(to_date[-4:]), int(to_date[:2]), int(to_date[3:5]), 23, 59, 59, 999999)
     
     try:
-        from_day
+        from_date
     except NameError:
-        #print "well, it WASN'T defined after all!"
         tday = datetime.today()
-        from_day = 1
-        to_year = from_year = tday.year
-        to_month = from_month = tday.month
-        from_month_year = str(to_year) + '-' + str(to_month)
-        to_month_year = str(to_year) + '-' + str(to_month)
-        to_day = validate_days(tday.year,tday.month,31)
+        from_date = tday.strftime('%m/01/%Y')
+        last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) + relativedelta(months=1)) - relativedelta(days=1)).strftime('%d')
+        to_date = tday.strftime('%m/'+last_day+'/%Y')
         
-        start_date = datetime(from_year, from_month, from_day, 0, 0, 0, 0)
-        end_date = datetime(to_year, to_month, to_day)
+        start_date = datetime(int(from_date[-4:]), int(from_date[:2]), int(from_date[3:5]), 0, 0, 0, 0)
+        end_date = datetime(int(to_date[-4:]), int(to_date[:2]), int(to_date[3:5]), 23, 59, 59, 999999)
         
     kwargs[ 'calldate__range' ] = (start_date, end_date)
     
@@ -109,7 +97,7 @@ def show_cdr(request):
     
     queryset = CDR.objects.values('calldate', 'channel', 'src', 'clid', 'dst', 'disposition', 'duration', 'accountcode').filter(**kwargs).order_by('-calldate')
     total_data = CDR.objects.extra(select=select_data).values('calldate').filter(**kwargs).annotate(Count('calldate')).annotate(Sum('duration')).annotate(Avg('duration')).order_by('-calldate')
-    form = CdrSearchForm(initial={'from_day':from_day,'from_month_year':from_month_year,'to_day':to_day,'to_month_year':to_month_year,'result':result,'export_csv_queryset':'0'})
+    form = CdrSearchForm(initial={'from_date':from_date,'to_date':to_date,'result':result,'export_csv_queryset':'0'})
     
     count = 0
     if result == '1':

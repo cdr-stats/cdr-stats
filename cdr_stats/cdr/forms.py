@@ -80,10 +80,8 @@ class CompareCallSearchForm(CdrSearchForm):
 
 class CdrSearchForm(forms.Form):
     
-    from_day = forms.ChoiceField(label=_('From :'), required=False, choices=day_range())
-    from_month_year = forms.ChoiceField(label='', required=False, choices=month_year_range())
-    to_day = forms.ChoiceField(label=_('To :'), required=False, choices=day_range())
-    to_month_year = forms.ChoiceField(label='', required=False, choices=month_year_range())
+    from_date = CharField(label=_('From'), required=True, max_length=10, widget=forms.TextInput(attrs={'size': 12}))
+    to_date = CharField(label=_('To'), required=True, max_length=10, widget=forms.TextInput(attrs={'size': 12}))
     
     result = forms.TypedChoiceField(label=_('Result:'), required=False, coerce=bool,
                 choices = (('1', _('Minutes')), ('2', _('Seconds'))),widget=forms.RadioSelect)
@@ -93,9 +91,9 @@ class CdrSearchForm(forms.Form):
                 # second fieldset shows the contact info
                 Fieldset(
                         _('Search Options :'),
-                        Column('from_day','from_month_year'),
-                        Column('to_day','to_month_year'),
-                        Column('result'),
+                        Column('from_date'),
+                        Column('to_date'),
+                        Row('result'),
                      )
                 )
 
