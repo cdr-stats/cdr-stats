@@ -2,11 +2,17 @@
 
 ~~~ TODO List ~~~
 
- - Result minutes / seconds
-    
- - Display Disposition
-
- - Replace PIE Chat by a Bar Chart
  
- - jquery datepicker integrate for From-date and To-Date Criteria
+ - jquery datepicker integrate in those 2 pages :
+        http://localhost:8000/show_stats_by_hour
+        http://localhost:8000/show_stats_by_day
 
+ - add accountcode field on user in admin UI : http://localhost:8000/admin/
+   option there to browse and delete users 
+   add an accountcode field to user
+    
+ - on normal UI, let other user to log in and display all the reporting for the CDR which have the accountcode same as the user.
+    a) user that are super user can see all
+    b) user that don't have accountcode cannot log in
+ 
+ 

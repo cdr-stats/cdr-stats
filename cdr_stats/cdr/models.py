@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import permalink
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
+from django.contrib.auth.models import User
 
 
 DISPOSITION = (
@@ -15,6 +16,10 @@ DISPOSITION = (
     (8, _('TORTURE')),
     (9, _('INVALIDARGS')),
 )
+
+accountcode = models.PositiveIntegerField(null=True, blank=True)
+accountcode.contribute_to_class(User, 'accountcode')
+
 
 class CDR(models.Model):
     acctid = models.PositiveIntegerField(primary_key=True, db_column = 'acctid')
