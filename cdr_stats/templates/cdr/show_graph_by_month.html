@@ -29,6 +29,20 @@ $(function () {
             return month[m-1];
     }
 
+    function int_convert_to_minute(value){
+        min = (value / 60) + "";
+        min = min.substring(0,(min.indexOf(".")));
+        if(min < 10){
+            min = "0" + min;
+        }
+        sec = value % 60;
+        if(sec < 10){
+            sec = "0" + sec;
+        }
+        return min + ":" + sec;
+    }
+
+
     var data = [    {% for year in total_record %}
                         {% ifchanged year.1 %}
                             {
@@ -80,7 +94,7 @@ $(function () {
                     tooltip: {
                                 formatter: function(obj){
                                     output = '';
-                                    output += '<center><b>' + MonthName(obj.x, 1) + ', ' + obj.label + '</b></center>{% trans "Calls" %}: ' + obj.y;
+                                    output += '<center><b>' + MonthName(obj.x, 1) + ', ' + obj.label + '</b></center>{% trans "Duration" %}: ' + int_convert_to_minute(obj.y);
                                     return output;
                                 },
                           }

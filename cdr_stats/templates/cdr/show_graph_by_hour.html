@@ -5,6 +5,13 @@
 
 {% block extra_header %}
     {% include "cdr/visualize_header.html" %}
+
+    <script type="text/javascript">
+    $(function() {
+        $("#id_from_date").datepicker();
+    });
+    </script>
+
 {% endblock %}
 
 {% block content %}

@@ -43,8 +43,7 @@ class MonthLoadSearchForm(CdrSearchForm):
 
 class DailyLoadSearchForm(CdrSearchForm):
 
-    from_day = forms.ChoiceField(label=_('Select Day'), required=False, choices=day_range())
-    from_month_year= forms.ChoiceField(label=_('Select Month'), required=False, choices=month_year_range())
+    from_date = forms.CharField(label='Select date', required=True, max_length=10)
     
     # Attach a formHelper to your forms class.
     helper = FormHelper()
@@ -55,13 +54,12 @@ class DailyLoadSearchForm(CdrSearchForm):
 
     def __init__(self, *args, **kwargs):
         super(DailyLoadSearchForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['from_day','from_month_year', 'destination', 'destination_type', 'source', 'source_type', 'channel']
+        self.fields.keyOrder = ['from_date', 'destination', 'destination_type', 'source', 'source_type', 'channel']
     
 
 class CompareCallSearchForm(CdrSearchForm):
 
-    from_day = forms.ChoiceField(label='Select Day', required=False, choices=day_range())
-    from_month_year= forms.ChoiceField(label=_('Select Month'), required=False, choices=month_year_range())
+    from_date = forms.CharField(label='Select date', required=True, max_length=10)
     comp_days = forms.ChoiceField(label=_('Days to Compare'), required=False, choices=comp_day_range())
     graph_view=forms.ChoiceField(label=_('Graph'), required=False,
             choices=((1, _('Calls per Hour')), (2,_('Minutes per Hour'))))
@@ -75,7 +73,7 @@ class CompareCallSearchForm(CdrSearchForm):
 
     def __init__(self, *args, **kwargs):
         super(CompareCallSearchForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['from_day','from_month_year','comp_days', 'destination', 'destination_type', 'source', 'source_type', 'channel','graph_view']
+        self.fields.keyOrder = ['from_date','comp_days', 'destination', 'destination_type', 'source', 'source_type', 'channel','graph_view']
 
 
 class CdrSearchForm(forms.Form):

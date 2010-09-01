@@ -95,6 +95,9 @@ def show_cdr(request):
     #select_data = {"calldate": "strftime('%%Y-%%m-%%d', calldate)"}
     select_data = {"calldate": "SUBSTR(calldate,1,10)"}
     
+    if not request.user.is_superuser:
+        kwargs[ 'accountcode' ] = request.user.accountcode
+    
     queryset = CDR.objects.values('calldate', 'channel', 'src', 'clid', 'dst', 'disposition', 'duration', 'accountcode').filter(**kwargs).order_by('-calldate')
     total_data = CDR.objects.extra(select=select_data).values('calldate').filter(**kwargs).annotate(Count('calldate')).annotate(Sum('duration')).annotate(Avg('duration')).order_by('-calldate')
     form = CdrSearchForm(initial={'from_date':from_date,'to_date':to_date,'result':result,'export_csv_queryset':'0'})
@@ -217,6 +220,9 @@ def show_graph_by_month(request):
             if e_month==0:
                 e_month=12
                 e_year=e_year-1
+                
+    if not request.user.is_superuser:
+        kwargs[ 'accountcode' ] = request.user.accountcode
 
     if kwargs:
         select_data = {"subdate": "SUBSTR(calldate,1,7)"}
@@ -264,17 +270,12 @@ def show_graph_by_month(request):
 def show_graph_by_day(request):
 
     kwargs = {}
+    tday = datetime.today()
     if request.method == 'POST':
-        if "from_month_year" in request.POST:
-            from_day        = int(request.POST['from_day'])
-            from_month_year = request.POST['from_month_year']
-            from_year       = int(request.POST['from_month_year'][0:4])
-            from_month      = int(request.POST['from_month_year'][5:7])
+        if "from_date" in request.POST:
+            from_date        = datetime(int(request.POST['from_date'][-4:]), int(request.POST['from_date'][:2]), int(request.POST['from_date'][3:5]), 0, 0, 0, 0)
         else:
-            from_day        = ''
-            from_month_year = ''
-            from_year       = ''
-            from_month      = ''
+            from_date        = tday
 
         destination = variable_value(request,'destination')
         destination_type = variable_value(request,'destination_type')
@@ -293,13 +294,13 @@ def show_graph_by_day(request):
         if channel!='':
             kwargs[ 'channel' ] = channel
 
-        if from_day != '':
-            start_date = datetime(from_year,from_month,from_day,0,0,0,0)
-            end_date = datetime(from_year,from_month,from_day,23,59,59,999999)
+        if from_date != '':
+            start_date = datetime(from_date.year,from_date.month,from_date.day,0,0,0,0)
+            end_date = datetime(from_date.year,from_date.month,from_date.day,23,59,59,999999)
             kwargs[ 'calldate__range' ] = (start_date,end_date)
 
 
-        form = DailyLoadSearchForm(initial={'from_day':from_day,'from_month_year':from_month_year,'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,})
+        form = DailyLoadSearchForm(initial={'from_date':from_date.strftime('%m/%d/%Y'),'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,})
 
     if len(kwargs) == 0:
         tday=datetime.today()
@@ -310,6 +311,9 @@ def show_graph_by_day(request):
         start_date = datetime(from_year,from_month,from_day,0,0,0,0)
         end_date = datetime(from_year,from_month,from_day,23,59,59,999999)
         kwargs[ 'calldate__range' ] = (start_date,end_date)
+
+    if not request.user.is_superuser:
+        kwargs[ 'accountcode' ] = request.user.accountcode
 
     if kwargs:
         select_data = {"called_time": "SUBSTR(calldate,12,2)"} # get Hour
@@ -347,18 +351,14 @@ def show_graph_by_hour(request):
 
     kwargs = {}
     graph_view = '1'
-    
+    tday = datetime.today()
     if request.method == 'POST':
-        if "from_month_year" in request.POST:
-            from_day        = int(request.POST['from_day'])
-            from_month_year = request.POST['from_month_year']
-            from_year       = int(request.POST['from_month_year'][0:4])
-            from_month      = int(request.POST['from_month_year'][5:7])
+        if "from_date" in request.POST:
+            from_date        = request.POST['from_date']
+            select_date = datetime(int(from_date[-4:]), int(from_date[:2]), int(from_date[3:5]), 0, 0, 0, 0)
         else:
-            from_day        = ''
-            from_month_year = ''
-            from_year       = ''
-            from_month      = ''
+            from_date      = tday.strftime('%m/%d/%Y')
+            select_date = tday
 
         comp_days = variable_value(request,'comp_days')
         destination = variable_value(request,'destination')
@@ -379,16 +379,15 @@ def show_graph_by_hour(request):
         if channel!='':
             kwargs[ 'channel' ] = channel
 
-        if from_day != '':
-            end_date = datetime(from_year, from_month, from_day)
+        if from_date != '':
+            end_date = select_date
             start_date= end_date+relativedelta(days=-int(comp_days))
             start_date = datetime(start_date.year, start_date.month, start_date.day,0,0,0,0)
             end_date = datetime(end_date.year, end_date.month, end_date.day,23,59,59,999999)
 
             kwargs[ 'calldate__range' ] = (start_date,end_date)
 
-
-        form = CompareCallSearchForm(initial={'from_day':from_day,'from_month_year':from_month_year,'comp_days':comp_days,'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,'graph_view':graph_view,})
+        form = CompareCallSearchForm(initial={'select_date':from_date,'comp_days':comp_days,'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,'graph_view':graph_view,})
 
     if len(kwargs) == 0:
         tday = datetime.today()
@@ -403,6 +402,9 @@ def show_graph_by_hour(request):
         end_date = datetime(end_date.year, end_date.month, end_date.day,23,59,59,999999)
 
         kwargs[ 'calldate__range' ] = (start_date,end_date)
+
+    if not request.user.is_superuser:
+        kwargs[ 'accountcode' ] = request.user.accountcode
 
     if kwargs:
         select_data = {"called_time": "SUBSTR(calldate,1,16)"} # Date without seconds
@@ -498,7 +500,6 @@ def dictSort(d):
     return k
     
 @login_required
-@login_required
 def show_concurrent_calls(request):
     kwargs = {}
     graph_view = '1'
@@ -538,6 +539,9 @@ def show_concurrent_calls(request):
     kwargs[ 'calldate__range' ] = (start_date,end_date)
 
     form = ConcurrentCallForm(initial={'channel':channel,'result':result})
+
+    if not request.user.is_superuser:
+        kwargs[ 'accountcode' ] = request.user.accountcode
 
     if kwargs:
         calls_in_day = CDR.objects.filter(**kwargs).values('calldate','duration').order_by('calldate')
@@ -678,9 +682,13 @@ def show_concurrent_calls(request):
 @login_required
 def show_global_report(request):
     template = 'cdr/show_global_report.html'
-    
+    kwargs = {}
+
+    if not request.user.is_superuser:
+        kwargs[ 'accountcode' ] = request.user.accountcode
+
     select_data = {"calldate": "SUBSTR(calldate,1,10)"}
-    calls = CDR.objects.extra(select=select_data).values('calldate').annotate(Sum('duration')).annotate(Avg('duration')).annotate(Count('calldate')).order_by('calldate')
+    calls = CDR.objects.filter(**kwargs).extra(select=select_data).values('calldate').annotate(Sum('duration')).annotate(Avg('duration')).annotate(Count('calldate')).order_by('calldate')
 
     maxtime = datetime(int(calls[0]['calldate'][0:4]), int(calls[0]['calldate'][5:7]), int(calls[0]['calldate'][8:10]), 0, 0, 0, 0)
     mintime = datetime(int(calls[0]['calldate'][0:4]), int(calls[0]['calldate'][5:7]), int(calls[0]['calldate'][8:10]), 0, 0, 0, 0)
