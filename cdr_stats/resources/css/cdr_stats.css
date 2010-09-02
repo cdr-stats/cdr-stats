@@ -89,3 +89,18 @@ body, .ui-widget-header  {
 .visualize {
     margin:10px 0 0 30px;
 }
+
+.dashboard_summary_header{ 
+    height: 20px;
+    color: #1b5582;
+    font-size: small;
+    font-weight: bold;
+    background-color: #d7ebf9;
+}
+
+.dashboard_summary_info{ 
+    height: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #000000;
+}

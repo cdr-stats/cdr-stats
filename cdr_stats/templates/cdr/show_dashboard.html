@@ -3,11 +3,17 @@
 {% load cdr_extras %}
 {% load uni_form_tags %}
 
-{% block extra_header %}
-    {% include "cdr/visualize_header.html" %}
+{% block extra_head %}
+  <script>
+  $(document).ready(function() {
+    $("#accordion").accordion({ autoHeight: false,  clearStyle: true  });
+  });
+  </script>
 {% endblock %}
 
+
 {% block content %}
+
 
 <br/><br/>
 
@@ -38,7 +44,6 @@ $(function () {
             }
         }
     }
-
     var data = [{
                     data: [
                         {% for data in total_record %}
@@ -47,7 +52,6 @@ $(function () {
                     ],
                     label: '{{label}}'
     }];
-
     var options = {
                     legend: {
                                 position: "se",
@@ -94,16 +98,20 @@ $(function () {
 });
 </script>
 
+<center>
     <h1>{% trans "Call Statistics" %}</h1>
     <div id="placeholder" style="width:700px;height:300px"></div>
+</center>
+
 
 <br/>
-<div class="span-6 last">
-<div style="height: 20px;color: #1b5582;font-size: small;font-weight: bold;background-color: #d7ebf9">Call Statistics</div>
-<font color="#000000" size="4"><b>{{total_calls}}</b</font> <font size="2">{% trans "Total Calls"%}</font><br/>
-<font color="#000000" size="4"><b>{{ACT}}</b</font> <font size="2">{% trans "Averange call per hour"%}</font><br/>
-<font color="#000000" size="4"><b>{{total_duration}}</b</font> <font size="2">{% trans "Total Duration"%}</font><br/>
-<font color="#000000" size="4"><b>{{ACD}}</b</font> <font size="2">{% trans "Averange call duration"%}</font>
+
+<div class="span-8 prepend-4 last">
+    <div class="dashboard_summary_header">{% trans "Total Calls"%}</div>
+    <div class="dashboard_summary_info">{{total_calls}}  {% trans "Total Calls"%}</div><br/>
+    <div class="dashboard_summary_info">{{ACT}} {% trans "Averange call per hour"%}</div><br/>
+    <div class="dashboard_summary_info">{{total_duration}} {% trans "Total Duration"%}</div><br/>
+    <div class="dashboard_summary_info">{{ACD}} {% trans "Averange call duration"%}</div>
 </div>
 
 
