@@ -18,6 +18,20 @@ CDR-Stats
 
 
 
+Applications
+-------------
+    User UI :
+        http://localhost:8000/
+        This application provide Report, CDR View, several CDR reporting, Dashboard.
+        User with accountcode can login and see their restrected data
+    
+    Admin UI :
+        http://localhost:8000/admin/
+        This interface provides user (ACL) management, assignation of accountcode, 
+        also basic CRUD functions on the CDR
+
+
+
 Coding Conventions
 --------------------
 
