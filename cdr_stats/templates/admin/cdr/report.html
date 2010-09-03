@@ -1,0 +1,24 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}List of CDR{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <h1>List of CDR:</h1>    
+        <table >
+            <tr>
+                <th scope="row">acctid</th>
+                <th scope="row">calldate</th>
+                <th scope="row">duration</th>
+            </tr>
+            <caption><a href="{{ app.app_url }}" class="section"></a></caption>
+            {% for cdr in cdr_list %}
+            <tr>
+            <td>{{ cdr.acctid }}</td>
+            <td>{{ cdr.calldate }}</td>
+            <td>{{ cdr.duration }}</td>
+            </tr>
+           {% endfor %}
+       </table>
+</div>
+{% endblock %}
