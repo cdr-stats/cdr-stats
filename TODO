@@ -1,14 +1,18 @@
 
 
 ~~~ TODO List ~~~
-
- - http://localhost:8000/show_concurrent_calls/
-    remove channels
-
- - http://localhost:8000/show_dashboard/
-    the footer for copyright is bigger, fix Css
     
  - http://localhost:8000/show_stats_by_hour/
     the select date look is not the same on the Search CDR, the table have some spacing
     
+  - http://localhost:8000/show_stats_by_hour/
+     a) Graph have a wrong line going from the last hour to the first
+     b) no select date by default y the value is not saved
+     
+  - http://localhost:8000/show_stats_by_day/
+    no select date by default
+    
+  - http://localhost:8000/show_concurrent_calls/
+    The result date is not aligned correctly :
+    Result*  Today  Yestarday  This Week  Last Week  This Month  Last Month
  
