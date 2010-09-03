@@ -13,7 +13,7 @@
             </tr>
             <caption><a href="{{ app.app_url }}" class="section"></a></caption>
             {% for cdr in cdr_list %}
-            <tr>
+            <tr class="{% cycle 'row1' 'row2' %}">
             <td>{{ cdr.acctid }}</td>
             <td>{{ cdr.calldate }}</td>
             <td>{{ cdr.duration }}</td>
