@@ -750,20 +750,20 @@ def show_dashboard(request):
     if total_calls==0:
         ACD = 0
     else:
-        ACD = math.floor(total_duration / total_calls)
+        ACD = int_convert_to_minute(math.floor(total_duration / total_calls))
     
     date_string = start_date.strftime('%Y-%m-%d')
     label = _('%(month)s/%(day)s/%(year)s') % {'month':date_string[5:7], 'day':date_string[8:10], 'year':date_string[0:4]}
     
     variables = RequestContext(request,
                         {
-                         'label':label,
-                         'total_calls':total_calls,
-                         'total_duration':total_duration,
-                         'ACT':ACT,
-                         'ACD':ACD,
-                         'total_record':total_record_final,
-                         'debug':debug,
+                         'label': label,
+                         'total_calls': total_calls,
+                         'total_duration': int_convert_to_minute(total_duration),
+                         'ACT': ACT,
+                         'ACD': ACD,
+                         'total_record': total_record_final,
+                         'debug': debug,
                         })
 
     return render_to_response(template, variables,

@@ -93,7 +93,7 @@ class CdrSearchForm(forms.Form):
 
 class ConcurrentCallForm(forms.Form):
     result = forms.TypedChoiceField( label='Result', required=True, coerce=bool, empty_value=1,
-                choices = (('1', _('Today')), ('2', _('Yestarday')), ('3', _('This Week')), ('4', _('Last Week')), ('5', _('This Month')), ('6', _('Last Month'))),widget=forms.RadioSelect)
+                choices = (('1', _('Today')), ('2', _('Yesterday')), ('3', _('Current Week')), ('4', _('Previous Week')), ('5', _('Current Month')), ('6', _('Previous Month'))),widget=forms.RadioSelect)
     
     # create the layout object
     layout = Layout(
