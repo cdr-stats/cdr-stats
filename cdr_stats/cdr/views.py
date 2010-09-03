@@ -110,6 +110,7 @@ def show_cdr(request):
     
     count = 0
     for i in queryset:
+        disposition = ''
         for d in DISPOSITION:
             if d[0] == i['disposition']:
                 disposition = d[1]
