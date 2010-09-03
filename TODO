@@ -15,4 +15,20 @@
   - http://localhost:8000/show_concurrent_calls/
     The result date is not aligned correctly :
     Result*  Today  Yestarday  This Week  Last Week  This Month  Last Month
+    
+  - add an Admin link in the menu at the left of the "lock" button
  
+ 
+  - http://localhost:8000/show_dashboard/
+    use different format for the date : YYYY-MM-DD
+    use this for all pages using the datepicker
+    
+    
+  - Dashboard correction
+    0.0 Averange call per hour =>>>>>> 0.0 Average Calls Per Hour
+    3325 Total Duration =>>>>>> 3325 Minutes Total Duration
+    302.0 Averange call duration =>>>>>> 302.0 Minutes Average Call Duration
+
+  
+    
+
