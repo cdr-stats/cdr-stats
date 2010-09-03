@@ -37,7 +37,10 @@ $(function () {
     var options = {
                     legend: {
                                 position: "se",
-                                margin: [-510,50]
+                                margin: [-510,50],
+                                labelFormatter: function(label){
+                                    return '<div class="graph_legend">'+label+'</div>';
+                                },
                           },
                     series: {
                                 bars: { show: true },
@@ -64,7 +67,9 @@ $(function () {
                                 xaxis: false
                           },
                     tooltip: {
-                                enabled: false
+                                formatter: function(obj){
+                                    return '<div class="graph_tooltip_header">' + obj.label + '</div><div class="graph_tooltip_info">{% trans "Hour" %}: ' + obj.x + '<br>{% trans "Calls" %}: ' + obj.y + '</div>';
+                                }
                           }
                   };
     var plot = $.plot($("#placeholder"), data, options);
@@ -73,7 +78,7 @@ $(function () {
 </script>
 
 <center>
-    <h1>{% trans "Load By Hour" %}</h1>
+    <div class="graph_header">{% trans "Load By Hour" %}</div>
     <div id="placeholder" style="width:700px;height:300px"></div>
 </center>
 

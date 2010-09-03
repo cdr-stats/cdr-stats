@@ -78,8 +78,11 @@ $(function () {
 
     var options = {
                     legend: {
-                                position: "se",
-                                margin: [-510,50]
+                                position: "ne",
+                                margin: [-510,0],
+                                labelFormatter: function(label){
+                                    return '<div class="graph_legend">'+label+'</div>';
+                                },
                           },
                     series: {
                                 lines: { show: true },
@@ -103,12 +106,12 @@ $(function () {
                                 formatter: function(obj){
                                     var time = obj.x;
                                     var date = obj.label;
-                                    output = '<center><b>' + date + '</b></center>{% trans "Hour" %}: ' + Info(date,time,1) + '<br>';
+                                    output = '<div class="graph_tooltip_header">' + date + '</div><div class="graph_tooltip_info">{% trans "Hour" %}: ' + Info(date,time,1) + '<br>';
                                     
                                     output += {% if graph_view == '1' %}
-                                                    '{% trans "Calls" %}: ' + Info(date,time,2);
+                                                    '{% trans "Calls" %}: ' + Info(date,time,2) + '</div>';
                                               {% else %}
-                                                    '{% trans "Minutes" %}: ' + Info(date,time,2) + ' min';
+                                                    '{% trans "Minutes" %}: ' + Info(date,time,2) + ' min</div>';
                                               {% endif %}
                                     return output;
                                 },
@@ -120,7 +123,7 @@ $(function () {
 </script>
 
 <center>
-    <h1>{% trans "Call Statistics" %}</h1>
+    <div class="graph_header">{% trans "Call Statistics" %}</div>
     <div id="placeholder" style="width:700px;height:300px"></div>
 </center>
 

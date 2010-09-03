@@ -26,7 +26,10 @@ $(function () {
     var options = {
                     legend: {
                                 position: "se",
-                                margin: [-510,50]
+                                margin: [-510,50],
+                                labelFormatter: function(label){
+                                    return '<div class="graph_legend">'+label+'</div>';
+                                },
                             },
                     series: {
                                 lines: { show: true },
@@ -47,7 +50,7 @@ $(function () {
                           },
                    tooltip: {
                                 formatter: function(obj){
-                                    return '<center><b>' + obj.label + '</b></center>{{graph_by}}: ' + obj.x + '<br>{% trans "Concurrent Calls" %}: ' + obj.y
+                                    return '<div class="graph_tooltip_header">' + obj.label + '</div><div class="graph_tooltip_info">{{graph_by}}: ' + obj.x + '<br>{% trans "Concurrent Calls" %}: ' + obj.y + '</div>'
                                 }
                    }
                   };
@@ -56,12 +59,10 @@ $(function () {
 });
 </script>
 
-
 <center>
-    <h1>{% trans "Concurrent Calls by" %} {{graph_by}}</h1>
+    <div class="graph_header">{% trans "Concurrent Calls by" %} {{graph_by}}</div>
     <div id="placeholder" style="width:700px;height:300px"></div>
 </center>
-    
     
 {% endblock %}
 

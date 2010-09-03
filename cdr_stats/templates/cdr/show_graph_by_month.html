@@ -21,8 +21,32 @@
 $(function () {
 
     function MonthName(m,type){
-        var short_month = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
-        var month = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+        var short_month = new Array(
+            "{% trans "Jan" %}",
+            "{% trans "Feb" %}",
+            "{% trans "Mar" %}",
+            "{% trans "Apr" %}",
+            "{% trans "May" %}",
+            "{% trans "Jun" %}",
+            "{% trans "Jul" %}",
+            "{% trans "Aug" %}",
+            "{% trans "Sep" %}",
+            "{% trans "Oct" %}",
+            "{% trans "Nov" %}",
+            "{% trans "Dec" %}");
+        var month = new Array(
+            "{% trans "January" %}",
+            "{% trans "February" %}",
+            "{% trans "March" %}",
+            "{% trans "April" %}",
+            "{% trans "May" %}",
+            "{% trans "June" %}",
+            "{% trans "July" %}",
+            "{% trans "August" %}",
+            "{% trans "September" %}",
+            "{% trans "October" %}",
+            "{% trans "November" %}",
+            "{% trans "December" %}");
         if(type == 0)
             return short_month[m-1];
         else
@@ -93,8 +117,7 @@ $(function () {
                           },
                     tooltip: {
                                 formatter: function(obj){
-                                    output = '';
-                                    output += '<center><b>' + MonthName(obj.x, 1) + ', ' + obj.label + '</b></center>{% trans "Duration" %}: ' + int_convert_to_minute(obj.y);
+                                    output = '<div class="graph_tooltip_header">' + MonthName(obj.x, 1) + ', ' + obj.label + '</div><div class="graph_tooltip_info">{% trans "Duration" %}: ' + int_convert_to_minute(obj.y) + '</div>';
                                     return output;
                                 },
                           }
@@ -105,7 +128,7 @@ $(function () {
 </script>
 
 <center>
-   <h1>{% blocktrans %}Traffic Last {{comp_months}} Months{% endblocktrans %}</h1>
+   <div class="graph_header">{% blocktrans %}Traffic Last {{comp_months}} Months{% endblocktrans %}</div>
     <div id="placeholder" style="width:700px;height:300px"></div>
 </center>
 

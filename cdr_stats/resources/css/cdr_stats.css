@@ -104,3 +104,24 @@ body, .ui-widget-header  {
     font-weight: bold;
     color: #000000;
 }
+
+.graph_header{
+    height: 50px;
+    text-align: center;
+    font-size: 40px;
+}
+
+.graph_legend{
+    font-size: 12px;
+}
+
+.graph_tooltip_header{
+    height: 16px;
+    text-align: center;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.graph_tooltip_info{
+    font-size: 10px;
+}

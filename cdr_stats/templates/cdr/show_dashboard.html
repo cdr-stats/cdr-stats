@@ -54,8 +54,11 @@ $(function () {
     }];
     var options = {
                     legend: {
-                                position: "se",
-                                margin: [-510,50]
+                                position: "ne",
+                                margin: [-700,0],
+                                labelFormatter: function(label){
+                                    return '<div class="graph_legend">'+label+'</div>';
+                                }
                           },
                     series: {
                                 lines: { show: true },
@@ -80,7 +83,7 @@ $(function () {
                                     var hour = (time.toString().split("."))[0];
                                     var minute = Math.round(time * 60 - (hour * 60));
                                     var output = '';
-                                    output += '<center><b>';
+                                    output += '<div class="graph_tooltip_header">';
                                     if(hour < 10){
                                         output += '0';
                                     }
@@ -88,7 +91,7 @@ $(function () {
                                     if(minute < 10){
                                         output += '0';
                                     }
-                                    output += minute + '</b></center>{% trans "Calls" %}: ' + Info(time,1) + '<br>{% trans "Duration" %}: ' + Info(time,2) + ' {% trans "secs" %}';
+                                    output += minute + '</div><div class="graph_tooltip_info">{% trans "Calls" %}: ' + Info(time,1) + '<br>{% trans "Duration" %}: ' + Info(time,2) + ' {% trans "secs" %}</div>';
                                     return output;
                                 },
                           }
@@ -99,7 +102,7 @@ $(function () {
 </script>
 
 <center>
-    <h1>{% trans "Call Statistics" %}</h1>
+    <div class="graph_header">{% trans "Call Statistics" %}</div>
     <div id="placeholder" style="width:700px;height:300px"></div>
 </center>
 

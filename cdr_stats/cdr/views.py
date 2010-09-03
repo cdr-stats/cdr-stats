@@ -451,16 +451,17 @@ def show_graph_by_hour(request):
 
                 x=0
                 for j in range(0,24):
+                    date_string = _('%(month)s/%(day)s/%(year)s') % {'month':rd[5:7], 'day':rd[8:10], 'year':rd[0:4]}
                     if j not in list_of_hour:
-                        total_record_final.append((rd,j,0))
+                        total_record_final.append((date_string,j,0))
                     else:
-                        total_record_final.append((rd,j,l_o_c[j]))
+                        total_record_final.append((date_string,j,l_o_c[j]))
                         x=x+1
 
 
             for d in dateList:
                 sd=str(d)
-                date_string= sd[0:4]+'-'+sd[5:7]+'-'+sd[8:10]
+                date_string= _('%(month)s/%(day)s/%(year)s') % {'month':sd[5:7], 'day':sd[8:10], 'year':sd[0:4]}
                 if date_string not in record_dates:
                     for j in range(0,24):
                         total_record_final.append((date_string,j,0))
@@ -507,14 +508,9 @@ def show_concurrent_calls(request):
     if request.method == 'POST':        
         channel = variable_value(request,'channel')
         result = variable_value(request,'result')
-   
-        if channel != '':
-            kwargs[ 'channel' ] = channel
-                
+    
     if ('result' not in vars()) or (result == ''):
         result = '1'
-    if ('channel' not in vars()) or (channel == ''):
-        channel = ''
     
     now = datetime.now()
     if(result == '1'):
@@ -538,7 +534,7 @@ def show_concurrent_calls(request):
 
     kwargs[ 'calldate__range' ] = (start_date,end_date)
 
-    form = ConcurrentCallForm(initial={'channel':channel,'result':result})
+    form = ConcurrentCallForm(initial={'result':result})
 
     if not request.user.is_superuser:
         kwargs[ 'accountcode' ] = request.user.accountcode
@@ -657,7 +653,8 @@ def show_concurrent_calls(request):
             for hours in total_record[dates]:
                 total_record_final += "[" + str(hours) + "," + str(total_record[dates][hours]) + "],"
             total_record_final += "],"
-            total_record_final += " label: \"" + dates + "\""
+            date_string = _('%(month)s/%(day)s/%(year)s') % {'month':dates[5:7], 'day':dates[8:10], 'year':dates[0:4]}
+            total_record_final += " label: \"" + date_string + "\""
             total_record_final += "},"
         total_record_final += "]"
         
@@ -754,7 +751,8 @@ def show_dashboard(request):
     else:
         ACD = math.floor(total_duration / total_calls)
     
-    label = start_date.strftime('%m/%d/%Y')
+    date_string = start_date.strftime('%Y-%m-%d')
+    label = _('%(month)s/%(day)s/%(year)s') % {'month':date_string[5:7], 'day':date_string[8:10], 'year':date_string[0:4]}
     
     variables = RequestContext(request,
                         {
