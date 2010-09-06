@@ -20,5 +20,19 @@
     also at the right of the graph, for instance in http://localhost:8000/show_stats_by_day/
     use the same format YYYY-MM-DD on the tooltip
     
-
-
+ - Move login button at the top right coner next to select languages
+ 
+ - Indicate the current tab in the menu by a different style
+ 
+ - Nicely display the user name that login
+ 
+ - on show_stats_by_day/ and show_stats_by_month/
+  no need to display the filter on a second lines, it will be more elegant to display at the right with a select
+  
+ - change the color of the info button
+ 
+ - display the selected language
+ 
+ 
+   
+ 
