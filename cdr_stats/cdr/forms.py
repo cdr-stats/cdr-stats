@@ -43,7 +43,7 @@ class MonthLoadSearchForm(CdrSearchForm):
 
 class DailyLoadSearchForm(CdrSearchForm):
 
-    from_date = forms.CharField(label=_('Select date'), required=True, max_length=10)
+    from_date = forms.CharField(label=_('Select date'), required=True, max_length=10, help_text="Please use the following format: <em>YYYY-MM-DD</em>.")
     
     # Attach a formHelper to your forms class.
     helper = FormHelper()
@@ -59,7 +59,7 @@ class DailyLoadSearchForm(CdrSearchForm):
 
 class CompareCallSearchForm(CdrSearchForm):
 
-    from_date = forms.CharField(label=_('Select date'), required=True, max_length=10)
+    from_date = forms.CharField(label=_('Select date'), required=True, max_length=10, help_text="Please use the following format: <em>YYYY-MM-DD</em>.")
     comp_days = forms.ChoiceField(label=_('Days to Compare'), required=False, choices=comp_day_range())
     graph_view=forms.ChoiceField(label=_('Graph'), required=False,
             choices=((1, _('Calls per Hour')), (2,_('Minutes per Hour'))))
@@ -78,8 +78,8 @@ class CompareCallSearchForm(CdrSearchForm):
 
 class CdrSearchForm(forms.Form):
     
-    from_date = CharField(label=_('From'), required=True, max_length=10)
-    to_date = CharField(label=_('To'), required=True, max_length=10)
+    from_date = CharField(label=_('From'), required=True, max_length=10, help_text="Please use the following format: <em>YYYY-MM-DD</em>.")
+    to_date = CharField(label=_('To'), required=True, max_length=10, help_text="Please use the following format: <em>YYYY-MM-DD</em>.")
     
     result = forms.TypedChoiceField(label=_('Result:'), required=False, coerce=bool,
                 choices = (('1', _('Minutes')), ('2', _('Seconds'))),widget=forms.RadioSelect)
@@ -92,16 +92,9 @@ class CdrSearchForm(forms.Form):
     helper.use_csrf_protection = True
 
 class ConcurrentCallForm(forms.Form):
-    result = forms.TypedChoiceField( label='Result', required=True, coerce=bool, empty_value=1,
+    result = forms.TypedChoiceField( label=_('Result'), required=True, coerce=bool, empty_value=1,
                 choices = (('1', _('Today')), ('2', _('Yesterday')), ('3', _('Current Week')), ('4', _('Previous Week')), ('5', _('Current Month')), ('6', _('Previous Month'))),widget=forms.RadioSelect)
     
-    # create the layout object
-    layout = Layout(
-                Fieldset(
-                        _('Search Options :'),
-                        'result',
-                     )
-                )
 
     # Attach a formHelper to your forms class.
     helper = FormHelper()
@@ -109,7 +102,7 @@ class ConcurrentCallForm(forms.Form):
     submit = Submit('search', _('Search'))
     helper.add_input(submit)
     helper.use_csrf_protection = True
-    helper.add_layout(layout)
+
 
 class loginForm(forms.Form):
 

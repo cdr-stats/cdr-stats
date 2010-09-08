@@ -8,7 +8,7 @@
 
     <script type="text/javascript">
     $(function() {
-        $("#id_from_date").datepicker();
+        $("#id_from_date").datepicker({ dateFormat: 'yy-mm-dd' });
     });
     </script>
 
@@ -30,8 +30,10 @@ $(function () {
 
     function Info(date,time,info){
         data = [
-        {% for data in total_record %}
-            ['{{data.0}}',{{data.1}},{{data.2}}],
+        {% for date,list in total_record.items %}
+            {% for hour,calls in list.items %}
+                ['{{date}}',{{hour}},{{calls}}],
+            {% endfor %}
         {% endfor %}];
 
         for(var i in data){
@@ -58,22 +60,17 @@ $(function () {
     }
 
     var data = [
-                    {% for dt in total_record %}
-                        {% ifchanged dt.0 %}
+                    {% for date,list in total_record.items %}
                             {
-                                label: '{{dt.0}}',
+                                label: '{{date}}',
                                 data: [
-                                        {% for call in total_record %}
-                                            {% ifequal dt.0 call.0 %}
-                                                [{{call.1}},{{call.2}}],
-                                            {% endifequal %}
+                                        {% for hour,calls in list.items %}
+                                                [{{hour}},{{calls}}],
                                         {% endfor %}
                                     ],
                             },
-                        {% endifchanged %}
                     {% endfor %}
                 ];
-    
 
 
     var options = {

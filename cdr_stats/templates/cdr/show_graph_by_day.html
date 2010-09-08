@@ -8,7 +8,7 @@
     
     <script type="text/javascript">
     $(function() {
-        $("#id_from_date").datepicker();
+        $("#id_from_date").datepicker({ dateFormat: 'yy-mm-dd' });
     });
     </script>
 {% endblock %}
@@ -31,7 +31,7 @@ $(function () {
                                 [ {{ call.0 }}, {{ call.1 }} ],
                             {% endfor %}
                     ],                    
-                    label: '{{report_date|date:"F j, Y"}}'
+                    label: '{{report_date|date:"Y-m-d"}}'
     }];
 
     var options = {

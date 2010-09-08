@@ -102,37 +102,20 @@
 
 <div class="container">
     
-	<div class="span-20">
+	<div class="span-18">
 		<a href="http://www.cdr-stats.org/" target="_blank"><img class="logo_cdrstat" src="{{MEDIA_URL}}/logo/cdr-stat-small.png" border="0" height="70"/></a>
 	</div>
 	
-	<div class="span-4 last">
+	<div class="span-4 ">
 	    <form action="/i18n/setlang/" method="post">
 	        {% csrf_token %}
             <select name="language">
             {% for lang in LANGUAGES %}
-            <option value="{{ lang.0 }}">{{ lang.1 }}</option>
+            <option value="{{ lang.0 }}" {% ifequal lang.0 LANGUAGE_CODE %}selected{% endifequal %}>{{ lang.1 }}</option>
             {% endfor %}
             </select>
             <input type="submit" value="Go" />
         </form>
-	</div>
-	
-	<div class="span-24 last">
-		<hr>
-	</div>
-	
-	<div class="span-24 prepend-2 last">
-		<div id="main-menu-container">
-            <a href="../show_dashboard/" class="fg-button ui-state-default ui-corner-all">{% trans "Dashboard" %}</a>
-            <a href="../show_cdr/" class="fg-button ui-state-default ui-corner-all">{% trans "Search CDR"  %}</a>
-            <a href="../show_stats_by_hour/" class="fg-button ui-state-default ui-corner-all">{% trans "Analyse CDR"  %}</a>
-            <a href="../show_stats_by_day/" class="fg-button ui-state-default ui-corner-all">{% trans "Daily Traffic"  %}</a>
-            <a href="../show_stats_by_month/" class="fg-button ui-state-default ui-corner-all">{% trans "Monthly Traffic"  %}</a>
-            <a href="../show_concurrent_calls/" class="fg-button ui-state-default ui-corner-all">{% trans "Concurrent Calls"  %}</a>
-            <a href="../show_global_report/" class="fg-button ui-state-default ui-corner-all">{% trans "Global Report"  %}</a>
-            <a href="../" class="fg-button ui-state-default ui-priority-secondary ui-corner-all">{% trans "Info"  %}</a>
-        </div>
 	</div>
 	
 	<div class="prepend-2 last">
@@ -143,7 +126,11 @@
 		{% include "cdr/login.html" %}
 	</div>
 	
-	<div class="span-14 prepend-2 append-6 last">
+	<div class="span-24 last">
+		<hr>
+	</div>
+	
+	<div class="span-24 last">
 	    {% if errorlogin %}
             <div class="error">
                 <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
@@ -161,6 +148,23 @@
 		<br>
 	</div>
 	
+	
+	<div class="span-24 prepend-2 last">
+		<div id="main-menu-container">
+            <a href="../show_dashboard/" class="fg-button ui-state-default ui-corner-all {% ifequal module 'show_dashboard' %}ui-state-highlight{% endifequal %}">{% trans "Dashboard" %}</a>
+            <a href="../show_cdr/" class="fg-button ui-state-default ui-corner-all {% ifequal module 'show_cdr' %}ui-state-highlight{% endifequal %}">{% trans "Search CDR"  %}</a>
+            <a href="../show_stats_by_hour/" class="fg-button ui-state-default ui-corner-all {% ifequal module 'show_graph_by_hour' %}ui-state-highlight{% endifequal %}">{% trans "Analyse CDR"  %}</a>
+            <a href="../show_stats_by_day/" class="fg-button ui-state-default ui-corner-all {% ifequal module 'show_graph_by_day' %}ui-state-highlight{% endifequal %}">{% trans "Daily Traffic"  %}</a>
+            <a href="../show_stats_by_month/" class="fg-button ui-state-default ui-corner-all {% ifequal module 'show_graph_by_month' %}ui-state-highlight{% endifequal %}">{% trans "Monthly Traffic"  %}</a>
+            <a href="../show_concurrent_calls/" class="fg-button ui-state-default ui-corner-all {% ifequal module 'show_concurrent_calls' %}ui-state-highlight{% endifequal %}">{% trans "Concurrent Calls"  %}</a>
+            <a href="../show_global_report/" class="fg-button ui-state-default ui-corner-all {% ifequal module 'show_global_report' %}ui-state-highlight{% endifequal %}">{% trans "Global Report"  %}</a>
+            <a href="../" class="fg-button ui-state-default ui-priority-secondary ui-corner-all {% ifequal module 'index' %}ui-state-highlight{% endifequal %}">{% trans "Info"  %}</a>
+        </div>
+	</div>
+	
+    <hr class="space">
+
+
 	
 	<div class="span-24 last">
 		{% block content %}

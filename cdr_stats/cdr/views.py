@@ -23,7 +23,7 @@ import operator
 import string
 import csv, codecs
 from operator import itemgetter
-
+from inspect import stack, getmodule
 
 DISPOSITION = (
     (1, _('ANSWER')),
@@ -68,22 +68,22 @@ def show_cdr(request):
         if "from_date" in request.GET:
             # From
             from_date            = request.GET['from_date']
-            start_date          = datetime(int(from_date[-4:]), int(from_date[:2]), int(from_date[3:5]), 0, 0, 0, 0)
+            start_date          = datetime(int(from_date[0:4]), int(from_date[5:7]), int(from_date[8:10]), 0, 0, 0, 0)
 
             # To
             to_date              = request.GET['to_date']
-            end_date            = datetime(int(to_date[-4:]), int(to_date[:2]), int(to_date[3:5]), 23, 59, 59, 999999)
+            end_date            = datetime(int(to_date[0:4]), int(to_date[5:7]), int(to_date[8:10]), 23, 59, 59, 999999)
     
     try:
         from_date
     except NameError:
         tday = datetime.today()
-        from_date = tday.strftime('%m/01/%Y')
+        from_date = tday.strftime('%Y-%m-01')
         last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) + relativedelta(months=1)) - relativedelta(days=1)).strftime('%d')
-        to_date = tday.strftime('%m/'+last_day+'/%Y')
+        to_date = tday.strftime('%Y-%m-'+last_day)
         
-        start_date = datetime(int(from_date[-4:]), int(from_date[:2]), int(from_date[3:5]), 0, 0, 0, 0)
-        end_date = datetime(int(to_date[-4:]), int(to_date[:2]), int(to_date[3:5]), 23, 59, 59, 999999)
+        start_date = datetime(int(from_date[0:4]), int(from_date[5:7]), int(from_date[8:10]), 0, 0, 0, 0)
+        end_date = datetime(int(to_date[0:4]), int(to_date[5:7]), int(to_date[8:10]), 23, 59, 59, 999999)
         
     kwargs[ 'calldate__range' ] = (start_date, end_date)
     
@@ -130,7 +130,8 @@ def show_cdr(request):
         total_calls = 0
         total_avg_duration = 0
 
-    variables = RequestContext(request, { 'form': form,
+    variables = RequestContext(request, { 'module': current_view(request),
+                                          'form': form,
                                           'queryset': request.session['cdr_queryset'],
                                           'total_data':total_data.reverse(),
                                           'total_duration':total_duration,
@@ -257,7 +258,8 @@ def show_graph_by_month(request):
 
         #print sorted(total_record, key=lambda total: total[1])
         variables = RequestContext(request,
-                            {'form': form,
+                            {'module': current_view(request),
+                             'form': form,
                              'result':'min',
                              'total_record':sorted(total_record, key=lambda total: total[1]),
                              'comp_months':comp_months,
@@ -274,7 +276,7 @@ def show_graph_by_day(request):
     tday = datetime.today()
     if request.method == 'POST':
         if "from_date" in request.POST:
-            from_date        = datetime(int(request.POST['from_date'][-4:]), int(request.POST['from_date'][:2]), int(request.POST['from_date'][3:5]), 0, 0, 0, 0)
+            from_date        = datetime(int(request.POST['from_date'][0:4]), int(request.POST['from_date'][5:7]), int(request.POST['from_date'][8:10]), 0, 0, 0, 0)
         else:
             from_date        = tday
 
@@ -301,12 +303,12 @@ def show_graph_by_day(request):
             kwargs[ 'calldate__range' ] = (start_date,end_date)
 
 
-        form = DailyLoadSearchForm(initial={'from_date':from_date.strftime('%m/%d/%Y'),'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,})
+        form = DailyLoadSearchForm(initial={'from_date':from_date.strftime('%Y-%m-%d'),'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,})
 
     if len(kwargs) == 0:
         tday=datetime.today()
         from_day = validate_days(tday.year,tday.month,tday.day)
-        form = DailyLoadSearchForm(initial={'from_day':tday.day,'destination_type':1,'source_type':1,})
+        form = DailyLoadSearchForm(initial={'from_date':tday.strftime('%Y-%m-%d'),'destination_type':1,'source_type':1,})
         from_year=tday.year
         from_month= tday.month
         start_date = datetime(from_year,from_month,from_day,0,0,0,0)
@@ -337,7 +339,8 @@ def show_graph_by_day(request):
                 total_record.append((int(i['called_time']),int(i['calldate__count']) ))
 
         variables = RequestContext(request,
-                            {'form': form,
+                            {'module': current_view(request),
+                             'form': form,
                              'result':'min',
                              'report_date':start_date,
                              'total_record':sorted(total_record, key=lambda total: total[0]),
@@ -356,9 +359,9 @@ def show_graph_by_hour(request):
     if request.method == 'POST':
         if "from_date" in request.POST:
             from_date        = request.POST['from_date']
-            select_date = datetime(int(from_date[-4:]), int(from_date[:2]), int(from_date[3:5]), 0, 0, 0, 0)
+            select_date = datetime(int(from_date[0:4]), int(from_date[5:7]), int(from_date[8:10]), 0, 0, 0, 0)
         else:
-            from_date      = tday.strftime('%m/%d/%Y')
+            from_date      = tday.strftime('%Y-%m-%d')
             select_date = tday
 
         comp_days = variable_value(request,'comp_days')
@@ -393,7 +396,7 @@ def show_graph_by_hour(request):
     if len(kwargs) == 0:
         tday = datetime.today()
         from_day = validate_days(tday.year,tday.month,tday.day)
-        form = CompareCallSearchForm(initial={'from_day':tday.day,'comp_days':2,'destination_type':1,'source_type':1,'graph_view':graph_view})
+        form = CompareCallSearchForm(initial={'from_date':tday.strftime('%Y-%m-%d'),'comp_days':2,'destination_type':1,'source_type':1,'graph_view':graph_view})
         from_year=tday.year
         from_month= tday.month
 
@@ -452,20 +455,18 @@ def show_graph_by_hour(request):
 
                 x=0
                 for j in range(0,24):
-                    date_string = _('%(month)s/%(day)s/%(year)s') % {'month':rd[5:7], 'day':rd[8:10], 'year':rd[0:4]}
                     if j not in list_of_hour:
-                        total_record_final.append((date_string,j,0))
+                        total_record_final.append((rd,j,0))
                     else:
-                        total_record_final.append((date_string,j,l_o_c[j]))
+                        total_record_final.append((rd,j,l_o_c[j]))
                         x=x+1
 
 
             for d in dateList:
-                sd=str(d)
-                date_string= _('%(month)s/%(day)s/%(year)s') % {'month':sd[5:7], 'day':sd[8:10], 'year':sd[0:4]}
-                if date_string not in record_dates:
+                sd=d.strftime('%Y-%m-%d')
+                if sd not in record_dates:
                     for j in range(0,24):
-                        total_record_final.append((date_string,j,0))
+                        total_record_final.append((sd,j,0))
 
             call_count_range=range(0,max(total_call_count)+1)
             call_count_range.reverse()
@@ -474,18 +475,27 @@ def show_graph_by_hour(request):
             total_record_final=[]
 
         datelist_final = []
-        for i in dateList:
+        for i in dateList:  
             y =  str(i)
             datelist_final.append(( y[0:4]+'-'+y[5:7]+'-'+y[8:10] ))
         
+        total_record = {}
+        for i in total_record_final:
+            if (i[0] in total_record.keys()) and (i[1] not in total_record[i[0]].keys()):
+                total_record[i[0]][i[1]] = i[2]
+            elif i[0] not in total_record.keys():
+                total_record[i[0]] = {}
+                total_record[i[0]][i[1]] = i[2]
+        
         variables = RequestContext(request,
-                            {'form': form,
+                            {'module': current_view(request),
+                             'form': form,
                              'result':'min',
                              'record_dates':datelist_final,
                              'total_hour':range(0,24),
                              'graph_view':graph_view,
                              'call_count_range':call_count_range,
-                             'total_record':sorted(total_record_final, key=lambda total: total[0]),
+                             'total_record':total_record,
                              'calls_in_day':calls_in_day,
                             })
 
@@ -665,7 +675,8 @@ def show_concurrent_calls(request):
         elif (maxconcurrent > 100):
             tickSize = 10
         variables = RequestContext(request,
-                            {'form': form,
+                            {'module': current_view(request),
+                             'form': form,
                              'result': 'min',
                              'graph_view': graph_view,
                              'total_record': total_record_final,
@@ -713,8 +724,8 @@ def show_global_report(request):
             total_data.append({'count':i, 'day':date.day, 'month':date.month, 'year':date.year, 'date':name_date , 'calldate__count':0, 'duration__sum':0, 'duration__avg':0})
         i += 1
 
-    data = {
-        'total_data': total_data,
+    data = {'module': current_view(request),
+            'total_data': total_data,
     }
     return render_to_response(template, data,context_instance = RequestContext(request))
 
@@ -752,23 +763,23 @@ def show_dashboard(request):
     else:
         ACD = int_convert_to_minute(math.floor(total_duration / total_calls))
     
-    date_string = start_date.strftime('%Y-%m-%d')
-    label = _('%(month)s/%(day)s/%(year)s') % {'month':date_string[5:7], 'day':date_string[8:10], 'year':date_string[0:4]}
+    label = start_date.strftime('%Y-%m-%d')
     
+    
+    
+
     variables = RequestContext(request,
-                        {
+                        {'module': current_view(request),
                          'label': label,
                          'total_calls': total_calls,
                          'total_duration': int_convert_to_minute(total_duration),
                          'ACT': ACT,
                          'ACD': ACD,
                          'total_record': total_record_final,
-                         'debug': debug,
                         })
 
     return render_to_response(template, variables,
            context_instance = RequestContext(request))
-
 
 def login_view(request):
     template = 'cdr/index.html'
@@ -821,10 +832,10 @@ def index(request):
     errorlogin = ''
     loginform = loginForm()
     
-    data = {
-        'loginform' : loginform,
-        'errorlogin' : errorlogin,
-        'news' : get_news(),
+    data = {'module': current_view(request),
+            'loginform' : loginform,
+            'errorlogin' : errorlogin,
+            'news' : get_news(),
     }
     return render_to_response(template, data,
            context_instance = RequestContext(request))
@@ -841,5 +852,9 @@ def pleaselog(request):
     }
     return render_to_response(template, data,
            context_instance = RequestContext(request))
+
+def current_view(request):
+    name = getmodule(stack()[1][0]).__name__
+    return stack()[1][3]
 
 
