@@ -89,6 +89,11 @@
         $('#buttonlogout').click(function(){
           $('#logout').submit();
         });
+        $('#buttonadmin').click(function(){
+            var url = String(window.location);
+            var patt = "(https?|ftp|gopher|telnet|file|notes|ms-help)://[^/]+/";
+            window.location = url.match(patt)[0] + 'admin';
+        });
       });
     </script>
    
@@ -102,7 +107,7 @@
 
 <div class="container">
     
-	<div class="span-18">
+	<div class="span-17">
 		<a href="http://www.cdr-stats.org/" target="_blank"><img class="logo_cdrstat" src="{{MEDIA_URL}}/logo/cdr-stat-small.png" border="0" height="70"/></a>
 	</div>
 	
@@ -117,6 +122,25 @@
             <input type="submit" value="Go" />
         </form>
 	</div>
+	
+    <div class="prepend-2">
+    {% if user.is_authenticated %}
+        <div class="welcome">
+        {% trans "Welcome" %} {{ user.username }}
+        </div>
+        {% if user.is_superuser %}
+            <button id="buttonadmin" class="ui-button ui-button-icon-only ui-widget ui-state-default ui-corner-all" title="Admin">
+                <span class="ui-button-icon-primary ui-icon ui-icon-gear"></span>
+                <span class="ui-button-text ">Admin</span>
+            </button>
+        {% endif %}
+    {% else %}
+        <button id="buttonadmin" class="ui-button ui-button-icon-only ui-widget ui-state-default ui-corner-all" title="Admin">
+            <span class="ui-button-icon-primary ui-icon ui-icon-gear"></span>
+            <span class="ui-button-text ">Admin</span>
+        </button>
+    {% endif %}
+    </div>
 	
 	<div class="prepend-2 last">
 	    {% include "cdr/login_option.html" %}
