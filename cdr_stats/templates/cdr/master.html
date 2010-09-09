@@ -21,6 +21,8 @@
     <!-- jquery UI css -->
     <link type="text/css" href="{{MEDIA_URL}}/css/cupertino/jquery-ui-1.8.1.custom.css" rel="stylesheet">  
     <link type="text/css" media="screen" href="{{MEDIA_URL}}/src/css/ui.multiselect.css" rel="stylesheet"/> 
+    <link type="text/css" href="{{MEDIA_URL}}/css/ui.selectmenu.css" rel="stylesheet">
+    
     
     <!-- Table css -->
     <link type="text/css" media="screen" href="{{MEDIA_URL}}/css/gradient-table.css" rel="stylesheet"/>
@@ -96,7 +98,7 @@
         });
       });
     </script>
-   
+       
 </head>
 
 <body>
@@ -107,11 +109,11 @@
 
 <div class="container">
     
-	<div class="span-17">
+	<div class="span-15">
 		<a href="http://www.cdr-stats.org/" target="_blank"><img class="logo_cdrstat" src="{{MEDIA_URL}}/logo/cdr-stat-small.png" border="0" height="70"/></a>
 	</div>
 	
-	<div class="span-4 ">
+	<div class="span-2 ">
 	    <form action="/i18n/setlang/" method="post">
 	        {% csrf_token %}
             <select name="language">
@@ -125,20 +127,11 @@
 	
     <div class="prepend-2">
     {% if user.is_authenticated %}
-        <div class="welcome">
-        {% trans "Welcome" %} {{ user.username }}
-        </div>
         {% if user.is_superuser %}
-            <button id="buttonadmin" class="ui-button ui-button-icon-only ui-widget ui-state-default ui-corner-all" title="Admin">
-                <span class="ui-button-icon-primary ui-icon ui-icon-gear"></span>
-                <span class="ui-button-text ">Admin</span>
-            </button>
+            <button id="buttonadmin" class="button-text-icon-gear">{% trans "Admin" %}</button>
         {% endif %}
     {% else %}
-        <button id="buttonadmin" class="ui-button ui-button-icon-only ui-widget ui-state-default ui-corner-all" title="Admin">
-            <span class="ui-button-icon-primary ui-icon ui-icon-gear"></span>
-            <span class="ui-button-text ">Admin</span>
-        </button>
+        <button id="buttonadmin" class="button-text-icon-gear">{% trans "Admin" %}</button>
     {% endif %}
     </div>
 	
@@ -146,12 +139,18 @@
 	    {% include "cdr/login_option.html" %}
     </div>
 	
+	
 	<div class="span-2 last">
 		{% include "cdr/login.html" %}
 	</div>
 	
 	<div class="span-24 last">
+	    <div id="welcome-container">
+	    {% if user.is_authenticated %}
+	    {% trans "Welcome" %}, {{ user.username }}
+	    {% endif %}
 		<hr>
+		</div>
 	</div>
 	
 	<div class="span-24 last">

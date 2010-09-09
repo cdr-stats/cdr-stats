@@ -125,3 +125,7 @@ body, .ui-widget-header  {
 .graph_tooltip_info{
     font-size: 10px;
 }
+
+#welcome-container{
+    text-align: right;
+}

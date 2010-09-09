@@ -107,5 +107,5 @@ class ConcurrentCallForm(forms.Form):
 class loginForm(forms.Form):
 
     user = forms.CharField(max_length=40, label=_('Login'), required=True, widget=forms.TextInput(attrs={'size':'10'}))
-    password = forms.CharField(max_length=40, label=_('password'), required=True, widget=forms.PasswordInput(attrs={'size':'10'}))
+    password = forms.CharField(max_length=40, label=_('Password'), required=True, widget=forms.PasswordInput(attrs={'size':'10'}))
     

@@ -3,20 +3,36 @@
     <div id="openlogin" style="text-align: right;">
         
         {% if user.is_authenticated %}
-        <button id="buttonlogout" class="ui-button ui-button-icon-only ui-widget ui-state-default ui-corner-all" title="Button">
-            <span class="ui-button-icon-primary ui-icon ui-icon-unlocked"></span>
-            <span class="ui-button-text">Logout</span>
-        </button>
+        <button id="buttonlogout" class="button-text-icon-unlocked">{% trans "Logout" %}</button>
         <form id="logout" action="/logout/" method="post">
         {% csrf_token %}
           <input type="hidden" name="action" value="logout" />
         </form>
 
         {% else %}
-        <button id="buttonlogin" class="ui-button ui-button-icon-only ui-widget ui-state-default ui-corner-all" title="Button">
-            <span class="ui-button-icon-primary ui-icon ui-icon-locked"></span>
-            <span class="ui-button-text">{% trans "Login"  %}</span>
-        </button>
+        <button id="buttonlogin" class="button-text-icon-locked" title="{% trans "Login" %}">{% trans "Login" %}</button>
         {% endif %}
 
     </div>
+    
+    <script type="text/javascript">
+	$(function() {
+		$(".button-text-icon-locked").button({
+            icons: {
+                primary: 'ui-icon-locked'
+            }
+        });
+        $(".button-text-icon-unlocked").button({
+            icons: {
+                primary: 'ui-icon-unlocked'
+            }
+        });
+        $(".button-text-icon-gear").button({
+            icons: {
+                primary: 'ui-icon-gear'
+            }
+        });
+	});
+	</script>
+    
+
