@@ -6,10 +6,9 @@
     the select date look is not the same on the Search CDR, the table have some spacing
     
  - on show_stats_by_day/ and show_stats_by_month/
-  no need to display the filter on a second lines, it will be more elegant to display at the right with a select
+  no need to display the filter on a second lines,
+  For instance we can display DESTINATION [------------] (Select for Destination type)
   
- - change the color of the info button
- 
- 
+ - Select language, no need to have a GO button, just sumbit the language when the user select a new language
    
  

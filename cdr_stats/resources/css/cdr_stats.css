@@ -131,13 +131,13 @@ body, .ui-widget-header  {
 
 .ui-priority-secondary { 
     border: 1px solid #77d5f7;
-    background: #0078ae url(images/ui-bg_glass_45_0078ae_1x400.png) 50% 50% repeat-x;
-    color: #ffffff;
+    //background: #0078ae url(images/ui-bg_glass_45_0078ae_1x400.png) 50% 50% repeat-x;
+    
 }
 
 .ui-state-secondary-highlight {
     border: 1px solid #fcd113;
-    background: #f8da4e url(images/ui-bg_glass_55_f8da4e_1x400.png) 50% 50% repeat-x;
+    //background: #f8da4e url(images/ui-bg_glass_55_f8da4e_1x400.png) 50% 50% repeat-x;
     color: #915608;
 }
 
