@@ -11,7 +11,7 @@ from uni_form.helpers import Layout, Fieldset, Row, Column, HTML
 
 
 
-class CdrSearchForm(forms.Form):
+class SearchForm(forms.Form):
 
     destination = forms.CharField(label=_('Destination'), required=False, widget=forms.TextInput(attrs={'size': 15}))
     destination_type = forms.TypedChoiceField(coerce=bool, required=False,
@@ -24,7 +24,23 @@ class CdrSearchForm(forms.Form):
     channel = forms.CharField(label='Channel', required=False, widget=forms.TextInput(attrs={'size': 15}))
 
 
-class MonthLoadSearchForm(CdrSearchForm):
+class CdrSearchForm(forms.Form):
+    
+    from_date = CharField(label=_('From'), required=True, max_length=10, help_text="Please use the following format: <em>YYYY-MM-DD</em>.")
+    to_date = CharField(label=_('To'), required=True, max_length=10, help_text="Please use the following format: <em>YYYY-MM-DD</em>.")
+    
+    result = forms.TypedChoiceField(label=_('Result:'), required=False, coerce=bool,
+                choices = (('1', _('Minutes')), ('2', _('Seconds'))),widget=forms.RadioSelect)
+
+    # Attach a formHelper to your forms class.
+    helper = FormHelper()
+    helper.form_method = 'GET'
+    submit = Submit('search', _('Search'))
+    helper.add_input(submit)
+    helper.use_csrf_protection = True
+    
+
+class MonthLoadSearchForm(SearchForm):
 
     from_month_year= forms.CharField(label=_('Select date'), required=True, max_length=10, help_text="Please use the following format: <em>YYYY-MM</em>.")
     comp_months = forms.ChoiceField(label=_('Months to Compare'), required=False, choices=comp_month_range())
@@ -41,7 +57,7 @@ class MonthLoadSearchForm(CdrSearchForm):
         self.fields.keyOrder = ['from_month_year', 'comp_months', 'destination', 'destination_type', 'source', 'source_type', 'channel']
 
 
-class DailyLoadSearchForm(CdrSearchForm):
+class DailyLoadSearchForm(SearchForm):
 
     from_date = forms.CharField(label=_('Select date'), required=True, max_length=10, help_text="Please use the following format: <em>YYYY-MM-DD</em>.")
     
@@ -57,7 +73,7 @@ class DailyLoadSearchForm(CdrSearchForm):
         self.fields.keyOrder = ['from_date', 'destination', 'destination_type', 'source', 'source_type', 'channel']
     
 
-class CompareCallSearchForm(CdrSearchForm):
+class CompareCallSearchForm(SearchForm):
 
     from_date = forms.CharField(label=_('Select date'), required=True, max_length=10, help_text="Please use the following format: <em>YYYY-MM-DD</em>.")
     comp_days = forms.ChoiceField(label=_('Days to Compare'), required=False, choices=comp_day_range())
@@ -75,21 +91,6 @@ class CompareCallSearchForm(CdrSearchForm):
         super(CompareCallSearchForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['from_date','comp_days', 'destination', 'destination_type', 'source', 'source_type', 'channel','graph_view']
 
-
-class CdrSearchForm(forms.Form):
-    
-    from_date = CharField(label=_('From'), required=True, max_length=10, help_text="Please use the following format: <em>YYYY-MM-DD</em>.")
-    to_date = CharField(label=_('To'), required=True, max_length=10, help_text="Please use the following format: <em>YYYY-MM-DD</em>.")
-    
-    result = forms.TypedChoiceField(label=_('Result:'), required=False, coerce=bool,
-                choices = (('1', _('Minutes')), ('2', _('Seconds'))),widget=forms.RadioSelect)
-
-    # Attach a formHelper to your forms class.
-    helper = FormHelper()
-    helper.form_method = 'GET'
-    submit = Submit('search', _('Search'))
-    helper.add_input(submit)
-    helper.use_csrf_protection = True
 
 class ConcurrentCallForm(forms.Form):
     result = forms.TypedChoiceField( label=_('Result'), required=True, coerce=bool, empty_value=1,
