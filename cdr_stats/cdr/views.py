@@ -200,13 +200,13 @@ def show_graph_by_month(request):
         form = MonthLoadSearchForm(initial={'from_month_year':from_month_year,'comp_months':comp_months,'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,})
 
     if len(kwargs) == 0:
-        form = MonthLoadSearchForm(initial={'comp_months':2,'destination_type':1,'source_type':1,})
         tday = datetime.today()
         from_year = tday.year
         from_month = tday.month
         from_day = validate_days(from_year,from_month,31)
         comp_months = 2
         cp_month = comp_months + 1
+        form = MonthLoadSearchForm(initial={'from_month_year':tday.strftime("%Y-%m"),'comp_months':comp_months,'destination_type':1,'source_type':1,})
         end_date = datetime(from_year, from_month, from_day)
         start_date = end_date + relativedelta(months = -int(cp_month), days = +relative_days(from_day,from_year))
         kwargs[ 'calldate__range' ] = (start_date,end_date)

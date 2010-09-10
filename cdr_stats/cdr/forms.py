@@ -26,7 +26,7 @@ class CdrSearchForm(forms.Form):
 
 class MonthLoadSearchForm(CdrSearchForm):
 
-    from_month_year= forms.ChoiceField(label=_('Select Month'), required=False, choices=month_year_range())
+    from_month_year= forms.CharField(label=_('Select date'), required=True, max_length=10, help_text="Please use the following format: <em>YYYY-MM</em>.")
     comp_months = forms.ChoiceField(label=_('Months to Compare'), required=False, choices=comp_month_range())
     
     # Attach a formHelper to your forms class.
