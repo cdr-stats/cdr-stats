@@ -26,8 +26,8 @@ class SearchForm(forms.Form):
 
 class CdrSearchForm(forms.Form):
     
-    from_date = CharField(label=_('From'), required=True, max_length=10, help_text="Please use the following format: <em>YYYY-MM-DD</em>.")
-    to_date = CharField(label=_('To'), required=True, max_length=10, help_text="Please use the following format: <em>YYYY-MM-DD</em>.")
+    from_date = CharField(label=_('From'), required=True, max_length=10, help_text=_("Please use the following format")+": <em>YYYY-MM-DD</em>.")
+    to_date = CharField(label=_('To'), required=True, max_length=10, help_text=_("Please use the following format")+": <em>YYYY-MM-DD</em>.")
     
     result = forms.TypedChoiceField(label=_('Result:'), required=False, coerce=bool,
                 choices = (('1', _('Minutes')), ('2', _('Seconds'))),widget=forms.RadioSelect)
@@ -59,7 +59,7 @@ class MonthLoadSearchForm(SearchForm):
 
 class DailyLoadSearchForm(SearchForm):
 
-    from_date = forms.CharField(label=_('Select date'), required=True, max_length=10, help_text="Please use the following format: <em>YYYY-MM-DD</em>.")
+    from_date = forms.CharField(label=_('Select date'), required=True, max_length=10, help_text=_("Please use the following format")+": <em>YYYY-MM-DD</em>.")
     
     # Attach a formHelper to your forms class.
     helper = FormHelper()
@@ -75,7 +75,7 @@ class DailyLoadSearchForm(SearchForm):
 
 class CompareCallSearchForm(SearchForm):
 
-    from_date = forms.CharField(label=_('Select date'), required=True, max_length=10, help_text="Please use the following format: <em>YYYY-MM-DD</em>.")
+    from_date = forms.CharField(label=_('Select date'), required=True, max_length=10, help_text=_("Please use the following format")+": <em>YYYY-MM-DD</em>.")
     comp_days = forms.ChoiceField(label=_('Days to Compare'), required=False, choices=comp_day_range())
     graph_view=forms.ChoiceField(label=_('Graph'), required=False,
             choices=((1, _('Calls per Hour')), (2,_('Minutes per Hour'))))

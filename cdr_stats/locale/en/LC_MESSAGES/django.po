@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-10 12:42-0500\n"
+"POT-Creation-Date: 2010-09-10 13:00-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Areski Belaid <areski@gmail.com>\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -57,6 +57,10 @@ msgstr ""
 
 #: cdr/forms.py:29
 msgid "From"
+msgstr ""
+
+#: cdr/forms.py:29 cdr/forms.py:30 cdr/forms.py:62 cdr/forms.py:78
+msgid "Please use the following format"
 msgstr ""
 
 #: cdr/forms.py:30
