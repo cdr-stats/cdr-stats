@@ -96,6 +96,9 @@
             var patt = "(https?|ftp|gopher|telnet|file|notes|ms-help)://[^/]+/";
             window.location = url.match(patt)[0] + 'admin';
         });
+        $("#language-container").change(function() {
+            this.form.submit();
+        });
       });
     </script>
        
@@ -116,12 +119,11 @@
 	<div class="span-2 ">
 	    <form action="/i18n/setlang/" method="post">
 	        {% csrf_token %}
-            <select name="language">
+            <select name="language" id="language-container">
             {% for lang in LANGUAGES %}
             <option value="{{ lang.0 }}" {% ifequal lang.0 LANGUAGE_CODE %}selected{% endifequal %}>{{ lang.1 }}</option>
             {% endfor %}
             </select>
-            <input type="submit" value="Go" />
         </form>
 	</div>
 	
