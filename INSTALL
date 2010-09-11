@@ -94,7 +94,7 @@ Configure your Database :
 
 
 Update Admin Media path :
------------------------
+--------------------------
 
     cd resources
     #ln -s /usr/lib/pymodules/python2.4/django/contrib/admin/media/ admin
@@ -104,6 +104,17 @@ Update Admin Media path :
     ADMIN_MEDIA_PREFIX = '/resources/admin/'
 
 
+
+# I18N :
+---------
+    Create POs Files :
+     > python manage.py makemessages --all
+
+    Create MOs Files :
+     > python manage.py compilemessages
+
+    To create or update a message file, run this command:
+     > python manage.py makemessages -l ru
 
 
 

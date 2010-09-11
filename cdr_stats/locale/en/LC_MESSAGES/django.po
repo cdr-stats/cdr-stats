@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-10 13:00-0500\n"
+"POT-Creation-Date: 2010-09-11 06:30-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Areski Belaid <areski@gmail.com>\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -296,7 +296,7 @@ msgstr ""
 msgid "Unknown content"
 msgstr ""
 
-#: templates/cdr/index.html:20 templates/cdr/master.html:184
+#: templates/cdr/index.html:20 templates/cdr/master.html:186
 msgid "Info"
 msgstr ""
 
@@ -426,52 +426,52 @@ msgstr ""
 msgid "Logout"
 msgstr ""
 
-#: templates/cdr/master.html:131 templates/cdr/master.html.py:134
+#: templates/cdr/master.html:133 templates/cdr/master.html.py:136
 msgid "Admin"
 msgstr ""
 
-#: templates/cdr/master.html:150
+#: templates/cdr/master.html:152
 msgid "Welcome"
 msgstr ""
 
-#: templates/cdr/master.html:166
+#: templates/cdr/master.html:168
 msgid "Alert"
 msgstr ""
 
-#: templates/cdr/master.html:166
+#: templates/cdr/master.html:168
 msgid "Please login by clicking on login button"
 msgstr ""
 
-#: templates/cdr/master.html:177
+#: templates/cdr/master.html:179
 msgid "Dashboard"
 msgstr ""
 
-#: templates/cdr/master.html:178
+#: templates/cdr/master.html:180
 msgid "Search CDR"
 msgstr ""
 
-#: templates/cdr/master.html:179
+#: templates/cdr/master.html:181
 msgid "Analyse CDR"
 msgstr ""
 
-#: templates/cdr/master.html:180
+#: templates/cdr/master.html:182
 msgid "Daily Traffic"
 msgstr ""
 
-#: templates/cdr/master.html:181
+#: templates/cdr/master.html:183
 msgid "Monthly Traffic"
 msgstr ""
 
-#: templates/cdr/master.html:182
+#: templates/cdr/master.html:184
 #: templates/cdr/show_graph_concurrent_calls.html:53
 msgid "Concurrent Calls"
 msgstr ""
 
-#: templates/cdr/master.html:183 templates/cdr/show_global_report.html:76
+#: templates/cdr/master.html:185 templates/cdr/show_global_report.html:76
 msgid "Global Report"
 msgstr ""
 
-#: templates/cdr/master.html:200
+#: templates/cdr/master.html:202
 msgid "CDR-Stats is software licensed under the "
 msgstr ""
 

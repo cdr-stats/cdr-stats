@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-10 13:00-0500\n"
+"POT-Creation-Date: 2010-09-11 06:30-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Areski Belaid <areski@gmail.com>\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -297,7 +297,7 @@ msgstr "Aucune disponible"
 msgid "Unknown content"
 msgstr "contenu Inconnue"
 
-#: templates/cdr/index.html:20 templates/cdr/master.html:184
+#: templates/cdr/index.html:20 templates/cdr/master.html:186
 msgid "Info"
 msgstr "Info"
 
@@ -458,53 +458,53 @@ msgstr ""
 msgid "Logout"
 msgstr "Déconnexion"
 
-#: templates/cdr/master.html:131 templates/cdr/master.html.py:134
+#: templates/cdr/master.html:133 templates/cdr/master.html.py:136
 msgid "Admin"
 msgstr "Admin"
 
-#: templates/cdr/master.html:150
+#: templates/cdr/master.html:152
 msgid "Welcome"
 msgstr "Bienvenue"
 
-#: templates/cdr/master.html:166
+#: templates/cdr/master.html:168
 msgid "Alert"
 msgstr "Alerte"
 
-#: templates/cdr/master.html:166
+#: templates/cdr/master.html:168
 msgid "Please login by clicking on login button"
 msgstr ""
 "S&#39;il vous plaît enregistrer-vous en cliquant sur le bouton connexion"
 
-#: templates/cdr/master.html:177
+#: templates/cdr/master.html:179
 msgid "Dashboard"
 msgstr "Tableau de bord"
 
-#: templates/cdr/master.html:178
+#: templates/cdr/master.html:180
 msgid "Search CDR"
 msgstr "Recherche de CRDs"
 
-#: templates/cdr/master.html:179
+#: templates/cdr/master.html:181
 msgid "Analyse CDR"
 msgstr "Analyser CDR"
 
-#: templates/cdr/master.html:180
+#: templates/cdr/master.html:182
 msgid "Daily Traffic"
 msgstr "Trafic quotidien"
 
-#: templates/cdr/master.html:181
+#: templates/cdr/master.html:183
 msgid "Monthly Traffic"
 msgstr "Trafic mensuel"
 
-#: templates/cdr/master.html:182
+#: templates/cdr/master.html:184
 #: templates/cdr/show_graph_concurrent_calls.html:53
 msgid "Concurrent Calls"
 msgstr "Appels simultanés"
 
-#: templates/cdr/master.html:183 templates/cdr/show_global_report.html:76
+#: templates/cdr/master.html:185 templates/cdr/show_global_report.html:76
 msgid "Global Report"
 msgstr "Rapport Globale"
 
-#: templates/cdr/master.html:200
+#: templates/cdr/master.html:202
 msgid "CDR-Stats is software licensed under the "
 msgstr "CDR-Stats est un logiciel sous la licence"
 
