@@ -17,8 +17,41 @@ DISPOSITION = (
     (9, _('INVALIDARGS')),
 )
 
-accountcode = models.PositiveIntegerField(null=True, blank=True)
-accountcode.contribute_to_class(User, 'accountcode')
+
+class Company(models.Model):
+    name = models.CharField(max_length=50, blank=True, null=True)
+    address = models.TextField(max_length=400, blank=True, null=True)
+    phone = models.CharField(max_length=30, blank=True, null=True)
+    fax = models.CharField(max_length=30, blank=True, null=True)
+    
+    def __unicode__(self):
+        return '[%s] %s' %(self.id, self.name)
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+    accountcode = models.PositiveIntegerField(null=True, blank=True)
+    company = models.OneToOneField(Company, verbose_name='Company', null=True, blank=True)
+
+
+class Customer(User):    
+    class Meta:
+        proxy = True
+        app_label = 'auth'
+        verbose_name = 'Customer'
+        verbose_name_plural = 'Customers'
+
+class Staff(User):
+    class Meta:
+        proxy = True
+        app_label = 'auth'
+        verbose_name = 'Admin'
+        verbose_name_plural = 'Admins'
+        
+    def save(self, **kwargs):
+        if not self.pk:
+            self.is_staff = 1
+            self.is_superuser = 1
+        super(Staff, self).save(**kwargs)
 
 
 class CDR(models.Model):

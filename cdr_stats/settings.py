@@ -114,6 +114,7 @@ INSTALLED_APPS = (
     'uni_form',
 )
 
+AUTH_PROFILE_MODULE = 'cdr.UserProfile'
 
 LOG_COLORSQL_ENABLE = True
 LOG_COLORSQL_VERBOSE = True

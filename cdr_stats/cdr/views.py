@@ -96,7 +96,7 @@ def show_cdr(request):
     select_data = {"calldate": "SUBSTR(calldate,1,10)"}
     
     if not request.user.is_superuser:
-        kwargs[ 'accountcode' ] = request.user.accountcode
+        kwargs[ 'accountcode' ] = request.user.get_profile().accountcode
     
     queryset = CDR.objects.values('calldate', 'channel', 'src', 'clid', 'dst', 'disposition', 'duration', 'accountcode').filter(**kwargs).order_by('-calldate')
     total_data = CDR.objects.extra(select=select_data).values('calldate').filter(**kwargs).annotate(Count('calldate')).annotate(Sum('duration')).annotate(Avg('duration')).order_by('-calldate')
@@ -224,8 +224,8 @@ def show_graph_by_month(request):
                 e_year=e_year-1
                 
     if not request.user.is_superuser:
-        kwargs[ 'accountcode' ] = request.user.accountcode
-
+        kwargs[ 'accountcode' ] = request.user.get_profile().accountcode
+    
     if kwargs:
         select_data = {"subdate": "SUBSTR(calldate,1,7)"}
         calls_min = CDR.objects.filter(**kwargs).extra(select=select_data).values('subdate').annotate(Sum('duration'))
@@ -316,7 +316,7 @@ def show_graph_by_day(request):
         kwargs[ 'calldate__range' ] = (start_date,end_date)
 
     if not request.user.is_superuser:
-        kwargs[ 'accountcode' ] = request.user.accountcode
+        kwargs[ 'accountcode' ] = request.user.get_profile().accountcode
 
     if kwargs:
         select_data = {"called_time": "SUBSTR(calldate,12,2)"} # get Hour
@@ -408,8 +408,8 @@ def show_graph_by_hour(request):
         kwargs[ 'calldate__range' ] = (start_date,end_date)
 
     if not request.user.is_superuser:
-        kwargs[ 'accountcode' ] = request.user.accountcode
-
+        kwargs[ 'accountcode' ] = request.user.get_profile().accountcode
+    
     if kwargs:
         select_data = {"called_time": "SUBSTR(calldate,1,16)"} # Date without seconds
         if graph_view == '1':
@@ -548,7 +548,7 @@ def show_concurrent_calls(request):
     form = ConcurrentCallForm(initial={'result':result})
 
     if not request.user.is_superuser:
-        kwargs[ 'accountcode' ] = request.user.accountcode
+        kwargs[ 'accountcode' ] = request.user.get_profile().accountcode
 
     if kwargs:
         calls_in_day = CDR.objects.filter(**kwargs).values('calldate','duration').order_by('calldate')
@@ -694,7 +694,7 @@ def show_global_report(request):
     kwargs = {}
 
     if not request.user.is_superuser:
-        kwargs[ 'accountcode' ] = request.user.accountcode
+        kwargs[ 'accountcode' ] = request.user.get_profile().accountcode
 
     select_data = {"calldate": "SUBSTR(calldate,1,10)"}
     calls = CDR.objects.filter(**kwargs).extra(select=select_data).values('calldate').annotate(Sum('duration')).annotate(Avg('duration')).annotate(Count('calldate')).order_by('calldate')

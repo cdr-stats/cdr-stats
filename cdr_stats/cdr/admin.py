@@ -1,7 +1,46 @@
 from cdr.models import *
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
+from django.db.models import Q
+from .models import Customer, Staff
 
+
+class UserProfileInline(admin.StackedInline):
+    model = UserProfile
+
+
+class StaffAdmin(UserAdmin):
+    inlines = [UserProfileInline]
+    #list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'is_superuser', 'accountcode', 'last_login')
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'is_superuser', 'last_login')
+
+    def queryset(self, request):
+        qs = super(UserAdmin, self).queryset(request)
+        qs = qs.filter(Q(is_staff=True) | Q(is_superuser=True))
+        return qs
+
+class CustomerAdmin(StaffAdmin):
+    inlines = [UserProfileInline]
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'is_superuser', 'last_login')
+
+    def queryset(self, request):
+        qs = super(UserAdmin, self).queryset(request)
+        qs = qs.exclude(Q(is_staff=True) | Q(is_superuser=True))
+        return qs
+        
+    
+admin.site.unregister(User)
+admin.site.register(Staff, StaffAdmin)
+admin.site.register(Customer, CustomerAdmin)
+
+
+# Setting
+class CompanyAdmin(admin.ModelAdmin):
+    list_display = ('name', 'address', 'phone', 'fax')
+    search_fields = ('name', 'phone')
+
+admin.site.register(Company, CompanyAdmin)
 
 # Setting
 class CDRAdmin(admin.ModelAdmin):
@@ -13,28 +52,3 @@ class CDRAdmin(admin.ModelAdmin):
 admin.site.register(CDR, CDRAdmin)
 
 
-class UserAdmin(UserAdmin):
-  list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'is_superuser', 'accountcode', 'last_login')
-  
-  def __init__(self,*args,**kwargs):
-    super(UserAdmin,self).__init__(*args,**kwargs)
-    fields = list(UserAdmin.fieldsets[0][1]['fields'])
-    fields.append('accountcode')
-    UserAdmin.fieldsets[0][1]['fields']=fields
-
-admin.site.unregister(User)
-admin.site.register(User,UserAdmin)
-
-"""
-
-class MyUserAdmin(UserAdmin):
-  def __init__(self,*args,**kwargs):
-    super(MyUserAdmin,self).__init__(*args,**kwargs)
-    fields = list(UserAdmin.fieldsets[0][1]['fields'])
-    fields.append('accountcode')
-    UserAdmin.fieldsets[0][1]['fields']=fields
-
-#admin.site.unregister(User)
-admin.site.register(MyUser,MyUserAdmin)
-
-"""
