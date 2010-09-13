@@ -10,7 +10,7 @@
             </ol>
         </div>
     {% endif %}
-    {% if form_html %}{{ form_html }}{% else %}
+    {% if form_html %}<div class="inlineLabels">{{ form_html }}</div>{% else %}
     <fieldset class="inlineLabels">
         {% for field in form %}
             {% include "uni_form/field.html" %}

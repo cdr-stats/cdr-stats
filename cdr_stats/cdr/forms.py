@@ -13,16 +13,28 @@ from uni_form.helpers import Layout, Fieldset, Row, Column, HTML
 
 class SearchForm(forms.Form):
 
-    destination = forms.CharField(label=_('Destination'), required=False, widget=forms.TextInput(attrs={'size': 15}))
-    destination_type = forms.TypedChoiceField(coerce=bool, required=False,
+    destination = forms.CharField(label=_('Destination'), required=False, widget=forms.TextInput(attrs={'size': 15, 'class':'span-10'}))
+    destination_type = forms.ChoiceField(label='', required=False,
+                    choices=((1, _('Equals')), (2, _('Begins with')), (3, _('Contains')), (4, _('Ends with')))
+                    )
+    source = forms.CharField(label=_('Source'), required=False, widget=forms.TextInput(attrs={'size': 15, 'class':'span-10'}))
+    source_type = forms.ChoiceField(label='', required=False,
                     choices=((1, _('Equals')), (2, _('Begins with')), (3, _('Contains')), (4, _('Ends with'))),
-                    widget=forms.RadioSelect)
-    source = forms.CharField(label=_('Source'), required=False, widget=forms.TextInput(attrs={'size': 15}))
-    source_type = forms.TypedChoiceField(coerce=bool, required=False,
-                    choices=((1, _('Equals')), (2, _('Begins with')), (3, _('Contains')), (4, _('Ends with'))),
-                    widget=forms.RadioSelect)
-    channel = forms.CharField(label='Channel', required=False, widget=forms.TextInput(attrs={'size': 15}))
-
+                    )
+    channel = forms.CharField(label='Channel', required=False, widget=forms.TextInput(attrs={'size': 15,'class':'span-10'}))
+    
+    layout = Fieldset(
+                '',
+                Row(
+                    Column('destination'),
+                    Column('destination_type'),
+                ),
+                Row(
+                    Column('source'),
+                    Column('source_type'),
+                ),
+                'channel',
+            )
 
 class CdrSearchForm(forms.Form):
     
@@ -42,8 +54,19 @@ class CdrSearchForm(forms.Form):
 
 class MonthLoadSearchForm(SearchForm):
 
-    from_month_year= forms.CharField(label=_('Select date'), required=True, max_length=10, help_text="Please use the following format: <em>YYYY-MM</em>.")
-    comp_months = forms.ChoiceField(label=_('Months to Compare'), required=False, choices=comp_month_range())
+    from_month_year= forms.CharField(label=_('Select date'), required=True, max_length=10, widget=forms.TextInput(attrs={'class':'span-10'}))
+    comp_months = forms.ChoiceField(label='', required=False, choices=comp_month_range())
+
+    layout = Layout(
+        Fieldset(
+                '',
+                Row(
+                    Column('from_month_year'),
+                    Column('comp_months'),
+                ),
+        ),
+        SearchForm.layout,
+    )
     
     # Attach a formHelper to your forms class.
     helper = FormHelper()
@@ -51,6 +74,7 @@ class MonthLoadSearchForm(SearchForm):
     submit = Submit('search', _('Search'))
     helper.add_input(submit)
     helper.use_csrf_protection = True
+    helper.add_layout(layout)
     
     def __init__(self, *args, **kwargs):
         super(MonthLoadSearchForm, self).__init__(*args, **kwargs)
@@ -59,7 +83,15 @@ class MonthLoadSearchForm(SearchForm):
 
 class DailyLoadSearchForm(SearchForm):
 
-    from_date = forms.CharField(label=_('Select date'), required=True, max_length=10, help_text=_("Please use the following format")+": <em>YYYY-MM-DD</em>.")
+    from_date = forms.CharField(label=_('Select date'), required=True, max_length=10, help_text=_("Please use the following format")+": <em>YYYY-MM-DD</em>.", widget=forms.TextInput(attrs={'class':'span-10'}))
+    
+    layout = Layout(
+        Fieldset(
+                '',
+                'from_date',
+        ),
+        SearchForm.layout,
+    )
     
     # Attach a formHelper to your forms class.
     helper = FormHelper()
@@ -67,6 +99,7 @@ class DailyLoadSearchForm(SearchForm):
     submit = Submit('search', _('Search'))
     helper.add_input(submit)
     helper.use_csrf_protection = True
+    helper.add_layout(layout)
 
     def __init__(self, *args, **kwargs):
         super(DailyLoadSearchForm, self).__init__(*args, **kwargs)
@@ -75,17 +108,30 @@ class DailyLoadSearchForm(SearchForm):
 
 class CompareCallSearchForm(SearchForm):
 
-    from_date = forms.CharField(label=_('Select date'), required=True, max_length=10, help_text=_("Please use the following format")+": <em>YYYY-MM-DD</em>.")
-    comp_days = forms.ChoiceField(label=_('Days to Compare'), required=False, choices=comp_day_range())
+    from_date = forms.CharField(label=_('Select date'), required=True, max_length=10, help_text=_("Please use the following format")+": <em>YYYY-MM-DD</em>.", widget=forms.TextInput(attrs={'class':'span-10'}))
+    comp_days = forms.ChoiceField(label='', required=False, choices=comp_day_range())
     graph_view=forms.ChoiceField(label=_('Graph'), required=False,
             choices=((1, _('Calls per Hour')), (2,_('Minutes per Hour'))))
-
+    
+    layout = Layout(
+        Fieldset(
+                '',
+                Row(
+                    Column('from_date'),
+                    Column('comp_days'),
+                ),
+        ),
+        SearchForm.layout,
+        'graph_view',
+    )
+    
     # Attach a formHelper to your forms class.
     helper = FormHelper()
     
     submit = Submit('search', _('Search'))
     helper.add_input(submit)
     helper.use_csrf_protection = True
+    helper.add_layout(layout)
 
     def __init__(self, *args, **kwargs):
         super(CompareCallSearchForm, self).__init__(*args, **kwargs)
