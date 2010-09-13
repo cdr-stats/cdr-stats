@@ -140,9 +140,9 @@ class CompareCallSearchForm(SearchForm):
 
 class ConcurrentCallForm(forms.Form):
     result = forms.TypedChoiceField( label=_('Result'), required=True, coerce=bool, empty_value=1,
-                choices = (('1', _('Today')), ('2', _('Yesterday')), ('3', _('Current Week')), ('4', _('Previous Week')), ('5', _('Current Month')), ('6', _('Previous Month'))),widget=forms.RadioSelect)
+                choices = (('1', _('Today')), ('2', _('Yesterday')), ('3', _('Current Week')), ('4', _('Previous Week')), ('5', _('Current Month')), ('6', _('Previous Month'))))
+             
     
-
     # Attach a formHelper to your forms class.
     helper = FormHelper()
     helper.form_method = 'POST'

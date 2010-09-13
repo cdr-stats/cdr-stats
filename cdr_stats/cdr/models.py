@@ -27,11 +27,16 @@ class Company(models.Model):
     def __unicode__(self):
         return '[%s] %s' %(self.id, self.name)
 
+    class Dilla:
+        skip_model = True        
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     accountcode = models.PositiveIntegerField(null=True, blank=True)
     company = models.OneToOneField(Company, verbose_name='Company', null=True, blank=True)
-
+    
+    class Dilla:
+        skip_model = True
 
 class Customer(User):    
     class Meta:
