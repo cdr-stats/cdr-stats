@@ -93,7 +93,7 @@ def show_cdr(request):
     request.session['cdr_queryset'] = ''
 
     #select_data = {"calldate": "strftime('%%Y-%%m-%%d', calldate)"}
-    select_data = {"calldate": "SUBSTR(calldate,1,10)"}
+    select_data = {"calldate": "SUBSTR(CAST(calldate as CHAR(30)),1,10)"}
     
     if not request.user.is_superuser:
         kwargs[ 'accountcode' ] = request.user.get_profile().accountcode
@@ -227,7 +227,7 @@ def show_graph_by_month(request):
         kwargs[ 'accountcode' ] = request.user.get_profile().accountcode
     
     if kwargs:
-        select_data = {"subdate": "SUBSTR(calldate,1,7)"}
+        select_data = {"subdate": "SUBSTR(CAST(calldate as CHAR(30)),1,7)"}
         calls_min = CDR.objects.filter(**kwargs).extra(select=select_data).values('subdate').annotate(Sum('duration'))
 
         total_record = []
@@ -319,7 +319,7 @@ def show_graph_by_day(request):
         kwargs[ 'accountcode' ] = request.user.get_profile().accountcode
 
     if kwargs:
-        select_data = {"called_time": "SUBSTR(calldate,12,2)"} # get Hour
+        select_data = {"called_time": "SUBSTR(CAST(calldate as CHAR(30)),12,2)"} # get Hour
         calls_in_day = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('calldate'))#.order_by('-calldate')#
         #calls_in_day = CDR.objects.filter(**kwargs).extra(select={'hour': "django_date_trunc('hour', %s.calldate)" % CDR._meta.db_table}).values('hour').annotate(Count('calldate'))#.order_by('-calldate')#
 
@@ -411,7 +411,7 @@ def show_graph_by_hour(request):
         kwargs[ 'accountcode' ] = request.user.get_profile().accountcode
     
     if kwargs:
-        select_data = {"called_time": "SUBSTR(calldate,1,16)"} # Date without seconds
+        select_data = {"called_time": "SUBSTR(CAST(calldate as CHAR(30)),1,16)"} # Date without seconds
         if graph_view == '1':
             calls_in_day = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('calldate'))#.order_by('-calldate')#
         else:
@@ -696,7 +696,7 @@ def show_global_report(request):
     if not request.user.is_superuser:
         kwargs[ 'accountcode' ] = request.user.get_profile().accountcode
 
-    select_data = {"calldate": "SUBSTR(calldate,1,10)"}
+    select_data = {"calldate": "SUBSTR(CAST(calldate as CHAR(30)),1,10)"}
     calls = CDR.objects.filter(**kwargs).extra(select=select_data).values('calldate').annotate(Sum('duration')).annotate(Avg('duration')).annotate(Count('calldate')).order_by('calldate')
 
     maxtime = datetime(int(calls[0]['calldate'][0:4]), int(calls[0]['calldate'][5:7]), int(calls[0]['calldate'][8:10]), 0, 0, 0, 0)
@@ -743,7 +743,7 @@ def show_dashboard(request):
     end_date = datetime(now.year,now.month,now.day,23,59,59,999999) - relativedelta(days=1)
     kwargs[ 'calldate__range' ] = (start_date,end_date)
     
-    select_data = {"called_time": "SUBSTR(calldate,1,16)"} # Date without seconds
+    select_data = {"called_time": "SUBSTR(CAST(calldate as CHAR(30)),1,16)"} # Date without seconds
     calls = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('calldate')).annotate(Sum('duration'))#.order_by('-calldate')#
     
     total_calls = 0
