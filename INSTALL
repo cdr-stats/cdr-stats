@@ -23,7 +23,9 @@ Set Permission on Sqlite DB :
     chmod -R 777 database
 
     create the database then :
+        python manage.py schemamigration cdr --initial
         python manage.py syncdb
+        python manage.py migrate
 
 
 

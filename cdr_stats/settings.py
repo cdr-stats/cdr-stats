@@ -112,6 +112,7 @@ INSTALLED_APPS = (
     #'django_extensions',
     'dateutil',
     'uni_form',
+    'south',
 )
 
 AUTH_PROFILE_MODULE = 'cdr.UserProfile'

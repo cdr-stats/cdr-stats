@@ -92,11 +92,11 @@
     sudo easy_install django-uni-form
 
 
-* EnhanceJS
+* South
 -------------
     
-    this is already included	
-    http://code.google.com/p/enhancejs/    
+    install :
+    sudo easy_install South
 
 
 * BluePrint 
