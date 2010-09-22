@@ -75,7 +75,7 @@
         
         # very useful to generate graph :
             # Create a PNG image file called my_project_visualized.png with application grouping
-            python `manage.py graph_models -a -g -o my_project_visualized.png
+            python manage.py graph_models -a -g -o my_project_visualized.png
 
 
 * python-dateutil
