@@ -1,36 +1,44 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# CDR-Stats - PO File
+# Copyright (C) 2010 - Star2Billing S.L. 
+# This file is distributed under the same license as the CDR-Stats application.
+# Areski Belaid <areski@gmail.com>, 2010.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-11 06:35-0500\n"
+"POT-Creation-Date: 2010-09-27 13:11-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language-Team: Areski Belaid <areski@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
+"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
-#: settings.py:126
+#: settings.py:128
 msgid "English"
 msgstr ""
 
-#: settings.py:127
+#: settings.py:129
 msgid "French"
 msgstr ""
 
-#: settings.py:128
+#: settings.py:130
 msgid "Spanish"
 msgstr ""
 
-#: settings.py:129
+#: settings.py:131
 msgid "Brazilian"
+msgstr ""
+
+#: settings.py:132
+msgid "German"
+msgstr ""
+
+#: settings.py:133
+msgid "Russian"
 msgstr ""
 
 #: cdr/forms.py:16 cdr/grid.py:17
@@ -57,92 +65,84 @@ msgstr "И заканчивается с"
 msgid "Source"
 msgstr "Источник"
 
-#: cdr/forms.py:29
+#: cdr/forms.py:41
 msgid "From"
 msgstr "От"
 
-#: cdr/forms.py:29 cdr/forms.py:30 cdr/forms.py:62 cdr/forms.py:78
+#: cdr/forms.py:41 cdr/forms.py:42 cdr/forms.py:86 cdr/forms.py:111
 msgid "Please use the following format"
 msgstr "Пожалуйста, используйте следующий формат"
 
-#: cdr/forms.py:30
+#: cdr/forms.py:42
 msgid "To"
 msgstr "К"
 
-#: cdr/forms.py:32
+#: cdr/forms.py:44
 msgid "Result:"
 msgstr "Результат:"
 
-#: cdr/forms.py:33 templates/cdr/show_graph_by_hour.html:111
+#: cdr/forms.py:45 templates/cdr/show_graph_by_hour.html:111
 msgid "Minutes"
 msgstr "Минуты"
 
-#: cdr/forms.py:33
+#: cdr/forms.py:45
 msgid "Seconds"
 msgstr "Секунды"
 
-#: cdr/forms.py:38 cdr/forms.py:51 cdr/forms.py:67 cdr/forms.py:86
-#: cdr/forms.py:103
+#: cdr/forms.py:50 cdr/forms.py:74 cdr/forms.py:99 cdr/forms.py:131
+#: cdr/forms.py:149
 msgid "Search"
 msgstr "Поиск"
 
-#: cdr/forms.py:45 cdr/forms.py:62 cdr/forms.py:78
+#: cdr/forms.py:57 cdr/forms.py:86 cdr/forms.py:111
 msgid "Select date"
 msgstr "Выберите дату"
 
-#: cdr/forms.py:46
-msgid "Months to Compare"
-msgstr "Месяцы для сравнения"
-
-#: cdr/forms.py:79
-msgid "Days to Compare"
-msgstr "Дни для сравнения"
-
-#: cdr/forms.py:80
+#: cdr/forms.py:113
 msgid "Graph"
 msgstr "График"
 
-#: cdr/forms.py:81
+#: cdr/forms.py:114
 msgid "Calls per Hour"
 msgstr "Звонков в час"
 
-#: cdr/forms.py:81
+#: cdr/forms.py:114
 msgid "Minutes per Hour"
 msgstr "Минут в час"
 
-#: cdr/forms.py:96
+#: cdr/forms.py:142
 msgid "Result"
 msgstr "Результат"
 
-#: cdr/forms.py:97
+#: cdr/forms.py:143
 msgid "Today"
 msgstr "Сегодня"
 
-#: cdr/forms.py:97
+#: cdr/forms.py:143
 msgid "Yesterday"
 msgstr "Вчера"
 
-#: cdr/forms.py:97
+#: cdr/forms.py:143
 msgid "Current Week"
 msgstr "Текущая неделя"
 
-#: cdr/forms.py:97
+#: cdr/forms.py:143
 msgid "Previous Week"
 msgstr "Предыдущая неделя"
 
-#: cdr/forms.py:97
+#: cdr/forms.py:143
 msgid "Current Month"
 msgstr "Текущий месяц"
 
-#: cdr/forms.py:97
+#: cdr/forms.py:143
 msgid "Previous Month"
 msgstr "Предыдущий месяц"
 
-#: cdr/forms.py:110 templates/cdr/login_option.html:13
+#: cdr/forms.py:156 templates/cdr/login_option.html:13
 msgid "Login"
 msgstr "Войти"
 
-#: cdr/forms.py:111
+#: cdr/forms.py:157
 msgid "Password"
 msgstr "Пароль"
 
@@ -298,7 +298,7 @@ msgstr "Ни доступных"
 msgid "Unknown content"
 msgstr "Неизвестный содержание"
 
-#: templates/cdr/index.html:20 templates/cdr/master.html:186
+#: templates/cdr/index.html:20 templates/cdr/master.html:185
 msgid "Info"
 msgstr "Информация"
 
@@ -306,7 +306,9 @@ msgstr "Информация"
 msgid ""
 "is an application that allows you to browse and analyse CDR (Call Detail "
 "Records)."
-msgstr "это приложение, которое позволяет вам просматривать и анализировать CDR (Call Detail Records)."
+msgstr ""
+"это приложение, которое позволяет вам просматривать и анализировать CDR "
+"(Call Detail Records)."
 
 #: templates/cdr/index.html:26
 msgid "Different reporting tools are provided :"
@@ -319,25 +321,31 @@ msgstr "Поиск CDR: поиск, фильтрация, отображение
 #: templates/cdr/index.html:29
 msgid ""
 "Monthly Report: Summarise and compare call traffic history month on month."
-msgstr "Ежемесячный доклад: Подведение итогов и сравнить голосового трафика истории месяц на месяц."
+msgstr ""
+"Ежемесячный доклад: Подведение итогов и сравнить голосового трафика истории "
+"месяц на месяц."
 
 #: templates/cdr/index.html:30
 msgid ""
 "Analyse CDR : Analyse and compare call volumes with the previous day’s "
 "traffic."
-msgstr "Анализ CDR: Анализ и сравнение объема звонков с оборота за предыдущий день."
+msgstr ""
+"Анализ CDR: Анализ и сравнение объема звонков с оборота за предыдущий день."
 
 #: templates/cdr/index.html:31
 msgid "Daily Traffic : Graph and filter traffic loads by hour during the day."
-msgstr "Ежедневный трафик: График нагрузки и фильтрации трафика на час в течение дня."
+msgstr ""
+"Ежедневный трафик: График нагрузки и фильтрации трафика на час в течение дня."
 
 #: templates/cdr/index.html:34
 msgid "CDR-Stats is Free Software released under the AGPL. "
-msgstr "CDR-Stats это свободное программное обеспечение, в соответствии с AGPL."
+msgstr ""
+"CDR-Stats это свободное программное обеспечение, в соответствии с AGPL."
 
 #: templates/cdr/index.html:35
 msgid "Support, alternative licensing and consultancy is available from "
-msgstr "Поддержка альтернативных лицензированию и консультации можно получить в"
+msgstr ""
+"Поддержка альтернативных лицензированию и консультации можно получить в"
 
 #: templates/cdr/index.html:46
 msgid "Download"
@@ -359,7 +367,9 @@ msgstr "Поддержка"
 msgid ""
 "Star2Billing S.L. offers consultancy including installation, training and "
 "customisation on all of its products, and CDR-Stats is no exception."
-msgstr "Star2Billing SL предлагает консультации, включая установку, обучение и настройку всех своих продуктов, и CDR-статистика не является исключением."
+msgstr ""
+"Star2Billing SL предлагает консультации, включая установку, обучение и "
+"настройку всех своих продуктов, и CDR-статистика не является исключением."
 
 #: templates/cdr/index.html:65
 msgid ""
@@ -367,7 +377,11 @@ msgid ""
 "Stats, and from the customer's point of view can speed the time of "
 "deployment, leaving them free to concentrate on more profitable and "
 "productive tasks."
-msgstr "Покупка консультантов, является хорошим способом для поддержки развития CDR-статистика, а с точки клиента зрения может ускорить время развертывания, оставляя их сосредоточиться на более прибыльных и производственной деятельностью."
+msgstr ""
+"Покупка консультантов, является хорошим способом для поддержки развития CDR-"
+"статистика, а с точки клиента зрения может ускорить время развертывания, "
+"оставляя их сосредоточиться на более прибыльных и производственной "
+"деятельностью."
 
 #: templates/cdr/index.html:67
 msgid "Contact us at"
@@ -393,7 +407,9 @@ msgstr "CDR-Stats под лицензией"
 msgid ""
 "however an alternative license can be purchased if the AGPL license is not "
 "suitable for your requirements. See "
-msgstr "Однако альтернативные лицензии можно приобрести, если лицензия AGPL не подходит для ваших потребностей. Посмотреть"
+msgstr ""
+"Однако альтернативные лицензии можно приобрести, если лицензия AGPL не "
+"подходит для ваших потребностей. Посмотреть"
 
 #: templates/cdr/index.html:100
 msgid "Contact Us"
@@ -403,14 +419,20 @@ msgstr "Связаться с Нами"
 msgid ""
 "Star2Billing S.L. was formed to provide commercial support, installation and "
 "training to telecommunications companies that wished to deploy A2Billing."
-msgstr "Star2Billing SL была создана для коммерческой поддержки, монтаж и подготовку кадров для телекоммуникационных компаний, которые хотели бы развернуть A2Billing."
+msgstr ""
+"Star2Billing SL была создана для коммерческой поддержки, монтаж и подготовку "
+"кадров для телекоммуникационных компаний, которые хотели бы развернуть "
+"A2Billing."
 
 #: templates/cdr/index.html:105
 msgid ""
 "A2Billing is both a Telecoms Switch and a Billing Platform for those wishing "
 "to deploy telecoms services such as VoIP, calling cards and callback, as "
 "well as a variety of other products. Please see"
-msgstr "A2Billing одновременно Telecoms Switch и биллинговой платформы для желающих разместить телекоммуникационных услуг, таких как VoIP, телефонные карты и обратного вызова, а также ряд других продуктов. Пожалуйста, см."
+msgstr ""
+"A2Billing одновременно Telecoms Switch и биллинговой платформы для желающих "
+"разместить телекоммуникационных услуг, таких как VoIP, телефонные карты и "
+"обратного вызова, а также ряд других продуктов. Пожалуйста, см."
 
 #: templates/cdr/index.html:105
 msgid "for more details."
@@ -422,58 +444,62 @@ msgid ""
 "stable, and is a complete ground up re-write of the famous Asterisk-Stat, "
 "which has been around for over 7 years as a CDR viewer and analyser for "
 "Asterisk, and has been included in FreePBX to view and analyse CDR."
-msgstr "CDR-Stats является последней части разработки программного обеспечения с Star2Billing стабильной, и полного нуля переписать знаменитого Asterisk-Stat, которая уже более 7 лет в качестве зрителя CDR и анализатор для Asterisk, и были включены в FreePBX для просмотра и анализа CDR."
+msgstr ""
+"CDR-Stats является последней части разработки программного обеспечения с "
+"Star2Billing стабильной, и полного нуля переписать знаменитого Asterisk-"
+"Stat, которая уже более 7 лет в качестве зрителя CDR и анализатор для "
+"Asterisk, и были включены в FreePBX для просмотра и анализа CDR."
 
 #: templates/cdr/login_option.html:6
 msgid "Logout"
 msgstr "Выйти"
 
-#: templates/cdr/master.html:133 templates/cdr/master.html.py:136
+#: templates/cdr/master.html:134
 msgid "Admin"
 msgstr "Администратор"
 
-#: templates/cdr/master.html:152
+#: templates/cdr/master.html:151
 msgid "Welcome"
 msgstr "Приветствовать"
 
-#: templates/cdr/master.html:168
+#: templates/cdr/master.html:167
 msgid "Alert"
 msgstr "Оповещение"
 
-#: templates/cdr/master.html:168
+#: templates/cdr/master.html:167
 msgid "Please login by clicking on login button"
 msgstr "Пожалуйста, Войти, нажав на кнопку Войти"
 
-#: templates/cdr/master.html:179
+#: templates/cdr/master.html:178
 msgid "Dashboard"
 msgstr "Приборная панель"
 
-#: templates/cdr/master.html:180
+#: templates/cdr/master.html:179
 msgid "Search CDR"
 msgstr "Поиск CDR"
 
-#: templates/cdr/master.html:181
+#: templates/cdr/master.html:180
 msgid "Analyse CDR"
 msgstr "Анализ CDR"
 
-#: templates/cdr/master.html:182
+#: templates/cdr/master.html:181
 msgid "Daily Traffic"
 msgstr "Ежедневно движения"
 
-#: templates/cdr/master.html:183
+#: templates/cdr/master.html:182
 msgid "Monthly Traffic"
 msgstr "Ежемесячный трафик"
 
-#: templates/cdr/master.html:184
+#: templates/cdr/master.html:183
 #: templates/cdr/show_graph_concurrent_calls.html:53
 msgid "Concurrent Calls"
 msgstr "Одновременных вызовов"
 
-#: templates/cdr/master.html:185 templates/cdr/show_global_report.html:76
+#: templates/cdr/master.html:184 templates/cdr/show_global_report.html:76
 msgid "Global Report"
 msgstr "Глобальный доклад"
 
-#: templates/cdr/master.html:202
+#: templates/cdr/master.html:201
 msgid "CDR-Stats is software licensed under the "
 msgstr "CDR-Stats это программное обеспечение под лицензией"
 
@@ -674,3 +700,8 @@ msgstr "Спасибо за использование CDR-Stats."
 msgid "Log in again"
 msgstr "Войти снова"
 
+#~ msgid "Months to Compare"
+#~ msgstr "Месяцы для сравнения"
+
+#~ msgid "Days to Compare"
+#~ msgstr "Дни для сравнения"

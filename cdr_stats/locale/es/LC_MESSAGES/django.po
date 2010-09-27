@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-11 06:30-0500\n"
+"POT-Creation-Date: 2010-09-27 13:11-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Areski Belaid <areski@gmail.com>\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -16,20 +16,28 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: settings.py:126
+#: settings.py:128
 msgid "English"
 msgstr "Inglés"
 
-#: settings.py:127
+#: settings.py:129
 msgid "French"
 msgstr "Francés"
 
-#: settings.py:128
+#: settings.py:130
 msgid "Spanish"
 msgstr "Español"
 
-#: settings.py:129
+#: settings.py:131
 msgid "Brazilian"
+msgstr ""
+
+#: settings.py:132
+msgid "German"
+msgstr ""
+
+#: settings.py:133
+msgid "Russian"
 msgstr ""
 
 #: cdr/forms.py:16 cdr/grid.py:17
@@ -56,101 +64,91 @@ msgstr "Termina con"
 msgid "Source"
 msgstr "Fuente"
 
-#: cdr/forms.py:29
+#: cdr/forms.py:41
 msgid "From"
 msgstr "De"
 
-#: cdr/forms.py:29 cdr/forms.py:30 cdr/forms.py:62 cdr/forms.py:78
+#: cdr/forms.py:41 cdr/forms.py:42 cdr/forms.py:86 cdr/forms.py:111
 msgid "Please use the following format"
 msgstr ""
 
-#: cdr/forms.py:30
+#: cdr/forms.py:42
 #, fuzzy
 msgid "To"
 msgstr "Para:"
 
-#: cdr/forms.py:32
+#: cdr/forms.py:44
 msgid "Result:"
 msgstr "Resultados:"
 
-#: cdr/forms.py:33 templates/cdr/show_graph_by_hour.html:111
+#: cdr/forms.py:45 templates/cdr/show_graph_by_hour.html:111
 msgid "Minutes"
 msgstr "Minutos"
 
-#: cdr/forms.py:33
+#: cdr/forms.py:45
 msgid "Seconds"
 msgstr "Segundos"
 
-#: cdr/forms.py:38 cdr/forms.py:51 cdr/forms.py:67 cdr/forms.py:86
-#: cdr/forms.py:103
+#: cdr/forms.py:50 cdr/forms.py:74 cdr/forms.py:99 cdr/forms.py:131
+#: cdr/forms.py:149
 msgid "Search"
 msgstr "Búsqueda"
 
-#: cdr/forms.py:45 cdr/forms.py:62 cdr/forms.py:78
+#: cdr/forms.py:57 cdr/forms.py:86 cdr/forms.py:111
 #, fuzzy
 msgid "Select date"
 msgstr "Seleccione el día de"
 
-#: cdr/forms.py:46
-#, fuzzy
-msgid "Months to Compare"
-msgstr "Número de meses para comparar"
-
-#: cdr/forms.py:79
-#, fuzzy
-msgid "Days to Compare"
-msgstr "Número de días para comparar"
-
-#: cdr/forms.py:80
+#: cdr/forms.py:113
 msgid "Graph"
 msgstr "Gráfico"
 
-#: cdr/forms.py:81
+#: cdr/forms.py:114
 #, fuzzy
 msgid "Calls per Hour"
 msgstr "Llamada por hora"
 
-#: cdr/forms.py:81
+#: cdr/forms.py:114
 #, fuzzy
 msgid "Minutes per Hour"
 msgstr "Minutos por hora"
 
-#: cdr/forms.py:96
+#: cdr/forms.py:142
 #, fuzzy
 msgid "Result"
 msgstr "Resultados:"
 
-#: cdr/forms.py:97
+#: cdr/forms.py:143
 #, fuzzy
 msgid "Today"
 msgstr "día"
 
-#: cdr/forms.py:97
+#: cdr/forms.py:143
 msgid "Yesterday"
 msgstr ""
 
-#: cdr/forms.py:97
+#: cdr/forms.py:143
 msgid "Current Week"
 msgstr ""
 
-#: cdr/forms.py:97
+#: cdr/forms.py:143
 msgid "Previous Week"
 msgstr ""
 
-#: cdr/forms.py:97
+#: cdr/forms.py:143
 #, fuzzy
 msgid "Current Month"
 msgstr "Seleccione mes"
 
-#: cdr/forms.py:97
+#: cdr/forms.py:143
 msgid "Previous Month"
 msgstr ""
 
-#: cdr/forms.py:110 templates/cdr/login_option.html:13
+#: cdr/forms.py:156 templates/cdr/login_option.html:13
 msgid "Login"
 msgstr "Login"
 
-#: cdr/forms.py:111
+#: cdr/forms.py:157
 #, fuzzy
 msgid "Password"
 msgstr "contraseña"
@@ -310,7 +308,7 @@ msgstr ""
 msgid "Unknown content"
 msgstr ""
 
-#: templates/cdr/index.html:20 templates/cdr/master.html:186
+#: templates/cdr/index.html:20 templates/cdr/master.html:185
 msgid "Info"
 msgstr "Info"
 
@@ -460,54 +458,54 @@ msgstr ""
 msgid "Logout"
 msgstr ""
 
-#: templates/cdr/master.html:133 templates/cdr/master.html.py:136
+#: templates/cdr/master.html:134
 msgid "Admin"
 msgstr ""
 
-#: templates/cdr/master.html:152
+#: templates/cdr/master.html:151
 msgid "Welcome"
 msgstr ""
 
-#: templates/cdr/master.html:168
+#: templates/cdr/master.html:167
 msgid "Alert"
 msgstr "Alerta"
 
-#: templates/cdr/master.html:168
+#: templates/cdr/master.html:167
 msgid "Please login by clicking on login button"
 msgstr "Por favor, identifíquese haciendo clic en el botón Login"
 
-#: templates/cdr/master.html:179
+#: templates/cdr/master.html:178
 msgid "Dashboard"
 msgstr ""
 
-#: templates/cdr/master.html:180
+#: templates/cdr/master.html:179
 #, fuzzy
 msgid "Search CDR"
 msgstr "Buscar CDRs"
 
-#: templates/cdr/master.html:181
+#: templates/cdr/master.html:180
 #, fuzzy
 msgid "Analyse CDR"
 msgstr "Analizar CDRs"
 
-#: templates/cdr/master.html:182
+#: templates/cdr/master.html:181
 msgid "Daily Traffic"
 msgstr "Tráfico diario"
 
-#: templates/cdr/master.html:183
+#: templates/cdr/master.html:182
 msgid "Monthly Traffic"
 msgstr "Tráfico Mensual"
 
-#: templates/cdr/master.html:184
+#: templates/cdr/master.html:183
 #: templates/cdr/show_graph_concurrent_calls.html:53
 msgid "Concurrent Calls"
 msgstr ""
 
-#: templates/cdr/master.html:185 templates/cdr/show_global_report.html:76
+#: templates/cdr/master.html:184 templates/cdr/show_global_report.html:76
 msgid "Global Report"
 msgstr ""
 
-#: templates/cdr/master.html:202
+#: templates/cdr/master.html:201
 msgid "CDR-Stats is software licensed under the "
 msgstr "CDR-Stats es un software licenciado bajo"
 
@@ -717,6 +715,14 @@ msgstr ""
 #: templates/registration/logged_out.html:10
 msgid "Log in again"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Months to Compare"
+#~ msgstr "Número de meses para comparar"
+
+#, fuzzy
+#~ msgid "Days to Compare"
+#~ msgstr "Número de días para comparar"
 
 #~ msgid "From :"
 #~ msgstr "De:"
