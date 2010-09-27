@@ -148,9 +148,9 @@ class JqGrid(object):
                 q_filters.append(models.Q(**filter_kwargs))
 
         if _filters['groupOp'].upper() == 'OR':
-            filters = reduce(operator.ior, q_filters)
+            filters = reduce(__ior__, q_filters)
         else:
-            filters = reduce(operator.iand, q_filters)
+            filters = reduce(__iand__, q_filters)
         return items.filter(filters)
 
     def sort_items(self, request, items):
