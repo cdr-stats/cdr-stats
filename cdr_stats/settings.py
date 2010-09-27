@@ -130,7 +130,7 @@ LANGUAGES = (
     ('es', gettext('Spanish')),  
     ('br', gettext('Brazilian')),
     ('de', gettext('German')),
-    ('ru', gettext('Russian')),
+#    ('ru', gettext('Russian')),
 )
 
 
