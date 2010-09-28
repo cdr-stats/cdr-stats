@@ -148,9 +148,9 @@ class JqGrid(object):
                 q_filters.append(models.Q(**filter_kwargs))
         print "Before operator"
         if _filters['groupOp'].upper() == 'OR':
-            filters = reduce(__ior__, q_filters)
+            filters = reduce(operator.__ior__, q_filters)
         else:
-            filters = reduce(__iand__, q_filters)
+            filters = reduce(operator.__iand__, q_filters)
         print "------------"
         print filters
         return items.filter(filters)
