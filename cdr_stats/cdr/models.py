@@ -102,26 +102,26 @@ class CDR(models.Model):
 		#		'generator':'generate_EmailField', #can point to a callable, which must return the desired value. If this is a string, it looks for a method in the dilla.py file.
 		#	},
 		    'acctid':{
-		        'integer_range':(1, 2147483647)
+		        'integer_range':(1, 20)
 		    },
 		    'disposition':{
 		        'integer_range':(1, 9)
 		    },
 			'src':{
-				'generator':None, #can point to a callable, which must return the desired value. If this is a string, it looks for a method in the dilla.py file.
-				'generator_wants_extras':False, #whether or not to pass this "field extra" hash item to the callable
-				'spaces':False, #if Char/TextField, whether or not to allow spaces
-				'word_count':1, #if Char/TextField, the number of words to generate
+				'generator':'phonenumber'
 			},
 			'dst':{
-				'generator':None, #can point to a callable, which must return the desired value. If this is a string, it looks for a method in the dilla.py file.
-				'generator_wants_extras':False, #whether or not to pass this "field extra" hash item to the callable
-				'spaces':False, #if Char/TextField, whether or not to allow spaces
-				'word_count':1, #if Char/TextField, the number of words to generate
+				'generator':'phonenumber'
+			},
+			'clid':{
+				'generator':'phonenumber'
+			},
+			'channel':{
+				'generator':'sip_URI'
 			},
 			'calldate':{
-				'day_delta': 1, #The day delta to generate the date, minus today
-				'hour_delta': 24, #The day delta to generate the date, minus the current hour
+				'day_delta': 10, #The day delta to generate the date, minus today
+				'hour_delta': 12, #The day delta to generate the date, minus the current hour
 			},
 		}
 
