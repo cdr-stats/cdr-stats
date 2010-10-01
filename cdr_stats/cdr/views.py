@@ -64,14 +64,14 @@ def grid_config(request):
 def show_cdr(request): 
 
     kwargs = {}
-    if request.method == 'GET':
-        if "from_date" in request.GET:
+    if request.method == 'POST':
+        if "from_date" in request.POST:
             # From
-            from_date = request.GET['from_date']
+            from_date = request.POST['from_date']
             start_date = datetime(int(from_date[0:4]), int(from_date[5:7]), int(from_date[8:10]), 0, 0, 0, 0)
 
             # To
-            to_date = request.GET['to_date']
+            to_date = request.POST['to_date']
             end_date = datetime(int(to_date[0:4]), int(to_date[5:7]), int(to_date[8:10]), 23, 59, 59, 999999)
     
     try:

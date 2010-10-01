@@ -89,7 +89,8 @@
 ----------------------
 
     install :
-    sudo easy_install django-uni-form
+    sudo easy_install django-uni-form >= 0.8.0
+    http://github.com/areski/django-uni-form/tarball/0.8.0
 
 
 * South
