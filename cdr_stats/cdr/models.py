@@ -26,6 +26,12 @@ class Company(models.Model):
     
     def __unicode__(self):
         return '[%s] %s' %(self.id, self.name)
+        
+    class Meta:
+        db_table = getattr(settings, 'CDR_TABLE_NAME', 'cdr' )
+        # Only in trunk 1.1 managed = False     # The database is normally already created
+        verbose_name = _("Company")
+        verbose_name_plural = _("Companies")
 
     class Dilla:
         skip_model = True        
@@ -79,10 +85,11 @@ class CDR(models.Model):
     userfield = models.CharField(max_length=80)
     #test = models.CharField(max_length=80)
     
-        
     class Meta:
         db_table = getattr(settings, 'CDR_TABLE_NAME', 'cdr' )
         # Only in trunk 1.1 managed = False     # The database is normally already created
+        verbose_name = _("CDR")
+        verbose_name_plural = _("CDR's")
 
     def __unicode__(self):
         return "%s -> %s" % (self.src,self.dst)
