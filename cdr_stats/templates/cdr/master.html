@@ -122,7 +122,7 @@
 	        {% csrf_token %}
             <select name="language" id="language-container">
             {% for lang in LANGUAGES %}
-            <option value="{{ lang.0 }}" {% ifequal lang.0 LANGUAGE_CODE %}selected{% endifequal %}>{{ lang.1 }}</option>
+            <option value="{{ lang.0 }}" {% ifequal lang.0 LANGUAGE_CODE %}selected{% endifequal %}>{{ lang.1 }} {{ lang.0 }}</option>
             {% endfor %}
             </select>
         </form>
