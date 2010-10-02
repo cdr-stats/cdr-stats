@@ -19,7 +19,7 @@ DISPOSITION = (
 
 
 class Company(models.Model):
-    name = models.CharField(max_length=50, blank=True, null=True)
+    name = models.CharField(max_length=50, blank=False, null=True)
     address = models.TextField(max_length=400, blank=True, null=True)
     phone = models.CharField(max_length=30, blank=True, null=True)
     fax = models.CharField(max_length=30, blank=True, null=True)
@@ -28,11 +28,11 @@ class Company(models.Model):
         return '[%s] %s' %(self.id, self.name)
         
     class Meta:
-        db_table = getattr(settings, 'CDR_TABLE_NAME', 'cdr' )
-        # Only in trunk 1.1 managed = False     # The database is normally already created
         verbose_name = _("Company")
         verbose_name_plural = _("Companies")
-
+        app_label = "Company"
+        db_table = "cdr_company"
+        
     class Dilla:
         skip_model = True        
 
@@ -43,6 +43,10 @@ class UserProfile(models.Model):
     
     class Dilla:
         skip_model = True
+        
+    class Meta:
+        db_table = "cdr_userprofile"
+
 
 class Customer(User):    
     class Meta:
@@ -90,6 +94,7 @@ class CDR(models.Model):
         # Only in trunk 1.1 managed = False     # The database is normally already created
         verbose_name = _("CDR")
         verbose_name_plural = _("CDR's")
+        #app_label = "Call Detail Records"
 
     def __unicode__(self):
         return "%s -> %s" % (self.src,self.dst)
