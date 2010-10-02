@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-27 13:11-0500\n"
+"POT-Creation-Date: 2010-10-02 07:16-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Areski Belaid <areski@gmail.com>\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -30,14 +30,6 @@ msgstr ""
 
 #: settings.py:131
 msgid "Brazilian"
-msgstr ""
-
-#: settings.py:132
-msgid "German"
-msgstr ""
-
-#: settings.py:133
-msgid "Russian"
 msgstr ""
 
 #: cdr/forms.py:16 cdr/grid.py:17
@@ -228,25 +220,41 @@ msgstr "TORTURE"
 msgid "INVALIDARGS"
 msgstr "INVALIDARGS"
 
-#: cdr/views.py:656 templates/cdr/show_graph_by_day.html:71
+#: cdr/models.py:33
+msgid "Company"
+msgstr ""
+
+#: cdr/models.py:34
+msgid "Companies"
+msgstr ""
+
+#: cdr/models.py:91
+msgid "CDR"
+msgstr ""
+
+#: cdr/models.py:92
+msgid "CDR's"
+msgstr ""
+
+#: cdr/views.py:657 templates/cdr/show_graph_by_day.html:71
 #: templates/cdr/show_graph_by_hour.html:106
 msgid "Hour"
 msgstr "Heure"
 
-#: cdr/views.py:658
+#: cdr/views.py:659
 msgid "Day"
 msgstr "Jour"
 
-#: cdr/views.py:667
+#: cdr/views.py:668
 #, python-format
 msgid "%(month)s/%(day)s/%(year)s"
 msgstr ""
 
-#: cdr/views.py:806
+#: cdr/views.py:809
 msgid "Disabled Account"
 msgstr "Compte désactivé"
 
-#: cdr/views.py:809
+#: cdr/views.py:812
 msgid "Invalid Login."
 msgstr "Nom d utilisateur incorrect."
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-27 13:11-0500\n"
+"POT-Creation-Date: 2010-10-02 07:16-0500\n"
 "PO-Revision-Date: 2010-06-24 10:48:56\n"
 "Last-Translator: vinicius@tofalando.com\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -30,14 +30,6 @@ msgstr "Espanhol"
 
 #: settings.py:131
 msgid "Brazilian"
-msgstr ""
-
-#: settings.py:132
-msgid "German"
-msgstr ""
-
-#: settings.py:133
-msgid "Russian"
 msgstr ""
 
 #: cdr/forms.py:16 cdr/grid.py:17
@@ -73,9 +65,8 @@ msgid "Please use the following format"
 msgstr ""
 
 #: cdr/forms.py:42
-#, fuzzy
 msgid "To"
-msgstr "Para:"
+msgstr "Para"
 
 #: cdr/forms.py:44
 msgid "Result:"
@@ -95,7 +86,6 @@ msgid "Search"
 msgstr "Pesquisar"
 
 #: cdr/forms.py:57 cdr/forms.py:86 cdr/forms.py:111
-#, fuzzy
 msgid "Select date"
 msgstr "Selecione o dia"
 
@@ -104,24 +94,20 @@ msgid "Graph"
 msgstr "Gráfico"
 
 #: cdr/forms.py:114
-#, fuzzy
 msgid "Calls per Hour"
 msgstr "Chamadas por hora"
 
 #: cdr/forms.py:114
-#, fuzzy
 msgid "Minutes per Hour"
 msgstr "Minutos por hora"
 
 #: cdr/forms.py:142
-#, fuzzy
 msgid "Result"
-msgstr "Resultados:"
+msgstr "Resultados"
 
 #: cdr/forms.py:143
-#, fuzzy
 msgid "Today"
-msgstr "dia"
+msgstr ""
 
 #: cdr/forms.py:143
 msgid "Yesterday"
@@ -136,7 +122,6 @@ msgid "Previous Week"
 msgstr ""
 
 #: cdr/forms.py:143
-#, fuzzy
 msgid "Current Month"
 msgstr "Selecione o mes"
 
@@ -149,7 +134,6 @@ msgid "Login"
 msgstr "Login"
 
 #: cdr/forms.py:157
-#, fuzzy
 msgid "Password"
 msgstr "senha"
 
@@ -236,27 +220,42 @@ msgstr "TORTURE"
 msgid "INVALIDARGS"
 msgstr "ARGUMENTOS INVÁLIDOS"
 
-#: cdr/views.py:656 templates/cdr/show_graph_by_day.html:71
-#: templates/cdr/show_graph_by_hour.html:106
+#: cdr/models.py:33
+msgid "Company"
+msgstr ""
+
+#: cdr/models.py:34
 #, fuzzy
+msgid "Companies"
+msgstr "Espanhol"
+
+#: cdr/models.py:91
+msgid "CDR"
+msgstr ""
+
+#: cdr/models.py:92
+msgid "CDR's"
+msgstr ""
+
+#: cdr/views.py:657 templates/cdr/show_graph_by_day.html:71
+#: templates/cdr/show_graph_by_hour.html:106
 msgid "Hour"
 msgstr "Origem"
 
-#: cdr/views.py:658
-#, fuzzy
+#: cdr/views.py:659
 msgid "Day"
 msgstr "dia"
 
-#: cdr/views.py:667
+#: cdr/views.py:668
 #, python-format
 msgid "%(month)s/%(day)s/%(year)s"
 msgstr ""
 
-#: cdr/views.py:806
+#: cdr/views.py:809
 msgid "Disabled Account"
 msgstr "Conta desativada"
 
-#: cdr/views.py:809
+#: cdr/views.py:812
 msgid "Invalid Login."
 msgstr "Usuário inválido."
 
@@ -284,7 +283,6 @@ msgid "Add"
 msgstr ""
 
 #: templates/admin/index.html:35
-#, fuzzy
 msgid "Change"
 msgstr "Canal"
 
@@ -342,7 +340,6 @@ msgid "Daily Traffic : Graph and filter traffic loads by hour during the day."
 msgstr ""
 
 #: templates/cdr/index.html:34
-#, fuzzy
 msgid "CDR-Stats is Free Software released under the AGPL. "
 msgstr "CDR-Stats é um software licenciado sobre"
 
@@ -463,12 +460,10 @@ msgid "Dashboard"
 msgstr ""
 
 #: templates/cdr/master.html:179
-#, fuzzy
 msgid "Search CDR"
 msgstr "Pesquisar CDRs"
 
 #: templates/cdr/master.html:180
-#, fuzzy
 msgid "Analyse CDR"
 msgstr "Analizar CDRs"
 
@@ -509,12 +504,10 @@ msgid "Call Statistics"
 msgstr ""
 
 #: templates/cdr/show_dashboard.html:113 templates/cdr/show_dashboard.html:114
-#, fuzzy
 msgid "Total Calls"
-msgstr "Chamadas"
+msgstr "Total Chamadas"
 
 #: templates/cdr/show_dashboard.html:115
-#, fuzzy
 msgid "Average Calls Per Hour"
 msgstr "Chamadas por hora"
 
@@ -527,31 +520,26 @@ msgid "Minutes Average Call Duration"
 msgstr ""
 
 #: templates/cdr/show_global_report.html:46
-#, fuzzy
 msgid "Calls :"
-msgstr "Chamadas"
+msgstr "Chamadas :"
 
 #: templates/cdr/show_global_report.html:46
-#, fuzzy
 msgid "Duration :"
 msgstr "Duração"
 
 #: templates/cdr/show_global_report.html:46
-#, fuzzy
 msgid "ACT :"
-msgstr "ACT"
+msgstr "ACT :"
 
 #: templates/cdr/show_global_report.html:78
 msgid "week"
 msgstr ""
 
 #: templates/cdr/show_global_report.html:82
-#, fuzzy
 msgid "year"
-msgstr "Pesquisar"
+msgstr ""
 
 #: templates/cdr/show_graph_by_day.html:81
-#, fuzzy
 msgid "Load by Hour"
 msgstr "Carga por hora"
 
@@ -573,9 +561,8 @@ msgstr ""
 
 #: templates/cdr/show_graph_by_month.html:50
 #: templates/cdr/show_graph_by_month.html:63
-#, fuzzy
 msgid "May"
-msgstr "dia"
+msgstr ""
 
 #: templates/cdr/show_graph_by_month.html:51
 msgid "Jun"
@@ -614,9 +601,8 @@ msgid "February"
 msgstr ""
 
 #: templates/cdr/show_graph_by_month.html:61
-#, fuzzy
 msgid "March"
-msgstr "Pesquisar"
+msgstr ""
 
 #: templates/cdr/show_graph_by_month.html:62
 msgid "April"
@@ -660,7 +646,6 @@ msgid "Concurrent Calls by"
 msgstr ""
 
 #: templates/cdr/show_jqgrid.html:65
-#, fuzzy
 msgid "Call Detail Report by Day"
 msgstr "Detalhes de Chamadas por dia"
 
@@ -699,27 +684,3 @@ msgstr ""
 #: templates/registration/logged_out.html:10
 msgid "Log in again"
 msgstr ""
-
-#, fuzzy
-#~ msgid "Months to Compare"
-#~ msgstr "Número de meses para comparar"
-
-#, fuzzy
-#~ msgid "Days to Compare"
-#~ msgstr "Número de días para comparar"
-
-#~ msgid "From :"
-#~ msgstr "De:"
-
-#~ msgid "Search Options :"
-#~ msgstr "Opções de pesquisa:"
-
-#, fuzzy
-#~ msgid "Calls by Hour"
-#~ msgstr "Chamadas por hora"
-
-#~ msgid "No Record(s) found."
-#~ msgstr "Nenhum Registro encontrado."
-
-#~ msgid "Number of calls by Hours"
-#~ msgstr "Número de chamadas por horas"
