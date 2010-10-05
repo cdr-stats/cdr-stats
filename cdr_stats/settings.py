@@ -6,7 +6,7 @@ APPLICATION_DIR = os.path.dirname( globals()[ '__file__' ] )
 
 
 DEBUG = False
-TEMPLATE_DEBUG = INFO
+TEMPLATE_DEBUG = False
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
