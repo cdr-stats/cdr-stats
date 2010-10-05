@@ -8,22 +8,12 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Adding model 'Company'
-        db.create_table('cdr_company', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=50, null=True, blank=True)),
-            ('address', self.gf('django.db.models.fields.TextField')(max_length=400, null=True, blank=True)),
-            ('phone', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
-            ('fax', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
-        ))
-        db.send_create_signal('cdr', ['Company'])
-
         # Adding model 'UserProfile'
         db.create_table('cdr_userprofile', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('user', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['auth.User'], unique=True)),
             ('accountcode', self.gf('django.db.models.fields.PositiveIntegerField')(null=True, blank=True)),
-            ('company', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['cdr.Company'], unique=True, null=True, blank=True)),
+            ('company', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['Company.Company'], unique=True, null=True, blank=True)),
         ))
         db.send_create_signal('cdr', ['UserProfile'])
 
@@ -52,9 +42,6 @@ class Migration(SchemaMigration):
 
     def backwards(self, orm):
         
-        # Deleting model 'Company'
-        db.delete_table('cdr_company')
-
         # Deleting model 'UserProfile'
         db.delete_table('cdr_userprofile')
 
@@ -63,6 +50,14 @@ class Migration(SchemaMigration):
 
 
     models = {
+        'Company.company': {
+            'Meta': {'object_name': 'Company', 'db_table': "'cdr_company'"},
+            'address': ('django.db.models.fields.TextField', [], {'max_length': '400', 'null': 'True', 'blank': 'True'}),
+            'fax': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True'}),
+            'phone': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'})
+        },
         'auth.group': {
             'Meta': {'object_name': 'Group'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -112,18 +107,10 @@ class Migration(SchemaMigration):
             'uniqueid': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
             'userfield': ('django.db.models.fields.CharField', [], {'max_length': '80'})
         },
-        'cdr.company': {
-            'Meta': {'object_name': 'Company'},
-            'address': ('django.db.models.fields.TextField', [], {'max_length': '400', 'null': 'True', 'blank': 'True'}),
-            'fax': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
-            'phone': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'})
-        },
         'cdr.userprofile': {
             'Meta': {'object_name': 'UserProfile'},
             'accountcode': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'company': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['cdr.Company']", 'unique': 'True', 'null': 'True', 'blank': 'True'}),
+            'company': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['Company.Company']", 'unique': 'True', 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.User']", 'unique': 'True'})
         },

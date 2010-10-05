@@ -114,7 +114,10 @@ class CDR(models.Model):
 		#		'generator':'generate_EmailField', #can point to a callable, which must return the desired value. If this is a string, it looks for a method in the dilla.py file.
 		#	},
 		    'acctid':{
-		        'integer_range':(1, 20)
+		        'integer_range':(1, 99999999)
+		    },
+		    'accountcode':{
+		        'integer_range':(10000, 99999)
 		    },
 		    'disposition':{
 		        'integer_range':(1, 9)
@@ -133,7 +136,7 @@ class CDR(models.Model):
 			},
 			'calldate':{
 				'day_delta': 10, #The day delta to generate the date, minus today
-				'hour_delta': 12, #The day delta to generate the date, minus the current hour
+				'hour_delta': 24, #The day delta to generate the date, minus the current hour
 			},
 		}
 
