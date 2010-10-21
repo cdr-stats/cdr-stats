@@ -96,7 +96,6 @@ def show_cdr(request):
     select_data = {"calldate": "SUBSTR(CAST(calldate as CHAR(30)),1,10)"}
     
     if not request.user.is_superuser:
-        print "SHITTTTTTTTTTTTTTTTTTTTTTTTTTTTT !!!"
         kwargs[ 'accountcode' ] = request.user.get_profile().accountcode
     
     queryset = CDR.objects.values('calldate', 'channel', 'src', 'clid', 'dst', 'disposition', 'duration', 'accountcode').filter(**kwargs).order_by('-calldate')
