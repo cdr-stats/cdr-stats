@@ -70,24 +70,24 @@ class Staff(User):
 
 
 class CDR(models.Model):
-    acctid = models.PositiveIntegerField(primary_key=True, db_column = 'acctid')
-    src = models.CharField(max_length=80)
-    dst = models.CharField(max_length=80)
-    calldate = models.DateTimeField()
-    clid = models.CharField(max_length=80)
-    dcontext = models.CharField(max_length=80)
-    channel = models.CharField(max_length=80)
-    dstchannel = models.CharField(max_length=80)
-    lastapp = models.CharField(max_length=80)
-    lastdata = models.CharField(max_length=80)
-    duration = models.PositiveIntegerField()
-    billsec = models.PositiveIntegerField()
-    disposition = models.PositiveIntegerField(choices=DISPOSITION)
-    amaflags = models.PositiveIntegerField()
-    accountcode = models.PositiveIntegerField()
-    uniqueid = models.CharField(max_length=32)
-    userfield = models.CharField(max_length=80)
-    #test = models.CharField(max_length=80)
+    #acctid = models.PositiveIntegerField(primary_key=True, db_column = 'acctid')
+    src = models.CharField(max_length=80, blank=True)
+    dst = models.CharField(max_length=80, blank=True)
+    calldate = models.DateTimeField(auto_now_add=True)
+    clid = models.CharField(max_length=80, blank=True)
+    dcontext = models.CharField(max_length=80, blank=True)
+    channel = models.CharField(max_length=80, blank=True)
+    dstchannel = models.CharField(max_length=80, blank=True)
+    lastapp = models.CharField(max_length=80, blank=True)
+    lastdata = models.CharField(max_length=80, blank=True)
+    duration = models.PositiveIntegerField(default=0)
+    billsec = models.PositiveIntegerField(default=0)
+    disposition = models.PositiveIntegerField(choices=DISPOSITION, default=1)
+    amaflags = models.PositiveIntegerField(blank=True)
+    accountcode = models.PositiveIntegerField(default=0)
+    uniqueid = models.CharField(max_length=32, blank=True)
+    userfield = models.CharField(max_length=80, blank=True)
+    #test = models.CharField(max_length=80, blank=True)
     
     class Meta:
         db_table = getattr(settings, 'CDR_TABLE_NAME', 'cdr' )
@@ -98,14 +98,13 @@ class CDR(models.Model):
 
     def __unicode__(self):
         return "%s -> %s" % (self.src,self.dst)
-        
-
+    
     def get_list(self):
-        return [(self.acctid, self.src, self.dst, self.calldate, self.clid, self.dcontext, self.channel, self.dstchannel, self.lastapp, self.lastdata, self.duration, self.billsec, self.get_disposition_display(), self.amaflags, self.accountcode, self.uniqueid, self.userfield, self.test)]
+        return [(self.id, self.src, self.dst, self.calldate, self.clid, self.dcontext, self.channel, self.dstchannel, self.lastapp, self.lastdata, self.duration, self.billsec, self.get_disposition_display(), self.amaflags, self.accountcode, self.uniqueid, self.userfield, self.test)]
     
     @permalink
     def get_absolute_url(self):
-        return ('cdr_detail', [str(self.acctid)])
+        return ('cdr_detail', [str(self.id)])
         
     class Dilla:
         skip_model = False
@@ -113,9 +112,6 @@ class CDR(models.Model):
 		#	'email':{
 		#		'generator':'generate_EmailField', #can point to a callable, which must return the desired value. If this is a string, it looks for a method in the dilla.py file.
 		#	},
-		    'acctid':{
-		        'integer_range':(1, 99999999)
-		    },
 		    'accountcode':{
 		        'integer_range':(10000, 99999)
 		    },

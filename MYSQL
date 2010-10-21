@@ -8,7 +8,7 @@ The Following SQL instructions might help.
 
 
 CREATE TABLE cdr_new (
-    acctid integer NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id integer NOT NULL AUTO_INCREMENT PRIMARY KEY,
     src varchar(80) NOT NULL,
     dst varchar(80) NOT NULL,
     calldate datetime NOT NULL,

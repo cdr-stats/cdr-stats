@@ -8,40 +8,53 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
+        # Adding model 'Company'
+        db.create_table('cdr_company', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=50, null=True)),
+            ('address', self.gf('django.db.models.fields.TextField')(max_length=400, null=True, blank=True)),
+            ('phone', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
+            ('fax', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
+        ))
+        db.send_create_signal('cdr', ['Company'])
+
         # Adding model 'UserProfile'
         db.create_table('cdr_userprofile', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('user', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['auth.User'], unique=True)),
             ('accountcode', self.gf('django.db.models.fields.PositiveIntegerField')(null=True, blank=True)),
-            ('company', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['Company.Company'], unique=True, null=True, blank=True)),
+            ('company', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['cdr.Company'], unique=True, null=True, blank=True)),
         ))
         db.send_create_signal('cdr', ['UserProfile'])
 
         # Adding model 'CDR'
         db.create_table('cdr', (
-            ('acctid', self.gf('django.db.models.fields.PositiveIntegerField')(primary_key=True, db_column='acctid')),
-            ('src', self.gf('django.db.models.fields.CharField')(max_length=80)),
-            ('dst', self.gf('django.db.models.fields.CharField')(max_length=80)),
-            ('calldate', self.gf('django.db.models.fields.DateTimeField')()),
-            ('clid', self.gf('django.db.models.fields.CharField')(max_length=80)),
-            ('dcontext', self.gf('django.db.models.fields.CharField')(max_length=80)),
-            ('channel', self.gf('django.db.models.fields.CharField')(max_length=80)),
-            ('dstchannel', self.gf('django.db.models.fields.CharField')(max_length=80)),
-            ('lastapp', self.gf('django.db.models.fields.CharField')(max_length=80)),
-            ('lastdata', self.gf('django.db.models.fields.CharField')(max_length=80)),
-            ('duration', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('billsec', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('disposition', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('amaflags', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('accountcode', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('uniqueid', self.gf('django.db.models.fields.CharField')(max_length=32)),
-            ('userfield', self.gf('django.db.models.fields.CharField')(max_length=80)),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('src', self.gf('django.db.models.fields.CharField')(max_length=80, blank=True)),
+            ('dst', self.gf('django.db.models.fields.CharField')(max_length=80, blank=True)),
+            ('calldate', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('clid', self.gf('django.db.models.fields.CharField')(max_length=80, blank=True)),
+            ('dcontext', self.gf('django.db.models.fields.CharField')(max_length=80, blank=True)),
+            ('channel', self.gf('django.db.models.fields.CharField')(max_length=80, blank=True)),
+            ('dstchannel', self.gf('django.db.models.fields.CharField')(max_length=80, blank=True)),
+            ('lastapp', self.gf('django.db.models.fields.CharField')(max_length=80, blank=True)),
+            ('lastdata', self.gf('django.db.models.fields.CharField')(max_length=80, blank=True)),
+            ('duration', self.gf('django.db.models.fields.PositiveIntegerField')(default=0)),
+            ('billsec', self.gf('django.db.models.fields.PositiveIntegerField')(default=0)),
+            ('disposition', self.gf('django.db.models.fields.PositiveIntegerField')(default=1)),
+            ('amaflags', self.gf('django.db.models.fields.PositiveIntegerField')(blank=True)),
+            ('accountcode', self.gf('django.db.models.fields.PositiveIntegerField')(default=0)),
+            ('uniqueid', self.gf('django.db.models.fields.CharField')(max_length=32, blank=True)),
+            ('userfield', self.gf('django.db.models.fields.CharField')(max_length=80, blank=True)),
         ))
         db.send_create_signal('cdr', ['CDR'])
 
 
     def backwards(self, orm):
         
+        # Deleting model 'Company'
+        db.delete_table('cdr_company')
+
         # Deleting model 'UserProfile'
         db.delete_table('cdr_userprofile')
 
@@ -50,14 +63,6 @@ class Migration(SchemaMigration):
 
 
     models = {
-        'Company.company': {
-            'Meta': {'object_name': 'Company', 'db_table': "'cdr_company'"},
-            'address': ('django.db.models.fields.TextField', [], {'max_length': '400', 'null': 'True', 'blank': 'True'}),
-            'fax': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True'}),
-            'phone': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'})
-        },
         'auth.group': {
             'Meta': {'object_name': 'Group'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -89,28 +94,36 @@ class Migration(SchemaMigration):
         },
         'cdr.cdr': {
             'Meta': {'object_name': 'CDR', 'db_table': "'cdr'"},
-            'accountcode': ('django.db.models.fields.PositiveIntegerField', [], {}),
-            'acctid': ('django.db.models.fields.PositiveIntegerField', [], {'primary_key': 'True', 'db_column': "'acctid'"}),
-            'amaflags': ('django.db.models.fields.PositiveIntegerField', [], {}),
-            'billsec': ('django.db.models.fields.PositiveIntegerField', [], {}),
-            'calldate': ('django.db.models.fields.DateTimeField', [], {}),
-            'channel': ('django.db.models.fields.CharField', [], {'max_length': '80'}),
-            'clid': ('django.db.models.fields.CharField', [], {'max_length': '80'}),
-            'dcontext': ('django.db.models.fields.CharField', [], {'max_length': '80'}),
-            'disposition': ('django.db.models.fields.PositiveIntegerField', [], {}),
-            'dst': ('django.db.models.fields.CharField', [], {'max_length': '80'}),
-            'dstchannel': ('django.db.models.fields.CharField', [], {'max_length': '80'}),
-            'duration': ('django.db.models.fields.PositiveIntegerField', [], {}),
-            'lastapp': ('django.db.models.fields.CharField', [], {'max_length': '80'}),
-            'lastdata': ('django.db.models.fields.CharField', [], {'max_length': '80'}),
-            'src': ('django.db.models.fields.CharField', [], {'max_length': '80'}),
-            'uniqueid': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
-            'userfield': ('django.db.models.fields.CharField', [], {'max_length': '80'})
+            'accountcode': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
+            'amaflags': ('django.db.models.fields.PositiveIntegerField', [], {'blank': 'True'}),
+            'billsec': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
+            'calldate': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'channel': ('django.db.models.fields.CharField', [], {'max_length': '80', 'blank': 'True'}),
+            'clid': ('django.db.models.fields.CharField', [], {'max_length': '80', 'blank': 'True'}),
+            'dcontext': ('django.db.models.fields.CharField', [], {'max_length': '80', 'blank': 'True'}),
+            'disposition': ('django.db.models.fields.PositiveIntegerField', [], {'default': '1'}),
+            'dst': ('django.db.models.fields.CharField', [], {'max_length': '80', 'blank': 'True'}),
+            'dstchannel': ('django.db.models.fields.CharField', [], {'max_length': '80', 'blank': 'True'}),
+            'duration': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'lastapp': ('django.db.models.fields.CharField', [], {'max_length': '80', 'blank': 'True'}),
+            'lastdata': ('django.db.models.fields.CharField', [], {'max_length': '80', 'blank': 'True'}),
+            'src': ('django.db.models.fields.CharField', [], {'max_length': '80', 'blank': 'True'}),
+            'uniqueid': ('django.db.models.fields.CharField', [], {'max_length': '32', 'blank': 'True'}),
+            'userfield': ('django.db.models.fields.CharField', [], {'max_length': '80', 'blank': 'True'})
+        },
+        'cdr.company': {
+            'Meta': {'object_name': 'Company'},
+            'address': ('django.db.models.fields.TextField', [], {'max_length': '400', 'null': 'True', 'blank': 'True'}),
+            'fax': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True'}),
+            'phone': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'})
         },
         'cdr.userprofile': {
             'Meta': {'object_name': 'UserProfile'},
             'accountcode': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'company': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['Company.Company']", 'unique': 'True', 'null': 'True', 'blank': 'True'}),
+            'company': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['cdr.Company']", 'unique': 'True', 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.User']", 'unique': 'True'})
         },

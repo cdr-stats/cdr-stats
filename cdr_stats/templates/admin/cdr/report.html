@@ -7,14 +7,14 @@
   <h1>List of CDR:</h1>    
         <table >
             <tr>
-                <th scope="row">acctid</th>
+                <th scope="row">id</th>
                 <th scope="row">calldate</th>
                 <th scope="row">duration</th>
             </tr>
             <caption><a href="{{ app.app_url }}" class="section"></a></caption>
             {% for cdr in cdr_list %}
             <tr class="{% cycle 'row1' 'row2' %}">
-            <td>{{ cdr.acctid }}</td>
+            <td>{{ cdr.id }}</td>
             <td>{{ cdr.calldate }}</td>
             <td>{{ cdr.duration }}</td>
             </tr>

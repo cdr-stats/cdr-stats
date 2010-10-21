@@ -12,7 +12,6 @@ class UserProfileInline(admin.StackedInline):
 
 class StaffAdmin(UserAdmin):
     inlines = [UserProfileInline]
-    #list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'is_superuser', 'accountcode', 'last_login')
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'is_superuser', 'last_login')
 
     def queryset(self, request):
@@ -44,10 +43,10 @@ admin.site.register(Company, CompanyAdmin)
 
 # Setting
 class CDRAdmin(admin.ModelAdmin):
-    list_display = ('acctid', 'src', 'dst', 'calldate', 'clid', 'channel', 'duration', 'disposition', 'accountcode')
+    list_display = ('id', 'src', 'dst', 'calldate', 'clid', 'channel', 'duration', 'disposition', 'accountcode')
     list_filter = ['calldate', 'accountcode']
     search_fields = ('accountcode', 'dst', 'src')
-    ordering = ('-acctid',)
+    ordering = ('-id',)
 
 admin.site.register(CDR, CDRAdmin)
 
