@@ -16,6 +16,7 @@ DISPOSITION = (
     (8, _('TORTURE')),
     (9, _('INVALIDARGS')),
 )
+dic_disposition = {'ANSWER': '1', 'ANSWERED': '1', 'BUSY': '2', 'NOANSWER': '3', 'NO ANSWER': '3', 'CANCEL': '4', 'CONGESTION': '5', 'CHANUNAVAIL': '6', 'DONTCALL': '7', 'TORTURE': '8', 'INVALIDARGS': '9'}
 
 
 class Company(models.Model):
@@ -73,7 +74,7 @@ class CDR(models.Model):
     #acctid = models.PositiveIntegerField(primary_key=True, db_column = 'acctid')
     src = models.CharField(max_length=80, blank=True)
     dst = models.CharField(max_length=80, blank=True)
-    calldate = models.DateTimeField(auto_now_add=True)
+    calldate = models.DateTimeField()
     clid = models.CharField(max_length=80, blank=True)
     dcontext = models.CharField(max_length=80, blank=True)
     channel = models.CharField(max_length=80, blank=True)
