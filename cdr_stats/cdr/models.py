@@ -30,7 +30,7 @@ class Company(models.Model):
     class Meta:
         verbose_name = _("Company")
         verbose_name_plural = _("Companies")
-        app_label = "Company"
+        #app_label = "Company"
         db_table = "cdr_company"
         
     class Dilla:
@@ -51,14 +51,14 @@ class UserProfile(models.Model):
 class Customer(User):    
     class Meta:
         proxy = True
-        app_label = 'auth'
+        #app_label = 'auth'
         verbose_name = 'Customer'
         verbose_name_plural = 'Customers'
 
 class Staff(User):
     class Meta:
         proxy = True
-        app_label = 'auth'
+        #app_label = 'auth'
         verbose_name = 'Admin'
         verbose_name_plural = 'Admins'
         
