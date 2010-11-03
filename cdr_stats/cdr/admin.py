@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.db.models import Q
-from .models import Customer, Staff
+from cdr.models import Customer, Staff
 
 
 class UserProfileInline(admin.StackedInline):
