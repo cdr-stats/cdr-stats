@@ -60,8 +60,7 @@
 ----------------
     
     inside the cdr-stats directory :
-	svn checkout http://django-dilla.googlecode.com/svn/trunk/dilla dilla
-
+	    http://github.com/areski/django-dilla/tarball/master
 
 
 * django-extensions
