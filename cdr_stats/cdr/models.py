@@ -55,6 +55,8 @@ class Customer(User):
         #app_label = 'auth'
         verbose_name = 'Customer'
         verbose_name_plural = 'Customers'
+    class Dilla:
+        skip_model = True
 
 class Staff(User):
     class Meta:
@@ -62,6 +64,8 @@ class Staff(User):
         #app_label = 'auth'
         verbose_name = 'Admin'
         verbose_name_plural = 'Admins'
+    class Dilla:
+        skip_model = True
         
     def save(self, **kwargs):
         if not self.pk:
@@ -84,7 +88,7 @@ class CDR(models.Model):
     duration = models.PositiveIntegerField(default=0)
     billsec = models.PositiveIntegerField(default=0)
     disposition = models.PositiveIntegerField(choices=DISPOSITION, default=1)
-    amaflags = models.PositiveIntegerField(blank=True)
+    amaflags = models.PositiveIntegerField(null=True)
     accountcode = models.PositiveIntegerField(default=0)
     uniqueid = models.CharField(max_length=32, blank=True)
     userfield = models.CharField(max_length=80, blank=True)
