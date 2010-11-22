@@ -856,7 +856,7 @@ def pleaselog(request):
            context_instance = RequestContext(request))
 
 def current_view(request):
-    name = getmodule(stack()[1][0]).__name__
+    #name = getmodule(stack()[1][0]).__name__
     return stack()[1][3]
 
 
