@@ -21,8 +21,8 @@
 
 #Variables
 #comment out the appropriate line below to install the desired version
-CDRSTATSVERSION=master
-#CDRSTATSVERSION=v1.1.0
+#CDRSTATSVERSION=master
+CDRSTATSVERSION=v1.2.0
 DJANGOUNIFORMVERSION=0.8.0
 DJANGOVERSION=1.2.3
 MYSQLROOTPASSWOOD=passw0rd
