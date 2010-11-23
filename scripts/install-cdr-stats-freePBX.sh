@@ -58,15 +58,19 @@ IFCONFIG=`which ifconfig 2>/dev/null||echo /sbin/ifconfig`
 IPADDR=`$IFCONFIG eth0|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'`
 
 #Get Django
-echo "Install Django..."
-cd /usr/src
-wget http://www.djangoproject.com/download/$DJANGOVERSION/tarball/
-tar zxfv Django-*.tar.gz
-rm -rf Django-*.tar.gz
-mv Django Django_$DATETIME
-mv Django-* Django
-cd Django
-python setup.py install
+$DIRECTORY = "/usr/src/Django-$DJANGOVERSION"
+if [ -d "$DIRECTORY" ]; then
+    echo "Django Already Installed!"
+else
+    echo "Installing Django..."
+    cd /usr/src
+    wget -O Django-$DJANGOVERSION.tar.gz http://www.djangoproject.com/download/$DJANGOVERSION/tarball/
+    tar zxfv Django-*.tar.gz
+    rm -rf Django-*.tar.gz
+    mv Django Django-$DJANGOVERSION
+    cd Django-$DJANGOVERSION
+    python setup.py install
+fi
 
 
 #get CDR-Stats
