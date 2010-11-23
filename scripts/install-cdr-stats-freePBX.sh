@@ -15,6 +15,10 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# To download this script direct to your server type
+#wget --no-check-certificate https://github.com/Star2Billing/cdr-stats/raw/master/scripts/install-cdr-stats-freePBX.sh
+
+
 #Variables
 #comment out the appropriate line below to install the desired version
 CDRSTATSVERSION=master
