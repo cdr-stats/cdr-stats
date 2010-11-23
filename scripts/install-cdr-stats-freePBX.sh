@@ -29,7 +29,7 @@ KERNELARCH=$(uname -p)
 
 
 clear
-echo "DO NOT RUN THIS SCRIPT ON INSTALLATIONS Except for FreePBX"
+echo "DO NOT RUN THIS SCRIPT ON INSTALLATIONS Except for FreePBX on CentOS"
 echo ""
 echo "Please note that if this is run on a system with no eth0, e.g. Proxmox"
 echo "You will have to edit:-"
@@ -137,6 +137,10 @@ sed -i "/'PASSWORD'/s/''/'$MYSQLPASSWORD'/" /usr/share/django_app/cdr_stats/sett
 sed -i "/'HOST'/s/''/'localhost'/" /usr/share/django_app/cdr_stats/settings.py
 sed -i "/'PORT'/s/''/'3306'/" /usr/share/django_app/cdr_stats/settings.py
 sed -i "s/'dilla'/#'dilla'/" /usr/share/django_app/cdr_stats/settings.py
+
+#Setup template for admin screens
+cd /usr/share/django_app/cdr_stats/resources
+ln -s /usr/lib/python2.4/site-packages/django/contrib/admin/media/ admin
 
 
 sed -i "s/8000/9000/"  /usr/share/django_app/cdr_stats/settings.py
