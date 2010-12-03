@@ -65,9 +65,8 @@ msgid "Please use the following format"
 msgstr ""
 
 #: cdr/forms.py:42
-#, fuzzy
 msgid "To"
-msgstr "Para:"
+msgstr "Para"
 
 #: cdr/forms.py:44
 msgid "Result:"
@@ -87,33 +86,28 @@ msgid "Search"
 msgstr "Búsqueda"
 
 #: cdr/forms.py:57 cdr/forms.py:86 cdr/forms.py:111
-#, fuzzy
 msgid "Select date"
-msgstr "Seleccione el día de"
+msgstr "Seleccione la fecha"
 
 #: cdr/forms.py:113
 msgid "Graph"
 msgstr "Gráfico"
 
 #: cdr/forms.py:114
-#, fuzzy
 msgid "Calls per Hour"
 msgstr "Llamada por hora"
 
 #: cdr/forms.py:114
-#, fuzzy
 msgid "Minutes per Hour"
 msgstr "Minutos por hora"
 
 #: cdr/forms.py:142
-#, fuzzy
 msgid "Result"
-msgstr "Resultados:"
+msgstr "Resultados"
 
 #: cdr/forms.py:143
-#, fuzzy
 msgid "Today"
-msgstr "día"
+msgstr "Hoy"
 
 #: cdr/forms.py:143
 msgid "Yesterday"
@@ -128,9 +122,8 @@ msgid "Previous Week"
 msgstr ""
 
 #: cdr/forms.py:143
-#, fuzzy
 msgid "Current Month"
-msgstr "Seleccione mes"
+msgstr ""
 
 #: cdr/forms.py:143
 msgid "Previous Month"
@@ -141,14 +134,13 @@ msgid "Login"
 msgstr "Login"
 
 #: cdr/forms.py:157
-#, fuzzy
 msgid "Password"
-msgstr "contraseña"
+msgstr "Pontraseña"
 
 #: cdr/functions_def.py:43 templates/cdr/show_global_report.html:80
 #: templates/cdr/show_global_report.html:81
 msgid "months"
-msgstr "mes"
+msgstr "meses"
 
 #: cdr/functions_def.py:44 templates/cdr/show_global_report.html:79
 msgid "month"
@@ -233,9 +225,8 @@ msgid "Company"
 msgstr ""
 
 #: cdr/models.py:34
-#, fuzzy
 msgid "Companies"
-msgstr "Español"
+msgstr ""
 
 #: cdr/models.py:91
 msgid "CDR"
@@ -247,16 +238,10 @@ msgstr ""
 
 #: cdr/views.py:657 templates/cdr/show_graph_by_day.html:71
 #: templates/cdr/show_graph_by_hour.html:106
-#, fuzzy
 msgid "Hour"
-msgstr "Fuente"
+msgstr "Hora"
 
-<<<<<<< HEAD
 #: cdr/views.py:659
-=======
-#: cdr/views.py:658
-#, fuzzy
->>>>>>> 7de63db... Fix Spanish internationalization
 msgid "Day"
 msgstr "día"
 
@@ -297,9 +282,8 @@ msgid "Add"
 msgstr ""
 
 #: templates/admin/index.html:35
-#, fuzzy
 msgid "Change"
-msgstr "Channel"
+msgstr "Cambio"
 
 #: templates/admin/index.html:45
 msgid "You don't have permission to edit anything."
@@ -326,7 +310,6 @@ msgid "Info"
 msgstr "Info"
 
 #: templates/cdr/index.html:25
-#, fuzzy
 msgid ""
 "is an application that allows you to browse and analyse CDR (Call Detail "
 "Records)."
@@ -358,9 +341,8 @@ msgid "Daily Traffic : Graph and filter traffic loads by hour during the day."
 msgstr ""
 
 #: templates/cdr/index.html:34
-#, fuzzy
 msgid "CDR-Stats is Free Software released under the AGPL. "
-msgstr "CDR-Stats es un software licenciado bajo"
+msgstr "CDR-Stats es un software licenciado bajo licencia AGPL"
 
 #: templates/cdr/index.html:35
 msgid "Support, alternative licensing and consultancy is available from "
@@ -492,14 +474,12 @@ msgid "Dashboard"
 msgstr ""
 
 #: templates/cdr/master.html:179
-#, fuzzy
 msgid "Search CDR"
-msgstr "Buscar CDRs"
+msgstr "Buscar CDR"
 
 #: templates/cdr/master.html:180
-#, fuzzy
 msgid "Analyse CDR"
-msgstr "Analizar CDRs"
+msgstr "Analizar CDR"
 
 #: templates/cdr/master.html:181
 msgid "Daily Traffic"
@@ -538,12 +518,10 @@ msgid "Call Statistics"
 msgstr ""
 
 #: templates/cdr/show_dashboard.html:113 templates/cdr/show_dashboard.html:114
-#, fuzzy
 msgid "Total Calls"
-msgstr "Total"
+msgstr "Total Llamadas"
 
 #: templates/cdr/show_dashboard.html:115
-#, fuzzy
 msgid "Average Calls Per Hour"
 msgstr "Llamada por hora"
 
@@ -561,26 +539,22 @@ msgid "Calls :"
 msgstr "Fecha de Llamada"
 
 #: templates/cdr/show_global_report.html:46
-#, fuzzy
 msgid "Duration :"
-msgstr "Duración"
+msgstr "Duración :"
 
 #: templates/cdr/show_global_report.html:46
-#, fuzzy
 msgid "ACT :"
 msgstr "PTC"
 
 #: templates/cdr/show_global_report.html:78
 msgid "week"
-msgstr ""
+msgstr "semana"
 
 #: templates/cdr/show_global_report.html:82
-#, fuzzy
 msgid "year"
 msgstr "Búsqueda"
 
 #: templates/cdr/show_graph_by_day.html:81
-#, fuzzy
 msgid "Load by Hour"
 msgstr "Carga por hora"
 
@@ -602,9 +576,8 @@ msgstr ""
 
 #: templates/cdr/show_graph_by_month.html:50
 #: templates/cdr/show_graph_by_month.html:63
-#, fuzzy
 msgid "May"
-msgstr "día"
+msgstr "Mayo"
 
 #: templates/cdr/show_graph_by_month.html:51
 msgid "Jun"
@@ -643,7 +616,6 @@ msgid "February"
 msgstr ""
 
 #: templates/cdr/show_graph_by_month.html:61
-#, fuzzy
 msgid "March"
 msgstr "Búsqueda"
 
@@ -689,7 +661,6 @@ msgid "Concurrent Calls by"
 msgstr ""
 
 #: templates/cdr/show_jqgrid.html:65
-#, fuzzy
 msgid "Call Detail Report by Day"
 msgstr "Detalles de Llamadas por día"
 
@@ -728,57 +699,3 @@ msgstr ""
 #: templates/registration/logged_out.html:10
 msgid "Log in again"
 msgstr ""
-<<<<<<< HEAD
-=======
-
-#, fuzzy
-#~ msgid "Months to Compare"
-#~ msgstr "Número de meses para comparar"
-
-#, fuzzy
-#~ msgid "Days to Compare"
-#~ msgstr "Número de días para comparar"
-
-#~ msgid "From :"
-#~ msgstr "De:"
-
-#~ msgid "Search Options :"
-#~ msgstr "Opciones de búsqueda:"
-
-#, fuzzy
-#~ msgid "Calls by Hour"
-#~ msgstr "Llamada por hora"
-
-#~ msgid "No Record(s) found."
-#~ msgstr "No Registro(s) encontrado."
-
-#~ msgid "Number of calls by hours"
-#~ msgstr "Número de llamadas por hora"
-
-#~ msgid ""
-#~ "Monthly Report : summarize your monthly traffic and allow you to have a "
-#~ "monthly vision of your traffic load."
-#~ msgstr ""
-#~ "Informe Mensual: un resumen de su tráfico mensual y le permitirá tener "
-#~ "una visión mensual de su carga."
-
-#~ msgid ""
-#~ "Analyze CDR : This report allows you to compare your traffic with "
-#~ "previous day and study the volum variation on your server"
-#~ msgstr ""
-#~ "Analizar CDR: Este informe le permite comparar el tráfico de su día "
-#~ "anterior y de estudiar la variación de volume en su servidor"
-
-#~ msgid ""
-#~ "Daily Traffic : give you a day by day vision and let you see how many "
-#~ "calls are running each hours"
-#~ msgstr ""
-#~ "Tráfico diario: da una visión día a día y permite ver las llamadas que se "
-#~ "ejecuta cada hora"
-
-#~ msgid "Number of calls by Hours"
-#~ msgstr "Número de llamadas por horas"
-
-#~ msgid "Llamadas"
-#~ msgstr "Pide"
->>>>>>> 7de63db... Fix Spanish internationalization
