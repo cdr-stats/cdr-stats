@@ -15,10 +15,14 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# To download this script direct to your server type
+#wget --no-check-certificate https://github.com/Star2Billing/cdr-stats/raw/master/scripts/install-cdr-stats-freePBX.sh
+
+
 #Variables
 #comment out the appropriate line below to install the desired version
-CDRSTATSVERSION=master
-#CDRSTATSVERSION=v1.1.0
+#CDRSTATSVERSION=master
+CDRSTATSVERSION=v1.2.0
 DJANGOUNIFORMVERSION=0.8.0
 DJANGOVERSION=1.2.3
 MYSQLROOTPASSWOOD=passw0rd
@@ -29,7 +33,7 @@ KERNELARCH=$(uname -p)
 
 
 clear
-echo "DO NOT RUN THIS SCRIPT ON INSTALLATIONS Except for FreePBX"
+echo "DO NOT RUN THIS SCRIPT ON INSTALLATIONS Except for FreePBX on CentOS"
 echo ""
 echo "Please note that if this is run on a system with no eth0, e.g. Proxmox"
 echo "You will have to edit:-"
@@ -54,15 +58,19 @@ IFCONFIG=`which ifconfig 2>/dev/null||echo /sbin/ifconfig`
 IPADDR=`$IFCONFIG eth0|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'`
 
 #Get Django
-echo "Install Django..."
-cd /usr/src
-wget http://www.djangoproject.com/download/$DJANGOVERSION/tarball/
-tar zxfv Django-*.tar.gz
-rm -rf Django-*.tar.gz
-mv Django Django_$DATETIME
-mv Django-* Django
-cd Django
-python setup.py install
+$DIRECTORY = "/usr/src/Django-$DJANGOVERSION"
+if [ -d "$DIRECTORY" ]; then
+    echo "Django Already Installed!"
+else
+    echo "Installing Django..."
+    cd /usr/src
+    wget -O Django-$DJANGOVERSION.tar.gz http://www.djangoproject.com/download/$DJANGOVERSION/tarball/
+    tar zxfv Django-*.tar.gz
+    rm -rf Django-*.tar.gz
+    mv Django Django-$DJANGOVERSION
+    cd Django-$DJANGOVERSION
+    python setup.py install
+fi
 
 
 #get CDR-Stats
@@ -137,6 +145,10 @@ sed -i "/'PASSWORD'/s/''/'$MYSQLPASSWORD'/" /usr/share/django_app/cdr_stats/sett
 sed -i "/'HOST'/s/''/'localhost'/" /usr/share/django_app/cdr_stats/settings.py
 sed -i "/'PORT'/s/''/'3306'/" /usr/share/django_app/cdr_stats/settings.py
 sed -i "s/'dilla'/#'dilla'/" /usr/share/django_app/cdr_stats/settings.py
+
+#Setup template for admin screens
+cd /usr/share/django_app/cdr_stats/resources
+ln -s /usr/lib/python2.4/site-packages/django/contrib/admin/media/ admin
 
 
 sed -i "s/8000/9000/"  /usr/share/django_app/cdr_stats/settings.py
