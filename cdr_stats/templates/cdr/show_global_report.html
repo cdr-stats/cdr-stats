@@ -14,13 +14,13 @@
 
 var jsonData = [
 {% for td in total_data %}
-    {date:'{{ td.date }}', year:{{td.year}},day:{{td.day}}, month:{{td.month}},calls:{{td.calldate__count}}, duration:'{{td.duration__sum|conv_min}}', act:'{{td.duration__avg|conv_min}}'},
+    {date:'{{ td.date }}', year:{{td.year}},day:{{td.day}}, month:{{td.month}},calls:{{td.start__count}}, duration:'{{td.duration__sum|conv_min}}', act:'{{td.duration__avg|conv_min}}'},
 {% endfor %}
 ];
 
 var callData = [
 {% for td in total_data %}
-    [{{td.count}} , {{td.calldate__count}}],
+    [{{td.count}} , {{td.start__count}}],
 {% endfor %}
 ];
 var durationData = [
@@ -30,7 +30,7 @@ var durationData = [
 ];
 var summaryData = [
 {% for td in total_data %}
-    [{{td.count}} , {{td.calldate__count}}],
+    [{{td.count}} , {{td.start__count}}],
 {% endfor %}
 ];
 </script>

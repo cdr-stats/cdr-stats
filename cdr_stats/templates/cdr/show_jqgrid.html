@@ -75,13 +75,13 @@ $(function() {
     <tbody>    
         {% for td in total_data %}
         <tr>
-            <th scope="row">{{td.calldate}}</th>
+            <th scope="row">{{td.start}}</th>
             <td>{{td.duration__sum|conv_min}}</td>
             <td>{% if max_duration > 0 %}
                 <img src="{{MEDIA_URL}}/images/spacer.png" width="{{td.duration__sum|cal_width:max_duration}}" style="vertical-align:center;" height="10"/>
                 {% endif %}
             </td>
-            <td>{{td.calldate__count}}</td>
+            <td>{{td.start__count}}</td>
             <td>{{td.duration__avg|conv_min}}</td>
         </tr>
         {% endfor %}

@@ -85,21 +85,21 @@ def show_cdr(request):
         start_date = datetime(int(from_date[0:4]), int(from_date[5:7]), int(from_date[8:10]), 0, 0, 0, 0)
         end_date = datetime(int(to_date[0:4]), int(to_date[5:7]), int(to_date[8:10]), 23, 59, 59, 999999)
         
-    kwargs[ 'calldate__range' ] = (start_date, end_date)
+    kwargs[ 'start__range' ] = (start_date, end_date)
     
     result = variable_value(request,'result')
     if result == '':
         result = '1'
     request.session['cdr_queryset'] = ''
 
-    #select_data = {"calldate": "strftime('%%Y-%%m-%%d', calldate)"}
-    select_data = {"calldate": "SUBSTR(CAST(calldate as CHAR(30)),1,10)"}
+    #select_data = {"start": "strftime('%%Y-%%m-%%d', start)"}
+    select_data = {"start": "SUBSTR(CAST(start as CHAR(30)),1,10)"}
     
     if not request.user.is_superuser:
         kwargs[ 'accountcode' ] = request.user.get_profile().accountcode
     
-    queryset = CDR.objects.values('calldate', 'channel', 'src', 'clid', 'dst', 'disposition', 'duration', 'accountcode').filter(**kwargs).order_by('-calldate')
-    total_data = CDR.objects.extra(select=select_data).values('calldate').filter(**kwargs).annotate(Count('calldate')).annotate(Sum('duration')).annotate(Avg('duration')).order_by('-calldate')
+    queryset = CDR.objects.values('start', 'channel', 'src', 'clid', 'dst', 'disposition', 'duration', 'accountcode').filter(**kwargs).order_by('-start')
+    total_data = CDR.objects.extra(select=select_data).values('start').filter(**kwargs).annotate(Count('start')).annotate(Sum('duration')).annotate(Avg('duration')).order_by('-start')
     form = CdrSearchForm(initial={'from_date':from_date,'to_date':to_date,'result':result,'export_csv_queryset':'0'})
     
     count = 0
@@ -122,7 +122,7 @@ def show_cdr(request):
     if total_data.count() != 0:
         max_duration = max([x['duration__sum'] for x in total_data])
         total_duration = sum([x['duration__sum'] for x in total_data])
-        total_calls = sum([x['calldate__count'] for x in total_data])
+        total_calls = sum([x['start__count'] for x in total_data])
         total_avg_duration = (sum([x['duration__avg'] for x in total_data]))/total_data.count()
     else:
         max_duration = 0
@@ -151,9 +151,9 @@ def export_to_csv(request):
     # the csv writer
     writer = csv.writer(response)
     qs = request.session['cdr_queryset']
-    writer.writerow(['Calldate', 'Channel', 'Source', 'Clid','Destination','Disposition','Duration', 'AccountCode'])
+    writer.writerow(['start', 'Channel', 'Source', 'Clid','Destination','Disposition','Duration', 'AccountCode'])
     for cdr in qs:
-        writer.writerow([cdr['calldate'], cdr['channel'].encode("utf-8"), cdr['src'].encode("utf-8"), cdr['clid'].encode("utf-8"), cdr['dst'].encode("utf-8"), cdr['disposition'], cdr['duration'].encode("utf-8"), cdr['accountcode']])
+        writer.writerow([cdr['start'], cdr['channel'].encode("utf-8"), cdr['src'].encode("utf-8"), cdr['clid'].encode("utf-8"), cdr['dst'].encode("utf-8"), cdr['disposition'], cdr['duration'].encode("utf-8"), cdr['accountcode']])
     return response
 
 
@@ -195,7 +195,7 @@ def show_graph_by_month(request):
             end_date = datetime(from_year, from_month, from_day)
             cp_month = int(comp_months) + 1
             start_date= end_date + relativedelta(months = -int(cp_month), days = +relative_days(from_day,from_year))
-            kwargs[ 'calldate__range' ] = (start_date,end_date)
+            kwargs[ 'start__range' ] = (start_date,end_date)
 
         form = MonthLoadSearchForm(initial={'from_month_year':from_month_year,'comp_months':comp_months,'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,})
 
@@ -209,7 +209,7 @@ def show_graph_by_month(request):
         form = MonthLoadSearchForm(initial={'from_month_year':tday.strftime("%Y-%m"),'comp_months':comp_months,'destination_type':1,'source_type':1,})
         end_date = datetime(from_year, from_month, from_day)
         start_date = end_date + relativedelta(months = -int(cp_month), days = +relative_days(from_day,from_year))
-        kwargs[ 'calldate__range' ] = (start_date,end_date)
+        kwargs[ 'start__range' ] = (start_date,end_date)
 
 
     total_month_list = []
@@ -227,7 +227,7 @@ def show_graph_by_month(request):
         kwargs[ 'accountcode' ] = request.user.get_profile().accountcode
     
     if kwargs:
-        select_data = {"subdate": "SUBSTR(CAST(calldate as CHAR(30)),1,7)"}
+        select_data = {"subdate": "SUBSTR(CAST(start as CHAR(30)),1,7)"}
         calls_min = CDR.objects.filter(**kwargs).extra(select=select_data).values('subdate').annotate(Sum('duration'))
 
         total_record = []
@@ -300,7 +300,7 @@ def show_graph_by_day(request):
         if from_date != '':
             start_date = datetime(from_date.year,from_date.month,from_date.day,0,0,0,0)
             end_date = datetime(from_date.year,from_date.month,from_date.day,23,59,59,999999)
-            kwargs[ 'calldate__range' ] = (start_date,end_date)
+            kwargs[ 'start__range' ] = (start_date,end_date)
 
 
         form = DailyLoadSearchForm(initial={'from_date':from_date.strftime('%Y-%m-%d'),'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,})
@@ -313,15 +313,15 @@ def show_graph_by_day(request):
         from_month= tday.month
         start_date = datetime(from_year,from_month,from_day,0,0,0,0)
         end_date = datetime(from_year,from_month,from_day,23,59,59,999999)
-        kwargs[ 'calldate__range' ] = (start_date,end_date)
+        kwargs[ 'start__range' ] = (start_date,end_date)
 
     if not request.user.is_superuser:
         kwargs[ 'accountcode' ] = request.user.get_profile().accountcode
 
     if kwargs:
-        select_data = {"called_time": "SUBSTR(CAST(calldate as CHAR(30)),12,2)"} # get Hour
-        calls_in_day = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('calldate'))#.order_by('-calldate')#
-        #calls_in_day = CDR.objects.filter(**kwargs).extra(select={'hour': "django_date_trunc('hour', %s.calldate)" % CDR._meta.db_table}).values('hour').annotate(Count('calldate'))#.order_by('-calldate')#
+        select_data = {"called_time": "SUBSTR(CAST(start as CHAR(30)),12,2)"} # get Hour
+        calls_in_day = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('start'))#.order_by('-start')#
+        #calls_in_day = CDR.objects.filter(**kwargs).extra(select={'hour': "django_date_trunc('hour', %s.start)" % CDR._meta.db_table}).values('hour').annotate(Count('start'))#.order_by('-start')#
 
         total_record = []
 
@@ -336,7 +336,7 @@ def show_graph_by_day(request):
                     total_record.append((i,0))
 
             for i in calls_in_day:
-                total_record.append((int(i['called_time']),int(i['calldate__count']) ))
+                total_record.append((int(i['called_time']),int(i['start__count']) ))
 
         variables = RequestContext(request,
                             {'module': current_view(request),
@@ -389,7 +389,7 @@ def show_graph_by_hour(request):
             start_date = datetime(start_date.year, start_date.month, start_date.day,0,0,0,0)
             end_date = datetime(end_date.year, end_date.month, end_date.day,23,59,59,999999)
 
-            kwargs[ 'calldate__range' ] = (start_date,end_date)
+            kwargs[ 'start__range' ] = (start_date,end_date)
 
         form = CompareCallSearchForm(initial={'select_date':from_date,'comp_days':comp_days,'destination':destination,'destination_type':destination_type,'source':source,'source_type':source_type,'channel':channel,'graph_view':graph_view,})
 
@@ -405,15 +405,15 @@ def show_graph_by_hour(request):
         start_date = datetime(start_date.year, start_date.month, start_date.day,0,0,0,0)
         end_date = datetime(end_date.year, end_date.month, end_date.day,23,59,59,999999)
 
-        kwargs[ 'calldate__range' ] = (start_date,end_date)
+        kwargs[ 'start__range' ] = (start_date,end_date)
 
     if not request.user.is_superuser:
         kwargs[ 'accountcode' ] = request.user.get_profile().accountcode
     
     if kwargs:
-        select_data = {"called_time": "SUBSTR(CAST(calldate as CHAR(30)),1,16)"} # Date without seconds
+        select_data = {"called_time": "SUBSTR(CAST(start as CHAR(30)),1,16)"} # Date without seconds
         if graph_view == '1':
-            calls_in_day = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('calldate'))#.order_by('-calldate')#
+            calls_in_day = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('start'))#.order_by('-start')#
         else:
             calls_in_day = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Sum('duration'))
 
@@ -426,8 +426,8 @@ def show_graph_by_hour(request):
             if datetime(int(i['called_time'][0:4]),int(i['called_time'][5:7]),int(i['called_time'][8:10])) in dateList:
                 record_dates.append(( i['called_time'][0:4]+'-'+i['called_time'][5:7]+'-'+i['called_time'][8:10] ))
                 if graph_view == '1':
-                    total_record.append(( i['called_time'], i['calldate__count']))
-                    total_call_count.append((i['calldate__count']))
+                    total_record.append(( i['called_time'], i['start__count']))
+                    total_call_count.append((i['start__count']))
                 else:
                     total_record.append(( i['called_time'], i['duration__sum']))
                     total_call_count.append((i['duration__sum']))
@@ -447,8 +447,8 @@ def show_graph_by_hour(request):
                     if string_date == rd:
                         list_of_hour.append(int((i['called_time'][11:13])))
                         if graph_view == '1':
-                            list_of_count.append((int(i['called_time'][11:13]),i['calldate__count']))
-                            l_o_c[int(i['called_time'][11:13])]=i['calldate__count']
+                            list_of_count.append((int(i['called_time'][11:13]),i['start__count']))
+                            l_o_c[int(i['called_time'][11:13])]=i['start__count']
                         else:
                             list_of_count.append((int(i['called_time'][11:13]),i['duration__sum']))
                             l_o_c[int(i['called_time'][11:13])]=i['duration__sum']
@@ -543,7 +543,7 @@ def show_concurrent_calls(request):
         start_date = datetime(now.year, int(now.month), 1, 0, 0, 0, 0) - relativedelta(months=1)
         end_date = datetime(now.year, int(now.month), 1, 23, 59, 59, 0) - relativedelta(days=1)
 
-    kwargs[ 'calldate__range' ] = (start_date,end_date)
+    kwargs[ 'start__range' ] = (start_date,end_date)
 
     form = ConcurrentCallForm(initial={'result':result})
 
@@ -551,14 +551,14 @@ def show_concurrent_calls(request):
         kwargs[ 'accountcode' ] = request.user.get_profile().accountcode
 
     if kwargs:
-        calls_in_day = CDR.objects.filter(**kwargs).values('calldate','duration').order_by('calldate')
+        calls_in_day = CDR.objects.filter(**kwargs).values('start','duration').order_by('start')
         calls = {}
 
         time_calls = {}
         last_time = 0
         
         for data in calls_in_day:
-            starttime = data['calldate']            
+            starttime = data['start']            
             int_starttime = int(starttime.strftime("%Y%m%d%H%M%S"))
             
             if int_starttime in time_calls.keys():
@@ -568,7 +568,7 @@ def show_concurrent_calls(request):
                 
         concurrent_calls = {}
         for data in calls_in_day:
-            starttime = data['calldate']
+            starttime = data['start']
             endtime = starttime + timedelta(seconds=data['duration'])
             
             int_starttime = int(starttime.strftime("%Y%m%d%H%M%S"))
@@ -697,21 +697,21 @@ def show_global_report(request):
     if not request.user.is_superuser:
         kwargs[ 'accountcode' ] = request.user.get_profile().accountcode
 
-    select_data = {"calldate": "SUBSTR(CAST(calldate as CHAR(30)),1,10)"}
-    calls = CDR.objects.filter(**kwargs).extra(select=select_data).values('calldate').annotate(Sum('duration')).annotate(Avg('duration')).annotate(Count('calldate')).order_by('calldate')
+    select_data = {"start": "SUBSTR(CAST(start as CHAR(30)),1,10)"}
+    calls = CDR.objects.filter(**kwargs).extra(select=select_data).values('start').annotate(Sum('duration')).annotate(Avg('duration')).annotate(Count('start')).order_by('start')
     
     if calls:
-        maxtime = datetime(int(calls[0]['calldate'][0:4]), int(calls[0]['calldate'][5:7]), int(calls[0]['calldate'][8:10]), 0, 0, 0, 0)
-        mintime = datetime(int(calls[0]['calldate'][0:4]), int(calls[0]['calldate'][5:7]), int(calls[0]['calldate'][8:10]), 0, 0, 0, 0)
+        maxtime = datetime(int(calls[0]['start'][0:4]), int(calls[0]['start'][5:7]), int(calls[0]['start'][8:10]), 0, 0, 0, 0)
+        mintime = datetime(int(calls[0]['start'][0:4]), int(calls[0]['start'][5:7]), int(calls[0]['start'][8:10]), 0, 0, 0, 0)
         calls_dict = {}
         
         for data in calls:
-            time = datetime(int(data['calldate'][0:4]), int(data['calldate'][5:7]), int(data['calldate'][8:10]), 0, 0, 0, 0)
+            time = datetime(int(data['start'][0:4]), int(data['start'][5:7]), int(data['start'][8:10]), 0, 0, 0, 0)
             if time > maxtime:
                 maxtime = time
             elif time < mintime:
                 mintime = time
-            calls_dict[int(time.strftime("%Y%m%d"))] = {'calldate__count':data['calldate__count'], 'duration__sum':data['duration__sum'], 'duration__avg':data['duration__avg']}
+            calls_dict[int(time.strftime("%Y%m%d"))] = {'start__count':data['start__count'], 'duration__sum':data['duration__sum'], 'duration__avg':data['duration__avg']}
         dateList = date_range(mintime, maxtime)
         
         
@@ -721,9 +721,9 @@ def show_global_report(request):
             name_date = _(date.strftime("%B")) + " " + str(date.day) + ", " + str(date.year)
             
             if inttime in calls_dict.keys():
-                total_data.append({'count':i, 'day':date.day, 'month':date.month, 'year':date.year, 'date':name_date , 'calldate__count':calls_dict[inttime]['calldate__count'], 'duration__sum':calls_dict[inttime]['duration__sum'], 'duration__avg':calls_dict[inttime]['duration__avg']})
+                total_data.append({'count':i, 'day':date.day, 'month':date.month, 'year':date.year, 'date':name_date , 'start__count':calls_dict[inttime]['start__count'], 'duration__sum':calls_dict[inttime]['duration__sum'], 'duration__avg':calls_dict[inttime]['duration__avg']})
             else:
-                total_data.append({'count':i, 'day':date.day, 'month':date.month, 'year':date.year, 'date':name_date , 'calldate__count':0, 'duration__sum':0, 'duration__avg':0})
+                total_data.append({'count':i, 'day':date.day, 'month':date.month, 'year':date.year, 'date':name_date , 'start__count':0, 'duration__sum':0, 'duration__avg':0})
             i += 1
 
     data = {'module': current_view(request),
@@ -743,10 +743,10 @@ def show_dashboard(request):
     
     start_date = datetime(now.year,now.month,now.day,0,0,0,0) - relativedelta(days=1)
     end_date = datetime(now.year,now.month,now.day,23,59,59,999999) - relativedelta(days=1)
-    kwargs[ 'calldate__range' ] = (start_date,end_date)
+    kwargs[ 'start__range' ] = (start_date,end_date)
     
-    select_data = {"called_time": "SUBSTR(CAST(calldate as CHAR(30)),1,16)"} # Date without seconds
-    calls = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('calldate')).annotate(Sum('duration'))#.order_by('-calldate')#
+    select_data = {"called_time": "SUBSTR(CAST(start as CHAR(30)),1,16)"} # Date without seconds
+    calls = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('start')).annotate(Sum('duration'))#.order_by('-start')#
     
     total_calls = 0
     total_duration = 0
@@ -755,8 +755,8 @@ def show_dashboard(request):
         hour = float(data['called_time'][11:13])
         minute = math.ceil(float(data['called_time'][14:16])/60 * 100) / 100
         time = hour + minute
-        total_record_final.append([str(time), data['calldate__count'], data['duration__sum']])
-        total_calls += data['calldate__count']
+        total_record_final.append([str(time), data['start__count'], data['duration__sum']])
+        total_calls += data['start__count']
         total_duration += data['duration__sum']
     
     ACT = math.floor(total_calls / 24)
@@ -828,7 +828,6 @@ def logout_view(request):
 	return HttpResponseRedirect('/')
 
 
-
 def index(request):
     template = 'cdr/index.html'
     errorlogin = ''
@@ -858,5 +857,190 @@ def pleaselog(request):
 def current_view(request):
     name = getmodule(stack()[1][0]).__name__
     return stack()[1][3]
+
+
+from django.shortcuts import get_object_or_404
+import locale
+locale.setlocale( locale.LC_ALL, '' )
+from xlwt import *
+
+def excelHeadings(headings, ws, row=0):
+    fnt = Font()
+    fnt.height = 240 #  multiplying the point size by 20
+    fnt.bold = True
+    fnt.name = 'Times New Roman'
+    styleheader = XFStyle()
+    styleheader.font = fnt
+    
+    for i in range(0,len(headings)):
+        ws.write(row,i, headings[i], styleheader)
+
+def download_invoice(request, invoiceid):
+    locale.setlocale( locale.LC_ALL, '' )
+    invoice = get_object_or_404(Invoice, pk = invoiceid)
+    wb = Workbook(encoding='utf-8')
+    wb.country_code = 61
+    
+    # Set up the Styles that will be used
+    styledate = XFStyle()
+    styledate.num_format_str = 'DD/MM/YY h:mm:ss AM/PM'
+    styledateHeading = XFStyle()
+    styledateHeading.num_format_str = 'DD/MM/YY'
+    styletime = XFStyle()
+    styletime.num_format_str = 'h:mm:ss'
+    stylemoney = XFStyle()
+    stylemoney .num_format_str = '$0.00'
+    fnt = Font()
+    fnt.height = 240 #  multiplying the point size by 20
+    fnt.bold = True
+    fnt.name = 'Times New Roman'
+    styleheader = XFStyle()
+    styleheader.font = fnt
+    
+    # Create an invoice work sheet
+    wst = wb.add_sheet('Invoice')
+    wst.write(0,0,'Company', styleheader)
+    wst.write(0,1, invoice.company.name, styleheader)
+    wst.write(1,0, 'Period start',styleheader)
+    wst.write(1,1, invoice.start,styledateHeading)
+    wst.write(2,0, 'Period end',styleheader)
+    wst.write(2,1, invoice.end,styledateHeading)    
+    headings = ['Classification','Number of calls','Total Duration','Charges', 'Cost']
+    for i in range(0,len(headings)):
+        wst.write(4,i, headings[i], styleheader)
+    
+    # Get all of the unique classification objects that relate to this invoice
+    ratetable = AccountCode.objects.filter(company=invoice.company).values('ratetable')
+    rate = Rate.objects.filter(ratetable__in=ratetable).values('classification')
+    rate = rate.distinct()
+    clas = Classification.objects.filter(pk__in=rate)
+    clas = clas.distinct()
+    
+    # For each classification create a new worksheet and add to invoice totals
+    totalcnt = totaltime = totalcost = totalbill =  0
+    wstpos = 1
+    ws = []
+    for c in clas:
+       
+       cdr = InvoiceDetail.objects.select_related(depth=2).filter(invoice=invoice, classification=c)
+       subcost = subtime = subcount = subbill = 0
+       if cdr:
+           ws.append(wb.add_sheet(c.name))
+           w = len(ws)-1
+           headings = ['Account Code','Date Time','Source','Destination','Billed Time','Cost']
+           for i in range(0,len(headings)):
+               ws[w].write(0,i, headings[i], styleheader)
+       
+           for d in range(0,len(cdr)):
+               # write the individual call detail
+               ws[w].write(d+1,0,cdr[d].call.accountcode.accountcode)
+               ws[w].write(d+1,1,cdr[d].call.start, styledate)
+               ws[w].write(d+1,2,cdr[d].call.src)
+               ws[w].write(d+1,3,cdr[d].call.dst)
+               ws[w].write(d+1,4,time.strftime('%H:%M:%S', time.gmtime(cdr[d].call.billsec)),styletime)
+               ws[w].write(d+1,5,locale.currency(cdr[d].bill, grouping=False, symbol=True),stylemoney)
+               subcost += cdr[d].cost
+               subtime += cdr[d].call.billsec
+               subbill += cdr[d].bill
+               totalcost += cdr[d].cost
+               totaltime += cdr[d].call.billsec
+               totalbill += cdr[d].bill
+
+       wstpos += 1
+       
+       #Invoice sheet, populate the subtotals
+       wst.write(wstpos+5,0, c.name)
+       wst.write(wstpos+5,1, len(cdr) )
+       wst.write(wstpos+5,2, time.strftime('%H:%M:%S', time.gmtime(subtime)),styletime)
+       wst.write(wstpos+5,3, subbill, stylemoney)
+       wst.write(wstpos+5,4, subcost, stylemoney)
+       totalcnt += len(cdr)
+       
+    wstpos += 6
+    # Invoice sheet, populate the Totals
+    wst.write(wstpos,0, 'Total', styleheader)
+    wst.write(wstpos,1, totalcnt)
+    wst.write(wstpos,2, time.strftime('%H:%M:%S', time.gmtime(totaltime)),styletime)
+    wst.write(wstpos,3, totalbill, stylemoney)
+    wst.write(wstpos,4, totalcost, stylemoney)
+    
+    wb.save('callaccounting.xls') # TODO: should append the time stamp to file name to prevent 2nd request from smashing this one.  Liklyhood is small
+    
+    filename = "Invoice_{0}_ID_{1}.xls".format(invoice.company.name, invoice.id) 
+    response = HttpResponse(open('callaccounting.xls','r').read(), mimetype='application/ms-excel')
+    response['Content-Disposition'] = 'attachment;filename='+filename     # force download.
+    return response
+
+
+def calculate_call_cost(call, rate):
+    """ returns the calculated call cost """
+    cost = 0.00
+    if call.billsec > 0:
+        if rate.flagfall: cost = float(rate.flagfall)
+        if rate.firstrate: cost += float(rate.firstrate)
+        if rate.interval: # incase the interval has not been specified
+            if call.billsec > rate.interval :
+                 cost += float(
+                    ((call.billsec / rate.interval) - 1 + bool(call.billsec % rate.interval)) * rate.remainingrate 
+                    )
+    else:
+        cost = 0
+    return cost
+
+
+def generate_invoice(request, invoiceid):
+    """ Generates invoice details by populating the InvoiceDetail object with billing data for the supplied invoice"""
+    response = "<h1> Results from invoice generation</h1>"
+    callcnt = 0
+    # determin what classification objects are used with the customer
+    invoice = Invoice.objects.get(pk = invoiceid)
+    ratetable = AccountCode.objects.filter(company=invoice.company).values('ratetable')
+    rate = Rate.objects.filter(ratetable__in=ratetable).values('classification')
+    rate = rate.distinct()
+    classes = Classification.objects.filter(pk__in=rate)
+    classes = classes.distinct()
+    
+    #for each classification, find calls that match it, determine call cost and populate InvoiceDetail
+    for clas in classes:
+        response +=  "Classification: {0}".format(clas)
+        # Note: we are ignoring the AMAflag as it often is not populated correctly. Instead if the call goes out via the selected channel in the Classification object, bill it.  Less stuff ups this way
+        cdrfilter = {'dst__regex':clas.regex, 'dstchannel__startswith':clas.channel,'start__gt':invoice.start, 'start__lt':invoice.end, 'accountcode__company':invoice.company,'disposition':1 }
+        cdrdata = CDR.objects.filter(**cdrfilter)
+        response += "Calls found {0} <br>".format(len(cdrdata))
+        for call in cdrdata:
+            billrate = Rate.objects.get(ratetable=call.accountcode.ratetable, classification=clas) # might get more then one response!
+            if not billrate:
+                response += "No rate for this call! Classification: {0}, account code: {0}<br>".format(clas.name, call.accountcode)
+                bill = 0
+            else:
+                bill = calculate_call_cost(call, billrate)
+                costrate = CostRateTable.objects.filter(classification=clas)
+                if not costrate:
+                    cost = 0
+                else:
+                    cost = calculate_call_cost(call, costrate[0])
+            # check if the call has already been added
+            oldcall= InvoiceDetail.objects.filter(call=call, invoice=invoice)
+            if oldcall:
+                # Allows running the invoice again if the rates were updated.
+                oldcall[0].cost = "%.15g" % cost
+                oldcall[0].bill = "%.15g" % bill
+                oldcall[0].save()
+            else:                
+                newcall = InvoiceDetail(call=call, invoice=invoice, classification=clas, cost="%.15g" % cost, bill="%.15g" % bill)
+                newcall.save()
+            callcnt += 1
+    response += "Completed. {0} calls processed".format(callcnt)
+    # TODO show calls that do not have a classification therfor missing in the invoice
+    return HttpResponse(response)
+
+
+def clear_invoice(request, invoiceid):
+    """ deletes all date for the invoice """
+    invoice = Invoice.objects.get(pk = invoiceid)
+    cnt = InvoiceDetail.objects.filter(invoice=invoice).count()
+    InvoiceDetail.objects.filter(invoice=invoice).delete()
+    response = "<h1> Completed</h1> Cleared {0} calls from this invoice, its now empty".format(cnt)
+    return HttpResponse(response)
 
 

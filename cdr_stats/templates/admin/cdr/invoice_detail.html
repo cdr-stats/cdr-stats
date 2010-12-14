@@ -1,0 +1,21 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Invoices{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <h1>Invoices details</h1>    
+        <table >
+            
+            <tr> <td> Invoice ID </td> <td>{{ invoice.id }}</td></tr> 
+            <tr> <td> Company </td> <td>{{ invoice.company.name }}</td></tr> 
+            <tr> <td> Start date & time </td> <td>{{ invoice.start }}</td></tr> 
+            <tr> <td> End date & time </td> <td>{{ invoice.end }}</td></tr> 
+            <tr> <td> Number of calls </td> <td>{{ invoice_cnt  }}</td> </tr> 
+            <tr> <td colspan="2"> ===========Actions=========== </td> </tr> 
+            <tr> <td> Generate new data </td> <td><a href="{% url generate_invoice invoice.id %}">Generate</a>  </td> </tr> 
+            <tr> <td> Download invoice in Excel</td> <td><a href="{% url download_invoice invoice.id %}">Download</a> </td> </tr> 
+            <tr> <td> Clear invoice data </td> <td><a href="{% url clear_invoice invoice.id %}"> No confirmation, be careful! </a> </td> </tr> 
+       </table>
+</div>
+{% endblock %}

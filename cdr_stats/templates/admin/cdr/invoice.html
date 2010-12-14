@@ -1,0 +1,32 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Invoices{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <h1>List of Invoices:</h1>    
+        <table >
+            <tr>
+                <th scope="row">id</th>
+                <th scope="row">Company</th>
+                <th scope="row">Start</th>
+                <th scope="row">End</th>
+                <th scope="row">Actions</th>
+            </tr>
+
+            {% for invoice in invoice_list %}
+            <tr class="{% cycle 'row1' 'row2' %}">
+            <td>{{ invoice.id }}</td>
+            <td>{{ invoice.company.name }}</td>
+            <td>{{ invoice.start }}</td>
+            <td>{{ invoice.end }}</td>
+            <td>
+                <a href="{% url generate_invoice invoice.id %}">Generate</a> | 
+                <a href="{% url download_invoice invoice.id %}">Download</a> |
+                <a href="{% url view_invoice invoice.id %}">View</a>            
+                </td>
+            </tr>
+           {% endfor %}
+       </table>
+</div>
+{% endblock %}

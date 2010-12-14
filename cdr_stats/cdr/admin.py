@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.db.models import Q
-from cdr.models import Customer, Staff
+from .models import *
 
 
 class UserProfileInline(admin.StackedInline):
@@ -43,11 +43,20 @@ admin.site.register(Company, CompanyAdmin)
 
 # Setting
 class CDRAdmin(admin.ModelAdmin):
-    list_display = ('id', 'src', 'dst', 'calldate', 'clid', 'channel', 'duration', 'disposition', 'accountcode')
-    list_filter = ['calldate', 'accountcode']
+    list_display = ('id', 'src', 'dst', 'start', 'clid', 'channel', 'duration', 'disposition', 'accountcode')
+    list_filter = ['start', 'accountcode']
     search_fields = ('accountcode', 'dst', 'src')
     ordering = ('-id',)
 
 admin.site.register(CDR, CDRAdmin)
+
+admin.site.register(Classification)
+admin.site.register(RateTable)
+admin.site.register(Rate)
+admin.site.register(CostRateTable)
+admin.site.register(AccountCode)
+admin.site.register(Invoice)
+admin.site.register(InvoiceDetail)
+
 
 

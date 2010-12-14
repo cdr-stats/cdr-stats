@@ -24,6 +24,8 @@ urlpatterns = patterns('',
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 	
 	(r'^admin/cdr/report/$', 'cdr.admin_views.report'),
+
+    
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
 
@@ -53,7 +55,12 @@ urlpatterns = patterns('',
 	(r'^index/$',   'cdr.views.index'),
 	(r'^pleaselog/$',   'cdr.views.pleaselog'),
 	
+	# Invoices
+	url (r'^generateinvoice/(?P<invoiceid>\d*)$', 'cdr.views.generate_invoice', name="generate_invoice"),
+	url (r'^downloadinvoice/(?P<invoiceid>\d*)$', 'cdr.views.download_invoice', name="download_invoice"),
+	url (r'^clearinvoice/(?P<invoiceid>\d*)$', 'cdr.views.clear_invoice', name="clear_invoice"),
+	url (r'^viewinvoice/(?P<invoiceid>\d*)$', 'cdr.admin_views.view_invoice', name="view_invoice"),
+    url (r'^admin/cdr/listinvoice/$', 'cdr.admin_views.list_invoice', name="list_invoice"),
+	
+	
 )
-
-
-

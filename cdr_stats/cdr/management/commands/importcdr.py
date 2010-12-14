@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from cdr.models import CDR
-from cdr.models import dic_disposition
+from cdr.models import *
 import csv
 import os
 
@@ -10,29 +9,20 @@ $accountcode, $src, $dst, $dcontext, $clid, $channel, $dstchannel, $lastapp, $la
 
 """
 
-def IntToDottedIP( intip ):
-    octet = ''
-    for exp in [3,2,1,0]:
-        octet = octet + str(intip / ( 256 ** exp )) + "."
-        intip = intip % ( 256 ** exp )
-    return(octet.rstrip('.'))
-
-def DottedIPToInt( dotted_ip ):
-    exp = 3
-    intip = 0
-    for quad in dotted_ip.split('.'):
-        intip = intip + (int(quad) * (256 ** exp))
-        exp = exp - 1
-    return(intip)
-
-
 class Command(BaseCommand):
+    """
+    Import and asterisk cdr.csv file into the datebase. This is useful if you do not wish to save your asterisk data to a database in case failure.
+    """
+    
+    
     args = '<filename1, filename2, ...>'
-    help = "Import a specified CDR file \n---------------------------------\n" \
-           "Filename should be provisioned in the following format : cdr_%IP%.csv \n" \
-           "the %IP% will be used to define to which account the CDR belongs.\n\n" \
-           "The file format have to follow the next sequence: \n" \
-           "$accountcode, $src, $dst, $dcontext, $clid, $channel, $dstchannel, $lastapp, $lastdata, $start, $answer, $end, $duration, $billsec, $disposition, $amaflags. $uniqueid, $userfield\n\n"
+    help = """
+        Import a specified CDR file \n
+        ---------------------------------\n
+        Import an Asterisk cdr.csv file into the call account system. \n
+        The file format have to follow the next sequence: \n
+        $accountcode, $src, $dst, $dcontext, $clid, $channel, $dstchannel, $lastapp, $lastdata, $start, $answer, $end, $duration, $billsec, $disposition, $amaflags. $uniqueid, $userfield
+        \n\n"""
     
     def handle(self, *args, **options):
         x = 0
@@ -42,59 +32,51 @@ class Command(BaseCommand):
         
         for filepath in args:
             x = x + 1
-            #print "File #" + str(x) + " - " + filepath
             myext = filepath[-3:]
             if not myext == 'csv':
                 raise CommandError('Wrong file type, only csv file are supported')
             
             filename = os.path.basename(filepath)
-            filename_noext = filename[0:-4]
-            fileIP = filename_noext.split('_')[1]
-            IP_lastnum = '.' + fileIP.split('.')[3]
-            #print "IP : %s - IPtoInt : %d" %(fileIP, DottedIPToInt(fileIP))
             file = open(filepath)
             reader = csv.reader(file,delimiter=',', quotechar='"')
             
             for row in reader:
                 try:
-                    "$accountcode, $src, $dst, $dcontext, $clid, $channel, $dstchannel, $lastapp, $lastdata, $start, $answer, $end, $duration, $billsec, $disposition, $amaflags. $uniqueid, $userfield"
                     if (len(row)==0):
                         continue
-                    #print row
-                    accountcode = DottedIPToInt(fileIP)
-                    #accountcode = row[0].encode("utf-8")
-                    src = row[1].encode("utf-8")
-                    if len(src) == 0:
-                        src = IP_lastnum
-                    dst = row[2].encode("utf-8")
-                    dcontext = row[3].encode("utf-8")
-                    clid = row[4].encode("utf-8")
-                    if len(clid) == 0:
-                        print IP_lastnum
-                        clid = IP_lastnum
-                    channel = row[5].encode("utf-8")
-                    dstchannel = row[6].encode("utf-8")
-                    lastapp = row[7].encode("utf-8")
-                    lastdata = row[8].encode("utf-8")
-                    start = row[9].encode("utf-8")
-                    answer = row[10].encode("utf-8")
-                    end = row[11].encode("utf-8")
-                    duration = row[12].encode("utf-8")
-                    billsec = row[13].encode("utf-8")
-                    #TODO : disposition
-                    disposition = dic_disposition[row[14].encode("utf-8")]
-                    print "disposition : " + str(disposition)
-                    #TODO : http://www.voip-info.org/wiki/view/Asterisk+Billing+amaflags
-                    amaflags = 1
-                    uniqueid = row[16].encode("utf-8")
-                    userfield = row[17].encode("utf-8")
+                    accountcodetxt = row[0].encode("utf-8")
+                    accountcodes = AccountCode.objects.filter(accountcode = accountcodetxt)
+                    if accountcodes:
+                        accountcode = accountcodes[0]
+                    else:
+                        accountcode = AccountCode(accountcode=accountcodetxt, description ="Newly created")
+                        accountcode.save()
                     
-                    if CDR.objects.filter(accountcode=accountcode, uniqueid=uniqueid):
-                        #print "########### NOT INSERTED"
+                    kwargs = {}
+                    kwargs['accountcode'] = accountcode
+                    kwargs['src'] = row[1].encode("utf-8")
+                    kwargs['dst'] = row[2].encode("utf-8")
+                    kwargs['dcontext'] = row[3].encode("utf-8")
+                    kwargs['clid'] = row[4].encode("utf-8")
+                    kwargs['channel'] = row[5].encode("utf-8")
+                    kwargs['dstchannel'] = row[6].encode("utf-8")
+                    kwargs['lastapp'] = row[7].encode("utf-8")
+                    kwargs['lastdata'] = row[8].encode("utf-8")
+                    kwargs['start'] = row[9].encode("utf-8") 
+                    kwargs['answered'] = row[10].encode("utf-8") if len(row[10]) > 14 else None
+                    kwargs['end'] = row[11].encode("utf-8")
+                    kwargs['duration'] = row[12].encode("utf-8")
+                    kwargs['billsec'] = row[13].encode("utf-8")
+                    kwargs['disposition'] = dic_disposition.get(row[14].encode("utf-8"),10)
+                    kwargs['amaflags'] = dic_amaflags.get(row[15].encode("utf-8"),4)
+                    kwargs['uniqueid'] = row[16].encode("utf-8")
+                    kwargs['userfield'] = row[17].encode("utf-8")
+                    
+                    if CDR.objects.filter(accountcode=accountcode, uniqueid=kwargs['uniqueid']):
+                        print "########### NOT INSERTED"
                         total_cdr_not_inserted = total_cdr_not_inserted + 1
                     else:
-                        #print "########### INSERTED"
-                        mycdr = CDR(src=src, dst=dst, calldate=start, clid=clid, dcontext=dcontext, channel=channel, dstchannel=dstchannel, lastapp=lastapp, lastdata=lastdata, duration=duration, billsec=billsec, disposition=disposition, amaflags=amaflags, accountcode=accountcode, uniqueid=uniqueid, userfield=userfield)
+                        mycdr = CDR(**kwargs)
                         mycdr.save()
                         total_cdr_inserted = total_cdr_inserted + 1
                         
@@ -105,21 +87,8 @@ class Command(BaseCommand):
                     raise
                     raise CommandError('CDR "%s" does not exist' % rownum)
             
-            self.stdout.write("\nCDR IMPORT RESULT:\n----------------------\n")
-            self.stdout.write('Amount of parsed lines "%d"\n' % rownum)
-            self.stdout.write('Successfully Inserted CDRs "%d"\n' % total_cdr_inserted)
-            self.stdout.write('Not Inserted CDRs "%d"\n' % total_cdr_not_inserted)
+            print "CDR IMPORT RESULT:\n----------------------\n"
+            print "Amount of parsed lines: {0}".format(rownum)
+            print "Successfully Inserted CDRs: {0}".format(total_cdr_inserted)
+            print "Not Inserted CDRs: {0}".format(total_cdr_not_inserted)
             
-            """
-            for acct_id in args:
-                try:
-                    cdr = CDR.objects.get(pk=int(acct_id))
-                except CDR.DoesNotExist:
-                    raise CommandError('CDR "%s" does not exist' % acct_id)
-                
-
-                cdr.dst = "TESTING"
-                cdr.save()
-
-                
-            """

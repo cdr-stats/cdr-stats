@@ -15,7 +15,7 @@
             {% for cdr in cdr_list %}
             <tr class="{% cycle 'row1' 'row2' %}">
             <td>{{ cdr.id }}</td>
-            <td>{{ cdr.calldate }}</td>
+            <td>{{ cdr.start }}</td>
             <td>{{ cdr.duration }}</td>
             </tr>
            {% endfor %}
