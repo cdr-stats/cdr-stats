@@ -107,5 +107,8 @@
     this is included
     
     
+* xlwt
+-------------
 
-
+    A Python package for generating Microsoft Excel ™ spreadsheet files
+    http://pypi.python.org/pypi/xlwt

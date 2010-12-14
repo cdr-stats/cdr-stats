@@ -29,7 +29,32 @@ Applications
         http://localhost:8000/admin/
         This interface provides user (ACL) management, assignation of accountcode, 
         also basic CRUD functions on the CDR
-
+    
+    Invoice Usage :
+        Each of these sets are performed within the admin interface
+        Setup:
+        1) Import CDR data from the command line tool:
+        python manage.py importcdr mycdr.csv
+        This will import data into the CDR table and populate any account codes.
+        2) Create at least one company
+        http://127.0.0.1:8000/admin/cdr/company/
+        3) assign each account code to a company
+        http://127.0.0.1:8000/admin/cdr/accountcode/
+        4) Create call 'classifications'. These are regex expressions that match the dialled numbers
+        The classification is used to determine what rate each call will be billed at
+        http://127.0.0.1:8000/admin/cdr/classification/
+        4) create at least one rate table
+        http://127.0.0.1:8000/admin/cdr/ratetable/
+        5) for each classification create a rate for it, this is the cost of each call
+        http://127.0.0.1:8000/admin/cdr/rate/
+        
+        Generate invoice:
+        1) create an invoice
+        http://127.0.0.1:8000/admin/cdr/invoice/
+        2) Generate data for the invoice, click generate
+        http://127.0.0.1:8000/admin/cdr/listinvoice/
+        3) download invoice in excel, click download
+        http://127.0.0.1:8000/admin/cdr/listinvoice/
 
 
 Coding Conventions
