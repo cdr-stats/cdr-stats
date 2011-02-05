@@ -8,3 +8,5 @@ python-dateutil==1.5
 simplejson==2.1.3
 yolk==0.4.1
 hg+https://bitbucket.org/jespern/django-piston
+git+https://github.com/pydanny/django-uni-form.git
+South==0.7.3
