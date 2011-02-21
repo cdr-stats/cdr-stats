@@ -45,8 +45,8 @@ Please refer to those sources for the Coding Conventions :
 Translation
 -----------
     
-We are using myGengo to ease the translation >
-http://mygengo.com/string/p/cdr-stats-1/
+We are using myGengo to ease the translation :
+    - http://mygengo.com/string/p/cdr-stats-1/
         
     
 Support 
