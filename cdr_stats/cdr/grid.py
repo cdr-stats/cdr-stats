@@ -1,11 +1,12 @@
-from cdr.models import CDR
+from cdr.factories import CDRFactory
+from django.conf import settings
 from jqgrid import *
 from cdr.views import *
 from django.utils.translation import gettext as _
 
 
 class ExampleGrid(JqGrid):
-    model = CDR # could also be a queryset
+    model = CDRFactory.get_cdr_app(settings.VOIP_PLATFORM)
     #queryset = CDR.objects.values('calldate','channel', 'src','clid', 'dst','disposition','duration').all()#filter(duration='30')
     fields = ['calldate','channel', 'src','clid', 'dst','disposition','duration', 'accountcode'] # optional
     caption = _('Call Detail Records') # optional

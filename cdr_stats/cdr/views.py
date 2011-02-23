@@ -25,6 +25,9 @@ import csv, codecs
 from operator import itemgetter
 from inspect import stack, getmodule
 
+from django.conf import settings
+from factories import CDRFactory
+
 DISPOSITION = (
     (1, _('ANSWER')),
     (2, _('BUSY')),
@@ -319,9 +322,13 @@ def show_graph_by_day(request):
         kwargs[ 'accountcode' ] = request.user.get_profile().accountcode
 
     if kwargs:
-        select_data = {"called_time": "SUBSTR(CAST(calldate as CHAR(30)),12,2)"} # get Hour
-        calls_in_day = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('calldate'))#.order_by('-calldate')#
+		#select_data = {"called_time": "SUBSTR(CAST(calldate as CHAR(30)),12,2)"} # get Hour
+        
+		#calls_in_day = CDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('calldate'))#.order_by('-calldate')#
         #calls_in_day = CDR.objects.filter(**kwargs).extra(select={'hour': "django_date_trunc('hour', %s.calldate)" % CDR._meta.db_table}).values('hour').annotate(Count('calldate'))#.order_by('-calldate')#
+        
+        cdr_app = CDRFactory.get_cdr_app(settings.VOIP_PLATFORM)
+        calls_in_day = cdr_app.show_graph_by_day(**kwargs)
 
         total_record = []
 

@@ -1,9 +1,12 @@
 from django.db import models
-from django.db.models import permalink
+from django.db.models import *
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.contrib.auth.models import User
 
+from abstract import AbstractCDR
+import string
+from datetime import *
 
 DISPOSITION = (
     (1, _('ANSWER')),
@@ -74,7 +77,7 @@ class Staff(User):
         super(Staff, self).save(**kwargs)
 
 
-class CDR(models.Model):
+class AsteriskCDR(models.Model, AbstractCDR):
     #acctid = models.PositiveIntegerField(primary_key=True, db_column = 'acctid')
     src = models.CharField(max_length=80, blank=True)
     dst = models.CharField(max_length=80, blank=True)
@@ -95,7 +98,7 @@ class CDR(models.Model):
     #test = models.CharField(max_length=80, blank=True)
     
     class Meta:
-        db_table = getattr(settings, 'CDR_TABLE_NAME', 'cdr' )
+        db_table = getattr(settings, 'ASTERISK_CDR_TABLE_NAME', 'asterisk_cdr' )
         # Only in trunk 1.1 managed = False     # The database is normally already created
         verbose_name = _("CDR")
         verbose_name_plural = _("CDR's")
@@ -110,6 +113,11 @@ class CDR(models.Model):
     @permalink
     def get_absolute_url(self):
         return ('cdr_detail', [str(self.id)])
+        
+    def show_graph_by_day(self, **kwargs):
+    	 select_data = {"called_time": "SUBSTR(CAST(calldate as CHAR(30)),12,2)"} # get Hour
+    	 calls_in_day = AsteriskCDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('calldate'))#.order_by('-calldate')#
+    	 return calls_in_day
         
     class Dilla:
         skip_model = False

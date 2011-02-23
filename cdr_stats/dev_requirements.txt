@@ -1,0 +1,3 @@
+git+git://github.com/aerosol/identicon.git#egg=identicon
+git+https://github.com/aerosol/django-dilla.git
+git+https://github.com/robhudson/django-debug-toolbar.git

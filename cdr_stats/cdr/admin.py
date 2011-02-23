@@ -42,12 +42,12 @@ class CompanyAdmin(admin.ModelAdmin):
 admin.site.register(Company, CompanyAdmin)
 
 # Setting
-class CDRAdmin(admin.ModelAdmin):
+class AsteriskCDRAdmin(admin.ModelAdmin):
     list_display = ('id', 'src', 'dst', 'calldate', 'clid', 'channel', 'duration', 'disposition', 'accountcode')
     list_filter = ['calldate', 'accountcode']
     search_fields = ('accountcode', 'dst', 'src')
     ordering = ('-id',)
 
-admin.site.register(CDR, CDRAdmin)
+admin.site.register(AsteriskCDR, AsteriskCDRAdmin)
 
 

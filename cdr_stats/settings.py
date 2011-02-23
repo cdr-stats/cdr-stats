@@ -16,8 +16,8 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.path.dirname(os.path.abspath( __file__ )) + '/database/local.db', # Or path to database file if using sqlite3.
+        'ENGINE': 'mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'cdr_stats', # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -25,11 +25,11 @@ DATABASES = {
     },
 }
 
-CDR_TABLE_NAME = 'cdr' # Name of the table containing the Asterisk/FreeSwitch CDR
+ASTERISK_CDR_TABLE_NAME = 'asterisk_cdr' # Name of the table containing the Asterisk/FreeSwitch CDR
 
 # Only the Asterisk CDR table is supported at the moment, 
 # but Freeswitch and other platform will be soon
-VOIP_PLATFORM = 'asterisk' # asterisk, freeswitch
+VOIP_PLATFORM = 'AsteriskCDR' # AsteriskCDR, FreeSWITCHCDR
 
 
 # Local time zone for this installation. Choices can be found here:
