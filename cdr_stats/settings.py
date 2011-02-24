@@ -16,8 +16,8 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'cdr_stats', # Or path to database file if using sqlite3.
+        'ENGINE': 'sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': os.path.dirname(os.path.abspath( __file__ )) + '/database/local.db', # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -25,7 +25,7 @@ DATABASES = {
     },
 }
 
-ASTERISK_CDR_TABLE_NAME = 'asterisk_cdr' # Name of the table containing the Asterisk/FreeSwitch CDR
+ASTERISK_CDR_TABLE_NAME = 'cdr' # Name of the table containing the Asterisk/FreeSwitch CDR
 
 # Only the Asterisk CDR table is supported at the moment, 
 # but Freeswitch and other platform will be soon
@@ -123,8 +123,22 @@ LOG_COLORSQL_VERBOSE = True
 
 LOGIN_URL = '/pleaselog/'
 
-gettext = lambda s: s
+#DILLA SETTINGS
+#==============
+DICTIONARY = "/usr/share/dict/words"
+DILLA_USE_LOREM_IPSUM = False  # set to True ignores dictionary
+DILLA_APPS = [
+                'cdr',
+             ]
+#DILLA_SPAMLIBS = ['cdr.cdr_custom_spamlib']
+# To use Dilla
+# > python manage.py run_dilla --cycles=100
 
+
+
+#LANGUAGES
+#===========
+gettext = lambda s: s
 LANGUAGES = (
     ('en', gettext('English')),
     ('fr', gettext('French')),  
@@ -134,4 +148,10 @@ LANGUAGES = (
 #    ('ru', gettext('Russian')),
 )
 
+#IMPORT LOCAL SETTINGS
+#=====================
+try:
+    from settings_local import *
+except:
+    pass
 
