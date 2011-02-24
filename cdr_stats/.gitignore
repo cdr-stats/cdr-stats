@@ -1,0 +1,6 @@
+*.pyc
+*.db
+*nbproject*
+settings_local.py
+build*
+dist*
