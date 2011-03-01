@@ -616,7 +616,33 @@ an absolute waiver of all civil liability in connection with the
 Program, unless a warranty or assumption of liability accompanies a
 copy of the Program in return for a fee.
 
-                     END OF TERMS AND CONDITIONS
+ 18. Additional Terms added under the provisions of Section 7.
+
+  a) All legal notices including the AGPL V3 License, copyright and author attributions 
+must be preserved both in the code and clearly displayed on each interface wherever 
+they are currently displayed.
+
+ The copyright footer must contain the following elements.
+
+A2Billing is software licensed under the AGPL 3
+Copyright (C) 2004-2011 - Star2billing S.L.
+http://www.star2billing.com/
+
+ If, for any reason, there is a requirement to remove the display of legal notices on the 
+graphical user interface, then a “Permission” can be obtained for this purpose from Star2Billing S.L. 
+There is more information at http://www.star2billing.com/about_us/licensing/
+
+ b) The origin of this software must not be misrepresented. You must not claim that you 
+wrote the original software, for instance, by replacing Star2Billing's copyright with your own. 
+Altered Source versions must be marked in reasonable ways as being different from the original, 
+and must not be misrepresented as being the original software.
+
+ c) The names and trademarks of copyright holders may not be used to endorse or 
+promote products and services pertaining to Star2Billing S.L. and its software 
+without specific, written prior permission.
+ 
+
+                    END OF TERMS AND CONDITIONS
 
             How to Apply These Terms to Your New Programs
 
