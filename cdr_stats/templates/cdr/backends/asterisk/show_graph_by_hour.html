@@ -1,0 +1,129 @@
+{% extends "cdr/master.html" %}
+{% load i18n %}
+{% load cdr_extras %}
+{% load uni_form_tags %}
+
+{% block extra_header %}
+    {% include "cdr/visualize_header.html" %}
+
+    <script type="text/javascript">
+    $(function() {
+        $("#id_from_date").datepicker({ dateFormat: 'yy-mm-dd' });
+    });
+    </script>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="search-form">
+{% with form.helper as helper %}
+    {% uni_form form helper %}
+{% endwith %}
+
+</div>
+
+<br/><br/>
+
+<script id="source" language="javascript" type="text/javascript">
+$(function () {
+
+    function Info(date,time,info){
+        data = [
+        {% for date,list in total_record.items %}
+            {% for hour,calls in list.items %}
+                ['{{date}}',{{hour}},{{calls}}],
+            {% endfor %}
+        {% endfor %}];
+
+        for(var i in data){
+            if(data[i][0] == date){
+                
+                switch(info){
+                    case 0:
+                        return data[i][0];
+                    break;
+                    case 1:
+                        if(time < 10)
+                            time = '0' + time;
+                        return time + ':00';
+                    break;
+                    case 2:
+                        if(data[i][1] == time)
+                            return data[i][2];
+                    break;
+                    default:
+                        return data[i][0];
+                }
+            }
+        }
+    }
+
+    var data = [
+                    {% for date,list in total_record.items %}
+                            {
+                                label: '{{date}}',
+                                data: [
+                                        {% for hour,calls in list.items %}
+                                                [{{hour}},{{calls}}],
+                                        {% endfor %}
+                                    ],
+                            },
+                    {% endfor %}
+                ];
+
+
+    var options = {
+                    legend: {
+                                position: "ne",
+                                margin: [-510,0],
+                                labelFormatter: function(label){
+                                    return '<div class="graph_legend">'+label+'</div>';
+                                },
+                          },
+                    series: {
+                                lines: { show: true },
+                                points: { show: true }
+                          },
+                    yaxis: {
+                                min: 0,
+                                tickDecimals: false
+                          },
+                    xaxis: {
+                                min: 0,
+                                max: 23,
+                                tickSize: 1,
+                                tickDecimals: false,
+                          },
+                    grid: {
+                                hoverable: true,
+                                xaxis: false
+                          },
+                    tooltip: {
+                                formatter: function(obj){
+                                    var time = obj.x;
+                                    var date = obj.label;
+                                    output = '<div class="graph_tooltip_header">' + date + '</div><div class="graph_tooltip_info">{% trans "Hour" %}: ' + Info(date,time,1) + '<br>';
+                                    
+                                    output += {% if graph_view == '1' %}
+                                                    '{% trans "Calls" %}: ' + Info(date,time,2) + '</div>';
+                                              {% else %}
+                                                    '{% trans "Minutes" %}: ' + Info(date,time,2) + ' min</div>';
+                                              {% endif %}
+                                    return output;
+                                },
+                          }
+                  };
+    var plot = $.plot($("#placeholder"), data, options);
+    
+});
+</script>
+
+<center>
+    <div class="graph_header">{% trans "Asterisk Call Statistics" %}</div>
+    <div id="placeholder" style="width:700px;height:300px"></div>
+</center>
+
+{% endblock %}
+
+

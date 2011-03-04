@@ -25,12 +25,16 @@ DATABASES = {
     },
 }
 
-ASTERISK_CDR_TABLE_NAME = 'cdr' # Name of the table containing the Asterisk/FreeSwitch CDR
-
 # Only the Asterisk CDR table is supported at the moment, 
 # but Freeswitch and other platform will be soon
-VOIP_PLATFORM = 'AsteriskCDR' # AsteriskCDR, FreeSWITCHCDR
+VOIP_PLATFORM = 'Asterisk' # Asterisk, Freeswitch
 
+# Name of the table containing the Asterisk/FreeSwitch CDR
+ASTERISK_CDR_TABLE_NAME = 'cdr'
+ 
+
+# Base folder for respective templates
+BASE_TEMPLATE_PATH = 'cdr/backends/'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -79,7 +83,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'cdr.colorsql.ColorSQLMiddleware',
+    #'cdr.colorsql.ColorSQLMiddleware',
 )
 
 ROOT_URLCONF = 'cdr_stats.urls'

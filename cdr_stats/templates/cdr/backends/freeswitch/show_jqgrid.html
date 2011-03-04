@@ -1,0 +1,106 @@
+{% extends "cdr/master.html" %}
+{% load i18n %}
+{% load cdr_extras %}
+{% load uni_form_tags %}
+
+{% block extra_head %}
+
+<script type="text/javascript">
+$(function () {
+    $.getJSON("{% url grid_config %}", function(data){
+        $("#mygrid")
+            .jqGrid(data)
+            .navGrid('#pager', 
+                {add: false, edit: false, del: false, view: true},
+        {}, // edit options
+        {}, // add options
+        {}, // del options 
+        { multipleSearch:true, closeOnEscape:true }, // search options 
+        { jqModal:true, closeOnEscape:true} // view options
+        ).filterToolbar({stringResult: true,searchOnEnter : false});
+    });
+});
+</script>
+
+<script type="text/javascript">
+$(function() {
+    var dates = $('#id_from_date, #id_to_date').datepicker({
+        defaultDate: "+1w",
+        changeMonth: true,
+        dateFormat: 'yy-mm-dd',
+        onSelect: function(selectedDate) {
+            var option = this.id == "id_from_date" ? "minDate" : "maxDate";
+            var instance = $(this).data("datepicker");
+            var date = $.datepicker.parseDate(instance.settings.dateFormat || $.datepicker._defaults.dateFormat, selectedDate, instance.settings);
+            dates.not(this).datepicker("option", option, date);
+        }
+    });
+});
+</script>
+
+{% endblock %}
+
+{% block content %}
+<div class="search-form">
+{% with form.helper as helper %}
+    {% uni_form form helper %}
+{% endwith %}
+</div>
+
+
+<p>&nbsp;</p>
+<div id="cdr-container" class='tabcontainer'>
+
+    <div id='general-info'>
+        <table id="mygrid"></table>
+		<div id="pager"></div>
+    </div>
+
+</div>
+<p>&nbsp;</p>
+
+
+
+<table class="gradient-style">
+    <caption>{% trans "Call Detail Report by Day"  %}</caption>
+    <thead>
+    	<tr>
+            <th scope="col">{% trans "Date"  %}</th>
+            <th scope="col">{% trans "Duration"  %}</th>
+            <th scope="col">{% trans "Graphic"  %}</th>
+            <th scope="col">{% trans "Calls"  %}</th>
+            <th scope="col"><acronym title="{% trans "Average Connection Time"  %}">{% trans "ACT"  %}</acronym></th>
+        </tr>
+    </thead>
+    <tbody>    
+        {% for td in total_data %}
+        <tr>
+            <th scope="row">{{td.calldate}}</th>
+            <td>{{td.duration__sum|conv_min}}</td>
+            <td>{% if max_duration > 0 %}
+                <img src="{{MEDIA_URL}}/images/spacer.png" width="{{td.duration__sum|cal_width:max_duration}}" style="vertical-align:center;" height="10"/>
+                {% endif %}
+            </td>
+            <td>{{td.calldate__count}}</td>
+            <td>{{td.duration__avg|conv_min}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+    	<tr>
+            <th scope="row">{% trans "Total"  %}</th>
+            <td>{{total_duration|conv_min}}</td>
+            <td></td>
+            <td>{{total_calls}}</td>
+            <td>{{total_avg_duration|conv_min}}</td>
+        </tr>
+    </tfoot>
+</table>
+
+
+<div id='export-container'>
+    {% trans "Export CSV file"  %} <br/>
+    <a href="/export_csv/" target="_blank"><img src='{{MEDIA_URL}}/icons/x-office-spreadsheet.png' width="75"/></a>
+</div>
+
+{% endblock %}

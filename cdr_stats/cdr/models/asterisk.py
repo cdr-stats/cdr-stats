@@ -2,11 +2,6 @@ from django.db import models
 from django.db.models import *
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
-from django.contrib.auth.models import User
-
-from abstract import AbstractCDR
-import string
-from datetime import *
 
 DISPOSITION = (
     (1, _('ANSWER')),
@@ -19,65 +14,11 @@ DISPOSITION = (
     (8, _('TORTURE')),
     (9, _('INVALIDARGS')),
 )
+
 dic_disposition = {'ANSWER': '1', 'ANSWERED': '1', 'BUSY': '2', 'NOANSWER': '3', 'NO ANSWER': '3', 'CANCEL': '4', 'FAILED': '4', 'CONGESTION': '5', 'CHANUNAVAIL': '6', 'DONTCALL': '7', 'TORTURE': '8', 'INVALIDARGS': '9'}
 
 
-class Company(models.Model):
-    name = models.CharField(max_length=50, blank=False, null=True)
-    address = models.TextField(max_length=400, blank=True, null=True)
-    phone = models.CharField(max_length=30, blank=True, null=True)
-    fax = models.CharField(max_length=30, blank=True, null=True)
-    
-    def __unicode__(self):
-        return '[%s] %s' %(self.id, self.name)
-        
-    class Meta:
-        verbose_name = _("Company")
-        verbose_name_plural = _("Companies")
-        #app_label = "Company"
-        db_table = "cdr_company"
-        
-    class Dilla:
-        skip_model = True        
-
-class UserProfile(models.Model):
-    user = models.OneToOneField(User)
-    accountcode = models.PositiveIntegerField(null=True, blank=True)
-    company = models.OneToOneField(Company, verbose_name='Company', null=True, blank=True)
-    
-    class Dilla:
-        skip_model = True
-        
-    class Meta:
-        db_table = "cdr_userprofile"
-
-
-class Customer(User):    
-    class Meta:
-        proxy = True
-        #app_label = 'auth'
-        verbose_name = 'Customer'
-        verbose_name_plural = 'Customers'
-    class Dilla:
-        skip_model = True
-
-class Staff(User):
-    class Meta:
-        proxy = True
-        #app_label = 'auth'
-        verbose_name = 'Admin'
-        verbose_name_plural = 'Admins'
-    class Dilla:
-        skip_model = True
-        
-    def save(self, **kwargs):
-        if not self.pk:
-            self.is_staff = 1
-            self.is_superuser = 1
-        super(Staff, self).save(**kwargs)
-
-
-class AsteriskCDR(models.Model, AbstractCDR):
+class AsteriskCDR(models.Model):
     #acctid = models.PositiveIntegerField(primary_key=True, db_column = 'acctid')
     src = models.CharField(max_length=80, blank=True)
     dst = models.CharField(max_length=80, blank=True)
@@ -98,11 +39,11 @@ class AsteriskCDR(models.Model, AbstractCDR):
     #test = models.CharField(max_length=80, blank=True)
     
     class Meta:
-        db_table = getattr(settings, 'ASTERISK_CDR_TABLE_NAME', 'asterisk_cdr' )
+        db_table = getattr(settings, 'ASTERISK_CDR_TABLE_NAME', 'cdr' )
         # Only in trunk 1.1 managed = False     # The database is normally already created
         verbose_name = _("CDR")
         verbose_name_plural = _("CDR's")
-        #app_label = "Call Detail Records"
+        app_label = "CDR"
 
     def __unicode__(self):
         return "%s -> %s" % (self.src,self.dst)
@@ -113,11 +54,6 @@ class AsteriskCDR(models.Model, AbstractCDR):
     @permalink
     def get_absolute_url(self):
         return ('cdr_detail', [str(self.id)])
-        
-    def show_graph_by_day(self, **kwargs):
-    	 select_data = {"called_time": "SUBSTR(CAST(calldate as CHAR(30)),12,2)"} # get Hour
-    	 calls_in_day = AsteriskCDR.objects.filter(**kwargs).extra(select=select_data).values('called_time').annotate(Count('calldate'))#.order_by('-calldate')#
-    	 return calls_in_day
         
     class Dilla:
         skip_model = False

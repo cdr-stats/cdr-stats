@@ -1,0 +1,156 @@
+{% extends "cdr/master.html" %}
+{% load i18n %}
+
+{% load cdr_extras %}
+{% load uni_form_tags %}
+
+{% block extra_header %}
+    {% include "cdr/visualize_header.html" %}
+{% endblock %}
+ 
+{% block content %}
+<div class="search-form">
+{% with form.helper as helper %}
+    {% uni_form form helper %}
+{% endwith %}
+</div>
+
+<br/><br/>
+
+<script type="text/javascript">
+$(function() {
+    $('#id_from_month_year').datepicker( {
+        changeMonth: true,
+        changeYear: true,
+        showButtonPanel: true,
+        dateFormat: 'yy-mm',
+        onClose: function(dateText, inst) { 
+            var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+            var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+            $(this).datepicker('setDate', new Date(year, month, 1));
+        }
+    });
+});
+</script>
+<style>
+.ui-datepicker-calendar {
+    display: none;
+    }
+</style>
+
+<script language="javascript" type="text/javascript">
+$(function () {
+
+    function MonthName(m,type){
+        var short_month = new Array(
+            "{% trans "Jan" %}",
+            "{% trans "Feb" %}",
+            "{% trans "Mar" %}",
+            "{% trans "Apr" %}",
+            "{% trans "May" %}",
+            "{% trans "Jun" %}",
+            "{% trans "Jul" %}",
+            "{% trans "Aug" %}",
+            "{% trans "Sep" %}",
+            "{% trans "Oct" %}",
+            "{% trans "Nov" %}",
+            "{% trans "Dec" %}");
+        var month = new Array(
+            "{% trans "January" %}",
+            "{% trans "February" %}",
+            "{% trans "March" %}",
+            "{% trans "April" %}",
+            "{% trans "May" %}",
+            "{% trans "June" %}",
+            "{% trans "July" %}",
+            "{% trans "August" %}",
+            "{% trans "September" %}",
+            "{% trans "October" %}",
+            "{% trans "November" %}",
+            "{% trans "December" %}");
+        if(type == 0)
+            return short_month[m-1];
+        else
+            return month[m-1];
+    }
+
+    function int_convert_to_minute(value){
+        min = (value / 60) + "";
+        min = min.substring(0,(min.indexOf(".")));
+        if(min < 10){
+            min = "0" + min;
+        }
+        sec = value % 60;
+        if(sec < 10){
+            sec = "0" + sec;
+        }
+        return min + ":" + sec;
+    }
+
+
+    var data = [    {% for year in total_record %}
+                        {% ifchanged year.1 %}
+                            {
+                                label: '{{year.1}}',
+                                data: [
+                                        {% for call in total_record %}
+                                            {% ifequal year.1 call.1 %}
+                                                [{{call.0}},{{call.2}}],
+                                            {% endifequal %}
+                                        {% endfor %}
+                                    ],
+                            },
+                        {% endifchanged %}
+                    {% endfor %}
+                ];
+
+    var options = {
+                    legend: {
+                                position: "se",
+                                margin: [-510,50]
+                          },
+                    series: {
+                                bars: { show: true },
+                          },
+                    yaxis: {
+                                min: 0,
+                                tickDecimals: false
+                          },
+                    xaxis: {
+                                min: 1,
+                                max: 13,
+                                tickSize: 1,
+                                tickDecimals: false,
+                                tickFormatter:
+                                    function (x) { 
+                                        var output = '';
+                                        if(x < 13){
+                                            for(var i=0; i < 15; i++)
+                                                output += "&nbsp;";
+                                            output += MonthName(x, 0);
+                                        }
+                                        return output;
+                                    }
+                          },
+                    grid: {
+                                hoverable: true,
+                                xaxis: false
+                          },
+                    tooltip: {
+                                formatter: function(obj){
+                                    output = '<div class="graph_tooltip_header">' + MonthName(obj.x, 1) + ', ' + obj.label + '</div><div class="graph_tooltip_info">{% trans "Duration" %}: ' + int_convert_to_minute(obj.y) + '</div>';
+                                    return output;
+                                },
+                          }
+                  };
+
+    $.plot($("#placeholder"), data, options);
+});
+</script>
+
+<center>
+   <div class="graph_header">{% blocktrans %}Asterisk Traffic Last {{comp_months}} Months{% endblocktrans %}</div>
+    <div id="placeholder" style="width:700px;height:300px"></div>
+</center>
+
+{% endblock %}
