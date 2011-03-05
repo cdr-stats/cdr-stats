@@ -43,7 +43,7 @@ class AsteriskCDR(models.Model):
         # Only in trunk 1.1 managed = False     # The database is normally already created
         verbose_name = _("CDR")
         verbose_name_plural = _("CDR's")
-        app_label = "CDR"
+        app_label = "cdr"
 
     def __unicode__(self):
         return "%s -> %s" % (self.src,self.dst)

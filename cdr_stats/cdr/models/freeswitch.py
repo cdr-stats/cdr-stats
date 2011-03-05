@@ -39,11 +39,11 @@ class FreeswitchCDR(models.Model):
     #test = models.CharField(max_length=80, blank=True)
     
     class Meta:
-        db_table = getattr(settings, 'ASTERISK_CDR_TABLE_NAME', 'cdr' )
+        db_table = getattr(settings, 'FREESWITCH_CDR_TABLE_NAME', 'freeswitch_cdr' )
         # Only in trunk 1.1 managed = False     # The database is normally already created
-        verbose_name = _("CDR")
-        verbose_name_plural = _("CDR's")
-        app_label = "CDR"
+        verbose_name = _("FS CDR")
+        verbose_name_plural = _("FS CDR's")
+        app_label = "fs_cdr"
 
     def __unicode__(self):
         return "%s -> %s" % (self.src,self.dst)
