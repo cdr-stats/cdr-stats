@@ -60,7 +60,7 @@ USE_I18N = True
 USE_L10N = True
 
 MEDIA_ROOT = os.path.join( APPLICATION_DIR, 'resources' )
-MEDIA_URL = 'http://localhost:8000/resources/'
+MEDIA_URL = 'http://localhost:10000/resources/'
 ADMIN_MEDIA_PREFIX = '/resources/admin/'
 
 

@@ -13,13 +13,7 @@ from datetime import *
 from dateutil import parser
 from dateutil.relativedelta import *
 from sets import *
-from operator import *
-import calendar
-import time
-import operator
 import string
-import csv, codecs
-from operator import itemgetter
 from inspect import stack, getmodule
 
 from cdr_stats.helpers import json_encode
