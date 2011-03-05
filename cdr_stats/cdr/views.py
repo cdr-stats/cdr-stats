@@ -23,8 +23,7 @@ from operator import itemgetter
 from inspect import stack, getmodule
 
 from cdr_stats.helpers import json_encode
-from cdr import backend
-from cdr.backend import BackendNotFound, BackendNotConfigured
+from cdr.backend import BackendNotFound, BackendNotConfigured, get_cdr_backend, run_backend_view
 from cdr.models import AsteriskCDR as CDR
 from cdr.forms import *
 from grid import ExampleGrid
@@ -32,21 +31,6 @@ from grid import ExampleGrid
 
 def current_view():
     return stack()[1][3]
-
-
-def run_backend_view(request, func_name):
-    try:
-        cdr_backend_instance = backend.get_cdr_backend(settings.VOIP_PLATFORM)
-    except BackendNotFound:
-        raise  BackendNotFound
-    except BackendNotConfigured:
-        raise BackendNotConfigured
-
-    func = getattr(cdr_backend_instance, func_name)
-    try:
-        return func(request)
-    except NotImplementedError:
-        raise NotImplementedError
 
 
 @login_required
