@@ -4,3 +4,4 @@
 settings_local.py
 build*
 dist*
+static/*
