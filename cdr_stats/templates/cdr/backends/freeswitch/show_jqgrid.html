@@ -78,7 +78,7 @@ $(function() {
             <th scope="row">{{td.calldate}}</th>
             <td>{{td.duration__sum|conv_min}}</td>
             <td>{% if max_duration > 0 %}
-                <img src="{{MEDIA_URL}}/images/spacer.png" width="{{td.duration__sum|cal_width:max_duration}}" style="vertical-align:center;" height="10"/>
+                <img src="{{STATIC_URL}}/images/spacer.png" width="{{td.duration__sum|cal_width:max_duration}}" style="vertical-align:center;" height="10"/>
                 {% endif %}
             </td>
             <td>{{td.calldate__count}}</td>
@@ -100,7 +100,7 @@ $(function() {
 
 <div id='export-container'>
     {% trans "Export CSV file"  %} <br/>
-    <a href="/export_csv/" target="_blank"><img src='{{MEDIA_URL}}/icons/x-office-spreadsheet.png' width="75"/></a>
+    <a href="/export_csv/" target="_blank"><img src='{{STATIC_URL}}/icons/x-office-spreadsheet.png' width="75"/></a>
 </div>
 
 {% endblock %}
