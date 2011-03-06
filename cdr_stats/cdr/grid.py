@@ -1,6 +1,5 @@
-#from cdr import backend
-from django.conf import settings
 from jqgrid import *
+#from cdr import backend
 from cdr.views import *
 from django.utils.translation import gettext as _
 

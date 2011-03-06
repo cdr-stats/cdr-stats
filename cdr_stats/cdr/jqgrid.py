@@ -33,8 +33,6 @@ from django.core.exceptions import FieldError, ImproperlyConfigured
 from django.core.paginator import Paginator, InvalidPage
 from django.utils import simplejson as json
 from django.utils.encoding import smart_str
-from django.http import Http404
-#from util.json import json_encode
 from cdr_stats.helpers import json_encode
 from django.core.urlresolvers import reverse
 

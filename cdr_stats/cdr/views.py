@@ -1,31 +1,18 @@
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render_to_response
-from django.db.models import *
 from django.template.context import RequestContext
-from django.conf import settings
-from django.utils.translation import gettext as _
-from django.db.models.loading import get_model
-
-from datetime import *
-from dateutil import parser
-from dateutil.relativedelta import *
-from sets import *
-import string
-from inspect import stack, getmodule
 
 from cdr_stats.helpers import json_encode
-from cdr.backend import BackendNotFound, BackendNotConfigured, get_cdr_backend, run_backend_view
-from cdr.models import AsteriskCDR as CDR
+from cdr.backend import run_backend_view
 from cdr.forms import *
 from grid import ExampleGrid
+from inspect import stack
 
 
 def current_view():
     return stack()[1][3]
-
 
 @login_required
 def grid_handler(request):
@@ -51,7 +38,6 @@ def grid_config(request):
 @login_required
 def show_cdr(request): 
     return run_backend_view(request, current_view())
-
 
 
 @login_required

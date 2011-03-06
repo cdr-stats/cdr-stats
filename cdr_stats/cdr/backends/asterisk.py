@@ -1,29 +1,15 @@
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render_to_response
-from django.db.models import *
 from cdr.models import AsteriskCDR as CDR
 from django.template.context import RequestContext
 from cdr.forms import *
 from cdr.models import *
 #from grid import ExampleGrid
 from datetime import *
-from dateutil import parser
 from dateutil.relativedelta import *
-from sets import *
-from django.db.models.loading import get_model
-from operator import *
 from cdr_stats.helpers import json_encode
-from uni_form.helpers import FormHelper, Submit, Reset
 from django.utils.translation import gettext as _
-import calendar
-import time
-import operator
-import string
-import csv, codecs
-from operator import itemgetter
+import csv
 from inspect import stack, getmodule
 
 from cdr.backend import CDRBackend, get_cdr_backend_template

@@ -5,7 +5,6 @@ from random import *
 import calendar
 import string
 import urllib
-import time
 
 #related to date manipulation
 def relative_days(from_day,from_year):

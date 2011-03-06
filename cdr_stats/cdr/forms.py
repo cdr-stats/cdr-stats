@@ -1,9 +1,5 @@
-from django import *
-from django import forms
-from cdr.models import *
 from cdr.functions_def import *
 from django.forms import *
-from django.contrib import *
 from django.contrib.admin.widgets import *
 from django.utils.translation import ugettext_lazy as _
 from uni_form.helpers import FormHelper, Submit, Reset
