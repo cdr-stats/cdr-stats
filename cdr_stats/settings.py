@@ -56,7 +56,7 @@ USE_I18N = True
 USE_L10N = True
 
 MEDIA_ROOT = os.path.join( APPLICATION_DIR, 'resources' )
-MEDIA_URL = 'http://localhost:8000/resources/'
+MEDIA_URL = 'http://0.0.0.0:8000/resources/'
 ADMIN_MEDIA_PREFIX = '/resources/admin/'
 
 
@@ -106,6 +106,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
+    'django.contrib.markup',
     'django.contrib.admindocs',
     'cdr',
     'dilla',

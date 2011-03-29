@@ -193,4 +193,16 @@ def int_convert_to_minute(value):
     return "%02d" % min + ":" + "%02d" % sec
 
 
-
+def isint( str ):
+    """ Is the given string an integer """
+    ok = 1
+    if not str:
+        return 0
+    
+    try:
+        num = int(str)
+    except ValueError:
+        ok = 0
+    except TypeError:
+        ok = 0
+    return ok
