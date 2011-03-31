@@ -29,6 +29,8 @@ urlpatterns = patterns('',
 
     (r'^i18n/', include('django.conf.urls.i18n')),
     
+    (r'^admin_tools/', include('admin_tools.urls')),
+    
     ( r'^resources/(?P<path>.*)$',
       'django.views.static.serve',
       { 'document_root': settings.MEDIA_ROOT } ),

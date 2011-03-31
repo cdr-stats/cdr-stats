@@ -11,3 +11,4 @@ hg+https://bitbucket.org/jespern/django-piston
 git+https://github.com/pydanny/django-uni-form.git
 South==0.7.3
 hg+https://bitbucket.org/izi/django-admin-tools
+git+git://github.com/Star2Billing/switch2bill-common.git

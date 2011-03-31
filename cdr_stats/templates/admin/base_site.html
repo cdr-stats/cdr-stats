@@ -1,10 +1,22 @@
 {% extends "admin/base.html" %}
-{% load i18n %}
+{% load i18n admin_tools_menu_tags %}
 
-{% block title %}{{ title }} | {% trans 'CDR-Stat Admin Panel' %}{% endblock %}
+{% block title %}{% trans 'CDR-Stats Admin' %}{% endblock %}
 
-{% block branding %}
-<h1 id="site-name">{% trans 'CDR-Stat Admin Panel' %}</h1>
+{% block extrastyle %}
+{{ block.super }}
+{% if user.is_active and user.is_staff %}
+{% if not is_popup %}
+{% admin_tools_render_menu_css %}
+{% endif %}
+{% endif %}
 {% endblock %}
 
-{% block nav-global %}{% endblock %}
+
+{% block nav-global %}
+{% if user.is_active and user.is_staff %}
+{% if not is_popup %}
+{% admin_tools_render_menu %}
+{% endif %}
+{% endif %}
+{% endblock %}
