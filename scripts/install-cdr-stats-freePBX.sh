@@ -91,7 +91,12 @@ echo "Install Dependencies and python modules..."
 yum -y install python-setuptools python-tools python-devel mod_python
 
 # Install DateUtils
-easy_install DateUtils
+easy_install -U python_dateutil==1.5
+
+#install docutils
+easy_install_docutils
+
+
 
 # Install Mysql-Python
 easy_install MySQL-python
