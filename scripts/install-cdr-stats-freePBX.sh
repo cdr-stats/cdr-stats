@@ -222,6 +222,7 @@ Listen *:9000
                     PythonPath "[@/usr/share/django_app/cdr_stats/@, @/usr/share/django_app/@] + sys.path"
                     SetEnv DJANGO_SETTINGS_MODULE cdr_stats.settings
                     PythonDebug On
+                    SetEnv PYTHON_EGG_CACHE /usr/share/django_app/cdr_stats/.python-eggs
             </Location>
 
             <location "/media">
@@ -235,6 +236,8 @@ Listen *:9000
 #correct the above file
 sed -i "s/@/'/g"  $APACHE_CONF_DIR/cdr-stats.conf
 
+mkdir /usr/share/django_app/cdr_stats/.python-eggs
+chmod 777 /usr/share/django_app/cdr_stats/.python-eggs
 
 service httpd restart
 
