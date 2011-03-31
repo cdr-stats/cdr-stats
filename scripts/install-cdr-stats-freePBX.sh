@@ -115,11 +115,6 @@ sed -i "/'PASSWORD'/s/''/'$MYSQLPASSWORD'/" /usr/share/django_app/cdr_stats/sett
 sed -i "/'HOST'/s/''/'localhost'/" /usr/share/django_app/cdr_stats/settings.py
 sed -i "/'PORT'/s/''/'3306'/" /usr/share/django_app/cdr_stats/settings.py
 sed -i "s/'dilla'/#'dilla'/" /usr/share/django_app/cdr_stats/settings.py
-
-
-#Setup template for admin screens
-cd /usr/share/django_app/cdr_stats/resources
-ln -s /usr/lib/python2.4/site-packages/django/contrib/admin/media/ admin
 sed -i "s/8000/9000/"  /usr/share/django_app/cdr_stats/settings.py
 
 
@@ -130,6 +125,10 @@ mkdir database
 chmod -R 777 database
 python manage.py syncdb
 python manage.py migrate
+
+
+#Collect static files from apps and other locations in a single location.
+python manage.py collectstatic -l
 
 
 #Update Database
