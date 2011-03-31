@@ -43,10 +43,9 @@ admin.site.register(Company, CompanyAdmin)
 
 # Setting
 class CDRAdmin(admin.ModelAdmin):
-    list_display = ('id', 'src', 'dst', 'calldate', 'clid', 'channel', 'duration', 'disposition', 'accountcode')
+    list_display = ('acctid', 'src', 'dst', 'calldate', 'clid', 'channel', 'duration', 'disposition', 'accountcode')
     list_filter = ['calldate', 'accountcode']
     search_fields = ('accountcode', 'dst', 'src')
-    ordering = ('-id',)
 
 admin.site.register(CDR, CDRAdmin)
 

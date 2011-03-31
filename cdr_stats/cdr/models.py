@@ -75,7 +75,9 @@ class Staff(User):
 
 
 class CDR(models.Model):
-    #acctid = models.PositiveIntegerField(primary_key=True, db_column = 'acctid')
+    #FreePBX is adding a acctid to the Asterisk table
+    #it's a good practice to have an id
+    acctid = models.AutoField(primary_key=True, db_column = 'acctid')
     src = models.CharField(max_length=80, blank=True, null=True)
     dst = models.CharField(max_length=80, blank=True, null=True)
     calldate = models.DateTimeField()

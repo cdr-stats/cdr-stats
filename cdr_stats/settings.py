@@ -16,7 +16,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.sqlite3', # Add 'django.db.backends.postgresql', 'django.db.backends.mysql', 'django.db.backends.sqlite3' or 'django.db.backends.oracle'.
         'NAME': os.path.dirname(os.path.abspath( __file__ )) + '/database/local.db', # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
@@ -102,7 +102,7 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.sites',
+    #'django.contrib.sites',
     'django.contrib.messages',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
@@ -114,7 +114,7 @@ INSTALLED_APPS = (
     #'django_extensions',
     'dateutil',
     'uni_form',
-    'south',
+    #'south',
 )
 
 AUTH_PROFILE_MODULE = 'cdr.UserProfile'

@@ -22,9 +22,7 @@
 #Variables
 #comment out the appropriate line below to install the desired version
 #CDRSTATSVERSION=master
-CDRSTATSVERSION=v1.2.0
-DJANGOUNIFORMVERSION=0.8.0
-DJANGOVERSION=1.2.3
+CDRSTATSVERSION=v1.3.0
 MYSQLROOTPASSWOOD=passw0rd
 MYSQLUSER=asteriskuser
 MYSQLPASSWORD=amp109
@@ -57,20 +55,18 @@ APACHE_CONF_DIR="/etc/httpd/conf.d/"
 IFCONFIG=`which ifconfig 2>/dev/null||echo /sbin/ifconfig`
 IPADDR=`$IFCONFIG eth0|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'`
 
-#Get Django
-$DIRECTORY = "/usr/src/Django-$DJANGOVERSION"
-if [ -d "$DIRECTORY" ]; then
-    echo "Django Already Installed!"
-else
-    echo "Installing Django..."
-    cd /usr/src
-    wget -O Django-$DJANGOVERSION.tar.gz http://www.djangoproject.com/download/$DJANGOVERSION/tarball/
-    tar zxfv Django-*.tar.gz
-    rm -rf Django-*.tar.gz
-    mv Django Django-$DJANGOVERSION
-    cd Django-$DJANGOVERSION
-    python setup.py install
-fi
+
+#python setup tools
+echo "Install Dependencies and python modules..."
+yum -y install python-setuptools python-tools python-devel mod_python
+
+
+#Install PIP
+rpm -ivh http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-4.noarch.rpm 
+# disable epel repository since by default it is enabled. It is not recommended to keep 
+# non standard repositories activated. Use it just in case you need.
+sed -i "s/enabled=1/enable=0/" /etc/yum.repos.d/epel.repo 
+yum --enablerepo=epel install python-pip
 
 
 #get CDR-Stats
@@ -84,49 +80,17 @@ mv cdr-stats cdr-stats_$DATETIME
 mv Star2Billing-cdr-stats-* cdr-stats
 ln -s /usr/src/cdr-stats/cdr_stats /usr/share/django_app/cdr_stats
 
-cd /usr/src/
 
-#python setup tools
-echo "Install Dependencies and python modules..."
-yum -y install python-setuptools python-tools python-devel mod_python
+#Install Cdr-Stats depencencies
+pip install -r /usr/share/django_app/cdr-stats/requirements.txt
 
-# Install DateUtils
-easy_install -U python_dateutil==1.5
-
-#install docutils
-easy_install_docutils
-
-
-
-# Install Mysql-Python
-easy_install MySQL-python
-
-#Install SQLite
-#yum -y install sqlite sqlite-devel python-sqlite
-#easy_install pysqlite
-
-# Install Django Uni-Form
-cd /usr/src
-wget --no-check-certificate http://github.com/areski/django-uni-form/tarball/$DJANGOUNIFORMVERSION
-tar xvzf areski-django-uni-form-*.tar.gz
-rm areski-django-uni-form-*.tar.gz
-mv django-uni-form django-uni-form_$DATETIME
-mv areski-django-uni-form-* django-uni-form
-cd django-uni-form
-python setup.py build
-python setup.py bdist_egg
-easy_install dist/django_uni_form-$DJANGOUNIFORMVERSION-py2.4.egg
-
-# Install South
-easy_install South
 
 # Update Secret Key
 echo "Update Secret Key..."
 RANDPASSW=`</dev/urandom tr -dc A-Za-z0-9| (head -c $1 > /dev/null 2>&1 || head -c 50)`
 sed -i "s/^SECRET_KEY.*/SECRET_KEY = \'$RANDPASSW\'/g"  /usr/share/django_app/cdr_stats/settings.py
-
-
 echo ""
+
 
 # Disable Debug
 sed -i "s/DEBUG = True/DEBUG = False/g"  /usr/share/django_app/cdr_stats/settings.py
@@ -137,10 +101,11 @@ sed -i "s/TEMPLATE_DEBUG = DEBUG/TEMPLATE_DEBUG = False/g"  /usr/share/django_ap
 echo "Configure CDR-Stats to run on $IPADDR : 9000..."
 sed -i "s/localhost/$IPADDR/g"  /usr/share/django_app/cdr_stats/settings.py
 
+
 #FreePBX specific Config
 #Backup existing CDR Database
-
 mysqldump -uroot -p$MYSQLROOTPASSWOOD asteriskcdrdb > /root/asteriskcdrdb-$DATETIME.sql
+
 
 # Setup settings.py
 sed -i "s/'sqlite3'/'mysql'/"  /usr/share/django_app/cdr_stats/settings.py
@@ -151,11 +116,10 @@ sed -i "/'HOST'/s/''/'localhost'/" /usr/share/django_app/cdr_stats/settings.py
 sed -i "/'PORT'/s/''/'3306'/" /usr/share/django_app/cdr_stats/settings.py
 sed -i "s/'dilla'/#'dilla'/" /usr/share/django_app/cdr_stats/settings.py
 
+
 #Setup template for admin screens
 cd /usr/share/django_app/cdr_stats/resources
 ln -s /usr/lib/python2.4/site-packages/django/contrib/admin/media/ admin
-
-
 sed -i "s/8000/9000/"  /usr/share/django_app/cdr_stats/settings.py
 
 
@@ -166,6 +130,7 @@ mkdir database
 chmod -R 777 database
 python manage.py syncdb
 python manage.py migrate
+
 
 #Update Database
 RESULT=`/usr/bin/mysql -uroot -p$MYSQLROOTPASSWOOD <<SQL
@@ -232,28 +197,27 @@ Listen *:9000
 
 
 ' > $APACHE_CONF_DIR/cdr-stats.conf
-
 #correct the above file
 sed -i "s/@/'/g"  $APACHE_CONF_DIR/cdr-stats.conf
 
+
+#Fix permission on python-egg
 mkdir /usr/share/django_app/cdr_stats/.python-eggs
 chmod 777 /usr/share/django_app/cdr_stats/.python-eggs
-
 service httpd restart
 
+
 #Add IPTables Rule for Access
+if [ -e /etc/sysconfig/iptables -a `grep -i 9000 /etc/sysconfig/iptables | wc -l` -eq 0 ]; then
+	echo "Opening port 9000"
+	iptables -A INPUT -p tcp -m tcp --dport 9000 -j ACCEPT
+	service iptables save
+fi
 
-	#Create manager_custom.conf
-	if [ -e /etc/sysconfig/iptables -a `grep -i 9000 /etc/sysconfig/iptables | wc -l` -eq 0 ]; then
-		echo "Opening port 9000"
-		iptables -A INPUT -p tcp -m tcp --dport 9000 -j ACCEPT
-		service iptables save
-	fi
 
-	
-	clear
-	
-	
+clear
+
+
 echo "Installation Complete"
 echo ""
 echo "Please note that if this is run on a system with no eth0, e.g. Proxmox"
@@ -272,7 +236,3 @@ echo "Yours"
 echo "The Star2Billing Team"
 echo "http://www.star2billing.com and http://www.cdr-stats.org/"
 
-
-
-	
-	
