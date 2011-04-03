@@ -624,7 +624,7 @@ they are currently displayed.
 
  The copyright footer must contain the following elements.
 
-A2Billing is software licensed under the AGPL 3
+CDR-Stats is software licensed under the AGPL 3
 Copyright (C) 2004-2011 - Star2billing S.L.
 http://www.star2billing.com/
 
@@ -656,7 +656,7 @@ state the exclusion of warranty; and each file should have at least
 the "copyright" line and a pointer to where the full notice is found.
 
 
-    A2Billing, Commercial Open Source Telecom Billing platform,   
+    CDR-Stats, Web CDR viewer and CDR Statistics for Asterisk & Freeswitch
 	Copyright (C) 2004-2010 - Star2billing S.L. 
 	<http://www.star2billing.com/>
 
