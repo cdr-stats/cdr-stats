@@ -52,7 +52,7 @@ We are using myGengo to ease the translation :
 Support 
 -------
 
-Star2Billing S.L. offers consultancy including installation, training and customisation 
+Star2Billing S.L. (http://www.star2billing.com) offers consultancy including installation, training and customisation 
 
 Please email us at sales@star2billing.com for more information
     
