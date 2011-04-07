@@ -82,7 +82,7 @@ ln -s /usr/src/cdr-stats/cdr_stats /usr/share/django_app/cdr_stats
 
 
 #Install Cdr-Stats depencencies
-pip install -r /usr/share/django_app/cdr_stats/requirements.txt
+pip-python install -r /usr/share/django_app/cdr_stats/requirements.txt
 
 
 # Update Secret Key
