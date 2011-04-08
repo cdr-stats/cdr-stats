@@ -55,6 +55,28 @@ APACHE_CONF_DIR="/etc/httpd/conf.d/"
 IFCONFIG=`which ifconfig 2>/dev/null||echo /sbin/ifconfig`
 IPADDR=`$IFCONFIG eth0|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'`
 
+#install the RPMFORGE Repository
+
+if [ ! -f /etc/yum.repos.d/rpmforge.repo ];
+	then
+		# Install RPMFORGE Repo
+rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt		
+echo '
+[rpmforge]
+name = Red Hat Enterprise $releasever - RPMforge.net - dag
+mirrorlist = http://apt.sw.be/redhat/el5/en/mirrors-rpmforge
+enabled = 0
+protect = 0
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rpmforge-dag
+gpgcheck = 1
+' > /etc/yum.repos.d/rpmforge.repo
+		
+fi
+
+yum -y --enablerepo=rpmforge install git-core mercurial
+
+
+
 
 #python setup tools
 echo "Install Dependencies and python modules..."
@@ -62,11 +84,7 @@ yum -y install python-setuptools python-tools python-devel mod_python
 
 
 #Install PIP
-rpm -ivh http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-4.noarch.rpm 
-# disable epel repository since by default it is enabled. It is not recommended to keep 
-# non standard repositories activated. Use it just in case you need.
-sed -i "s/enabled=1/enable=0/" /etc/yum.repos.d/epel.repo 
-yum --enablerepo=epel install python-pip
+easy_install pip
 
 
 #get CDR-Stats
@@ -82,7 +100,7 @@ ln -s /usr/src/cdr-stats/cdr_stats /usr/share/django_app/cdr_stats
 
 
 #Install Cdr-Stats depencencies
-pip-python install -r /usr/share/django_app/cdr_stats/requirements.txt
+pip install -r /usr/share/django_app/cdr_stats/requirements.txt
 
 
 # Update Secret Key
