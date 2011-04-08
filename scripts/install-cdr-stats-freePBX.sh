@@ -126,7 +126,7 @@ mysqldump -uroot -p$MYSQLROOTPASSWOOD asteriskcdrdb > /root/asteriskcdrdb-$DATET
 
 
 # Setup settings.py
-sed -i "s/'sqlite3'/'mysql'/"  /usr/share/django_app/cdr_stats/settings.py
+sed -i "s/backends.sqlite3/backends.mysql/"  /usr/share/django_app/cdr_stats/settings.py
 sed -i "s/.*'NAME'/       'NAME': 'asteriskcdrdb',#/"  /usr/share/django_app/cdr_stats/settings.py
 sed -i "/'USER'/s/''/'$MYSQLUSER'/" /usr/share/django_app/cdr_stats/settings.py
 sed -i "/'PASSWORD'/s/''/'$MYSQLPASSWORD'/" /usr/share/django_app/cdr_stats/settings.py
