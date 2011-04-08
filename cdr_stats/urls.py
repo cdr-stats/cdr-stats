@@ -31,12 +31,7 @@ urlpatterns = patterns('',
     
     (r'^admin_tools/', include('admin_tools.urls')),
     
-    ( r'^resources/(?P<path>.*)$',
-      'django.views.static.serve',
-      { 'document_root': settings.MEDIA_ROOT } ),
-    
     # Jqgrid
-    
     url (r'^examplegrid/$', grid_handler, name='grid_handler'),
     url (r'^examplegrid/cfg/$', grid_config, name='grid_config'),
 	
@@ -54,8 +49,10 @@ urlpatterns = patterns('',
     (r'^logout/$',  'cdr.views.logout_view'),
 	(r'^index/$',   'cdr.views.index'),
 	(r'^pleaselog/$',   'cdr.views.pleaselog'),
-	
+    
+    # Serve static
+    (r'^static/(?P<path>.*)$', 'django.views.static.serve',
+     {'document_root': settings.STATIC_ROOT}),
 )
-
 
 
