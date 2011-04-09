@@ -90,13 +90,13 @@ class CustomIndexDashboard(Dashboard):
             deletable=False,
             collapsible=False,
             children=[
-                [_('Go to CDR-Stats'), 'http://www.cdr-stats.org/'],
+                [_('Go to CDR-Stats.org'), 'http://www.cdr-stats.org/'],
                 [_('Change password'),
                  reverse('%s:password_change' % site_name)],
                 [_('Log out'), reverse('%s:logout' % site_name)],
             ]
         ))
-        
+                
         # append a recent actions module
         self.children.append(modules.RecentActions(_('Recent Actions'), 5))
 

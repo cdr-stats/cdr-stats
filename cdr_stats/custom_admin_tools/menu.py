@@ -28,7 +28,8 @@ class CustomMenu(Menu):
             items.AppList(
                 _('Administration'),
                 models=('django.contrib.*',)
-            )
+            ),
+            items.MenuItem(_('CDR-Reporting'), reverse('admin:index')+'../cdr'),
         ]
 
     def init_with_context(self, context):
