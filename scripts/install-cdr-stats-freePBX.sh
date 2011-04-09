@@ -237,11 +237,6 @@ clear
 
 echo "Installation Complete"
 echo ""
-echo "Please note that if this is run on a system with no eth0, e.g. Proxmox"
-echo "You will have to edit:-"
-echo "/usr/src/cdr-stats/cdr_stats/settings.py"
-echo "Line 59, MEDIA_URL = and put in your IP address manually"
-echo "then restart apache with the command service httpd restart"
 echo ""
 echo ""
 echo "Please log on to CDR-Stats at "
