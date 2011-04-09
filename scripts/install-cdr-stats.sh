@@ -93,7 +93,7 @@ echo "Install CDR-Stats..."
 mkdir /usr/share/django_app/
 cd /usr/src/
 wget --no-check-certificate https://github.com/Star2Billing/cdr-stats/tarball/$VERSION
-mv master Star2Billing-newfies-$VERSION.tar.gz
+mv master Star2Billing-cdr-stats-$VERSION.tar.gz
 tar xvzf Star2Billing-cdr-stats-*.tar.gz
 rm -rf Star2Billing-cdr-stats-*.tar.gz
 mv cdr-stats cdr-stats_$DATETIME
