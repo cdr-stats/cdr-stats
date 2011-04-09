@@ -141,7 +141,7 @@ python manage.py syncdb
 
 
 #Collect static files from apps and other locations in a single location.
-python manage.py collectstatic -l
+python manage.py collectstatic -l --noinput
 
 
 #Update Database
