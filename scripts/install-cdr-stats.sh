@@ -49,26 +49,26 @@ IPADDR=`$IFCONFIG eth0|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'`
 #python setup tools
 echo "Install Dependencies and python modules..."
 case $DISTRO in
-        'UBUNTU')
-            apt-get -y install python-setuptools python-dev build-essential 
-            apt-get -y install libapache2-mod-python libapache2-mod-wsgi
-            easy_install pip
-            easy_install virtualenv
-            #ln -s /usr/local/bin/pip /usr/bin/pip
-            
-            #Install Extra dependencies on New OS
-            apt-get -y install mysql-server libmysqlclient-dev
-            apt-get -y install git-core
-            apt-get install mercurial
-        ;;
-        'CENTOS')
-            #install the RPMFORGE Repository
+    'UBUNTU')
+        apt-get -y install python-setuptools python-dev build-essential 
+        apt-get -y install libapache2-mod-python libapache2-mod-wsgi
+        easy_install pip
+        easy_install virtualenv
+        #ln -s /usr/local/bin/pip /usr/bin/pip
+        
+        #Install Extra dependencies on New OS
+        apt-get -y install mysql-server libmysqlclient-dev
+        apt-get -y install git-core
+        apt-get install mercurial
+    ;;
+    'CENTOS')
+        #install the RPMFORGE Repository
 
-            if [ ! -f /etc/yum.repos.d/rpmforge.repo ];
-	            then
-		            # Install RPMFORGE Repo
-            rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt		
-            echo '
+        if [ ! -f /etc/yum.repos.d/rpmforge.repo ];
+            then
+	            # Install RPMFORGE Repo
+        rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt		
+        echo '
 [rpmforge]
 name = Red Hat Enterprise $releasever - RPMforge.net - dag
 mirrorlist = http://apt.sw.be/redhat/el5/en/mirrors-rpmforge
@@ -77,22 +77,22 @@ protect = 0
 gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rpmforge-dag
 gpgcheck = 1
 ' > /etc/yum.repos.d/rpmforge.repo
-            fi
+        fi
 
-            yum -y --enablerepo=rpmforge install git-core mercurial
-            
-            #Install Python
-            yum -y install python-setuptools python-tools python-devel mod_python
-            #Install PIP
-            easy_install pip
-        ;;
+        yum -y --enablerepo=rpmforge install git-core mercurial
+        
+        #Install Python
+        yum -y install python-setuptools python-tools python-devel mod_python
+        #Install PIP
+        easy_install pip
+    ;;
 esac
 
 
 echo "Install CDR-Stats..."
 mkdir /usr/share/django_app/
 cd /usr/src/
-wget --no-check-certificate https://github.com/Star2Billing/cdr-stats/tarball/$CDRSTATSVERSION
+wget --no-check-certificate https://github.com/Star2Billing/cdr-stats/tarball/$VERSION
 tar xvzf Star2Billing-cdr-stats-*.tar.gz
 rm -rf Star2Billing-cdr-stats-*.tar.gz
 mv cdr-stats cdr-stats_$DATETIME
@@ -173,13 +173,13 @@ mkdir /usr/share/django_app/cdr_stats/.python-eggs
 chmod 777 /usr/share/django_app/cdr_stats/.python-eggs
 
 case $DISTRO in
-        'UBUNTU')
-            chown -R www-data.www-data /usr/share/django_app/cdr_stats/database/
-            service apache2 restart
-        ;;
-        'CENTOS')
-            service httpd restart
-        ;;
+    'UBUNTU')
+        chown -R www-data.www-data /usr/share/django_app/cdr_stats/database/
+        service apache2 restart
+    ;;
+    'CENTOS')
+        service httpd restart
+    ;;
 esac
 
 
