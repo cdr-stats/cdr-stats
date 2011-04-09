@@ -142,7 +142,7 @@ cd /usr/share/django_app/cdr_stats/
 mkdir database
 chmod -R 777 database
 python manage.py syncdb
-python manage.py migrate
+#python manage.py migrate
 
 
 #Collect static files from apps and other locations in a single location.

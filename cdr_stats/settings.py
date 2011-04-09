@@ -168,6 +168,7 @@ INSTALLED_APPS = (
     #'django_extensions',
     'dateutil',
     'uni_form',
+    #Disable South : Error with django 1.3
     #'south',
 )
 
