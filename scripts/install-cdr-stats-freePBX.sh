@@ -115,11 +115,6 @@ sed -i "s/DEBUG = True/DEBUG = False/g"  /usr/share/django_app/cdr_stats/setting
 sed -i "s/TEMPLATE_DEBUG = DEBUG/TEMPLATE_DEBUG = False/g"  /usr/share/django_app/cdr_stats/settings.py
 
 
-# Configure the IP
-echo "Configure CDR-Stats to run on $IPADDR : 9000..."
-sed -i "s/localhost/$IPADDR/g"  /usr/share/django_app/cdr_stats/settings.py
-
-
 #FreePBX specific Config
 #Backup existing CDR Database
 mysqldump -uroot -p$MYSQLROOTPASSWOOD asteriskcdrdb > /root/asteriskcdrdb-$DATETIME.sql
