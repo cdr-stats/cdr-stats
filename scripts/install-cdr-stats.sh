@@ -118,7 +118,7 @@ sed -i "s/TEMPLATE_DEBUG = DEBUG/TEMPLATE_DEBUG = False/g"  /usr/share/django_ap
 
 
 # Setup settings.py
-sed -i "s/'sqlite3'/'mysql'/"  /usr/share/django_app/cdr_stats/settings.py
+sed -i "s/backends.sqlite3/backends.mysql/"  /usr/share/django_app/cdr_stats/settings.py
 sed -i "s/.*'NAME'/       'NAME': 'cdr-stats',#/"  /usr/share/django_app/cdr_stats/settings.py
 sed -i "/'USER'/s/''/'$MYSQLUSER'/" /usr/share/django_app/cdr_stats/settings.py
 sed -i "/'PASSWORD'/s/''/'$MYSQLPASSWORD'/" /usr/share/django_app/cdr_stats/settings.py

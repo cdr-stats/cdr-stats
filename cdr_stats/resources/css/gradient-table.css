@@ -20,8 +20,7 @@
 	font-size: 13px;
 	font-weight: normal;
 	padding: 8px;
-	background: #b9c9fe url('/resources/images/table-images/gradhead_cyan.png') repeat-x;
-	border-top: 2px solid #d3ddff;
+	background: #b9c9fe url('/static/cdr-stats/images/table-images/gradhead_cyan.png') repeat-x;
 	border-bottom: 1px solid #fff;
 	color: #3079a9;
 }
@@ -32,7 +31,7 @@
 	border-bottom: 1px solid #fff;
 	color: #669;
 	border-top: 1px solid #fff;
-	background: #e8edff url('/resources/images/table-images/gradback_cyan.png') repeat-x;
+	background: #e8edff url('/static/cdr-stats/images/table-images/gradback_cyan.png') repeat-x;
 }
 
 .gradient-style tfoot tr td
@@ -41,11 +40,11 @@
 	font-size: 14px;
 	color: #555;
 	font-weight: solid;
-	background: #d0dafd url('/resources/images/table-images/gradhover_cyan.png') repeat-x;
+	background: #d0dafd url('/static/cdr-stats/images/table-images/gradhover_cyan.png') repeat-x;
 }
 
 .gradient-style tbody tr:hover td
 {
-	background: #d0dafd url('/resources/images/table-images/gradhover_cyan.png') repeat-x;
+	background: #d0dafd url('/static/cdr-stats/images/table-images/gradhover_cyan.png') repeat-x;
 	color: #3079a9;
 }

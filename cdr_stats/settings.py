@@ -163,7 +163,6 @@ INSTALLED_APPS = (
     'django.contrib.markup',
     'django.contrib.admindocs',
     'cdr',
-    #'dilla',
     #'debug_toolbar',
     #'django_extensions',
     'dateutil',

@@ -33,17 +33,12 @@ class Company(models.Model):
         verbose_name_plural = _("Companies")
         #app_label = "Company"
         db_table = "cdr_company"
-        
-    class Dilla:
-        skip_model = True        
+         
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     accountcode = models.PositiveIntegerField(null=True, blank=True)
     company = models.OneToOneField(Company, verbose_name='Company', null=True, blank=True)
-    
-    class Dilla:
-        skip_model = True
         
     class Meta:
         db_table = "cdr_userprofile"
@@ -55,8 +50,6 @@ class Customer(User):
         #app_label = 'auth'
         verbose_name = 'Customer'
         verbose_name_plural = 'Customers'
-    class Dilla:
-        skip_model = True
 
 class Staff(User):
     class Meta:
@@ -64,8 +57,6 @@ class Staff(User):
         #app_label = 'auth'
         verbose_name = 'Admin'
         verbose_name_plural = 'Admins'
-    class Dilla:
-        skip_model = True
         
     def save(self, **kwargs):
         if not self.pk:
@@ -112,36 +103,6 @@ class CDR(models.Model):
     @permalink
     def get_absolute_url(self):
         return ('cdr_detail', [str(self.id)])
-        
-    class Dilla:
-        skip_model = False
-    	field_extras={ #field extras are for defining custom dilla behavior per field
-		#	'email':{
-		#		'generator':'generate_EmailField', #can point to a callable, which must return the desired value. If this is a string, it looks for a method in the dilla.py file.
-		#	},
-		    'accountcode':{
-		        'integer_range':(10000, 99999)
-		    },
-		    'disposition':{
-		        'integer_range':(1, 9)
-		    },
-			'src':{
-				'generator':'phonenumber'
-			},
-			'dst':{
-				'generator':'phonenumber'
-			},
-			'clid':{
-				'generator':'phonenumber'
-			},
-			'channel':{
-				'generator':'sip_URI'
-			},
-			'calldate':{
-				'day_delta': 10, #The day delta to generate the date, minus today
-				'hour_delta': 24, #The day delta to generate the date, minus the current hour
-			},
-		}
-
+    
 
 
