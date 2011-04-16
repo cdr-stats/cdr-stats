@@ -35,6 +35,22 @@ Applications
 .. image:: https://github.com/Star2Billing/cdr-stats/raw/master/screenshot/cdr-stats-admin.png
 
 
+Documentation
+-------------
+
+General documentation :
+
+    - https://github.com/Star2Billing/cdr-stats/blob/master/docs/newfies_doc.txt
+
+Models :
+
+    - https://github.com/Star2Billing/cdr-stats/blob/master/docs/cdr_stats_model.png
+
+RestFul API :
+
+    - PDF (https://github.com/Star2Billing/newfies/raw/master/docs/api_doc.pdf)
+
+
 Coding Conventions
 ------------------
 

@@ -19,7 +19,7 @@ cdr_handler = CsrfExemptResource(cdrHandler, authentication=auth)
 
 urlpatterns = patterns('',
 
-    url(r'^cdr[/]$', cdr_handler),
+    url(r'^cdr[/]*$', cdr_handler),
     url(r'^cdr/(?P<uniqueid>[^/]+)', cdr_handler),
 
     # automated documentation

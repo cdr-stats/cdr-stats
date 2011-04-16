@@ -56,7 +56,7 @@ class cdrHandler(BaseHandler):
             except :
                 return rc.NOT_FOUND
         else:
-            return base.all().order_by('-id')[:10]
+            return base.all().order_by('-acctid')[:10]
 
     def create(self, request):
         """
@@ -68,7 +68,7 @@ class cdrHandler(BaseHandler):
         'disposition', 'amaflags', 'accountcode', 'uniqueid', 'userfield'
         
         CURL Testing :
-        curl -u username:password -i -H "Accept: application/json" -X POST http://127.0.0.1:8000/cdr/api/cdr -d "uniqueid=2342jtdsf-00123&calldate=YYYY-MM-DD HH:MM:SS&src=1231321&dcontext=mycontext&dst=650784355&disposition=ANSWERED"
+        curl -u username:password -i -H "Accept: application/json" -X POST http://127.0.0.1:8000/cdr/api/cdr -d "uniqueid=2342jtdsf-00123&calldate=2011-04-16 10:50:11&src=1231321&dcontext=mycontext&dst=650784355&disposition=ANSWERED"
         """
         attrs = self.flatten_dict(request.POST)
         #if self.exists(**attrs):
@@ -121,7 +121,7 @@ class cdrHandler(BaseHandler):
         else:
             calldate = datetime.strptime(calldate, '%Y-%m-%d %H:%M:%S')
         
-        print "(src=%s, dst=%s,clid=%s, dcontext=%s, channel=%s, dstchannel=%s, lastapp=%s, lastdata=%s, duration=%s, billsec=%s, disposition=%s, amaflags=%s, accountcode=%s, uniqueid=%s, userfield=%s, calldate=%s)" % (str(src), str(dst), str(clid), str(dcontext), str(channel), str(dstchannel), str(lastapp), str(lastdata), str(duration), str(billsec), str(disposition), str(amaflags),  str(accountcode),  str(uniqueid),  str(userfield),  str(calldate))
+        #print "(src=%s, dst=%s,clid=%s, dcontext=%s, channel=%s, dstchannel=%s, lastapp=%s, lastdata=%s, duration=%s, billsec=%s, disposition=%s, amaflags=%s, accountcode=%s, uniqueid=%s, userfield=%s, calldate=%s)" % (str(src), str(dst), str(clid), str(dcontext), str(channel), str(dstchannel), str(lastapp), str(lastdata), str(duration), str(billsec), str(disposition), str(amaflags),  str(accountcode),  str(uniqueid),  str(userfield),  str(calldate))
         
         new_cdr = CDR(src=src,
                         dst=dst,
@@ -156,7 +156,7 @@ class cdrHandler(BaseHandler):
         curl -u username:password -i -H "Accept: application/json" -X PUT http://127.0.0.1:8000/cdr/api/cdr/%uniqueid%/ -d "duration=55"
         """
         try :
-            cdr = CDR.objects.get(id=uniqueid)
+            cdr = CDR.objects.get(uniqueid=uniqueid)
             cdr.duration = request.PUT.get('duration')
             cdr.save()
             return cdr
