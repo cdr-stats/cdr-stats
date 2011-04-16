@@ -25,11 +25,14 @@ Applications
     This application provide Report, CDR View, several CDR reporting, Dashboard.
     User with accountcode can login and see their restrected data
 
+.. image:: https://github.com/Star2Billing/cdr-stats/raw/master/screenshot/cdr-stats-user.png
+
 * Admin UI :
     http://localhost:8000/admin/
     This interface provides user (ACL) management, assignation of accountcode, 
     also basic CRUD functions on the CDR
 
+.. image:: https://github.com/Star2Billing/cdr-stats/raw/master/screenshot/cdr-stats-admin.png
 
 
 Coding Conventions
