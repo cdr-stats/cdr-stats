@@ -48,7 +48,7 @@ Models :
 
 RestFul API :
 
-    - PDF (https://github.com/Star2Billing/newfies/raw/master/docs/api_doc.pdf)
+    - PDF (https://github.com/Star2Billing/cdr-stats/raw/master/docs/api_doc.pdf)
 
 
 Coding Conventions
