@@ -21,8 +21,8 @@
 
 #Variables
 #comment out the appropriate line below to install the desired version
-CDRSTATSVERSION=master
-#CDRSTATSVERSION=v1.3.0
+#CDRSTATSVERSION=master
+CDRSTATSVERSION=v1.4.0
 MYSQLROOTPASSWOOD=passw0rd
 MYSQLUSER=asteriskuser
 MYSQLPASSWORD=amp109

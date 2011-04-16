@@ -21,8 +21,8 @@
 
 #Variables
 #comment out the appropriate line below to install the desired version
-VERSION=master
-#VERSION=v1.3.0
+#VERSION=master
+VERSION=v1.4.0
 DATETIME=$(date +"%Y%m%d%H%M%S")
 KERNELARCH=$(uname -p)
 DISTRO='UBUNTU'
