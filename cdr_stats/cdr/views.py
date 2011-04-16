@@ -11,7 +11,6 @@ from grid import ExampleGrid
 from datetime import *
 from dateutil import parser
 from dateutil.relativedelta import *
-from sets import *
 from django.db.models.loading import get_model
 from operator import *
 from cdr_stats.helpers import json_encode
