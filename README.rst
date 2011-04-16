@@ -40,7 +40,7 @@ Documentation
 
 General documentation :
 
-    - https://github.com/Star2Billing/cdr-stats/blob/master/docs/cdr-stats_doc.txt
+    - https://github.com/Star2Billing/cdr-stats/blob/master/docs/cdr-stats_doc.rst
 
 Models :
 
