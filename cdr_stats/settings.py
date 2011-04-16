@@ -169,6 +169,7 @@ INSTALLED_APPS = (
     'uni_form',
     #Disable South : Error with django 1.3
     #'south',
+    #'dilla',
 )
 
 AUTH_PROFILE_MODULE = 'cdr.UserProfile'
@@ -177,6 +178,20 @@ LOG_COLORSQL_ENABLE = True
 LOG_COLORSQL_VERBOSE = True
 
 LOGIN_URL = '/pleaselog/'
+
+#DILLA SETTINGS
+#==============
+DICTIONARY = "/usr/share/dict/words"
+DILLA_USE_LOREM_IPSUM = False  # set to True ignores dictionary
+DILLA_APPS = [                          
+                'cdr',
+             ]
+DILLA_SPAMLIBS = [                
+                'cdr.cdr_custom_spamlib',
+                ]
+# To use Dilla
+# > python manage.py run_dilla --cycles=100
+
 
 gettext = lambda s: s
 

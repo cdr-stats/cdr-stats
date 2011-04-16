@@ -98,6 +98,7 @@ tar xvzf Star2Billing-cdr-stats-*.tar.gz
 rm -rf Star2Billing-cdr-stats-*.tar.gz
 mv cdr-stats cdr-stats_$DATETIME
 mv Star2Billing-cdr-stats-* cdr-stats
+mv /usr/share/django_app/cdr_stats archive_cdr-stats-$DATETIME
 ln -s /usr/src/cdr-stats/cdr_stats /usr/share/django_app/cdr_stats
 
 
