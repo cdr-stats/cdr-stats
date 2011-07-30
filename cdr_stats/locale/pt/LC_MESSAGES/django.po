@@ -1,5 +1,5 @@
 # CDR-Stats - PO File
-# Copyright (C) 2010 - Star2Billing S.L. 
+# Copyright (C) 2010 - Star2Billing S.L.
 # This file is distributed under the same license as the CDR-Stats application.
 # Areski Belaid <areski@gmail.com>, 2010.
 #
@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-10-02 07:16-0500\n"
 "PO-Revision-Date: 2010-06-24 10:48:56\n"
-"Last-Translator: vinicius@tofalando.com\n"
+"Last-Translator: Areski Belaid <areski@gmail.com>\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -30,7 +30,7 @@ msgstr "Espanhol"
 
 #: settings.py:131
 msgid "Brazilian"
-msgstr ""
+msgstr "Brasileiro"
 
 #: cdr/forms.py:16 cdr/grid.py:17
 msgid "Destination"
@@ -62,7 +62,7 @@ msgstr "De"
 
 #: cdr/forms.py:41 cdr/forms.py:42 cdr/forms.py:86 cdr/forms.py:111
 msgid "Please use the following format"
-msgstr ""
+msgstr "Por favor use o seguinte formato"
 
 #: cdr/forms.py:42
 msgid "To"
@@ -107,19 +107,19 @@ msgstr "Resultados"
 
 #: cdr/forms.py:143
 msgid "Today"
-msgstr ""
+msgstr "Hoje"
 
 #: cdr/forms.py:143
 msgid "Yesterday"
-msgstr ""
+msgstr "Ontem"
 
 #: cdr/forms.py:143
 msgid "Current Week"
-msgstr ""
+msgstr "Semana"
 
 #: cdr/forms.py:143
 msgid "Previous Week"
-msgstr ""
+msgstr "Semana anterior"
 
 #: cdr/forms.py:143
 msgid "Current Month"
@@ -127,7 +127,7 @@ msgstr "Selecione o mes"
 
 #: cdr/forms.py:143
 msgid "Previous Month"
-msgstr ""
+msgstr "Mês anterior"
 
 #: cdr/forms.py:156 templates/cdr/login_option.html:13
 msgid "Login"
@@ -182,7 +182,7 @@ msgstr "Duração"
 
 #: cdr/grid.py:20
 msgid "Accountcode"
-msgstr ""
+msgstr "Accountcode"
 
 #: cdr/models.py:9 cdr/views.py:29
 msgid "ANSWER"
@@ -222,19 +222,19 @@ msgstr "ARGUMENTOS INVÁLIDOS"
 
 #: cdr/models.py:33
 msgid "Company"
-msgstr ""
+msgstr "Companhia"
 
 #: cdr/models.py:34
 msgid "Companies"
-msgstr ""
+msgstr "Empresas"
 
 #: cdr/models.py:91
 msgid "CDR"
-msgstr ""
+msgstr "CDR"
 
 #: cdr/models.py:92
 msgid "CDR's"
-msgstr ""
+msgstr "CDR"
 
 #: cdr/views.py:657 templates/cdr/show_graph_by_day.html:71
 #: templates/cdr/show_graph_by_hour.html:106
@@ -248,7 +248,7 @@ msgstr "dia"
 #: cdr/views.py:668
 #, python-format
 msgid "%(month)s/%(day)s/%(year)s"
-msgstr ""
+msgstr "%(month)s/%(day)s/%(year)s"
 
 #: cdr/views.py:809
 msgid "Disabled Account"
@@ -260,26 +260,26 @@ msgstr "Usuário inválido."
 
 #: templates/admin/base_site.html:4 templates/admin/base_site.html.py:7
 msgid "CDR-Stat Admin Panel"
-msgstr ""
+msgstr "CDR-Stat Painel de Administração"
 
 #: templates/admin/filter.html:2
 #, python-format
 msgid " By %(filter_title)s "
-msgstr ""
+msgstr "Por  %(filter_title)s "
 
 #: templates/admin/index.html:18
 #, python-format
 msgid "Models available in the %(name)s application."
-msgstr ""
+msgstr "Modelos disponíveis no %(name)s de aplicação."
 
 #: templates/admin/index.html:19
 #, python-format
 msgid "%(name)s"
-msgstr ""
+msgstr "%(name)s"
 
 #: templates/admin/index.html:29
 msgid "Add"
-msgstr ""
+msgstr "Adicionar"
 
 #: templates/admin/index.html:35
 msgid "Change"
@@ -287,23 +287,23 @@ msgstr "Canal"
 
 #: templates/admin/index.html:45
 msgid "You don't have permission to edit anything."
-msgstr ""
+msgstr "Você não tem permissão para editar qualquer coisa."
 
 #: templates/admin/index.html:61
 msgid "Recent Actions"
-msgstr ""
+msgstr "Ações recentes"
 
 #: templates/admin/index.html:62
 msgid "My Actions"
-msgstr ""
+msgstr "Minhas ações"
 
 #: templates/admin/index.html:66
 msgid "None available"
-msgstr ""
+msgstr "Não disponível"
 
 #: templates/admin/index.html:80
 msgid "Unknown content"
-msgstr ""
+msgstr "Conteúdo desconhecido"
 
 #: templates/cdr/index.html:20 templates/cdr/master.html:185
 msgid "Info"
@@ -313,7 +313,7 @@ msgstr "Info"
 msgid ""
 "is an application that allows you to browse and analyse CDR (Call Detail "
 "Records)."
-msgstr ""
+msgstr "é uma aplicação que permite que você navegue e analisar CDR (Call Detail Records)."
 
 #: templates/cdr/index.html:26
 msgid "Different reporting tools are provided :"
@@ -321,22 +321,22 @@ msgstr "Diferentes ferramentas de relatórios disponíveis:"
 
 #: templates/cdr/index.html:28
 msgid "Search CDR: Search, filter, display and export CDR."
-msgstr ""
+msgstr "Pesquisa CDR: Pesquise, filtro, visualizar e exportar CDR."
 
 #: templates/cdr/index.html:29
 msgid ""
 "Monthly Report: Summarise and compare call traffic history month on month."
-msgstr ""
+msgstr "Relatório Mensal: Resumir e compare chamada mês da história tráfego no mês."
 
 #: templates/cdr/index.html:30
 msgid ""
 "Analyse CDR : Analyse and compare call volumes with the previous day’s "
 "traffic."
-msgstr ""
+msgstr "Analisar CDR: Analisar e comparar os volumes de chamadas com o tráfego do dia anterior."
 
 #: templates/cdr/index.html:31
 msgid "Daily Traffic : Graph and filter traffic loads by hour during the day."
-msgstr ""
+msgstr "Tráfego diário: Gráfico e cargas de tráfego filtro por hora durante o dia."
 
 #: templates/cdr/index.html:34
 msgid "CDR-Stats is Free Software released under the AGPL. "
@@ -344,7 +344,7 @@ msgstr "CDR-Stats é um software licenciado sobre"
 
 #: templates/cdr/index.html:35
 msgid "Support, alternative licensing and consultancy is available from "
-msgstr ""
+msgstr "Licenciamento de apoio, alternativas e de consultoria está disponível a partir"
 
 #: templates/cdr/index.html:46
 msgid "Download"
@@ -366,7 +366,7 @@ msgstr "Suporte"
 msgid ""
 "Star2Billing S.L. offers consultancy including installation, training and "
 "customisation on all of its products, and CDR-Stats is no exception."
-msgstr ""
+msgstr "Star2Billing SL oferece consultoria, incluindo instalação, treinamento e personalização em todos os seus produtos, e CDR-Estatísticas não é excepção."
 
 #: templates/cdr/index.html:65
 msgid ""
@@ -374,7 +374,7 @@ msgid ""
 "Stats, and from the customer's point of view can speed the time of "
 "deployment, leaving them free to concentrate on more profitable and "
 "productive tasks."
-msgstr ""
+msgstr "Compra de consultoria é uma boa maneira para ajudar a apoiar o desenvolvimento de CDR-Stats, e do ponto de vista do cliente pode acelerar o tempo de implantação, deixando-os livres para se concentrar em tarefas mais rentável e produtiva."
 
 #: templates/cdr/index.html:67
 msgid "Contact us at"
@@ -400,7 +400,7 @@ msgstr "CDR-Stats está licenciado sobre"
 msgid ""
 "however an alternative license can be purchased if the AGPL license is not "
 "suitable for your requirements. See "
-msgstr ""
+msgstr "no entanto uma licença alternativa pode ser comprado se a licença AGPL não é adequado para suas necessidades. Ver"
 
 #: templates/cdr/index.html:100
 msgid "Contact Us"
@@ -420,7 +420,7 @@ msgid ""
 "A2Billing is both a Telecoms Switch and a Billing Platform for those wishing "
 "to deploy telecoms services such as VoIP, calling cards and callback, as "
 "well as a variety of other products. Please see"
-msgstr ""
+msgstr "A2Billing é tanto um interruptor Telecoms e uma plataforma de billing para aqueles que desejam implantar serviços de telecomunicações, tais como VoIP, cartões de chamada e retorno de chamada, bem como uma variedade de outros produtos. Consulte"
 
 #: templates/cdr/index.html:105
 msgid "for more details."
@@ -432,19 +432,19 @@ msgid ""
 "stable, and is a complete ground up re-write of the famous Asterisk-Stat, "
 "which has been around for over 7 years as a CDR viewer and analyser for "
 "Asterisk, and has been included in FreePBX to view and analyse CDR."
-msgstr ""
+msgstr "CDR-Stats é o último pedaço de desenvolvimento de software do estábulo Star2Billing, e é um campo completo de re-escrita do famoso Asterisk-Stat, que tem sido em torno de mais de 7 anos como um visualizador de CDR e analisador para o Asterisk, e tem foram incluídos no FreePBX para ver e analisar CDR."
 
 #: templates/cdr/login_option.html:6
 msgid "Logout"
-msgstr ""
+msgstr "Sair"
 
 #: templates/cdr/master.html:134
 msgid "Admin"
-msgstr ""
+msgstr "Administrador"
 
 #: templates/cdr/master.html:151
 msgid "Welcome"
-msgstr ""
+msgstr "Boas-vindas"
 
 #: templates/cdr/master.html:167
 msgid "Alert"
@@ -456,7 +456,7 @@ msgstr "Por favor, autentique-se clicando no botão Login"
 
 #: templates/cdr/master.html:178
 msgid "Dashboard"
-msgstr ""
+msgstr "Painel de instrumentos"
 
 #: templates/cdr/master.html:179
 msgid "Search CDR"
@@ -477,11 +477,11 @@ msgstr "Tráfego Mensal"
 #: templates/cdr/master.html:183
 #: templates/cdr/show_graph_concurrent_calls.html:53
 msgid "Concurrent Calls"
-msgstr ""
+msgstr "Chamadas simultâneas"
 
 #: templates/cdr/master.html:184 templates/cdr/show_global_report.html:76
 msgid "Global Report"
-msgstr ""
+msgstr "Relatório Global"
 
 #: templates/cdr/master.html:201
 msgid "CDR-Stats is software licensed under the "
@@ -495,12 +495,12 @@ msgstr "Chamadas"
 
 #: templates/cdr/show_dashboard.html:94
 msgid "secs"
-msgstr ""
+msgstr "segs"
 
 #: templates/cdr/show_dashboard.html:105
 #: templates/cdr/show_graph_by_hour.html:123
 msgid "Call Statistics"
-msgstr ""
+msgstr "Estatísticas de chamadas"
 
 #: templates/cdr/show_dashboard.html:113 templates/cdr/show_dashboard.html:114
 msgid "Total Calls"
@@ -512,11 +512,11 @@ msgstr "Chamadas por hora"
 
 #: templates/cdr/show_dashboard.html:116
 msgid "Minutes Total Duration"
-msgstr ""
+msgstr "Minutos Duração Total"
 
 #: templates/cdr/show_dashboard.html:117
 msgid "Minutes Average Call Duration"
-msgstr ""
+msgstr "Minutos duração média de chamada"
 
 #: templates/cdr/show_global_report.html:46
 msgid "Calls :"
@@ -532,11 +532,11 @@ msgstr "ACT :"
 
 #: templates/cdr/show_global_report.html:78
 msgid "week"
-msgstr ""
+msgstr "semana"
 
 #: templates/cdr/show_global_report.html:82
 msgid "year"
-msgstr ""
+msgstr "ano"
 
 #: templates/cdr/show_graph_by_day.html:81
 msgid "Load by Hour"
@@ -544,96 +544,96 @@ msgstr "Carga por hora"
 
 #: templates/cdr/show_graph_by_month.html:46
 msgid "Jan"
-msgstr ""
+msgstr "Jan"
 
 #: templates/cdr/show_graph_by_month.html:47
 msgid "Feb"
-msgstr ""
+msgstr "Fevereiro"
 
 #: templates/cdr/show_graph_by_month.html:48
 msgid "Mar"
-msgstr ""
+msgstr "Estragar"
 
 #: templates/cdr/show_graph_by_month.html:49
 msgid "Apr"
-msgstr ""
+msgstr "Abril"
 
 #: templates/cdr/show_graph_by_month.html:50
 #: templates/cdr/show_graph_by_month.html:63
 msgid "May"
-msgstr ""
+msgstr "Maio"
 
 #: templates/cdr/show_graph_by_month.html:51
 msgid "Jun"
-msgstr ""
+msgstr "Junho"
 
 #: templates/cdr/show_graph_by_month.html:52
 msgid "Jul"
-msgstr ""
+msgstr "Julho"
 
 #: templates/cdr/show_graph_by_month.html:53
 msgid "Aug"
-msgstr ""
+msgstr "Agosto"
 
 #: templates/cdr/show_graph_by_month.html:54
 msgid "Sep"
-msgstr ""
+msgstr "Setembro"
 
 #: templates/cdr/show_graph_by_month.html:55
 msgid "Oct"
-msgstr ""
+msgstr "Outubro"
 
 #: templates/cdr/show_graph_by_month.html:56
 msgid "Nov"
-msgstr ""
+msgstr "Novembro"
 
 #: templates/cdr/show_graph_by_month.html:57
 msgid "Dec"
-msgstr ""
+msgstr "Dezembro"
 
 #: templates/cdr/show_graph_by_month.html:59
 msgid "January"
-msgstr ""
+msgstr "Janeiro"
 
 #: templates/cdr/show_graph_by_month.html:60
 msgid "February"
-msgstr ""
+msgstr "Fevereiro"
 
 #: templates/cdr/show_graph_by_month.html:61
 msgid "March"
-msgstr ""
+msgstr "Março"
 
 #: templates/cdr/show_graph_by_month.html:62
 msgid "April"
-msgstr ""
+msgstr "Abril"
 
 #: templates/cdr/show_graph_by_month.html:64
 msgid "June"
-msgstr ""
+msgstr "Junho"
 
 #: templates/cdr/show_graph_by_month.html:65
 msgid "July"
-msgstr ""
+msgstr "Julho"
 
 #: templates/cdr/show_graph_by_month.html:66
 msgid "August"
-msgstr ""
+msgstr "Agosto"
 
 #: templates/cdr/show_graph_by_month.html:67
 msgid "September"
-msgstr ""
+msgstr "Setembro"
 
 #: templates/cdr/show_graph_by_month.html:68
 msgid "October"
-msgstr ""
+msgstr "Outubro"
 
 #: templates/cdr/show_graph_by_month.html:69
 msgid "November"
-msgstr ""
+msgstr "Novembro"
 
 #: templates/cdr/show_graph_by_month.html:70
 msgid "December"
-msgstr ""
+msgstr "Dezembro"
 
 #: templates/cdr/show_graph_by_month.html:152
 #, python-format
@@ -642,7 +642,7 @@ msgstr "Tráfego do(s) ultimo(s) %(comp_months)s mes(es)"
 
 #: templates/cdr/show_graph_concurrent_calls.html:63
 msgid "Concurrent Calls by"
-msgstr ""
+msgstr "Chamadas simultâneas por"
 
 #: templates/cdr/show_jqgrid.html:65
 msgid "Call Detail Report by Day"
@@ -674,12 +674,13 @@ msgstr "Exportar para um arquivo CSV"
 
 #: templates/registration/logged_out.html:4
 msgid "Home"
-msgstr ""
+msgstr "Casa"
 
 #: templates/registration/logged_out.html:8
 msgid "Thank you for using CDR-Stats."
-msgstr ""
+msgstr "Obrigado por utilizar o CDR-Stats."
 
 #: templates/registration/logged_out.html:10
 msgid "Log in again"
-msgstr ""
+msgstr "Login novamente"
+
