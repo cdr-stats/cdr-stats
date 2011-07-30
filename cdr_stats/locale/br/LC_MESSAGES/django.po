@@ -225,9 +225,8 @@ msgid "Company"
 msgstr ""
 
 #: cdr/models.py:34
-#, fuzzy
 msgid "Companies"
-msgstr "Espanhol"
+msgstr ""
 
 #: cdr/models.py:91
 msgid "CDR"
