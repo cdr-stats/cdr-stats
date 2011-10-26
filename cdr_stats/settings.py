@@ -29,6 +29,26 @@ DATABASES = {
 
 CDR_TABLE_NAME = 'cdr' # Name of the table containing the Asterisk/FreeSwitch CDR
 
+CDR_TABLE_FIELDS = {
+    'acctid': 'id',
+    'src': 'src',
+    'dst': 'dst',
+    'calldate': 'calldate',
+    'clid': 'clid',
+    'dcontext': 'dcontext',
+    'channel': 'channel',
+    'dstchannel': 'dstchannel',
+    'lastapp': 'lastapp',
+    'lastdata': 'lastdata',
+    'duration': 'duration',
+    'billsec': 'billsec',
+    'disposition': 'disposition',
+    'amaflags': 'amaflags',
+    'accountcode': 'accountcode',
+    'uniqueid': 'uniqueid',
+    'userfield': 'userfield'
+}
+
 # Only the Asterisk CDR table is supported at the moment, 
 # but Freeswitch and other platform will be soon
 VOIP_PLATFORM = 'asterisk' # asterisk, freeswitch
