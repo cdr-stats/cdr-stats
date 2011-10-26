@@ -46,7 +46,7 @@ CDR_TABLE_FIELDS = {
     'amaflags': 'amaflags',
     'accountcode': 'accountcode',
     'uniqueid': 'uniqueid',
-    'userfield': 'userfield'
+    'userfield': 'userfield',
 }
 
 # Only the Asterisk CDR table is supported at the moment, 
