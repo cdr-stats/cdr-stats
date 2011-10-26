@@ -29,14 +29,17 @@ DATABASES = {
 
 CDR_TABLE_NAME = 'cdr' # Name of the table containing the Asterisk/FreeSwitch CDR
 
+# If your telephony server like XiVO, Freewitch or SipXecs use
+# another columns name for the CDR table, you can change here:
+# WARNING: some specific columns for Freewitch and SipXecs can't be mapped for now.
 CDR_TABLE_FIELDS = {
-    'acctid': 'id',
+    'acctid': 'acctid', # id with XiVO, callid with Freewitch
     'src': 'src',
     'dst': 'dst',
-    'calldate': 'calldate',
+    'calldate': 'calldate', # callstartdate with Freewitch
     'clid': 'clid',
     'dcontext': 'dcontext',
-    'channel': 'channel',
+    'channel': 'channel', # srcchannel with Freewitch
     'dstchannel': 'dstchannel',
     'lastapp': 'lastapp',
     'lastdata': 'lastdata',
