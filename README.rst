@@ -1,4 +1,3 @@
-
 .. image:: https://github.com/Star2Billing/cdr-stats/raw/master/cdr_stats/resources/logo/icon_600.png
 
 CDR-Stats is a CDR viewer for Asterisk/Freeswitch Call Data Records. It allows you to 
@@ -74,3 +73,6 @@ Star2Billing S.L. (http://www.star2billing.com) offers consultancy including ins
 Please email us at sales@star2billing.com for more information
     
 
+.. raw:: html
+
+    <a href='http://www.pledgie.com/campaigns/10877'><img alt='Click here to lend your support to: cdr-stats and make a donation at www.pledgie.com !' src='http://www.pledgie.com/campaigns/10877.png?skin_name=chrome' border='0' /></a>
