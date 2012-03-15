@@ -1,5 +1,3 @@
-
-
 .. image:: https://github.com/Star2Billing/cdr-stats/raw/master/cdr_stats/resources/logo/icon_600.png
 
 CDR-Stats is a CDR viewer for Asterisk/Freeswitch Call Data Records. It allows you to 
@@ -14,7 +12,6 @@ Star2Billing S.L. is the company behind the development of CDR-Stats, and
 was originally formed to provide a revenue stream to support the popular 
 open source A2Billing Telecom Switch and Billing System by providing 
 professional support, installation and consultancy services.
-
 
 
 Applications
@@ -75,4 +72,3 @@ Star2Billing S.L. (http://www.star2billing.com) offers consultancy including ins
 
 Please email us at sales@star2billing.com for more information
     
-
