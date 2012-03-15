@@ -66,26 +66,26 @@ class Staff(User):
 
 
 class CDR(models.Model):
+    table_fields = settings.CDR_TABLE_FIELDS
     #FreePBX is adding a acctid to the Asterisk table
     #it's a good practice to have an id
-    acctid = models.AutoField(primary_key=True, db_column = 'acctid')
-    src = models.CharField(max_length=80, blank=True, null=True)
-    dst = models.CharField(max_length=80, blank=True, null=True)
-    calldate = models.DateTimeField()
-    clid = models.CharField(max_length=80, blank=True, null=True)
-    dcontext = models.CharField(max_length=80, blank=True, null=True)
-    channel = models.CharField(max_length=80, blank=True, null=True)
-    dstchannel = models.CharField(max_length=80, blank=True, null=True)
-    lastapp = models.CharField(max_length=80, blank=True, null=True)
-    lastdata = models.CharField(max_length=80, blank=True, null=True)
-    duration = models.PositiveIntegerField(default=0, null=True)
-    billsec = models.PositiveIntegerField(default=0, null=True)
-    disposition = models.PositiveIntegerField(choices=DISPOSITION, default=1)
-    amaflags = models.PositiveIntegerField(default=0, null=True)
-    accountcode = models.PositiveIntegerField(default=0, null=True)
-    uniqueid = models.CharField(max_length=32, blank=True, null=True)
-    userfield = models.CharField(max_length=80, blank=True, null=True)
-    #test = models.CharField(max_length=80, blank=True)
+    acctid = models.AutoField(primary_key=True, db_column = table_fields['acctid'])
+    src = models.CharField(max_length=80, blank=True, null=True, db_column = table_fields['src'])
+    dst = models.CharField(max_length=80, blank=True, null=True, db_column = table_fields['dst'])
+    calldate = models.DateTimeField(db_column = table_fields['calldate'])
+    clid = models.CharField(max_length=80, blank=True, null=True, db_column = table_fields['clid'])
+    dcontext = models.CharField(max_length=80, blank=True, null=True, db_column = table_fields['dcontext'])
+    channel = models.CharField(max_length=80, blank=True, null=True, db_column = table_fields['channel'])
+    dstchannel = models.CharField(max_length=80, blank=True, null=True, db_column = table_fields['dstchannel'])
+    lastapp = models.CharField(max_length=80, blank=True, null=True, db_column = table_fields['lastapp'])
+    lastdata = models.CharField(max_length=80, blank=True, null=True, db_column = table_fields['lastdata'])
+    duration = models.PositiveIntegerField(default=0, null=True, db_column = table_fields['duration'])
+    billsec = models.PositiveIntegerField(default=0, null=True, db_column = table_fields['billsec'])
+    disposition = models.PositiveIntegerField(choices=DISPOSITION, default=1, db_column = table_fields['disposition'])
+    amaflags = models.PositiveIntegerField(default=0, null=True, db_column = table_fields['amaflags'])
+    accountcode = models.PositiveIntegerField(default=0, null=True, db_column = table_fields['accountcode'])
+    uniqueid = models.CharField(max_length=32, blank=True, null=True, db_column = table_fields['uniqueid'])
+    userfield = models.CharField(max_length=80, blank=True, null=True, db_column = table_fields['userfield'])
     
     class Meta:
         db_table = getattr(settings, 'CDR_TABLE_NAME', 'cdr' )

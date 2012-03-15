@@ -24,19 +24,6 @@ import csv, codecs
 from operator import itemgetter
 from inspect import stack, getmodule
 
-DISPOSITION = (
-    (1, _('ANSWER')),
-    (2, _('BUSY')),
-    (3, _('NOANSWER')),
-    (4, _('CANCEL')),
-    (5, _('CONGESTION')),
-    (6, _('CHANUNAVAIL')),
-    (7, _('DONTCALL')),
-    (8, _('TORTURE')),
-    (9, _('INVALIDARGS')),
-)
-
-
 # Create your views here.
 @login_required
 def grid_handler(request):
