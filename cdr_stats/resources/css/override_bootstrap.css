@@ -1,0 +1,180 @@
+
+/* Page header in content wrapper */
+.page-header {
+    padding: 10px 20px 10px;  /* affected width & height of Page header */
+}
+
+#language-container {
+    width: 110px; /* language selection box */
+}
+
+footer {
+    padding: 40px 20px 10px;
+    text-align: center; /* center align it with the container */
+}
+
+.brand img {
+    height: 35px;
+    width: 35px;
+    padding-bottom: 2px;
+}
+
+.navbar .brand {
+    float: left;
+    display: block;
+    padding: 8px 20px 5px 12px;
+    margin-left: -20px;
+    font-size: 20px;
+    font-weight: 200;
+    line-height: 1;
+    color: white;
+}
+
+.graph_header {
+    clear: both;
+}
+
+#toggle_btn {
+    float: right;
+    height: 15px;
+    margin-bottom: 20px;
+    margin-top: 5px;
+}
+
+.well {
+    margin-bottom: 0px;
+    padding: 15px;
+}
+
+.control-label {
+  font-size: 15px;
+}
+
+.navbar-fixed-top .brand {
+  font-size: 30px;
+  font-weight: bold;
+  color: #000;
+  text-shadow: 0 1px 0 rgba(255,255,255,.1), 0 0 30px rgba(255,255,255,.125);
+  -webkit-transition: all .2s linear;
+     -moz-transition: all .2s linear;
+          transition: all .2s linear;
+}
+
+.navbar-inner ul.nav {
+    padding: 5px;
+}
+
+.help-block {
+  margin-top: 5px;
+}
+
+.input {
+  margin-bottom: 10px;
+}
+
+label {
+  font-size: 15px;
+}
+
+.hero-unit {
+    background-color: #EEEEEE;
+    border-radius: 6px 6px 6px 6px;
+    margin-bottom: 30px;
+    padding: 40px;
+    margin-top: 15px;
+}
+
+.placeholder_graph_realtime {
+    width: 1050px; height:300px;
+}
+
+.welldashboard {
+    min-height: 20px;
+    background-color: whiteSmoke;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+
+/* * * Responsive * * */
+
+/* Landscape phones and down */
+@media (max-width: 479px) {
+    #finance {
+        position: relative; margin: 40px 0px; width: 440px; border: 1px solid #99CCFF;
+    }
+    #placeholder_cdr_analytic {
+        width: 350px; height:300px;
+    }
+    #overview_analytic {
+        width:300px;
+    }
+    #placeholder_cdr_analytic div.legend table {
+      margin-right: 0px;
+    }
+}
+
+/* Landscape phone to portrait tablet */
+@media (min-width: 480px) and (max-width: 767px) {
+    #finance {
+        position: relative; margin: 40px 0px; width: 580px; border: 1px solid #99CCFF;
+    }
+    #placeholder_cdr_analytic {
+        width: 450px; height:300px;
+    }
+    #overview_analytic {
+        width:350px;
+    }
+}
+
+/* Portrait tablet to landscape and desktop */
+@media (min-width: 768px) and (max-width: 979px) {
+    #finance {
+        position: relative; margin: 40px 0px; width: 720px; border: 1px solid #99CCFF;
+    }
+    #placeholder_cdr_analytic {
+        width: 700px; height:300px;
+    }
+    #overview_analytic {
+        width: 500px;
+    }
+    #placeholder_cdr_analytic div.legend table {
+      margin-right: 0px;
+    }
+}
+
+/* Large desktop */
+@media (min-width: 980px) and (max-width: 1399px) {
+    #finance {
+        position: relative; margin: 40px 0px; width: 1010px; border: 1px solid #99CCFF;
+    }
+    #placeholder_cdr_analytic {
+        width: 800px; height:300px;
+    }
+    #overview_analytic {
+        width:500px;
+    }
+    #placeholder_cdr_analytic div.legend table {
+      margin-right: -40px;
+    }
+}
+
+/* Very Large desktop */
+@media (min-width: 1400px) {
+    #finance {
+        position: relative; margin: 40px 0px; width: 1170px; border: 1px solid #99CCFF;
+    }
+    #placeholder_cdr_analytic {
+        width: 1050px; height:300px;
+    }
+    #overview_analytic {
+        width:500px;
+    }
+    #placeholder_cdr_analytic div.legend table {
+      margin-right: -40px;
+    }
+}

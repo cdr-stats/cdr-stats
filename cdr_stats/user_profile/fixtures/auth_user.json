@@ -1,0 +1,16 @@
+[
+   {
+      "pk":1,
+      "model":"user_profile.userprofile",
+      "fields":{
+         "updated_date":"2011-10-11 01:33:57",
+         "accountcode":null,
+         "dialersetting":1,
+         "user":1,
+         "created_date":"2011-10-11 01:33:57",
+         "userprofile_gateway":[
+            1
+         ]
+      }
+   }
+]
