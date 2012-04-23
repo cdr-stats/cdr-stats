@@ -1,0 +1,39 @@
+# Name of nodes to start, here we have a single node
+CELERYD_NODES="newfies-node1"
+# or we could have three nodes:
+#CELERYD_NODES="w1 w2 w3"
+
+# Where the Django project is.
+CELERYD_CHDIR="/usr/share/newfies"
+
+# How to call "manage.py celeryd_multi"
+CELERYD_MULTI="/usr/share/virtualenvs/newfies-dialer/bin/python $CELERYD_CHDIR/manage.py celeryd_multi"
+
+# How to call "manage.py celeryctl"
+CELERYD_CTL="/usr/share/virtualenvs/newfies-dialer/bin/python $CELERYD_CHDIR/manage.py celeryctl"
+
+# Extra arguments to celeryd
+#CELERYD_OPTS="--time-limit=300 --concurrency=8"
+
+# Name of the celery config module.
+#CELERY_CONFIG_MODULE="celeryconfig"
+
+#note : on a single machine we can easily run celerybeat over celeryd
+
+# Path to celeryd
+CELERYD="/usr/share/virtualenvs/newfies-dialer/bin/python $CELERYD_CHDIR/manage.py celeryd_detach"
+
+# celeryd options
+CELERYD_OPTS="-EB -l info"
+
+# %n will be replaced with the nodename.
+CELERYD_LOG_FILE="/var/log/newfies/celery-%n.log"
+CELERYD_PID_FILE="/var/run/celery-%n.pid"
+
+#TODO : review user / group
+# Workers should run as an unprivileged user.
+#CELERYD_USER="celery"
+#CELERYD_GROUP="celery"
+
+# Name of the projects settings module.
+export DJANGO_SETTINGS_MODULE="settings"

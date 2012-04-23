@@ -1,0 +1,90 @@
+#!/bin/bash
+#
+# freeswitch:       Starts the freeswitch Daemon
+#
+# chkconfig: 345 90 02
+# description: FreeSwitch
+### BEGIN INIT INFO
+# Provides: $freeswitch
+# Required-Start: $local_fs
+# Required-Stop: $local_fs
+# Default-Start:  2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Freeswitch
+# Description: Freeswitch
+
+### END INIT INFO
+
+# Source function library.
+. /etc/init.d/functions
+. /etc/sysconfig/network
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/freeswitch/bin
+DESC="FreeSwitch Voice Switching System"
+NAME=freeswitch
+DAEMON=/usr/local/freeswitch/bin/$NAME
+PIDFILE=/usr/local/freeswitch/run/$NAME.pid
+prog=freeswitch
+FS_USER=freeswitch
+
+do_setlimits() {
+        ulimit -c unlimited
+        ulimit -d unlimited
+        ulimit -f unlimited
+        ulimit -i unlimited
+        ulimit -n 999999
+        ulimit -q unlimited
+        ulimit -u unlimited
+        ulimit -v unlimited
+        ulimit -x unlimited
+        ulimit -s 240
+        ulimit -l unlimited
+        return 0
+}
+
+# source to get FREESWITCH_OPTIONS
+[ -f /etc/sysconfig/freeswitch ] && . /etc/sysconfig/freeswitch
+
+do_start() {
+	echo -n $"Starting $prog: "
+        do_setlimits
+        $DAEMON -nc $FREESWITCH_OPTIONS &>/dev/null
+        RETVAL=$?
+	[ $RETVAL -eq 0 ] && success || failure
+        echo 
+        return $RETVAL
+}
+
+do_stop() {
+	echo -n $"Shutting down $prog: "
+        $DAEMON -stop &>/dev/null
+        RETVAL=$?
+	[ $RETVAL -eq 0 ] && success || failure
+        echo
+        return $RETVAL
+}
+
+# See how we were called.
+case "$1" in
+  start)
+        do_start
+        ;;
+  stop)
+        do_stop
+        ;;
+  restart)
+        do_stop
+        echo "Waiting for daemon to exit..."
+        sleep 5
+        do_start
+        ;;
+  status)
+        status -p $PIDFILE freeswitch
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop|restart|status}"
+        exit 2
+        ;;
+esac
+
+exit $RETVAL
