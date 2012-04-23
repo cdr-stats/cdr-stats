@@ -5,3 +5,5 @@
 *devserver*
 cdr_stats/.idea
 cdr_stats/static
+celerybeat-schedule
+.idea
