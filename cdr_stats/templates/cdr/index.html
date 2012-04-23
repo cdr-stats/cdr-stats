@@ -1,121 +1,39 @@
 {% extends "cdr/master.html" %}
 {% load i18n %}
-{% load uni_form_tags %}
-
-{% block extra_head %}
-  <script>
-  $(document).ready(function() {
-    $("#accordion").accordion({ autoHeight: false,  clearStyle: true  });
-  });
-  </script>
-{% endblock %}
 
 
 {% block content %}
 
-<br/><br/>
-
-<div id="accordeon-container">
-<div id="accordion">
-	<h3><a href="#">{% trans "Info"  %}</a></h3>
-	<div>
-		<p>
-		<br/>
-		
-		<a href="http://www.cdr-stats.org/" target="_blank" >CDR-Stats</a> {% trans "is an application that allows you to browse and analyse CDR (Call Detail Records)." %}<br>
-		{% trans "Different reporting tools are provided :" %}
-		<ul>
-		    <li>{% trans "Search CDR: Search, filter, display and export CDR." %}</li>
-		    <li>{% trans "Monthly Report: Summarise and compare call traffic history month on month." %}</li>
-		    <li>{% trans "Analyse CDR : Analyse and compare call volumes with the previous day’s traffic." %}</li>
-		    <li>{% trans "Daily Traffic : Graph and filter traffic loads by hour during the day." %}</li>
-		</ul>
-        <br/>
-        {% trans "CDR-Stats is Free Software released under the AGPL. " %} <br/>
-        {% trans "Support, alternative licensing and consultancy is available from " %} 
-        <a target="_blank" href="http://www.star2billing.com">http://www.star2billing.com</a>
-        <br/>
-        <br/>
+<!-- Main hero unit for a primary marketing message or call to action -->
+<div class="hero-unit">
         
-        <a href="http://www.cdr-stats.org/" target="_blank" ><img src='{{STATIC_URL}}cdr-stats/icons/help-about-2.png' title="Info" alt="Info" width="110" class="info-icon"/></a>
-        
-        <br/><br/>
-
-		</p>
-	</div>
-	<h3><a href="#">{% trans "Download" %}</a></h3>
-	<div>
-		<p>
-        {% trans "Please visit" %} <a target="_blank" href="http://www.cdr-stats.org/">http://www.cdr-stats.org/</a> <br/>
-        {% trans "and download the last stable release." %}
-        <br/><br/><br/>
-        
-        <a href="http://www.cdr-stats.org/" target="_blank" ><img src='{{STATIC_URL}}cdr-stats/icons/system-log-out-4.png' title="Download" alt="Download" width="110" class="info-icon"/></a>
-        
-        <br/><br/>
-
-        
-		</p>
-	</div>
-	<h3><a href="#">{% trans "Support" %}</a></h3>
-	<div>
-		<p>
-        {% trans "Star2Billing S.L. offers consultancy including installation, training and customisation on all of its products, and CDR-Stats is no exception." %}
-        <br/><br/>
-        {% trans "Purchasing consultancy is a good way to help support the development of CDR-Stats, and from the customer's point of view can speed the time of deployment, leaving them free to concentrate on more profitable and productive tasks." %}
-        <br/><br/>
-        {% trans "Contact us at" %} <a href="mailto:sales@star2billing.com">sales@star2billing.com</a> {% trans "for more information" %}<br/><br/>
-		
-		<a href="mailto:sales@star2billing.com"><img src='{{STATIC_URL}}cdr-stats/icons/system-help-3.png' title="Support" alt="Support" width="110" class="info-icon"/></a>
-		
-		
-	</div>
-	<h3><a href="#">{% trans "News" %}</a></h3>
-	<div>
-		{% if news %}
-            {% for rc in news %}
-            {{rc.0}}  <a href="{{rc.1}}">{{rc.1}}</a> {{rc.2}}
-            <hr>
-            {% endfor %}
-        {% endif %}
-
-        <br/><br/>
-        
-        <img src='{{STATIC_URL}}cdr-stats/icons/knewsticker-2.png' title='News' alt="News" width="110" class="info-icon"/>
-        
-	</div>
-	
-	<h3><a href="#">{% trans "Licensing" %}</a></h3>
-	<div>
-		<p>
-        {% trans "CDR-Stats is licensed under" %} <a href="http://www.fsf.org/licensing/licenses/agpl-3.0.html" target="_blank">AGPL 3</a>,
-        {% trans "however an alternative license can be purchased if the AGPL license is not suitable for your requirements. See " %} 
-        <a target="_blank" href="http://www.cdr-stats.org/">http://www.cdr-stats.org/</a>
-        <br/>
-		<br><a href="http://www.fsf.org/licensing/licenses/agpl-3.0.html" target="_blank"><img src="{{STATIC_URL}}cdr-stats/icons/agplv3-155x51.png" class="info-icon"></a>
-        
-        <br/><br/>
-	</div>
-	
-	<h3><a href="#">{% trans "Contact Us" %}</a></h3>
-	<div>
-		<p>
-		{% trans "Star2Billing S.L. was formed to provide commercial support, installation and training to telecommunications companies that wished to deploy A2Billing." %}
-        <br/><br/>
-        {% trans "A2Billing is both a Telecoms Switch and a Billing Platform for those wishing to deploy telecoms services such as VoIP, calling cards and callback, as well as a variety of other products. Please see" %} <a target="_blank" href="http://www.star2billing.com">http://www.star2billing.com</a> {% trans "for more details." %}
-
-        <br/><br/>
-        {% trans "CDR-Stats is the latest piece of software development from the Star2Billing stable, and is a complete ground up re-write of the famous Asterisk-Stat, which has been around for over 7 years as a CDR viewer and analyser for Asterisk, and has been included in FreePBX to view and analyse CDR." %}
-        <br/><br/>
-
-        <a href="mailto:sales@star2billing.com"><img src='{{STATIC_URL}}cdr-stats/icons/kontact-4.png' title="Contact" alt="Contact" width="110" class="info-icon"/></a>
-        
-		</p>
-
-        <br/><br/>
-	</div>
-</div>
+	<img src="{{STATIC_URL}}cdr-stats/images/cdr-stats_600.png" alt="CDR-Stats" width="400px"/>
+	<br/><br/>
+	<a href="http://www.cdr-stats.org/" target="_blank" >CDR-Stats</a> {% trans "is an application that allows you to browse and analyse CDR (Call Detail Records)." %}<br/><br/>
+	{% trans "Different reporting tools are provided :" %}
+	<ul>
+	    <li>{% trans "Search CDR: Search, filter, display and export CDR." %}</li>
+	    <li>{% trans "Monthly Report: Summarise and compare call traffic history month on month." %}</li>
+	    <li>{% trans "Analyse CDR : Analyse and compare call volumes with the previous day’s traffic." %}</li>
+	    <li>{% trans "Daily Traffic : Graph and filter traffic loads by hour during the day." %}</li>
+	</ul>
+	<p><a class="btn primary large" href="http://www.cdr-stats.org/about-us/contact/">{% trans "Learn more" %} &raquo;</a></p>
 </div>
 
+<div class="row">
+  <div class="span6">
+    <h2>{% trans "Support" %}</h2>
+    <p>{% trans "Star2Billing S.L. offers consultancy including installation, training and customisation on CDR-Stats" %}</p>
+    <p>{% trans "Contact us at" %} <a href="mailto:newfies-dialer@star2billing.com">newfies-dialer@star2billing.com</a> {% trans "for more information" %}<p>
+    <p><a class="btn" href="http://www.newfies-dialer.org/support/">{% trans "Get Support" %} &raquo;</a></p>
+  </div>
+
+  <div class="span6">
+    <h2>{% trans "Licensing" %}</h2>
+     <p>{% trans "CDR-Stats is licensed under" %} <a href="http://www.mozilla.org/MPL/2.0/" target="_blank">MPL V2</a>,
+        {% trans "however an alternative license can be purchased if the MPL V2 license is not suitable for your requirements." %}</p>
+    <p><a class="btn" href="http://www.newfies-dialer.org/support/licensing/">{% trans "View Licensing details" %} &raquo;</a></p>
+  </div>
+</div>
 
 {% endblock %}

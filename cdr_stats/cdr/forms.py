@@ -1,158 +1,219 @@
+#
+# CDR-Stats License
+# http://www.cdr-stats.org
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this file,
+# You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (C) 2011-2012 Star2Billing S.L.
+#
+# The Initial Developer of the Original Code is
+# Arezqui Belaid <info@star2billing.com>
+#
 from django import *
 from django import forms
-from cdr.models import *
-from cdr.functions_def import *
 from django.forms import *
 from django.contrib import *
 from django.contrib.admin.widgets import *
+from django.conf import settings
+from django.core.validators import validate_email
 from django.utils.translation import ugettext_lazy as _
-from uni_form.helpers import FormHelper, Submit, Reset
-from uni_form.helpers import Layout, Fieldset, Row, Column, HTML
 
+from cdr.models import *
+from cdr.functions_def import *
+from user_profile.models import UserProfile
+
+STRING_SEARCH_TYPE_LIST = ((1, _('Equals')),
+                           (2, _('Begins with')),
+                           (3, _('Contains')),
+                           (4, _('Ends with')))
+
+COMPARE_LIST = ((1, '='),
+                (2, '>'),
+                (3, '>='),
+                (4, '<'),
+                (5, '<='))
+
+PAGE_SIZE_LIST = ((10, '10'),
+                  (25, '25'),
+                  (50, '50'),
+                  (100, '100'))
+
+DATE_HELP_TEXT = _("Please use the following format")+": <em>YYYY-MM-DD</em>."
+COUNTRY_HELP_TEXT = _('Hold down "Ctrl", "Command" on Mac, to select more than one.')
+
+def sw_list_with_all():
+    """Switch list"""
+    list_sw = []
+    list_sw.append((0, _('All Switches')))
+    sw_list = get_switch_list()
+    for i in sw_list:
+        list_sw.append((i[0], i[1]))
+    return list_sw
+
+
+def hc_list_with_all():
+    """Hangup cause list"""
+    list_hc = []
+    list_hc.append((0, _('All')))
+    hc_list = get_hc_list()
+    for i in hc_list:
+        list_hc.append((i[0], i[1]))
+    return list_hc
+
+
+def country_list_with_all():
+    """Country list"""
+    list_ct = []
+    list_ct.append((0, _('All')))
+    ct_list = get_country_list()
+    for i in ct_list:
+        list_ct.append((i[0], i[1]))
+    return list_ct
 
 
 class SearchForm(forms.Form):
+    caller = forms.CharField(label=_('Caller Id'), required=False)
+    caller_type = forms.ChoiceField(label='', required=False,
+                                    choices=STRING_SEARCH_TYPE_LIST)
+    caller_type.widget.attrs['class'] = 'input-small'
 
-    destination = forms.CharField(label=_('Destination'), required=False, widget=forms.TextInput(attrs={'size': 15, 'class':'span-10'}))
+    destination = forms.CharField(label=_('Destination'), required=False)
     destination_type = forms.ChoiceField(label='', required=False,
-                    choices=((1, _('Equals')), (2, _('Begins with')), (3, _('Contains')), (4, _('Ends with')))
-                    )
-    source = forms.CharField(label=_('Source'), required=False, widget=forms.TextInput(attrs={'size': 15, 'class':'span-10'}))
-    source_type = forms.ChoiceField(label='', required=False,
-                    choices=((1, _('Equals')), (2, _('Begins with')), (3, _('Contains')), (4, _('Ends with'))),
-                    )
-    channel = forms.CharField(label='Channel', required=False, widget=forms.TextInput(attrs={'size': 15,'class':'span-10'}))
-    
-    layout = Fieldset(
-                '',
-                Row(
-                    Column('destination'),
-                    Column('destination_type'),
-                ),
-                Row(
-                    Column('source'),
-                    Column('source_type'),
-                ),
-                'channel',
-            )
+                                         choices=STRING_SEARCH_TYPE_LIST)
+    destination_type.widget.attrs['class'] = 'input-small'
 
-class CdrSearchForm(forms.Form):
-    
-    from_date = CharField(label=_('From'), required=True, max_length=10, help_text=_("Please use the following format")+": <em>YYYY-MM-DD</em>.")
-    to_date = CharField(label=_('To'), required=True, max_length=10, help_text=_("Please use the following format")+": <em>YYYY-MM-DD</em>.")
-    
-    result = forms.TypedChoiceField(label=_('Result:'), required=False, coerce=bool,
-                choices = (('1', _('Minutes')), ('2', _('Seconds'))),widget=forms.RadioSelect)
+    accountcode = forms.CharField(label=_('Account code'), required=False)
+    accountcode_type = forms.ChoiceField(label='', required=False,
+                                         choices=STRING_SEARCH_TYPE_LIST)
+    accountcode_type.widget.attrs['class'] = 'input-small'
 
-    # Attach a formHelper to your forms class.
-    helper = FormHelper()
-    helper.form_method = 'POST'
-    submit = Submit('search', _('Search'))
-    helper.add_input(submit)
-    helper.use_csrf_protection = True
-    
+    duration = forms.CharField(label=_('Duration'), required=False)
+    duration_type = forms.ChoiceField(label='', required=False,
+                                      choices=COMPARE_LIST)
+    duration_type.widget.attrs['class'] = 'input-small'
 
-class MonthLoadSearchForm(SearchForm):
+    hangup_cause = forms.ChoiceField(label=_('Hangup cause'), required=False,
+                                     choices=hc_list_with_all())
 
-    from_month_year= forms.CharField(label=_('Select date'), required=True, max_length=10, widget=forms.TextInput(attrs={'class':'span-10'}))
-    comp_months = forms.ChoiceField(label='', required=False, choices=comp_month_range())
+    switch = forms.ChoiceField(label=_('Switch'), required=False,
+                               choices=get_switch_list())
 
-    layout = Layout(
-        Fieldset(
-                '',
-                Row(
-                    Column('from_month_year'),
-                    Column('comp_months'),
-                ),
-        ),
-        SearchForm.layout,
-    )
-    
-    # Attach a formHelper to your forms class.
-    helper = FormHelper()
-    
-    submit = Submit('search', _('Search'))
-    helper.add_input(submit)
-    helper.use_csrf_protection = True
-    helper.add_layout(layout)
-    
-    def __init__(self, *args, **kwargs):
-        super(MonthLoadSearchForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['from_month_year', 'comp_months', 'destination', 'destination_type', 'source', 'source_type', 'channel']
-
-
-class DailyLoadSearchForm(SearchForm):
-
-    from_date = forms.CharField(label=_('Select date'), required=True, max_length=10, help_text=_("Please use the following format")+": <em>YYYY-MM-DD</em>.", widget=forms.TextInput(attrs={'class':'span-10'}))
-    
-    layout = Layout(
-        Fieldset(
-                '',
-                'from_date',
-        ),
-        SearchForm.layout,
-    )
-    
-    # Attach a formHelper to your forms class.
-    helper = FormHelper()
-
-    submit = Submit('search', _('Search'))
-    helper.add_input(submit)
-    helper.use_csrf_protection = True
-    helper.add_layout(layout)
+    country_id = forms.MultipleChoiceField(label=_('Country'), required=False,
+                                           choices=country_list_with_all(),
+                                           help_text=COUNTRY_HELP_TEXT)
 
     def __init__(self, *args, **kwargs):
-        super(DailyLoadSearchForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['from_date', 'destination', 'destination_type', 'source', 'source_type', 'channel']
-    
+        super(SearchForm, self).__init__(*args, **kwargs)
+        self.fields['switch'].choices = sw_list_with_all()
+
+
+class CdrSearchForm(SearchForm):
+    from_date = CharField(label=_('From'), required=True, max_length=10)
+    to_date = CharField(label=_('To'), required=True, max_length=10)
+    direction = forms.TypedChoiceField(label=_('Direction'), required=False, coerce=bool,
+                choices=(('inbound', _('Inbound')), ('outbound', _('Outbound'))))
+    result = forms.TypedChoiceField(label=_('Result'), required=False, coerce=bool,
+                choices=((1, _('Minutes')), (2, _('Seconds'))),
+                widget=forms.RadioSelect)
+    records_per_page = forms.ChoiceField(label=_('CDR per page'),
+                                         required=False, initial=settings.PAGE_SIZE,
+                                         choices=PAGE_SIZE_LIST)
+    records_per_page.widget.attrs['class'] = 'input-mini'
+
+    def __init__(self, *args, **kwargs):
+        super(CdrSearchForm, self).__init__(*args, **kwargs)
+        self.fields['records_per_page'].widget.attrs['onchange'] = 'this.form.submit();'
+
+
+class CountryReportForm(CdrSearchForm):
+    def __init__(self, *args, **kwargs):
+        super(CountryReportForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['from_date', 'to_date', 'country_id', 'duration',
+                                'duration_type', 'switch']
+
+
+class CdrOverviewForm(CdrSearchForm):
+
+    def __init__(self, *args, **kwargs):
+        super(CdrOverviewForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['from_date', 'to_date', 'destination', 'destination_type',
+                                'switch']
+
 
 class CompareCallSearchForm(SearchForm):
+    from_date = forms.CharField(label=_('Select date'), required=True,
+                                max_length=10,
+                                widget=forms.TextInput(attrs={'class':'span-10'}))
 
-    from_date = forms.CharField(label=_('Select date'), required=True, max_length=10, help_text=_("Please use the following format")+": <em>YYYY-MM-DD</em>.", widget=forms.TextInput(attrs={'class':'span-10'}))
     comp_days = forms.ChoiceField(label='', required=False, choices=comp_day_range())
-    graph_view=forms.ChoiceField(label=_('Graph'), required=False,
-            choices=((1, _('Calls per Hour')), (2,_('Minutes per Hour'))))
-    
-    layout = Layout(
-        Fieldset(
-                '',
-                Row(
-                    Column('from_date'),
-                    Column('comp_days'),
-                ),
-        ),
-        SearchForm.layout,
-        'graph_view',
-    )
-    
-    # Attach a formHelper to your forms class.
-    helper = FormHelper()
-    
-    submit = Submit('search', _('Search'))
-    helper.add_input(submit)
-    helper.use_csrf_protection = True
-    helper.add_layout(layout)
+    graph_view = forms.ChoiceField(label=_('Graph'), required=False,
+                 choices=((1, _('Calls per Hour')), (2,_('Minutes per Hour'))))
+    check_days = forms.TypedChoiceField(label=_('Check with'), required=False, coerce=bool,
+                 choices=((1, _('Previous days')), (2, _('Same day of the week'))),
+                 widget=forms.RadioSelect)
 
     def __init__(self, *args, **kwargs):
         super(CompareCallSearchForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['from_date','comp_days', 'destination', 'destination_type', 'source', 'source_type', 'channel','graph_view']
+        self.fields.keyOrder = ['from_date','comp_days', 'check_days', 'destination',
+                                'destination_type', 'graph_view', 'switch']
 
 
-class ConcurrentCallForm(forms.Form):
-    result = forms.TypedChoiceField( label=_('Result'), required=True, coerce=bool, empty_value=1,
-                choices = (('1', _('Today')), ('2', _('Yesterday')), ('3', _('Current Week')), ('4', _('Previous Week')), ('5', _('Current Month')), ('6', _('Previous Month'))))
-             
-    
-    # Attach a formHelper to your forms class.
-    helper = FormHelper()
-    helper.form_method = 'POST'
-    submit = Submit('search', _('Search'))
-    helper.add_input(submit)
-    helper.use_csrf_protection = True
+class ConcurrentCallForm(CdrSearchForm):
+    def __init__(self, *args, **kwargs):
+        super(ConcurrentCallForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['from_date', 'result', 'switch']
+        self.fields['from_date'].label = _('Select date')
+
+
+class SwitchForm(SearchForm):
+    def __init__(self, *args, **kwargs):
+        super(SwitchForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['switch']
+        self.fields['switch'].widget.attrs['onchange'] = 'this.form.submit();'
 
 
 class loginForm(forms.Form):
 
-    user = forms.CharField(max_length=40, label=_('Login'), required=True, widget=forms.TextInput(attrs={'size':'10'}))
-    password = forms.CharField(max_length=40, label=_('Password'), required=True, widget=forms.PasswordInput(attrs={'size':'10'}))
+    user = forms.CharField(max_length=40, label=_('Login'), required=True)
+    user.widget.attrs['class'] = 'input-small'
+    user.widget.attrs['placeholder'] = 'Username'
+    password = forms.CharField(max_length=40, label=_('Password'),
+                               required=True, widget=forms.PasswordInput())
+    password.widget.attrs['class'] = 'input-small'
+    password.widget.attrs['placeholder'] = 'Password'
+
     
+class EmailReportForm(ModelForm):
+    """A form used to change the detail of a user in the Customer UI."""
+
+    multiple_email = forms.CharField(max_length=300, required=False,
+                           label=_("Enter e-mails to receive the mail report, if more than one separate by comma"))
+    multiple_email.widget.attrs['class'] = 'span6'
+
+    class Meta:
+        model = UserProfile
+        fields = ('multiple_email',)
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(EmailReportForm, self).__init__(*args, **kwargs)
+
+    def clean_multiple_email(self):
+        """Check that the field contains one or more comma-separated emails
+        and normalizes the data to a list of the email strings.
+        """
+        emails = self.cleaned_data['multiple_email'].split(',')
+        mail_list = []
+        for email in emails:
+            email = email.strip()
+            try:
+                validate_email(email)
+                mail_list.append((str(email)))
+            except:
+                raise forms.ValidationError('%s is not a valid e-mail address.' % email)
+
+        # Always return the cleaned data.
+        mail_list = ','.join(mail_list)
+        return mail_list
