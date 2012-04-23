@@ -1,0 +1,46 @@
+{# use in combination with https://github.com/zyga/django-pagination #}
+{# and http://twitter.github.com/bootstrap/ #}
+{# project-dir/templates/pagination/pagination.html #}
+{% load i18n %}
+{% if is_paginated %}
+
+  <div class="pagination pagination-centered">
+    <ul>
+      {% block previouslink %}
+        {% if page_obj.has_previous %}
+          <li class="prev"><a href="?page{{ page_suffix }}={{ page_obj.previous_page_number }}{{ getvars }}">{{ previous_link_decorator|safe }}{% trans "Previous" %}</a></li>
+        {% else %}
+          {% if display_disabled_previous_link %}
+            <li class="prev disabled"><a>{{ previous_link_decorator|safe }}{% trans "Previous" %}</a></li>
+          {% endif %}
+        {% endif %}
+      {% endblock previouslink %}
+      {% block pagelinks %}
+        {% if display_page_links %}
+          {% for page in pages %}
+            {% if page %}
+              {% ifequal page page_obj.number %}
+                <li class="active"><a href="#">{{ page }}</a></li>
+              {% else %}
+                <li><a href="?page{{ page_suffix }}={{ page }}{{ getvars }}">{{ page }}</a></li>
+              {% endifequal %}
+            {% else %}
+                <li class="disabled">
+                    <a href="#">...</a>
+                </li>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      {% endblock pagelinks %}
+      {% block nextlink %}
+        {% if page_obj.has_next %}
+          <li class="next"><a href="?page{{ page_suffix }}={{ page_obj.next_page_number }}{{ getvars }}">{% trans "Next" %}{{ next_link_decorator|safe }}</a></li>
+        {% else %}
+          {% if display_disabled_next_link %}
+            <li class="next disabled"><a>{% trans "Next" %}{{ next_link_decorator|safe }}</a></li>
+          {% endif %}
+        {% endif %}
+      {% endblock nextlink %}
+    </ul>
+  </div>
+{% endif %}
