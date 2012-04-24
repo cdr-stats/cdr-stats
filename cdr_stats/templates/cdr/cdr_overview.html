@@ -520,9 +520,7 @@ $(function () {
 
 <div class="row">
     <div class="span12">
-        <center>
-        <p class="lead" style="margin-top:30px; margin-bottom:10px;">
-            
+        <div class="graph_header">
             <span id="id_title_span">{% trans "Load by Hour"|title %}</span> -
             <b>
                 {% if start_date  %}
@@ -532,8 +530,8 @@ $(function () {
                     {% trans "to" %} {{ end_date|date:"jS N Y" }}
                 {% endif %}
             </b>
-        </p>
-        </center>
+        </div>
+        <p>&nbsp;</p>
     </div>
 </div>
 

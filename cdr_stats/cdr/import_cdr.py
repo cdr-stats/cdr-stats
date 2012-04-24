@@ -97,7 +97,6 @@ def get_country_id(prefix_list):
 
 def chk_prefix_in_whitelist(prefix_list):
     """Check destination no with allowed prefix"""
-    # TODO : Check Whitelist numbers
     white_prefix_list = Whitelist.objects.all()
     flag = False
     if white_prefix_list:
@@ -121,7 +120,6 @@ def chk_prefix_in_whitelist(prefix_list):
 
 def chk_prefix_in_blacklist(prefix_list):
     """Check destination no with ban prefix"""
-    # TODO : Check Blacklist
     banned_prefix_list = Blacklist.objects.all()
     flag = False
     if banned_prefix_list:

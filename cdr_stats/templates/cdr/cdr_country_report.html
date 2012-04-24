@@ -48,7 +48,7 @@
                 <div class="span4">
                     <label class="control-label" for="id_{{ form.duration.name }}">{{ form.duration.label }}</label>
                     <div class="input">
-                        {{ form.duration }}&nbsp;&nbsp;{{ form.duration_type }}
+                        {{ form.duration }}&nbsp;{{ form.duration_type }}
                     </div>
                 </div>
             </div>
@@ -207,8 +207,9 @@ $(function () {
 <p>&nbsp;</p>
 <center>
     <div class="graph_header">{% trans "Countries Call Statistics" %}</div>
+    <p>&nbsp;</p>
     <div id="placeholder" style="width:700px;height:300px"></div>
-    <p></p>
+    <p>&nbsp;</p>
     <div id="overview" style="margin-left:50px;margin-top:20px;width:400px;height:50px"></div>
 </center>
 <br/>
@@ -301,7 +302,7 @@ $(function () {
                                 <tr>
                                     <td class="td-dashboard"><img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World"%}"></td>
                                     <td class="td-dashboard" width="100">{% trans "Total"%}</td>
-                                    <td width="100">{{ total_calls }} {% trans "Calls"%}</td>
+                                    <td>{{ total_calls }} {% trans "Calls"%}</td>
                                     <td>{{ total_duration|conv_min }} {% trans "minutes"%}</td>
                                 </tr>
                             </tbody>
@@ -310,9 +311,8 @@ $(function () {
                     </div>
                 </div>
 
-
                 <div class="span6">
-                    <div id="country_pie" style="width:350px;height:350px;margin-right:80px;"></div>
+                    <div id="country_pie" style="width:350px;height:350px;"></div>
                     <div id="country_hover"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
                 </div>
             </div>
