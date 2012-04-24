@@ -283,8 +283,8 @@ func_install_frontend(){
 
     echo ""
     echo ""
-    echo "This script will install CDR-Stats on your server"
-	echo "======================================================"
+    echo "We will now install CDR-Stats on your server"
+	echo "============================================"
     echo ""
     branch=STABLE
     echo "Which version do you want to install ? DEVEL or STABLE [DEVEL/STABLE] (default:STABLE)"
@@ -328,8 +328,6 @@ func_install_frontend(){
 			if [ ! -f /etc/yum.repos.d/rpmforge.repo ];
             	then
                 	# Install RPMFORGE Repo
-                	#Check architecture
-        			KERNELARCH=$(uname -p)
         			if [ $KERNELARCH = "x86_64" ]; then
 						rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm
 					else
@@ -836,17 +834,17 @@ while [ $ExitFinish -eq 0 ]; do
 	show_menu_cdr_stats
 
 	case $OPTION in
-		1) 
+		1)
 			func_install_frontend
 			func_install_landing_page
 			func_install_backend
 			echo done
 		;;
-		2) 
+		2)
 			func_install_frontend
 			func_install_landing_page
 		;;
-		3) 
+		3)
 			func_install_backend
 		;;
 		0)
