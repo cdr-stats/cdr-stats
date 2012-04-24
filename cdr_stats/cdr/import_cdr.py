@@ -248,6 +248,7 @@ def import_cdr():
                 
                 prefix_list = prefix_list_string(sanitized_destination)
 
+                authorized = 1 # default
                 #check desti against whiltelist
                 authorized = chk_prefix_in_whitelist(prefix_list)
                 if authorized:

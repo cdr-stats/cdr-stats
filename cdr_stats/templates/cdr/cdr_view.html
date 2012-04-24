@@ -243,7 +243,11 @@
                 <td>{{ row.accountcode }}</td>
                 <td>
                     <img src="{{STATIC_URL}}cdr-stats/{{ row.country|iso_flag }}" class="elemtooltip" title="{{ row.country|country_name }}">
-                    <img src="{{STATIC_URL}}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans "Authorized call" %}"/>
+                    {% if row.authorized == 1  %}
+                        <img src="{{STATIC_URL}}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans "Authorized call" %}"/>
+                    {% else %}
+                        <img src="{{STATIC_URL}}cdr-stats/icons/flag_red.png" class="elemtooltip" title="{% trans "Unauthorized call" %}"/>
+                    {% endif %}
                     {% ifequal row.direction 'inbound' %}
                       <img src="{{STATIC_URL}}cdr-stats/icons/door_in.png" title="{{ row.direction|capfirst }} {% trans "call" %}" class="elemtooltip"/>
                     {% else %}

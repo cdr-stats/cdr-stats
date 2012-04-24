@@ -438,6 +438,7 @@ def cdr_view(request):
                      'hangup_cause': get_hangupcause_name(i['hangup_cause_id']),
                      'accountcode': i['accountcode'],
                      'direction': i['direction'],
+                     'authorized': i['authorized'],
                    })
 
     logging.debug('Map-reduce cdr analytic')
