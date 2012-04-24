@@ -1,10 +1,9 @@
 django-celery==2.5.0
 django-kombu
-django-haystack
 linaro_django_pagination
 #django-pagination==1.0.7
 #git+git://github.com/zyga/django-pagination
-
+django-uuidfield
 git+git://github.com/Star2Billing/django-notification
 #git+git://github.com/jtauber/django-notification.git
 
