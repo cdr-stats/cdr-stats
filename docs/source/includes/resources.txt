@@ -1,0 +1,52 @@
+.. _getting-help:
+
+Getting Help
+============
+
+.. _mailing-list:
+
+Mailing list
+------------
+
+For discussions about the usage, development, and future of CDR-Stats,
+please join the `CDR-Stats`_ mailing list.
+
+.. _`CDR-Stats`: http://groups.google.com/group/cdr-stats
+
+.. _bug-tracker:
+
+Bug tracker
+===========
+
+If you have any suggestions, bug reports or annoyances please report them
+to our issue tracker at https://github.com/Star2Billing/cdr-stats/issues/
+
+.. _wiki:
+
+Wiki
+====
+
+https://github.com/Star2Billing/cdr-stats/wiki/
+
+.. _contributing-short:
+
+Contributing
+============
+
+Development of `CDR-Stats` happens at Github: https://github.com/Star2Billing/cdr-stats
+
+You are highly encouraged to participate in the development of `CDR-Stats`.
+If you would prefer not to use Github, you are welcome to send us regular patches
+
+Be sure to also read the :ref:`contributing` section in the documentation.
+
+
+.. _license:
+
+License
+=======
+
+This software is licensed under the `MPL 2.0 License`. See the :file:`LICENSE`
+file in the top distribution directory for the full license text.
+
+.. # vim: syntax=rst expandtab tabstop=4 shiftwidth=4 shiftround

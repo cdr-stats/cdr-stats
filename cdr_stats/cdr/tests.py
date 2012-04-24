@@ -152,12 +152,12 @@ class CdrStatsAdminInterfaceTestCase(TestCase):
 
         response = self.client.get('/admin/cdr_alert/whitelist/')
         self.failUnlessEqual(response.status_code, 200)
-        response = self.client.get('/admin/cdr_alert/whitelist/add/')
+        response = self.client.get('/admin/cdr_alert/whitelist/whitelist_by_country/')
         self.failUnlessEqual(response.status_code, 200)
 
         response = self.client.get('/admin/cdr_alert/blacklist/')
         self.failUnlessEqual(response.status_code, 200)
-        response = self.client.get('/admin/cdr_alert/blacklist/add/')
+        response = self.client.get('/admin/cdr_alert/blacklist/blacklist_by_country/')
         self.failUnlessEqual(response.status_code, 200)
 
         response = self.client.get('/admin/country_dialcode/country/')
@@ -192,6 +192,10 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response,
                                 'cdr/cdr_view.html')
+        response = self.client.get('/cdr_overview/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response,
+            'cdr/cdr_overview.html')
 
     def test_cdr_report_view(self):
         """Test Function to check cdr-stats view"""
@@ -199,14 +203,6 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response,
                                 'cdr/cdr_graph_by_hour.html')
-        response = self.client.get('/daily_report/')
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response,
-                                'cdr/cdr_graph_by_day.html')
-        response = self.client.get('/monthly_report/')
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response,
-                                'cdr/cdr_graph_by_month.html')
         response = self.client.get('/concurrent_calls/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response,
