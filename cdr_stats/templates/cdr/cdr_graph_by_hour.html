@@ -119,7 +119,6 @@
                     }
                 }
             }
-
             var options = {
                 legend: {
                     position: "ne",
@@ -145,9 +144,9 @@
                     xaxis: false
                 }
             };
-            var plot = $.plot($("#placeholder"), data, options);
+            var plot = $.plot($("#graph_responsive"), data, options);
 
-            $("#placeholder").bind("plothover", function (event, pos, item) {
+            $("#graph_responsive").bind("plothover", function (event, pos, item) {
 
                 if (item) {
                     if (previousPoint != item.dataIndex) {
@@ -187,8 +186,7 @@
             </b>
         </div>
         <p>&nbsp;</p>
-        <div id="placeholder" style="width:700px;height:300px"></div>
+        <div id="graph_responsive"></div>
     </center>
 
 {% endblock %}
-

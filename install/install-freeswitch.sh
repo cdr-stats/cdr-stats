@@ -182,14 +182,6 @@ modules.conf.xml
 #Configure Dialplan
 cd $FS_CONFIG_PATH/conf/dialplan/
 
-# Place Plivo Default Dialplan in FreeSWITCH
-[ -f default.xml ] && mv default.xml default.xml.bak
-wget --no-check-certificate $FS_CONF_PATH/default.xml -O default.xml
-
-# Place Plivo Public Dialplan in FreeSWITCH
-[ -f public.xml ] && mv public.xml public.xml.bak
-wget --no-check-certificate $FS_CONF_PATH/public.xml -O public.xml
-
 #Return to current path
 cd $CURRENT_PATH
 

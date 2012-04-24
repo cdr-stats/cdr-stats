@@ -8,3 +8,4 @@ cdr_stats/static
 celerybeat-schedule
 .idea
 settings_local.py
+*sublime*

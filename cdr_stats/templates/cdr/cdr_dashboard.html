@@ -60,7 +60,7 @@ $(function () {
               }
     };
 
-    var plot = $.plot($("#placeholder"), [data], options);
+    var plot = $.plot($("#graph_responsive"), [data], options);
 
     var overview = $.plot($("#overview"), [data], {
         legend: {show: false},
@@ -74,9 +74,9 @@ $(function () {
     });
 
     // now connect the two
-    $("#placeholder").bind("plotselected", function (event, ranges) {
+    $("#graph_responsive").bind("plotselected", function (event, ranges) {
         // do the zooming
-        plot = $.plot($("#placeholder"), [data],
+        plot = $.plot($("#graph_responsive"), [data],
                       $.extend(true, {}, options, {
                           xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to }
                       }));
@@ -89,7 +89,7 @@ $(function () {
         plot.setSelection(ranges);
     });
     
-    $("#placeholder").bind("plothover", function (event, pos, item) {
+    $("#graph_responsive").bind("plothover", function (event, pos, item) {
         if (item) {
             if (previousPoint != item.dataIndex) {
                 previousPoint = item.dataIndex;
@@ -127,7 +127,7 @@ $(function () {
 <p>&nbsp;</p>
 <center>
     <h2 align="center">{% trans "Call Statistics" %} : {% now "jS F Y" %}</h2>
-    <div id="placeholder" style="width:700px;height:300px"></div>
+    <div id="graph_responsive"></div>
     <p></p>
     <div id="overview" style="margin-left:50px;margin-top:20px;width:400px;height:50px"></div>
 </center>
