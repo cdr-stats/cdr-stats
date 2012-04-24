@@ -1,7 +1,7 @@
 <configuration name="xml_cdr.conf" description="XML CDR CURL logger">
   <settings>
     <!-- the url to post to if blank web posting is disabled  -->
-    <param name="url" value="NEWFIES_API_STORE_CDR"/>
+    <param name="url" value="CDR_STATS_API_STORE_CDR"/>
 
     <!-- optional: credentials to send to web server -->
     <!-- <param name="cred" value="APIUSERNAME:APIPASSWORD"/> -->
