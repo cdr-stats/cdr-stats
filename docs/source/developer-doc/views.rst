@@ -53,6 +53,14 @@ CDR-Stats Views
   .. autofunction:: cdr_overview
 
 
+.. _cdr_realtime-overview:
+
+:class:`cdr_realtime`
+---------------------
+
+  .. autofunction:: cdr_realtime
+
+
 .. _cdr-graph-by-hour:
 
 :class:`cdr_graph_by_hour`
