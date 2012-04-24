@@ -87,7 +87,6 @@ Objects Description
     :members:
 
 
-
 .. _database-design:
 
 Database Design
