@@ -98,6 +98,7 @@ func_install_fs_source() {
 	-e "s/#say\/mod_say_hu/say\/mod_say_hu/g" \
 	-e "s/#say\/mod_say_th/say\/mod_say_th/g" \
 	-e "s/#xml_int\/mod_xml_cdr/xml_int\/mod_xml_cdr/g" \
+	-e "s/#event_handlers\/mod_cdr_mongodb/event_handlers\/mod_cdr_mongodb/g" \
 	modules.conf
 	make && make install && make sounds-install && make moh-install
 
