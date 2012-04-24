@@ -78,9 +78,9 @@ $(function () {
 
     };
 
-    var plot = $.plot($("#placeholder"), [d], options);
+    var plot = $.plot($("#graph_responsive"), [d], options);
 
-    $("#placeholder").bind("plothover", function (event, pos, item) {
+    $("#graph_responsive").bind("plothover", function (event, pos, item) {
 
         if (item) {
             if (previousPoint != item.dataIndex) {
@@ -125,9 +125,10 @@ $(function () {
         
 });
 </script>
-<center>
-    <div class="graph_header">{% trans "Concurrent Calls" %}</div>
-    <div id="placeholder" style="width:600px;height:300px;"></div>
-</center>
-
+<div class="row">
+    <div class="span12">
+        <div class="graph_header">{% trans "Concurrent Calls" %}</div>
+        <div id="graph_responsive"></div>
+    </div>
+</div>
 {% endblock %}

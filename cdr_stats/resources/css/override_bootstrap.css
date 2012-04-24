@@ -107,7 +107,7 @@ label {
     #finance {
         position: relative; margin: 40px 0px; width: 440px; border: 1px solid #99CCFF;
     }
-    #placeholder_cdr_analytic {
+    #graph_responsive, #placeholder_cdr_analytic {
         width: 350px; height:300px;
     }
     #overview_analytic {
@@ -123,12 +123,16 @@ label {
     #finance {
         position: relative; margin: 40px 0px; width: 580px; border: 1px solid #99CCFF;
     }
-    #placeholder_cdr_analytic {
+    #graph_responsive, #placeholder_cdr_analytic {
         width: 450px; height:300px;
     }
     #overview_analytic {
         width:350px;
     }
+    #graph_responsive div.legend table, #placeholder_cdr_analytic div.legend table {
+      margin-right: -55px;
+    }
+}
 }
 
 /* Portrait tablet to landscape and desktop */
@@ -136,14 +140,14 @@ label {
     #finance {
         position: relative; margin: 40px 0px; width: 720px; border: 1px solid #99CCFF;
     }
-    #placeholder_cdr_analytic {
+    #graph_responsive, #placeholder_cdr_analytic {
         width: 700px; height:300px;
     }
     #overview_analytic {
         width: 500px;
     }
-    #placeholder_cdr_analytic div.legend table {
-      margin-right: 0px;
+    #graph_responsive div.legend table, #placeholder_cdr_analytic div.legend table {
+      margin-right: -55px;
     }
 }
 
@@ -152,14 +156,14 @@ label {
     #finance {
         position: relative; margin: 40px 0px; width: 1010px; border: 1px solid #99CCFF;
     }
-    #placeholder_cdr_analytic {
+    #graph_responsive, #placeholder_cdr_analytic {
         width: 800px; height:300px;
     }
     #overview_analytic {
         width:500px;
     }
-    #placeholder_cdr_analytic div.legend table {
-      margin-right: -40px;
+    #graph_responsive div.legend table, #placeholder_cdr_analytic div.legend table {
+      margin-right: -60px;
     }
 }
 
@@ -168,13 +172,13 @@ label {
     #finance {
         position: relative; margin: 40px 0px; width: 1170px; border: 1px solid #99CCFF;
     }
-    #placeholder_cdr_analytic {
+    #graph_responsive, #placeholder_cdr_analytic {
         width: 1050px; height:300px;
     }
     #overview_analytic {
         width:500px;
     }
-    #placeholder_cdr_analytic div.legend table {
-      margin-right: -40px;
+    #graph_responsive div.legend table, #placeholder_cdr_analytic div.legend table {
+      margin-right: -70px;
     }
 }
