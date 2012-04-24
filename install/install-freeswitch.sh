@@ -15,7 +15,7 @@
 
 #
 # To download and run the script on your server :
-# cd /usr/src/ ; rm install-freeswitch.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-freeswitch.sh ; chmod +x install-freeswitch.sh ; ./freeswitch.sh
+# cd /usr/src/ ; rm install-freeswitch.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-freeswitch.sh ; chmod +x install-freeswitch.sh ; ./install-freeswitch.sh
 
 
 # Identify Linux Distribution type
@@ -97,8 +97,7 @@ func_install_fs_source() {
 	-e "s/#event_handlers\/mod_cdr_mongodb/event_handlers\/mod_cdr_mongodb/g" \
 	modules.conf
 	make && make install && make sounds-install && make moh-install
-
-
+    
 	#Set permissions
 	chown -R freeswitch:freeswitch /usr/local/freeswitch /etc/freeswitch
 	
@@ -175,6 +174,8 @@ sed -i -r \
 -e 's/mod_say_zh.*$/&\n    <load module="mod_say_de"\/>\n    <load module="mod_say_es"\/>\n    <load module="mod_say_fr"\/>\n    <load module="mod_say_it"\/>\n    <load module="mod_say_nl"\/>\n    <load module="mod_say_hu"\/>\n    <load module="mod_say_th"\/>    <load module="mod_cdr_mongodb"\/>/' \
 modules.conf.xml
 
+#Rename default mongodb database
+sed -i "s/test.cdr/freeswitch.cdr/g" cdr_mongodb.conf.xml
 
 #Configure Dialplan
 cd $FS_CONFIG_PATH/conf/dialplan/

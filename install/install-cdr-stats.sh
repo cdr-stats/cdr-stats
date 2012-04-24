@@ -141,7 +141,7 @@ func_install_landing_page() {
     esac
     
     #Update Welcome page IP
-    sed -i "s/LOCALHOST/$IPADDR:$HTTP_PORT/g" $INSTALL_DIR_WELCOME/index.html    
+    sed -i "s/LOCALHOST/$IPADDR:$HTTP_PORT/g" $INSTALL_DIR_WELCOME/index.html
 }
 
 func_check_dependencies() {
