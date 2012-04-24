@@ -4,6 +4,7 @@ linaro_django_pagination
 #django-pagination==1.0.7
 #git+git://github.com/zyga/django-pagination
 django-uuidfield
+django-jsonfield
 git+git://github.com/Star2Billing/django-notification
 #git+git://github.com/jtauber/django-notification.git
 
