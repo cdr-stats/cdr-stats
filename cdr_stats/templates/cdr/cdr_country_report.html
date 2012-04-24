@@ -268,53 +268,42 @@ $(function () {
         var plot = $.plot($("#country_pie"), data, options);
     });
     </script>
-    <p>&nbsp;</p>
+
     <div class="row">
-        <div class="span12">
-            <div class="row">
-                <div class="span6">
-                    <div class="show-grid overlay">
-                        <div class="dashboard_summary_header span6">{% trans "10 most called countries"|title %}</div>
-                        <div class="span6">
-                            <table>
-                            <tbody>
-                            {% for country_data in top_ten_country_analytic %}
-                                <tr>
-                                    <td class="td-dashboard"><img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}"></td>
-                                    <td class="td-dashboard" width="100">{{ country_data.0 }}</td>
-                                    <td width="100">{{ country_data.1 }} {% trans "Calls"%}</td>
-                                    <td>{{ country_data.2|conv_min }} {% trans "minutes"%}</td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="show-grid overlay span6">
-                        <hr/>
-                    </div>
-                    
-                    <div class="show-grid overlay">
-                        <div class="span6">
-                            <table>
-                            <tbody>
-                                <tr>
-                                    <td class="td-dashboard"><img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World"%}"></td>
-                                    <td class="td-dashboard" width="100">{% trans "Total"%}</td>
-                                    <td>{{ total_calls }} {% trans "Calls"%}</td>
-                                    <td>{{ total_duration|conv_min }} {% trans "minutes"%}</td>
-                                </tr>
-                            </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="span6">
-                    <div id="country_pie" style="width:350px;height:350px;"></div>
-                    <div id="country_hover"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
-                </div>
+        <div class="span6 welldashboard">
+            <div class="span6">
+                <h2 align="left">{% trans "10 most called countries"|title %}</h2>
+                <br/>
+                <table>
+                    <tbody>
+                    {% for country_data in top_ten_country_analytic %}
+                        <tr>
+                            <td class="td-dashboard"><img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}"></td>
+                            <td class="td-dashboard" width="100">{{ country_data.0 }}</td>
+                            <td width="100">{{ country_data.1 }} {% trans "Calls"%}</td>
+                            <td>{{ country_data.2|conv_min }} {% trans "minutes"%}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <hr style="width:400px;"/>
+                <table>
+                    <tbody>
+                    <tr>
+                        <td class="td-dashboard"><img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World"%}"></td>
+                        <td class="td-dashboard" width="100">{% trans "Total"%}</td>
+                        <td width="100">{{ total_calls }} {% trans "Calls"%}</td>
+                        <td>{{ total_duration|conv_min }} {% trans "minutes"%}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <br/>
+            </div>
+        </div>
+        <div class="span6 welldashboard">
+            <div class="span6">
+                <div id="country_pie" style="width:350px;height:350px;margin:auto;"></div>
+                <div id="country_hover"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
             </div>
         </div>
     </div>
