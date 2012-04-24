@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Newfies-Dialer License
-# http://www.newfies-dialer.org
+# CDR-Stats License
+# http://www.cdr-stats.org
 #
 # This Source Code Form is subject to the terms of the Mozilla Public 
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -15,7 +15,7 @@
 
 #
 # To download and run the script on your server :
-# wget --no-check-certificate https://raw.github.com/Star2Billing/newfies-dialer/master/install/freeswitch/install-freeswitch.sh
+# wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-freeswitch.sh
 #
 #
 #TODO: install memcache
@@ -35,8 +35,8 @@ else
 fi
 
 
-FS_CONF_PATH=https://raw.github.com/Star2Billing/newfies-dialer/master/install/freeswitch-conf
-FS_INIT_PATH=https://raw.github.com/Star2Billing/newfies-dialer/master/install/freeswitch-init
+FS_CONF_PATH=https://raw.github.com/Star2Billing/cdr-stats/master/install/freeswitch-conf
+FS_INIT_PATH=https://raw.github.com/Star2Billing/cdr-stats/master/install/freeswitch-init
 FS_GIT_REPO=git://git.freeswitch.org/freeswitch.git
 FS_INSTALLED_PATH=/usr/local/freeswitch
 FS_CONFIG_PATH=/etc/freeswitch
@@ -190,21 +190,8 @@ wget --no-check-certificate $FS_CONF_PATH/default.xml -O default.xml
 [ -f public.xml ] && mv public.xml public.xml.bak
 wget --no-check-certificate $FS_CONF_PATH/public.xml -O public.xml
 
-
-#Configure XML CDR
-#cd $FS_INSTALLED_PATH/conf/autoload_configs/
-
-#this is commented as we don't use xml_cdr anymore
-## Place Newfies XML CDR conf in FreeSWITCH
-#[ -f xml_cdr.conf.xml ] && mv xml_cdr.conf.xml xml_cdr.conf.xml.bak
-#wget --no-check-certificate $FS_CONF_PATH/xml_cdr.conf.xml -O xml_cdr.conf.xml
-#create dir to store send error of CDR
-#mkdir /usr/local/freeswitch/log/err_xml_cdr/
-
 #Return to current path
 cd $CURRENT_PATH
-
-
 
 case $DIST in
     'DEBIAN')

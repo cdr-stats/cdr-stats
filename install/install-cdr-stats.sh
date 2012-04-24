@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Newfies-Dialer License
-# http://www.newfies-dialer.org
+# CDR-Stats License
+# http://www.cdr-stats.org
 #
 # This Source Code Form is subject to the terms of the Mozilla Public 
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -17,10 +17,10 @@
 # To download and run the script on your server :
 #
 # >> Install with Master script :
-# cd /usr/src/ ; rm install-newfies.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/newfies-dialer/master/install/install-newfies.sh ; chmod +x install-newfies.sh ; ./install-newfies.sh
+# cd /usr/src/ ; rm install-cdr-stats.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats.sh ; chmod +x install-cdr-stats.sh ; ./install-cdr-stats.sh
 #
 # >> Install with develop script :
-# cd /usr/src/ ; rm install-newfies.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/newfies-dialer/develop/install/install-newfies.sh ; chmod +x install-newfies.sh ; ./install-newfies.sh
+# cd /usr/src/ ; rm install-cdr-stats.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/develop/install/install-cdr-stats.sh ; chmod +x install-cdr-stats.sh ; ./install-cdr-stats.sh
 #
 #
 #TODO:
@@ -31,9 +31,9 @@
 INSTALL_MODE='CLONE'
 DATETIME=$(date +"%Y%m%d%H%M%S")
 KERNELARCH=$(uname -p)
-INSTALL_DIR='/usr/share/newfies'
-INSTALL_DIR_WELCOME='/var/www/newfies'
-DATABASENAME=$INSTALL_DIR'/database/newfies.db'
+INSTALL_DIR='/usr/share/cdr-stats'
+INSTALL_DIR_WELCOME='/var/www/cdr-stats'
+DATABASENAME=$INSTALL_DIR'/database/cdr-stats.db'
 MYSQLUSER=
 MYSQLPASSWORD=
 MYHOST=
@@ -42,7 +42,7 @@ MYHOSTPORT=
 FS_INSTALLED_PATH=/usr/local/freeswitch
 CELERYD_USER="celery"
 CELERYD_GROUP="celery"
-NEWFIES_ENV="newfies-dialer"
+CDRSTATS_ENV="cdr-stats"
 HTTP_PORT="8008"
 SOUTH_SOURCE='hg+http://bitbucket.org/andrewgodwin/south/@ecaafda23e600e510e252734d67bf8f9f2362dc9#egg=South-dev'
 
@@ -74,12 +74,12 @@ func_identify_os() {
 #Function accept_license
 func_accept_license() {
     echo ""
-    wget --no-check-certificate -q -O  MPL-V2.0.txt https://raw.github.com/Star2Billing/newfies-dialer/develop/COPYING
+    wget --no-check-certificate -q -O  MPL-V2.0.txt https://raw.github.com/Star2Billing/cdr-stats/develop/COPYING
     more MPL-V2.0.txt
     echo ""
     echo ""
-    echo "Newfies-Dialer License MPL V2.0"
-    echo "Further information at http://www.newfies-dialer.org/support/licensing/"
+    echo "CDR-Stats License MPL V2.0"
+    echo "Further information at http://www.cdr-stats.org/support/licensing/"
     echo ""
     echo "This Source Code Form is subject to the terms of the Mozilla Public"
     echo "License, v. 2.0. If a copy of the MPL was not distributed with this file,"
@@ -110,7 +110,7 @@ func_accept_license() {
 func_install_landing_page() {
     mkdir -p $INSTALL_DIR_WELCOME
     # Copy files
-    cp -r /usr/src/newfies-dialer/install/landing-page/* $INSTALL_DIR_WELCOME
+    cp -r /usr/src/cdr-stats/install/landing-page/* $INSTALL_DIR_WELCOME
     
     echo ""
     echo "Add Apache configuration for Welcome page..."
@@ -128,7 +128,7 @@ func_install_landing_page() {
 
     </VirtualHost>
     
-    ' > $APACHE_CONF_DIR/welcome-newfies.conf
+    ' > $APACHE_CONF_DIR/welcome-cdr-stats.conf
     
     case $DIST in
         'DEBIAN')
@@ -234,10 +234,10 @@ func_mysql_database_setting() {
     if [ -z "$MYSQLPASSWORD" ]; then
         MYSQLPASSWORD="password"
     fi
-    echo "Enter Database name (default:newfies)"
+    echo "Enter Database name (default:cdr-stats)"
     read DATABASENAME
     if [ -z "$DATABASENAME" ]; then
-        DATABASENAME="newfies"
+        DATABASENAME="cdr-stats"
     fi
 }
 
@@ -255,7 +255,7 @@ func_setup_virtualenv() {
     echo ""
     echo ""
     echo "This will install virtualenv & virtualenvwrapper"
-    echo "and create a new virtualenv : $NEWFIES_ENV"
+    echo "and create a new virtualenv : $CDRSTATS_ENV"
     
     easy_install virtualenv
     easy_install virtualenvwrapper
@@ -272,10 +272,10 @@ func_setup_virtualenv() {
     export WORKON_HOME=/usr/share/virtualenvs
     source $SCRIPT_VIRTUALENVWRAPPER
 
-    mkvirtualenv $NEWFIES_ENV
-    workon $NEWFIES_ENV
+    mkvirtualenv $CDRSTATS_ENV
+    workon $CDRSTATS_ENV
     
-    echo "Virtualenv $NEWFIES_ENV created and activated"
+    echo "Virtualenv $CDRSTATS_ENV created and activated"
 }
 
 #Function to install Frontend
@@ -283,7 +283,7 @@ func_install_frontend(){
 
     echo ""
     echo ""
-    echo "This script will install Newfies-Dialer on your server"
+    echo "This script will install CDR-Stats on your server"
 	echo "======================================================"
     echo ""
     branch=STABLE
@@ -291,7 +291,7 @@ func_install_frontend(){
     read branch
 
     db_backend=MySQL
-    echo "Do you want to install Newfies with SQLite or MySQL? [SQLite/MySQL] (default:MySQL)"
+    echo "Do you want to install CDR-Stats with SQLite or MySQL? [SQLite/MySQL] (default:MySQL)"
     read db_backend
 
     #python setup tools
@@ -365,21 +365,21 @@ func_install_frontend(){
     
 
     if [ -d "$INSTALL_DIR" ]; then
-        # Newfies is already installed
+        # CDR-Stats is already installed
         echo ""
         echo ""
-        echo "We detect an existing Newfies Installation"
+        echo "We detect an existing CDR-Stats Installation"
         echo "if you continue the existing installation will be removed!"
         echo ""
         echo "Press Enter to continue or CTRL-C to exit"
         read TEMP
 
-        mkdir /tmp/old-newfies-dialer_$DATETIME
-        mv $INSTALL_DIR /tmp/old-newfies-dialer_$DATETIME
-        echo "Files from $INSTALL_DIR has been moved to /tmp/old-newfies-dialer_$DATETIME"
+        mkdir /tmp/old-cdr-stats_$DATETIME
+        mv $INSTALL_DIR /tmp/old-cdr-stats_$DATETIME
+        echo "Files from $INSTALL_DIR has been moved to /tmp/old-cdr-stats_$DATETIME"
         echo "Run backup with mysqldump..."
-        mysqldump -u $MYSQLUSER --password=$MYSQLPASSWORD $DATABASENAME > /tmp/old-newfies-dialer_$DATETIME.mysqldump.sql
-        echo "Mysql Dump of database $DATABASENAME added in /tmp/old-newfies-dialer_$DATETIME.mysqldump.sql"
+        mysqldump -u $MYSQLUSER --password=$MYSQLPASSWORD $DATABASENAME > /tmp/old-cdr-stats_$DATETIME.mysqldump.sql
+        echo "Mysql Dump of database $DATABASENAME added in /tmp/old-cdr-stats_$DATETIME.mysqldump.sql"
         echo "Press Enter to continue"
         read TEMP
     fi
@@ -387,51 +387,50 @@ func_install_frontend(){
     #Create and enable virtualenv
     func_setup_virtualenv
     
-    #get Newfies
-    echo "Install Newfies..."
+    #get CDR-Stats
+    echo "Install CDR-Stats..."
     cd /usr/src/
-    rm -rf newfies-dialer
-    mkdir /var/log/newfies
+    rm -rf cdr-stats
+    mkdir /var/log/cdr-stats
 
     case $INSTALL_MODE in
         'CLONE')
-            git clone git://github.com/Star2Billing/newfies-dialer.git
+            git clone git://github.com/Star2Billing/cdr-stats.git
             
             #Install Develop / Master
             if echo $branch | grep -i "^DEVEL" > /dev/null ; then
-                cd newfies-dialer
+                cd cdr-stats
                 git checkout -b develop --track origin/develop
             fi
         ;;
         # 'DOWNLOAD')
         #    VERSION=master
-        #    wget --no-check-certificate https://github.com/Star2Billing/newfies-dialer/tarball/$VERSION
-        #    mv master Star2Billing-newfies-dialer-$VERSION.tar.gz
-        #    tar xvzf Star2Billing-newfies-dialer-*.tar.gz
-        #    rm -rf Star2Billing-newfies-*.tar.gz
-        #    mv newfies-dialer newfies-dialer_$DATETIME
-        #    mv Star2Billing-newfies-* newfies-dialer        
+        #    wget --no-check-certificate https://github.com/Star2Billing/cdr-stats/tarball/$VERSION
+        #    mv master Star2Billing-cdr-stats-$VERSION.tar.gz
+        #    tar xvzf Star2Billing-cdr-stats-*.tar.gz
+        #    rm -rf Star2Billing-cdr-stats-*.tar.gz
+        #    mv cdr-stats cdr-stats_$DATETIME
+        #    mv Star2Billing-cdr-stats-* cdr-stats        
         #;;
     esac
 
     # Copy files
-    cp -r /usr/src/newfies-dialer/newfies $INSTALL_DIR
+    cp -r /usr/src/cdr-stats/cdr_stats $INSTALL_DIR
 
-    #Install Newfies depencencies
+    #Install CDR-Stats depencencies
     easy_install -U distribute
     #For python 2.6 only
     pip install importlib
     echo "Install basic requirements..."
-    for line in $(cat /usr/src/newfies-dialer/install/requirements/basic-requirements.txt)
+    for line in $(cat /usr/src/cdr-stats/install/requirements/basic-requirements.txt)
     do
         pip install $line
     done
     echo "Install Django requirements..."
-    for line in $(cat /usr/src/newfies-dialer/install/requirements/django-requirements.txt)
+    for line in $(cat /usr/src/cdr-stats/install/requirements/django-requirements.txt)
     do
         pip install $line
     done
-    pip install plivohelper
     
     #Add South install again
     pip install -e $SOUTH_SOURCE
@@ -439,8 +438,8 @@ func_install_frontend(){
     #Check Python dependencies
     func_check_dependencies
     
-    # copy settings_local.py into newfies dir
-    cp /usr/src/newfies-dialer/install/conf/settings_local.py $INSTALL_DIR
+    # copy settings_local.py into cdr-stats dir
+    cp /usr/src/cdr-stats/install/conf/settings_local.py $INSTALL_DIR
 
     # Update Secret Key
     echo "Update Secret Key..."
@@ -479,19 +478,19 @@ func_install_frontend(){
     cd $INSTALL_DIR/
     
     #Fix permission on python-egg
-    mkdir /usr/share/newfies/.python-eggs
-    chown $APACHE_USER:$APACHE_USER /usr/share/newfies/.python-eggs
+    mkdir /usr/share/cdr-stats/.python-eggs
+    chown $APACHE_USER:$APACHE_USER /usr/share/cdr-stats/.python-eggs
     mkdir database
     
     #upload audio files
-    mkdir -p /usr/share/newfies/usermedia/upload/audiofiles
-    chown -R $APACHE_USER:$APACHE_USER /usr/share/newfies/usermedia
+    mkdir -p /usr/share/cdr-stats/usermedia/upload/audiofiles
+    chown -R $APACHE_USER:$APACHE_USER /usr/share/cdr-stats/usermedia
     
     #following lines is for apache logs
-    touch /var/log/newfies/newfies-django.log
-    touch /var/log/newfies/newfies-django-db.log
-    touch /var/log/newfies/err-apache-newfies.log
-    chown -R $APACHE_USER:$APACHE_USER /var/log/newfies
+    touch /var/log/cdr-stats/cdr-stats.log
+    touch /var/log/cdr-stats/cdr-stats-db.log
+    touch /var/log/cdr-stats/err-apache-cdr-stats.log
+    chown -R $APACHE_USER:$APACHE_USER /var/log/cdr-stats
     
     python manage.py syncdb --noinput
     python manage.py migrate
@@ -525,7 +524,7 @@ func_install_frontend(){
     
     <VirtualHost *:'$HTTP_PORT'>
         DocumentRoot '$INSTALL_DIR'/
-        ErrorLog /var/log/newfies/err-apache-newfies.log
+        ErrorLog /var/log/cdr-stats/err-apache-cdr-stats.log
         LogLevel warn
 
         Alias /static/ "'$INSTALL_DIR'/static/"
@@ -535,8 +534,8 @@ func_install_frontend(){
         </Location>
 
         WSGIPassAuthorization On
-        WSGIDaemonProcess newfies user='$APACHE_USER' user='$APACHE_USER' threads=25
-        WSGIProcessGroup newfies
+        WSGIDaemonProcess cdr-stats user='$APACHE_USER' user='$APACHE_USER' threads=25
+        WSGIProcessGroup cdr-stats
         WSGIScriptAlias / '$INSTALL_DIR'/django.wsgi
 
         <Directory '$INSTALL_DIR'>
@@ -548,9 +547,9 @@ func_install_frontend(){
 
     </VirtualHost>
     
-    ' > $APACHE_CONF_DIR/newfies.conf
+    ' > $APACHE_CONF_DIR/cdr-stats.conf
     #correct the above file
-    sed -i "s/@/'/g"  $APACHE_CONF_DIR/newfies.conf
+    sed -i "s/@/'/g"  $APACHE_CONF_DIR/cdr-stats.conf
     
     IFCONFIG=`which ifconfig 2>/dev/null||echo /sbin/ifconfig`
     IPADDR=`$IFCONFIG eth0|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'`
@@ -559,22 +558,10 @@ func_install_frontend(){
         echo "we have not detected your IP address automatically, please enter it manually"
         read IPADDR
 	fi
-    
-    ##Update Freeswitch XML CDR
-    #NEWFIES_CDR_API='api\/v1\/store_cdr\/'
-    #CDR_API_URL="http:\/\/$IPADDR:$HTTP_PORT\/$NEWFIES_CDR_API"
-    #cd "$FS_INSTALLED_PATH/conf/autoload_configs/"
-    #sed -i "s/NEWFIES_API_STORE_CDR/$CDR_API_URL/g" xml_cdr.conf.xml
-    #
-    ##Update API username and password
-    #sed -i "s/APIUSERNAME/$APIUSERNAME/g" xml_cdr.conf.xml
-    #sed -i "s/APIPASSWORD/$APIPASSWORD/g" xml_cdr.conf.xml
-    
-    #Update for Plivo URL & Authorize local IP
+	    
+    #Update Authorize local IP
     sed -i "s/SERVER_IP_PORT/$IPADDR:$HTTP_PORT/g" $INSTALL_DIR/settings_local.py
     sed -i "s/#'SERVER_IP',/'$IPADDR',/g" $INSTALL_DIR/settings_local.py
-    sed -i "s/dummy/plivo/g" $INSTALL_DIR/settings_local.py 
-    
 
     
     case $DIST in
@@ -594,8 +581,8 @@ func_install_frontend(){
             func_iptables_configuration
             
             #Selinux to allow apache to access this directory
-            chcon -Rv --type=httpd_sys_content_t /usr/share/virtualenvs/newfies-dialer/
-            chcon -Rv --type=httpd_sys_content_t /usr/share/newfies/usermedia
+            chcon -Rv --type=httpd_sys_content_t /usr/share/virtualenvs/cdr-stats/
+            chcon -Rv --type=httpd_sys_content_t /usr/share/cdr-stats/usermedia
             semanage port -a -t http_port_t -p tcp $HTTP_PORT
             #Allowing Apache to access Redis port
             semanage port -a -t http_port_t -p tcp 6379
@@ -612,17 +599,17 @@ func_install_frontend(){
     echo ""
     echo ""
     echo "**************************************************************"
-    echo "Congratulations, Newfies Web Application is now installed!"
+    echo "Congratulations, CDR-Stats Web Application is now installed!"
     echo "**************************************************************"
     echo ""
-    echo "Please log on to Newfies at "
+    echo "Please log on to CDR-Stats at "
     echo "http://$IPADDR:$HTTP_PORT"
     echo "the username and password are the ones you entered during this installation."
     echo ""
-    echo "Thank you for installing Newfies"
+    echo "Thank you for installing CDR-Stats"
     echo "Yours"
     echo "The Star2Billing Team"
-    echo "http://www.star2billing.com and http://www.newfies-dialer.org/"
+    echo "http://www.star2billing.com and http://www.cdr-stats.org/"
     echo
     echo "**************************************************************"
     echo ""
@@ -634,7 +621,7 @@ func_install_frontend(){
 func_install_backend() {
     echo ""
     echo ""
-    echo "This will install Newfies Backend, Celery & Redis on your server"
+    echo "This will install CDR-Stats Backend, Celery & Redis on your server"
     echo "Press Enter to continue or CTRL-C to exit"
     read TEMP
 
@@ -663,30 +650,30 @@ func_install_backend() {
     case $DIST in
         'DEBIAN')
             # Add init-scripts
-            cp /usr/src/newfies-dialer/install/celery-init/debian/etc/default/newfies-celeryd /etc/default/
-            cp /usr/src/newfies-dialer/install/celery-init/debian/etc/init.d/newfies-celeryd /etc/init.d/
+            cp /usr/src/cdr-stats/install/celery-init/debian/etc/default/cdr-stats-celeryd /etc/default/
+            cp /usr/src/cdr-stats/install/celery-init/debian/etc/init.d/cdr-stats-celeryd /etc/init.d/
             #celerybeat script disabled
-            #cp /usr/src/newfies-dialer/install/celery-init/debian/etc/init.d/newfies-celerybeat /etc/init.d/
+            #cp /usr/src/cdr-stats-dialer/install/celery-init/debian/etc/init.d/cdr-stats-celerybeat /etc/init.d/
 
             # Configure init-scripts
-            sed -i "s/CELERYD_USER='celery'/CELERYD_USER='$CELERYD_USER'/g"  /etc/default/newfies-celeryd
-            sed -i "s/CELERYD_GROUP='celery'/CELERYD_GROUP='$CELERYD_GROUP'/g"  /etc/default/newfies-celeryd
+            sed -i "s/CELERYD_USER='celery'/CELERYD_USER='$CELERYD_USER'/g"  /etc/default/cdr-stats-celeryd
+            sed -i "s/CELERYD_GROUP='celery'/CELERYD_GROUP='$CELERYD_GROUP'/g"  /etc/default/cdr-stats-celeryd
 
-            chmod +x /etc/default/newfies-celeryd
-            chmod +x /etc/init.d/newfies-celeryd
+            chmod +x /etc/default/cdr-stats-celeryd
+            chmod +x /etc/init.d/cdr-stats-celeryd
             #celerybeat script disabled
-            #chmod +x /etc/init.d/newfies-celerybeat
+            #chmod +x /etc/init.d/cdr-stats-celerybeat
 
             #Debug
             #python $INSTALL_DIR/manage.py celeryd -E -B -l debug
 
-            /etc/init.d/newfies-celeryd restart
+            /etc/init.d/cdr-stats-celeryd restart
             #celerybeat script disabled
-            #/etc/init.d/newfies-celerybeat restart
+            #/etc/init.d/cdr-stats-celerybeat restart
             
-            cd /etc/init.d; update-rc.d newfies-celeryd defaults 99
+            cd /etc/init.d; update-rc.d cdr-stats-celeryd defaults 99
             #celerybeat script disabled
-            #cd /etc/init.d; update-rc.d newfies-celerybeat defaults 99
+            #cd /etc/init.d; update-rc.d cdr-stats-celerybeat defaults 99
             
             #Check permissions on /dev/shm to ensure that celery can start and run for openVZ. 
 			DIR="/dev/shm"
@@ -706,32 +693,32 @@ func_install_backend() {
         ;;
         'CENTOS')
             # Add init-scripts
-            cp /usr/src/newfies-dialer/install/celery-init/centos/etc/default/newfies-celeryd /etc/default/
-            cp /usr/src/newfies-dialer/install/celery-init/centos/etc/init.d/newfies-celeryd /etc/init.d/
+            cp /usr/src/cdr-stats/install/celery-init/centos/etc/default/cdr-stats-celeryd /etc/default/
+            cp /usr/src/cdr-stats/install/celery-init/centos/etc/init.d/cdr-stats-celeryd /etc/init.d/
             #celerybeat script disabled
-            #cp /usr/src/newfies-dialer/install/celery-init/centos/etc/init.d/newfies-celerybeat /etc/init.d/
+            #cp /usr/src/cdr-stats/install/celery-init/centos/etc/init.d/cdr-stats-celerybeat /etc/init.d/
 
             # Configure init-scripts
-            sed -i "s/CELERYD_USER='celery'/CELERYD_USER='$CELERYD_USER'/g"  /etc/default/newfies-celeryd
-            sed -i "s/CELERYD_GROUP='celery'/CELERYD_GROUP='$CELERYD_GROUP'/g"  /etc/default/newfies-celeryd
+            sed -i "s/CELERYD_USER='celery'/CELERYD_USER='$CELERYD_USER'/g"  /etc/default/cdr-stats-celeryd
+            sed -i "s/CELERYD_GROUP='celery'/CELERYD_GROUP='$CELERYD_GROUP'/g"  /etc/default/cdr-stats-celeryd
 
-            chmod +x /etc/init.d/newfies-celeryd
+            chmod +x /etc/init.d/cdr-stats-celeryd
             #celerybeat script disabled
-            #chmod +x /etc/init.d/newfies-celerybeat
+            #chmod +x /etc/init.d/cdr-stats-celerybeat
 
             #Debug
             #python $INSTALL_DIR/manage.py celeryd -E -B -l debug
 
-            /etc/init.d/newfies-celeryd restart
+            /etc/init.d/cdr-stats-celeryd restart
             #celerybeat script disabled
-            #/etc/init.d/newfies-celerybeat restart
+            #/etc/init.d/cdr-stats-celerybeat restart
             
-            chkconfig --add newfies-celeryd
-            chkconfig --level 2345 newfies-celeryd on
+            chkconfig --add cdr-stats-celeryd
+            chkconfig --level 2345 cdr-stats-celeryd on
             
             #celerybeat script disabled
-            #chkconfig --add newfies-celerybeat
-            #chkconfig --level 2345 newfies-celerybeat on
+            #chkconfig --add cdr-stats-celerybeat
+            #chkconfig --level 2345 cdr-stats-celerybeat on
         ;;
     esac
 
@@ -739,14 +726,14 @@ func_install_backend() {
     echo ""
     echo ""
     echo "**************************************************************"
-    echo "Congratulations, Newfies Backend is now installed!"
+    echo "Congratulations, CDR-Stats Backend is now installed!"
     echo "**************************************************************"
     echo ""
     echo ""
-    echo "Thank you for installing Newfies"
+    echo "Thank you for installing CDR-Stats"
     echo "Yours"
     echo "The Star2Billing Team"
-    echo "http://www.star2billing.com and http://www.newfies-dialer.org/"
+    echo "http://www.star2billing.com and http://www.cdr-stats.org/"
     echo
     echo "**************************************************************"
     echo ""
@@ -765,8 +752,8 @@ func_install_redis_server() {
             make
             make install
 
-            cp /usr/src/newfies-dialer/install/redis/debian/etc/redis.conf /etc/redis.conf
-            cp /usr/src/newfies-dialer/install/redis/debian/etc/init.d/redis-server /etc/init.d/redis-server
+            cp /usr/src/cdr-stats/install/redis/debian/etc/redis.conf /etc/redis.conf
+            cp /usr/src/cdr-stats/install/redis/debian/etc/init.d/redis-server /etc/init.d/redis-server
             chmod +x /etc/init.d/redis-server
 
             useradd redis
@@ -798,13 +785,13 @@ func_install_redis_server() {
 
 
 #Menu Section for Script
-show_menu_newfies() {
+show_menu_cdr_stats() {
 	clear
-	echo " > Newfies-Dialer Installation Menu"
+	echo " > CDR-Stats Installation Menu"
 	echo "====================================="
 	echo "	1)  Install All"
-	echo "	2)  Install Newfies-Dialer Web Frontend"
-	echo "	3)  Install Newfies-Dialer Backend / Newfies-Celery"
+	echo "	2)  Install CDR-Stats Web Frontend"
+	echo "	3)  Install CDR-Stats Backend / CDR-Stats-Celery"
 	echo "	0)  Quit"
 	echo -n "(0-3) : "
 	read OPTION < /dev/tty
@@ -846,7 +833,7 @@ ExitFinish=0
 while [ $ExitFinish -eq 0 ]; do
 
 	# Show menu with Installation items
-	show_menu_newfies
+	show_menu_cdr_stats
 
 	case $OPTION in
 		1) 
@@ -874,11 +861,11 @@ done
 
 # Clean the system on MySQL
 #==========================
-# deactivate ; rm -rf /usr/share/newfies ; rm -rf /var/log/newfies ; rmvirtualenv newfies-dialer ; rm -rf /etc/init.d/newfies-celer* ; rm -rf /etc/default/newfies-celeryd ; rm /etc/apache2/sites-enabled/newfies.conf ; mysqladmin drop newfies --password=password
+# deactivate ; rm -rf /usr/share/cdr-stats ; rm -rf /var/log/cdr-stats ; rmvirtualenv cdr-stats ; rm -rf /etc/init.d/cdr-stats-celer* ; rm -rf /etc/default/cdr-stats-celeryd ; rm /etc/apache2/sites-enabled/cdr-stats.conf ; mysqladmin drop cdr-stats --password=password
 
 # Create Database on MySQL
 #=========================
-# mysqladmin drop newfies --password=password
-# mysqladmin create newfies --password=password
+# mysqladmin drop cdr-stats --password=password
+# mysqladmin create cdr-stats --password=password
 
 
