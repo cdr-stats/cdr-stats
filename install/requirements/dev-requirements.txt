@@ -1,4 +1,4 @@
 sphinx
 django-extensions
-git+git://github.com/aerosol/identicon.git
-git+git://github.com/aerosol/django-dilla.git
+#git+git://github.com/aerosol/identicon.git
+#git+git://github.com/aerosol/django-dilla.git
