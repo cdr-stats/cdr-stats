@@ -20,6 +20,7 @@ The CDR-Stats directory::
     |-- api                - The code for APIs
     |-- cdr                - The code for CDR
     |   `-- fixtures
+    |-- cdr_alert
     |-- static
     |   |-- cdr
     |   |    |-- css

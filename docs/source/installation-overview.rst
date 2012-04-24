@@ -16,10 +16,10 @@ To get started with Cdr-stats you must have the following installed:
 
 - python >= 2.5 (programming language)
 - Apache / http server with WSGI modules
-- Django Framework >= 1.3 (Python based Web framework)
+- Django Framework >= 1.4 (Python based Web framework)
 - Celery >= 2.2 (Asynchronous task queue/job queue based on distributed message passing)
 - django-celery >= 2.2.4 (Celery integration for Django)
-- django-pagination >= 1.0.7 (Utilities for creating robust pagination tools throughout a django application)
+- linaro_django_pagination (Utilities for creating robust pagination tools throughout a django application)
 - django-uuidfield >= 0.2 (Provides a UUIDField for your Django models)
 - django-reusableapps >= 0.1.1 (Python module to enable Django to load reusable, pluggable and egg-based applications)
 - docutils >= 0.7 (Text processing system for processing plaintext documentation into useful formats)
@@ -33,6 +33,10 @@ To get started with Cdr-stats you must have the following installed:
 - wsgiref >= 0.1.2 (Validation support for WSGI )
 - django-tastypie (Creating delicious APIs for Django)
 - django-notification >= 0.1.3 (User notification management for the Django web framework)
+- switch2bill-common
+- django-country-dialcode
+- django-countries
+- django_socketio
 
 
 Use PIP to install all the requirements,::
@@ -75,7 +79,7 @@ Inside CDR-Stats directory you should run::
 
 
 ``syncdb`` will create a database named test.db in ``database`` folder of the
-CDR-Stats directory. We have configured Newfies-Dialer to do this, but you
+CDR-Stats directory. We have configured CDR-Stats to do this, but you
 can change this simply by modifying settings.py where DATABASES dictionary is
 constructed. You can find more information about this in the 
 Django documentation.

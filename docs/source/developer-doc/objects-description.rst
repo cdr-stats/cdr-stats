@@ -87,7 +87,6 @@ Objects Description
     :members:
 
 
-
 .. _database-design:
 
 Database Design
@@ -96,4 +95,5 @@ Database Design
 The current database schema is shown below:
 
 .. image:: ../_static/images/model_cdr-stats.png
+    :width: 1000
 

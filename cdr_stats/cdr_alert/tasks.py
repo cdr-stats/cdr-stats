@@ -331,6 +331,10 @@ def notify_admin_without_mail(notice_id, email_id):
 
 @task
 def blacklist_whitelist_notification(notice_type):
+    """
+    Send notification to user while destination number matched with
+    blacklist or whitelist
+    """
     if notice_type == 3:
         notice_type_name = 'blacklist'
     if notice_type == 4:
