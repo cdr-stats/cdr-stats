@@ -446,6 +446,7 @@ def cdr_view(request):
                      'accountcode': i['accountcode'],
                      'direction': i['direction'],
                      'authorized': i['authorized'],
+                     'switch_id': i['switch_id'],
                    })
 
     logging.debug('Map-reduce cdr analytic')
@@ -527,20 +528,31 @@ def cdr_export_to_csv(request):
 
 
 @login_required
-def cdr_detail(request, id):
+def cdr_detail(request, id, switch_id):
     """Detail of Call
 
     **Attributes**:
 
         * ``template`` - cdr/cdr_detail.html
-        * ``mongodb_data_set`` - CDR_MONGO_COLLECTION
     """
+    c_switch = Switch.objects.get(id=switch_id)
+    ipaddress = c_switch.ipaddress
+
+    #Connect on MongoDB Database
+    host = settings.CDR_MONGO_IMPORT[ipaddress]['host']
+    port = settings.CDR_MONGO_IMPORT[ipaddress]['port']
+    db_name = settings.CDR_MONGO_IMPORT[ipaddress]['db_name']
+    try:
+        connection = Connection(host, port)
+        DB_CONNECTION = connection[db_name]
+    except ConnectionFailure, e:
+        raise Http404
+
     try:
         menu = request.GET.get('menu')
     except:
         menu = 'on'
-    data = settings.DB_CONNECTION[settings.CDR_MONGO_COLLECTION]
-    doc = data.find({'_id': ObjectId(id)})
+    doc = DB_CONNECTION[settings.CDR_MONGO_IMPORT[ipaddress]['collection']].find({'_id': ObjectId(id)})
     return render_to_response('cdr/cdr_detail.html', {'row': list(doc), 'menu': menu,},
                               context_instance=RequestContext(request))
 

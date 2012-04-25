@@ -306,18 +306,18 @@ CDR_MONGO_CDR_HANGUP = 'cdr_hangup_cause_analytic'
 CDR_MONGO_CDR_COUNTRY = 'cdr_country_analytic'
 
 
-#CDR_MONGO_IMPORT define the list of host that you are willing to import cdr from
+#MongoDB(s) to use for import
 CDR_MONGO_IMPORT = {
     '127.0.0.1': {
+        'db_name': 'freeswitch_cdr',
         'host': 'localhost',
         'port': 27017,
-        'db_name': 'freeswitch_cdr',
         'collection': 'cdr',
     },
     #'192.168.1.15': {
+    #    'db_name': 'freeswitch_cdr',
     #    'host': '192.168.1.15',
     #    'port': 27017,
-    #    'db_name': 'freeswitch_cdr',
     #    'collection': 'cdr',
     #},
 }
