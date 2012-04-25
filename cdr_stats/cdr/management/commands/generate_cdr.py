@@ -16,6 +16,8 @@ from django.core.management.base import BaseCommand, CommandError
 from django.utils.translation import ugettext_lazy as _
 from random import choice
 from uuid import uuid1
+from pymongo.connection import Connection
+from pymongo.errors import ConnectionFailure
 import sys
 
 import random
@@ -107,6 +109,20 @@ class Command(BaseCommand):
         except ValueError:
             day_delta_int = 30
         
+        #Retrieve the field collection in the mongo_import list
+        ipaddress = settings.CDR_MONGO_IMPORT.items()[0][0]
+
+        #Connect on MongoDB Database
+        host = settings.CDR_MONGO_IMPORT[ipaddress]['host']
+        port = settings.CDR_MONGO_IMPORT[ipaddress]['port']
+        db_name = settings.CDR_MONGO_IMPORT[ipaddress]['db_name']
+        try:
+            connection = Connection(host, port)
+            DB_CONNECTION = connection[db_name]
+        except ConnectionFailure, e:
+            sys.stderr.write("Could not connect to MongoDB: %s - %s" % \
+                                                            (e, ipaddress))
+            sys.exit(1)
 
         for i in range(1, int(no_of_record) + 1):
             
@@ -321,6 +337,6 @@ class Command(BaseCommand):
             cdr_json['import_cdr_daily'] = 0
             cdr_json['import_cdr_hourly'] = 0
             
-            settings.DB_CONNECTION[settings.CDR_MONGO_COLLECTION].\
+            DB_CONNECTION[settings.CDR_MONGO_IMPORT[ipaddress]['collection']].\
                 insert(cdr_json)
     

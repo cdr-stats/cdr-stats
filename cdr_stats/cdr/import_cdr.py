@@ -47,12 +47,12 @@ STATUS_SYNC = {"new":0, "in_process": 1, "verified":2}
 
 
 
-def update_cdr_collection(cdr_id, field_name):
+def update_cdr_collection(mongohandler, cdr_id, field_name):
     # change import_cdr_xxxx flag in cdr_common collection
-    settings.DB_CONNECTION[settings.CDR_MONGO_COLLECTION].update(
-                                        {'_id': cdr_id},
-                                        {'$set': {field_name: 1}}
-                                    )
+    mongohandler.update(
+                {'_id': cdr_id},
+                {'$set': {field_name: 1}}
+    )
     return True
 
 
@@ -141,17 +141,27 @@ def chk_prefix_in_blacklist(prefix_list):
     return True
 
 
-def import_cdr():
+def print_shell(shell, message):
+    if shell:
+        print message
+
+
+def import_cdr(shell=False):
     #TODO : dont use the args here
     # Browse settings.CDR_MONGO_IMPORT and for each IP check if the IP exist in our Switch objects
     # If it does we will connect to that Database and import the data as we do below
 
+    print_shell(shell, "Starting the synchronization...")
+
     #loop within the Mongo CDR Import List
     for ipaddress in settings.CDR_MONGO_IMPORT:
         #Select the Switch ID
+        print_shell(shell, "Switch : %s" % ipaddress)
 
         DEV_ADD_IP = False
-        #DEV_ADD_IP = '127.0.0.2' #uncomment this if you need to import from a fake different IP
+        #uncomment this if you need to import from a fake different IP / used for dev
+        #DEV_ADD_IP = '127.0.0.2'
+
         if DEV_ADD_IP:
             previous_ip = ipaddress
             ipaddress = DEV_ADD_IP
@@ -169,7 +179,6 @@ def import_cdr():
             ipaddress = previous_ip
 
         #Connect on MongoDB Database
-        ipaddress= '127.0.0.1'
         host = settings.CDR_MONGO_IMPORT[ipaddress]['host']
         port = settings.CDR_MONGO_IMPORT[ipaddress]['port']
         db_name = settings.CDR_MONGO_IMPORT[ipaddress]['db_name']
@@ -182,20 +191,21 @@ def import_cdr():
             sys.exit(1)
 
         #Connect to Mongo
-        cdrs = settings.DB_CONNECTION[settings.CDR_MONGO_COLLECTION]
+        importcdr_handler = DB_CONNECTION[settings.CDR_MONGO_IMPORT[ipaddress]['collection']]
 
-        total_record = cdrs.find({'import_cdr': 0}).count()
+        total_record = importcdr_handler.find({'import_cdr': 0}).count()
         #print total_record
 
         PAGE_SIZE = int(5000)
 
-        total_loop_count = int(int(total_record)/PAGE_SIZE) + 1
+        total_loop_count = int( int(total_record) / PAGE_SIZE ) + 1
         #print total_loop_count
+        count_import = 0
 
         for j in range(1, total_loop_count+1):
             PAGE_NUMBER = int(j)
             
-            result = cdrs.find({'import_cdr': 0}, 
+            result = importcdr_handler.find({'import_cdr': 0}, 
                     {
                         "callflow.caller_profile.caller_id_number":1,
                         "callflow.caller_profile.caller_id_name":1,
@@ -226,7 +236,6 @@ def import_cdr():
 
             #Retrieve FreeSWITCH CDRs
             for cdr in result:
-
                 start_uepoch = datetime.fromtimestamp(int(cdr['variables']['start_uepoch'][:10]))
                 answer_uepoch = datetime.fromtimestamp(int(cdr['variables']['answer_uepoch'][:10]))
                 end_uepoch = datetime.fromtimestamp(int(cdr['variables']['end_uepoch'][:10]))
@@ -263,7 +272,6 @@ def import_cdr():
                     #TODO: Add logger
                     print "Error to find the country_id %s" % destination_number
 
-
                 # Prepare global CDR
                 cdr_record = {
                     'switch_id': switch.id,
@@ -297,9 +305,18 @@ def import_cdr():
                 # record global CDR
                 settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COMMON].insert(cdr_record)
 
-                # change import_cdr flag
-                update_cdr_collection(cdr['_id'], 'import_cdr')
+                print_shell(shell, "Sync CDR (cid:%s, dest:%s, dur:%s, hg:%s, country:%s, auth:%s)" % (
+                                            cdr['callflow']['caller_profile']['caller_id_number'],
+                                            cdr['callflow']['caller_profile']['destination_number'],
+                                            cdr['variables']['duration'],
+                                            cdr['variables']['hangup_cause_q850'],
+                                            country_id,
+                                            authorized,))
+                count_import = count_import + 1
 
+                # change import_cdr flag
+                #update_cdr_collection(importcdr_handler, cdr['_id'], 'import_cdr')
+                
                 # Store monthly cdr collection with unique import
                 if cdr['import_cdr_monthly'] == 0:
                     # monthly collection
@@ -317,8 +334,6 @@ def import_cdr():
                                                     {'calls': 1,
                                                      'duration': int(cdr['variables']['duration']) }
                                             }, upsert=True)
-                    # change import_cdr_monthly flag in cdr_common collection
-                    update_cdr_collection(cdr['_id'], 'import_cdr_monthly')
 
                 # Store daily cdr collection with unique import
                 if cdr['import_cdr_daily'] == 0:
@@ -337,8 +352,6 @@ def import_cdr():
                                                     {'calls': 1,
                                                      'duration': int(cdr['variables']['duration']) }
                                             },upsert=True)
-                    # change import_cdr_daily flag in cdr_common collection
-                    update_cdr_collection(cdr['_id'], 'import_cdr_daily')
 
                 # Store hourly cdr collection with unique import
                 if cdr['import_cdr_hourly'] == 0:
@@ -355,8 +368,6 @@ def import_cdr():
                                                 '$inc': {'calls': 1,
                                                          'duration': int(cdr['variables']['duration']) }
                                             },upsert=True)
-                    # change import_cdr_hourly flag in cdr_common collection
-                    update_cdr_collection(cdr['_id'], 'import_cdr_hourly')
 
                     # Country report collection
                     current_y_m_d_h_m = datetime.strptime(str(start_uepoch)[:16], "%Y-%m-%d %H:%M")
@@ -370,3 +381,11 @@ def import_cdr():
                                                 '$inc': {'calls': 1,
                                                          'duration': int(cdr['variables']['duration']) }
                                             },upsert=True)
+
+                # Flag the CDR as imported
+                importcdr_handler.update(
+                            {'_id': cdr['_id']},
+                            {'$set': {'import_cdr': 1, 'import_cdr_monthly': 1, 'import_cdr_daily': 1, 'import_cdr_hourly': 1}}
+                )
+
+        print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" % (ipaddress, count_import))

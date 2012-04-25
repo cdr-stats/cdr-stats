@@ -21,18 +21,21 @@ from datetime import timedelta
 LOCK_EXPIRE = 60 * 30 # Lock expires in 30 minutes
 
 
-@periodic_task(run_every=timedelta(seconds=300)) # every 5 min
-@single_instance_task(LOCK_EXPIRE)
-def sync_cdr_pending(*args, **kwargs):
+class sync_cdr_pending(PeriodicTask):
     """A periodic task that checks for pending calls to import
 
     **Usage**:
 
         sync_cdr_pending.delay()
     """ 
-    logger = sync_cdr_pending.get_logger()
-    logger.info("TASK :: sync_cdr_pending")
+    run_every = timedelta(seconds=3) # every 5 min
 
-    import_cdr()
+    @single_instance_task(key="sync_cdr_pending", timeout=LOCK_EXPIRE)
+    def run(self, **kwargs):
+    	logger = self.get_logger()
+        logger.info("TASK :: sync_cdr_pending")
 
-    return True
+        import_cdr()
+
+        return True
+

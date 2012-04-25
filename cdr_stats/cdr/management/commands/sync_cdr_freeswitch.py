@@ -23,4 +23,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        import_cdr()
+        import_cdr(shell=True)

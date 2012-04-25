@@ -285,20 +285,16 @@ REDIS_DB = 0
 SOCKETIO_HOST = 'localhost'
 SOCKETIO_PORT = 9000
 
-#MONGODB
+#GENERAL
 #=======
-#AUTHENTICATION_BACKENDS = (
-#    'mongoengine.django.auth.MongoEngineBackend',
-#)
-
-#SESSION_ENGINE = 'mongoengine.django.sessions'
 PHONE_NO_PREFIX_LIMIT_MIN = 2
 PHONE_NO_PREFIX_LIMIT_MAX = 5
 
-CDR_MONGO_DB_NAME = 'freeswitch_cdr'
+#MONGODB
+#=======
+CDR_MONGO_DB_NAME = 'cdr-stats'
 CDR_MONGO_HOST = 'localhost'
 CDR_MONGO_PORT = 27017
-CDR_MONGO_COLLECTION = 'cdr'
 CDR_MONGO_CDR_COMMON = 'cdr_common'
 CDR_MONGO_CONC_CALL = 'concurrent_call'
 CDR_MONGO_CDR_COUNTRY_REPORT = 'cdr_country_report'
@@ -310,7 +306,7 @@ CDR_MONGO_CDR_HANGUP = 'cdr_hangup_cause_analytic'
 CDR_MONGO_CDR_COUNTRY = 'cdr_country_analytic'
 
 
-
+#CDR_MONGO_IMPORT define the list of host that you are willing to import cdr from
 CDR_MONGO_IMPORT = {
     '127.0.0.1': {
         'host': 'localhost',
@@ -325,18 +321,6 @@ CDR_MONGO_IMPORT = {
     #    'collection': 'cdr',
     #},
 }
-#TODO : File search for CDR_MONGO_COLLECTION, use CDR_MONGO_IMPORT instead
-
-#Connect on MongoDB Database
-from pymongo.connection import Connection
-from pymongo.errors import ConnectionFailure
-import sys
-try:
-    connection = Connection(CDR_MONGO_HOST, CDR_MONGO_PORT)
-    DB_CONNECTION = connection[CDR_MONGO_DB_NAME]
-except ConnectionFailure, e:
-    sys.stderr.write("Could not connect to MongoDB: %s" % e)
-    sys.exit(1)
 
 #No of records per page
 #=======================
@@ -428,3 +412,17 @@ try:
     from settings_local import *
 except:
     pass
+
+#CONNECT MONGODB
+#===============
+
+#Connect on MongoDB Database
+from pymongo.connection import Connection
+from pymongo.errors import ConnectionFailure
+import sys
+try:
+    connection = Connection(CDR_MONGO_HOST, CDR_MONGO_PORT)
+    DB_CONNECTION = connection[CDR_MONGO_DB_NAME]
+except ConnectionFailure, e:
+    sys.stderr.write("Could not connect to MongoDB: %s" % e)
+    sys.exit(1)

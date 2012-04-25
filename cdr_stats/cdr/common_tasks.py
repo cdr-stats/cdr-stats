@@ -15,10 +15,10 @@
 from django.core.cache import cache
 from django.utils.hashcompat import md5_constructor as md5
 
-def single_instance_task(timeout):
+def single_instance_task(key, timeout):
     def task_exc(func):
         def wrapper(*args, **kwargs):
-            lock_id = "celery-single-instance-" + func.__name__
+            lock_id = "celery-single-instance-" + key
             acquire_lock = lambda: cache.add(lock_id, "true", timeout)
             release_lock = lambda: cache.delete(lock_id)
             if acquire_lock():

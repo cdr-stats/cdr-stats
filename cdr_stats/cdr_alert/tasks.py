@@ -363,47 +363,49 @@ def blacklist_whitelist_notification(notice_type):
 
 
 # Send previous day's CDR Report as mail
-@periodic_task(run_every=timedelta(seconds=86400)) # every day
-@single_instance_task(LOCK_EXPIRE)
-def send_cdr_report(*args, **kwargs):
+class send_cdr_report(PeriodicTask):
     """A periodic task to send previous day's CDR Report as mail
 
     **Usage**:
 
         send_cdr_report.delay()
     """
-    logger = send_cdr_report.get_logger()
-    logger.info("TASK :: send_cdr_report")
-    
-    list_users = User.objects.filter(is_staff=True, is_active=True)
-    for c_user in list_users:
-        from_email = c_user.email
-        try:
-            user_profile_obj = UserProfile.objects.get(user=c_user)
-            to = user_profile_obj.multiple_email
-        except UserProfile.DoesNotExist:
-            logger.error("Error send_cdr_report : UserProfile don't exist for this user (user_id:%d)" % c_user.id)
+    run_every = timedelta(seconds=86400) # every day
 
-        mail_data = get_cdr_mail_report()
+    @single_instance_task(key="send_cdr_report", timeout=LOCK_EXPIRE)
+    def run(self, **kwargs):
+        logger = self.get_logger()
+        logger.info("TASK :: send_cdr_report")
+            
+        list_users = User.objects.filter(is_staff=True, is_active=True)
+        for c_user in list_users:
+            from_email = c_user.email
+            try:
+                user_profile_obj = UserProfile.objects.get(user=c_user)
+                to = user_profile_obj.multiple_email
+            except UserProfile.DoesNotExist:
+                logger.error("Error send_cdr_report : UserProfile don't exist for this user (user_id:%d)" % c_user.id)
 
-        subject = _('CDR Report')
-        
-        html_content = get_template('cdr/mail_report_template.html').render(
-                        Context({
-                            'yesterday_date': mail_data['yesterday_date'],
-                            'rows': mail_data['rows'],
-                            'total_duration': mail_data['total_duration'],
-                            'total_calls': mail_data['total_calls'],
-                            'ACT': mail_data['ACT'],
-                            'ACD': mail_data['ACD'],
-                            'country_analytic_array': mail_data['country_analytic_array'],
-                            'hangup_analytic_array': mail_data['hangup_analytic_array'],
-                        })
-                    )
-        msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
-        logger.info("Email sent to %s" % to)
-        msg.content_subtype = "html"
-        msg.send()
+            mail_data = get_cdr_mail_report()
 
-    logger.debug("TASK :: send_cdr_report finished")
-    return True
+            subject = _('CDR Report')
+            
+            html_content = get_template('cdr/mail_report_template.html').render(
+                            Context({
+                                'yesterday_date': mail_data['yesterday_date'],
+                                'rows': mail_data['rows'],
+                                'total_duration': mail_data['total_duration'],
+                                'total_calls': mail_data['total_calls'],
+                                'ACT': mail_data['ACT'],
+                                'ACD': mail_data['ACD'],
+                                'country_analytic_array': mail_data['country_analytic_array'],
+                                'hangup_analytic_array': mail_data['hangup_analytic_array'],
+                            })
+                        )
+            msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
+            logger.info("Email sent to %s" % to)
+            msg.content_subtype = "html"
+            msg.send()
+
+        logger.debug("TASK :: send_cdr_report finished")
+        return True
