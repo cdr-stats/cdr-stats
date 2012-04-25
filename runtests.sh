@@ -3,6 +3,6 @@
 cd cdr_stats
 
 #Run Full Test Suit
-#./manage.py test --verbosity=2
+#./manage.py test cdr --verbosity=2
 
 

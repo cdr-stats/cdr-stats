@@ -150,6 +150,11 @@ class CdrStatsAdminInterfaceTestCase(TestCase):
         response = self.client.get('/admin/cdr_alert/alarmreport/')
         self.failUnlessEqual(response.status_code, 200)
 
+        response = self.client.get('/admin/cdr_alert/alertremoveprefix/')
+        self.failUnlessEqual(response.status_code, 200)
+        response = self.client.get('/admin/cdr_alert/alertremoveprefix/add/')
+        self.failUnlessEqual(response.status_code, 200)
+
         response = self.client.get('/admin/cdr_alert/whitelist/')
         self.failUnlessEqual(response.status_code, 200)
         response = self.client.get('/admin/cdr_alert/whitelist/whitelist_by_country/')
@@ -190,37 +195,37 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         """Test Function to check cdr_view"""
         response = self.client.get('/cdr_view/')
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response,
-                                'cdr/cdr_view.html')
+        self.assertTemplateUsed(response, 'cdr/cdr_view.html')
+
         response = self.client.get('/cdr_overview/')
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response,
-            'cdr/cdr_overview.html')
+        self.assertTemplateUsed(response, 'cdr/cdr_overview.html')
 
     def test_cdr_report_view(self):
         """Test Function to check cdr-stats view"""
         response = self.client.get('/hourly_report/')
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response,
-                                'cdr/cdr_graph_by_hour.html')
-        response = self.client.get('/concurrent_calls/')
+        self.assertTemplateUsed(response, 'cdr/cdr_graph_by_hour.html')
+
+        response = self.client.get('/cdr_concurrent_calls/')
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response,
-                                'cdr/cdr_graph_concurrent_calls.html')
+        self.assertTemplateUsed(response, 'cdr/cdr_graph_concurrent_calls.html')
+
+        response = self.client.get('/cdr_realtime/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'cdr/cdr_graph_realtime.html')
+
         response = self.client.get('/global_report/')
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response,
-                                'cdr/cdr_global_report.html')
+        self.assertTemplateUsed(response, 'cdr/cdr_global_report.html')
 
         response = self.client.get('/country_report/')
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response,
-                                'cdr/cdr_country_report.html')
+        self.assertTemplateUsed(response, 'cdr/cdr_country_report.html')
 
         response = self.client.get('/mail_report/')
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response,
-                                'cdr/cdr_mail_report.html')
+        self.assertTemplateUsed(response, 'cdr/cdr_mail_report.html')
 
 
 test_cases = [
