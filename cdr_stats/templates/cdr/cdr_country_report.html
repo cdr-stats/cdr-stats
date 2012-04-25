@@ -138,7 +138,7 @@ $(function () {
               },
     };
 
-    var plot = $.plot($("#placeholder"), data, options);
+    var plot = $.plot($("#graph_responsive"), data, options);
 
     var overview = $.plot($("#overview"), data, {
         legend: {show: false},
@@ -152,9 +152,9 @@ $(function () {
     });
 
     // now connect the two
-    $("#placeholder").bind("plotselected", function (event, ranges) {
+    $("#graph_responsive").bind("plotselected", function (event, ranges) {
         // do the zooming
-        plot = $.plot($("#placeholder"), data,
+        plot = $.plot($("#graph_responsive"), data,
                       $.extend(true, {}, options, {
                           xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to }
                       }));
@@ -167,7 +167,7 @@ $(function () {
         plot.setSelection(ranges);
     });
     
-    $("#placeholder").bind("plothover", function (event, pos, item) {
+    $("#graph_responsive").bind("plothover", function (event, pos, item) {
         if (item) {
             if (previousPoint != item.dataIndex) {
                 previousPoint = item.dataIndex;
@@ -204,11 +204,23 @@ $(function () {
 
 <div class="row">
     <div class="span12">
-        <div class="graph_header">{% trans "Countries Call Statistics" %}</div>
-        <div id="placeholder" style="width:700px;height:300px"></div>
-        <div id="overview" style="margin-left:50px;margin-top:20px;width:400px;height:50px"></div>
+        <div class="graph_header">
+            <h2>{% trans "Countries Call Statistics" %}</h2>
+        </div>
     </div>
 </div>
+
+<div class="row">
+    <div class="span12">
+        <div id="graph_responsive" style="margin:auto;"></div>
+    </div>
+</div>
+<div class="row">
+    <div class="span12">
+        <div id="overview" style="margin:auto;margin-bottom:20px;margin-top:20px;width:400px;height:50px"></div>
+    </div>
+</div>
+
 
 <br/>
 
@@ -269,7 +281,7 @@ $(function () {
     <div class="row">
         <div class="span6 welldashboard">
             <div class="span6">
-                <h2 align="left">{% trans "10 most called countries"|title %}</h2>
+                <h3 align="left">{% trans "10 most called countries"|title %}</h3>
                 <table>
                     <tbody>
                     {% for country_data in top_ten_country_analytic %}

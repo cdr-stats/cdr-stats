@@ -124,16 +124,22 @@ $(function () {
 });
 </script>
 
+<div class="row">
+    <div class="span12">
+        <div class="graph_header">
+            <h2>{% trans "Call Statistics" %} : {% now "jS F Y" %}</h2>
+        </div>
+    </div>
+</div>
 
 <div class="row">
     <div class="span12">
-        <h2>{% trans "Call Statistics" %} : {% now "jS F Y" %}</h2>
-        <div id="graph_responsive"></div>
+        <div id="graph_responsive" style="margin:auto;"></div>
     </div>
 </div>
 <div class="row">
     <div class="span12">
-        <div id="overview" style="margin-left:50px;margin-top:20px;width:400px;height:50px"></div>
+        <div id="overview" style="margin:auto;margin-bottom:20px;margin-top:20px;width:400px;height:50px"></div>
     </div>
 </div>
 

@@ -38,7 +38,10 @@ COMPARE_LIST = ((1, '='),
 PAGE_SIZE_LIST = ((10, '10'),
                   (25, '25'),
                   (50, '50'),
-                  (100, '100'))
+                  (100, '100'),
+                  (250, '250'),
+                  (500, '500'),
+                  (1000, '1000'))
 
 DATE_HELP_TEXT = _("Please use the following format")+": <em>YYYY-MM-DD</em>."
 COUNTRY_HELP_TEXT = _('Hold down "Ctrl", "Command" on Mac, to select more than one.')

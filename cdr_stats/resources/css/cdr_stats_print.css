@@ -3,3 +3,7 @@
 
 #graph_responsive, #placeholder_cdr_analytic {width: 500px; margin:  -10px 0px -10px 0px;}
 #overview_analytic { width: 500px;}
+
+#graph_responsive, #placeholder_cdr_analytic {
+	width: 1050px; height:300px;
+}
