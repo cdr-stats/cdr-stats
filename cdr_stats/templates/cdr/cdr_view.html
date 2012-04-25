@@ -243,41 +243,42 @@
                 <td>{{ row.hangup_cause }}</td>
                 <td>{{ row.accountcode }}</td>
                 <td>
-                    <img src="{{STATIC_URL}}cdr-stats/{{ row.country|iso_flag }}" class="elemtooltip" title="{{ row.country|country_name }}">
-                    {% if row.authorized == 1  %}
-                        <img src="{{STATIC_URL}}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans "Authorized call" %}"/>
-                    {% else %}
-                        <img src="{{STATIC_URL}}cdr-stats/icons/flag_red.png" class="elemtooltip" title="{% trans "Unauthorized call" %}"/>
-                    {% endif %}
-                    {% ifequal row.direction 'inbound' %}
-                      <img src="{{STATIC_URL}}cdr-stats/icons/door_in.png" title="{{ row.direction|capfirst }} {% trans "call" %}" class="elemtooltip"/>
-                    {% else %}
-                      <img src="{{STATIC_URL}}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
-                    {% endifequal %}
-                    <a data-toggle="modal" href="#modal-create-{{ row.id }}" class="ajax-modal-{{ row.id }}" url='/cdr_detail/{{ row.id }}'
-                    data-controls-modal='modal-create-content-{{ row.id }}'><img src="{{STATIC_URL}}cdr-stats/icons/zoom.png" class="elemtooltip" title="{% trans "Show details" %}"/></a>
+                    <div class="flag_icon">
+                        <img src="{{STATIC_URL}}cdr-stats/{{ row.country|iso_flag }}" class="elemtooltip" title="{{ row.country|country_name }}">
+                        {% if row.authorized == 1  %}
+                            <img src="{{STATIC_URL}}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans "Authorized call" %}"/>
+                        {% else %}
+                            <img src="{{STATIC_URL}}cdr-stats/icons/flag_red.png" class="elemtooltip" title="{% trans "Unauthorized call" %}"/>
+                        {% endif %}
+                        {% ifequal row.direction 'inbound' %}
+                          <img src="{{STATIC_URL}}cdr-stats/icons/door_in.png" title="{{ row.direction|capfirst }} {% trans "call" %}" class="elemtooltip"/>
+                        {% else %}
+                          <img src="{{STATIC_URL}}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
+                        {% endifequal %}
+                        <a data-toggle="modal" href="#modal-create-{{ row.id }}" class="ajax-modal-{{ row.id }}" url='/cdr_detail/{{ row.id }}'
+                        data-controls-modal='modal-create-content-{{ row.id }}'><img src="{{STATIC_URL}}cdr-stats/icons/zoom.png" class="elemtooltip" title="{% trans "Show details" %}"/></a>
 
-                    <script type="text/javascript" charset="utf-8">
-                        $(".ajax-modal-{{ row.id }}").live('click', function() {
-                          var url = $(this).attr('url');
-                          var modal_id = $(this).attr('data-controls-modal');
-                          url = url + "/?menu=off";
-                          $("#" + modal_id).load(url);
-                        });
-                    </script>
-                    <!-- modal content -->
-                    <div id="modal-create-{{ row.id }}" class="modal hide fade" >
-                        <div class="modal-header">
-                          <a class="close" data-dismiss="modal" >&times;</a>
-                          <h3>{% trans "Call Details" %}</h3>
-                        </div>
-                        <div class="modal-body" id="modal-create-content-{{ row.id }}">
-                        </div>
-                        <div class="modal-footer">
-                          <a href="#" class="btn" data-dismiss="modal">{% trans "Close" %}</a>
+                        <script type="text/javascript" charset="utf-8">
+                            $(".ajax-modal-{{ row.id }}").live('click', function() {
+                              var url = $(this).attr('url');
+                              var modal_id = $(this).attr('data-controls-modal');
+                              url = url + "/?menu=off";
+                              $("#" + modal_id).load(url);
+                            });
+                        </script>
+                        <!-- modal content -->
+                        <div id="modal-create-{{ row.id }}" class="modal hide fade" >
+                            <div class="modal-header">
+                              <a class="close" data-dismiss="modal" >&times;</a>
+                              <h3>{% trans "Call Details" %}</h3>
+                            </div>
+                            <div class="modal-body" id="modal-create-content-{{ row.id }}">
+                            </div>
+                            <div class="modal-footer">
+                              <a href="#" class="btn" data-dismiss="modal">{% trans "Close" %}</a>
+                            </div>
                         </div>
                     </div>
-
                 </td>
             </tr>
             {% endfor %}
