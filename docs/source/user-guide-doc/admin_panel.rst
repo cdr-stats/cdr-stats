@@ -61,3 +61,13 @@ Whitelist
 
 
 
+Alert-remove-prefix
+~~~~~~~~~~~~~~~~~~~
+
+.. image:: ../_static/images/admin/alert_remove_prefix_list.png
+    :width: 1000
+
+
+.. image:: ../_static/images/admin/add_alert_remove_prefix.png
+    :width: 1000
+
