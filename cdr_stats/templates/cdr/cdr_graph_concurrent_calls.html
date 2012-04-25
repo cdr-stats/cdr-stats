@@ -44,10 +44,7 @@ $(function() {
 <a class="btn btn-small" id="toggle_btn" href="#" data-toggle="collapse" data-target="#form_collapse">
   <i class="icon-search"></i> <span>{% trans "Advance search" %}</span>
 </a>
-    
-<!--{% for call in final_data %}
-     [ {{ call.0 }}, {{ call.1 }} ],
-{% endfor %}-->
+
 
 <script id="source">
 $(function () {
@@ -125,12 +122,13 @@ $(function () {
         
 });
 </script>
+
 <div class="row">
     <div class="span12">
-        <center>
         <div class="graph_header">{% trans "Concurrent Calls" %}</div>
         <div id="graph_responsive"></div>
-        </center>
     </div>
 </div>
+
+
 {% endblock %}

@@ -85,8 +85,6 @@
   <i class="icon-search"></i> <span>{% trans "Advance search" %}</span>
 </a>
 
-<p>&nbsp;</p>
-    
 <script id="source" language="javascript" type="text/javascript">
 $(function () {
     var data = [
@@ -204,16 +202,15 @@ $(function () {
 });
 </script>
 
-<p>&nbsp;</p>
-<center>
-    <div class="graph_header">{% trans "Countries Call Statistics" %}</div>
-    <p>&nbsp;</p>
-    <div id="placeholder" style="width:700px;height:300px"></div>
-    <p>&nbsp;</p>
-    <div id="overview" style="margin-left:50px;margin-top:20px;width:400px;height:50px"></div>
-</center>
-<br/>
+<div class="row">
+    <div class="span12">
+        <div class="graph_header">{% trans "Countries Call Statistics" %}</div>
+        <div id="placeholder" style="width:700px;height:300px"></div>
+        <div id="overview" style="margin-left:50px;margin-top:20px;width:400px;height:50px"></div>
+    </div>
+</div>
 
+<br/>
 
     <script type="text/javascript">
     //country pi

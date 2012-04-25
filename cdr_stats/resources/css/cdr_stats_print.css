@@ -1,9 +1,5 @@
 .navbar, .navbar-fixed-top, .collapse, .well, .actions, a.btn, .nav, .nav-tabs, .flag_icon,
-.pagination, .pagination-centered, .show-rows, .show_export_file, .td-dashboard {display:none;}
+.pagination, .pagination-centered, .show-rows, .show_export_file, .row-fluid {display:none;}
 
-#graph_responsive, #placeholder_cdr_analytic {width: 800px;}
-#legend {
-    width: 12%;
-}
-
+#graph_responsive, #placeholder_cdr_analytic {width: 500px; margin:  -10px 0px -10px 0px;}
 #overview_analytic { width: 500px;}

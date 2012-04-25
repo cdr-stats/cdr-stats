@@ -176,7 +176,8 @@
         });
     </script>
 
-    <center>
+    <div class="row">
+        <div class="span12">
         <div class="graph_header">
             {% trans "Call Statistics" %} -
             <b>
@@ -185,8 +186,9 @@
                 {% endif %}
             </b>
         </div>
-        <p>&nbsp;</p>
         <div id="graph_responsive"></div>
-    </center>
+        </div>
+    </div>
+
 
 {% endblock %}

@@ -57,7 +57,7 @@ $(function () {
         grid: { 
                 hoverable: true,
                 xaxis: false
-              }
+              },
     };
 
     var plot = $.plot($("#graph_responsive"), [data], options);
@@ -127,13 +127,13 @@ $(function () {
 
 <div class="row">
     <div class="span12">
-        <center><h2 align="center">{% trans "Call Statistics" %} : {% now "jS F Y" %}</h2></center>
-        <center><div id="graph_responsive"></div></center>
+        <h2>{% trans "Call Statistics" %} : {% now "jS F Y" %}</h2>
+        <div id="graph_responsive"></div>
     </div>
 </div>
 <div class="row">
     <div class="span12">
-        <center><div id="overview" style="margin-left:50px;margin-top:20px;width:400px;height:50px"></div></center>
+        <div id="overview" style="margin-left:50px;margin-top:20px;width:400px;height:50px"></div>
     </div>
 </div>
 
