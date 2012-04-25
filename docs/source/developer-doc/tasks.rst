@@ -20,5 +20,3 @@ CDR-Stats Tasks
 
 .. autoclass:: blacklist_whitelist_notification
     :members:
-
-

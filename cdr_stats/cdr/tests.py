@@ -184,6 +184,10 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'cdr/index.html')
+        response = self.client.get('/user_detail_change/')
+        self.failUnlessEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'cdr/registration/user_detail_change.html')
+
 
     def test_dashboard(self):
         """Test Function to check customer dashboard"""
