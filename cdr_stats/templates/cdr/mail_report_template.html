@@ -2,7 +2,6 @@
 {% load country_dialcode_tags %}
 
 <center><h3>{% trans "CDR-Stats report of " %} {{ yesterday_date|date:"jS F Y" }}</h3></center>
-<p>&nbsp;</p>
 
 <p><div class="dashboard_summary_header">{% trans "Last 10 Calls"%}</div></p>
 
@@ -31,6 +30,7 @@
       <td>{{ row.hangup_cause }}</td>
       <td>{{ row.accountcode }}</td>
       <td>
+          <div class="flag_icon">
             <img src="{{STATIC_URL}}cdr-stats/{{ row.country|iso_flag }}" class="elemtooltip" title="{{ row.country|country_name }}">
             <img src="{{STATIC_URL}}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans "Authorized call" %}"/>
             {% ifequal row.direction 'inbound' %}
@@ -38,6 +38,7 @@
             {% else %}
               <img src="{{STATIC_URL}}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
             {% endifequal %}
+          <div>
       </td>
   </tr>
   {% endfor %}
@@ -114,11 +115,7 @@
 </div>
 
 <p>&nbsp;</p>
-<div class="row">
-    
-</div>
 
-<p>&nbsp;</p>
 <div class="row">
     <div class="span6">
         <div class="show-grid overlay">

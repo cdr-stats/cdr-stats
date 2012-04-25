@@ -1,2 +1,9 @@
 .navbar, .navbar-fixed-top, .collapse, .well, .actions, a.btn, .nav, .nav-tabs, .flag_icon,
-.pagination, .pagination-centered, .show-rows, .show_export_file {display:none;}
+.pagination, .pagination-centered, .show-rows, .show_export_file, .td-dashboard {display:none;}
+
+#graph_responsive, #placeholder_cdr_analytic {width: 800px;}
+#legend {
+    width: 12%;
+}
+
+#overview_analytic { width: 500px;}
