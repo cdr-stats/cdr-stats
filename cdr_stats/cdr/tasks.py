@@ -38,4 +38,3 @@ class sync_cdr_pending(PeriodicTask):
         import_cdr()
 
         return True
-
