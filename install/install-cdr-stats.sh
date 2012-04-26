@@ -31,7 +31,7 @@
 INSTALL_MODE='CLONE'
 DATETIME=$(date +"%Y%m%d%H%M%S")
 KERNELARCH=$(uname -p)
-INSTALL_DIR='/usr/share/cdr_stats'
+INSTALL_DIR='/usr/share/cdrstats'
 INSTALL_DIR_WELCOME='/var/www/cdr-stats'
 DATABASENAME=$INSTALL_DIR'/database/cdr-stats.db'
 MYSQLUSER=

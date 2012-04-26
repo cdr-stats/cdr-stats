@@ -1,9 +1,9 @@
 
 # Where the Django project is.
-CELERYBEAT_CHDIR='/usr/share/cdr-stats/'
+CELERYBEAT_CHDIR='/usr/share/cdrstats/'
 
 # Path to celeryd
-CELERYBEAT='/usr/share/virtualenvs/cdr-stats/bin/python /usr/share/cdr-stats/manage.py celerybeat'
+CELERYBEAT='/usr/share/virtualenvs/cdr-stats/bin/python /usr/share/cdrstats/manage.py celerybeat'
 
 # celeryd options
 CELERYBEAT_OPTS='--schedule=/var/run/celerybeat-schedule'
