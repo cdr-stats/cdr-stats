@@ -195,13 +195,13 @@ func_check_dependencies() {
     fi
     
     #Check raven
-    grep_pip=`pip freeze| grep raven`
-    if echo $grep_pip | grep -i "raven" > /dev/null ; then
-        echo "OK : raven installed..."
-    else
-        echo "Error : raven not installed..."
-        exit 1
-    fi
+    #grep_pip=`pip freeze| grep raven`
+    #if echo $grep_pip | grep -i "raven" > /dev/null ; then
+    #    echo "OK : raven installed..."
+    #else
+    #    echo "Error : raven not installed..."
+    #    exit 1
+    #fi
     
     echo ""
     echo "Python dependencies successfully installed!"
