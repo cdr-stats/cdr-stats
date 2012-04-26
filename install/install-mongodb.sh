@@ -28,7 +28,7 @@ func_identify_os() {
     # Identify Linux Distribution type
     if [ -f /etc/debian_version ] ; then
         DIST='DEBIAN'
-        if [ "$(lsb_release -cs)" != "lucid" ] || [ "$(lsb_release -cs)" != "precise" ]; then
+        if [ "$(lsb_release -cs)" != "lucid" ] && [ "$(lsb_release -cs)" != "precise" ]; then
 		    echo "This script is only intended to run on Ubuntu LTS 10.04 / 12.04 or CentOS 6.2"
 		    exit 255
 	    fi
