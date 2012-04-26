@@ -47,6 +47,8 @@ import logging
 
 TOTAL_GRAPH_COLOR = '#A61700'
 
+news_url = settings.NEWS_URL
+
 cdr_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COMMON]
 #db.cdr.ensureIndex({"variables.answer_stamp":1}, {background:true});
 
@@ -135,7 +137,7 @@ def login_view(request):
     data = {
         'loginform' : loginform,
         'errorlogin' : errorlogin,
-        'news' : get_news(),
+        'news' : get_news(news_url),
         'is_authenticated' : request.user.is_authenticated()
     }
     return render_to_response(template, data,context_instance = RequestContext(request))
@@ -1700,7 +1702,7 @@ def index(request):
     data = {'module': current_view(request),
             'loginform' : loginform,
             'errorlogin' : errorlogin,
-            'news' : get_news(),
+            'news' : get_news(news_url),
     }
     return render_to_response(template, data,
            context_instance = RequestContext(request))
@@ -1713,7 +1715,7 @@ def pleaselog(request):
     data = {
         'loginform' : loginform,
         'notlogged' : True,
-        'news' : get_news(),
+        'news' : get_news(news_url),
     }
     return render_to_response(template, data,
            context_instance = RequestContext(request))

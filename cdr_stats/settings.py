@@ -257,6 +257,8 @@ LANGUAGES = (
 #    ('ru', gettext('Russian')),
 )
 
+# News URL
+NEWS_URL = 'http://www.cdr-stats.org/news.php'
 
 #DJANGO-ADMIN-TOOL
 #=================
