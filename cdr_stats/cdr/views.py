@@ -25,6 +25,7 @@ from django.core.mail import send_mail, mail_admins
 from django.template.context import RequestContext
 from django.utils.translation import gettext as _
 from django.conf import settings
+from common.common_functions import *
 from cdr.forms import *
 from cdr.models import *
 from cdr.mapreduce import *

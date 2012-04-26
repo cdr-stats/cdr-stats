@@ -14,8 +14,6 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-
-
 import os
 
 from django.utils.translation import ugettext as _

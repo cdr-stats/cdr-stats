@@ -26,7 +26,8 @@ from django.conf import settings
 from notification import models as notification
 
 from cdr.views import current_view
-from cdr.functions_def import variable_value, chk_account_code
+from common.common_functions import variable_value
+from cdr.functions_def import chk_account_code
 
 from user_profile.models import UserProfile
 from user_profile.forms import *
