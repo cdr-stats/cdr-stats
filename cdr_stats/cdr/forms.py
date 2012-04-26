@@ -20,7 +20,7 @@ from django.conf import settings
 from django.core.validators import validate_email
 from django.utils.translation import ugettext_lazy as _
 
-from common.common_functions import *
+from common.common_functions import comp_day_range
 from cdr.models import *
 from cdr.functions_def import *
 from user_profile.models import UserProfile
