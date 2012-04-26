@@ -450,8 +450,7 @@ func_install_frontend(){
     if echo $db_backend | grep -i "^SQLITE" > /dev/null ; then
         # Setup settings_local.py for SQLite
         sed -i "s/'init_command/#'init_command/g"  $INSTALL_DIR/settings_local.py
-    else
-            
+    else    
         # Setup settings_local.py for MySQL
         sed -i "s/'django.db.backends.sqlite3'/'django.db.backends.mysql'/"  $INSTALL_DIR/settings_local.py
         sed -i "s/.*'NAME'/       'NAME': '$DATABASENAME',#/"  $INSTALL_DIR/settings_local.py
@@ -741,28 +740,35 @@ func_install_backend() {
 func_install_redis_server() {
     case $DIST in
         'DEBIAN')
-            cd /usr/src
-            wget http://redis.googlecode.com/files/redis-2.2.11.tar.gz
-            tar -zxf redis-2.2.11.tar.gz
-            cd redis-2.2.11
-            make
-            make install
+            if [ "$(lsb_release -cs)" == "precise" ]; then
+                #Ubuntu 12.04 TLS
+                apt-get -y install redis-server
+                /etc/init.d/redis-server.dpkg-dist start
+            else
+                #Ubuntu 10.04 TLS
+                cd /usr/src
+                wget http://redis.googlecode.com/files/redis-2.2.11.tar.gz
+                tar -zxf redis-2.2.11.tar.gz
+                cd redis-2.2.11
+                make
+                make install
 
-            cp /usr/src/cdr-stats/install/redis/debian/etc/redis.conf /etc/redis.conf
-            cp /usr/src/cdr-stats/install/redis/debian/etc/init.d/redis-server /etc/init.d/redis-server
-            chmod +x /etc/init.d/redis-server
+                cp /usr/src/cdr-stats/install/redis/debian/etc/redis.conf /etc/redis.conf
+                cp /usr/src/cdr-stats/install/redis/debian/etc/init.d/redis-server /etc/init.d/redis-server
+                chmod +x /etc/init.d/redis-server
 
-            useradd redis
-            mkdir -p /var/lib/redis
-            mkdir -p /var/log/redis
-            chown redis.redis /var/lib/redis
-            chown redis.redis /var/log/redis
-            
-            cd /etc/init.d/
-            update-rc.d -f redis-server defaults
+                useradd redis
+                mkdir -p /var/lib/redis
+                mkdir -p /var/log/redis
+                chown redis.redis /var/lib/redis
+                chown redis.redis /var/log/redis
+                
+                cd /etc/init.d/
+                update-rc.d -f redis-server defaults
 
-            #Start redis-server
-            /etc/init.d/redis-server start
+                #Start redis-server
+                /etc/init.d/redis-server start
+            fi
         ;;
         'CENTOS')
             #install redis
