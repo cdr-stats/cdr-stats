@@ -47,6 +47,7 @@ PAGE_SIZE_LIST = ((10, '10'),
 DATE_HELP_TEXT = _("Please use the following format")+": <em>YYYY-MM-DD</em>."
 COUNTRY_HELP_TEXT = _('Hold down "Ctrl", "Command" on Mac, to select more than one.')
 
+
 def sw_list_with_all():
     """Switch list"""
     list_sw = []
@@ -78,6 +79,7 @@ def country_list_with_all():
 
 
 class SearchForm(forms.Form):
+    """Form used to search on general parameters in the Customer UI."""
     caller = forms.CharField(label=_('Caller Id'), required=False)
     caller_type = forms.ChoiceField(label='', required=False,
                                     choices=STRING_SEARCH_TYPE_LIST)
@@ -114,6 +116,7 @@ class SearchForm(forms.Form):
 
 
 class CdrSearchForm(SearchForm):
+    """Form used to search calls in the Customer UI."""
     from_date = CharField(label=_('From'), required=True, max_length=10)
     to_date = CharField(label=_('To'), required=True, max_length=10)
     direction = forms.TypedChoiceField(label=_('Direction'), required=False, coerce=bool,
@@ -132,6 +135,7 @@ class CdrSearchForm(SearchForm):
 
 
 class CountryReportForm(CdrSearchForm):
+    """Form used to get country vise calls report in the Customer UI."""
     def __init__(self, *args, **kwargs):
         super(CountryReportForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['from_date', 'to_date', 'country_id', 'duration',
@@ -139,7 +143,7 @@ class CountryReportForm(CdrSearchForm):
 
 
 class CdrOverviewForm(CdrSearchForm):
-
+    """Form used to get overview of calls in the Customer UI."""
     def __init__(self, *args, **kwargs):
         super(CdrOverviewForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['from_date', 'to_date', 'destination', 'destination_type',
@@ -147,6 +151,7 @@ class CdrOverviewForm(CdrSearchForm):
 
 
 class CompareCallSearchForm(SearchForm):
+    """Form used to search calls for comparison in the Customer UI."""
     from_date = forms.CharField(label=_('Select date'), required=True,
                                 max_length=10)
 
@@ -165,6 +170,7 @@ class CompareCallSearchForm(SearchForm):
 
 
 class ConcurrentCallForm(CdrSearchForm):
+    """Form used for concurrent calls in the Customer UI."""
     def __init__(self, *args, **kwargs):
         super(ConcurrentCallForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['from_date', 'result', 'switch']
@@ -172,6 +178,7 @@ class ConcurrentCallForm(CdrSearchForm):
 
 
 class SwitchForm(SearchForm):
+    """Form used to get the list of switches in the Customer UI."""
     def __init__(self, *args, **kwargs):
         super(SwitchForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['switch']
@@ -179,7 +186,7 @@ class SwitchForm(SearchForm):
 
 
 class loginForm(forms.Form):
-
+    """Form used to login of a user in the Customer UI."""
     user = forms.CharField(max_length=40, label=_('Login'), required=True)
     user.widget.attrs['class'] = 'input-small'
     user.widget.attrs['placeholder'] = 'Username'
@@ -190,8 +197,7 @@ class loginForm(forms.Form):
 
     
 class EmailReportForm(ModelForm):
-    """A form used to change the detail of a user in the Customer UI."""
-
+    """Form used to change the detail of a user in the Customer UI."""
     multiple_email = forms.CharField(max_length=300, required=False,
                            label=_("Enter e-mails to receive the mail report, if more than one separate by comma"))
     multiple_email.widget.attrs['class'] = 'span6'

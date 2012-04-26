@@ -83,16 +83,6 @@ def common_send_notification(request, status, recipient=None):
     return True
 
 
-def dictSort(d):
-    """ returns a dictionary sorted by keys """
-    our_list = d.items()
-    our_list.sort()
-    k = {}
-    for item in our_list:
-        k[item[0]] = item[1]
-    return k
-
-
 def login_view(request):
     """Login view
 
@@ -1783,4 +1773,3 @@ def cust_password_reset_complete(request):
         extra_context=data)
     else:
         return HttpResponseRedirect("/")
-

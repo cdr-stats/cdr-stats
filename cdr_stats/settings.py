@@ -312,7 +312,7 @@ CDR_MONGO_CDR_COUNTRY = 'cdr_country_analytic'
 #MongoDB(s) to use for import
 CDR_MONGO_IMPORT = {
     '127.0.0.1': {
-        'db_name': 'freeswitch_cdr',
+        'db_name': 'freeswitch_cdr', # cdr-stats
         'host': 'localhost',
         'port': 27017,
         'collection': 'cdr',

@@ -6,6 +6,8 @@ Customer Panel
 
 User Interface :
 
+This application provides a user interface...
+
 http://localhost:8000/
 
 
