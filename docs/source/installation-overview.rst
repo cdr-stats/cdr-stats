@@ -33,10 +33,10 @@ To get started with Cdr-stats you must have the following installed:
 - wsgiref >= 0.1.2 (Validation support for WSGI )
 - django-tastypie (Creating delicious APIs for Django)
 - django-notification >= 0.1.3 (User notification management for the Django web framework)
-- switch2bill-common
-- django-country-dialcode
-- django-countries
-- django_socketio
+- switch2bill-common - Common libs reused in different project
+- django-country-dialcode - Django reusable application to manage Dial code of Countries
+- django-countries - List of world countries
+- django-socketio - A Django app providing the features required to use websockets with Django via Socket.IO
 
 
 Use PIP to install all the requirements,::
