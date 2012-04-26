@@ -20,16 +20,8 @@ import logging
 
 from django.contrib.auth.models import User
 from django.conf.urls.defaults import url
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
-from django.db.models.query import QuerySet
 from django.http import HttpResponse, HttpResponseNotFound
-from django.utils.encoding import smart_unicode
-from django.utils.xmlutils import SimplerXMLGenerator
-from django.contrib.auth import authenticate
 from django.conf import settings
-from django.db import IntegrityError
 
 from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
 from tastypie.authentication import Authentication, BasicAuthentication
