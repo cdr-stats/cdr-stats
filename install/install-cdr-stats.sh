@@ -298,7 +298,7 @@ func_install_frontend(){
     echo "Install Dependencies and python modules..."
     case $DIST in
         'DEBIAN')
-            apt-get -y install python-setuptools python-dev build-essential libevent-dev gcc-c++
+            apt-get -y install python-setuptools python-dev build-essential libevent-dev
             apt-get -y install libapache2-mod-python libapache2-mod-wsgi
             apt-get -y install git-core mercurial gawk
             easy_install pip
