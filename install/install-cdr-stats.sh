@@ -298,7 +298,7 @@ func_install_frontend(){
     echo "Install Dependencies and python modules..."
     case $DIST in
         'DEBIAN')
-            apt-get -y install python-setuptools python-dev build-essential 
+            apt-get -y install python-setuptools python-dev build-essential libevent-dev gcc-c++
             apt-get -y install libapache2-mod-python libapache2-mod-wsgi
             apt-get -y install git-core mercurial gawk
             easy_install pip
@@ -339,7 +339,7 @@ func_install_frontend(){
             rpm -ivh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-5.noarch.rpm
             # disable epel repository since by default it is enabled.
             sed -i "s/enabled=1/enable=0/" /etc/yum.repos.d/epel.repo
-            yum -y --enablerepo=epel install python-pip mod_python python-setuptools python-tools python-devel mercurial mod_wsgi
+            yum -y --enablerepo=epel install python-pip mod_python python-setuptools python-tools python-devel mercurial mod_wsgi libevent libevent-devel
             #start http after reboot
             chkconfig --levels 235 httpd on
 
