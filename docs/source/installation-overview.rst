@@ -23,7 +23,6 @@ To get started with Cdr-stats you must have the following installed:
 - django-uuidfield >= 0.2 (Provides a UUIDField for your Django models)
 - django-reusableapps >= 0.1.1 (Python module to enable Django to load reusable, pluggable and egg-based applications)
 - docutils >= 0.7 (Text processing system for processing plaintext documentation into useful formats)
-- importlib >= 1.0.2 (Implementation of the `import` statement)
 - kombu >= 1.0.2 (An AMQP - Advanced Message Queuing Protocol messaging framework for Python)
 - pyparsing >= 1.5.5 (A general parsing module for Python)
 - python-dateutil >= 1.5 (Extensions to the standard datetime module)

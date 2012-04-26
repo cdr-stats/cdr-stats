@@ -417,8 +417,6 @@ func_install_frontend(){
 
     #Install CDR-Stats depencencies
     easy_install -U distribute
-    #For python 2.6 only
-    pip install importlib
     echo "Install basic requirements..."
     for line in $(cat /usr/src/cdr-stats/install/requirements/basic-requirements.txt)
     do
