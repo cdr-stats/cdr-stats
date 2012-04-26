@@ -234,10 +234,10 @@ func_mysql_database_setting() {
     if [ -z "$MYSQLPASSWORD" ]; then
         MYSQLPASSWORD="password"
     fi
-    echo "Enter Database name (default:cdr-stats)"
+    echo "Enter Database name (default:cdrstats)"
     read DATABASENAME
     if [ -z "$DATABASENAME" ]; then
-        DATABASENAME="cdr-stats"
+        DATABASENAME="cdrstats"
     fi
 }
 
