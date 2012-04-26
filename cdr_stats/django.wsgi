@@ -7,27 +7,21 @@ Heavily based on
 http://blog.dscpl.com.au/2010/03/improved-wsgi-script-for-use-with.html
 """
 
-import glob 
+import glob
 import os.path
 import sys
 
 here = os.path.abspath(os.path.dirname(__file__))
 
 g = glob.glob(here + '/manage.py')
-
 project_name = os.path.split(g[0])[0]
 
+site_package_dirs = '/usr/share/virtualenvs/cdr-stats/lib/python2.7/site-packages'
 
-#TODO Replace the environement
-site_package_dirs  = glob.glob(here + '/_env/lib/python*/site-packages')
-src_dirs = glob.glob(here + '/_env/src/*')
+if site_package_dirs not in sys.path:
+    sys.path.append(site_package_dirs)
 
-new_sys_path = [here, os.path.join(here, project_name,),]
-
-for dir in site_package_dirs + src_dirs:
-    new_sys_path.append(os.path.join(here, dir))
-
-sys.path = new_sys_path + sys.path
+sys.path.append('/usr/share/cdr_stats')
 
 import settings
 import django.core.management
