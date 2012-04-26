@@ -19,3 +19,4 @@ git+git://github.com/toastdriven/django-tastypie.git
 #raven==1.4.4
 #sentry==3.1.4
 django_socketio
+django_extensions
