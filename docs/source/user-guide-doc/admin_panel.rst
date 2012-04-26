@@ -138,3 +138,22 @@ To Add/Update alert-removep-refix
 .. image:: ../_static/images/admin/add_alert_remove_prefix.png
     :width: 1000
 
+Switch
+~~~~~~
+
+**URL**:
+
+    * http://localhost:8000/admin/cdr/switch/
+
+.. image:: ../_static/images/admin/switch_list.png
+    :width: 1000
+
+HangupCause
+~~~~~~~~~~~
+
+**URL**:
+
+    * http://localhost:8000/admin/cdr/hangupcause/
+
+.. image:: ../_static/images/admin/hangup_cause_list.png
+    :width: 1000
