@@ -334,6 +334,10 @@ def blacklist_whitelist_notification(notice_type):
     """
     Send notification to user while destination number matched with
     blacklist or whitelist
+
+    **Usage**:
+
+        blacklist_whitelist_notification.delay(notice_type)
     """
     if notice_type == 3:
         notice_type_name = 'blacklist'
