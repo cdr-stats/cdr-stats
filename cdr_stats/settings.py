@@ -197,6 +197,7 @@ INSTALLED_APPS = (
     'djcelery',
     'tastypie',
     'django_socketio',
+    'common',
     #'raven.contrib.django',
     'notification',
     'country_dialcode',

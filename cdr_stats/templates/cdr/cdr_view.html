@@ -1,5 +1,5 @@
 {% extends "cdr/master.html" %}
-{% load i18n pagination_tags cdr_extras %}
+{% load i18n pagination_tags cdr_extras common_tags %}
 {% load country_dialcode_tags %}
 
 {% block title %}{% trans "CDR View" %}{% endblock %}
@@ -306,7 +306,7 @@
 
         <div class="show_export_file" id='export-container'>
             {% trans "Export CSV file"  %} <br/>
-            <a href="/cdr_export_csv/" target="_blank"><img src='{{ STATIC_URL }}/cdr-stats/icons/x-office-spreadsheet.png' width="75"/></a>
+            <a href="/cdr_export_csv/" target="_blank"><img src='{{ STATIC_URL }}cdr-stats/icons/x-office-spreadsheet.png' width="75"/></a>
         </div>
     </div>
 
@@ -337,7 +337,7 @@
                 <td>{{ td.calldate|date:"D d M Y" }}</td>
                 <td>{{ td.duration__sum|conv_min }}</td>
                 <td>{% if max_duration > 0 %}
-                    <img src="{{ STATIC_URL }}/cdr-stats/images/spacer.png" width="{{ td.duration__sum|cal_width:max_duration }}" style="vertical-align:center; height:10px"/>
+                    <img src="{{ STATIC_URL }}cdr-stats/images/spacer.png" width="{{ td.duration__sum|cal_width:max_duration }}" style="vertical-align:center; height:10px"/>
                     {% endif %}
                 </td>
                 <td>{{ td.calldate__count }}</td>
