@@ -28,7 +28,7 @@ class sync_cdr_pending(PeriodicTask):
 
         sync_cdr_pending.delay()
     """ 
-    run_every = timedelta(seconds=3) # every 5 min
+    run_every = timedelta(seconds=60) # every minute
 
     @single_instance_task(key="sync_cdr_pending", timeout=LOCK_EXPIRE)
     def run(self, **kwargs):

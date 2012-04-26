@@ -1,7 +1,7 @@
 #!/bin/sh -e
 #
-# Newfies-Dialer License
-# http://www.newfies-dialer.org
+# CDR-Stats License
+# http://www.cdr-stats.org
 #
 # This Source Code Form is subject to the terms of the Mozilla Public 
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -118,11 +118,11 @@ DEFAULT_CELERYD="-m celery.bin.celeryd_detach"
 
 # /etc/init.d/celeryd: start and stop the celery task worker daemon.
 
-CELERY_DEFAULTS=${CELERY_DEFAULTS:-"/etc/default/newfies-celeryd"}
+CELERY_DEFAULTS=${CELERY_DEFAULTS:-"/etc/default/cdr-stats-celeryd"}
 
 test -f "$CELERY_DEFAULTS" && . "$CELERY_DEFAULTS"
-if [ -f "/etc/default/newfies-celeryd" ]; then
-    . /etc/default/newfies-celeryd
+if [ -f "/etc/default/cdr-stats-celeryd" ]; then
+    . /etc/default/cdr-stats-celeryd
 fi
 
 CELERYD_PID_FILE=${CELERYD_PID_FILE:-${CELERYD_PIDFILE:-$DEFAULT_PID_FILE}}
@@ -219,7 +219,7 @@ case "$1" in
     ;;
 
     *)
-        echo "Usage: /etc/init.d/newfies-celeryd {start|stop|restart|try-restart|kill}"
+        echo "Usage: /etc/init.d/cdr-stats-celeryd {start|stop|restart|try-restart|kill}"
         exit 1
     ;;
 esac
