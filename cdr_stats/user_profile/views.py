@@ -23,12 +23,11 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson
 from django.db.models import Q
 from django.conf import settings
+
 from notification import models as notification
+from common.common_functions import variable_value, current_view
 
-from cdr.views import current_view
-from common.common_functions import variable_value
 from cdr.functions_def import chk_account_code
-
 from user_profile.models import UserProfile
 from user_profile.forms import *
 

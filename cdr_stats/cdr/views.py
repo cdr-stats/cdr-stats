@@ -37,9 +37,6 @@ from datetime import *
 from dateutil import parser
 from dateutil.relativedelta import *
 
-from operator import itemgetter
-from inspect import stack, getmodule
-
 import operator
 import calendar, time, string
 import csv, codecs
@@ -1719,11 +1716,6 @@ def pleaselog(request):
     }
     return render_to_response(template, data,
            context_instance = RequestContext(request))
-
-
-def current_view(request):
-    #name = getmodule(stack()[1][0]).__name__
-    return stack()[1][3]
 
 
 def cust_password_reset(request):

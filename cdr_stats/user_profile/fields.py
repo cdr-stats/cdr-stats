@@ -20,6 +20,7 @@ from django.utils.translation import ugettext as _
 from django.db import models
 from django.conf import settings
 
+
 _using_south = 'south' in settings.INSTALLED_APPS
 if _using_south:
     try:
@@ -28,9 +29,6 @@ if _using_south:
         # Don't complain if South is not available
         _using_south = False
 
-
-#TODO: Why do we use this here if we userprofile model we use : from django_countries import CountryField
-#That means our dependencies to django_countries is useless
 
 # Codes for the Representation of Names of Languages
 # (Ref.: http://www.loc.gov/standards/iso639-2/php/code_list.php
@@ -243,7 +241,6 @@ LANGUAGES = (
 )
 
 
-
 class LanguageField(models.CharField):
     """Stores language codes as defined by ISO 639-1"""
 
@@ -260,6 +257,5 @@ class LanguageField(models.CharField):
 
 if _using_south:
     add_introspection_rules([], ['^djangomissing\.fields\.LanguageField'])
-
 
 # End of file
