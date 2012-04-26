@@ -31,7 +31,7 @@
 INSTALL_MODE='CLONE'
 DATETIME=$(date +"%Y%m%d%H%M%S")
 KERNELARCH=$(uname -p)
-INSTALL_DIR='/usr/share/cdr-stats'
+INSTALL_DIR='/usr/share/cdr_stats'
 INSTALL_DIR_WELCOME='/var/www/cdr-stats'
 DATABASENAME=$INSTALL_DIR'/database/cdr-stats.db'
 MYSQLUSER=
@@ -474,13 +474,13 @@ func_install_frontend(){
     cd $INSTALL_DIR/
     
     #Fix permission on python-egg
-    mkdir /usr/share/cdr-stats/.python-eggs
-    chown $APACHE_USER:$APACHE_USER /usr/share/cdr-stats/.python-eggs
+    mkdir $INSTALL_DIR/.python-eggs
+    chown $APACHE_USER:$APACHE_USER $INSTALL_DIR/.python-eggs
     mkdir database
     
     #upload audio files
-    mkdir -p /usr/share/cdr-stats/usermedia/upload/audiofiles
-    chown -R $APACHE_USER:$APACHE_USER /usr/share/cdr-stats/usermedia
+    mkdir -p $INSTALL_DIR/usermedia/upload/audiofiles
+    chown -R $APACHE_USER:$APACHE_USER $INSTALL_DIR/usermedia
     
     #following lines is for apache logs
     touch /var/log/cdr-stats/cdr-stats.log
@@ -578,7 +578,7 @@ func_install_frontend(){
             
             #Selinux to allow apache to access this directory
             chcon -Rv --type=httpd_sys_content_t /usr/share/virtualenvs/cdr-stats/
-            chcon -Rv --type=httpd_sys_content_t /usr/share/cdr-stats/usermedia
+            chcon -Rv --type=httpd_sys_content_t $INSTALL_DIR/usermedia
             semanage port -a -t http_port_t -p tcp $HTTP_PORT
             #Allowing Apache to access Redis port
             semanage port -a -t http_port_t -p tcp 6379
