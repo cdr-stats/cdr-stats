@@ -45,7 +45,12 @@ CDR_TYPE = {"FreeSWITCH":1, "Asterisk":2, "Yate":3, "OpenSIPS":4, "Kamailio":5}
 #value 0 per default, 1 in process of import, 2 imported successfully and verified
 STATUS_SYNC = {"new":0, "in_process": 1, "verified":2}
 
-
+# Assign collection names to variables
+CDR_COMMON = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COMMON]
+CDR_MONTHLY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_MONTHLY]
+CDR_DAILY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_DAILY]
+CDR_HOURLY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HOURLY]
+CDR_COUNTRY_REPORT = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY_REPORT]
 
 def update_cdr_collection(mongohandler, cdr_id, field_name):
     # change import_cdr_xxxx flag in cdr_common collection
@@ -303,7 +308,7 @@ def import_cdr(shell=False):
                 accountcode = cdr['variables']['accountcode']
 
                 # record global CDR
-                settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COMMON].insert(cdr_record)
+                CDR_COMMON.insert(cdr_record)
 
                 print_shell(shell, "Sync CDR (cid:%s, dest:%s, dur:%s, hg:%s, country:%s, auth:%s)" % (
                                             cdr['callflow']['caller_profile']['caller_id_number'],
@@ -321,71 +326,78 @@ def import_cdr(shell=False):
                 if cdr['import_cdr_monthly'] == 0:
                     # monthly collection
                     current_y_m = datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
-                    settings.DB_CONNECTION[settings.CDR_MONGO_CDR_MONTHLY].update(
-                                            {
-                                                'start_uepoch': current_y_m,
-                                                'destination_number': destination_number,
-                                                'hangup_cause_id': hangup_cause_id,
-                                                'accountcode': accountcode,
-                                                'switch_id': switch.id,
-                                            },
-                                            {
-                                                '$inc':
-                                                    {'calls': 1,
-                                                     'duration': int(cdr['variables']['duration']) }
-                                            }, upsert=True)
+                    CDR_MONTHLY.update(
+                                {
+                                    'start_uepoch': current_y_m,
+                                    'destination_number': destination_number,
+                                    'hangup_cause_id': hangup_cause_id,
+                                    'accountcode': accountcode,
+                                    'switch_id': switch.id,
+                                },
+                                {
+                                    '$inc':
+                                        {'calls': 1,
+                                         'duration': int(cdr['variables']['duration']) }
+                                }, upsert=True)
 
                 # Store daily cdr collection with unique import
                 if cdr['import_cdr_daily'] == 0:
                     # daily collection
                     current_y_m_d = datetime.strptime(str(start_uepoch)[:10], "%Y-%m-%d")
-                    settings.DB_CONNECTION[settings.CDR_MONGO_CDR_DAILY].update(
-                                            {
-                                                'start_uepoch': current_y_m_d,
-                                                'destination_number': destination_number,
-                                                'hangup_cause_id': hangup_cause_id,
-                                                'accountcode': accountcode,
-                                                'switch_id': switch.id,
-                                            },
-                                            {
-                                                '$inc':
-                                                    {'calls': 1,
-                                                     'duration': int(cdr['variables']['duration']) }
-                                            },upsert=True)
+                    CDR_DAILY.update(
+                            {
+                                'start_uepoch': current_y_m_d,
+                                'destination_number': destination_number,
+                                'hangup_cause_id': hangup_cause_id,
+                                'accountcode': accountcode,
+                                'switch_id': switch.id,
+                            },
+                            {
+                                '$inc':
+                                    {'calls': 1,
+                                     'duration': int(cdr['variables']['duration']) }
+                            },upsert=True)
 
                 # Store hourly cdr collection with unique import
                 if cdr['import_cdr_hourly'] == 0:
                     # hourly collection
                     current_y_m_d_h = datetime.strptime(str(start_uepoch)[:13], "%Y-%m-%d %H")
-                    settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HOURLY].update(
-                                            {
-                                                'start_uepoch': current_y_m_d_h,
-                                                'destination_number': destination_number,
-                                                'hangup_cause_id': hangup_cause_id,
-                                                'accountcode': accountcode,
-                                                'switch_id': switch.id,},
-                                            {
-                                                '$inc': {'calls': 1,
-                                                         'duration': int(cdr['variables']['duration']) }
-                                            },upsert=True)
+                    CDR_HOURLY.update(
+                                {
+                                    'start_uepoch': current_y_m_d_h,
+                                    'destination_number': destination_number,
+                                    'hangup_cause_id': hangup_cause_id,
+                                    'accountcode': accountcode,
+                                    'switch_id': switch.id,},
+                                {
+                                    '$inc': {'calls': 1,
+                                             'duration': int(cdr['variables']['duration']) }
+                                },upsert=True)
 
                     # Country report collection
                     current_y_m_d_h_m = datetime.strptime(str(start_uepoch)[:16], "%Y-%m-%d %H:%M")
-                    settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY_REPORT].update(
-                                            {
-                                                'start_uepoch': current_y_m_d_h_m,
-                                                'country_id': country_id,
-                                                'accountcode': accountcode,
-                                                'switch_id': switch.id,},
-                                            {
-                                                '$inc': {'calls': 1,
-                                                         'duration': int(cdr['variables']['duration']) }
-                                            },upsert=True)
+                    CDR_COUNTRY_REPORT.update(
+                                        {
+                                            'start_uepoch': current_y_m_d_h_m,
+                                            'country_id': country_id,
+                                            'accountcode': accountcode,
+                                            'switch_id': switch.id,},
+                                        {
+                                            '$inc': {'calls': 1,
+                                                     'duration': int(cdr['variables']['duration']) }
+                                        },upsert=True)
 
                 # Flag the CDR as imported
                 importcdr_handler.update(
                             {'_id': cdr['_id']},
                             {'$set': {'import_cdr': 1, 'import_cdr_monthly': 1, 'import_cdr_daily': 1, 'import_cdr_hourly': 1}}
                 )
+
+            # Apply index
+            CDR_COMMON.ensure_index([("start_uepoch", -1)], unique=True)
+            CDR_MONTHLY.ensure_index([("start_uepoch", -1)], unique=True)
+            CDR_DAILY.ensure_index([("start_uepoch", -1)], unique=True)
+            CDR_HOURLY.ensure_index([("start_uepoch", -1)], unique=True)
+            CDR_COUNTRY_REPORT.ensure_index([("start_uepoch", -1)], unique=True)
 
         print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" % (ipaddress, count_import))

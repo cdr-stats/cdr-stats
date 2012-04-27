@@ -59,11 +59,14 @@ def common_send_notification(request, status, recipient=None):
 
     **Attributes**:
 
-        * ``pk`` - primary key of the record
+        * ``request`` - primary key of the record
         * ``status`` - get label for notifications
+        * ``recipient`` - receiver of notification
 
     **Logic Description**:
 
+        get the notice label from stauts & send notification with
+        recipient, from_user & sender detail
     """
     if not recipient:
         recipient = request.user
@@ -144,6 +147,12 @@ def cdr_view(request):
         * ``template`` - cdr/cdr_view.html
         * ``form`` - CdrSearchForm
         * ``mongodb_data_set`` - CDR_MONGO_CDR_COMMON
+        * ``map_reduce`` - mapreduce_cdr_view()
+
+    **Logic Description**:
+
+        get the call records as well as daily call analytics
+        from mongodb collection according to search parameters
     """
     logging.debug('CDR View Start')
     query_var = {}
@@ -492,6 +501,12 @@ def cdr_view(request):
 
 @login_required
 def cdr_export_to_csv(request):
+    """
+    **Logic Description**:
+
+        get the call records  from mongodb collection
+        according to search parameters & store into csv file
+    """
     # get the response object, this can be used as a stream
     response = HttpResponse(mimetype='text/csv')
     # force download
@@ -524,6 +539,10 @@ def cdr_detail(request, id, switch_id):
     **Attributes**:
 
         * ``template`` - cdr/cdr_detail.html
+
+    **Logic Description**:
+
+        get the single call record in detail from mongodb collection
     """
     c_switch = Switch.objects.get(id=switch_id)
     ipaddress = c_switch.ipaddress
@@ -556,6 +575,12 @@ def cdr_global_report(request):
         * ``template`` - cdr/cdr_global_report.html
         * ``form`` - SwitchForm
         * ``mongodb_data_set`` - CDR_MONGO_CDR_COMMON
+        * ``map_reduce`` - mapreduce_cdr_view()
+
+    **Logic Description**:
+
+        get all call records from mongodb collection to create
+        global call report
     """
     logging.debug('CDR global report view start')
     query_var = {}
@@ -645,6 +670,12 @@ def cdr_dashboard(request):
         * ``template`` - cdr/cdr_dashboard.html
         * ``form`` - SwitchForm
         * ``mongodb_data_set`` - CDR_MONGO_CDR_COMMON
+        * ``map_reduce`` - mapreduce_cdr_minute_report()
+
+    **Logic Description**:
+
+        get all call records from mongodb collection for current day
+        to create hourly report as well as to hungupcause/country analytic
     """
     logging.debug('CDR dashboard view start')
     now = datetime.now()
@@ -781,6 +812,12 @@ def cdr_country_report(request):
         * ``template`` - cdr/cdr_country_report.html
         * ``form`` - CountryReportForm
         * ``mongodb_data_set`` - CDR_MONGO_CDR_COUNTRY_REPORT / CDR_MONGO_CDR_COUNTRY
+        * ``map_reduce`` - mapreduce_cdr_country_report()
+
+    **Logic Description**:
+
+        get all call records from mongodb collection for all countries
+        to create country call
     """
     logging.debug('CDR country report view start')
     now = datetime.now()
@@ -939,6 +976,13 @@ def cdr_overview(request):
         * ``template`` - cdr/cdr_overview.html.html
         * ``form`` - CdrOverviewForm
         * ``mongodb_data_set`` - CDR_MONGO_CDR_DAILY, CDR_MONGO_CDR_HOURLY
+        * ``map_reduce`` - mapreduce_cdr_hourly_overview() | mapreduce_cdr_monthly_overview()
+                           mapreduce_cdr_daily_overview
+
+    **Logic Description**:
+
+        get all call records from mongodb collection for
+        all monthly, daily, hourly analytics
     """
     logging.debug('CDR overview start')
     query_var = {}
@@ -1008,6 +1052,7 @@ def cdr_overview(request):
         logging.debug('Map-reduce cdr overview analytic')
         # Collect Hourly data
         hourly_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HOURLY]
+
         (map, reduce, finalize_fun, out) = mapreduce_cdr_hourly_overview()
         calls_in_day = hourly_data.map_reduce(map, reduce, out, query=query_var)
         calls_in_day = calls_in_day.find().sort([('_id.a_Year', -1), ('_id.b_Month', -1), ('_id.c_Day', -1),
@@ -1050,6 +1095,7 @@ def cdr_overview(request):
 
         # Collect daily data
         daily_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_DAILY]
+
         (map, reduce, finalize_fun, out) = mapreduce_cdr_daily_overview()
         calls_in_day = daily_data.map_reduce(map, reduce, out, query=query_var)
         calls_in_day = calls_in_day.find().sort([('_id.a_Year', -1), ('_id.b_Month', -1),
@@ -1089,6 +1135,7 @@ def cdr_overview(request):
 
         # Collect monthly data
         monthly_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_MONTHLY]
+
         (map, reduce, finalize_fun, out) = mapreduce_cdr_monthly_overview()
         query_var['start_uepoch'] = {'$gte': month_start_date, '$lt': month_end_date}
 
@@ -1155,7 +1202,6 @@ def cdr_overview(request):
 
 def get_hourly_data_for_date(start_date, end_date, query_var, graph_view):
     hourly_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HOURLY]
-
     logging.debug('Map-reduce cdr hourly analytic')
     #Retrieve Map Reduce
     (map, reduce, finalize_fun, out) = mapreduce_cdr_hour_report()
@@ -1248,6 +1294,12 @@ def cdr_graph_by_hour(request):
         * ``template`` - cdr/cdr_graph_by_hour.html
         * ``form`` - CompareCallSearchForm
         * ``mongodb_data_set`` - CDR_MONGO_CDR_HOURLY
+        * ``map_reduce`` - mapreduce_cdr_hour_report()
+
+    **Logic Description**:
+
+        get all call records from mongodb collection for
+        hourly analytics for given date
     """
     logging.debug('CDR hourly view start')
     query_var = {}
@@ -1364,7 +1416,12 @@ def cdr_concurrent_calls(request):
 
         * ``template`` - cdr/cdr_graph_concurrent_calls.html
         * ``form`` - ConcurrentCallForm
-        * ``mongodb_data_set`` - CDR_MONGO_CONC_CALL_AGG
+        * ``mongodb_data_set`` - CDR_MONGO_CONC_CALL_AGG (map-reduce collection)
+
+    **Logic Description**:
+
+        get all concurrent call records from mongodb map-reduce collection for
+        current date
     """
     logging.debug('CDR concurrent view start')
     query_var = {}
@@ -1438,6 +1495,12 @@ def cdr_realtime(request):
 
         * ``template`` - cdr/cdr_realtime.html
         * ``form`` - SwitchForm
+        * ``mongodb_collection`` - CDR_MONGO_CONC_CALL_AGG (map-reduce collection)
+
+    **Logic Description**:
+
+        get all call records from mongodb collection for
+        concurrent analytics
     """
     logging.debug('CDR realtime view start')
     query_var = {}
@@ -1625,6 +1688,12 @@ def mail_report(request):
 
         * ``template`` - cdr/cdr_mail_report.html
         * ``form`` - MailreportForm
+        * ``mongodb_data_set`` - CDR_MONGO_CDR_COMMON
+
+    **Logic Description**:
+
+        get top 10 calls from mongodb collection & hnagupcause/country analytic
+        to generate mail report
     """
     logging.debug('CDR mail report view start')
     template = 'cdr/cdr_mail_report.html'

@@ -91,7 +91,6 @@ class Command(BaseCommand):
         settings.DB_CONNECTION[settings.CDR_MONGO_CONC_CALL].ensure_index([('call_date', -1),
                                                                            ('switch_id', 1),
                                                                            ('accountcode', 1)], unique=True)
-
         #TODO: Map-reduce collection
         map = mark_safe(u'''
               function(){
@@ -128,4 +127,5 @@ class Command(BaseCommand):
                  ''')
 
         cdr_conn_call = settings.DB_CONNECTION[settings.CDR_MONGO_CONC_CALL]
+
         cdr_conn_call.map_reduce(map, reduce, out=settings.CDR_MONGO_CONC_CALL_AGG)
