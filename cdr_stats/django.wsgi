@@ -16,6 +16,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 g = glob.glob(here + '/manage.py')
 project_name = os.path.split(g[0])[0]
 
+#FIXME for other Python version
 site_package_dirs = '/usr/share/virtualenvs/cdr-stats/lib/python2.7/site-packages'
 
 if site_package_dirs not in sys.path:
