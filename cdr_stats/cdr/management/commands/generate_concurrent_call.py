@@ -127,9 +127,5 @@ class Command(BaseCommand):
                  ''')
 
         cdr_conn_call = settings.DB_CONNECTION[settings.CDR_MONGO_CONC_CALL]
-        # verify indexes
-        print "========index info for concurrent_calls==========="
-        print cdr_conn_call.index_information()
-        print cdr_conn_call.find().explain()
 
         cdr_conn_call.map_reduce(map, reduce, out=settings.CDR_MONGO_CONC_CALL_AGG)
