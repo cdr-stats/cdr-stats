@@ -333,6 +333,12 @@ def cdr_view(request):
     final_result = cdr_data.find(query_var)
     total_result_count = cdr_data.find(query_var).count()
 
+
+    # verify indexes
+    print "========index info for cdr==========="
+    print cdr_data.index_information()
+    print cdr_data.find(query_var).explain()
+
     # Define no of records per page
     PAGE_SIZE = int(records_per_page)
     try:
@@ -581,6 +587,11 @@ def cdr_global_report(request):
     #Retrieve Map Reduce
     (map, reduce, finalize_fun, out) = mapreduce_cdr_view()
 
+    # verify indexes
+    print "========index info for cdr==========="
+    print cdr_data.index_information()
+    print cdr_data.find(query_var).explain()
+
     #Run Map Reduce
     calls = cdr_data.map_reduce(map, reduce, out, query=query_var, finalize=finalize_fun,)
     calls = calls.find().sort([('_id.a_Year', -1), ('_id.b_Month', -1), ('_id.c_Day', -1)])
@@ -672,6 +683,11 @@ def cdr_dashboard(request):
             query_var['accountcode'] = chk_account_code(request)
         else:
             return HttpResponseRedirect('/?acc_code_error=true')
+
+    # verify indexes
+    print "========index info for cdr==========="
+    print cdr_data.index_information()
+    print cdr_data.find(query_var).explain()
 
     logging.debug('Map-reduce cdr dashboard analytic')
     #Retrieve Map Reduce
@@ -847,6 +863,11 @@ def cdr_country_report(request):
     #Run Map Reduce
     country_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY_REPORT]
 
+    # verify indexes
+    print "========index info for country_report==========="
+    print country_data.index_information()
+    print country_data.find(query_var).explain()
+
     calls = country_data.map_reduce(map, reduce, out, query=query_var)
     calls = calls.find().sort([('_id.a_Year', 1),
                                ('_id.b_Month', 1),
@@ -1008,6 +1029,12 @@ def cdr_overview(request):
         logging.debug('Map-reduce cdr overview analytic')
         # Collect Hourly data
         hourly_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HOURLY]
+
+        # verify indexes
+        print "========index info for hourly_data==========="
+        print hourly_data.index_information()
+        print hourly_data.find(query_var).explain()
+
         (map, reduce, finalize_fun, out) = mapreduce_cdr_hourly_overview()
         calls_in_day = hourly_data.map_reduce(map, reduce, out, query=query_var)
         calls_in_day = calls_in_day.find().sort([('_id.a_Year', -1), ('_id.b_Month', -1), ('_id.c_Day', -1),
@@ -1050,6 +1077,12 @@ def cdr_overview(request):
 
         # Collect daily data
         daily_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_DAILY]
+
+        # verify indexes
+        print "========index info for daily_data==========="
+        print daily_data.index_information()
+        print daily_data.find(query_var).explain()
+
         (map, reduce, finalize_fun, out) = mapreduce_cdr_daily_overview()
         calls_in_day = daily_data.map_reduce(map, reduce, out, query=query_var)
         calls_in_day = calls_in_day.find().sort([('_id.a_Year', -1), ('_id.b_Month', -1),
@@ -1089,6 +1122,13 @@ def cdr_overview(request):
 
         # Collect monthly data
         monthly_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_MONTHLY]
+
+        # verify indexes
+        print "========index info for monthly_data==========="
+        print monthly_data.index_information()
+        print monthly_data.find(query_var).explain()
+
+
         (map, reduce, finalize_fun, out) = mapreduce_cdr_monthly_overview()
         query_var['start_uepoch'] = {'$gte': month_start_date, '$lt': month_end_date}
 
@@ -1155,6 +1195,11 @@ def cdr_overview(request):
 
 def get_hourly_data_for_date(start_date, end_date, query_var, graph_view):
     hourly_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HOURLY]
+
+    # verify indexes
+    print "========index info for hourly_data==========="
+    print hourly_data.index_information()
+    print hourly_data.find(query_var).explain()
 
     logging.debug('Map-reduce cdr hourly analytic')
     #Retrieve Map Reduce
