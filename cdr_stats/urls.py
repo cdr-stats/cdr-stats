@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
+from cdr.views import *
 
-from cdr.urls import urlpatterns as urlpatterns_cdr
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -10,10 +10,14 @@ admin.autodiscover()
 
 
 urlpatterns = patterns('',
+    
+    # redirect
+    ('^$', 'django.views.generic.simple.redirect_to', {'url': '/cdr/'}),
 
     # Example:
     # (r'^stats/', include('stats.foo.urls')),
     #( r'^/resources/(?P<path>.*)$', 'django.views.static.serve',  { 'document_root': settings.MEDIA_ROOT } ),
+	(r'^cdr/', include('cdr.urls')),
 	
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
@@ -21,11 +25,24 @@ urlpatterns = patterns('',
 	
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
-
-    # Serve static
-    (r'^static/(?P<path>.*)$', 'django.views.static.serve',
-    {'document_root': settings.STATIC_ROOT}),
-
+    
+    ( r'^resources/(?P<path>.*)$',
+      'django.views.static.serve',
+      { 'document_root': settings.MEDIA_ROOT } ),
+    
+    # Jqgrid
+    
+    url (r'^examplegrid/$', grid_handler, name='grid_handler'),
+	url (r'^examplegrid/cfg/$', grid_config, name='grid_config'),
+	
+	(r'^show_jqgrid/$',   'cdr.views.show_jqgrid'),
+	
+	
+	(r'^show_graph_examples/$',   'cdr.views.show_graph'),
+	
+	# Pages
+	(r'^login/$',   'cdr.views.login'),
+	(r'^index/$',   'cdr.views.index'),
+	
 )
 
-urlpatterns += urlpatterns_cdr
