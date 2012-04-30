@@ -36,5 +36,4 @@ class sync_cdr_pending(PeriodicTask):
         logger.info("TASK :: sync_cdr_pending")
 
         import_cdr()
-
         return True

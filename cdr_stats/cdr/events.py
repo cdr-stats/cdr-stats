@@ -14,6 +14,7 @@ import random
 import logging
 logger = logging.getLogger('cdr-stats.filelog')
 
+
 def cached(ctime=3600):
     """
     A `seconds` value of `0` means that we will not memcache it.
@@ -47,6 +48,7 @@ def get_switch_id(key_uuid):
         return False
     return switch.id
 
+
 @cached(300) # 5 minutes
 def get_user(user_id):
     try:
@@ -71,8 +73,13 @@ def my_message_handler(request, socket, context, message):
         socket.send(result)
     user = get_user(message['user'])
     logger.debug(user)
-    
-    if not user or (not user.userprofile.accountcode and not user.is_superuser):
+
+    if not user:
+        logger.debug('Wrong User')
+        result[message['voipswitch']] = 0
+        socket.send(result)
+
+    if not user.is_superuser or not hasattr(user, 'userprofile') or not user.userprofile.accountcode:
         logger.debug('Wrong User')
         result[message['voipswitch']] = 0
         socket.send(result)

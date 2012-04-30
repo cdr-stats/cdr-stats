@@ -34,7 +34,7 @@ $(function() {
     }
     createTimeline{{ c_switch.id }}();
 
-    var socket{{ c_switch.id }} = new io.Socket();
+    var socket{{ c_switch.id }} = new io.Socket('localhost',{port: 9000});
 
     setInterval(function() {
         data = {voipswitch: voipswitchname, user : {{ user_id }}, message: "get-stats"};
@@ -52,7 +52,7 @@ $(function() {
     };
 
     var messaged = function(data) {
-        console.log(data);
+        //console.log(data);
         var now = new Date().getTime();
         dataSet1.append(now, data[voipswitchname]);
         $("#numbercall-"+voipswitchname).text(data[voipswitchname]);

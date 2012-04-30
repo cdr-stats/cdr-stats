@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import os, sys
 
 from gevent import monkey
@@ -15,10 +14,8 @@ setup_environ(settings)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 application = django.core.handlers.wsgi.WSGIHandler()
 
-PORT = 9000
-HOSTNAME = 'localhost'
 
 if __name__ == '__main__':
-    print('Listening on http://%s:%s' % (HOSTNAME,PORT))
+    print('Listening on http://%s:%s' % (settings.SOCKETIO_HOST,settings.SOCKETIO_PORT))
     # Start up SocketIOServer, a gevent-pywsgi server which maps the url '/socket.io'
-    SocketIOServer((HOSTNAME, PORT), application, resource="socket.io").serve_forever()
+    SocketIOServer((settings.SOCKETIO_HOST, settings.SOCKETIO_PORT), application, resource="socket.io").serve_forever()
