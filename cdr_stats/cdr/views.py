@@ -40,5 +40,9 @@ def index(request):
            context_instance = RequestContext(request))
 
 
+def map_view(request):
+    return render_to_response('cdr/map/index.html', None,
+        context_instance = RequestContext(request))
+
 
 
