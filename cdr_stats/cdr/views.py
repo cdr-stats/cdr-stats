@@ -34,7 +34,8 @@ def show_graph(request):
 def login(request):
     return render_to_response('cdr/login.html', None,
            context_instance = RequestContext(request))
-           
+
+
 def index(request):
     return render_to_response('cdr/index.html', None,
            context_instance = RequestContext(request))
