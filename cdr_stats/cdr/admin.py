@@ -1,52 +1,33 @@
-from cdr.models import *
+#
+# CDR-Stats License
+# http://www.cdr-stats.org
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this file,
+# You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (C) 2011-2012 Star2Billing S.L.
+#
+# The Initial Developer of the Original Code is
+# Arezqui Belaid <info@star2billing.com>
+#
+
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
-from django.db.models import Q
-from cdr.models import Customer, Staff
+from cdr.models import *
 
 
-class UserProfileInline(admin.StackedInline):
-    model = UserProfile
+# Switch
+class SwitchAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'ipaddress', 'key_uuid')
+    list_filter = ['name', 'ipaddress',]
+    search_fields = ('name', 'ipaddress',)
+
+admin.site.register(Switch, SwitchAdmin)
 
 
-class StaffAdmin(UserAdmin):
-    inlines = [UserProfileInline]
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'is_superuser', 'last_login')
+# HangupCause
+class HangupCauseAdmin(admin.ModelAdmin):
+    list_display = ('id', 'code', 'enumeration', 'cause', 'description')
+    search_fields = ('code', 'enumeration',)
 
-    def queryset(self, request):
-        qs = super(UserAdmin, self).queryset(request)
-        qs = qs.filter(Q(is_staff=True) | Q(is_superuser=True))
-        return qs
-
-class CustomerAdmin(StaffAdmin):
-    inlines = [UserProfileInline]
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'is_superuser', 'last_login')
-
-    def queryset(self, request):
-        qs = super(UserAdmin, self).queryset(request)
-        qs = qs.exclude(Q(is_staff=True) | Q(is_superuser=True))
-        return qs
-        
-    
-admin.site.unregister(User)
-admin.site.register(Staff, StaffAdmin)
-admin.site.register(Customer, CustomerAdmin)
-
-
-# Setting
-class CompanyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'address', 'phone', 'fax')
-    search_fields = ('name', 'phone')
-
-admin.site.register(Company, CompanyAdmin)
-
-# Setting
-class CDRAdmin(admin.ModelAdmin):
-    list_display = ('acctid', 'src', 'dst', 'calldate', 'clid', 'channel', 'duration', 'disposition', 'accountcode')
-    list_filter = ['calldate', 'accountcode']
-    search_fields = ('accountcode', 'dst', 'src')
-
-admin.site.register(CDR, CDRAdmin)
-
-
+admin.site.register(HangupCause, HangupCauseAdmin)

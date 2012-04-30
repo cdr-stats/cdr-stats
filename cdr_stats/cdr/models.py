@@ -1,8 +1,25 @@
+#
+# CDR-Stats License
+# http://www.cdr-stats.org
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this file,
+# You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (C) 2011-2012 Star2Billing S.L.
+#
+# The Initial Developer of the Original Code is
+# Arezqui Belaid <info@star2billing.com>
+#
 from django.db import models
 from django.db.models import permalink
+from django.db import IntegrityError
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.contrib.auth.models import User
+from datetime import datetime, timedelta
+from django_extensions.db.fields import UUIDField
+
 
 
 DISPOSITION = (
@@ -16,93 +33,118 @@ DISPOSITION = (
     (8, _('TORTURE')),
     (9, _('INVALIDARGS')),
 )
-dic_disposition = {'ANSWER': '1', 'ANSWERED': '1', 'BUSY': '2', 'NOANSWER': '3', 'NO ANSWER': '3', 'CANCEL': '4', 'FAILED': '4', 'CONGESTION': '5', 'CHANUNAVAIL': '6', 'DONTCALL': '7', 'TORTURE': '8', 'INVALIDARGS': '9'}
 
+class Switch(models.Model):
+    """This defines the Switch
 
-class Company(models.Model):
-    name = models.CharField(max_length=50, blank=False, null=True)
-    address = models.TextField(max_length=400, blank=True, null=True)
-    phone = models.CharField(max_length=30, blank=True, null=True)
-    fax = models.CharField(max_length=30, blank=True, null=True)
+    **Attributes**:
+
+        * ``name`` - Name of switch.
+        * ``ipaddress`` - ipaddress
+
+    **Name of DB table**: voip_switch
+    """
+    name = models.CharField(max_length=100, blank=False, null=True, unique=True)
+    ipaddress = models.CharField(max_length=100, blank=False, null=False, unique=True)
+    key_uuid = UUIDField(auto=True)
     
     def __unicode__(self):
-        return '[%s] %s' %(self.id, self.name)
+        return '[%s] %s' %(self.id, self.ipaddress)
         
     class Meta:
-        verbose_name = _("Company")
-        verbose_name_plural = _("Companies")
-        #app_label = "Company"
-        db_table = "cdr_company"
-         
+        verbose_name = _("Switch")
+        verbose_name_plural = _("Switches")
+        db_table = "voip_switch"
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(User)
-    accountcode = models.PositiveIntegerField(null=True, blank=True)
-    company = models.OneToOneField(Company, verbose_name='Company', null=True, blank=True)
         
+class HangupCause(models.Model):
+    """This defines the HangupCause
+
+    **Attributes**:
+
+        * ``code`` - ITU-T Q.850 Code.
+        * ``enumeration`` - Enumeration
+        * ``cause`` - cause
+        * ``description`` - cause description
+
+    **Name of DB table**: hangup_cause
+    """
+    code = models.PositiveIntegerField(unique=True, verbose_name=_('Code'),
+                                       help_text=_("ITU-T Q.850 Code"))
+    enumeration  = models.CharField(max_length=100, null=True, blank=True,
+                                    verbose_name=_('Enumeration'))
+    cause  = models.CharField(max_length=100, null=True, blank=True,
+                              verbose_name=_('Cause'))
+    description  = models.TextField(null=True, blank=True,
+                                    verbose_name=_('Description'))
+
+    def __unicode__(self):
+        return '[%s] %s' %(self.code, self.enumeration)
+
     class Meta:
-        db_table = "cdr_userprofile"
+        verbose_name = _("Hangupcause")
+        verbose_name_plural = _("Hangupcauses")
+        db_table = "hangup_cause"
 
 
-class Customer(User):    
-    class Meta:
-        proxy = True
-        #app_label = 'auth'
-        verbose_name = 'Customer'
-        verbose_name_plural = 'Customers'
+class AsteriskCDR(models.Model):
+    """This defines the cdr of Asterisk
 
-class Staff(User):
-    class Meta:
-        proxy = True
-        #app_label = 'auth'
-        verbose_name = 'Admin'
-        verbose_name_plural = 'Admins'
-        
-    def save(self, **kwargs):
-        if not self.pk:
-            self.is_staff = 1
-            self.is_superuser = 1
-        super(Staff, self).save(**kwargs)
+    **Attributes**:
 
+        * ``calldate`` -
+        * ``src`` - Source
+        * ``dst`` - destination
+        * ``clid`` - Caller Id
+        * ``dcontext`` -
+        * ``channel`` -
+        * ``dstchannel`` -
+        * ``lastapp`` -
+        * ``durationt`` -
+        * ``billsec`` -
+        * ``disposition`` -
+        * ``amaflags`` -
+        * ``accountcode`` -
+        * ``uniqueid`` -
+        * ``userfield`` -
+        * ``cost`` -
+        * ``vendor`` -
 
-class CDR(models.Model):
-    #FreePBX is adding a acctid to the Asterisk table
-    #it's a good practice to have an id
-    acctid = models.AutoField(primary_key=True, db_column = 'acctid')
-    src = models.CharField(max_length=80, blank=True, null=True)
-    dst = models.CharField(max_length=80, blank=True, null=True)
-    calldate = models.DateTimeField()
-    clid = models.CharField(max_length=80, blank=True, null=True)
-    dcontext = models.CharField(max_length=80, blank=True, null=True)
-    channel = models.CharField(max_length=80, blank=True, null=True)
-    dstchannel = models.CharField(max_length=80, blank=True, null=True)
-    lastapp = models.CharField(max_length=80, blank=True, null=True)
+    **Name of DB table**: asterisk_cdr
+    """
+    calldate = models.DateTimeField(default=(lambda:datetime.now()),
+               verbose_name=_('calldate'), db_index=True,
+               help_text =_("Date Format: YYYY-mm-DD HH:MM:SS"))
+    src = models.CharField(max_length=80, blank=True, null=True, verbose_name=_('Source'))
+    dst = models.CharField(max_length=80, blank=True, null=True,
+                           verbose_name=_('Destination'), db_index=True,)
+    clid = models.CharField(max_length=80, blank=True, null=True, verbose_name=_('Caller Id'))
+    dcontext = models.CharField(max_length=80, blank=True, null=True,
+                                verbose_name=_('Destination context'))
+    channel = models.CharField(max_length=80, blank=True, null=True,
+                               verbose_name=_('channel'))
+    dstchannel = models.CharField(max_length=80, blank=True, null=True,
+                                  verbose_name=_('destination channel'))
+    lastapp = models.CharField(max_length=80, blank=True, null=True, verbose_name=_('Last app'))
     lastdata = models.CharField(max_length=80, blank=True, null=True)
-    duration = models.PositiveIntegerField(default=0, null=True)
-    billsec = models.PositiveIntegerField(default=0, null=True)
-    disposition = models.PositiveIntegerField(choices=DISPOSITION, default=1)
-    amaflags = models.PositiveIntegerField(default=0, null=True)
-    accountcode = models.PositiveIntegerField(default=0, null=True)
-    uniqueid = models.CharField(max_length=32, blank=True, null=True)
-    userfield = models.CharField(max_length=80, blank=True, null=True)
-    #test = models.CharField(max_length=80, blank=True)
-    
-    class Meta:
-        db_table = getattr(settings, 'CDR_TABLE_NAME', 'cdr' )
-        # Only in trunk 1.1 managed = False     # The database is normally already created
-        verbose_name = _("CDR")
-        verbose_name_plural = _("CDR's")
-        #app_label = "Call Detail Records"
+    duration = models.IntegerField(default=0, null=True, verbose_name=_('Duration'))
+    billsec = models.IntegerField(default=0, null=True, verbose_name=_('Bill sec'))
+    disposition = models.PositiveIntegerField(choices=DISPOSITION, default=1,
+                                              verbose_name=_('Disposition'))
+    amaflags = models.IntegerField(default=0, null=True)
+    accountcode = models.IntegerField(default=0, null=True, db_index=True,
+                                      verbose_name=_('Accountcode'))
+    uniqueid = models.CharField(max_length=32, blank=True, null=True, unique=True,)
+    userfield = models.CharField(max_length=255, blank=True, null=True)
+    cost = models.CharField(max_length=20, blank=True, null=True)
+    vendor = models.CharField(max_length=20, blank=True, null=True)
+    switch_id = models.ForeignKey(Switch, null=True, blank=True,
+                                  verbose_name=_("Switch"))
 
     def __unicode__(self):
-        return "%s -> %s" % (self.src,self.dst)
-    
-    def get_list(self):
-        return [(self.id, self.src, self.dst, self.calldate, self.clid, self.dcontext, self.channel, self.dstchannel, self.lastapp, self.lastdata, self.duration, self.billsec, self.get_disposition_display(), self.amaflags, self.accountcode, self.uniqueid, self.userfield, self.test)]
-    
-    @permalink
-    def get_absolute_url(self):
-        return ('cdr_detail', [str(self.id)])
-    
+        return '[%s]' %(self.id)
 
-
+    class Meta:
+        verbose_name = _("Asterisk_CDR")
+        verbose_name_plural = _("Asterisk_CDR")
+        db_table = "asterisk_cdr"

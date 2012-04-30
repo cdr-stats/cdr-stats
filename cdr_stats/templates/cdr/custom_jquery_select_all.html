@@ -1,0 +1,50 @@
+{% load i18n %}
+
+<script type="text/javascript" language="javascript">
+function toggleChecked(status) {
+    $(".checkbox").each( function() {
+        $(this).attr("checked", status);
+    })
+}
+
+$(document).ready(function() {
+    $('#ListForm').submit(function() {
+        
+        var $fields = $(this).find('input[name="select"]:checked');
+
+        if (!$fields.length) {
+            msg = '{% trans "You must check at least one box!" %}';
+            alert(msg);
+            return false; // The form will *not* submit
+        }
+        else
+        {
+            var confirm_string;
+            var contact_count;
+
+            if(document.location.href.search("/user_detail_change/") != -1)
+            {
+                confirm_string = $fields.length + '{% trans " notification(s) are going to be deleted?" %}';
+
+                if(document.getElementById('id_mark_read') && document.getElementById('id_mark_read').value == 'true')
+                {
+                    confirm_string = $fields.length + '{% trans " notification(s) are going to be marked as read?" %}';
+                }
+            }
+
+            var answer = confirm(confirm_string);
+            return answer; // answer is a boolean
+        }
+    });
+});
+</script>
+
+
+<script type="text/javascript" language="javascript">
+function get_alert_msg(id)
+{
+    confirm_string = '{% trans "Confirm deletion?" %}';
+    var answer = confirm(confirm_string);
+    return answer // answer is a boolean
+}
+</script>

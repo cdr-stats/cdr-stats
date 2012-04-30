@@ -1,0 +1,134 @@
+{% extends "cdr/master.html" %}
+{% load i18n cdr_extras %}
+
+{% block extra_header %}
+<script type="text/javascript">
+$(function() {
+    $("#id_from_date").datepicker({ dateFormat: 'yy-mm-dd' });
+});
+</script>
+{% endblock %}
+
+
+{% block content %}
+<div id="form_collapse" class="collapse">
+
+<form class="well form-search" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
+<div class="row">
+    <div class="span12">
+        <div class="row">
+            <div class="span4">
+                <label class="control-label" for="id_{{ form.from_date.name }}">{{ form.from_date.label }}</label>
+                <div class="input">
+                  {{ form.from_date }}
+                  <span class="help-block">{{ form.from_date.help_text|safe }} </span>
+                </div>
+            </div>
+            <div class="span4">
+                <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }}</label>
+                <div class="input">
+                  {{ form.switch }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="actions">
+  <input type="submit" class="btn-primary" name="search" value={% trans "Search" %} />
+</div>
+</form>
+</div>
+    
+<a class="btn btn-small" id="toggle_btn" href="#" data-toggle="collapse" data-target="#form_collapse">
+  <i class="icon-search"></i> <span>{% trans "Advance search" %}</span>
+</a>
+
+
+<script id="source">
+$(function () {
+
+    var d = [
+      {% for call in final_data %}
+         [{{ call.0 }}, {{ call.1 }}],
+      {% endfor %}
+    ];
+        
+    var options = {
+        legend: {
+                position: "ne",
+                margin: [-10, 0],
+                backgroundOpacity: 0
+            },
+        xaxis: {
+            mode: "time",
+            //tickLength: 5
+        },
+        series: {
+                lines: { show: true, steps: true, fill: true }
+        },
+        grid: {
+                hoverable: true,
+                xaxis: false
+            }
+
+    };
+
+    var plot = $.plot($("#graph_responsive"), [d], options);
+
+    $("#graph_responsive").bind("plothover", function (event, pos, item) {
+
+        if (item) {
+            if (previousPoint != item.dataIndex) {
+                previousPoint = item.dataIndex;
+
+                $("#tooltip").remove();
+                var x = item.datapoint[0].toFixed(2),
+                    y = parseInt(item.datapoint[1].toFixed(2));
+
+                //var date = item.series.label;
+                var myDate = new Date(parseInt(x));
+
+                var year = myDate.getFullYear();
+                var month = myDate.getMonth() + 1;
+                var day = myDate.getDate();
+            
+                var hours = myDate.getHours();
+                var minutes = myDate.getMinutes();
+
+                if (month < 10){  month = "0" + month; }
+                if (day < 10){  day = "0" + day; }
+                if (hours < 10){  hours = "0" + hours; }
+                if (minutes < 10){  minutes = "0" + minutes; }
+
+                var dt = 'xxxx-xx-xx xx:xx';
+
+                var hm = hours + ":" + minutes + " ";
+                if(hours > 11){ hm = hm+" PM"; }
+                else { hm = hm+" AM" }
+                dt = year+'-'+month+'-'+day+' '+hm;
+
+                output = '<div class="graph_tooltip_header">'+dt+'</div><div class="graph_tooltip_info">' + y + ' {% trans "concurrent calls"|title %} </div>';
+
+                showTooltip(item.pageX, item.pageY, output);
+            }
+        }
+        else {
+            $("#tooltip").remove();
+            previousPoint = null;
+        }
+    });
+        
+});
+</script>
+
+<div class="row">
+    <div class="span12">
+        <div class="graph_header">{% trans "Concurrent Calls" %}</div>
+        <div id="graph_responsive"></div>
+    </div>
+</div>
+
+
+{% endblock %}

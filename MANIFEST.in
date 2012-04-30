@@ -1,0 +1,12 @@
+global-exclude *.pyc
+
+include README.rst
+include COPYING
+include cdr_stats/django.wsgi
+include install/conf/requirements.txt
+
+recursive-include cdr_stats *
+    
+exclude cdr_stats/__init__.py
+exclude cdr_stats/settings.py
+exclude cdr_stats/manage.py

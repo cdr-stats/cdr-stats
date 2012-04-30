@@ -1,7 +1,35 @@
 {% extends "admin/base.html" %}
-{% load i18n admin_tools_menu_tags %}
+{% load i18n admin_tools_menu_tags cdr_extras %}
 
 {% block title %}{% trans 'CDR-Stats Admin' %}{% endblock %}
+
+{% block extrahead %}
+<link rel="shortcut icon" type="image/x-icon" href="{{STATIC_URL}}cdr-stats/images/favicon.ico">
+
+<style>
+
+#header #bookmark-button {
+right:380px;!important;
+}
+#header  {
+color:#555555;
+}
+#header a:link, #header a:visited {
+color:#555555;
+}
+a:link, a:visited {
+color:#5B80B2;
+text-decoration:none;
+}
+</style>
+<script type="text/javascript" language="JavaScript">
+    function toggleChecked(status) {
+        $(".checkbox").each( function() {
+            $(this).attr("checked", status);
+        })
+    }
+</script>
+{% endblock %}
 
 {% block extrastyle %}
 {{ block.super }}
@@ -19,4 +47,11 @@
 {% admin_tools_render_menu %}
 {% endif %}
 {% endif %}
+{% endblock %}
+
+{% block userlinks %}
+    {% if user.is_active and user.is_staff %}
+        <a href="/admin/notification/notice/">({{ user|notice_count }})</a> /
+    {% endif %}
+    {{ block.super }}
 {% endblock %}

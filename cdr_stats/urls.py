@@ -1,58 +1,62 @@
+#
+# CDR-Stats License
+# http://www.cdr-stats.org
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this file,
+# You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (C) 2011-2012 Star2Billing S.L.
+#
+# The Initial Developer of the Original Code is
+# Arezqui Belaid <info@star2billing.com>
+#
+
 from django.conf.urls.defaults import *
 from django.conf import settings
-from cdr.views import *
 from django.conf.urls.i18n import *
+
+from tastypie.api import Api
+from api.resources import *
+from cdr.urls import urlpatterns as urlpatterns_cdr
+from user_profile.urls import urlpatterns as urlpatterns_user_profile
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
+# tastypie api
+tastypie_api = Api(api_name='v1')
+tastypie_api.register(UserResource())
+tastypie_api.register(SwitchResource())
+tastypie_api.register(HangupCauseResource())
+tastypie_api.register(CdrDailyResource())
+tastypie_api.register(CdrResource())
 
 
 urlpatterns = patterns('',
-    
-    # redirect
-    ('^$', 'django.views.generic.simple.redirect_to', {'url': '/cdr/'}),
-
-    # Example:
-    # (r'^stats/', include('stats.foo.urls')),
-    #( r'^/resources/(?P<path>.*)$', 'django.views.static.serve',  { 'document_root': settings.MEDIA_ROOT } ),
-	(r'^cdr/', include('cdr.urls')),
 	
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
-    (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-	
-	(r'^admin/cdr/report/$', 'cdr.admin_views.report'),
+    #(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
 
     (r'^i18n/', include('django.conf.urls.i18n')),
     
     (r'^admin_tools/', include('admin_tools.urls')),
-    
-    # Jqgrid
-    url (r'^examplegrid/$', grid_handler, name='grid_handler'),
-    url (r'^examplegrid/cfg/$', grid_config, name='grid_config'),
-	
-	(r'^show_dashboard/$',        'cdr.views.show_dashboard'),
-	(r'^show_cdr/$',              'cdr.views.show_cdr'),
-	(r'^show_stats_by_month/$',   'cdr.views.show_graph_by_month'),
-    (r'^show_stats_by_day/$',     'cdr.views.show_graph_by_day'),
-    (r'^show_stats_by_hour/$',    'cdr.views.show_graph_by_hour'),
-	(r'^show_concurrent_calls/$', 'cdr.views.show_concurrent_calls'),
-	(r'^show_global_report/$',    'cdr.views.show_global_report'),
-	(r'^export_csv/$',            'cdr.views.export_to_csv'),
 
-    # Pages
-	(r'^login/$',   'cdr.views.login_view'),
-    (r'^logout/$',  'cdr.views.logout_view'),
-	(r'^index/$',   'cdr.views.index'),
-	(r'^pleaselog/$',   'cdr.views.pleaselog'),
-    
+    (r'^api/', include(tastypie_api.urls)),
     # Serve static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
      {'document_root': settings.STATIC_ROOT}),
 )
 
 
+urlpatterns += urlpatterns_cdr
+urlpatterns += urlpatterns_user_profile
+
+urlpatterns += patterns('',
+    url("", include('django_socketio.urls')),
+)

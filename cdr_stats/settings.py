@@ -1,29 +1,49 @@
-# Django settings for cdr-stats project.
-import os
-APPLICATION_DIR = os.path.dirname( globals()[ '__file__' ] )
+#
+# CDR-Stats License
+# http://www.cdr-stats.org
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this file,
+# You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (C) 2011-2012 Star2Billing S.L.
+#
+# The Initial Developer of the Original Code is
+# Arezqui Belaid <info@star2billing.com>
+#
 
+import os
+import djcelery
+
+djcelery.setup_loader()
+
+APPLICATION_DIR = os.path.dirname( globals()[ '__file__' ] )
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+     ('admin', 'admin@cdr-stats.com'),
 )
+
+MANAGERS = ADMINS
+
+SERVER_EMAIL = 'cdr-stats@localhost.com'
 
 MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
         # Add 'postgresql_psycopg2','postgresql','mysql','sqlite3','oracle'
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', #'django.db.backends.sqlite3',
         # Or path to database file if using sqlite3.
-        'NAME': os.path.dirname(os.path.abspath(__file__)) + '/database/local.db',
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost.
-                                         # Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default.
-                                         # Not used with sqlite3.
+        'NAME': 'cdr_stats_psql', #os.path.dirname(os.path.abspath(__file__)) + '/database/local.db',
+        'USER': 'postgres',       # Not used with sqlite3.
+        'PASSWORD': 'postgres',   # Not used with sqlite3.
+        'HOST': 'localhost',      # Set to empty string for localhost.
+                                  # Not used with sqlite3.
+        'PORT': '',               # Set to empty string for default.
+                                  # Not used with sqlite3.
     }
 }
 
@@ -72,6 +92,8 @@ STATIC_URL = '/static/'
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = os.path.join(APPLICATION_DIR, 'static')
 
+COUNTRIES_FLAG_PATH = 'flags/%s.png'
+
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
@@ -110,15 +132,18 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
+    #'raven.contrib.django.middleware.SentryResponseErrorIdMiddleware',
+    #'raven.contrib.django.middleware.Sentry404CatchMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'pagination.middleware.PaginationMiddleware',
-    #'debug_toolbar.middleware.DebugToolbarMiddleware',
+    #'pagination.middleware.PaginationMiddleware',
+    'linaro_django_pagination.middleware.PaginationMiddleware',
     'common.filter_persist_middleware.FilterPersistMiddleware',
+    'mongodb_connection_middleware.MongodbConnectionMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -156,24 +181,52 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    #'django.contrib.sites',
+    'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     'django.contrib.markup',
-    'django.contrib.admindocs',
+    #'django.contrib.admindocs',
     'cdr',
-    #'debug_toolbar',
-    #'django_extensions',
+    'cdr_alert',
+    'user_profile',
     'dateutil',
-    'uni_form',
-    #Disable South : Error with django 1.3
-    #'south',
+    'south',
     #'dilla',
+    #'pagination',
+    'linaro_django_pagination',
+    'djcelery',
+    'tastypie',
+    'django_socketio',
+    'common',
+    #'raven.contrib.django',
+    'notification',
+    'country_dialcode',
 )
 
-AUTH_PROFILE_MODULE = 'cdr.UserProfile'
+# Debug Toolbar
+try:
+    import debug_toolbar
+except ImportError:
+    pass
+else:
+    INSTALLED_APPS = INSTALLED_APPS #+ ('debug_toolbar',)
+    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES #+ \
+        #('debug_toolbar.middleware.DebugToolbarMiddleware',)
+    DEBUG_TOOLBAR_CONFIG = {
+        'INTERCEPT_REDIRECTS': False,
+    }
+
+# Django extensions
+try:
+    import django_extensions
+except ImportError:
+    pass
+else:
+    INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
+
+
+AUTH_PROFILE_MODULE = 'user_profile.UserProfile'
 
 LOG_COLORSQL_ENABLE = True
 LOG_COLORSQL_VERBOSE = True
@@ -198,13 +251,15 @@ gettext = lambda s: s
 
 LANGUAGES = (
     ('en', gettext('English')),
-    ('fr', gettext('French')),  
-    ('es', gettext('Spanish')),  
+    ('fr', gettext('French')),
+    ('es', gettext('Spanish')),
     ('pt', gettext('Portuguese')),
     ('de', gettext('German')),
 #    ('ru', gettext('Russian')),
 )
 
+# News URL
+NEWS_URL = 'http://www.cdr-stats.org/news.php'
 
 #DJANGO-ADMIN-TOOL
 #=================
@@ -213,15 +268,166 @@ ADMIN_TOOLS_MENU = 'cdr_stats.custom_admin_tools.menu.CustomMenu'
 ADMIN_TOOLS_INDEX_DASHBOARD = 'cdr_stats.custom_admin_tools.dashboard.CustomIndexDashboard'
 ADMIN_TOOLS_APP_INDEX_DASHBOARD = 'cdr_stats.custom_admin_tools.dashboard.CustomAppIndexDashboard'
 
-
-#PISTON
+#CELERY
 #======
-PISTON_DISPLAY_ERRORS = True
-PISTON_EMAIL_ERRORS = "areski@gmail.com"
+CARROT_BACKEND = 'ghettoq.taproot.Redis'
+#CARROT_BACKEND = 'redis'
+
+BROKER_HOST = 'localhost'  # Maps to redis host.
+BROKER_PORT = 6379         # Maps to redis port.
+BROKER_VHOST = 0        # Maps to database number.
+
+
+CELERY_RESULT_BACKEND = 'redis'
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+REDIS_DB = 0
+#REDIS_CONNECT_RETRY = True
+
+#SOCKETIO
+#========
+SOCKETIO_HOST = 'localhost'
+SOCKETIO_PORT = 9000
+SOCKETIO_CALLNUM_DEFAULT = 0
+
+#GENERAL
+#=======
+PHONE_NO_PREFIX_LIMIT_MIN = 2
+PHONE_NO_PREFIX_LIMIT_MAX = 5
+
+#MONGODB
+#=======
+CDR_MONGO_DB_NAME = 'cdr-stats'
+CDR_MONGO_HOST = 'localhost'
+CDR_MONGO_PORT = 27017
+CDR_MONGO_CDR_COMMON = 'cdr_common'
+CDR_MONGO_CONC_CALL = 'concurrent_call'
+CDR_MONGO_CDR_COUNTRY_REPORT = 'cdr_country_report'
+CDR_MONGO_CONC_CALL_AGG = 'concurrent_call_map_reduce'
+CDR_MONGO_CDR_MONTHLY = 'cdr_monthly_analytic'
+CDR_MONGO_CDR_DAILY = 'cdr_daily_analytic'
+CDR_MONGO_CDR_HOURLY = 'cdr_hourly_analytic'
+CDR_MONGO_CDR_HANGUP = 'cdr_hangup_cause_analytic'
+CDR_MONGO_CDR_COUNTRY = 'cdr_country_analytic'
+
+
+#MongoDB(s) to use for import
+CDR_MONGO_IMPORT = {
+    '127.0.0.1': {
+        'db_name': 'freeswitch_cdr', # cdr-stats
+        'host': 'localhost',
+        'port': 27017,
+        'collection': 'cdr',
+    },
+    #'192.168.1.15': {
+    #    'db_name': 'freeswitch_cdr',
+    #    'host': '192.168.1.15',
+    #    'port': 27017,
+    #    'collection': 'cdr',
+    #},
+}
+
+#No of records per page
+#=======================
+PAGE_SIZE = 10
+
+#TASTYPIE API
+#============
+API_ALLOWED_IP = ['127.0.0.1', 'localhost']
+
+#EMAIL BACKEND
+#=============
+# Use only in Debug mode. Not in production
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+
+#LOGGING
+#=======
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'root': {
+        'level': 'DEBUG',
+        'handlers': ['default'],
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(asctime)s %(levelname)s || %(message)s'
+        },
+    },
+    'handlers': {
+        # Include the default Django email handler for errors
+        # This is what you'd get without configuring logging at all.
+        'mail_admins': {
+            'class': 'django.utils.log.AdminEmailHandler',
+            'level': 'ERROR',
+             # But the emails are plain text by default - HTML is nicer
+            'include_html': True,
+        },
+        'default': {
+            'class':'logging.handlers.WatchedFileHandler',
+            'filename': '/var/log/cdr-stats/cdr-stats.log',
+            'formatter':'verbose',
+        },
+        'default-db': {
+            'level':'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': '/var/log/cdr-stats/cdr-stats-db.log',
+            'maxBytes': 1024*1024*5, # 5 MB
+            'backupCount': 20,
+            'formatter':'verbose',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        # Again, default Django configuration to email unhandled exceptions
+        'django': {
+            'handlers':['default'],
+            'propagate': False,
+            'level':'DEBUG',
+        },
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'cdr-stats.filelog': {
+            'handlers': ['default',],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['default-db'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
 
 #IMPORT LOCAL SETTINGS
 #=====================
-#try:
-#    from settings_local import *
-#except:
-#    pass
+try:
+    from settings_local import *
+except:
+    pass
+
+#CONNECT MONGODB
+#===============
+
+#Connect on MongoDB Database
+from pymongo.connection import Connection
+from pymongo.errors import ConnectionFailure
+import sys
+try:
+    connection = Connection(CDR_MONGO_HOST, CDR_MONGO_PORT)
+    DB_CONNECTION = connection[CDR_MONGO_DB_NAME]
+except ConnectionFailure, e:
+    sys.stderr.write("Could not connect to MongoDB: %s" % e)
+    sys.exit(1)

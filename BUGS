@@ -1,8 +1,0 @@
-
-BUGS REPORT
-===========
-
-- reported by a user with few thousands record per day, when clicking on "Global Report", 
-  the CPU use on the * box shot to 100% for httpd
-  
-- 

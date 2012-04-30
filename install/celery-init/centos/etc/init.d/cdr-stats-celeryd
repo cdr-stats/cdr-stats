@@ -1,0 +1,202 @@
+#!/bin/sh
+#
+# CDR-Stats License
+# http://www.cdr-stats.org
+#
+# This Source Code Form is subject to the terms of the Mozilla Public 
+# License, v. 2.0. If a copy of the MPL was not distributed with this file,
+# You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (C) 2011-2012 Star2Billing S.L.
+# 
+# The Initial Developer of the Original Code is
+# Arezqui Belaid <info@star2billing.com>
+#
+#
+# chkconfig: - 85 15
+# description:  CDR-Stat Celery worker daemon
+# processname: cdr-stats-celeryd
+# config: /etc/default/cdr-stats-celeryd
+# pidfile: /var/run/cdr-stats-celeryd.pid
+#
+# To configure celeryd you probably need to tell it where to chdir.
+#
+# EXAMPLE CONFIGURATION
+# =====================
+#
+# this is an example configuration for a Python project:
+#
+# /etc/sysconfig/celeryd:
+#
+#   # Where to chdir at start.
+#   CELERYD_CHDIR="/opt/Myproject/"
+#
+#   # Extra arguments to celeryd
+#   CELERYD_OPTS="--time-limit=300"
+#
+#   # Name of the celery config module.#
+#   CELERY_CONFIG_MODULE="celeryconfig"
+#
+# EXAMPLE DJANGO CONFIGURATION
+# ============================
+#
+#   # Where the Django project is.
+#   CELERYD_CHDIR="/opt/Project/"
+#
+#   # Name of the projects settings module.
+#   export DJANGO_SETTINGS_MODULE="settings"
+#
+#   # Path to celeryd
+#   CELERYD="/opt/Project/manage.py"
+#
+#   # Extra arguments to manage.py
+#   CELERYD_OPTS="celeryd"
+#
+# AVAILABLE OPTIONS
+# =================
+#
+#   * CELERYD_OPTS
+#       Additional arguments to celeryd, see `celeryd --help` for a list.
+#
+#   * CELERYD_CHDIR
+#       Path to chdir at start. Default is to stay in the current directory.
+#
+#   * CELERYD_PID_FILE
+#       Full path to the pidfile. Default is /var/run/celeryd.pid.
+#
+#   * CELERYD_LOG_FILE
+#       Full path to the celeryd logfile. Default is /var/log/celeryd.log
+#
+#   * CELERYD_LOG_LEVEL
+#       Log level to use for celeryd. Default is INFO.
+#
+#   * CELERYD
+#       Path to the celeryd program. Default is `celeryd`.
+#       You can point this to an virtualenv, or even use manage.py for django.
+#
+#   * CELERYD_USER
+#       User to run celeryd as. Default is current user.
+#
+#   * CELERYD_GROUP
+#       Group to run celeryd as. Default is current user.
+#
+#   * VIRTUALENV
+#       Full path to the virtualenv environment to activate. Default is none.
+#
+#   * PYTHONPATH
+#       A directory to add to the Python path.
+
+# Source function library.
+. /etc/init.d/functions
+
+if test -f /etc/default/cdr-stats-celeryd; then
+    . /etc/default/cdr-stats-celeryd
+fi
+
+RETVAL=0
+
+DEFAULT_LOG_LEVEL="INFO"
+DEFAULT_NODES="celery"
+DEFAULT_CELERYD="-m celery.bin.celeryd_detach"
+
+DEFAULT_CELERYD="/usr/bin/celeryd"
+CELERYD_LOG_FILE=${CELERYD_LOG_FILE:-${CELERYD_LOGFILE:-"/var/log/cdr-stats-celeryd.log"}}
+CELERYD_PID_FILE=${CELERYD_PID_FILE:-${CELERYD_PIDFILE:-"/var/run/cdr-stats-celeryd.pid"}}
+CELERYD_LOG_LEVEL=${CELERYD_LOG_LEVEL:-${CELERYD_LOGLEVEL:-"INFO"}}
+CELERYD_MULTI=${CELERYD_MULTI:-"celeryd-multi"}
+CELERYD_CTL=${CELERYD_CTL:-"celeryctl"}
+CELERYD_USER=${CELERYD_USER:-${CELERYD_USER:-"root"}}
+
+CELERYD=${CELERYD:-$DEFAULT_CELERYD}
+
+export CELERY_LOADER
+
+CELERYD_OPTS="$CELERYD_OPTS -f $CELERYD_LOG_FILE -l $CELERYD_LOG_LEVEL --pidfile=$CELERYD_PID_FILE"
+
+if [ -n "$2" ]; then
+    CELERYD_OPTS="$CELERYD_OPTS $2"
+fi
+
+# Append the Django settings module to use, if specified
+if [ -n "$DJANGO_SETTINGS_MODULE" ]; then
+    CELERYD_OPTS="$CELERYD_OPTS --settings=$DJANGO_SETTINGS_MODULE"
+fi
+
+#old / Not used
+start_worker () {
+    echo -n $"Starting cdr-stats-celeryd: "
+    daemon --pidfile=$CELERYD_PID_FILE --user=$CELERYD_USER \
+      PYTHONPATH=$PYTHONPATH:$CELERY_PYTHONPATH $CELERYD $CELERYD_OPTS 2>/dev/null &
+    RETVAL=$?
+    sleep 3; echo
+    if [ -n "$VIRTUALENV" ]; then
+        source $VIRTUALENV/bin/activate
+    fi
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/cdr-stats-celeryd
+}
+
+#old / Not used
+stop_worker () {
+    echo -n $"Stopping cdr-stats-celeryd: "
+    killproc -p $CELERYD_PID_FILE $CELERYD 2>/dev/null
+    RETVAL=$?
+    sleep 3; echo
+    if [ $RETVAL -eq 0 ]; then
+        rm -f /var/lock/subsys/cdr-stats-celeryd
+        rm -f $CELERYD_PID_FILE
+    fi
+}
+
+
+stop_workers () {
+    $CELERYD_MULTI stop $CELERYD_NODES --pidfile="$CELERYD_PID_FILE"
+}
+
+
+start_workers () {
+    $CELERYD_MULTI start $CELERYD_NODES $DAEMON_OPTS        \
+                         --pidfile="$CELERYD_PID_FILE"      \
+                         --logfile="$CELERYD_LOG_FILE"      \
+                         --loglevel="$CELERYD_LOG_LEVEL"    \
+                         --cmd="$CELERYD"                   \
+                         $CELERYD_OPTS
+}
+
+
+restart_workers () {
+    $CELERYD_MULTI restart $CELERYD_NODES $DAEMON_OPTS      \
+                           --pidfile="$CELERYD_PID_FILE"    \
+                           --logfile="$CELERYD_LOG_FILE"    \
+                           --loglevel="$CELERYD_LOG_LEVEL"  \
+                           --cmd="$CELERYD"                 \
+                           $CELERYD_OPTS
+}
+
+
+
+case "$1" in
+  start)
+    start_workers
+    ;;
+
+  stop)
+    stop_workers
+    ;;
+
+  restart)
+    #stop_worker
+    #start_worker
+    restart_workers
+    ;;
+
+  status)
+    #status cdr-stats-celeryd
+    $CELERYD_CTL status
+    ;;
+
+  *)
+    echo $"Usage: $0 {start|stop|restart|status}"
+    exit 1
+esac
+
+exit $?

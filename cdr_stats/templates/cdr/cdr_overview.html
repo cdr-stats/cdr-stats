@@ -1,0 +1,548 @@
+{% extends "cdr/master.html" %}
+{% load i18n cdr_extras %}
+
+{% block extra_header %}
+<script type="text/javascript">
+    $(function() {
+        var dates = $('#id_from_date, #id_to_date').datepicker({
+            defaultDate: "+1w",
+            changeMonth: true,
+            dateFormat: 'yy-mm-dd',
+            onSelect: function(selectedDate) {
+                var option = this.id == "id_from_date" ? "minDate" : "maxDate";
+                var instance = $(this).data("datepicker");
+                var date = $.datepicker.parseDate(instance.settings.dateFormat || $.datepicker._defaults.dateFormat, selectedDate, instance.settings);
+                dates.not(this).datepicker("option", option, date);
+            }
+        });
+    });
+</script>
+<style type="text/css">
+    #placeholder_cdr_analytic div.legend table {
+        width: 5%;
+        margin-right: -70px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="form_collapse" class="collapse">
+<form class="well form-search" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
+    <div class="row">
+        <div class="span12">
+            <div class="row">
+                <div class="span4">
+                    <label class="control-label" for="id_{{ form.from_date.name }}">{{ form.from_date.label }}</label>
+                    <div class="input">
+                        {{ form.from_date }}
+                        <span class="help-block">{{ form.from_date.help_text|safe }} </span>
+                    </div>
+                </div>
+                <div class="span4">
+                    <label class="control-label" for="id_{{ form.to_date.name }}">{{ form.to_date.label }}</label>
+                    <div class="input">
+                        {{ form.to_date }}
+                        <span class="help-block">{{ form.to_date.help_text|safe }} </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span6">
+            <label class="control-label" for="id_{{ form.destination.name }}">{{ form.destination.label }}</label>
+            <div class="input">
+                {{ form.destination }}&nbsp;&nbsp;{{ form.destination_type }}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span6">
+            <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }}</label>
+            <div class="input">
+                {{ form.switch }}
+            </div>
+        </div>
+    </div>
+    <label>&nbsp;</label>
+    <div class="actions">
+        <input class="btn-primary" type=submit name=submit value={% trans "Search" %} />
+    </div>
+</form>
+</div>
+
+<a class="btn btn-small" id="toggle_btn" href="#" data-toggle="collapse" data-target="#form_collapse">
+    <i class="icon-search"></i> <span>{% trans "Advance search" %}</span>
+</a>
+
+<script id="source" language="javascript" type="text/javascript">
+$(function () {
+    function MonthName(m, type){
+        var short_month = new Array(
+            "{% trans "Jan" %}",
+            "{% trans "Feb" %}",
+            "{% trans "Mar" %}",
+            "{% trans "Apr" %}",
+            "{% trans "May" %}",
+            "{% trans "Jun" %}",
+            "{% trans "Jul" %}",
+            "{% trans "Aug" %}",
+            "{% trans "Sep" %}",
+            "{% trans "Oct" %}",
+            "{% trans "Nov" %}",
+            "{% trans "Dec" %}");
+        var month = new Array(
+            "{% trans "January" %}",
+            "{% trans "February" %}",
+            "{% trans "March" %}",
+            "{% trans "April" %}",
+            "{% trans "May" %}",
+            "{% trans "June" %}",
+            "{% trans "July" %}",
+            "{% trans "August" %}",
+            "{% trans "September" %}",
+            "{% trans "October" %}",
+            "{% trans "November" %}",
+            "{% trans "December" %}");
+        if (type == 0)
+            return short_month[m-1];
+        else
+            return month[m-1];
+    }
+
+    var hour_call_count = [
+        {% regroup total_hour_record|dictsort:"switch_id" by switch_id as switch_list %}
+        {% for rc in switch_list %}
+            {% ifnotequal rc.grouper 0 %}
+            {
+                label: '{{ rc.grouper|get_switch_ip }}',
+                data: [
+                    {% for item in rc.list %}
+                        [parseInt({{ item.dt }}), {{ item.calldate__count }}],
+                    {% endfor %}
+                ]
+            },
+            {% endifnotequal %}
+        {% endfor %}
+        //sum of all switches
+        {
+            label: '{% trans "Total Calls" %}',
+            data: [
+                {% for item in total_hour_call_count %}
+                    [parseInt({{ item.0 }}), {{ item.1 }}],
+                {% endfor %}
+            ],
+            color: '{{ TOTAL_GRAPH_COLOR }}'
+        }
+    ];
+
+    var hour_call_duration = [
+        {% regroup total_hour_record|dictsort:"switch_id" by switch_id as switch_list %}
+        {% for rc in switch_list %}
+            {% ifnotequal rc.grouper 0 %}
+            {
+                label: '{{ rc.grouper|get_switch_ip }}',
+                data: [
+                    {% for item in rc.list %}
+                        [parseInt({{ item.dt }}), {{ item.duration__sum }}],
+                    {% endfor %}
+                ]
+            },
+            {% endifnotequal %}
+        {% endfor %}
+        //sum of all switches
+        {
+            label: '{% trans "Total Duration" %}',
+            data: [
+                {% for item in total_hour_call_duration %}
+                    [parseInt({{ item.0 }}), {{ item.1 }}],
+                {% endfor %}
+            ],
+            color: '{{ TOTAL_GRAPH_COLOR }}'
+        }
+    ];
+
+    var day_call_count = [
+        {% regroup total_day_record|dictsort:"switch_id" by switch_id as switch_list %}
+        {% for rc in switch_list %}
+            {% ifnotequal rc.grouper 0 %}
+            {
+                label: '{{ rc.grouper|get_switch_ip }}',
+                data: [
+                    {% for item in rc.list %}
+                        [parseInt({{ item.dt }}), {{ item.calldate__count }}],
+                    {% endfor %}
+                ]
+            },
+            {% endifnotequal %}
+        {% endfor %}
+        //sum of all switches
+        {
+            label: '{% trans "Total Calls" %}',
+            data: [
+                {% for item in total_day_call_count %}
+                    [parseInt({{ item.0 }}), {{ item.1 }}],
+                {% endfor %}
+            ],
+            color: '{{ TOTAL_GRAPH_COLOR }}'
+        }
+    ];
+
+    var day_call_duration = [
+        {% regroup total_day_record|dictsort:"switch_id" by switch_id as switch_list %}
+        {% for rc in switch_list %}
+            {% ifnotequal rc.grouper 0 %}
+            {
+                label: '{{ rc.grouper|get_switch_ip }}',
+                data: [
+                    {% for item in rc.list %}
+                        [parseInt({{ item.dt }}), {{ item.duration__sum }}],
+                    {% endfor %}
+                ]
+            },
+            {% endifnotequal %}
+        {% endfor %}
+        //sum of all switches
+        {
+            label: '{% trans "Total Duration" %}',
+            data: [
+                {% for item in total_day_call_duration %}
+                    [parseInt({{ item.0 }}), {{ item.1 }}],
+                {% endfor %}
+            ],
+            color: '{{ TOTAL_GRAPH_COLOR }}'
+        }
+    ];
+
+    var month_data_call_count = [
+        {% regroup total_month_record|dictsort:"switch_id" by switch_id as switch_list %}
+        {% for rc in switch_list %}
+            {% ifnotequal rc.grouper 0 %}
+            {
+                label: '{{ rc.grouper|get_switch_ip }}',
+                data: [
+                    {% for item in rc.list %}
+                        [parseInt({{ item.dt }}), {{ item.calldate__count }}],
+                    {% endfor %}
+                ]
+            },
+            {% endifnotequal %}
+        {% endfor %}
+        //sum of all switches
+        {
+            label: '{% trans "Total Calls" %}',
+            data: [
+                {% for item in total_month_call_count %}
+                    [parseInt({{ item.0 }}), {{ item.1 }}],
+                {% endfor %}
+            ],
+            color: '{{ TOTAL_GRAPH_COLOR }}'
+        }
+    ];
+
+    var month_data_call_duration = [
+        {% regroup total_month_record|dictsort:"switch_id" by switch_id as switch_list %}
+        {% for rc in switch_list %}
+            {% ifnotequal rc.grouper 0 %}
+            {
+                label: '{{ rc.grouper|get_switch_ip }}',
+                data: [
+                    {% for item in rc.list %}
+                        [parseInt({{ item.dt }}), {{ item.duration__sum }}],
+                    {% endfor %}
+                ]
+            },
+            {% endifnotequal %}
+        {% endfor %}
+        //sum of all switches
+        {
+            label: '{% trans "Total Duration" %}',
+            data: [
+                {% for item in total_month_call_duration %}
+                    [parseInt({{ item.0 }}), {{ item.1 }}],
+                {% endfor %}
+            ],
+            color: '{{ TOTAL_GRAPH_COLOR }}'
+        }
+    ];
+
+    var options = {
+        legend: {
+            position: "ne",
+            margin: [-40, 0],
+            backgroundOpacity: 0
+        },
+        series: {
+            lines: { show: true},
+            points: { show: true }
+        },
+        yaxis: {
+            min: 0,
+            tickDecimals: false
+        },
+        xaxis: {
+            mode: "time",
+            tickLength: 5
+        },
+        grid: {
+            hoverable: true,
+            xaxis: false
+        },
+        selection: { mode: "x" }
+      };
+
+    //default data set - hour_call_count
+    var plot = $.plot($("#placeholder_cdr_analytic"), hour_call_count, options);
+
+    function onverview_graph(data_set) {
+        var overview_option = {
+            legend: {show: false},
+            series: {
+                lines: { show: true, lineWidth: 1 },
+                shadowSize: 0
+            },
+            xaxis: { ticks: [], mode: "time" },
+            yaxis: { ticks: [], min: 0, autoscaleMargin: 0.1 },
+            selection: { mode: "x" }
+        };
+
+        var overview = $.plot($("#overview_analytic"), data_set, overview_option);
+
+        // now connect the two
+        $("#placeholder_cdr_analytic").bind("plotselected", function (event, ranges) {
+            // do the zooming
+            plot = $.plot($("#placeholder_cdr_analytic"), data_set,
+                    $.extend(true, {}, options, {
+                        xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to }
+                    }));
+
+            // don't fire event on the overview to prevent eternal loop
+            overview.setSelection(ranges, true);
+        });
+
+        $("#overview_analytic").bind("plotselected", function (event, ranges) {
+            plot.setSelection(ranges);
+        });
+    }
+
+    //default data set - hour_call_count
+    onverview_graph(hour_call_count);
+
+    $("#placeholder_cdr_analytic").bind("plothover", function (event, pos, item) {
+        if (item) {
+            if (previousPoint != item.dataIndex) {
+                previousPoint = item.dataIndex;
+
+                $("#tooltip").remove();
+                var x = item.datapoint[0].toFixed(2),
+                    y = item.datapoint[1].toFixed(2);
+                var d = new Date(parseInt(x));
+                Year = d.getFullYear();
+                Month = d.getMonth() + 1;
+                Day = d.getDate();
+                Hour = d.getHours();
+                month_name = MonthName(Month, 0);
+                var graph_type = $('#id_graph_type').val();
+                var graph_view = $('#id_graph_view').val();
+                //alert(graph_type +' '+graph_view);
+                var date_tag = '{% trans "Date" %}';
+                var call_tag = '{% trans "Calls" %}';
+                var duration_tag = '{% trans "Duration" %}';
+                var hour_tag = '{% trans "Hour" %}';
+                if(graph_type=='hour' && graph_view=='count')
+                {
+                    date_string = date_tag + ' - ' + Day + ', ' + month_name + ' ' + Year;
+                    value_string = call_tag + ' - ' + parseInt(y);
+                }
+                if(graph_type=='hour' && graph_view=='duration')
+                {
+                    date_string = date_tag + ' - ' + Day + ', ' + month_name + ' ' + Year;
+                    value_string = duration_tag + ' - ' + y;
+                }
+
+                if(graph_type=='day' && graph_view=='count')
+                {
+                    date_string = date_tag + ' - ' + Day + ', ' + month_name + ' ' + Year;
+                    value_string = call_tag + ' - ' + parseInt(y);
+                }
+                if(graph_type=='day' && graph_view=='duration')
+                {
+                    date_string = date_tag + ' - ' + Day + ', ' + month_name + ' ' + Year;
+                    value_string = duration_tag + ' - ' + y;
+                }
+
+                if(graph_type=='month' && graph_view=='count')
+                {
+                    date_string = month_name + ' - ' + Year ;
+                    value_string = call_tag + ' - ' + parseInt(y);
+                }
+                if(graph_type=='month' && graph_view=='duration')
+                {
+                    date_string = month_name + ' - ' + Year;
+                    value_string = duration_tag + ' - ' + y;
+                }
+
+                output = '<div class="graph_tooltip_info">' + date_string + "<br/>"+ value_string + '</div>';
+
+                showTooltip(item.pageX, item.pageY, output);
+            }
+        }
+        else {
+            $("#tooltip").remove();
+            previousPoint = null;
+        }
+    });
+
+    function call_count_graph(graph_type_val, graph_title, data_set)
+    {
+        $('#id_graph_type').val(graph_type_val);
+        $('#id_title_span').text(graph_title);
+        var plot = $.plot($("#placeholder_cdr_analytic"), data_set, options);
+        onverview_graph(data_set);
+        $('#id_count').button('toggle');
+    }
+
+    $("#id_hour").click(function () {
+        call_count_graph('hour', '{% trans "Load by Hour" %}', hour_call_count)
+    });
+
+    $("#id_day").click(function () {
+        call_count_graph('day', '{% trans "Load by Day" %}', day_call_count)
+    });
+
+    $("#id_month").click(function () {
+        call_count_graph('month', '{% trans "Load by Month" %}', month_data_call_count)
+    });
+
+
+    $("#id_count").click(function () {
+        $('#id_graph_view').val('count');
+        var graph_type = $('#id_graph_type').val();
+        if(graph_type =='hour')
+        {
+            $('#id_title_span').text('{% trans "Load by Hour" %}');
+            $.plot($("#placeholder_cdr_analytic"), hour_call_count, options);
+            onverview_graph(hour_call_count);
+        }
+        if(graph_type =='day')
+        {
+            $('#id_title_span').text('{% trans "Load by Day" %}');
+            $.plot($("#placeholder_cdr_analytic"), day_call_count, options);
+            onverview_graph(day_call_count);
+        }
+        if(graph_type =='month')
+        {
+            $('#id_title_span').text('{% trans "Load by Month" %}');
+            $.plot($("#placeholder_cdr_analytic"), month_data_call_count, options);
+            onverview_graph(month_data_call_count);
+        }
+
+    });
+
+    $("#id_duration").click(function () {
+        $('#id_graph_view').val('duration');
+        var graph_type = $('#id_graph_type').val();
+        if(graph_type =='hour')
+        {
+            $('#id_title_span').text('{% trans "Load by Hour" %}');
+            $.plot($("#placeholder_cdr_analytic"), hour_call_duration, options);
+            onverview_graph(hour_call_duration);
+        }
+        if(graph_type =='day')
+        {
+            $('#id_title_span').text('{% trans "Load by Day" %}');
+            $.plot($("#placeholder_cdr_analytic"), day_call_duration, options);
+            onverview_graph(day_call_duration);
+        }
+        if(graph_type =='month')
+        {
+            $('#id_title_span').text('{% trans "Load by Month" %}');
+            $.plot($("#placeholder_cdr_analytic"), month_data_call_duration, options);
+            onverview_graph(month_data_call_duration);
+        }
+    });
+
+    $("#id_dot").click(function () {
+        if(options.series.points.show == true)
+        {
+            options.series.points.show = false;
+            $('#id_dot').text('{% trans "Off Points" %}');
+        }
+        else
+        {
+            options.series.points.show = true;
+            $('#id_dot').text('{% trans "On Points" %}');
+        }
+        var graph_view = $('#id_graph_view').val();
+        $("#id_"+graph_view).click();
+
+    });
+});
+
+</script>
+
+<div class="row"><div class="span6">&nbsp;</div></div>
+
+<div class="row">
+    <div class="span12">
+        <table align="right">
+            <tbody>
+            <tr>
+                <td class="td-dashboard">
+                    <div class="btn-group" data-toggle="buttons-radio">
+                        <button class="btn active" id="id_hour">{% trans "Hour" %}</button>
+                        <button class="btn" id="id_day">{% trans "Day" %}</button>
+                        <button class="btn" id="id_month">{% trans "Month" %}</button>
+                        <!--default-->
+                        <input type="hidden" name="graph_type" id="id_graph_type" value="hour" />
+                        <input type="hidden" name="graph_view" id="id_graph_view" value="count" />
+                    </div>
+                </td>
+                <td class="td-dashboard">
+                    <div class="btn-group" data-toggle="buttons-radio">
+                        <button class="btn active" id="id_count">{% trans "Count" %}</button>
+                        <button class="btn" id="id_duration">{% trans "Duration" %}</button>
+                    </div>
+                </td>
+                <td class="td-dashboard">
+                    <div class="btn-group" data-toggle="buttons-checkbox">
+                        <button class="btn" id="id_dot">{% trans "On Points" %}</button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="span12">
+        <div class="graph_header">
+            <span id="id_title_span">{% trans "Load by Hour"|title %}</span> -
+            <b>
+                {% if start_date  %}
+                    {{ start_date|date:"jS N Y" }}
+                {% endif %}
+                {% if end_date  %}
+                    {% trans "to" %} {{ end_date|date:"jS N Y" }}
+                {% endif %}
+            </b>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+        <div id="placeholder_cdr_analytic"></div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+        <div id="overview_analytic" style="margin:auto;margin-top:20px;height:50px"></div>
+    </div>
+</div>
+{% endblock %}
