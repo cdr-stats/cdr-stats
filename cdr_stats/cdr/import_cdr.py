@@ -394,10 +394,10 @@ def import_cdr(shell=False):
                 )
 
             # Apply index
-            CDR_COMMON.ensure_index([("start_uepoch", -1)], unique=True)
-            CDR_MONTHLY.ensure_index([("start_uepoch", -1)], unique=True)
-            CDR_DAILY.ensure_index([("start_uepoch", -1)], unique=True)
-            CDR_HOURLY.ensure_index([("start_uepoch", -1)], unique=True)
-            CDR_COUNTRY_REPORT.ensure_index([("start_uepoch", -1)], unique=True)
+            CDR_COMMON.ensure_index([("start_uepoch", -1)])
+            CDR_MONTHLY.ensure_index([("start_uepoch", -1)])
+            CDR_DAILY.ensure_index([("start_uepoch", -1)])
+            CDR_HOURLY.ensure_index([("start_uepoch", -1)])
+            CDR_COUNTRY_REPORT.ensure_index([("start_uepoch", -1)])
 
         print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" % (ipaddress, count_import))
