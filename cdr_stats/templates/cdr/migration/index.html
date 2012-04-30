@@ -23,25 +23,13 @@
     <script type="text/javascript" src="{{STATIC_URL}}cdr-stats/migration/hasher.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}cdr-stats/migration/modernizr.geoloc.js"></script>
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}cdr-stats/migration/main.css" />
-    <script type="text/javascript">
 
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-1397562-10']);
-      _gaq.push(['_trackPageview']);
-
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-
-    </script>
 <script type="text/javascript">
-  (function() {
+  /*(function() {
     var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
     po.src = 'https://apis.google.com/js/plusone.js';
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-  })();
+  })();*/
 </script>
 </head>
 <body>
@@ -54,10 +42,7 @@
     <p style="font-size:13px;padding: 2px 0px 0px 0px;">Where are migrants coming from? Where have migrants left?</p>
 </div>
 
-<div id="social">
-<iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fmigrationsmap.net&amp;send=false&amp;layout=button_count&amp;width=100&amp;show_faces=true&amp;action=like&amp;colorscheme=dark&amp;font=arial&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:200px; height:21px; padding-top:10px;" allowTransparency="true"></iframe>
-<div id="plusone"><g:plusone size="medium"></g:plusone></div>
-</div>
+
 <div id="country_select_div">
     <span id="explanation">Click on the map or pick a country here:</span>
     <select id="country_select">
