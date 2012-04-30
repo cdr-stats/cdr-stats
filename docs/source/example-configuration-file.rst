@@ -43,6 +43,32 @@ sends all errors from the production server to the admin's email address. ::
           }
       }
 
+      or
+
+      DATABASES = {
+          'default': {
+                  'ENGINE': 'django.db.backends.postgresql_psycopg2',
+                  'NAME': 'cdr_stats_psql',
+                  'USER': 'postgresuser',
+                  'PASSWORD': 'postgrespasswd',
+                  'HOST': 'localhost',
+                  'PORT': '5432',
+              }
+      }
+
+      or
+
+      DATABASES = {
+          'default': {
+                  'ENGINE': 'mysql',
+                  'NAME': 'cdr_stats_mysql',
+                  'USER': 'mysqluser',
+                  'PASSWORD': 'mysqlpasswd',
+                  'HOST': 'localhost',
+                  'PORT': '3306',
+              }
+      }
+
       CDR_TABLE_NAME = 'cdr' # Name of the table containing the Asterisk/FreeSwitch CDR
 
       # Only the Asterisk CDR table is supported at the moment,
