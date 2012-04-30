@@ -1842,3 +1842,12 @@ def cust_password_reset_complete(request):
         extra_context=data)
     else:
         return HttpResponseRedirect("/")
+
+
+def migration_view(request):
+    """
+    """
+    template = 'cdr/migration/index.html'
+    data = {}
+    return render_to_response(template, data,
+           context_instance = RequestContext(request))

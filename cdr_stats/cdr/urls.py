@@ -35,6 +35,8 @@ urlpatterns = patterns('cdr.views',
 	(r'^index/$',   'index'),
 	(r'^pleaselog/$', 'pleaselog'),
 
+    (r'^map_view/$', 'migration_view'),
+
     # Password reset for Customer UI
     (r'^password_reset/$', 'cust_password_reset'),
     (r'^password_reset/done/$', 'cust_password_reset_done'),

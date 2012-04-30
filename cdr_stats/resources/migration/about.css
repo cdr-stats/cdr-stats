@@ -1,0 +1,93 @@
+body {
+    font-size: 18px;
+    font-family: 'UniversElseRegular', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: url(gray_texture.jpg);
+    background-repeat: repeat;
+
+}
+
+a {
+    color: black;
+}
+
+a:hover {
+    color: #3b185f;
+    background: #f9f8fa;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: normal;
+    color: #222;
+}
+
+h1 a, h2 a, h3 a, h4 a,
+h5 a, h6 a {
+    text-decoration: none;
+}
+
+h1 a:hover, h2 a:hover,
+h3 a:hover, h4 a:hover {
+    color: #432165;
+    text-decoration: underline;
+}
+
+h1.title {
+    width: 560px;
+}
+
+h1, h2 {
+    margin: 10px 0 25px 0;
+}
+
+h1 {
+    font-size: 48px;
+    line-height: 52px;
+}
+
+h2 {
+    font-size: 36px;
+    line-height: 40px;
+}
+
+p, div.line-block, ul, ol, pre,
+table {
+    margin: 25px 0 25px 0;
+}
+
+dt {
+    margin: 25px 0 16px 0;
+    padding: 0;
+}
+
+dd {
+    margin: 16px 0 25px 40px;
+    padding: 0;
+}
+
+ul ol, ol ul, ul ul, ol ol {
+    margin: 10px 0;
+    padding: 0 0 0 40px;
+}
+
+li {
+    padding: 0;
+}
+
+h1 + p.date {
+    margin-top: -28px;
+    font-style: italic;
+}
+
+#container {
+    width: 960px;
+    margin: 10px auto;
+    background-color: #D3D3D3;
+    border-radius: 20px;
+    border: 3px solid gray;
+    padding: 20px;
+
+}
+
+
