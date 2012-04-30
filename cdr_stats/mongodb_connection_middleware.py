@@ -25,5 +25,3 @@ class MongodbConnectionMiddleware(object):
                 return None
         except ConnectionFailure:
             return HttpResponseRedirect('/?db_error=closed')
-
-
