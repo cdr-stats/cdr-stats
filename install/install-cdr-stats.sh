@@ -557,6 +557,13 @@ func_install_frontend(){
     #Update Authorize local IP
     sed -i "s/SERVER_IP_PORT/$IPADDR:$HTTP_PORT/g" $INSTALL_DIR/settings_local.py
     sed -i "s/#'SERVER_IP',/'$IPADDR',/g" $INSTALL_DIR/settings_local.py
+    
+    #add service for socketio server
+    echo "Add service for socketio server..."
+    cp /usr/src/cdr-stats/install/cdr-stats-socketio /etc/init.d/cdr-stats-socketio
+    chmod +x /etc/init.d/cdr-stats-socketio
+    cd /etc/init.d; update-rc.d cdr-stats-socketio defaults 99
+    /etc/init.d/cdr-stats-socketio start
 
     
     case $DIST in

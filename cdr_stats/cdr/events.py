@@ -71,18 +71,22 @@ def my_message_handler(request, socket, context, message):
         logger.debug('Wrong Switch ID')
         result[message['voipswitch']] = 0
         socket.send(result)
+        return True
+
     user = get_user(message['user'])
     logger.debug(user)
 
     if not user:
         logger.debug('Wrong User')
-        result[message['voipswitch']] = 0
+        result[message['voipswitch']] = settings.SOCKETIO_CALLNUM_DEFAULT
         socket.send(result)
+        return True
 
     if not user.is_superuser or not hasattr(user, 'userprofile') or not user.userprofile.accountcode:
         logger.debug('Wrong User')
-        result[message['voipswitch']] = 0
+        result[message['voipswitch']] = settings.SOCKETIO_CALLNUM_DEFAULT
         socket.send(result)
+        return True
     
     query_var = {}
     now = datetime.today()

@@ -34,7 +34,7 @@ $(function() {
     }
     createTimeline{{ c_switch.id }}();
 
-    var socket{{ c_switch.id }} = new io.Socket('localhost',{port: 9000});
+    var socket{{ c_switch.id }} = new io.Socket('{{ socketio_host }}',{port: {{ socketio_port }} });
 
     setInterval(function() {
         data = {voipswitch: voipswitchname, user : {{ user_id }}, message: "get-stats"};

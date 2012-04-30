@@ -72,8 +72,9 @@ API_ALLOWED_IP = ['127.0.0.1', 'localhost', ]
 
 #SOCKETIO
 #========
-SOCKETIO_HOST = 'localhost'
+SOCKETIO_HOST = 'SERVER_IP'
 SOCKETIO_PORT = 9000
+SOCKETIO_CALLNUM_DEFAULT = 0
 
 #GENERAL
 #=======

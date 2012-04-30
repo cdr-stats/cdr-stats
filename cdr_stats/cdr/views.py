@@ -1557,6 +1557,8 @@ def cdr_realtime(request):
                      'colorgraph2': '0, 180, 0',
                      'colorgraph3': '0, 0, 180',
                      'realtime_graph_maxcall': 300,
+                     'socketio_host': settings.SOCKETIO_HOST,
+                     'socketio_port': settings.SOCKETIO_PORT,
                     }
 
     return render_to_response('cdr/cdr_graph_realtime.html', variables,
