@@ -200,7 +200,7 @@ class loginForm(forms.Form):
 class EmailReportForm(ModelForm):
     """Form used to change the detail of a user in the Customer UI."""
     multiple_email = forms.CharField(max_length=300, required=False,
-                           label=_("Enter e-mails to receive the mail report, if more than one separate by comma"))
+                           label=_("Enter email addresses to receive the report separated by a comma"))
     multiple_email.widget.attrs['class'] = 'span6'
 
     class Meta:
