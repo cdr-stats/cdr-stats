@@ -713,8 +713,11 @@ def cdr_dashboard(request):
             if switch_id and int(switch_id) != 0:
                 query_var['switch_id'] = int(switch_id)
 
-    start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
-    end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
+    #start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
+    #end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
+    end_date = datetime(now.year, now.month, now.day,
+                        now.hour, now.minute, now.second, now.microsecond)
+    start_date = end_date+relativedelta(days=-int(1))
 
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
