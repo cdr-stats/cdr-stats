@@ -156,7 +156,7 @@ class CompareCallSearchForm(SearchForm):
     from_date = forms.CharField(label=_('Select date'), required=True,
                                 max_length=10)
 
-    comp_days = forms.ChoiceField(label='', required=False, choices=comp_day_range())
+    comp_days = forms.ChoiceField(label='', required=False, choices=comp_day_range(6))
     comp_days.widget.attrs['class'] = 'input-small'
     graph_view = forms.ChoiceField(label=_('Graph'), required=False,
                  choices=((1, _('Calls per Hour')), (2,_('Minutes per Hour'))))

@@ -468,19 +468,18 @@ $(function () {
         if(options.series.points.show == true)
         {
             options.series.points.show = false;
-            $('#id_dot').text('{% trans "Off Points" %}');
+            $('#id_dot').text('{% trans "Points Off" %}');
         }
         else
         {
             options.series.points.show = true;
-            $('#id_dot').text('{% trans "On Points" %}');
+            $('#id_dot').text('{% trans "Points On" %}');
         }
         var graph_view = $('#id_graph_view').val();
         $("#id_"+graph_view).click();
 
     });
 });
-
 </script>
 
 <div class="row"><div class="span6">&nbsp;</div></div>
@@ -508,7 +507,7 @@ $(function () {
                 </td>
                 <td class="td-dashboard">
                     <div class="btn-group" data-toggle="buttons-checkbox">
-                        <button class="btn" id="id_dot">{% trans "On Points" %}</button>
+                        <button class="btn" id="id_dot">{% trans "Points On" %}</button>
                     </div>
                 </td>
             </tr>
