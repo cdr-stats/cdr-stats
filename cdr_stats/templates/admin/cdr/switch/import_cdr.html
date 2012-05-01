@@ -1,14 +1,49 @@
 {% extends "admin/change_list.html" %}
 {% load i18n admin_modify adminmedia common_tags %}
 
-{% block breadcrumbs %}{% if not is_popup %}
-<div class="breadcrumbs">
-     <a href="../../../">{% trans "Home" %}</a> &rsaquo;
-     <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
-     <a href="/admin/{{ opts.app_label }}/{{ model_name }}">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
-     Import {{ opts.verbose_name }}
-</div>
-{% endif %}{% endblock %}
+{% block breadcrumbs %}
+    {% if not is_popup %}
+    <div class="breadcrumbs">
+         <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+         <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
+         <a href="/admin/{{ opts.app_label }}/{{ model_name }}">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
+         Import {{ opts.verbose_name }}
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{STATIC_URL}}cdr-stats/js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript">
+        {% for item in CDR_FIELD_LIST|groupby_columns:5 %}
+            {% for obj in item %}
+                $(function() {
+                    $("#id_{{ obj.0 }}").keydown(function(event) {
+                        // Allow only backspace and delete
+                        if ( event.keyCode == 46 || event.keyCode == 8 ) {
+                            // let it happen, don't do anything
+                        }
+                        else {
+                            // Ensure that it is a number and stop the keypress
+                            if (event.keyCode < 48 || event.keyCode > 57 ) {
+                                event.preventDefault();
+                            }
+                        }
+                    });
+                });
+            {% endfor %}
+        {% endfor %}
+
+        function chk_field_value()
+        {
+            {% for item in CDR_FIELD_LIST %}
+                $("#id_{{ item.0 }}").val()
+            {% endfor %}
+            return true;
+        }
+    </script>
+{% endblock %}
 
 {% block content %}
 
@@ -51,7 +86,7 @@
 <br/>
 
 
-<form method="post" action="" enctype="multipart/form-data" >{% csrf_token %}
+<form method="post" action="" enctype="multipart/form-data" onsubmit="return chk_field_value();">{% csrf_token %}
     <table border=0>
     {{ form.as_table }}
 
