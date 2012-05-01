@@ -132,7 +132,7 @@ class SwitchAdmin(admin.ModelAdmin):
                             type_error_import_list.append(row)
         else:
             form = CDR_FileImport(request.user)
-        
+
         ctx = RequestContext(request, {
             'title': _('Import CDR'),
             'form': form,

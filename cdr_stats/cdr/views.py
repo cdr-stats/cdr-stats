@@ -373,7 +373,8 @@ def cdr_view(request):
                                   'accountcode': accountcode, 'accountcode_type': accountcode_type,
                                   'caller': caller, 'caller_type': caller_type,
                                   'duration': duration, 'duration_type': duration_type,
-                                  'result': result, 'hangup_cause': hangup_cause_id,
+                                  'result': result, 'direction': direction,
+                                  'hangup_cause': hangup_cause_id,
                                   'switch': switch_id, 'country_id': country_id,
                                   'records_per_page': records_per_page})
     
