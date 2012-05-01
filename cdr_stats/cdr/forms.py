@@ -115,6 +115,21 @@ class SearchForm(forms.Form):
         super(SearchForm, self).__init__(*args, **kwargs)
         self.fields['switch'].choices = sw_list_with_all()
 
+    def clean_duration(self):
+        """
+        """
+        duration = self.cleaned_data['duration']
+        if duration:
+            try:
+                int(duration)
+            except:
+                try:
+                    float(duration)
+                except:
+                    raise forms.ValidationError('%s is not a valid duration.' % duration)
+
+        return duration
+
 
 class CdrSearchForm(SearchForm):
     """Form used to search calls in the Customer UI."""

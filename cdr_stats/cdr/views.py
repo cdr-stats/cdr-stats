@@ -212,7 +212,7 @@ def cdr_view(request):
             result = int(variable_value(request, 'result'))
             if result:
                 request.session['session_result'] = result
-
+            #print form.cleaned_data.get('destination')
             destination = variable_value(request, 'destination')
             destination_type = variable_value(request, 'destination_type')
             if destination:
@@ -258,6 +258,44 @@ def cdr_view(request):
             country_id = [int(row) for row in country_id]
             if len(country_id) >= 1:
                 request.session['session_country_id'] = country_id
+        else:
+            action = 'tabs-1'
+            menu = 'on'
+            docs = []
+            docs_pages = 0
+            PAGE_SIZE = settings.PAGE_SIZE
+            total_data = []
+            total_duration = 0
+            total_calls = 0
+            total_avg_duration = 0
+            max_duration = 0
+            col_name_with_order = []
+            detail_data = []
+            tday = datetime.today()
+            start_date = tday.strftime('%Y-%m-01')
+            last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) + relativedelta(months=1)) - relativedelta(days=1)).strftime('%d')
+            end_date = tday.strftime('%Y-%m-'+last_day)
+            template_data = {'module': current_view(request),
+                             'rows': docs,
+                             'form': form,
+                             'pages': docs_pages,
+                             'PAGE_SIZE': PAGE_SIZE,
+                             'total_data': detail_data,
+                             'total_duration': total_duration,
+                             'total_calls': total_calls,
+                             'total_avg_duration': total_avg_duration,
+                             'max_duration': max_duration,
+                             'user': request.user,
+                             'search_tag': search_tag,
+                             'col_name_with_order': col_name_with_order,
+                             'menu': menu,
+                             'start_date': start_date,
+                             'end_date': end_date,
+                             'action': action,
+                             }
+            logging.debug('CDR View End')
+            return render_to_response('cdr/cdr_view.html', template_data,
+                context_instance=RequestContext(request))
 
     try:
         menu = request.GET.get('menu')
@@ -342,10 +380,10 @@ def cdr_view(request):
 
     if switch_id and int(switch_id) != 0:
         query_var['switch_id'] = int(switch_id)
-    
+
     if hangup_cause_id and int(hangup_cause_id) != 0:
         query_var['hangup_cause_id'] = int(hangup_cause_id)
-                    
+
     if direction:
         query_var['direction'] = str(direction)
 
@@ -377,7 +415,7 @@ def cdr_view(request):
                                   'hangup_cause': hangup_cause_id,
                                   'switch': switch_id, 'country_id': country_id,
                                   'records_per_page': records_per_page})
-    
+
     request.session['query_var'] = query_var
 
     col_name_with_order = {}
@@ -1519,7 +1557,7 @@ def cdr_concurrent_calls(request):
         variables = {'module': current_view(request),
                      'form': form,
                      'final_data': final_data,
-                     'start_date': start_date,
+                     'start_date': start_date
                     }
 
     return render_to_response('cdr/cdr_graph_concurrent_calls.html', variables,
