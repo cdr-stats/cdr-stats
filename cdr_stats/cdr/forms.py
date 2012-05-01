@@ -44,6 +44,28 @@ PAGE_SIZE_LIST = ((10, '10'),
                   (500, '500'),
                   (1000, '1000'))
 
+CDR_FIELD_LIST = (('caller_id_number', 'caller_id_number'),
+                  ('caller_id_name', 'caller_id_name'),
+                  ('destination_number', 'destination_number'),
+                  ('duration', 'duration'),
+                  ('billsec', 'billsec'),
+                  ('hangup_cause_id', 'hangup_cause'),
+                  ('direction', 'direction'),
+                  ('uuid', 'uuid'),
+                  ('remote_media_ip', 'remote_media_ip'),
+                  ('start_uepoch', 'start_uepoch'),
+                  ('answer_uepoch', 'answer_uepoch'),
+                  ('end_uepoch', 'end_uepoch'),
+                  ('mduration', 'mduration'),
+                  ('billmsec', 'billmsec'),
+                  ('read_codec', 'read_codec'),
+                  ('write_codec', 'write_codec'),
+                  ('cdr_type', 'cdr_type'),
+                  ('cdr_object_id', 'cdr_object_id'),
+                  ('country_id', 'country_id'),
+                  ('authorized', 'authorized')
+                 )
+
 DATE_HELP_TEXT = _("Please use the following format")+": <em>YYYY-MM-DD</em>."
 COUNTRY_HELP_TEXT = _('Hold down "Ctrl", "Command" on Mac, to select more than one.')
 
@@ -247,12 +269,11 @@ class FileImport(forms.Form):
 
 
 class CDR_FileImport(FileImport):
-    """Admin Form : Import CSV file with phonebook"""
-    switch = forms.ChoiceField(label=_("Phonebook"),
-        choices=[(0, 'all')],
-        required=True,
-        help_text=_("Select switch"))
+    """Admin Form : Import CSV file with phonebook CDR_FIELD_LIST"""
+    switch = forms.ChoiceField(label=_("Switch"),
+             choices=get_switch_list(), required=True, help_text=_("Select switch"))
+    accountcode = forms.CharField(label=_('Account code'), required=True)
 
     def __init__(self, user, *args, **kwargs):
         super(CDR_FileImport, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['switch', 'csv_file']
+        self.fields.keyOrder = ['switch', 'accountcode', 'csv_file']
