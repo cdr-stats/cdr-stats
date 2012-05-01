@@ -27,8 +27,8 @@
 {% block content %}
 <div class="tabbable">
 <ul class="nav nav-tabs">
-    <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "Calls details record" %}</a></li>
-    <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "Report by Day" %}</a></li>
+    <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "calls detail records"|title %}</a></li>
+    <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "report by day"|title %}</a></li>
 </ul>
 
 <div id="form_collapse" class="collapse">
@@ -139,14 +139,14 @@
 </div>
 
     <a class="btn btn-small" id="toggle_btn" href="#" data-toggle="collapse" data-target="#form_collapse">
-      <i class="icon-search"></i> <span>{% trans "Advance search" %}</span>
+      <i class="icon-search"></i> <span>{% trans "advanced search"|title %}</span>
     </a>
 
 
     <div class="tab-content">
     <div id="tabs-1" class="tab-pane {% if action == "tabs-1" or action == "" %}active{% endif %}">
         <div class="graph_header">
-            {% trans "Calls details record"|title %} -
+            {% trans "calls detail records"|title %} -
             <b>
             {% if start_date  %}
                 {{ start_date|date:"jS N Y" }}
@@ -172,10 +172,10 @@
                 <th>
                     {% ifequal col_name_with_order.sort_field 'caller_id_number' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" col_name_with_order.caller_id_number_up  %}
-                      {% trans "Clid" %}
+                      {% trans "CLID" %}
                       {% sort_link "<i class='icon-chevron-down'></i>" col_name_with_order.caller_id_number_down  %}
                     {% else %}
-                      {% sort_link "Clid" col_name_with_order.caller_id_number  %}
+                      {% sort_link "CLID" col_name_with_order.caller_id_number  %}
                     {% endifequal %}
                 </th>
                 <th>
@@ -286,7 +286,7 @@
             {% else %}
             <tr>
                 <td colspan="8" align="center">
-                    {% trans "No record found!" %}
+                    {% trans "no records found"|title %}
                 </td>
             </tr>
             {% endif %}
