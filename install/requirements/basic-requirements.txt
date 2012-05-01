@@ -8,7 +8,7 @@ docutils==0.7
 python-dateutil==1.5
 yolk==0.4.1
 feedparser
-celery==2.5.1
+celery==2.5.3
 redis
 kombu
 pymongo

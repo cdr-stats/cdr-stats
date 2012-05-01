@@ -86,6 +86,14 @@ def common_send_notification(request, status, recipient=None):
     return True
 
 
+def check_cdr_data_exists(request):
+    doc = cdr_data.find_one()
+    if not doc:
+        return False
+    else:
+        return True
+    
+
 def login_view(request):
     """Login view
 
@@ -94,6 +102,7 @@ def login_view(request):
         * ``template`` - cdr/index.html
         * ``form`` - loginForm
     """
+
     template = 'cdr/index.html'
     errorlogin = ''
     if request.method == 'POST':
@@ -154,6 +163,10 @@ def cdr_view(request):
         get the call records as well as daily call analytics
         from mongodb collection according to search parameters
     """
+
+    if not check_cdr_data_exists(request):
+        return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
+
     logging.debug('CDR View Start')
     query_var = {}
     result = 1 # default min
@@ -582,6 +595,10 @@ def cdr_global_report(request):
         get all call records from mongodb collection to create
         global call report
     """
+
+    if not check_cdr_data_exists(request):
+        return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
+
     logging.debug('CDR global report view start')
     query_var = {}
     total_data = []
@@ -677,6 +694,10 @@ def cdr_dashboard(request):
         get all call records from mongodb collection for current day
         to create hourly report as well as to hungupcause/country analytic
     """
+
+    if not check_cdr_data_exists(request):
+        return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
+
     logging.debug('CDR dashboard view start')
     now = datetime.now()
     form = SwitchForm()
@@ -819,6 +840,10 @@ def cdr_country_report(request):
         get all call records from mongodb collection for all countries
         to create country call
     """
+
+    if not check_cdr_data_exists(request):
+        return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
+
     logging.debug('CDR country report view start')
     now = datetime.now()
     form = CountryReportForm()
@@ -984,6 +1009,10 @@ def cdr_overview(request):
         get all call records from mongodb collection for
         all monthly, daily, hourly analytics
     """
+
+    if not check_cdr_data_exists(request):
+        return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
+
     logging.debug('CDR overview start')
     query_var = {}
     tday = datetime.today()
@@ -1301,6 +1330,10 @@ def cdr_graph_by_hour(request):
         get all call records from mongodb collection for
         hourly analytics for given date
     """
+
+    if not check_cdr_data_exists(request):
+        return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
+
     logging.debug('CDR hourly view start')
     query_var = {}
     total_record = []
@@ -1423,6 +1456,10 @@ def cdr_concurrent_calls(request):
         get all concurrent call records from mongodb map-reduce collection for
         current date
     """
+
+    if not check_cdr_data_exists(request):
+        return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
+
     logging.debug('CDR concurrent view start')
     query_var = {}
     switch_id = 0
@@ -1697,6 +1734,10 @@ def mail_report(request):
         get top 10 calls from mongodb collection & hnagupcause/country analytic
         to generate mail report
     """
+
+    if not check_cdr_data_exists(request):
+        return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
+    
     logging.debug('CDR mail report view start')
     template = 'cdr/cdr_mail_report.html'
     user_obj = User.objects.get(username=request.user)

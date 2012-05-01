@@ -1,4 +1,4 @@
-django-celery==2.5.0
+django-celery==2.5.5
 django-kombu
 linaro_django_pagination
 #django-pagination==1.0.7
