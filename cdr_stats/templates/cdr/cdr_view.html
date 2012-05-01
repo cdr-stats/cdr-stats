@@ -190,12 +190,10 @@
                 <th>
                     {% ifequal col_name_with_order.sort_field 'duration' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" col_name_with_order.duration_up  %}
-                      <abbr title='{% trans "Duration" %}'>{% trans "Dur" %}</abbr>
+                      {% trans "Duration" %}
                       {% sort_link "<i class='icon-chevron-down'></i>" col_name_with_order.duration_down  %}
                     {% else %}
-                        <abbr title={% trans 'Duration' %}>
-                          {% sort_link "Dur" col_name_with_order.duration  %}
-                        </abbr>
+                      {% sort_link "Duration" col_name_with_order.duration  %}
                     {% endifequal %}
                 </th>
                 <th>
@@ -215,7 +213,7 @@
                       {% trans "Hangup cause" %}
                       {% sort_link "<i class='icon-chevron-down'></i>" col_name_with_order.hangup_cause_id_down  %}
                     {% else %}
-                      {% sort_link "Hangup cause" col_name_with_order.hangup_cause_id  %}
+                      {% sort_link "Hangup Cause" col_name_with_order.hangup_cause_id  %}
                     {% endifequal %}
                 </th>
                 <th>

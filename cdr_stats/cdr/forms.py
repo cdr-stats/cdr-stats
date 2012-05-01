@@ -25,16 +25,17 @@ from cdr.models import *
 from cdr.functions_def import *
 from user_profile.models import UserProfile
 
-STRING_SEARCH_TYPE_LIST = ((1, _('Equals')),
-                           (2, _('Begins with')),
+STRING_SEARCH_TYPE_LIST = ((2, _('Begins with')),
                            (3, _('Contains')),
-                           (4, _('Ends with')))
+                           (4, _('Ends with')),
+                           (1, _('Equals')),
+                           )
 
-COMPARE_LIST = ((1, '='),
-                (2, '>'),
+COMPARE_LIST = ((2, '>'),
                 (3, '>='),
                 (4, '<'),
-                (5, '<='))
+                (5, '<='),
+                (1, '='),)
 
 PAGE_SIZE_LIST = ((10, '10'),
                   (25, '25'),
@@ -102,7 +103,7 @@ def country_list_with_all():
 
 class SearchForm(forms.Form):
     """Form used to search on general parameters in the Customer UI."""
-    caller = forms.CharField(label=_('Caller Id'), required=False)
+    caller = forms.CharField(label=_('Caller ID'), required=False)
     caller_type = forms.ChoiceField(label='', required=False,
                                     choices=STRING_SEARCH_TYPE_LIST)
     caller_type.widget.attrs['class'] = 'input-small'
@@ -112,7 +113,7 @@ class SearchForm(forms.Form):
                                          choices=STRING_SEARCH_TYPE_LIST)
     destination_type.widget.attrs['class'] = 'input-small'
 
-    accountcode = forms.CharField(label=_('Account code'), required=False)
+    accountcode = forms.CharField(label=_('Account Code'), required=False)
     accountcode_type = forms.ChoiceField(label='', required=False,
                                          choices=STRING_SEARCH_TYPE_LIST)
     accountcode_type.widget.attrs['class'] = 'input-small'
