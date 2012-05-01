@@ -227,3 +227,32 @@ class EmailReportForm(ModelForm):
         # Always return the cleaned data.
         mail_list = ','.join(mail_list)
         return mail_list
+
+
+class FileImport(forms.Form):
+    """General Form : CSV file upload"""
+    csv_file = forms.FileField(label=_("Upload CSV File "), required=True,
+        error_messages={'required': 'Please upload File'},
+        help_text=_("Browse CSV file"))
+
+    def clean_file(self):
+        """Form Validation :  File extension Check"""
+        filename = self.cleaned_data["csv_file"]
+        file_exts = (".csv", )
+        if not str(filename).split(".")[1].lower() in file_exts:
+            raise forms.ValidationError(_(u'Document types accepted: %s' %\
+                                          ' '.join(file_exts)))
+        else:
+            return filename
+
+
+class CDR_FileImport(FileImport):
+    """Admin Form : Import CSV file with phonebook"""
+    switch = forms.ChoiceField(label=_("Phonebook"),
+        choices=[(0, 'all')],
+        required=True,
+        help_text=_("Select switch"))
+
+    def __init__(self, user, *args, **kwargs):
+        super(CDR_FileImport, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['switch', 'csv_file']

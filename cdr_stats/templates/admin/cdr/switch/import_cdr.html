@@ -1,0 +1,127 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_modify adminmedia %}
+
+{% block breadcrumbs %}{% if not is_popup %}
+<div class="breadcrumbs">
+     <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+     <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
+     <a href="/admin/{{ opts.app_label }}/{{ model_name }}">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
+     Import {{ opts.verbose_name }}
+</div>
+{% endif %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+<br/>
+
+<table border=1>
+<caption>{% trans "Sample File" %}</caption>
+<tr>
+    <th>{% trans "contact" %}</th>
+    <th>{% trans "last name" %}</th>
+    <th>{% trans "first name" %}</th>
+    <th>{% trans "email-id" %}</th>
+    <th>{% trans "description" %}</th>
+    <th>{% trans "status" %}</th>
+    <th>{% trans "additional_vars" %}</th>
+</tr>
+<tr>
+    <td>1234</td>
+    <td>Belaid</td>
+    <td>Arezqui</td>
+    <td>areski@gmail.com</td>
+    <td>test subscriber</td>
+    <td>1</td>
+    <td>test</td>
+</tr>
+<tr>
+    <td>5678</td>
+    <td>Fourth</td>
+    <td>John</td>
+    <td>john@gmail.com</td>
+    <td>test subscriber</td>
+    <td>0</td>
+    <td>test</td>
+</tr>
+</table>
+<br/>
+{% trans "CONTACT STATUS = ('1'-'ACTIVE') ('0'-'INACTIVE')" %}
+<br/>
+<br/>
+
+
+<form method="post" action="" enctype="multipart/form-data" >{% csrf_token %}
+    <table border=0>
+    {{ form.as_table }}
+    <tr>
+        <td colspan=2 align=right>
+        <input type="submit" class="l-1" name="submit" value="{% trans "Submit" %}" />&nbsp;
+        <input type="reset" name="reset" class="j-2" value="{% trans "Reset" %}" />
+        </td>
+    </tr>
+    </table>
+</form>
+
+<br/>
+<br/>
+
+{% block msg %}
+    {% if msg %}
+        {{ msg }}
+    {% endif %}
+{% endblock %}
+
+<br/>
+<br/>
+
+
+{% if success_import_list %}
+    <table border=1>
+    <tr>
+        <th>{% trans "Contact(s) imported" %} :</th>
+    </tr>
+    {% for row in success_import_list %}
+    <tr class="{% cycle 'row1' 'row2' %}">
+        <td>
+            {{ row }}
+        </td>
+    </tr>
+    {% endfor %}
+    </table>
+{% endif %}
+
+{% if error_import_list %}
+<br>
+    <table border=1>
+    <tr>
+        <th>{% trans "Contact(s) not imported" %} :</th>
+    </tr>
+    {% for row in error_import_list %}
+    <tr class="{% cycle 'row1' 'row2' %}">
+        <td>
+            {{ row }}
+        </td>
+    </tr>
+    {% endfor %}
+    </table>
+{% endif %}
+
+{% if type_error_import_list %}
+<br>
+    <table border=1>
+    <tr>
+        <th>{% trans "Type mismatch" %} :</th>
+    </tr>
+    {% for row in type_error_import_list %}
+    <tr class="{% cycle 'row1' 'row2' %}">
+        <td>
+            {{ row }}
+        </td>
+    </tr>
+    {% endfor %}
+    </table>
+{% endif %}
+
+
+</div>
+{% endblock %}
