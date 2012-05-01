@@ -4,7 +4,7 @@
         {% for child in module.children %}
         <h3><a href="{{ child.url }}">
             {% if child.title == "Cdr_Alert" %}
-                {% trans "Cdr Alert" %}
+                {% trans "CDR Alert" %}
             {% else %}
                 {{ child.title }}
             {% endif %}
@@ -28,7 +28,7 @@
             </li>
             {% ifequal model.title 'Switches' %}
                 <li>
-                    <a href="/admin/cdr/switch/import_cdr/">{% trans "Import cdr" %}</a>
+                    <a href="/admin/cdr/switch/import_cdr/">{% trans "Import CDR" %}</a>
                 </li>
             {% endifequal %}
             {% endspaceless %}
