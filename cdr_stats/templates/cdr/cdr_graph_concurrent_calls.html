@@ -19,16 +19,11 @@ $(function() {
         <div class="row">
             <div class="span4">
                 <label class="control-label" for="id_{{ form.from_date.name }}">{{ form.from_date.label }}</label>
-                <div class="input">
-                  {{ form.from_date }}
-                  <span class="help-block">{{ form.from_date.help_text|safe }} </span>
-                </div>
+                {{ form.from_date }}
             </div>
             <div class="span4">
                 <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }}</label>
-                <div class="input">
-                  {{ form.switch }}
-                </div>
+                {{ form.switch }}
             </div>
             <div class="span4">
                 <input type="submit" class="btn-primary" name="search" value={% trans "Search" %} />
