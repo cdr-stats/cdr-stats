@@ -21,7 +21,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 
 from cdr.models import *
-from cdr.forms import CDR_FileImport
+from cdr.forms import CDR_FileImport, CDR_FIELD_LIST
 import csv
 
 
@@ -125,6 +125,7 @@ class SwitchAdmin(admin.ModelAdmin):
             'success_import_list': success_import_list,
             'error_import_list': error_import_list,
             'type_error_import_list': type_error_import_list,
+            'CDR_FIELD_LIST': list(CDR_FIELD_LIST),
             })
         template = 'admin/cdr/switch/import_cdr.html'
         return render_to_response(template, context_instance=ctx)
