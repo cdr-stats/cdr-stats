@@ -21,9 +21,28 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 
 from cdr.models import *
-from cdr.forms import CDR_FileImport, CDR_FIELD_LIST
+from cdr.forms import CDR_FileImport
+from common.common_functions import striplist
 import csv
 
+CDR_FIELD_LIST = (('caller_id_number', 'caller_id_number'),
+                  ('caller_id_name', 'caller_id_name'),
+                  ('destination_number', 'destination_number'),
+                  ('duration', 'duration'),
+                  ('billsec', 'billsec'),
+                  ('hangup_cause_id', 'hangup_cause'),
+                  ('direction', 'direction'),
+                  ('uuid', 'uuid'),
+                  ('remote_media_ip', 'remote_media_ip'),
+                  ('start_uepoch', 'start_uepoch'),
+                  ('answer_uepoch', 'answer_uepoch'),
+                  ('end_uepoch', 'end_uepoch'),
+                  ('mduration', 'mduration'),
+                  ('billmsec', 'billmsec'),
+                  ('read_codec', 'read_codec'),
+                  ('write_codec', 'write_codec'))
+
+CDR_FIELD_LIST_NUM = [ x for x in range(1, len(CDR_FIELD_LIST)+1)]
 
 # Switch
 class SwitchAdmin(admin.ModelAdmin):
@@ -113,7 +132,7 @@ class SwitchAdmin(admin.ModelAdmin):
                             type_error_import_list.append(row)
         else:
             form = CDR_FileImport(request.user)
-
+        
         ctx = RequestContext(request, {
             'title': _('Import CDR'),
             'form': form,
@@ -126,6 +145,7 @@ class SwitchAdmin(admin.ModelAdmin):
             'error_import_list': error_import_list,
             'type_error_import_list': type_error_import_list,
             'CDR_FIELD_LIST': list(CDR_FIELD_LIST),
+            'CDR_FIELD_LIST_NUM': list(CDR_FIELD_LIST_NUM),
             })
         template = 'admin/cdr/switch/import_cdr.html'
         return render_to_response(template, context_instance=ctx)
