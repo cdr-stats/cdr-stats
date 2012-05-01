@@ -69,6 +69,9 @@
             <div class="input">
                 {{ form.destination }}&nbsp;&nbsp;{{ form.destination_type }}
             </div>
+            {% if form.destination.errors %}
+                <span class="help-inline">{{ form.destination.errors }}</span>
+            {% endif %}
           </div>
           {% if user.is_superuser %}
           <div class="span4">
@@ -76,6 +79,9 @@
             <div class="input">
                 {{ form.accountcode }}&nbsp;&nbsp;{{ form.accountcode_type }}
             </div>
+              {% if form.accountcode.errors %}
+                  <span class="help-inline">{{ form.accountcode.errors }}</span>
+              {% endif %}
           </div>
           {% endif %}
           <div class="span4">
@@ -83,6 +89,9 @@
             <div class="input">
               {{ form.caller }}&nbsp;&nbsp;{{ form.caller_type }}
             </div>
+            {% if form.caller.errors %}
+                <span class="help-inline">{{ form.caller.errors }}</span>
+            {% endif %}
           </div>
       </div>
   </div>

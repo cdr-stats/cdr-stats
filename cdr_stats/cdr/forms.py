@@ -115,20 +115,45 @@ class SearchForm(forms.Form):
         super(SearchForm, self).__init__(*args, **kwargs)
         self.fields['switch'].choices = sw_list_with_all()
 
+    def clean_caller(self):
+        """ """
+        caller = self.cleaned_data['caller']
+        if caller:
+            try:
+                int(caller)
+            except:
+                raise forms.ValidationError('%s is not a valid caller.' % caller)
+        return caller
+
     def clean_duration(self):
-        """
-        """
+        """ """
         duration = self.cleaned_data['duration']
         if duration:
             try:
                 int(duration)
             except:
-                try:
-                    float(duration)
-                except:
-                    raise forms.ValidationError('%s is not a valid duration.' % duration)
-
+                raise forms.ValidationError('%s is not a valid duration.' % duration)
         return duration
+
+    def clean_accountcode(self):
+        """ """
+        accountcode = self.cleaned_data['accountcode']
+        if accountcode:
+            try:
+                int(accountcode)
+            except:
+                raise forms.ValidationError('%s is not a valid accountcode.' % accountcode)
+        return accountcode
+
+    def clean_destination(self):
+        """ """
+        destination = self.cleaned_data['destination']
+        if destination:
+            try:
+                int(destination)
+            except:
+                raise forms.ValidationError('%s is not a valid destination.' % destination)
+        return destination
 
 
 class CdrSearchForm(SearchForm):
