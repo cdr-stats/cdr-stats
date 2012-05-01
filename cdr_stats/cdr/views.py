@@ -253,7 +253,7 @@ def cdr_view(request):
             if records_per_page:
                 request.session['session_records_per_page'] = records_per_page
 
-            country_id = form.cleaned_data.get('country_id')
+            country_id = variable_value(request, 'country_id')
             # convert list value in int
             country_id = [int(row) for row in country_id]
             if len(country_id) >= 1:
@@ -1467,10 +1467,8 @@ def cdr_concurrent_calls(request):
     logging.debug('CDR concurrent view start')
     query_var = {}
     switch_id = 0
-    search_tag = 0
     if request.method == 'POST':
         logging.debug('CDR concurrent view with search option')
-        search_tag = 1
         form = ConcurrentCallForm(request.POST)
         if form.is_valid():
             if "from_date" in request.POST and request.POST['from_date'] != '':
@@ -1521,6 +1519,7 @@ def cdr_concurrent_calls(request):
         variables = {'module': current_view(request),
                      'form': form,
                      'final_data': final_data,
+                     'start_date': start_date,
                     }
 
     return render_to_response('cdr/cdr_graph_concurrent_calls.html', variables,
