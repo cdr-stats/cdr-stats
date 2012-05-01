@@ -1,42 +1,6 @@
 {% extends "admin/change_list.html" %}
 {% load i18n admin_modify adminmedia common_tags %}
 
-{% block extrahead %}
-    {{ block.super }}
-    <script type="text/javascript" src="{{STATIC_URL}}cdr-stats/js/jquery-1.7.1.min.js"></script>
-    <script type="text/javascript">
-        {% for item in CDR_FIELD_LIST|groupby_columns:5 %}
-            {% for obj in item %}
-                $(function() {
-                    $("#id_{{ obj.0 }}").keydown(function(event) {
-                        // Allow only backspace and delete
-                        if ( event.keyCode == 46 || event.keyCode == 8 ) {
-                            // let it happen, don't do anything
-                        }
-                        else {
-                            // Ensure that it is a number and stop the keypress
-                            if (event.keyCode < 48 || event.keyCode > 57 ) {
-                                event.preventDefault();
-                            }
-                        }
-                    });
-                });
-            {% endfor %}
-        {% endfor %}
-
-        function chk_value(id)
-        {
-            if($("#"+id).val() > 20)
-            {
-                alert("Enter digit between 1 to 20");
-                $("#"+id).focus();
-                return false;
-            }
-            return true;
-        }
-    </script>
-{% endblock %}
-
 {% block breadcrumbs %}{% if not is_popup %}
 <div class="breadcrumbs">
      <a href="../../../">{% trans "Home" %}</a> &rsaquo;
@@ -90,11 +54,15 @@
 <form method="post" action="" enctype="multipart/form-data" >{% csrf_token %}
     <table border=0>
     {{ form.as_table }}
-    <tr><td colspan="2">{% trans "Enter 1 to 20 as csv column order" %}</td></tr>
+
     {% for item in CDR_FIELD_LIST|groupby_columns:5 %}
         <tr class="{% cycle 'row1' 'row2' %}">
             {% for obj in item %}
-                <td><input type="text" onblur="return chk_value('id_{{ obj.0 }}');" maxlength="2" class="input-small" name="{{ obj.0 }}" id="id_{{ obj.0 }}" value="" />&nbsp;{{ obj.0 }}</td>
+                <td><select name="{{ obj.0 }}" id="id_{{ obj.0 }}">
+                    {% for j in CDR_FIELD_LIST_NUM  %}
+                        <option value="{{ j }}">{{ j }}</option>
+                    {% endfor %}
+                    </select>&nbsp;{{ obj.0 }}</td>
             {% endfor %}
         </tr>
     {% endfor %}

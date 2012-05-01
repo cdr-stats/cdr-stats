@@ -44,24 +44,6 @@ PAGE_SIZE_LIST = ((10, '10'),
                   (500, '500'),
                   (1000, '1000'))
 
-CDR_FIELD_LIST = (('caller_id_number', 'caller_id_number'),
-                  ('caller_id_name', 'caller_id_name'),
-                  ('destination_number', 'destination_number'),
-                  ('duration', 'duration'),
-                  ('billsec', 'billsec'),
-                  ('hangup_cause_id', 'hangup_cause'),
-                  ('direction', 'direction'),
-                  ('uuid', 'uuid'),
-                  ('remote_media_ip', 'remote_media_ip'),
-                  ('start_uepoch', 'start_uepoch'),
-                  ('answer_uepoch', 'answer_uepoch'),
-                  ('end_uepoch', 'end_uepoch'),
-                  ('mduration', 'mduration'),
-                  ('billmsec', 'billmsec'),
-                  ('read_codec', 'read_codec'),
-                  ('write_codec', 'write_codec'),
-                 )
-
 DATE_HELP_TEXT = _("Please use the following format")+": <em>YYYY-MM-DD</em>."
 COUNTRY_HELP_TEXT = _('Hold down "Ctrl", "Command" on Mac, to select more than one.')
 
