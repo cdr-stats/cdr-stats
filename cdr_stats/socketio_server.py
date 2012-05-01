@@ -1,8 +1,10 @@
 #!/usr/bin/env python
+from gevent import monkey;
+monkey.patch_all()
+
 import os, sys, time, logging
 import optparse
 from daemon import Daemon
-from gevent import monkey; monkey.patch_all()
 
 import settings
 import django.core.handlers.wsgi
@@ -18,30 +20,24 @@ version = 'v1.0'
 
 
 #setup logger
-logger = logging.getLogger("rtm")
+logger = logging.getLogger("socketio_server")
 logger.setLevel(logging.DEBUG)
 
 # create file handler which logs even debug messages
-fh = logging.FileHandler("rtm-web.log")
+fh = logging.FileHandler("socketio_server.log")
 fh.setLevel(logging.DEBUG)
-
-# create console handler with a higher log level
-ch = logging.StreamHandler()
-ch.setLevel(logging.ERROR)
 
 # create formatter and add it to the handlers
 formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s\t%(message)s", datefmt="%Y-%m-%d %H:%M:%S")
 fh.setFormatter(formatter)
-ch.setFormatter(formatter)
 
 # add the handlers to the logger
 logger.addHandler(fh)
-logger.addHandler(ch)
 
 
 class StdErrWrapper:
     def __init__(self):
-        self.logger = logging.getLogger("rtm.web.access")
+        self.logger = logging.getLogger("socketio_server.access")
 
     def write(self, s):
         self.logger.info(s.rstrip())
@@ -52,10 +48,9 @@ class Web(Daemon):
         self.cwd = cwd
 
     def run(self):
-        self.logger = logging.getLogger("rtm.web")
+        self.logger = logging.getLogger("socketio_server")
         self.logger.info("Creating web-server")
-        #SocketIOServer(("", 8080), Application(self.cwd), resource="socket.io", log=StdErrWrapper()).serve_forever()
-        SocketIOServer((settings.SOCKETIO_HOST, settings.SOCKETIO_PORT), Application(self.cwd), resource="socket.io").serve_forever()
+        SocketIOServer((settings.SOCKETIO_HOST, settings.SOCKETIO_PORT), Application(self.cwd), resource="socket.io", log=StdErrWrapper()).serve_forever()
         self.logger.info("Done.")
 
 #if __name__ == '__main__':
