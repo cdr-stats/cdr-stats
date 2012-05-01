@@ -41,7 +41,7 @@ class SwitchAdmin(admin.ModelAdmin):
 
     def import_cdr(self, request):
         """Add custom method in django admin view to import CSV file of
-        Contacts
+        cdr
 
         **Attributes**:
 
@@ -103,8 +103,8 @@ class SwitchAdmin(admin.ModelAdmin):
                                 cdr_record_count =\
                                 cdr_record_count + 1
                                 msg =\
-                                _('%(contact_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
-                                % {'cdr_record_count': contact_record_count,
+                                _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
+                                % {'cdr_record_count': cdr_record_count,
                                    'total_rows': total_rows}
                                 # (cdr_record_count, total_rows)
                                 success_import_list.append(row)
