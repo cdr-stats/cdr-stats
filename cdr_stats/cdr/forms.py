@@ -60,10 +60,6 @@ CDR_FIELD_LIST = (('caller_id_number', 'caller_id_number'),
                   ('billmsec', 'billmsec'),
                   ('read_codec', 'read_codec'),
                   ('write_codec', 'write_codec'),
-                  ('cdr_type', 'cdr_type'),
-                  ('cdr_object_id', 'cdr_object_id'),
-                  ('country_id', 'country_id'),
-                  ('authorized', 'authorized')
                  )
 
 DATE_HELP_TEXT = _("Please use the following format")+": <em>YYYY-MM-DD</em>."

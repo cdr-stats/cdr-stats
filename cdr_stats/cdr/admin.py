@@ -22,6 +22,7 @@ from django.shortcuts import render_to_response
 
 from cdr.models import *
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST
+from common.common_functions import striplist
 import csv
 
 
