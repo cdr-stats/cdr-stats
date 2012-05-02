@@ -794,6 +794,15 @@ func_install_redis_server() {
 }
 
 
+#Install MongoDB
+func_install_mongodb() {
+    cd /usr/src/
+    wget https://raw.github.com/Star2Billing/cdr-stats/master/install/install-mongodb.sh
+    bash install-mongodb.sh
+}
+
+
+
 #Menu Section for Script
 show_menu_cdr_stats() {
 	clear
@@ -802,8 +811,9 @@ show_menu_cdr_stats() {
 	echo "	1)  Install All"
 	echo "	2)  Install CDR-Stats Web Frontend"
 	echo "	3)  Install CDR-Stats Backend / CDR-Stats-Celery"
+	echo "  4)  Install MongoDB"
 	echo "	0)  Quit"
-	echo -n "(0-3) : "
+	echo -n "(0-4) : "
 	read OPTION < /dev/tty
 }
 
@@ -847,6 +857,7 @@ while [ $ExitFinish -eq 0 ]; do
 
 	case $OPTION in
 		1)
+		    func_install_mongodb
 			func_install_frontend
 			func_install_landing_page
 			func_install_backend
@@ -858,6 +869,9 @@ while [ $ExitFinish -eq 0 ]; do
 		;;
 		3)
 			func_install_backend
+		;;
+		4)
+		    func_install_mongodb
 		;;
 		0)
 		ExitFinish=1
