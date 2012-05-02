@@ -811,7 +811,7 @@ show_menu_cdr_stats() {
 	echo "	1)  Install All"
 	echo "	2)  Install CDR-Stats Web Frontend"
 	echo "	3)  Install CDR-Stats Backend / CDR-Stats-Celery"
-	echo "  4)  Install MongoDB"
+	echo "	4)  Install MongoDB"
 	echo "	0)  Quit"
 	echo -n "(0-4) : "
 	read OPTION < /dev/tty
