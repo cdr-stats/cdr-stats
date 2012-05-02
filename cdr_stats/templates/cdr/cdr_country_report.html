@@ -335,19 +335,8 @@ $(function () {
             <hr/>
             <div id="country_pie_calls" style="width:350px;height:350px;margin:auto;"></div>
             <div id="country_hover_calls"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
-        </div>
-        <div class="span6 welldashboard">
-            <h2 align="center">{% trans "Countries per duration"|title %}</h2>
-            <hr/>
-            <div id="country_pie_duration" style="width:350px;height:350px;margin:auto;"></div>
-            <div id="country_hover_duration"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
-        </div>
-    </div>
 
-    <p>&nbsp;</p>
-
-    <div class="row">
-        <div class="span6 welldashboard">
+            <br/>
             <div class="span6">
                 <h3 align="left">{{ DISPLAY_NO_OF_COUNTRY }} {% trans "most called countries per calls"|title %}</h3>
                 <table>
@@ -374,6 +363,11 @@ $(function () {
             </div>
         </div>
         <div class="span6 welldashboard">
+            <h2 align="center">{% trans "Countries per duration"|title %}</h2>
+            <hr/>
+            <div id="country_pie_duration" style="width:350px;height:350px;margin:auto;"></div>
+            <div id="country_hover_duration"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
+            <br/>
             <div class="span6">
                 <h3 align="left">{{ DISPLAY_NO_OF_COUNTRY }} {% trans "most called countries per duration"|title %}</h3>
                 <table>
@@ -400,5 +394,6 @@ $(function () {
             </div>
         </div>
     </div>
+
 {% endblock %}
 
