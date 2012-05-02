@@ -32,6 +32,7 @@ from cdr_alert.models import Blacklist, Whitelist
 from cdr_alert.tasks import blacklist_whitelist_notification
 from country_dialcode.models import Prefix
 from common.common_functions import striplist
+from cdr.functions_blacklist import *
 
 from random import choice
 from uuid import uuid1

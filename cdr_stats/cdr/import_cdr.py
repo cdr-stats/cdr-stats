@@ -22,6 +22,7 @@ from pymongo.errors import ConnectionFailure
 
 from cdr.models import Switch, HangupCause
 from cdr.functions_def import *
+from cdr.functions_blacklist import *
 from country_dialcode.models import Prefix
 from random import choice
 from uuid import uuid1
