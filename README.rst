@@ -77,11 +77,11 @@ Conventions :
 Additional information
 -----------------------
 
-Fork the project on GitHub : https://github.com/Star2Billing/newfies-dialer
+Fork the project on GitHub : https://github.com/Star2Billing/cdr-stats
 
-License : MPL 2.0 (https://raw.github.com/Star2Billing/newfies-dialer/master/COPYING)
+License : MPL 2.0 (https://raw.github.com/Star2Billing/cdr-stats/master/COPYING)
 
-Website : http://www.newfies-dialer.org
+Website : http://www.cdr-stats.org
 
 
 Support 
