@@ -92,17 +92,21 @@ gpgcheck=0' > /etc/yum.repos.d/10gen-mongodb.repo
 }
 
 
-#Identify the OS
-func_identify_os
+if which mongo >/dev/null; then
+    echo "MongoDB is already installed!"
+else
+    #Identify the OS
+    func_identify_os
 
-func_install_mongodb
+    #Install Mongo
+    func_install_mongodb
 
+    echo ""
+    echo ""
+    echo "**************************************************************"
+    echo "Congratulations, MongoDB is now installed!"
+    echo "**************************************************************"
+    echo ""
+    echo ""
+fi
 
-
-echo ""
-echo ""
-echo "**************************************************************"
-echo "Congratulations, MongoDB is now installed!"
-echo "**************************************************************"
-echo ""
-echo ""
