@@ -23,6 +23,8 @@
 #comment out the appropriate line below to install the desired version
 #CDRSTATSVERSION=master
 CDRSTATSVERSION=v1.4.0
+IFACE=vlan254:0
+MYHOST=localhost
 MYSQLROOTPASSWOOD=passw0rd
 MYSQLUSER=asteriskuser
 MYSQLPASSWORD=amp109
@@ -53,7 +55,7 @@ read TEMP
 APACHE_CONF_DIR="/etc/httpd/conf.d/"
 
 IFCONFIG=`which ifconfig 2>/dev/null||echo /sbin/ifconfig`
-IPADDR=`$IFCONFIG eth0|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'`
+IPADDR=`$IFCONFIG $IFACE|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'`
 
 #install the RPMFORGE Repository
 
@@ -73,7 +75,7 @@ gpgcheck = 1
 		
 fi
 
-yum -y --enablerepo=rpmforge install git-core mercurial
+yum -y --enablerepo=rpmforge install git-core mercurial mysql-devel
 
 
 
@@ -89,10 +91,11 @@ easy_install pip
 
 #get CDR-Stats
 echo "Install CDR-Stats..."
-mkdir /usr/share/django_app/
+mkdir -p /usr/share/django_app/
 cd /usr/src/
 wget --no-check-certificate https://github.com/Star2Billing/cdr-stats/tarball/$CDRSTATSVERSION
-tar xvzf Star2Billing-cdr-stats-*.tar.gz
+mv $CDRSTATSVERSION Star2Billing-cdr-stats-123.tar.gz
+ar xvzf Star2Billing-cdr-stats-*.tar.gz
 rm -rf Star2Billing-cdr-stats-*.tar.gz
 mv cdr-stats cdr-stats_$DATETIME
 mv Star2Billing-cdr-stats-* cdr-stats
@@ -117,7 +120,7 @@ sed -i "s/TEMPLATE_DEBUG = DEBUG/TEMPLATE_DEBUG = False/g"  /usr/share/django_ap
 
 #FreePBX specific Config
 #Backup existing CDR Database
-mysqldump -uroot -p$MYSQLROOTPASSWOOD asteriskcdrdb > /root/asteriskcdrdb-$DATETIME.sql
+mysqldump -h$MYHOST -uroot -p$MYSQLROOTPASSWOOD asteriskcdrdb > /root/asteriskcdrdb-$DATETIME.sql
 
 
 # Setup settings.py
@@ -125,7 +128,7 @@ sed -i "s/backends.sqlite3/backends.mysql/"  /usr/share/django_app/cdr_stats/set
 sed -i "s/.*'NAME'/       'NAME': 'asteriskcdrdb',#/"  /usr/share/django_app/cdr_stats/settings.py
 sed -i "/'USER'/s/''/'$MYSQLUSER'/" /usr/share/django_app/cdr_stats/settings.py
 sed -i "/'PASSWORD'/s/''/'$MYSQLPASSWORD'/" /usr/share/django_app/cdr_stats/settings.py
-sed -i "/'HOST'/s/''/'localhost'/" /usr/share/django_app/cdr_stats/settings.py
+sed -i "/'HOST'/s/''/'$MYHOST'/" /usr/share/django_app/cdr_stats/settings.py
 sed -i "/'PORT'/s/''/'3306'/" /usr/share/django_app/cdr_stats/settings.py
 sed -i "s/'dilla'/#'dilla'/" /usr/share/django_app/cdr_stats/settings.py
 sed -i "s/8000/9000/"  /usr/share/django_app/cdr_stats/settings.py
@@ -145,7 +148,7 @@ python manage.py collectstatic -l --noinput
 
 
 #Update Database
-RESULT=`/usr/bin/mysql -uroot -p$MYSQLROOTPASSWOOD <<SQL
+RESULT=`/usr/bin/mysql -h$MYHOST -uroot -p$MYSQLROOTPASSWOOD <<SQL
 
 use asteriskcdrdb
 	
@@ -214,7 +217,7 @@ sed -i "s/@/'/g"  $APACHE_CONF_DIR/cdr-stats.conf
 
 
 #Fix permission on python-egg
-mkdir /usr/share/django_app/cdr_stats/.python-eggs
+mkdir -p /usr/share/django_app/cdr_stats/.python-eggs
 chmod 777 /usr/share/django_app/cdr_stats/.python-eggs
 service httpd restart
 
