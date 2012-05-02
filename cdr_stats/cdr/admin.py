@@ -139,6 +139,36 @@ class SwitchAdmin(admin.ModelAdmin):
                                     get_cdr_from_row[j[0]] = row[row_counter]
                                     row_counter = row_counter + 1
 
+                                start_uepoch = datetime.fromtimestamp(int(get_cdr_from_row['start_uepoch'][:10]))
+                                answer_uepoch = datetime.fromtimestamp(int(get_cdr_from_row['end_uepoch'][:10]))
+                                end_uepoch = datetime.fromtimestamp(int(get_cdr_from_row['end_uepoch'][:10]))
+
+                                # Check Destination number
+                                destination_number = get_cdr_from_row['destination_number']
+
+                                # number startswith 0 or `+` sign
+                                #remove leading +
+                                sanitized_destination = re.sub("^\++","",destination_number)
+                                #remove leading 011
+                                sanitized_destination = re.sub("^011+","",sanitized_destination)
+                                #remove leading 00
+                                sanitized_destination = re.sub("^0+","",sanitized_destination)
+
+                                prefix_list = prefix_list_string(sanitized_destination)
+
+                                authorized = 1 # default
+                                #check desti against whiltelist
+                                authorized = chk_prefix_in_whitelist(prefix_list)
+                                if authorized:
+                                    authorized = 1 # allowed destination
+                                else:
+                                    #check desti against blacklist
+                                    authorized = chk_prefix_in_blacklist(prefix_list)
+                                    if not authorized:
+                                        authorized = 0 # not allowed destination
+
+                                country_id = get_country_id(prefix_list)
+
                                 #print get_cdr_from_row
                                 """
                                 # Prepare global CDR
