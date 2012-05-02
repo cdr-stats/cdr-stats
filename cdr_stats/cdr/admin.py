@@ -87,49 +87,65 @@ class SwitchAdmin(admin.ModelAdmin):
         if request.method == 'POST':
             form = CDR_FileImport(request.user, request.POST, request.FILES)
             if form.is_valid():
-                # col_no - field name
-                #  0     - date
-                #  1     - destination
-                #  2     - account_code
-                #  3     - country_id
-                #  4     - switch_id
-                #  5     - duration
-                #  6     - bill sec
-                # To count total rows of CSV file
-                records = csv.reader(request.FILES['csv_file'],
-                    delimiter=',', quotechar='"')
-                total_rows = len(list(records))
+                #print request.POST
+                cdr_field_list = {}
+                for i in CDR_FIELD_LIST:
+                    cdr_field_list[i[0]] = int(request.POST[i[0]])
+                #print cdr_field_list
+                #print sorted(cdr_field_list, key=lambda key: cdr_field_list[key])
+                #print sorted(cdr_field_list, key=cdr_field_list.get)
+                countMap = {}
+                for v in cdr_field_list.itervalues():
+                    countMap[v] = countMap.get(v, 0) + 1
+                uni = [ k for k, v in cdr_field_list.iteritems() if countMap[v] == 1]
+                if len(uni) == len(CDR_FIELD_LIST):
+                    print "start import"
+                    # col_no - field name
+                    #  0     - date
+                    #  1     - destination
+                    #  2     - account_code
+                    #  3     - country_id
+                    #  4     - switch_id
+                    #  5     - duration
+                    #  6     - bill sec
+                    # To count total rows of CSV file
+                    records = csv.reader(request.FILES['csv_file'],
+                        delimiter=',', quotechar='"')
+                    total_rows = len(list(records))
 
-                rdr = csv.reader(request.FILES['csv_file'],
-                    delimiter=',', quotechar='"')
-                contact_record_count = 0
-                # Read each Row
-                for row in rdr:
-                    if (row and str(row[0]) > 0):
-                        row = striplist(row)
-                        try:
-                            # check field type
-                            int(row[5])
-
+                    rdr = csv.reader(request.FILES['csv_file'],
+                        delimiter=',', quotechar='"')
+                    contact_record_count = 0
+                    # Read each Row
+                    for row in rdr:
+                        if (row and str(row[0]) > 0):
+                            row = striplist(row)
                             try:
-                                # check if prefix is already
-                                # existing in the retail plan or not
+                                # check field type
+                                int(row[5])
 
-                                msg = _('CDR already exists !!')
-                                error_import_list.append(row)
+                                try:
+                                    # check if prefix is already
+                                    # existing in the retail plan or not
+
+                                    msg = _('CDR already exists !!')
+                                    error_import_list.append(row)
+                                except:
+                                    # if not, insert record
+                                    cdr_record_count =\
+                                    cdr_record_count + 1
+                                    msg =\
+                                    _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
+                                    % {'cdr_record_count': cdr_record_count,
+                                       'total_rows': total_rows}
+                                    # (cdr_record_count, total_rows)
+                                    success_import_list.append(row)
                             except:
-                                # if not, insert record
-                                cdr_record_count =\
-                                cdr_record_count + 1
-                                msg =\
-                                _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
-                                % {'cdr_record_count': cdr_record_count,
-                                   'total_rows': total_rows}
-                                # (cdr_record_count, total_rows)
-                                success_import_list.append(row)
-                        except:
-                            msg = _("Error : invalid value for import! Check import samples.")
-                            type_error_import_list.append(row)
+                                msg = _("Error : invalid value for import! Check import samples.")
+                                type_error_import_list.append(row)
+                else:
+                    print "error"
+                    msg = _("Error : invalid value in filed selection order.")
         else:
             form = CDR_FileImport(request.user)
 

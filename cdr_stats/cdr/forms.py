@@ -286,6 +286,23 @@ class FileImport(forms.Form):
         else:
             return filename
 
+CDR_FIELD_LIST = (('caller_id_number', 'caller_id_number'),
+                  ('caller_id_name', 'caller_id_name'),
+                  ('destination_number', 'destination_number'),
+                  ('duration', 'duration'),
+                  ('billsec', 'billsec'),
+                  ('hangup_cause_id', 'hangup_cause'),
+                  ('direction', 'direction'),
+                  ('uuid', 'uuid'),
+                  ('remote_media_ip', 'remote_media_ip'),
+                  ('start_uepoch', 'start_uepoch'),
+                  ('answer_uepoch', 'answer_uepoch'),
+                  ('end_uepoch', 'end_uepoch'),
+                  ('mduration', 'mduration'),
+                  ('billmsec', 'billmsec'),
+                  ('read_codec', 'read_codec'),
+                  ('write_codec', 'write_codec'))
+CDR_FIELD_LIST_NUM = [ (x, x) for x in range(1, len(CDR_FIELD_LIST)+1)]
 
 class CDR_FileImport(FileImport):
     """Admin Form : Import CSV file with phonebook CDR_FIELD_LIST"""
@@ -293,9 +310,26 @@ class CDR_FileImport(FileImport):
              choices=get_switch_list(), required=True, help_text=_("Select switch"))
     accountcode = forms.CharField(label=_('Account code'), required=True)
 
+    caller_id_number = forms.ChoiceField(label=_("caller_id_number"), required=True, choices=CDR_FIELD_LIST_NUM)
+    caller_id_name = forms.ChoiceField(label=_("caller_id_name"), required=True, choices=CDR_FIELD_LIST_NUM)
+    destination_number = forms.ChoiceField(label=_("destination_number"), required=True, choices=CDR_FIELD_LIST_NUM)
+    duration = forms.ChoiceField(label=_("duration"), required=True, choices=CDR_FIELD_LIST_NUM)
+    billsec = forms.ChoiceField(label=_("billsec"), required=True, choices=CDR_FIELD_LIST_NUM)
+    hangup_cause_id = forms.ChoiceField(label=_("hangup_cause_id"), required=True, choices=CDR_FIELD_LIST_NUM)
+    direction = forms.ChoiceField(label=_("direction"), required=True, choices=CDR_FIELD_LIST_NUM)
+    uuid = forms.ChoiceField(label=_("uuid"), required=True, choices=CDR_FIELD_LIST_NUM)
+    remote_media_ip = forms.ChoiceField(label=_("remote_media_ip"), required=True, choices=CDR_FIELD_LIST_NUM)
+    start_uepoch = forms.ChoiceField(label=_("start_uepoch"), required=True, choices=CDR_FIELD_LIST_NUM)
+    answer_uepoch = forms.ChoiceField(label=_("answer_uepoch"), required=True, choices=CDR_FIELD_LIST_NUM)
+    end_uepoch = forms.ChoiceField(label=_("end_uepoch"), required=True, choices=CDR_FIELD_LIST_NUM)
+    mduration = forms.ChoiceField(label=_("mduration"), required=True, choices=CDR_FIELD_LIST_NUM)
+    billmsec = forms.ChoiceField(label=_("billmsec"), required=True, choices=CDR_FIELD_LIST_NUM)
+    read_codec = forms.ChoiceField(label=_("read_codec"), required=True, choices=CDR_FIELD_LIST_NUM)
+    write_codec = forms.ChoiceField(label=_("write_codec"), required=True, choices=CDR_FIELD_LIST_NUM)
+
+
     def __init__(self, user, *args, **kwargs):
         super(CDR_FileImport, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['switch', 'accountcode', 'csv_file']
 
     def clean_accountcode(self):
         """ """

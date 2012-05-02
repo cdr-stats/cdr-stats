@@ -55,19 +55,53 @@
 
 <form method="post" action="" enctype="multipart/form-data">{% csrf_token %}
     <table border=0>
-    {{ form.as_table }}
+    {% get_fieldset switch,accountcode,csv_file as file_fields from form %}
+    {% for field in file_fields %}
+        <tr>
+            <td>
+                <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
+            </td>
+            <td>
+                <div class="input">
+                    {{ field }}
+                    {% if field.errors %}
+                        <span class="help-inline">{{ field.errors|removetags:"ul li"|safe }}</span>
+                    {% endif %}
+                    <span class="help-block">{{ field.help_text }} </span>
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
 
-    {% for item in CDR_FIELD_LIST|groupby_columns:5 %}
+    <table>
+
+    {% for item in CDR_FIELD_LIST|groupby_columns:10 %}
         <tr class="{% cycle 'row1' 'row2' %}">
-            {% for obj in item %}
-                <td><select name="{{ obj.0 }}" id="id_{{ obj.0 }}">
-                    {% for j in CDR_FIELD_LIST_NUM  %}
-                        <option value="{{ j }}">{{ j }}</option>
-                    {% endfor %}
-                    </select>&nbsp;{{ obj.0 }}</td>
+            {% get_fieldset caller_id_number,caller_id_name as file_fields from form %}
+            {% for field in file_fields %}
+                {% if field %}
+                    <td>
+                        <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
+                    </td>
+                    <td>
+                        <div class="input">
+                            {{ field }}
+                            {% if field.errors %}
+                                <span class="help-inline">{{ field.errors|removetags:"ul li"|safe }}</span>
+                            {% endif %}
+                            <span class="help-block">{{ field.help_text }} </span>
+                        </div>
+                    </td>
+                {% else %}
+                    <td>&nbsp;</td>
+                {% endif %}
             {% endfor %}
         </tr>
     {% endfor %}
+    </table>
+
+    <table>
     <tr>
         <td colspan=2 align=right>
         <input type="submit" class="l-1" name="submit" value="{% trans "Submit" %}" />&nbsp;
