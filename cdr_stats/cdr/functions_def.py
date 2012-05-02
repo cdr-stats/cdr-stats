@@ -34,7 +34,13 @@ def get_country_list():
 
 def get_hc_list():
     list = HangupCause.objects.all()
-    return ((l.id, l.enumeration) for l in list)
+    result = []
+    for l in list:
+        if len(l.enumeration) > 0:
+            result.append((l.id, l.enumeration))
+        else:
+            result.append((l.id, l.cause[:25].upper() + '...'))
+    return result
 
 
 def get_hangupcause_name(id):

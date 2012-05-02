@@ -11,7 +11,7 @@ $(function() {
 
 
 {% block content %}
-<div id="form_collapse" class="collapse">
+
 
 <form class="well form-search" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
 <div class="row">
@@ -19,31 +19,20 @@ $(function() {
         <div class="row">
             <div class="span4">
                 <label class="control-label" for="id_{{ form.from_date.name }}">{{ form.from_date.label }}</label>
-                <div class="input">
-                  {{ form.from_date }}
-                  <span class="help-block">{{ form.from_date.help_text|safe }} </span>
-                </div>
+                {{ form.from_date }}
             </div>
             <div class="span4">
                 <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }}</label>
-                <div class="input">
-                  {{ form.switch }}
-                </div>
+                {{ form.switch }}
+            </div>
+            <div class="span4">
+                <input type="submit" class="btn-primary" name="search" value={% trans "Search" %} />
             </div>
         </div>
     </div>
 </div>
-
-
-<div class="actions">
-  <input type="submit" class="btn-primary" name="search" value={% trans "Search" %} />
-</div>
 </form>
-</div>
-    
-<a class="btn btn-small" id="toggle_btn" href="#" data-toggle="collapse" data-target="#form_collapse">
-  <i class="icon-search"></i> <span>{% trans "Advance search" %}</span>
-</a>
+
 
 
 <script id="source">
@@ -125,7 +114,14 @@ $(function () {
 
 <div class="row">
     <div class="span12">
-        <div class="graph_header">{% trans "Concurrent Calls" %}</div>
+        <div class="graph_header">
+            {% trans "Concurrent Calls" %} -
+            <b>
+            {% if start_date  %}
+                {{ start_date|date:"jS N Y" }}
+            {% endif %}
+            </b>
+        </div>
         <div id="graph_responsive"></div>
     </div>
 </div>

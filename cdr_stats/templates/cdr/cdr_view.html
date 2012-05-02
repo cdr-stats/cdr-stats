@@ -27,8 +27,8 @@
 {% block content %}
 <div class="tabbable">
 <ul class="nav nav-tabs">
-    <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "Calls details record" %}</a></li>
-    <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "Report by Day" %}</a></li>
+    <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "calls detail records"|title %}</a></li>
+    <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "report by day"|title %}</a></li>
 </ul>
 
 <div id="form_collapse" class="collapse">
@@ -69,6 +69,9 @@
             <div class="input">
                 {{ form.destination }}&nbsp;&nbsp;{{ form.destination_type }}
             </div>
+            {% if form.destination.errors %}
+                <span class="help-inline">{{ form.destination.errors }}</span>
+            {% endif %}
           </div>
           {% if user.is_superuser %}
           <div class="span4">
@@ -76,6 +79,9 @@
             <div class="input">
                 {{ form.accountcode }}&nbsp;&nbsp;{{ form.accountcode_type }}
             </div>
+              {% if form.accountcode.errors %}
+                  <span class="help-inline">{{ form.accountcode.errors }}</span>
+              {% endif %}
           </div>
           {% endif %}
           <div class="span4">
@@ -83,6 +89,9 @@
             <div class="input">
               {{ form.caller }}&nbsp;&nbsp;{{ form.caller_type }}
             </div>
+            {% if form.caller.errors %}
+                <span class="help-inline error">{{ form.caller.errors }}</span>
+            {% endif %}
           </div>
       </div>
   </div>
@@ -108,6 +117,9 @@
                 <div class="input">
                     {{ form.duration }}&nbsp;&nbsp;{{ form.duration_type }}
                 </div>
+                {% if form.duration.errors %}
+                    <span class="help-inline">{{ form.duration.errors }}</span>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -139,14 +151,14 @@
 </div>
 
     <a class="btn btn-small" id="toggle_btn" href="#" data-toggle="collapse" data-target="#form_collapse">
-      <i class="icon-search"></i> <span>{% trans "Advance search" %}</span>
+      <i class="icon-search"></i> <span>{% trans "advanced search"|title %}</span>
     </a>
 
 
     <div class="tab-content">
     <div id="tabs-1" class="tab-pane {% if action == "tabs-1" or action == "" %}active{% endif %}">
         <div class="graph_header">
-            {% trans "Calls details record"|title %} -
+            {% trans "calls detail records"|title %} -
             <b>
             {% if start_date  %}
                 {{ start_date|date:"jS N Y" }}
@@ -172,10 +184,10 @@
                 <th>
                     {% ifequal col_name_with_order.sort_field 'caller_id_number' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" col_name_with_order.caller_id_number_up  %}
-                      {% trans "Clid" %}
+                      {% trans "CLID" %}
                       {% sort_link "<i class='icon-chevron-down'></i>" col_name_with_order.caller_id_number_down  %}
                     {% else %}
-                      {% sort_link "Clid" col_name_with_order.caller_id_number  %}
+                      {% sort_link "CLID" col_name_with_order.caller_id_number  %}
                     {% endifequal %}
                 </th>
                 <th>
@@ -190,12 +202,10 @@
                 <th>
                     {% ifequal col_name_with_order.sort_field 'duration' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" col_name_with_order.duration_up  %}
-                      <abbr title='{% trans "Duration" %}'>{% trans "Dur" %}</abbr>
+                      {% trans "Duration" %}
                       {% sort_link "<i class='icon-chevron-down'></i>" col_name_with_order.duration_down  %}
                     {% else %}
-                        <abbr title={% trans 'Duration' %}>
-                          {% sort_link "Dur" col_name_with_order.duration  %}
-                        </abbr>
+                      {% sort_link "Duration" col_name_with_order.duration  %}
                     {% endifequal %}
                 </th>
                 <th>
@@ -215,7 +225,7 @@
                       {% trans "Hangup cause" %}
                       {% sort_link "<i class='icon-chevron-down'></i>" col_name_with_order.hangup_cause_id_down  %}
                     {% else %}
-                      {% sort_link "Hangup cause" col_name_with_order.hangup_cause_id  %}
+                      {% sort_link "Hangup Cause" col_name_with_order.hangup_cause_id  %}
                     {% endifequal %}
                 </th>
                 <th>
@@ -286,7 +296,7 @@
             {% else %}
             <tr>
                 <td colspan="8" align="center">
-                    {% trans "No record found!" %}
+                    {% trans "no records found"|title %}
                 </td>
             </tr>
             {% endif %}

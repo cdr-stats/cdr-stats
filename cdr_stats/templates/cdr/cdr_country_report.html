@@ -50,6 +50,9 @@
                     <div class="input">
                         {{ form.duration }}&nbsp;{{ form.duration_type }}
                     </div>
+                    {% if form.duration.errors %}
+                        <span class="help-inline error">{{ form.duration.errors }}</span>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -82,7 +85,7 @@
 </div>
 
 <a class="btn btn-small" id="toggle_btn" href="#" data-toggle="collapse" data-target="#form_collapse">
-  <i class="icon-search"></i> <span>{% trans "Advance search" %}</span>
+  <i class="icon-search"></i> <span>{% trans "advanced search"|title %}</span>
 </a>
 
 <script id="source" language="javascript" type="text/javascript">
@@ -221,19 +224,16 @@ $(function () {
     </div>
 </div>
 
-
-<br/>
-
-    <script type="text/javascript">
+<script type="text/javascript">
     //country pi
-    function pieHoverCountry(event, pos, obj){
+    function pieHoverCountrycalls(event, pos, obj){
         if (!obj)
             return;
         percent = parseFloat(obj.series.percent).toFixed(2);
-        $("#country_hover").html('<span style="font-weight: bold; color: '+obj.series.color+'">'+obj.series.label+' ('+percent+'%)</span>');
+        $("#country_hover_calls").html('<span style="font-weight: bold; color: '+obj.series.color+'">'+obj.series.label+' ('+percent+'%)</span>');
     }
 
-    function pieClickCountry(event, pos, obj){
+    function pieClickCountrycalls(event, pos, obj){
         if (!obj)
            return;
         percent = parseFloat(obj.series.percent).toFixed(2);
@@ -272,16 +272,73 @@ $(function () {
                 clickable: true
             }
         };
-        $("#country_pie").bind("plothover", pieHoverCountry);
-        $("#country_pie").bind("plotclick", pieClickCountry);
-        var plot = $.plot($("#country_pie"), data, options);
+        $("#country_pie_calls").bind("plothover", pieHoverCountrycalls);
+        $("#country_pie_calls").bind("plotclick", pieClickCountrycalls);
+        var plot = $.plot($("#country_pie_calls"), data, options);
     });
-    </script>
+
+    function pieHoverCountryduration(event, pos, obj){
+        if (!obj)
+            return;
+        percent = parseFloat(obj.series.percent).toFixed(2);
+        $("#country_hover_duration").html('<span style="font-weight: bold; color: '+obj.series.color+'">'+obj.series.label+' ('+percent+'%)</span>');
+    }
+
+    function pieClickCountryduration(event, pos, obj){
+        if (!obj)
+            return;
+        percent = parseFloat(obj.series.percent).toFixed(2);
+        alert(''+obj.series.label+': '+percent+'%');
+    }
+
+    $(function () {
+
+        var data = [
+            {% for td in country_analytic_array_final %}
+                { label: '{{ td.0 }}' , data: [[1, {{ td.2 }}]]},
+            {% endfor %}
+        ];
+
+        var options = {
+            series: {
+                pie: {
+                    show: true,
+                    innerRadius: 0.35,
+                    radius: 1,
+                    label: {
+                        show: true,
+                        radius: 3/4,
+                        formatter: function(label, series){
+                            return '<div style="font-size:8pt;text-align:center;padding-bottom:2px;color:white;">'+label+'<br/>'+Math.round(series.percent)+'%</div>';
+                        }
+                    },
+                    background: { opacity: 0.5 }
+                }
+            },
+            legend: {
+                show: false
+            },
+            grid: {
+                hoverable: true,
+                clickable: true
+            }
+        };
+        $("#country_pie_duration").bind("plothover", pieHoverCountryduration);
+        $("#country_pie_duration").bind("plotclick", pieClickCountryduration);
+        var plot = $.plot($("#country_pie_duration"), data, options);
+    });
+</script>
 
     <div class="row">
         <div class="span6 welldashboard">
+            <h2 align="center">{% trans "Countries per calls"|title %}</h2>
+            <hr/>
+            <div id="country_pie_calls" style="width:350px;height:350px;margin:auto;"></div>
+            <div id="country_hover_calls"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
+
+            <br/>
             <div class="span6">
-                <h3 align="left">{% trans "10 most called countries"|title %}</h3>
+                <h3 align="left">{{ DISPLAY_NO_OF_COUNTRY }} {% trans "most called countries per calls"|title %}</h3>
                 <table>
                     <tbody>
                     {% for country_data in top_ten_country_analytic %}
@@ -289,7 +346,6 @@ $(function () {
                             <td class="td-dashboard"><img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}"></td>
                             <td class="td-dashboard" width="100">{{ country_data.0 }}</td>
                             <td width="100">{{ country_data.1 }} {% trans "Calls"%}</td>
-                            <td>{{ country_data.2|conv_min }} {% trans "minutes"%}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -301,19 +357,43 @@ $(function () {
                         <td class="td-dashboard"><img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World"%}"></td>
                         <td class="td-dashboard" width="100">{% trans "Total"%}</td>
                         <td width="100">{{ total_calls }} {% trans "Calls"%}</td>
-                        <td>{{ total_duration|conv_min }} {% trans "minutes"%}</td>
                     </tr>
                     </tbody>
                 </table>
             </div>
         </div>
         <div class="span6 welldashboard">
+            <h2 align="center">{% trans "Countries per duration"|title %}</h2>
+            <hr/>
+            <div id="country_pie_duration" style="width:350px;height:350px;margin:auto;"></div>
+            <div id="country_hover_duration"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
+            <br/>
             <div class="span6">
-                <div id="country_pie" style="width:350px;height:350px;margin:auto;"></div>
-                <div id="country_hover"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
+                <h3 align="left">{{ DISPLAY_NO_OF_COUNTRY }} {% trans "most called countries per duration"|title %}</h3>
+                <table>
+                    <tbody>
+                    {% for country_data in top_ten_country_analytic %}
+                        <tr>
+                            <td class="td-dashboard"><img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}"></td>
+                            <td class="td-dashboard" width="100">{{ country_data.0 }}</td>
+                            <td>{{ country_data.2|conv_min }} {% trans "minutes"%}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <hr style="width:400px;"/>
+                <table>
+                    <tbody>
+                    <tr>
+                        <td class="td-dashboard"><img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World"%}"></td>
+                        <td class="td-dashboard" width="100">{% trans "Total"%}</td>
+                        <td>{{ total_duration|conv_min }} {% trans "minutes"%}</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-       
+
 {% endblock %}
 

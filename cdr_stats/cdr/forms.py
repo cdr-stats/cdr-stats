@@ -25,16 +25,17 @@ from cdr.models import *
 from cdr.functions_def import *
 from user_profile.models import UserProfile
 
-STRING_SEARCH_TYPE_LIST = ((1, _('Equals')),
-                           (2, _('Begins with')),
+STRING_SEARCH_TYPE_LIST = ((2, _('Begins with')),
                            (3, _('Contains')),
-                           (4, _('Ends with')))
+                           (4, _('Ends with')),
+                           (1, _('Equals')),
+                           )
 
-COMPARE_LIST = ((1, '='),
-                (2, '>'),
+COMPARE_LIST = ((2, '>'),
                 (3, '>='),
                 (4, '<'),
-                (5, '<='))
+                (5, '<='),
+                (1, '='),)
 
 PAGE_SIZE_LIST = ((10, '10'),
                   (25, '25'),
@@ -43,28 +44,6 @@ PAGE_SIZE_LIST = ((10, '10'),
                   (250, '250'),
                   (500, '500'),
                   (1000, '1000'))
-
-CDR_FIELD_LIST = (('caller_id_number', 'caller_id_number'),
-                  ('caller_id_name', 'caller_id_name'),
-                  ('destination_number', 'destination_number'),
-                  ('duration', 'duration'),
-                  ('billsec', 'billsec'),
-                  ('hangup_cause_id', 'hangup_cause'),
-                  ('direction', 'direction'),
-                  ('uuid', 'uuid'),
-                  ('remote_media_ip', 'remote_media_ip'),
-                  ('start_uepoch', 'start_uepoch'),
-                  ('answer_uepoch', 'answer_uepoch'),
-                  ('end_uepoch', 'end_uepoch'),
-                  ('mduration', 'mduration'),
-                  ('billmsec', 'billmsec'),
-                  ('read_codec', 'read_codec'),
-                  ('write_codec', 'write_codec'),
-                  ('cdr_type', 'cdr_type'),
-                  ('cdr_object_id', 'cdr_object_id'),
-                  ('country_id', 'country_id'),
-                  ('authorized', 'authorized')
-                 )
 
 DATE_HELP_TEXT = _("Please use the following format")+": <em>YYYY-MM-DD</em>."
 COUNTRY_HELP_TEXT = _('Hold down "Ctrl", "Command" on Mac, to select more than one.')
@@ -102,7 +81,7 @@ def country_list_with_all():
 
 class SearchForm(forms.Form):
     """Form used to search on general parameters in the Customer UI."""
-    caller = forms.CharField(label=_('Caller Id'), required=False)
+    caller = forms.CharField(label=_('Caller ID'), required=False)
     caller_type = forms.ChoiceField(label='', required=False,
                                     choices=STRING_SEARCH_TYPE_LIST)
     caller_type.widget.attrs['class'] = 'input-small'
@@ -112,7 +91,7 @@ class SearchForm(forms.Form):
                                          choices=STRING_SEARCH_TYPE_LIST)
     destination_type.widget.attrs['class'] = 'input-small'
 
-    accountcode = forms.CharField(label=_('Account code'), required=False)
+    accountcode = forms.CharField(label=_('Account Code'), required=False)
     accountcode_type = forms.ChoiceField(label='', required=False,
                                          choices=STRING_SEARCH_TYPE_LIST)
     accountcode_type.widget.attrs['class'] = 'input-small'
@@ -135,6 +114,46 @@ class SearchForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(SearchForm, self).__init__(*args, **kwargs)
         self.fields['switch'].choices = sw_list_with_all()
+
+    def clean_caller(self):
+        """ """
+        caller = self.cleaned_data['caller']
+        if caller:
+            try:
+                int(caller)
+            except:
+                raise forms.ValidationError('%s is not a valid caller.' % caller)
+        return caller
+
+    def clean_duration(self):
+        """ """
+        duration = self.cleaned_data['duration']
+        if duration:
+            try:
+                int(duration)
+            except:
+                raise forms.ValidationError('%s is not a valid duration.' % duration)
+        return duration
+
+    def clean_accountcode(self):
+        """ """
+        accountcode = self.cleaned_data['accountcode']
+        if accountcode:
+            try:
+                int(accountcode)
+            except:
+                raise forms.ValidationError('%s is not a valid accountcode.' % accountcode)
+        return accountcode
+
+    def clean_destination(self):
+        """ """
+        destination = self.cleaned_data['destination']
+        if destination:
+            try:
+                int(destination)
+            except:
+                raise forms.ValidationError('%s is not a valid destination.' % destination)
+        return destination
 
 
 class CdrSearchForm(SearchForm):
@@ -177,7 +196,7 @@ class CompareCallSearchForm(SearchForm):
     from_date = forms.CharField(label=_('Select date'), required=True,
                                 max_length=10)
 
-    comp_days = forms.ChoiceField(label='', required=False, choices=comp_day_range())
+    comp_days = forms.ChoiceField(label='', required=False, choices=comp_day_range(6))
     comp_days.widget.attrs['class'] = 'input-small'
     graph_view = forms.ChoiceField(label=_('Graph'), required=False,
                  choices=((1, _('Calls per Hour')), (2,_('Minutes per Hour'))))
@@ -221,7 +240,7 @@ class loginForm(forms.Form):
 class EmailReportForm(ModelForm):
     """Form used to change the detail of a user in the Customer UI."""
     multiple_email = forms.CharField(max_length=300, required=False,
-                           label=_("Enter e-mails to receive the mail report, if more than one separate by comma"))
+                           label=_("Enter email addresses to receive the report separated by a comma"))
     multiple_email.widget.attrs['class'] = 'span6'
 
     class Meta:
@@ -267,6 +286,24 @@ class FileImport(forms.Form):
         else:
             return filename
 
+CDR_FIELD_LIST = (('caller_id_number'),
+                  ('caller_id_name'),
+                  ('destination_number'),
+                  ('duration'),
+                  ('billsec'),
+                  ('hangup_cause_id'),
+                  ('direction'),
+                  ('uuid'),
+                  ('remote_media_ip'),
+                  ('start_uepoch'),
+                  ('answer_uepoch'),
+                  ('end_uepoch'),
+                  ('mduration'),
+                  ('billmsec'),
+                  ('read_codec'),
+                  ('write_codec'))
+
+CDR_FIELD_LIST_NUM = [ (x, x) for x in range(1, len(CDR_FIELD_LIST)+1)]
 
 class CDR_FileImport(FileImport):
     """Admin Form : Import CSV file with phonebook CDR_FIELD_LIST"""
@@ -274,6 +311,33 @@ class CDR_FileImport(FileImport):
              choices=get_switch_list(), required=True, help_text=_("Select switch"))
     accountcode = forms.CharField(label=_('Account code'), required=True)
 
+    caller_id_number = forms.ChoiceField(label=_("caller_id_number"), required=True, choices=CDR_FIELD_LIST_NUM)
+    caller_id_name = forms.ChoiceField(label=_("caller_id_name"), required=True, choices=CDR_FIELD_LIST_NUM)
+    destination_number = forms.ChoiceField(label=_("destination_number"), required=True, choices=CDR_FIELD_LIST_NUM)
+    duration = forms.ChoiceField(label=_("duration"), required=True, choices=CDR_FIELD_LIST_NUM)
+    billsec = forms.ChoiceField(label=_("billsec"), required=True, choices=CDR_FIELD_LIST_NUM)
+    hangup_cause_id = forms.ChoiceField(label=_("hangup_cause_id"), required=True, choices=CDR_FIELD_LIST_NUM)
+    direction = forms.ChoiceField(label=_("direction"), required=True, choices=CDR_FIELD_LIST_NUM)
+    uuid = forms.ChoiceField(label=_("uuid"), required=True, choices=CDR_FIELD_LIST_NUM)
+    remote_media_ip = forms.ChoiceField(label=_("remote_media_ip"), required=True, choices=CDR_FIELD_LIST_NUM)
+    start_uepoch = forms.ChoiceField(label=_("start_uepoch"), required=True, choices=CDR_FIELD_LIST_NUM)
+    answer_uepoch = forms.ChoiceField(label=_("answer_uepoch"), required=True, choices=CDR_FIELD_LIST_NUM)
+    end_uepoch = forms.ChoiceField(label=_("end_uepoch"), required=True, choices=CDR_FIELD_LIST_NUM)
+    mduration = forms.ChoiceField(label=_("mduration"), required=True, choices=CDR_FIELD_LIST_NUM)
+    billmsec = forms.ChoiceField(label=_("billmsec"), required=True, choices=CDR_FIELD_LIST_NUM)
+    read_codec = forms.ChoiceField(label=_("read_codec"), required=True, choices=CDR_FIELD_LIST_NUM)
+    write_codec = forms.ChoiceField(label=_("write_codec"), required=True, choices=CDR_FIELD_LIST_NUM)
+
+
     def __init__(self, user, *args, **kwargs):
         super(CDR_FileImport, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['switch', 'accountcode', 'csv_file']
+
+    def clean_accountcode(self):
+        """ """
+        accountcode = self.cleaned_data['accountcode']
+        if accountcode:
+            try:
+                int(accountcode)
+            except:
+                raise forms.ValidationError('%s is not a valid accountcode.' % accountcode)
+        return accountcode

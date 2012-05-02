@@ -38,6 +38,9 @@
                     <div class="input">
                         {{ form.destination }}&nbsp;&nbsp;{{ form.destination_type }}
                     </div>
+                    {% if form.destination.errors %}
+                        <span class="help-inline error">{{ form.destination.errors }}</span>
+                    {% endif %}
                 </div>
             </div>
             <div class="row">
@@ -64,7 +67,7 @@
     </div>
 
     <a class="btn btn-small" id="toggle_btn" href="#" data-toggle="collapse" data-target="#form_collapse">
-        <i class="icon-search"></i> <span>{% trans "Advance search" %}</span>
+        <i class="icon-search"></i> <span>{% trans "advanced search"|title %}</span>
     </a>
 
 

@@ -17,7 +17,6 @@ from django.utils.translation import gettext as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.safestring import mark_safe
 
-from pymongo.objectid import ObjectId
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 
