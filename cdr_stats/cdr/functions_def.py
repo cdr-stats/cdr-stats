@@ -59,6 +59,37 @@ def get_hangupcause_id(hangupcause_code):
         return ''
 
 
+def prefix_list_string(phone_number):
+    """
+    To return prefix string
+    For Example :-
+    phone_no = 34650XXXXXX
+    prefix_string = (34650, 3465, 346, 34)
+    """
+    phone_number = str(phone_number)
+    prefix_range = range(settings.PHONE_NO_PREFIX_LIMIT_MIN,
+        settings.PHONE_NO_PREFIX_LIMIT_MAX + 1)
+    prefix_range.reverse()
+    destination_prefix_list = ''
+    for i in prefix_range:
+        if i == settings.PHONE_NO_PREFIX_LIMIT_MIN:
+            destination_prefix_list = destination_prefix_list +\
+                                      phone_number[0:i]
+        else:
+            destination_prefix_list = destination_prefix_list +\
+                                      phone_number[0:i] + ', '
+    return str(destination_prefix_list)
+
+
+def get_country_id(prefix_list):
+    try:
+        prefix_obj = Prefix.objects.filter(prefix__in=eval(prefix_list))
+        country_id = prefix_obj[0].country_id.id
+    except:
+        country_id = 0
+    return country_id
+
+
 def get_country_name(id):
     try:
         obj = Country.objects.get(pk=id)

@@ -19,10 +19,29 @@ from django.db.models import *
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils.safestring import mark_safe
+from django.conf import settings
+
+from pymongo.connection import Connection
+from pymongo.errors import ConnectionFailure
 
 from cdr.models import *
 from cdr.forms import *
+from cdr_alert.models import Blacklist, Whitelist
+from cdr_alert.tasks import blacklist_whitelist_notification
+from country_dialcode.models import Prefix
 from common.common_functions import striplist
+
+from random import choice
+from uuid import uuid1
+from datetime import *
+import calendar
+import time
+import sys
+import random
+import json, ast
+import re
 import csv
 
 
