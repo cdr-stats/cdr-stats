@@ -21,28 +21,10 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 
 from cdr.models import *
-from cdr.forms import CDR_FileImport
+from cdr.forms import *
 from common.common_functions import striplist
 import csv
 
-CDR_FIELD_LIST = (('caller_id_number', 'caller_id_number'),
-                  ('caller_id_name', 'caller_id_name'),
-                  ('destination_number', 'destination_number'),
-                  ('duration', 'duration'),
-                  ('billsec', 'billsec'),
-                  ('hangup_cause_id', 'hangup_cause'),
-                  ('direction', 'direction'),
-                  ('uuid', 'uuid'),
-                  ('remote_media_ip', 'remote_media_ip'),
-                  ('start_uepoch', 'start_uepoch'),
-                  ('answer_uepoch', 'answer_uepoch'),
-                  ('end_uepoch', 'end_uepoch'),
-                  ('mduration', 'mduration'),
-                  ('billmsec', 'billmsec'),
-                  ('read_codec', 'read_codec'),
-                  ('write_codec', 'write_codec'))
-
-CDR_FIELD_LIST_NUM = [ x for x in range(1, len(CDR_FIELD_LIST)+1)]
 
 # Switch
 class SwitchAdmin(admin.ModelAdmin):
@@ -91,7 +73,7 @@ class SwitchAdmin(admin.ModelAdmin):
                 cdr_field_list = {}
                 for i in CDR_FIELD_LIST:
                     cdr_field_list[i[0]] = int(request.POST[i[0]])
-                #print cdr_field_list
+
                 #print sorted(cdr_field_list, key=lambda key: cdr_field_list[key])
                 #print sorted(cdr_field_list, key=cdr_field_list.get)
                 countMap = {}

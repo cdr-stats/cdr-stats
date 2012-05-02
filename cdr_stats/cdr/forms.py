@@ -286,22 +286,23 @@ class FileImport(forms.Form):
         else:
             return filename
 
-CDR_FIELD_LIST = (('caller_id_number', 'caller_id_number'),
-                  ('caller_id_name', 'caller_id_name'),
-                  ('destination_number', 'destination_number'),
-                  ('duration', 'duration'),
-                  ('billsec', 'billsec'),
-                  ('hangup_cause_id', 'hangup_cause'),
-                  ('direction', 'direction'),
-                  ('uuid', 'uuid'),
-                  ('remote_media_ip', 'remote_media_ip'),
-                  ('start_uepoch', 'start_uepoch'),
-                  ('answer_uepoch', 'answer_uepoch'),
-                  ('end_uepoch', 'end_uepoch'),
-                  ('mduration', 'mduration'),
-                  ('billmsec', 'billmsec'),
-                  ('read_codec', 'read_codec'),
-                  ('write_codec', 'write_codec'))
+CDR_FIELD_LIST = (('caller_id_number'),
+                  ('caller_id_name'),
+                  ('destination_number'),
+                  ('duration'),
+                  ('billsec'),
+                  ('hangup_cause_id'),
+                  ('direction'),
+                  ('uuid'),
+                  ('remote_media_ip'),
+                  ('start_uepoch'),
+                  ('answer_uepoch'),
+                  ('end_uepoch'),
+                  ('mduration'),
+                  ('billmsec'),
+                  ('read_codec'),
+                  ('write_codec'))
+
 CDR_FIELD_LIST_NUM = [ (x, x) for x in range(1, len(CDR_FIELD_LIST)+1)]
 
 class CDR_FileImport(FileImport):
