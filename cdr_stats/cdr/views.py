@@ -1413,6 +1413,7 @@ def cdr_graph_by_hour(request):
         return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
 
     logging.debug('CDR hourly view start')
+    template_name = 'cdr/cdr_graph_by_hour.html'
     query_var = {}
     total_record = []
     #default
@@ -1472,6 +1473,21 @@ def cdr_graph_by_hour(request):
                 end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
                 if check_days==1:
                     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
+        else:
+            # form is not valid
+            total_record = []
+            variables = {'module': current_view(request),
+                         'form': form,
+                         'result': 'min',
+                         'graph_view': graph_view,
+                         'search_tag': search_tag,
+                         'from_date': from_date,
+                         'comp_days': comp_days,
+                         'total_record': total_record,
+                         }
+
+            return render_to_response(template_name, variables,
+                   context_instance = RequestContext(request))
 
     if len(query_var) == 0:
         from_date = datetime.today()
@@ -1515,8 +1531,8 @@ def cdr_graph_by_hour(request):
                      'total_record': total_record,
                      }
 
-        return render_to_response('cdr/cdr_graph_by_hour.html', variables,
-            context_instance = RequestContext(request))
+        return render_to_response(template_name, variables,
+               context_instance = RequestContext(request))
 
 
 @login_required
