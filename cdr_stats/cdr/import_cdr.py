@@ -21,8 +21,8 @@ from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 
 from cdr.models import Switch, HangupCause
-from cdr_alert.models import Blacklist, Whitelist
-from cdr_alert.tasks import blacklist_whitelist_notification
+from cdr.functions_def import *
+from cdr.functions_blacklist import *
 from country_dialcode.models import Prefix
 from random import choice
 from uuid import uuid1
@@ -51,6 +51,7 @@ CDR_DAILY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_DAILY]
 CDR_HOURLY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HOURLY]
 CDR_COUNTRY_REPORT = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY_REPORT]
 
+
 def update_cdr_collection(mongohandler, cdr_id, field_name):
     # change import_cdr_xxxx flag in cdr_common collection
     mongohandler.update(
@@ -60,89 +61,7 @@ def update_cdr_collection(mongohandler, cdr_id, field_name):
     return True
 
 
-def get_hangupcause_id(hangupcause_code):
-    try:
-        obj = HangupCause.objects.get(code=hangupcause_code)
-        return obj.id
-    except:
-        return ''
 
-    
-def prefix_list_string(phone_number):
-    """
-    To return prefix string
-    For Example :-
-    phone_no = 34650XXXXXX
-    prefix_string = (34650, 3465, 346, 34)
-    """
-    phone_number = str(phone_number)
-    prefix_range = range(settings.PHONE_NO_PREFIX_LIMIT_MIN,
-                         settings.PHONE_NO_PREFIX_LIMIT_MAX + 1)
-    prefix_range.reverse()
-    destination_prefix_list = ''
-    for i in prefix_range:
-        if i == settings.PHONE_NO_PREFIX_LIMIT_MIN:
-            destination_prefix_list = destination_prefix_list + \
-            phone_number[0:i]
-        else:
-            destination_prefix_list = destination_prefix_list + \
-            phone_number[0:i] + ', '
-    return str(destination_prefix_list)
-
-
-def get_country_id(prefix_list):
-    try:
-        prefix_obj = Prefix.objects.filter(prefix__in=eval(prefix_list))
-        country_id = prefix_obj[0].country_id.id
-    except:
-        country_id = 0
-    return country_id
-
-
-def chk_prefix_in_whitelist(prefix_list):
-    """Check destination no with allowed prefix"""
-    white_prefix_list = Whitelist.objects.all()
-    flag = False
-    if white_prefix_list:
-        for j in eval(prefix_list):
-            for i in white_prefix_list:
-                # Allowed Prefix
-                if i.phonenumber_prefix == j:
-                    flag = True
-                    break
-
-            # if flag is true
-            # allowed
-            if flag:
-                # TODO: Send alert
-                blacklist_whitelist_notification.delay(4) # notice_type = 4 whitelist
-                return True
-
-    # no whitelist define
-    return False
-
-
-def chk_prefix_in_blacklist(prefix_list):
-    """Check destination no with ban prefix"""
-    banned_prefix_list = Blacklist.objects.all()
-    flag = False
-    if banned_prefix_list:
-        for j in eval(prefix_list):
-            for i in banned_prefix_list:
-                # Banned Prefix
-                if i.phonenumber_prefix == j:
-                    flag = True
-                    break
-
-            # if flag is true
-            # not allowed
-            if flag:
-                # TODO: Send alert
-                blacklist_whitelist_notification.delay(3) # notice_type = 3 blacklist
-                return False
-
-    # no blacklist is defined
-    return True
 
 
 def print_shell(shell, message):

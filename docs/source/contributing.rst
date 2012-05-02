@@ -17,7 +17,7 @@ Community Code of Conduct
 Members of our community need to work together effectively, and this code 
 of conduct lays down the ground rules for our cooperation.
 
-Please read the following documentation about how the Newfies-Dialer Project functions, 
+Please read the following documentation about how the CDR-Stats Project functions, 
 coding styles expected for contributions, and the community standards we expect 
 everyone to abide by.
 
@@ -34,7 +34,7 @@ Be considerate.
 Your work will be used by other people, and you in turn will depend on the
 work of others.  Any decision you take will affect users and colleagues, and
 we expect you to take those consequences into account when making decisions.
-Even if it's not obvious at the time, our contributions to Newfies-Dialer will impact
+Even if it's not obvious at the time, our contributions to CDR-Stats will impact
 the work of others.  For example, changes to code, infrastructure, policy,
 documentation and translations during a release may negatively impact
 others work.
@@ -42,22 +42,22 @@ others work.
 Be respectful.
 --------------
 
-The Newfies-Dialer community and its members treat one another with respect. Everyone
-can make a valuable contribution to Newfies-Dialer.  We may not always agree, but
+The CDR-Stats community and its members treat one another with respect. Everyone
+can make a valuable contribution to CDR-Stats.  We may not always agree, but
 disagreement is no excuse for poor behaviour and bad manners.  We might all
 experience some frustration now and then, but we cannot allow that frustration
 to turn into a personal attack. It's important to remember that a community
 where people feel uncomfortable or threatened is not a productive one. We
-expect members of the Newfies-Dialer community to be respectful when dealing with
-other contributors as well as with people outside the Newfies-Dialer project and with
-users of Newfies-Dialer.
+expect members of the CDR-Stats community to be respectful when dealing with
+other contributors as well as with people outside the CDR-Stats project and with
+users of CDR-Stats.
 
 Be collaborative.
 -----------------
 
-Collaboration is central to Newfies-Dialer and to the larger free software community.
+Collaboration is central to CDR-Stats and to the larger free software community.
 We should always be open to collaboration. Your work should be done
-transparently and patches from Newfies-Dialer should be given back to the community
+transparently and patches from CDR-Stats should be given back to the community
 when they are made, not just when the distribution is released. If you wish
 to work on new code for existing upstream projects, at least keep those
 projects informed of your ideas and progress. It many not be possible to
@@ -71,7 +71,7 @@ When you disagree, consult others.
 ----------------------------------
 
 Disagreements, both political and technical, happen all the time and
-the Newfies-Dialer community is no exception. It is important that we resolve
+the CDR-Stats community is no exception. It is important that we resolve
 disagreements and differing views constructively and with the help of the
 community and community process. If you really want to go a different
 way, then we encourage you to make a derivative distribution or alternate
@@ -90,7 +90,7 @@ forum.
 Step down considerately.
 ------------------------
 
-Developers on every project come and go and Newfies-Dialer is no different. When you
+Developers on every project come and go and CDR-Stats is no different. When you
 leave or disengage from the project, in whole or in part, we ask that you do
 so in a way that minimises disruption to the project. This means you should
 tell people you are leaving and take the proper steps to ensure that others
@@ -133,7 +133,7 @@ spelling or other errors on the website/docs/code.
 If the error is from a Python traceback, include it in the bug report.
 
 We also need to know what platform you're running (Windows, OSX, Linux, etc),
-the version of your Python interpreter, the version of Newfies-Dialer and related
+the version of your Python interpreter, the version of CDR-Stats and related
 packages that you were running when the bug occurred.
 
 5) Submit the bug.
@@ -150,16 +150,15 @@ developer trying to fix the bug might ask.
 Issue Trackers
 --------------
 
-Bugs for a package in the Newfies-Dialer ecosystem should be reported to the relevant
+Bugs for a package in the CDR-Stats ecosystem should be reported to the relevant
 issue tracker.
 
-* Newfies-Dialer: http://github.com/Star2Billing/newfies-dialer/issues/
+* CDR-Stats: http://github.com/Star2Billing/cdr-stats/issues/
 * Celery: https://github.com/ask/celery/issues/
 * Freeswitch: http://jira.freeswitch.org/secure/Dashboard.jspa
-* Plivo: https://github.com/plivo/plivo/issues/
 
 If you are unsure of the origin of the bug you can ask the
-:ref:`mailing-list`, or just use the Newfies-Dialer issue tracker.
+:ref:`mailing-list`, or just use the CDR-Stats issue tracker.
 
 .. _coding-style:
 

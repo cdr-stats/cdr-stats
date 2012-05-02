@@ -1,17 +1,21 @@
 :Web: http://www.cdr-stats.org/
 :Download: http://www.cdr-stats.org/download/
-:Source:
-:Keywords: voip, freeswitch, asterisk, django, python, call, reporting, CDR
+:Source: https://github.com/Star2Billing/cdr-stats/
+:Keywords: voip, freeswitch, asterisk, django, python, call, reporting, 
+   CDR, mongoDB
 
 --
-
 
 .. _getting_started:
 
 Getting Started
 ===============
 
-CDR-Stats is a CDR viewer for Asterisk Call Data Records. (The Freeswitch version is under development). It allows you to interrogate your CDR to provide reports and statistics via a simple to use, yet powerful, web interface.
+CDR-Stats is free and open source call detail record analysis and reporting software for Freeswitch, 
+Asterisk and other type of VoIP Switch. It allows you to interrogate your CDR to provide reports 
+and statistics via a simple to use, yet powerful, web interface.
+
+It is based on the Django Python Framework, Celery, SocketIO, Gevent and MongoDB.
 
 .. _`Freeswitch`: http://www.freeswitch.org/
 .. _`Asterisk`: http://www.asterisk.org/
