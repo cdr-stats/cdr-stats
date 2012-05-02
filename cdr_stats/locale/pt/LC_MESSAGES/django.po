@@ -93,9 +93,8 @@ msgid "All"
 msgstr "Todos"
 
 #: cdr/forms.py:84
-#, fuzzy
 msgid "Caller ID"
-msgstr "Data da Ligação"
+msgstr "Caller ID"
 
 #: cdr/forms.py:89 cdr/models.py:120 templates/cdr/cdr_view.html:196
 #: templates/cdr/mail_report_template.html:13
@@ -103,9 +102,8 @@ msgid "Destination"
 msgstr "Destino"
 
 #: cdr/forms.py:94
-#, fuzzy
 msgid "Account Code"
-msgstr "Accountcode"
+msgstr "Account Code"
 
 #: cdr/forms.py:99 cdr/models.py:130 templates/cdr/cdr_country_report.html:192
 #: templates/cdr/cdr_dashboard.html:114 templates/cdr/cdr_overview.html:352
@@ -134,9 +132,8 @@ msgid "To"
 msgstr "Para"
 
 #: cdr/forms.py:163
-#, fuzzy
 msgid "Direction"
-msgstr "Duração"
+msgstr ""
 
 #: cdr/forms.py:164
 msgid "Inbound"
@@ -183,9 +180,8 @@ msgid "Check with"
 msgstr "Verifique com"
 
 #: cdr/forms.py:204
-#, fuzzy
 msgid "Previous days"
-msgstr "Semana anterior"
+msgstr ""
 
 #: cdr/forms.py:204
 msgid "Same day of the week"
@@ -205,14 +201,12 @@ msgid "Enter email addresses to receive the report separated by a comma"
 msgstr "Digite os endereços de e-mail para receber o relatório separados por uma vírgula"
 
 #: cdr/forms.py:275
-#, fuzzy
 msgid "Upload CSV File "
-msgstr "Exportar para um arquivo CSV"
+msgstr ""
 
 #: cdr/forms.py:277
-#, fuzzy
 msgid "Browse CSV file"
-msgstr "Exportar para um arquivo CSV"
+msgstr ""
 
 #: cdr/forms.py:284
 #, python-format
@@ -220,14 +214,12 @@ msgid "Document types accepted: %s"
 msgstr "Tipos de documentos aceitos:%s"
 
 #: cdr/forms.py:293
-#, fuzzy
 msgid "Select switch"
-msgstr "Selecione o dia"
+msgstr ""
 
 #: cdr/forms.py:294
-#, fuzzy
 msgid "Account code"
-msgstr "Accountcode"
+msgstr ""
 
 #: cdr/models.py:26
 msgid "ANSWER"
@@ -278,18 +270,16 @@ msgid "ITU-T Q.850 Code"
 msgstr "ITU-T Q.850 Código"
 
 #: cdr/models.py:75
-#, fuzzy
 msgid "Enumeration"
-msgstr "Duração"
+msgstr ""
 
 #: cdr/models.py:77
 msgid "Cause"
 msgstr "Causar"
 
 #: cdr/models.py:79
-#, fuzzy
 msgid "Description"
-msgstr "Destino"
+msgstr ""
 
 #: cdr/models.py:85
 msgid "Hangupcause"
@@ -312,24 +302,20 @@ msgid "Source"
 msgstr "Origem"
 
 #: cdr/models.py:121
-#, fuzzy
 msgid "Caller Id"
-msgstr "Chamadas :"
+msgstr "Caller ID"
 
 #: cdr/models.py:123
-#, fuzzy
 msgid "Destination context"
-msgstr "Destino"
+msgstr ""
 
 #: cdr/models.py:125
-#, fuzzy
 msgid "channel"
-msgstr "Canal"
+msgstr "canal"
 
 #: cdr/models.py:127
-#, fuzzy
 msgid "destination channel"
-msgstr "Destino"
+msgstr ""
 
 #: cdr/models.py:128
 msgid "Last app"
@@ -380,7 +366,6 @@ msgid "Account code is not assigned!"
 msgstr "Código de conta não é atribuído!"
 
 #: cdr/templatetags/cdr_extras.py:47
-#, fuzzy
 msgid "New"
 msgstr "Noticias"
 
@@ -423,9 +408,8 @@ msgid "Week"
 msgstr "Semana"
 
 #: cdr_alert/models.py:26 templates/cdr/cdr_overview.html:496
-#, fuzzy
 msgid "Month"
-msgstr "mes"
+msgstr ""
 
 #: cdr_alert/models.py:30
 msgid "Active"
@@ -529,9 +513,8 @@ msgid ""
 msgstr "Aloc (duração média de chamada); ASR (resposta aproveitar ratio); CIC (consecutivos Convida incompletos)"
 
 #: cdr_alert/models.py:113
-#, fuzzy
 msgid "Condition"
-msgstr "Disposição"
+msgstr ""
 
 #: cdr_alert/models.py:114
 msgid "Value"
@@ -558,28 +541,24 @@ msgid "Alarms"
 msgstr "Alarmes"
 
 #: cdr_alert/models.py:152
-#, fuzzy
 msgid "Select Alarm"
-msgstr "Selecione o dia"
+msgstr ""
 
 #: cdr_alert/models.py:153
 msgid "Calculated value"
 msgstr "Valor calculado"
 
 #: cdr_alert/models.py:165
-#, fuzzy
 msgid "Alarm Report"
-msgstr "Relatório Global"
+msgstr ""
 
 #: cdr_alert/models.py:166
-#, fuzzy
 msgid "Alarms Report"
-msgstr "Relatório Global"
+msgstr ""
 
 #: cdr_alert/models.py:183 cdr_alert/models.py:207
-#, fuzzy
 msgid "Select Country"
-msgstr "Selecione o dia"
+msgstr ""
 
 #: cdr_alert/models.py:189 cdr_alert/models.py:190
 msgid "Blacklist"
@@ -606,18 +585,16 @@ msgid "Alert Message \"%(user)s\" - \"%(user_id)s\""
 msgstr "Alerta de Mensagem \"% (user) s\" - \"% (user_id) s\""
 
 #: cdr_alert/tasks.py:395
-#, fuzzy
 msgid "CDR Report"
-msgstr "Relatório Global"
+msgstr ""
 
 #: custom_admin_tools/dashboard.py:71
 msgid "Task Manager"
 msgstr "Gerenciador de Tarefas"
 
 #: custom_admin_tools/dashboard.py:75
-#, fuzzy
 msgid "Dashboard Stats"
-msgstr "Painel de instrumentos"
+msgstr ""
 
 #: custom_admin_tools/dashboard.py:78 custom_admin_tools/dashboard.py:135
 msgid "Recent Actions"
@@ -641,9 +618,8 @@ msgstr "Ir para CDR-Stats.org"
 
 #: custom_admin_tools/dashboard.py:106
 #: templates/cdr/registration/user_detail_change.html:129
-#, fuzzy
 msgid "Change password"
-msgstr "senha"
+msgstr ""
 
 #: custom_admin_tools/dashboard.py:108 templates/cdr/bootstrap_menu.html:56
 msgid "Log out"
@@ -658,9 +634,8 @@ msgid "CDR-Stats"
 msgstr "CDR-Stats"
 
 #: custom_admin_tools/menu.py:29
-#, fuzzy
 msgid "Applications"
-msgstr "Minhas ações"
+msgstr ""
 
 #: custom_admin_tools/menu.py:33 templates/cdr/bootstrap_menu.html:53
 msgid "Administration"
@@ -679,9 +654,8 @@ msgid "Accepted methods"
 msgstr "Métodos aceitos"
 
 #: templates/admin/base_site.html:4
-#, fuzzy
 msgid "CDR-Stats Admin"
-msgstr "CDR-Stat Painel de Administração"
+msgstr "CDR-Stat Administração"
 
 #: templates/admin/filter.html:2
 #, python-format
@@ -700,9 +674,8 @@ msgid "Sample File"
 msgstr "Arquivo de Amostra"
 
 #: templates/admin/cdr/switch/import_cdr.html:56
-#, fuzzy
 msgid "contact"
-msgstr "Fale conosco"
+msgstr ""
 
 #: templates/admin/cdr/switch/import_cdr.html:57
 msgid "last name"
@@ -717,9 +690,8 @@ msgid "email-id"
 msgstr "e-mail-id"
 
 #: templates/admin/cdr/switch/import_cdr.html:60
-#, fuzzy
 msgid "description"
-msgstr "Destino"
+msgstr ""
 
 #: templates/admin/cdr/switch/import_cdr.html:61
 msgid "status"
@@ -742,9 +714,8 @@ msgid "Reset"
 msgstr "Redefinir"
 
 #: templates/admin/cdr/switch/import_cdr.html:129
-#, fuzzy
 msgid "Contact(s) imported"
-msgstr "Fale conosco"
+msgstr ""
 
 #: templates/admin/cdr/switch/import_cdr.html:145
 msgid "Contact(s) not imported"
@@ -756,9 +727,8 @@ msgstr "Incompatibilidade de tipo"
 
 #: templates/admin/cdr_alert/blacklist/blacklist_by_country.html:22
 #: templates/admin/cdr_alert/whitelist/whitelist_by_country.html:22
-#, fuzzy
 msgid "Select country"
-msgstr "Selecione o dia"
+msgstr ""
 
 #: templates/admin/cdr_alert/blacklist/blacklist_by_country.html:29
 #: templates/admin/cdr_alert/whitelist/whitelist_by_country.html:29
@@ -2429,9 +2399,8 @@ msgid "Admin"
 msgstr "Administrador"
 
 #: user_profile/models.py:104
-#, fuzzy
 msgid "Admins"
-msgstr "Administrador"
+msgstr "Admins"
 
 #: user_profile/views.py:138
 msgid "All notifications are marked as read."
