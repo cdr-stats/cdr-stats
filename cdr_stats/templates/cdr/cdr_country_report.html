@@ -50,6 +50,9 @@
                     <div class="input">
                         {{ form.duration }}&nbsp;{{ form.duration_type }}
                     </div>
+                    {% if form.duration.errors %}
+                        <span class="help-inline error">{{ form.duration.errors }}</span>
+                    {% endif %}
                 </div>
             </div>
         </div>
