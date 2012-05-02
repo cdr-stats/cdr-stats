@@ -797,6 +797,7 @@ func_install_redis_server() {
 #Install MongoDB
 func_install_mongodb() {
     cd /usr/src/
+    rm install-mongodb.sh
     wget https://raw.github.com/Star2Billing/cdr-stats/master/install/install-mongodb.sh
     bash install-mongodb.sh
 }
