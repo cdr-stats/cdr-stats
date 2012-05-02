@@ -1,17 +1,29 @@
-.. image:: https://github.com/Star2Billing/cdr-stats/raw/master/cdr_stats/resources/logo/icon_600.png
 
-CDR-Stats is a CDR viewer for Asterisk/Freeswitch Call Data Records. It allows you to 
-interrogate your CDR to provide reports and statistics via a simple to 
-use, yet powerful, web interface.
+.. image:: https://github.com/Star2Billing/cdr-stats/raw/master/docs/source/_static/images/cdr-stats_600.png
 
-It is based on the Django Python Framework which enables the building 
-of clean, maintainable web applications, and encourages rapid 
-development with clean and pragmatic design.
+CDR-Stats is free and open source call detail record analysis and reporting software for Freeswitch, 
+Asterisk and other type of VoIP Switch. It allows you to interrogate your CDR to provide reports 
+and statistics via a simple to use, yet powerful, web interface.
 
-Star2Billing S.L. is the company behind the development of CDR-Stats, and 
-was originally formed to provide a revenue stream to support the popular 
-open source A2Billing Telecom Switch and Billing System by providing 
-professional support, installation and consultancy services.
+It is based on the Django Python Framework, Celery, SocketIO, Gevent and MongoDB.
+
+
+Features
+--------
+
+* Highly scalable design to maintain high performance when facing Call Analytic with large quantities of data.
+
+* Single and Multi-server architectures to allow reporting on many millions of calls from multiple call data sources.
+
+* Browser Responsive - The pages resize to suit any browsing device so CDR-Stats can be managed from a phone browser, tablet or computer.
+
+* Alarms – Custom alarm triggers can be set for a range of conditions including average 	length of calls, failed calls, and unexpected destinations called.
+
+* Realtime Reporting of calls	in progress on supported platforms.
+
+* Fraud detection - Using graphical tools helps spot patterns which may indicate suspicious or fraudulent activity.
+
+* Multi-tenant System that allows CDR from multiple sources or CDR assigned to customers on 	the basis of account-code.
 
 
 Applications
@@ -35,28 +47,14 @@ Applications
 Documentation
 -------------
 
-General documentation :
+Complete documentation :
 
-    - https://github.com/Star2Billing/cdr-stats/blob/master/docs/cdr-stats_doc.rst
+    - http://cdr-stats.readthedocs.org/
 
-Models :
+Beginner's Guide :
 
-    - https://github.com/Star2Billing/cdr-stats/blob/master/docs/cdr_stats_model.png
+    - http://www.cdr-stats.org/documentation/beginners-guide/
 
-RestFul API :
-
-    - https://github.com/Star2Billing/cdr-stats/raw/master/docs/api_doc.pdf
-
-
-Coding Conventions
-------------------
-
-Please refer to those sources for the Coding Conventions :
-
-    - http://docs.djangoproject.com/en/dev/internals/contributing/#coding-style
-
-    - http://www.python.org/dev/peps/pep-0008/
-    
 
 Translation
 -----------
@@ -65,10 +63,32 @@ We are using myGengo to ease the translation :
     - http://mygengo.com/string/p/cdr-stats-1/
         
     
+Coding Conventions
+------------------
+
+This project is PEP8 compilant and please refer to these sources for the Coding 
+Conventions :
+
+    - http://docs.djangoproject.com/en/dev/internals/contributing/#coding-style
+
+    - http://www.python.org/dev/peps/pep-0008/
+    
+
+Additional information
+-----------------------
+
+Fork the project on GitHub : https://github.com/Star2Billing/newfies-dialer
+
+License : MPL 2.0 (https://raw.github.com/Star2Billing/newfies-dialer/master/COPYING)
+
+Website : http://www.newfies-dialer.org
+
+
 Support 
 -------
 
-Star2Billing S.L. (http://www.star2billing.com) offers consultancy including installation, training and customisation 
+Star2Billing S.L. (http://www.star2billing.com) offers consultancy including 
+installation, training and customization 
 
-Please email us at sales@star2billing.com for more information
-    
+Please email us at cdr-stats@star2billing.com for more information
+
