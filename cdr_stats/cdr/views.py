@@ -166,7 +166,7 @@ def cdr_view(request):
 
     if not check_cdr_data_exists(request):
         return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
-
+    template_name = 'cdr/cdr_view.html'
     logging.debug('CDR View Start')
     query_var = {}
     result = 1 # default min
@@ -259,6 +259,7 @@ def cdr_view(request):
             if len(country_id) >= 1:
                 request.session['session_country_id'] = country_id
         else:
+            # form is not valid
             action = 'tabs-1'
             menu = 'on'
             docs = []
@@ -294,7 +295,7 @@ def cdr_view(request):
                              'action': action,
                              }
             logging.debug('CDR View End')
-            return render_to_response('cdr/cdr_view.html', template_data,
+            return render_to_response(template_name, template_data,
                 context_instance=RequestContext(request))
 
     try:
@@ -547,7 +548,7 @@ def cdr_view(request):
                      'action': action,
                      }
     logging.debug('CDR View End')
-    return render_to_response('cdr/cdr_view.html', template_data,
+    return render_to_response(template_name, template_data,
                               context_instance=RequestContext(request))
 
 
@@ -1054,7 +1055,7 @@ def cdr_overview(request):
 
     if not check_cdr_data_exists(request):
         return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
-
+    template_name = 'cdr/cdr_overview.html'
     logging.debug('CDR overview start')
     query_var = {}
     tday = datetime.today()
@@ -1096,6 +1097,41 @@ def cdr_overview(request):
                 month_start_date = datetime(start_date.year, start_date.month, 1, 0, 0, 0, 0)
                 month_end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
 
+        else:
+            # form is not valid
+            total_hour_record = []
+            total_hour_call_count = []
+            total_hour_call_duration = []
+            total_day_record = []
+            total_day_call_duration = []
+            total_day_call_count = []
+            total_month_record = []
+            total_month_call_duration = []
+            total_month_call_count = []
+
+            tday = datetime.today()
+            start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
+            end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
+
+            variables = {'module': current_view(request),
+                         'form': form,
+                         'search_tag': search_tag,
+                         'total_hour_record': total_hour_record,
+                         'total_hour_call_count': total_hour_call_count,
+                         'total_hour_call_duration': total_hour_call_duration,
+                         'total_day_record': total_day_record,
+                         'total_day_call_count': total_day_call_count,
+                         'total_day_call_duration': total_day_call_duration,
+                         'total_month_record': total_month_record,
+                         'total_month_call_duration': total_month_call_duration,
+                         'total_month_call_count': total_month_call_count,
+                         'start_date': start_date,
+                         'end_date': end_date,
+                         'TOTAL_GRAPH_COLOR': TOTAL_GRAPH_COLOR,
+                         }
+
+            return render_to_response(template_name, variables,
+                                      context_instance = RequestContext(request))
 
     if len(query_var) == 0:
         tday = datetime.today()
@@ -1267,8 +1303,8 @@ def cdr_overview(request):
                      'TOTAL_GRAPH_COLOR': TOTAL_GRAPH_COLOR,
                      }
 
-        return render_to_response('cdr/cdr_overview.html', variables,
-            context_instance = RequestContext(request))
+        return render_to_response(template_name, variables,
+                                  context_instance = RequestContext(request))
 
 
 def get_hourly_data_for_date(start_date, end_date, query_var, graph_view):
