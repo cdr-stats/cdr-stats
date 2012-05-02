@@ -79,32 +79,76 @@ class SwitchAdmin(admin.ModelAdmin):
                 countMap = {}
                 for v in cdr_field_list.itervalues():
                     countMap[v] = countMap.get(v, 0) + 1
-                uni = [ k for k, v in cdr_field_list.iteritems() if countMap[v] == 1]
+                uni = [ (k, v) for k, v in cdr_field_list.iteritems() if countMap[v] == 1]
+                uni = sorted(uni, key=lambda uni: uni[1])
                 if len(uni) == len(CDR_FIELD_LIST):
                     print "start import"
+                    #print uni
                     # col_no - field name
-                    #  0     - date
-                    #  1     - destination
-                    #  2     - account_code
-                    #  3     - country_id
-                    #  4     - switch_id
-                    #  5     - duration
-                    #  6     - bill sec
+                    #  0     - caller_id_number
+                    #  1     - caller_id_name
+                    #  2     - destination_number
+                    #  3     - duration
+                    #  4     - billsec
+                    #  5     - hangup_cause_id
+                    #  6     - direction
+                    #  7     - uuid
+                    #  8     - remote_media_ip
+                    #  9     - start_uepoch
+                    #  10    - answer_uepoch
+                    #  11    - end_uepoch
+                    #  12    - mduration
+                    #  13    - billmsec
+                    #  14    - read_codec
+                    #  15    - write_codec
                     # To count total rows of CSV file
                     records = csv.reader(request.FILES['csv_file'],
-                        delimiter=',', quotechar='"')
+                                         delimiter=',', quotechar='"')
                     total_rows = len(list(records))
 
                     rdr = csv.reader(request.FILES['csv_file'],
-                        delimiter=',', quotechar='"')
+                                     delimiter=',', quotechar='"')
                     contact_record_count = 0
                     # Read each Row
                     for row in rdr:
                         if (row and str(row[0]) > 0):
                             row = striplist(row)
                             try:
-                                # check field type
-                                int(row[5])
+                                get_cdr_from_row = {}
+                                row_counter = 0
+                                for j in uni:
+                                    get_cdr_from_row[j[0]] = row[row_counter]
+                                    row_counter = row_counter + 1
+
+                                #print get_cdr_from_row
+                                """
+                                # Prepare global CDR
+                                cdr_record = {
+                                    'switch_id': switch.id,
+                                    'caller_id_number': get_cdr_from_row['caller_id_number'],
+                                    'caller_id_name': get_cdr_from_row['caller_id_name'],
+                                    'destination_number': get_cdr_from_row['destination_number'],
+                                    'duration': int(get_cdr_from_row['destination_number']),
+                                    'billsec': int(get_cdr_from_row['destination_number']),
+                                    'hangup_cause_id': get_hangupcause_id(get_cdr_from_row['destination_number']),
+                                    'accountcode': get_cdr_from_row['destination_number'],
+                                    'direction': get_cdr_from_row['destination_number'],
+                                    'uuid': get_cdr_from_row['destination_number'],
+                                    'remote_media_ip': get_cdr_from_row['destination_number'],
+                                    'start_uepoch': get_cdr_from_row['destination_number'],
+                                    'answer_uepoch': get_cdr_from_row['destination_number'],
+                                    'end_uepoch': get_cdr_from_row['destination_number'],
+                                    'mduration': get_cdr_from_row['destination_number'],
+                                    'billmsec': get_cdr_from_row['destination_number'],
+                                    'read_codec': get_cdr_from_row['destination_number'],
+                                    'write_codec': get_cdr_from_row['destination_number'],
+                                    'cdr_type': ,
+                                    'cdr_object_id': ,
+                                    'country_id': ,
+                                    'authorized': ,
+                                    }
+                                """
+
 
                                 try:
                                     # check if prefix is already
