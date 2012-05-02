@@ -31,7 +31,7 @@ from cdr.models import *
 from cdr.mapreduce import *
 
 from pymongo import *
-from pymongo.objectid import ObjectId
+from bson.objectid import ObjectId
 
 from datetime import *
 from dateutil import parser

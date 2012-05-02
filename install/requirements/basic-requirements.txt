@@ -11,5 +11,5 @@ feedparser
 celery==2.5.3
 redis
 kombu
-pymongo
+pymongo==2.2
 ordereddict

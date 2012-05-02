@@ -36,7 +36,6 @@ from tastypie import http
 from tastypie import fields
 
 from pymongo import *
-from pymongo.objectid import ObjectId
 
 from cdr.models import *
 from cdr.functions_def import *
