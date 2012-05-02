@@ -72,7 +72,7 @@ class SwitchAdmin(admin.ModelAdmin):
                 #print request.POST
                 cdr_field_list = {}
                 for i in CDR_FIELD_LIST:
-                    cdr_field_list[i[0]] = int(request.POST[i[0]])
+                    cdr_field_list[i] = int(request.POST[i])
 
                 #print sorted(cdr_field_list, key=lambda key: cdr_field_list[key])
                 #print sorted(cdr_field_list, key=cdr_field_list.get)
@@ -126,7 +126,6 @@ class SwitchAdmin(admin.ModelAdmin):
                                 msg = _("Error : invalid value for import! Check import samples.")
                                 type_error_import_list.append(row)
                 else:
-                    print "error"
                     msg = _("Error : invalid value in filed selection order.")
         else:
             form = CDR_FileImport(request.user)
