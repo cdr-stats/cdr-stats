@@ -43,6 +43,7 @@ import csv, codecs
 import logging
 
 TOTAL_GRAPH_COLOR = '#A61700'
+DISPLAY_NO_OF_COUNTRY = 10
 
 news_url = settings.NEWS_URL
 
@@ -166,7 +167,7 @@ def cdr_view(request):
 
     if not check_cdr_data_exists(request):
         return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
-
+    template_name = 'cdr/cdr_view.html'
     logging.debug('CDR View Start')
     query_var = {}
     result = 1 # default min
@@ -186,7 +187,8 @@ def cdr_view(request):
     caller_type = ''
     cli = ''
     search_tag = 0
-
+    action = 'tabs-1'
+    menu = 'on'
     if request.method == 'POST':
         logging.debug('CDR Search View')
         search_tag = 1
@@ -259,8 +261,8 @@ def cdr_view(request):
             if len(country_id) >= 1:
                 request.session['session_country_id'] = country_id
         else:
-            action = 'tabs-1'
-            menu = 'on'
+            # form is not valid
+            logging.debug('Error : CDR search form')
             docs = []
             docs_pages = 0
             PAGE_SIZE = settings.PAGE_SIZE
@@ -294,7 +296,7 @@ def cdr_view(request):
                              'action': action,
                              }
             logging.debug('CDR View End')
-            return render_to_response('cdr/cdr_view.html', template_data,
+            return render_to_response(template_name, template_data,
                 context_instance=RequestContext(request))
 
     try:
@@ -527,7 +529,7 @@ def cdr_view(request):
         total_duration = 0
         total_calls = 0
         total_avg_duration = 0
-    action = 'tabs-1'
+
     template_data = {'module': current_view(request),
                      'rows': docs,
                      'form': form,
@@ -547,7 +549,7 @@ def cdr_view(request):
                      'action': action,
                      }
     logging.debug('CDR View End')
-    return render_to_response('cdr/cdr_view.html', template_data,
+    return render_to_response(template_name, template_data,
                               context_instance=RequestContext(request))
 
 
@@ -882,16 +884,26 @@ def cdr_country_report(request):
         get all call records from mongodb collection for all countries
         to create country call
     """
-
     if not check_cdr_data_exists(request):
         return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
 
     logging.debug('CDR country report view start')
-    now = datetime.now()
+    template_name = 'cdr/cdr_country_report.html'
     form = CountryReportForm()
+
     switch_id = 0
     query_var = {}
     search_tag = 0
+    now = datetime.now()
+    start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
+    end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
+    from_date = start_date.strftime("%Y-%m-%d")
+    to_date = end_date.strftime("%Y-%m-%d")
+    form = CountryReportForm(initial={'from_date': from_date, 'to_date': to_date})
+
+    total_calls = 0
+    total_duration = 0
+    total_record_final = []
 
     if request.method == 'POST':
         logging.debug('CDR country report view with search option')
@@ -928,12 +940,22 @@ def cdr_country_report(request):
                 due = duration_field_chk_mongodb(duration, duration_type)
                 if due:
                     query_var['duration'] = due
-    else:
-        start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
-        end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
-        from_date = start_date.strftime("%Y-%m-%d")
-        to_date = end_date.strftime("%Y-%m-%d")
-        form = CountryReportForm(initial={'from_date': from_date, 'to_date': to_date})
+        else:
+            country_analytic_array_final = country_analytic_array = []
+            logging.debug('Error : CDR country report form')
+            variables = {'module': current_view(request),
+                         'total_calls': total_calls,
+                         'total_duration': total_duration,
+                         'total_record': total_record_final,
+                         'country_analytic_array_final': country_analytic_array_final,
+                         'top_ten_country_analytic' : country_analytic_array[0:11],
+                         'form': form,
+                         'search_tag': search_tag,
+                         'DISPLAY_NO_OF_COUNTRY': DISPLAY_NO_OF_COUNTRY,
+                         }
+
+            return render_to_response(template_name, variables,
+                   context_instance=RequestContext(request))
 
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
@@ -957,10 +979,6 @@ def cdr_country_report(request):
                                ('_id.c_Day', 1),
                                ('_id.d_Hour', 1),
                                ('_id.e_Min', 1)])
-
-    total_calls = 0
-    total_duration = 0
-    total_record_final = []
 
     for d in calls:
         graph_day = str(int(d['_id']['a_Year'])) + "-" + str(int(d['_id']['b_Month'])) + "-" + str(int(d['_id']['c_Day'])) + " "
@@ -998,15 +1016,15 @@ def cdr_country_report(request):
     # sort array based on call count in desc order
     country_analytic_array = sorted(country_analytic_array, key=lambda record: record[1], reverse=True)
 
-    # Top 10 countries list
-    for i in country_analytic_array[0:11]:
+    # Top countries list
+    for i in country_analytic_array[0: DISPLAY_NO_OF_COUNTRY ]:
         #i[0] - country name, i[1] - call count, i[2] - call duration, i[3] - country id,
         country_analytic_array_final.append((i[0], int(i[1]), int(i[2]), int(i[3])))
 
     # Other countries analytic
     other_country_call_count = 0
     other_country_call_duration = 0
-    for i in country_analytic_array[11:]:
+    for i in country_analytic_array[DISPLAY_NO_OF_COUNTRY:]:
         #i[0] - country name, i[1] - call count, i[2] - call duration
         other_country_call_count += int(i[1])
         other_country_call_duration += int(i[2])
@@ -1025,12 +1043,13 @@ def cdr_country_report(request):
                  'total_duration': total_duration,
                  'total_record': total_record_final,
                  'country_analytic_array_final': country_analytic_array_final,
-                 'top_ten_country_analytic' : country_analytic_array[0:11],
+                 'top_ten_country_analytic' : country_analytic_array[0:DISPLAY_NO_OF_COUNTRY],
                  'form': form,
                  'search_tag': search_tag,
+                 'DISPLAY_NO_OF_COUNTRY': DISPLAY_NO_OF_COUNTRY,
                 }
 
-    return render_to_response('cdr/cdr_country_report.html', variables,
+    return render_to_response(template_name, variables,
            context_instance=RequestContext(request))
 
 
@@ -1054,7 +1073,7 @@ def cdr_overview(request):
 
     if not check_cdr_data_exists(request):
         return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
-
+    template_name = 'cdr/cdr_overview.html'
     logging.debug('CDR overview start')
     query_var = {}
     tday = datetime.today()
@@ -1096,6 +1115,42 @@ def cdr_overview(request):
                 month_start_date = datetime(start_date.year, start_date.month, 1, 0, 0, 0, 0)
                 month_end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
 
+        else:
+            # form is not valid
+            logging.debug('Error : CDR overview search form')
+            total_hour_record = []
+            total_hour_call_count = []
+            total_hour_call_duration = []
+            total_day_record = []
+            total_day_call_duration = []
+            total_day_call_count = []
+            total_month_record = []
+            total_month_call_duration = []
+            total_month_call_count = []
+
+            tday = datetime.today()
+            start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
+            end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
+
+            variables = {'module': current_view(request),
+                         'form': form,
+                         'search_tag': search_tag,
+                         'total_hour_record': total_hour_record,
+                         'total_hour_call_count': total_hour_call_count,
+                         'total_hour_call_duration': total_hour_call_duration,
+                         'total_day_record': total_day_record,
+                         'total_day_call_count': total_day_call_count,
+                         'total_day_call_duration': total_day_call_duration,
+                         'total_month_record': total_month_record,
+                         'total_month_call_duration': total_month_call_duration,
+                         'total_month_call_count': total_month_call_count,
+                         'start_date': start_date,
+                         'end_date': end_date,
+                         'TOTAL_GRAPH_COLOR': TOTAL_GRAPH_COLOR,
+                         }
+
+            return render_to_response(template_name, variables,
+                                      context_instance = RequestContext(request))
 
     if len(query_var) == 0:
         tday = datetime.today()
@@ -1267,8 +1322,8 @@ def cdr_overview(request):
                      'TOTAL_GRAPH_COLOR': TOTAL_GRAPH_COLOR,
                      }
 
-        return render_to_response('cdr/cdr_overview.html', variables,
-            context_instance = RequestContext(request))
+        return render_to_response(template_name, variables,
+                                  context_instance = RequestContext(request))
 
 
 def get_hourly_data_for_date(start_date, end_date, query_var, graph_view):
@@ -1377,6 +1432,7 @@ def cdr_graph_by_hour(request):
         return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
 
     logging.debug('CDR hourly view start')
+    template_name = 'cdr/cdr_graph_by_hour.html'
     query_var = {}
     total_record = []
     #default
@@ -1436,6 +1492,22 @@ def cdr_graph_by_hour(request):
                 end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
                 if check_days==1:
                     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
+        else:
+            # form is not valid
+            logging.debug('Error : CDR hourly search form')
+            total_record = []
+            variables = {'module': current_view(request),
+                         'form': form,
+                         'result': 'min',
+                         'graph_view': graph_view,
+                         'search_tag': search_tag,
+                         'from_date': from_date,
+                         'comp_days': comp_days,
+                         'total_record': total_record,
+                         }
+
+            return render_to_response(template_name, variables,
+                   context_instance = RequestContext(request))
 
     if len(query_var) == 0:
         from_date = datetime.today()
@@ -1479,8 +1551,8 @@ def cdr_graph_by_hour(request):
                      'total_record': total_record,
                      }
 
-        return render_to_response('cdr/cdr_graph_by_hour.html', variables,
-            context_instance = RequestContext(request))
+        return render_to_response(template_name, variables,
+               context_instance = RequestContext(request))
 
 
 @login_required

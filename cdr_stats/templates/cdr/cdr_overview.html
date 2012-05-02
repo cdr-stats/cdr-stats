@@ -55,6 +55,9 @@
             <div class="input">
                 {{ form.destination }}&nbsp;&nbsp;{{ form.destination_type }}
             </div>
+            {% if form.destination.errors %}
+                <span class="help-inline error">{{ form.destination.errors }}</span>
+            {% endif %}
         </div>
     </div>
 

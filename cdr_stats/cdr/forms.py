@@ -296,3 +296,13 @@ class CDR_FileImport(FileImport):
     def __init__(self, user, *args, **kwargs):
         super(CDR_FileImport, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['switch', 'accountcode', 'csv_file']
+
+    def clean_accountcode(self):
+        """ """
+        accountcode = self.cleaned_data['accountcode']
+        if accountcode:
+            try:
+                int(accountcode)
+            except:
+                raise forms.ValidationError('%s is not a valid accountcode.' % accountcode)
+        return accountcode
