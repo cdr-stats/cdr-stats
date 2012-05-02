@@ -43,6 +43,7 @@ import csv, codecs
 import logging
 
 TOTAL_GRAPH_COLOR = '#A61700'
+DISPLAY_NO_OF_COUNTRY = 10
 
 news_url = settings.NEWS_URL
 
@@ -883,7 +884,6 @@ def cdr_country_report(request):
         get all call records from mongodb collection for all countries
         to create country call
     """
-
     if not check_cdr_data_exists(request):
         return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
 
@@ -951,6 +951,7 @@ def cdr_country_report(request):
                          'top_ten_country_analytic' : country_analytic_array[0:11],
                          'form': form,
                          'search_tag': search_tag,
+                         'DISPLAY_NO_OF_COUNTRY': DISPLAY_NO_OF_COUNTRY,
                          }
 
             return render_to_response(template_name, variables,
@@ -978,8 +979,6 @@ def cdr_country_report(request):
                                ('_id.c_Day', 1),
                                ('_id.d_Hour', 1),
                                ('_id.e_Min', 1)])
-
-
 
     for d in calls:
         graph_day = str(int(d['_id']['a_Year'])) + "-" + str(int(d['_id']['b_Month'])) + "-" + str(int(d['_id']['c_Day'])) + " "
@@ -1017,15 +1016,15 @@ def cdr_country_report(request):
     # sort array based on call count in desc order
     country_analytic_array = sorted(country_analytic_array, key=lambda record: record[1], reverse=True)
 
-    # Top 10 countries list
-    for i in country_analytic_array[0:11]:
+    # Top countries list
+    for i in country_analytic_array[0: DISPLAY_NO_OF_COUNTRY ]:
         #i[0] - country name, i[1] - call count, i[2] - call duration, i[3] - country id,
         country_analytic_array_final.append((i[0], int(i[1]), int(i[2]), int(i[3])))
 
     # Other countries analytic
     other_country_call_count = 0
     other_country_call_duration = 0
-    for i in country_analytic_array[11:]:
+    for i in country_analytic_array[DISPLAY_NO_OF_COUNTRY:]:
         #i[0] - country name, i[1] - call count, i[2] - call duration
         other_country_call_count += int(i[1])
         other_country_call_duration += int(i[2])
@@ -1044,9 +1043,10 @@ def cdr_country_report(request):
                  'total_duration': total_duration,
                  'total_record': total_record_final,
                  'country_analytic_array_final': country_analytic_array_final,
-                 'top_ten_country_analytic' : country_analytic_array[0:11],
+                 'top_ten_country_analytic' : country_analytic_array[0:DISPLAY_NO_OF_COUNTRY],
                  'form': form,
                  'search_tag': search_tag,
+                 'DISPLAY_NO_OF_COUNTRY': DISPLAY_NO_OF_COUNTRY,
                 }
 
     return render_to_response(template_name, variables,

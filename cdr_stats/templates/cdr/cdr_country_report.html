@@ -350,7 +350,7 @@ $(function () {
     <div class="row">
         <div class="span6 welldashboard">
             <div class="span6">
-                <h3 align="left">{% trans "10 most called countries"|title %}</h3>
+                <h3 align="left">{{ DISPLAY_NO_OF_COUNTRY }} {% trans "most called countries"|title %}</h3>
                 <table>
                     <tbody>
                     {% for country_data in top_ten_country_analytic %}
