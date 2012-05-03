@@ -59,7 +59,7 @@ class Web(Daemon):
 #    SocketIOServer((settings.SOCKETIO_HOST, settings.SOCKETIO_PORT), application, resource="socket.io").serve_forever()
 
 if __name__ == "__main__":
-    parser = optparse.OptionParser(usage="usage: %prog -d|c|m [options]", version="CDR-Stats scoketio-server " + version)
+    parser = optparse.OptionParser(usage="usage: %prog -d|c|m [options]", version="CDR-Stats socketio-server " + version)
     parser.add_option("-c", "--config", action="store", dest="config", default="rtm.cfg", help="Path to config file",)
     parser.add_option("-d", "--daemon", action="store_true", dest="daemon", default=False, help="Start as daemon",)
     parser.add_option("-m", "--master", action="store_true", dest="master", default=False, help="Start master in foreground",)
