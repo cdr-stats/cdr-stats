@@ -47,6 +47,12 @@ import json, ast
 import re
 import csv
 
+# Assign collection names to variables
+CDR_COMMON = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COMMON]
+CDR_MONTHLY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_MONTHLY]
+CDR_DAILY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_DAILY]
+CDR_HOURLY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HOURLY]
+CDR_COUNTRY_REPORT = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY_REPORT]
 
 # Switch
 class SwitchAdmin(admin.ModelAdmin):
@@ -197,18 +203,83 @@ class SwitchAdmin(admin.ModelAdmin):
                                     'country_id': country_id,
                                     'authorized': authorized,
                                     }
-                                #print cdr_record
+
 
                                 try:
                                     # check if prefix is already
                                     # existing in the retail plan or not
-
+                                    print cdr_record
+                                    #int(1.2)
                                     msg = _('CDR already exists !!')
                                     error_import_list.append(row)
                                 except:
                                     # if not, insert record
-                                    cdr_record_count =\
-                                    cdr_record_count + 1
+
+                                    # record global CDR
+                                    CDR_COMMON.insert(cdr_record)
+
+                                    # monthly collection
+                                    current_y_m = datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
+                                    CDR_MONTHLY.update(
+                                            {
+                                            'start_uepoch': current_y_m,
+                                            'destination_number': destination_number,
+                                            'hangup_cause_id': hangup_cause_id,
+                                            'accountcode': accountcode,
+                                            'switch_id': switch.id,
+                                            },
+                                            {
+                                            '$inc':
+                                                    {'calls': 1,
+                                                     'duration': int(cdr['variables']['duration']) }
+                                        }, upsert=True)
+
+
+                                    # daily collection
+                                    current_y_m_d = datetime.strptime(str(start_uepoch)[:10], "%Y-%m-%d")
+                                    CDR_DAILY.update(
+                                            {
+                                            'start_uepoch': current_y_m_d,
+                                            'destination_number': destination_number,
+                                            'hangup_cause_id': hangup_cause_id,
+                                            'accountcode': accountcode,
+                                            'switch_id': switch.id,
+                                            },
+                                            {
+                                            '$inc':
+                                                    {'calls': 1,
+                                                     'duration': int(cdr['variables']['duration']) }
+                                        },upsert=True)
+
+
+                                    # hourly collection
+                                    current_y_m_d_h = datetime.strptime(str(start_uepoch)[:13], "%Y-%m-%d %H")
+                                    CDR_HOURLY.update(
+                                            {
+                                            'start_uepoch': current_y_m_d_h,
+                                            'destination_number': destination_number,
+                                            'hangup_cause_id': hangup_cause_id,
+                                            'accountcode': accountcode,
+                                            'switch_id': switch.id,},
+                                            {
+                                            '$inc': {'calls': 1,
+                                                     'duration': int(cdr['variables']['duration']) }
+                                        },upsert=True)
+
+                                    # Country report collection
+                                    current_y_m_d_h_m = datetime.strptime(str(start_uepoch)[:16], "%Y-%m-%d %H:%M")
+                                    CDR_COUNTRY_REPORT.update(
+                                            {
+                                            'start_uepoch': current_y_m_d_h_m,
+                                            'country_id': country_id,
+                                            'accountcode': accountcode,
+                                            'switch_id': switch.id,},
+                                            {
+                                            '$inc': {'calls': 1,
+                                                     'duration': int(cdr['variables']['duration']) }
+                                        },upsert=True)
+
+                                    cdr_record_count = cdr_record_count + 1
                                     msg =\
                                     _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
                                     % {'cdr_record_count': cdr_record_count,
