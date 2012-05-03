@@ -306,7 +306,7 @@ CDR_FIELD_LIST = (('caller_id_number'),
 
 
 CDR_FIELD_LIST_NUM = [ (x, "column-"+str(x)) for x in range(1, len(CDR_FIELD_LIST)+1)]
-ACCOUNTCODE_FIELD_LIST_NUM = CDR_FIELD_LIST_NUM
+ACCOUNTCODE_FIELD_LIST_NUM = [ (x, "column-"+str(x)) for x in range(1, len(CDR_FIELD_LIST)+1)]
 ACCOUNTCODE_FIELD_LIST_NUM.append((0, 'No import'))
 ACCOUNTCODE_FIELD_LIST_NUM = sorted(ACCOUNTCODE_FIELD_LIST_NUM,
                                     key=lambda ACCOUNTCODE_FIELD_LIST_NUM: ACCOUNTCODE_FIELD_LIST_NUM[0])
