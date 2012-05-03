@@ -42,33 +42,26 @@ class StdErrWrapper:
     def write(self, s):
         self.logger.info(s.rstrip())
 
-
-class Web(Daemon):
-    def set_cwd(self, cwd):
-        self.cwd = cwd
-
+class MyDaemon(Daemon):
     def run(self):
+        #while True:
         self.logger = logging.getLogger("socketio_server")
         self.logger.info("Creating web-server")
-        SocketIOServer((settings.SOCKETIO_HOST, settings.SOCKETIO_PORT), Application(self.cwd), resource="socket.io", log=StdErrWrapper()).serve_forever()
+        SocketIOServer((settings.SOCKETIO_HOST, settings.SOCKETIO_PORT), application, resource="socket.io", log=StdErrWrapper()).serve_forever()
         self.logger.info("Done.")
 
-#if __name__ == '__main__':
-#    print('Listening on http://%s:%s' % (settings.SOCKETIO_HOST,settings.SOCKETIO_PORT))
-#    # Start up SocketIOServer, a gevent-pywsgi server which maps the url '/socket.io'
-#    SocketIOServer((settings.SOCKETIO_HOST, settings.SOCKETIO_PORT), application, resource="socket.io").serve_forever()
 
 if __name__ == "__main__":
     parser = optparse.OptionParser(usage="usage: %prog -d|c|m [options]", version="CDR-Stats socketio-server " + version)
-    parser.add_option("-c", "--config", action="store", dest="config", default="rtm.cfg", help="Path to config file",)
+    parser.add_option("-c", "--config", action="store", dest="config", default="socketio-server.cfg", help="Path to config file",)
     parser.add_option("-d", "--daemon", action="store_true", dest="daemon", default=False, help="Start as daemon",)
     parser.add_option("-m", "--master", action="store_true", dest="master", default=False, help="Start master in foreground",)
-    parser.add_option("-p", "--pid", action="store", dest="pid", default="cdrsio.pid", help="Path to pid file",)
+    parser.add_option("-p", "--pid", action="store", dest="pid", default="/tmp/socketioserver.pid", help="Path to pid file",)
 
     (options, args) = parser.parse_args()
     if options.daemon:
-        daemon = Web(options.pid)
-        daemon.set_cwd(os.getcwd())
+        daemon = MyDaemon(options.pid)
+        #daemon.set_cwd(os.getcwd())
         #daemon.load_config(options.config)
         
         if len(args) != 1:
@@ -87,10 +80,8 @@ if __name__ == "__main__":
         
     elif options.master:
         print "Starting as master..."
-        daemon = Web(options.pid)
-        daemon.set_cwd(os.getcwd())
+        daemon = MyDaemon(options.pid)
         #daemon.load_config(options.config)
-        
         try:
             daemon.run()
         except KeyboardInterrupt:
