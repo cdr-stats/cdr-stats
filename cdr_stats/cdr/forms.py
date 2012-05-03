@@ -315,7 +315,7 @@ class CDR_FileImport(FileImport):
     """Admin Form : Import CSV file with phonebook CDR_FIELD_LIST"""
     switch = forms.ChoiceField(label=_("Switch"),
              choices=get_switch_list(), required=True, help_text=_("Select switch"))
-    accountcode_csv = forms.CharField(label=_('Account code'), required=True)
+    accountcode_csv = forms.CharField(label=_('Account code'), required=False)
 
     caller_id_number = forms.ChoiceField(label=_("caller_id_number"), required=True, choices=CDR_FIELD_LIST_NUM)
     caller_id_name = forms.ChoiceField(label=_("caller_id_name"), required=True, choices=CDR_FIELD_LIST_NUM)
@@ -339,7 +339,6 @@ class CDR_FileImport(FileImport):
         super(CDR_FileImport, self).__init__(*args, **kwargs)
 
     def clean_accountcode_csv(self):
-        """ """
         accountcode_csv = self.cleaned_data['accountcode_csv']
         if accountcode_csv:
             try:
@@ -347,3 +346,11 @@ class CDR_FileImport(FileImport):
             except:
                 raise forms.ValidationError('%s is not a valid accountcode.' % accountcode_csv)
         return accountcode_csv
+
+    def clean_accountcode(self):
+        accountcode = int(self.cleaned_data['accountcode'])
+        accountcode_csv = self.cleaned_data['accountcode_csv']
+        if not accountcode_csv and accountcode == 0:
+            raise forms.ValidationError('select accountcode column no else enter accountcode')
+
+        return accountcode
