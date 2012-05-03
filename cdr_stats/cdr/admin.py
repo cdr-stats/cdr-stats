@@ -97,10 +97,14 @@ class SwitchAdmin(admin.ModelAdmin):
         if request.method == 'POST':
             form = CDR_FileImport(request.user, request.POST, request.FILES)
             if form.is_valid():
-                #print request.POST
+
                 cdr_field_list = {}
+                cdr_field_not_in_list = []
                 for i in CDR_FIELD_LIST:
-                    cdr_field_list[i] = int(request.POST[i])
+                    if int(request.POST[i]) != 0:
+                        cdr_field_list[i] = int(request.POST[i])
+                    else:
+                        cdr_field_not_in_list.append((i))
 
                 # perform sorting & get unique order list
                 countMap = {}
@@ -109,8 +113,9 @@ class SwitchAdmin(admin.ModelAdmin):
                 uni = [ (k, v) for k, v in cdr_field_list.iteritems() if countMap[v] == 1]
                 uni = sorted(uni, key=lambda uni: uni[1])
 
+
                 # if order list matched with CDR_FIELD_LIST count
-                if len(uni) == len(CDR_FIELD_LIST):
+                if len(uni) == len(CDR_FIELD_LIST) - len(cdr_field_not_in_list):
                     # To count total rows of CSV file
                     records = csv.reader(request.FILES['csv_file'],
                                          delimiter=',', quotechar='"')
@@ -130,6 +135,20 @@ class SwitchAdmin(admin.ModelAdmin):
                                 for j in uni:
                                     get_cdr_from_row[j[0]] = row[row_counter]
                                     row_counter = row_counter + 1
+
+                                accountcode = ''
+                                # fields are not in csv
+                                get_cdr_not_from_row = {}
+                                if len(cdr_field_not_in_list) != 0:
+                                    for i in cdr_field_not_in_list:
+                                        if i == 'accountcode':
+                                            accountcode = int(request.POST[i+"_csv"])
+                                        else:
+                                            get_cdr_not_from_row[i] = request.POST[i+"_csv"]
+
+                                if not accountcode:
+                                    accountcode = int(get_cdr_from_row['accountcode'])
+
 
                                 start_uepoch = datetime.fromtimestamp(int(get_cdr_from_row['start_uepoch'][:10]))
                                 answer_uepoch = datetime.fromtimestamp(int(get_cdr_from_row['end_uepoch'][:10]))
@@ -163,10 +182,10 @@ class SwitchAdmin(admin.ModelAdmin):
 
                                 destination_number = get_cdr_from_row['destination_number']
                                 hangup_cause_id = get_hangupcause_id(int(get_cdr_from_row['hangup_cause_id']))
-                                accountcode = int(request.POST['accountcode'])
                                 switch_id = int(request.POST['switch'])
                                 duration = int(get_cdr_from_row['duration'])
                                 uuid = get_cdr_from_row['uuid']
+
 
                                 # Prepare global CDR
                                 cdr_record = {
@@ -193,7 +212,6 @@ class SwitchAdmin(admin.ModelAdmin):
                                     'country_id': country_id,
                                     'authorized': authorized,
                                     }
-
 
                                 try:
                                     # check if cdr is already existing in cdr_common

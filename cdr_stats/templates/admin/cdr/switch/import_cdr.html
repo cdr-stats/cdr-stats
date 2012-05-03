@@ -79,7 +79,7 @@
 
 <form method="post" action="" enctype="multipart/form-data">{% csrf_token %}
     <table border=0>
-    {% get_fieldset switch,accountcode,csv_file as file_fields from form %}
+    {% get_fieldset switch,accountcode_csv,csv_file as file_fields from form %}
     {% for field in file_fields %}
         <tr>
             <td>{{ field.label }}</td>
@@ -144,6 +144,21 @@
         </tr>
         <tr class="row2">
             {% get_fieldset mduration,billmsec,read_codec,write_codec as file_fields from form %}
+            {% for field in file_fields %}
+                <td>{{ field.label }}</td>
+                <td>
+                    {% if field.errors %}
+                        <ul class="errorlist">
+                            <li>{{ field.errors|removetags:"ul li"|safe }}<li>
+                        </ul>
+                    {% endif %}
+                    {{ field }}
+                    <br/>{{ field.help_text }}
+                </td>
+            {% endfor %}
+        </tr>
+        <tr class="row1">
+            {% get_fieldset accountcode as file_fields from form %}
             {% for field in file_fields %}
                 <td>{{ field.label }}</td>
                 <td>

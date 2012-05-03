@@ -301,15 +301,21 @@ CDR_FIELD_LIST = (('caller_id_number'),
                   ('mduration'),
                   ('billmsec'),
                   ('read_codec'),
-                  ('write_codec'))
+                  ('write_codec'),
+                  ('accountcode'))
 
-CDR_FIELD_LIST_NUM = [ (x, x) for x in range(1, len(CDR_FIELD_LIST)+1)]
+
+CDR_FIELD_LIST_NUM = [ (x, "column-"+str(x)) for x in range(1, len(CDR_FIELD_LIST)+1)]
+ACCOUNTCODE_FIELD_LIST_NUM = CDR_FIELD_LIST_NUM
+ACCOUNTCODE_FIELD_LIST_NUM.append((0, 'No import'))
+ACCOUNTCODE_FIELD_LIST_NUM = sorted(ACCOUNTCODE_FIELD_LIST_NUM,
+                                    key=lambda ACCOUNTCODE_FIELD_LIST_NUM: ACCOUNTCODE_FIELD_LIST_NUM[0])
 
 class CDR_FileImport(FileImport):
     """Admin Form : Import CSV file with phonebook CDR_FIELD_LIST"""
     switch = forms.ChoiceField(label=_("Switch"),
              choices=get_switch_list(), required=True, help_text=_("Select switch"))
-    accountcode = forms.CharField(label=_('Account code'), required=True)
+    accountcode_csv = forms.CharField(label=_('Account code'), required=True)
 
     caller_id_number = forms.ChoiceField(label=_("caller_id_number"), required=True, choices=CDR_FIELD_LIST_NUM)
     caller_id_name = forms.ChoiceField(label=_("caller_id_name"), required=True, choices=CDR_FIELD_LIST_NUM)
@@ -327,17 +333,17 @@ class CDR_FileImport(FileImport):
     billmsec = forms.ChoiceField(label=_("billmsec"), required=True, choices=CDR_FIELD_LIST_NUM)
     read_codec = forms.ChoiceField(label=_("read_codec"), required=True, choices=CDR_FIELD_LIST_NUM)
     write_codec = forms.ChoiceField(label=_("write_codec"), required=True, choices=CDR_FIELD_LIST_NUM)
-
+    accountcode = forms.ChoiceField(label=_("accountcode"), required=True, choices=ACCOUNTCODE_FIELD_LIST_NUM)
 
     def __init__(self, user, *args, **kwargs):
         super(CDR_FileImport, self).__init__(*args, **kwargs)
 
-    def clean_accountcode(self):
+    def clean_accountcode_csv(self):
         """ """
-        accountcode = self.cleaned_data['accountcode']
-        if accountcode:
+        accountcode_csv = self.cleaned_data['accountcode_csv']
+        if accountcode_csv:
             try:
-                int(accountcode)
+                int(accountcode_csv)
             except:
-                raise forms.ValidationError('%s is not a valid accountcode.' % accountcode)
-        return accountcode
+                raise forms.ValidationError('%s is not a valid accountcode.' % accountcode_csv)
+        return accountcode_csv
