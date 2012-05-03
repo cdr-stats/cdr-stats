@@ -34,7 +34,6 @@ from cdr_alert.functions_blacklist import *
 
 from country_dialcode.models import Prefix
 from common.common_functions import striplist
-from cdr.functions_blacklist import *
 
 from random import choice
 from uuid import uuid1
