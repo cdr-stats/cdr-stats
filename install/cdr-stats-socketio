@@ -14,7 +14,7 @@ SOCKETIO_SERVER_PIDFILE=$PID_PREFIX/cdr-stats-socketio-server.pid
 PREFIX=/home/areski/public_html/django/MyProjects/django_asterisk-stat/cdr-stats/cdr_stats
 PID_PREFIX=/tmp
 VENV_ON=/home/areski/.virtualenvs/cdrstats/bin/activate
-SOCKETIO_SERVER=$PREFIX/run_socketio.py
+SOCKETIO_SERVER=$PREFIX/socketio_server.py
 SOCKETIO_SERVER_PIDFILE=$PID_PREFIX/cdr-stats-socketio-server.pid
 
 
@@ -46,7 +46,7 @@ do_start()
 		echo "$SERVER_NAME already running"
 		server_already_running="true"
 	else
-		$NICE --adjustment=-10 $SOCKETIO_SERVER -d -p $SOCKETIO_SERVER_PIDFILE
+		$NICE $SOCKETIO_SERVER -d -p $SOCKETIO_SERVER_PIDFILE start
 	fi
 	
 	if [ "$server_already_running" = "true" ]; then
