@@ -1,9 +1,9 @@
 
 .. image:: https://github.com/Star2Billing/cdr-stats/raw/master/docs/source/_static/images/cdr-stats_600.png
 
-CDR-Stats is free and open source call detail record analysis and reporting software for Freeswitch, 
-Asterisk and other type of VoIP Switch. It allows you to interrogate your CDR to provide reports 
-and statistics via a simple to use, yet powerful, web interface.
+CDR-Stats is a free and open source call detail record analysis and reporting software for Freeswitch, 
+Asterisk and other types of VoIP Switch. It allows you to interrogate CDR to provide reports 
+and statistics via a simple to use powerful web interface.
 
 It is based on the Django Python Framework, Celery, SocketIO, Gevent and MongoDB.
 
@@ -11,33 +11,33 @@ It is based on the Django Python Framework, Celery, SocketIO, Gevent and MongoDB
 Features
 --------
 
-* Highly scalable design to maintain high performance when facing Call Analytic with large quantities of data.
+* Highly scalable design to maintain high performance when analysing large quantities of data.
 
 * Single and Multi-server architectures to allow reporting on many millions of calls from multiple call data sources.
 
 * Browser Responsive - The pages resize to suit any browsing device so CDR-Stats can be managed from a phone browser, tablet or computer.
 
-* Alarms – Custom alarm triggers can be set for a range of conditions including average 	length of calls, failed calls, and unexpected destinations called.
+* Alarms – Custom alarm triggers can be set for a range of conditions including average length of calls, failed calls, and unexpected destinations called.
 
-* Realtime Reporting of calls	in progress on supported platforms.
+* Realtime Reporting of calls in progress on supported platforms.
 
 * Fraud detection - Using graphical tools helps spot patterns which may indicate suspicious or fraudulent activity.
 
-* Multi-tenant System that allows CDR from multiple sources or CDR assigned to customers on 	the basis of account-code.
+* Multi-tenant System that allows CDR from multiple sources or CDR assigned to customers on the basis of account-code.
 
 
 Applications
 ------------
 
 * User UI :
-    http://localhost:8000/
-    This application provide Report, CDR View, several CDR reporting, Dashboard.
-    User with accountcode can login and see their restrected data
+    http://localhost:8008/
+    This application provide Reports, CDR Viewing, CDR reporting, Dashboard.
+    Users can login and see their CDR only.
 
 .. image:: https://github.com/Star2Billing/cdr-stats/raw/master/screenshot/cdr-stats-user.png
 
 * Admin UI :
-    http://localhost:8000/admin/
+    http://localhost:8008/admin/
     This interface provides user (ACL) management, assignation of accountcode, 
     also basic CRUD functions on the CDR
 
