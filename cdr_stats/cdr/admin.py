@@ -102,33 +102,15 @@ class SwitchAdmin(admin.ModelAdmin):
                 for i in CDR_FIELD_LIST:
                     cdr_field_list[i] = int(request.POST[i])
 
-                #print sorted(cdr_field_list, key=lambda key: cdr_field_list[key])
-                #print sorted(cdr_field_list, key=cdr_field_list.get)
+                # perform sorting & get unique order list
                 countMap = {}
                 for v in cdr_field_list.itervalues():
                     countMap[v] = countMap.get(v, 0) + 1
                 uni = [ (k, v) for k, v in cdr_field_list.iteritems() if countMap[v] == 1]
                 uni = sorted(uni, key=lambda uni: uni[1])
+
+                # if order list matched with CDR_FIELD_LIST count
                 if len(uni) == len(CDR_FIELD_LIST):
-                    print "start import"
-                    #print uni
-                    # col_no - field name
-                    #  0     - caller_id_number
-                    #  1     - caller_id_name
-                    #  2     - destination_number
-                    #  3     - duration
-                    #  4     - billsec
-                    #  5     - hangup_cause_id
-                    #  6     - direction
-                    #  7     - uuid
-                    #  8     - remote_media_ip
-                    #  9     - start_uepoch
-                    #  10    - answer_uepoch
-                    #  11    - end_uepoch
-                    #  12    - mduration
-                    #  13    - billmsec
-                    #  14    - read_codec
-                    #  15    - write_codec
                     # To count total rows of CSV file
                     records = csv.reader(request.FILES['csv_file'],
                                          delimiter=',', quotechar='"')
@@ -137,6 +119,7 @@ class SwitchAdmin(admin.ModelAdmin):
                     rdr = csv.reader(request.FILES['csv_file'],
                                      delimiter=',', quotechar='"')
                     cdr_record_count = 0
+
                     # Read each Row
                     for row in rdr:
                         if (row and str(row[0]) > 0):
@@ -183,6 +166,7 @@ class SwitchAdmin(admin.ModelAdmin):
                                 accountcode = int(request.POST['accountcode'])
                                 switch_id = int(request.POST['switch'])
                                 duration = int(get_cdr_from_row['duration'])
+                                uuid = get_cdr_from_row['uuid']
 
                                 # Prepare global CDR
                                 cdr_record = {
@@ -195,7 +179,7 @@ class SwitchAdmin(admin.ModelAdmin):
                                     'hangup_cause_id': hangup_cause_id,
                                     'accountcode': accountcode,
                                     'direction': get_cdr_from_row['direction'],
-                                    'uuid': get_cdr_from_row['uuid'],
+                                    'uuid': uuid,
                                     'remote_media_ip': get_cdr_from_row['remote_media_ip'],
                                     'start_uepoch': start_uepoch,
                                     'answer_uepoch': answer_uepoch,
@@ -214,9 +198,10 @@ class SwitchAdmin(admin.ModelAdmin):
                                 try:
                                     # check if cdr is already existing in cdr_common
                                     cdr_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COMMON]
-                                    record_count = cdr_data.find({'uuid': uuid}).count()
-                                    #print record_count
-                                    #print "recod count %s" % record_count
+                                    query_var = {}
+                                    query_var['uuid'] = uuid
+                                    record_count = cdr_data.find(query_var).count()
+
                                     if record_count >= 1:
                                         msg = _('CDR already exists !!')
                                         error_import_list.append(row)

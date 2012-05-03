@@ -20,43 +20,61 @@
 <table border=1>
 <caption>{% trans "Sample File" %}</caption>
 <tr>
-    <th>{% trans "contact" %}</th>
-    <th>{% trans "last name" %}</th>
-    <th>{% trans "first name" %}</th>
-    <th>{% trans "email-id" %}</th>
-    <th>{% trans "description" %}</th>
-    <th>{% trans "status" %}</th>
-    <th>{% trans "additional_vars" %}</th>
+    <th>{% trans "caller_id_number" %}</th>
+    <th>{% trans "caller_id_name" %}</th>
+    <th>{% trans "destination_number" %}</th>
+    <th>{% trans "duration" %}</th>
+    <th>{% trans "billsec" %}</th>
+    <th>{% trans "hangup_cause_id" %}</th>
+    <th>{% trans "direction" %}</th>
+    <th>{% trans "uuid" %}</th>
+    <th>{% trans "remote_media_ip" %}</th>
+    <th>{% trans "start_uepoch" %}</th>
+    <th>{% trans "answer_uepoch" %}</th>
+    <th>{% trans "end_uepoch" %}</th>
+    <th>{% trans "mduration" %}</th>
+    <th>{% trans "billmsec" %}</th>
+    <th>{% trans "read_codec" %}</th>
+    <th>{% trans "write_codec" %}</th>
 </tr>
 <tr>
-    <td>1234</td>
-    <td>Belaid</td>
-    <td>Arezqui</td>
-    <td>areski@gmail.com</td>
-    <td>test subscriber</td>
-    <td>1</td>
-    <td>test</td>
+    <td>68787741</td>
+    <td>1373550</td>
+    <td>01134687217</td>
+    <td>40</td>
+    <td>151</td>
+    <td>17</td>
+    <td>inbound</td>
+    <td>3h708846-9036-11e1-964f-000c296bd876</td>
+    <td>192.168.1.22</td>
+    <td>1327521566</td>
+    <td>1327521566</td>
+    <td>1327521566</td>
+    <td>12460</td>
+    <td>12460</td>
+    <td>G722</td>
+    <td>G722</td>
 </tr>
 <tr>
-    <td>5678</td>
-    <td>Fourth</td>
-    <td>John</td>
-    <td>john@gmail.com</td>
-    <td>test subscriber</td>
-    <td>0</td>
-    <td>test</td>
+    <td>58783741</td>
+    <td>1773500</td>
+    <td>44111919</td>
+    <td>90</td>
+    <td>11</td>
+    <td>16</td>
+    <td>inbound</td>
+    <td>3e308846-9036-11e1-964f-000c296bd875</td>
+    <td>192.168.1.21</td>
+    <td>1327521966</td>
+    <td>1327521966</td>
+    <td>1327521966</td>
+    <td>12960</td>
+    <td>12960</td>
+    <td>G722</td>
+    <td>G722</td>
 </tr>
 </table>
-<br/>
-{% block msg %}
-    {% if msg %}
-        <ul class="messagelist">
-            <li>{{ msg }}</li>
-        </ul>
-    {% endif %}
-{% endblock %}
 
-<br/>
 <br/>
 
 <form method="post" action="" enctype="multipart/form-data">{% csrf_token %}
@@ -144,6 +162,16 @@
 <br/>
 <br/>
 
+{% block msg %}
+    {% if msg %}
+        <ul>
+            <li>{{ msg }}</li>
+        </ul>
+    {% endif %}
+{% endblock %}
+
+<br/>
+<br/>
 
 
 
