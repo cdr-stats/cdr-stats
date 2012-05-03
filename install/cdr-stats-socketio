@@ -10,14 +10,6 @@ SOCKETIO_SERVER=$PREFIX/socketio_server.py
 SOCKETIO_SERVER_PIDFILE=$PID_PREFIX/cdr-stats-socketio-server.pid
 #####################################################
 
-#TEST
-PREFIX=/home/areski/public_html/django/MyProjects/django_asterisk-stat/cdr-stats/cdr_stats
-PID_PREFIX=/tmp
-VENV_ON=/home/areski/.virtualenvs/cdrstats/bin/activate
-SOCKETIO_SERVER=$PREFIX/socketio_server.py
-SOCKETIO_SERVER_PIDFILE=$PID_PREFIX/cdr-stats-socketio-server.pid
-
-
 do_help()
 {
 	echo
@@ -94,8 +86,6 @@ do_status()
 
 
 # main #
-echo "$SOCKETIO_SERVER"
-
 [ -x $SOCKETIO_SERVER ] || do_installerror
 
 mkdir -p $PID_PREFIX 2>/dev/null

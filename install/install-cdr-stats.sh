@@ -559,13 +559,25 @@ func_install_frontend(){
     sed -i "s/#'SERVER_IP',/'$IPADDR',/g" $INSTALL_DIR/settings_local.py
     sed -i "s/SERVER_IP/$IPADDR/g" $INSTALL_DIR/settings_local.py
     
+    
     #add service for socketio server
-    #echo "Add service for socketio server..."
-    #cp /usr/src/cdr-stats/install/cdr-stats-socketio /etc/init.d/cdr-stats-socketio
-    #chmod +x /etc/init.d/cdr-stats-socketio
-    #cd /etc/init.d; update-rc.d cdr-stats-socketio defaults 99
-    #/etc/init.d/cdr-stats-socketio start
-
+    echo "Add service for socketio server..."
+    cp /usr/src/cdr-stats/install/cdr-stats-socketio /etc/init.d/cdr-stats-socketio
+    chmod +x /etc/init.d/cdr-stats-socketio
+    case $DIST in
+        'DEBIAN')
+            #Add SocketIO to Service
+            cd /etc/init.d; update-rc.d cdr-stats-socketio defaults 99
+            /etc/init.d/cdr-stats-socketio start
+        ;;
+        'CENTOS')
+            #Add SocketIO to Service
+            chkconfig --add cdr-stats-socketio
+            chkconfig --level 2345 cdr-stats-socketio on
+            /etc/init.d/cdr-stats-socketio start
+        ;;
+    esac
+    
     
     case $DIST in
         'DEBIAN')

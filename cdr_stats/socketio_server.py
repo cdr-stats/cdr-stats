@@ -46,7 +46,7 @@ class MyDaemon(Daemon):
     def run(self):
         #while True:
         self.logger = logging.getLogger("socketio_server")
-        self.logger.info("Creating web-server")
+        self.logger.info("Creating websocket-server")
         SocketIOServer((settings.SOCKETIO_HOST, settings.SOCKETIO_PORT), application, resource="socket.io", log=StdErrWrapper()).serve_forever()
         self.logger.info("Done.")
 
@@ -61,8 +61,6 @@ if __name__ == "__main__":
     (options, args) = parser.parse_args()
     if options.daemon:
         daemon = MyDaemon(options.pid)
-        #daemon.set_cwd(os.getcwd())
-        #daemon.load_config(options.config)
         
         if len(args) != 1:
             parser.error("Hmm... what about action? socketio_server.py -d start|stop|restart")
