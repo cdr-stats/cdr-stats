@@ -136,7 +136,7 @@ class SwitchAdmin(admin.ModelAdmin):
 
                     rdr = csv.reader(request.FILES['csv_file'],
                                      delimiter=',', quotechar='"')
-                    contact_record_count = 0
+                    cdr_record_count = 0
                     # Read each Row
                     for row in rdr:
                         if (row and str(row[0]) > 0):
@@ -212,11 +212,14 @@ class SwitchAdmin(admin.ModelAdmin):
 
 
                                 try:
-                                    # check if prefix is already
-                                    # existing in the retail plan or not
-                                    print int('sd')
-                                    msg = _('CDR already exists !!')
-                                    error_import_list.append(row)
+                                    # check if cdr is already existing in cdr_common
+                                    cdr_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COMMON]
+                                    record_count = cdr_data.find({'uuid': uuid}).count()
+                                    #print record_count
+                                    #print "recod count %s" % record_count
+                                    if record_count >= 1:
+                                        msg = _('CDR already exists !!')
+                                        error_import_list.append(row)
                                 except:
                                     # if not, insert record
 
@@ -238,7 +241,6 @@ class SwitchAdmin(admin.ModelAdmin):
                                                         {'calls': 1,
                                                          'duration': duration }
                                             }, upsert=True)
-
 
                                     # daily collection
                                     current_y_m_d = datetime.strptime(str(start_uepoch)[:10], "%Y-%m-%d")
@@ -288,7 +290,6 @@ class SwitchAdmin(admin.ModelAdmin):
                                     _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
                                     % {'cdr_record_count': cdr_record_count,
                                        'total_rows': total_rows}
-                                    # (cdr_record_count, total_rows)
                                     success_import_list.append(row)
                             except:
                                 msg = _("Error : invalid value for import! Check import samples.")
