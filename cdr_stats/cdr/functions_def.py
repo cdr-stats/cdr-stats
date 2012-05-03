@@ -12,8 +12,9 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.utils.translation import gettext as _
-from country_dialcode.models import Country
 from cdr.models import *
+from country_dialcode.models import Country, Prefix
+
 from datetime import *
 from random import *
 import calendar

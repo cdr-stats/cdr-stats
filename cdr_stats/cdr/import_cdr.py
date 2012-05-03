@@ -22,7 +22,7 @@ from pymongo.errors import ConnectionFailure
 
 from cdr.models import Switch, HangupCause
 from cdr.functions_def import *
-from cdr.functions_blacklist import *
+from cdr_alert.functions_blacklist import *
 from country_dialcode.models import Prefix
 from random import choice
 from uuid import uuid1
@@ -59,9 +59,6 @@ def update_cdr_collection(mongohandler, cdr_id, field_name):
                 {'$set': {field_name: 1}}
     )
     return True
-
-
-
 
 
 def print_shell(shell, message):

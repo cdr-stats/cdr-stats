@@ -28,8 +28,10 @@ from pymongo.errors import ConnectionFailure
 
 from cdr.models import *
 from cdr.forms import *
+from cdr.functions_def import *
 from cdr_alert.models import Blacklist, Whitelist
-from cdr_alert.tasks import blacklist_whitelist_notification
+from cdr_alert.functions_blacklist import *
+
 from country_dialcode.models import Prefix
 from common.common_functions import striplist
 from cdr.functions_blacklist import *
@@ -149,11 +151,11 @@ class SwitchAdmin(admin.ModelAdmin):
 
                                 # number startswith 0 or `+` sign
                                 #remove leading +
-                                sanitized_destination = re.sub("^\++","",destination_number)
+                                sanitized_destination = re.sub("^\++", "", destination_number)
                                 #remove leading 011
-                                sanitized_destination = re.sub("^011+","",sanitized_destination)
+                                sanitized_destination = re.sub("^011+", "", sanitized_destination)
                                 #remove leading 00
-                                sanitized_destination = re.sub("^0+","",sanitized_destination)
+                                sanitized_destination = re.sub("^0+", "", sanitized_destination)
 
                                 prefix_list = prefix_list_string(sanitized_destination)
 
@@ -170,35 +172,32 @@ class SwitchAdmin(admin.ModelAdmin):
 
                                 country_id = get_country_id(prefix_list)
 
-                                #print get_cdr_from_row
-                                """
                                 # Prepare global CDR
                                 cdr_record = {
-                                    'switch_id': switch.id,
+                                    'switch_id': int(request.POST['switch']),
                                     'caller_id_number': get_cdr_from_row['caller_id_number'],
                                     'caller_id_name': get_cdr_from_row['caller_id_name'],
                                     'destination_number': get_cdr_from_row['destination_number'],
-                                    'duration': int(get_cdr_from_row['destination_number']),
-                                    'billsec': int(get_cdr_from_row['destination_number']),
-                                    'hangup_cause_id': get_hangupcause_id(get_cdr_from_row['destination_number']),
-                                    'accountcode': get_cdr_from_row['destination_number'],
-                                    'direction': get_cdr_from_row['destination_number'],
-                                    'uuid': get_cdr_from_row['destination_number'],
-                                    'remote_media_ip': get_cdr_from_row['destination_number'],
-                                    'start_uepoch': get_cdr_from_row['destination_number'],
-                                    'answer_uepoch': get_cdr_from_row['destination_number'],
-                                    'end_uepoch': get_cdr_from_row['destination_number'],
-                                    'mduration': get_cdr_from_row['destination_number'],
-                                    'billmsec': get_cdr_from_row['destination_number'],
-                                    'read_codec': get_cdr_from_row['destination_number'],
-                                    'write_codec': get_cdr_from_row['destination_number'],
-                                    'cdr_type': ,
-                                    'cdr_object_id': ,
-                                    'country_id': ,
-                                    'authorized': ,
+                                    'duration': int(get_cdr_from_row['duration']),
+                                    'billsec': int(get_cdr_from_row['billsec']),
+                                    'hangup_cause_id': get_hangupcause_id(int(get_cdr_from_row['hangup_cause_id'])),
+                                    'accountcode': int(request.POST['accountcode']),
+                                    'direction': get_cdr_from_row['direction'],
+                                    'uuid': get_cdr_from_row['uuid'],
+                                    'remote_media_ip': get_cdr_from_row['remote_media_ip'],
+                                    'start_uepoch': get_cdr_from_row['start_uepoch'],
+                                    'answer_uepoch': get_cdr_from_row['answer_uepoch'],
+                                    'end_uepoch': get_cdr_from_row['end_uepoch'],
+                                    'mduration': get_cdr_from_row['mduration'],
+                                    'billmsec': get_cdr_from_row['billmsec'],
+                                    'read_codec': get_cdr_from_row['read_codec'],
+                                    'write_codec': get_cdr_from_row['write_codec'],
+                                    #'cdr_type': CDR_TYPE,
+                                    #'cdr_object_id': ,
+                                    'country_id': country_id,
+                                    'authorized': authorized,
                                     }
-                                """
-
+                                #print cdr_record
 
                                 try:
                                     # check if prefix is already
