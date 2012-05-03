@@ -311,6 +311,7 @@ ACCOUNTCODE_FIELD_LIST_NUM.append((0, 'No import'))
 ACCOUNTCODE_FIELD_LIST_NUM = sorted(ACCOUNTCODE_FIELD_LIST_NUM,
                                     key=lambda ACCOUNTCODE_FIELD_LIST_NUM: ACCOUNTCODE_FIELD_LIST_NUM[0])
 
+
 class CDR_FileImport(FileImport):
     """Admin Form : Import CSV file with phonebook CDR_FIELD_LIST"""
     switch = forms.ChoiceField(label=_("Switch"),
@@ -346,6 +347,7 @@ class CDR_FileImport(FileImport):
             except:
                 raise forms.ValidationError('%s is not a valid accountcode.' % accountcode_csv)
         return accountcode_csv
+
 
     def clean_accountcode(self):
         accountcode = int(self.cleaned_data['accountcode'])

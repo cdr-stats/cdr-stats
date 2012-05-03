@@ -298,7 +298,7 @@ class SwitchAdmin(admin.ModelAdmin):
                                 msg = _("Error : invalid value for import! Check import samples.")
                                 type_error_import_list.append(row)
                 else:
-                    msg = _("Error : invalid value in filed selection order.")
+                    msg = _("Error : You selected to import several times the same column")
         else:
             form = CDR_FileImport(request.user)
 
