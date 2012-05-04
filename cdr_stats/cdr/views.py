@@ -817,8 +817,15 @@ def cdr_dashboard(request):
         total_duration += int(d['value']['duration__sum'])
         
         # created cdr_hangup_analytic
-        settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HANGUP].update({'hangup_cause_id': int(d['value']['hangup_cause_id'])},
+        try:
+            int_hangup_cause_id = int(d['value']['hangup_cause_id'])
+        except:
+            int_hangup_cause_id = False
+
+        if int_hangup_cause_id:
+            settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HANGUP].update({'hangup_cause_id': int(d['value']['hangup_cause_id'])},
                                                                      {'$inc': {'count': 1}}, upsert=True)
+        
 
     hangup_analytic_array = []
     hangup_analytic = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HANGUP].find({})
