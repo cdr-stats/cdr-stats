@@ -96,6 +96,7 @@ class SwitchAdmin(admin.ModelAdmin):
         type_error_import_list = []
         if request.method == 'POST':
             form = CDR_FileImport(request.user, request.POST, request.FILES)
+
             if form.is_valid():
 
                 cdr_field_list = {}
@@ -115,6 +116,7 @@ class SwitchAdmin(admin.ModelAdmin):
 
                 # if order list matched with CDR_FIELD_LIST count
                 if len(uni) == len(CDR_FIELD_LIST) - len(cdr_field_not_in_list):
+
                     # To count total rows of CSV file
                     records = csv.reader(request.FILES['csv_file'],
                                          delimiter=',', quotechar='"')
@@ -184,7 +186,7 @@ class SwitchAdmin(admin.ModelAdmin):
                                 duration = int(get_cdr_from_row['duration'])
                                 billsec = int(get_cdr_from_row['billsec'])
                                 hangup_cause_id = get_hangupcause_id(int(get_cdr_from_row['hangup_cause_id']))
-                                start_uepoch = datetime.fromtimestamp(int(get_cdr_from_row['start_uepoch'][:10]))
+                                start_uepoch = datetime.fromtimestamp(int(get_cdr_from_row['start_uepoch']))
                                 destination_number = get_cdr_from_row['destination_number']
                                 uuid = get_cdr_from_row['uuid']
 
@@ -249,20 +251,18 @@ class SwitchAdmin(admin.ModelAdmin):
                                     query_var = {}
                                     query_var['uuid'] = uuid
                                     record_count = cdr_data.find(query_var).count()
-
                                     if record_count >= 1:
                                         msg = _('CDR already exists !!')
                                         error_import_list.append(row)
-                                except:
-                                    # if not, insert record
+                                    else:
+                                        # if not, insert record
+                                        # record global CDR
+                                        CDR_COMMON.insert(cdr_record)
 
-                                    # record global CDR
-                                    CDR_COMMON.insert(cdr_record)
-
-                                    # monthly collection
-                                    current_y_m = datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
-                                    CDR_MONTHLY.update(
-                                            {
+                                        # monthly collection
+                                        current_y_m = datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
+                                        CDR_MONTHLY.update(
+                                                {
                                                 'start_uepoch': current_y_m,
                                                 'destination_number': destination_number,
                                                 'hangup_cause_id': hangup_cause_id,
@@ -275,10 +275,10 @@ class SwitchAdmin(admin.ModelAdmin):
                                                          'duration': duration }
                                             }, upsert=True)
 
-                                    # daily collection
-                                    current_y_m_d = datetime.strptime(str(start_uepoch)[:10], "%Y-%m-%d")
-                                    CDR_DAILY.update(
-                                            {
+                                        # daily collection
+                                        current_y_m_d = datetime.strptime(str(start_uepoch)[:10], "%Y-%m-%d")
+                                        CDR_DAILY.update(
+                                                {
                                                 'start_uepoch': current_y_m_d,
                                                 'destination_number': destination_number,
                                                 'hangup_cause_id': hangup_cause_id,
@@ -291,10 +291,10 @@ class SwitchAdmin(admin.ModelAdmin):
                                                          'duration': duration }
                                             },upsert=True)
 
-                                    # hourly collection
-                                    current_y_m_d_h = datetime.strptime(str(start_uepoch)[:13], "%Y-%m-%d %H")
-                                    CDR_HOURLY.update(
-                                            {
+                                        # hourly collection
+                                        current_y_m_d_h = datetime.strptime(str(start_uepoch)[:13], "%Y-%m-%d %H")
+                                        CDR_HOURLY.update(
+                                                {
                                                 'start_uepoch': current_y_m_d_h,
                                                 'destination_number': destination_number,
                                                 'hangup_cause_id': hangup_cause_id,
@@ -305,10 +305,10 @@ class SwitchAdmin(admin.ModelAdmin):
                                                          'duration': duration }
                                             },upsert=True)
 
-                                    # Country report collection
-                                    current_y_m_d_h_m = datetime.strptime(str(start_uepoch)[:16], "%Y-%m-%d %H:%M")
-                                    CDR_COUNTRY_REPORT.update(
-                                            {
+                                        # Country report collection
+                                        current_y_m_d_h_m = datetime.strptime(str(start_uepoch)[:16], "%Y-%m-%d %H:%M")
+                                        CDR_COUNTRY_REPORT.update(
+                                                {
                                                 'start_uepoch': current_y_m_d_h_m,
                                                 'country_id': country_id,
                                                 'accountcode': accountcode,
@@ -318,12 +318,16 @@ class SwitchAdmin(admin.ModelAdmin):
                                                          'duration': duration }
                                             },upsert=True)
 
-                                    cdr_record_count = cdr_record_count + 1
-                                    msg =\
-                                    _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
-                                    % {'cdr_record_count': cdr_record_count,
-                                       'total_rows': total_rows}
-                                    success_import_list.append(row)
+                                        cdr_record_count = cdr_record_count + 1
+                                        msg =\
+                                        _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
+                                        % {'cdr_record_count': cdr_record_count,
+                                           'total_rows': total_rows}
+                                        success_import_list.append(row)
+                                except:
+                                    msg = _("Error : invalid value for import! Check import samples.")
+                                    type_error_import_list.append(row)
+
                             except:
                                 msg = _("Error : invalid value for import! Check import samples.")
                                 type_error_import_list.append(row)
