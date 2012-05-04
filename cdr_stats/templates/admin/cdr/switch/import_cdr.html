@@ -97,23 +97,9 @@
     </table>
 
     <table>
-        <tr class="row1">
-            {% get_fieldset caller_id_number,caller_id_name,destination_number,duration as file_fields from form %}
-            {% for field in file_fields %}
-                <td>{{ field.label }}</td>
-                <td>
-                    {% if field.errors %}
-                        <ul class="errorlist">
-                            <li>{{ field.errors|removetags:"ul li"|safe }}<li>
-                        </ul>
-                    {% endif %}
-                    {{ field }}
-                    <br/>{{ field.help_text }}
-                </td>
-            {% endfor %}
-        </tr>
+        <tr class="row1"><td colspan="14"><b>{% trans "Mandatory fields to import" %}</b></td></tr>
         <tr class="row2">
-            {% get_fieldset billsec,hangup_cause_id,direction,uuid as file_fields from form %}
+            {% get_fieldset caller_id_number,destination_number,start_uepoch,duration,billsec,hangup_cause_id,uuid as file_fields from form %}
             {% for field in file_fields %}
                 <td>{{ field.label }}</td>
                 <td>
@@ -127,23 +113,10 @@
                 </td>
             {% endfor %}
         </tr>
-        <tr class="row1">
-            {% get_fieldset remote_media_ip,start_uepoch,answer_uepoch,end_uepoch as file_fields from form %}
-            {% for field in file_fields %}
-                <td>{{ field.label }}</td>
-                <td>
-                    {% if field.errors %}
-                        <ul class="errorlist">
-                            <li>{{ field.errors|removetags:"ul li"|safe }}<li>
-                        </ul>
-                    {% endif %}
-                    {{ field }}
-                    <br/>{{ field.help_text }}
-                </td>
-            {% endfor %}
-        </tr>
+        <tr><td colspan="14"></td></tr>
+        <tr class="row1"><td colspan="14"><b>{% trans "Extra fields to import" %}</b></td></tr>
         <tr class="row2">
-            {% get_fieldset mduration,billmsec,read_codec,write_codec as file_fields from form %}
+            {% get_fieldset caller_id_name,direction,remote_media_ip,answer_uepoch,end_uepoch as file_fields from form %}
             {% for field in file_fields %}
                 <td>{{ field.label }}</td>
                 <td>
@@ -158,7 +131,7 @@
             {% endfor %}
         </tr>
         <tr class="row1">
-            {% get_fieldset accountcode as file_fields from form %}
+            {% get_fieldset mduration,billmsec,read_codec,write_codec,accountcode as file_fields from form %}
             {% for field in file_fields %}
                 <td>{{ field.label }}</td>
                 <td>
