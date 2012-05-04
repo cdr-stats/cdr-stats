@@ -161,7 +161,7 @@ class CdrSearchForm(SearchForm):
     from_date = CharField(label=_('From'), required=True, max_length=10)
     to_date = CharField(label=_('To'), required=True, max_length=10)
     direction = forms.TypedChoiceField(label=_('Direction'), required=False, coerce=bool,
-                choices=(('inbound', _('Inbound')), ('outbound', _('Outbound'))))
+                choices=(('all', _('All')), ('inbound', _('Inbound')), ('outbound', _('Outbound'))))
     result = forms.TypedChoiceField(label=_('Result'), required=False, coerce=bool,
                 choices=((1, _('Minutes')), (2, _('Seconds'))),
                 widget=forms.RadioSelect)

@@ -195,6 +195,20 @@ def cdr_view(request):
         request.session['session_search_tag'] = search_tag
         form = CdrSearchForm(request.POST)
         if form.is_valid():
+            # set session var value
+            request.session['session_destination'] = ''
+            request.session['session_destination_type'] = ''
+            request.session['session_accountcode'] = ''
+            request.session['session_accountcode_type'] = ''
+            request.session['session_caller'] = ''
+            request.session['session_caller_type'] = ''
+            request.session['session_duration'] = ''
+            request.session['session_duration_type'] = ''
+            request.session['session_hangup_cause_id'] = ''
+            request.session['session_switch_id'] = ''
+            request.session['session_direction'] = ''
+
+            request.session['session_country_id'] = ''
             if "from_date" in request.POST:
                 # From
                 from_date = request.POST['from_date']
@@ -214,7 +228,7 @@ def cdr_view(request):
             result = int(variable_value(request, 'result'))
             if result:
                 request.session['session_result'] = result
-            #print form.cleaned_data.get('destination')
+
             destination = variable_value(request, 'destination')
             destination_type = variable_value(request, 'destination_type')
             if destination:
@@ -240,7 +254,7 @@ def cdr_view(request):
                 request.session['session_duration_type'] = duration_type
 
             direction = variable_value(request, 'direction')
-            if direction:
+            if direction and direction != 'all':
                 request.session['session_direction'] = str(direction)
 
             switch_id = variable_value(request, 'switch')
@@ -386,7 +400,7 @@ def cdr_view(request):
     if hangup_cause_id and int(hangup_cause_id) != 0:
         query_var['hangup_cause_id'] = int(hangup_cause_id)
 
-    if direction:
+    if direction and direction != 'all':
         query_var['direction'] = str(direction)
 
     if len(country_id) >= 1 and country_id[0] != 0:
