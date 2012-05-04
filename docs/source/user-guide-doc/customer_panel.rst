@@ -145,7 +145,12 @@ In this view, you can get report of concurrent calls
 Realtime-Report
 ~~~~~~~~~~~~~~~
 
+In this view, you can monitor in realtime the traffic on your voip servers
+
 **URL**:
 
     * http://localhost:8000/cdr_realtime/
+
+.. image:: ../_static/images/customer/realtime.png
+    :width: 1000
 

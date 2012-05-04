@@ -21,15 +21,6 @@ Objects Description
 .. autoclass:: HangupCause
     :members:
 
-.. _AsteriskCDR-model:
-
-:class:`AsteriskCDR`
---------------------
-
-.. autoclass:: AsteriskCDR
-    :members:
-
-
 .. automodule:: user_profile.models
 
 .. _UserProfile-model:
