@@ -12,7 +12,7 @@ import time
 
 test = namegen.NameGenerator()
 count_contact = 0
-max_contact = 10000
+max_contact = 100
 start_callerid = 81050000
 start_phonenumber = 650200000
 
