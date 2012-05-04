@@ -134,7 +134,7 @@ class SwitchAdmin(admin.ModelAdmin):
                                 accountcode = ''
                                 # extra fields to import
                                 caller_id_name = ''
-                                direction = ''
+                                direction = 'outbound'
                                 remote_media_ip = ''
                                 answer_uepoch = ''
                                 end_uepoch = ''
@@ -239,7 +239,7 @@ class SwitchAdmin(admin.ModelAdmin):
                                     'billmsec': billmsec,
                                     'read_codec': read_codec,
                                     'write_codec': write_codec,
-                                    #'cdr_type': CDR_TYPE,
+                                    'cdr_type': 'CSV_IMPORT',
                                     #'cdr_object_id': ,
                                     'country_id': country_id,
                                     'authorized': authorized,
