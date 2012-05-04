@@ -295,6 +295,13 @@ SOCKETIO_CALLNUM_DEFAULT = 0
 PHONE_NO_PREFIX_LIMIT_MIN = 2
 PHONE_NO_PREFIX_LIMIT_MAX = 5
 
+#Realtime Graph : set the Y axis limit
+REALTIME_Y_AXIS_LIMIT = 100
+
+# freeswitch, asterisk : see support Switches
+LOCAL_SWITCH_TYPE = 'freeswitch'
+LOCAL_SWITCH_ID = 1
+
 #MONGODB
 #=======
 CDR_MONGO_DB_NAME = 'cdr-stats'

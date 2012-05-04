@@ -34,6 +34,12 @@ DISPOSITION = (
     (9, _('INVALIDARGS')),
 )
 
+SWITCH_TYPE = (
+    ('freeswitch', _('FreeSWITCH')),
+    ('asterisk', _('Asterisk')),
+)
+
+
 class Switch(models.Model):
     """This defines the Switch
 
@@ -46,6 +52,7 @@ class Switch(models.Model):
     """
     name = models.CharField(max_length=100, blank=False, null=True, unique=True)
     ipaddress = models.CharField(max_length=100, blank=False, null=False, unique=True)
+    #switch_type = models.CharField(choices=SWITCH_TYPE, default='freeswitch', max_length=100, null=False)
     key_uuid = UUIDField(auto=True)
     
     def __unicode__(self):
@@ -87,31 +94,10 @@ class HangupCause(models.Model):
         db_table = "hangup_cause"
 
 
+"""
 class AsteriskCDR(models.Model):
-    """This defines the cdr of Asterisk
-
-    **Attributes**:
-
-        * ``calldate`` -
-        * ``src`` - Source
-        * ``dst`` - destination
-        * ``clid`` - Caller Id
-        * ``dcontext`` -
-        * ``channel`` -
-        * ``dstchannel`` -
-        * ``lastapp`` -
-        * ``durationt`` -
-        * ``billsec`` -
-        * ``disposition`` -
-        * ``amaflags`` -
-        * ``accountcode`` -
-        * ``uniqueid`` -
-        * ``userfield`` -
-        * ``cost`` -
-        * ``vendor`` -
-
-    **Name of DB table**: asterisk_cdr
-    """
+    #This defines the cdr of Asterisk
+    
     calldate = models.DateTimeField(default=(lambda:datetime.now()),
                verbose_name=_('calldate'), db_index=True,
                help_text =_("Date Format: YYYY-mm-DD HH:MM:SS"))
@@ -148,3 +134,4 @@ class AsteriskCDR(models.Model):
         verbose_name = _("Asterisk_CDR")
         verbose_name_plural = _("Asterisk_CDR")
         db_table = "asterisk_cdr"
+"""

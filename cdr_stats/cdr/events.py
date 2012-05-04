@@ -82,7 +82,7 @@ def my_message_handler(request, socket, context, message):
         socket.send(result)
         return True
 
-    if not user.is_superuser or not hasattr(user, 'userprofile') or not user.userprofile.accountcode:
+    if not user.is_superuser and (not hasattr(user, 'userprofile') or not user.userprofile.accountcode):
         logger.debug('Wrong User')
         result[message['voipswitch']] = settings.SOCKETIO_CALLNUM_DEFAULT
         socket.send(result)
