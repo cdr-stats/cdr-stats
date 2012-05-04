@@ -97,9 +97,9 @@
     </table>
 
     <table>
-        <tr class="row1"><td colspan="12"><b>{% trans "Mandatory fields to import" %}</b></td></tr>
+        <tr class="row1"><td colspan="14"><b>{% trans "Mandatory fields to import" %}</b></td></tr>
         <tr class="row2">
-            {% get_fieldset caller_id_number,destination_number,start_uepoch,duration,billsec,hangup_cause_id as file_fields from form %}
+            {% get_fieldset caller_id_number,destination_number,start_uepoch,duration,billsec,hangup_cause_id,uuid as file_fields from form %}
             {% for field in file_fields %}
                 <td>{{ field.label }}</td>
                 <td>
@@ -113,10 +113,10 @@
                 </td>
             {% endfor %}
         </tr>
-        <tr><td colspan="12"></td></tr>
-        <tr class="row1"><td colspan="12"><b>{% trans "Extra fields to import " %}</b></td></tr>
+        <tr><td colspan="14"></td></tr>
+        <tr class="row1"><td colspan="14"><b>{% trans "Extra fields to import" %}</b></td></tr>
         <tr class="row2">
-            {% get_fieldset caller_id_name,direction,uuid,remote_media_ip,answer_uepoch,end_uepoch as file_fields from form %}
+            {% get_fieldset caller_id_name,direction,remote_media_ip,answer_uepoch,end_uepoch as file_fields from form %}
             {% for field in file_fields %}
                 <td>{{ field.label }}</td>
                 <td>

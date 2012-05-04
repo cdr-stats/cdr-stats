@@ -113,7 +113,6 @@ class SwitchAdmin(admin.ModelAdmin):
                 uni = [ (k, v) for k, v in cdr_field_list.iteritems() if countMap[v] == 1]
                 uni = sorted(uni, key=lambda uni: uni[1])
 
-
                 # if order list matched with CDR_FIELD_LIST count
                 if len(uni) == len(CDR_FIELD_LIST) - len(cdr_field_not_in_list):
                     # To count total rows of CSV file
@@ -130,32 +129,64 @@ class SwitchAdmin(admin.ModelAdmin):
                         if (row and str(row[0]) > 0):
                             row = striplist(row)
                             try:
+                                accountcode = ''
+                                # extra fields to import
+                                caller_id_name = ''
+                                direction = ''
+                                remote_media_ip = ''
+                                answer_uepoch = ''
+                                end_uepoch = ''
+                                mduration = ''
+                                billmsec = ''
+                                write_codec = ''
+                                read_codec = ''
                                 get_cdr_from_row = {}
                                 row_counter = 0
                                 for j in uni:
-                                    get_cdr_from_row[j[0]] = row[row_counter]
+                                    get_cdr_from_row[j[0]] = row[j[1]-1]
+                                    #get_cdr_from_row[j[0]] = row[row_counter]
+                                    if j[0] == 'caller_id_name':
+                                        caller_id_name = row[j[1]-1]
+                                    if j[0] == 'caller_id_name':
+                                        caller_id_name = row[j[1]-1]
+                                    if j[0] == 'direction':
+                                        direction = row[j[1]-1]
+                                    if j[0] == 'remote_media_ip':
+                                        remote_media_ip = row[j[1]-1]
+                                    if j[0] == 'answer_uepoch':
+                                        answer_uepoch = row[j[1]-1]
+                                    if j[0] == 'end_uepoch':
+                                        end_uepoch = row[j[1]-1]
+                                    if j[0] == 'mduration':
+                                        mduration = row[j[1]-1]
+                                    if j[0] == 'billmsec':
+                                        billmsec = row[j[1]-1]
+                                    if j[0] == 'read_codec':
+                                        read_codec = row[j[1]-1]
+                                    if j[0] == 'write_codec':
+                                        write_codec = row[j[1]-1]
+
                                     row_counter = row_counter + 1
 
-                                accountcode = ''
-                                # fields are not in csv
                                 get_cdr_not_from_row = {}
                                 if len(cdr_field_not_in_list) != 0:
                                     for i in cdr_field_not_in_list:
                                         if i == 'accountcode':
                                             accountcode = int(request.POST[i+"_csv"])
-                                        else:
-                                            get_cdr_not_from_row[i] = request.POST[i+"_csv"]
 
                                 if not accountcode:
                                     accountcode = int(get_cdr_from_row['accountcode'])
 
 
+                                # Mandatory fields to import
+                                switch_id = int(request.POST['switch'])
+                                caller_id_number = get_cdr_from_row['caller_id_number']
+                                duration = int(get_cdr_from_row['duration'])
+                                billsec = int(get_cdr_from_row['billsec'])
+                                hangup_cause_id = get_hangupcause_id(int(get_cdr_from_row['hangup_cause_id']))
                                 start_uepoch = datetime.fromtimestamp(int(get_cdr_from_row['start_uepoch'][:10]))
-                                answer_uepoch = datetime.fromtimestamp(int(get_cdr_from_row['end_uepoch'][:10]))
-                                end_uepoch = datetime.fromtimestamp(int(get_cdr_from_row['end_uepoch'][:10]))
-
-                                # Check Destination number
                                 destination_number = get_cdr_from_row['destination_number']
+                                uuid = get_cdr_from_row['uuid']
 
                                 # number startswith 0 or `+` sign
                                 #remove leading +
@@ -180,33 +211,32 @@ class SwitchAdmin(admin.ModelAdmin):
 
                                 country_id = get_country_id(prefix_list)
 
-                                destination_number = get_cdr_from_row['destination_number']
-                                hangup_cause_id = get_hangupcause_id(int(get_cdr_from_row['hangup_cause_id']))
-                                switch_id = int(request.POST['switch'])
-                                duration = int(get_cdr_from_row['duration'])
-                                uuid = get_cdr_from_row['uuid']
-
+                                # Extra fields to import
+                                if answer_uepoch:
+                                    answer_uepoch = datetime.fromtimestamp(int(answer_uepoch[:10]))
+                                if end_uepoch:
+                                    end_uepoch = datetime.fromtimestamp(int(end_uepoch[:10]))
 
                                 # Prepare global CDR
                                 cdr_record = {
                                     'switch_id': int(request.POST['switch']),
-                                    'caller_id_number': get_cdr_from_row['caller_id_number'],
-                                    'caller_id_name': get_cdr_from_row['caller_id_name'],
+                                    'caller_id_number': caller_id_number,
+                                    'caller_id_name': caller_id_name,
                                     'destination_number': destination_number,
                                     'duration': duration,
-                                    'billsec': int(get_cdr_from_row['billsec']),
+                                    'billsec': billsec,
                                     'hangup_cause_id': hangup_cause_id,
                                     'accountcode': accountcode,
-                                    'direction': get_cdr_from_row['direction'],
+                                    'direction': direction,
                                     'uuid': uuid,
-                                    'remote_media_ip': get_cdr_from_row['remote_media_ip'],
+                                    'remote_media_ip': remote_media_ip,
                                     'start_uepoch': start_uepoch,
                                     'answer_uepoch': answer_uepoch,
                                     'end_uepoch': end_uepoch,
-                                    'mduration': get_cdr_from_row['mduration'],
-                                    'billmsec': get_cdr_from_row['billmsec'],
-                                    'read_codec': get_cdr_from_row['read_codec'],
-                                    'write_codec': get_cdr_from_row['write_codec'],
+                                    'mduration': mduration,
+                                    'billmsec': billmsec,
+                                    'read_codec': read_codec,
+                                    'write_codec': write_codec,
                                     #'cdr_type': CDR_TYPE,
                                     #'cdr_object_id': ,
                                     'country_id': country_id,
