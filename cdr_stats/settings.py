@@ -302,6 +302,11 @@ REALTIME_Y_AXIS_LIMIT = 100
 LOCAL_SWITCH_TYPE = 'freeswitch'
 LOCAL_SWITCH_ID = 1
 
+#ASTERISK IMPORT
+#===============
+ASTERISK_IMPORT_TYPE = 'mysql' # Only mysql supported
+
+
 #MONGODB
 #=======
 CDR_MONGO_DB_NAME = 'cdr-stats'
