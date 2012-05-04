@@ -500,8 +500,13 @@ def cdr_view(request):
             duration = i['duration']
             billsec = i['duration']
 
+        if "cdr_object_id" in i:
+            cdr_id = i['cdr_object_id']
+        else:
+            cdr_id = ''
+
         docs.append({
-                     'id': i['cdr_object_id'],
+                     'id': cdr_id,
                      'start_uepoch': i['start_uepoch'],
                      'caller_id_number': i['caller_id_number'],
                      'caller_id_name': i['caller_id_name'],

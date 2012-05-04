@@ -265,8 +265,10 @@
                         {% else %}
                           <img src="{{STATIC_URL}}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
                         {% endifequal %}
+                        {% if row.id %}
                         <a data-toggle="modal" href="#modal-create-{{ row.id }}" class="ajax-modal-{{ row.id }}" url='/cdr_detail/{{ row.id }}/{{ row.switch_id }}'
                         data-controls-modal='modal-create-content-{{ row.id }}'><img src="{{STATIC_URL}}cdr-stats/icons/zoom.png" class="elemtooltip" title="{% trans "Show details" %}"/></a>
+                        {% endif %}
 
                         <script type="text/javascript" charset="utf-8">
                             $(".ajax-modal-{{ row.id }}").live('click', function() {
