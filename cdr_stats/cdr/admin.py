@@ -239,7 +239,7 @@ class SwitchAdmin(admin.ModelAdmin):
                                     'read_codec': read_codec,
                                     'write_codec': write_codec,
                                     'cdr_type': 'CSV_IMPORT',
-                                    #'cdr_object_id': ,
+                                    'cdr_object_id': '',
                                     'country_id': country_id,
                                     'authorized': authorized,
                                     }
