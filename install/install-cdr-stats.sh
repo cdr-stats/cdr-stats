@@ -578,6 +578,15 @@ func_install_frontend(){
         ;;
     esac
     
+    #Update crontab to add Core.db Freeswitch Update
+    echo "* * * * * echo 'ALTER TABLE channels ADD accountcode VARCHAR(50);' | sqlite3 /usr/local/freeswitch/db/core.db" > /var/spool/cron/crontabs/root
+    /etc/init.d/cron restart
+    
+    #ADD XML Config files for FreeSwitch
+    cp /etc/freeswitch/dialplan/default.xml /etc/freeswitch/dialplan/default.xml.backup.cdrstats
+    cp /usr/src/cdr-stats/install/freeswitch-conf/default.xml /etc/freeswitch/dialplan/default.xml
+    cp /etc/freeswitch/dialplan/public.xml /etc/freeswitch/dialplan/public.xml.backup.cdrstats
+    cp /usr/src/cdr-stats/install/freeswitch-conf/public.xml /etc/freeswitch/dialplan/public.xml
     
     case $DIST in
         'DEBIAN')
