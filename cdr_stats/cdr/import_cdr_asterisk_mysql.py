@@ -117,6 +117,7 @@ def import_cdr_asterisk_mysql(shell=False):
         try:
             connection = Database.connect(user=user, passwd=password, db=db_name, host=host)
             cursor = connection.cursor()
+            cursor_update = connection.cursor()
         except ConnectionFailure, e:
             sys.stderr.write("Could not connect to Mysql: %s - %s" % \
                                                             (e, ipaddress))
@@ -124,12 +125,12 @@ def import_cdr_asterisk_mysql(shell=False):
 
 
         try:
-            cursor.execute ("SELECT VERSION() from %s WHERE import_cdr IS NOT NULL LIMIT 0,1" % table_name)
+            cursor.execute("SELECT VERSION() from %s WHERE import_cdr IS NOT NULL LIMIT 0,1" % table_name)
             row = cursor.fetchone()
         except:
             #Add missing field to flag import
             cursor.execute("ALTER TABLE %s  ADD import_cdr TINYINT NOT NULL DEFAULT '0'" % table_name)
-            cursor.execute ("ALTER TABLE %s ADD INDEX (import_cdr)" % table_name)
+            cursor.execute("ALTER TABLE %s ADD INDEX (import_cdr)" % table_name)
 
         #cursor.execute ("SELECT count(*) FROM %s WHERE import_cdr=0" % table_name)
         #row = cursor.fetchone()
@@ -138,11 +139,11 @@ def import_cdr_asterisk_mysql(shell=False):
         #print total_loop_count
         count_import = 0
 
-        cursor.execute ("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel, duration, billsec, disposition, accountcode, uniqueid FROM %s WHERE import_cdr=0" % table_name)
+        cursor.execute("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel, duration, billsec, disposition, accountcode, uniqueid, acctid FROM %s WHERE import_cdr=0" % table_name)
         row = cursor.fetchone()
-        while row is not None:
-            print ", ".join([str(c) for c in row])
 
+        while row is not None:
+            acctid = row[9]
             callerid = row[2]
             try:
                 m = re.search('"(.+?)" <(.+?)>', callerid)
@@ -198,7 +199,7 @@ def import_cdr_asterisk_mysql(shell=False):
 
             if get_country_id==0:
                 #TODO: Add logger
-                print "Error to find the country_id %s" % destination_number
+                print_shell(shell, "Error to find the country_id %s" % destination_number)
 
             # Prepare global CDR
             cdr_record = {
@@ -229,13 +230,15 @@ def import_cdr_asterisk_mysql(shell=False):
             # record global CDR
             CDR_COMMON.insert(cdr_record)
 
-            print_shell(shell, "Sync CDR (cid:%s, dest:%s, dur:%s, hg:%s, country:%s, auth:%s)" % (
+            print_shell(shell, "Sync CDR (acctid:%d, cid:%s, dest:%s, dur:%s, hg:%s, country:%s, auth:%s, calldate:%s)" % (
+                                        acctid,
                                         callerid_number,
                                         destination_number,
                                         duration,
                                         hangup_cause_id,
                                         country_id,
-                                        authorized,))
+                                        authorized,
+                                        start_uepoch.strftime('%Y-%m-%d %M:%S'),))
             count_import = count_import + 1
 
             # change import_cdr flag
@@ -300,20 +303,17 @@ def import_cdr_asterisk_mysql(shell=False):
                                              'duration': duration }
                                 },upsert=True)
 
-            # Flag the CDR as imported
-            #importcdr_handler.update(
-            #            {'_id': cdr['_id']},
-            #            {'$set': {'import_cdr': 1, 'import_cdr_monthly': 1, 'import_cdr_daily': 1, 'import_cdr_hourly': 1}}
-            #)
-
-
-            print "Record inserted..."
-            sys.exit(1)
+            #Flag the CDR
+            try:
+                cursor_update.execute("UPDATE %s SET import_cdr=1 WHERE acctid=%d" % (table_name, acctid))
+            except:
+                print_shell(shell, "ERROR : Update failed (acctid:%d)" % acctid)
 
             #Fetch a other record
             row = cursor.fetchone()
         
         cursor.close()
+        cursor_update.close()
         connection.close()
 
         if count_import > 0:
