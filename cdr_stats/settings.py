@@ -306,6 +306,17 @@ LOCAL_SWITCH_ID = 1
 #===============
 ASTERISK_IMPORT_TYPE = 'mysql' # Only mysql supported
 
+#Mysql Settings to use for import
+ASTERISK_CDR_MYSQL_IMPORT = {
+    '127.0.0.1': {
+        'db_name': 'asteriskcdr',
+        'table': 'cdr',
+        'host': 'localhost',
+        'user': 'root',
+        'password': 'password',
+        'port': ,
+    },
+}
 
 #MONGODB
 #=======
@@ -323,7 +334,7 @@ CDR_MONGO_CDR_HANGUP = 'cdr_hangup_cause_analytic'
 CDR_MONGO_CDR_COUNTRY = 'cdr_country_analytic'
 
 
-#MongoDB(s) to use for import
+#MongoDB setting(s) to use for import
 CDR_MONGO_IMPORT = {
     '127.0.0.1': {
         'db_name': 'freeswitch_cdr', # cdr-stats
