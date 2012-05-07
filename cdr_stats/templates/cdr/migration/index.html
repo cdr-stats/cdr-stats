@@ -37,12 +37,6 @@
 <div id="container">
 
 
-<div id="title">
-    <h1 style="color:white;">MigrationsMap.net</h1>
-    <p style="font-size:13px;padding: 2px 0px 0px 0px;">Where are migrants coming from? Where have migrants left?</p>
-</div>
-
-
 <div id="country_select_div">
     <span id="explanation">Click on the map or pick a country here:</span>
     <select id="country_select">
@@ -61,7 +55,7 @@
         var currentCircles=[];
         var currentCountry="USA";
         var previousCountry = "USA";
-        var direction = "out";
+        var direction = "in";
         var unselected_color = "#515151";
         var selected_color = "#999";//"#67E667" ;//"#87ceeb";
         var border_color = "#999";
@@ -112,14 +106,14 @@
         }
         function flashCircles()
         {
-            var c = paper.circle(userLongitude,userLatitude , 1);
+            var c = paper.circle(userLongitude, userLatitude, 1);
             c.attr({"stroke":"white"});
             c.animate({r: 30,stroke:"yellow"}, 333, function(){
                 var d = paper.circle(userLongitude,userLatitude , 1);
                 c.animate({r: 60,stroke:"white"}, 333);
                 d.attr({"stroke":"white"});
                 d.animate({r: 30,stroke:"yellow"},333, function(){
-                    var e = paper.circle(userLongitude,userLatitude , 1);
+                    var e = paper.circle(userLongitude, userLatitude, 1);
                     e.attr({"stroke":"white"});
                     e.animate({r: 30,stroke:"yellow"}, 333);
                     c.animate({r: 90,stroke:"yellow"}, 333);
@@ -149,8 +143,6 @@
             $("#"+direction).removeClass("on");
             $("#"+other_direction).addClass("on")
         }
-        
-
 
         
         function color_country(country,color,strokeColor)
@@ -193,7 +185,7 @@
         
         function get_over_handler(country){
             return function(event){
-                color_country(country,selected_color);
+                color_country(country, selected_color);
                 var country_name =  $("#country_name_popup");
 
                 country_name.empty();
@@ -364,7 +356,7 @@
                  POP = data;
              });
 
-             $.getJSON("{{STATIC_URL}}cdr-stats/migration/" + "code_to_name.json", function(data) {
+            $.getJSON("{{STATIC_URL}}cdr-stats/migration/" + "code_to_name.json", function(data) {
                  code_to_name = data;
                  var country_select = $("#country_select");
                  $.each(data, function(code, name) {

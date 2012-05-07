@@ -4,6 +4,7 @@ import json
 
 def getIndicator(indicator_code, file_name):
     matrix, reversed_matrix, code_to_name = load_matrices()
+    print file_name+".json"
     f = open(file_name+".json","w")
     res ={}
     for country_code in code_to_name:
