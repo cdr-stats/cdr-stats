@@ -40,10 +40,23 @@ random.seed()
 HANGUP_CAUSE = ['NORMAL_CLEARING','NORMAL_CLEARING','NORMAL_CLEARING','NORMAL_CLEARING',
                 'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED', 'INVALID_NUMBER_FORMAT']
 
-CDR_TYPE = {"FreeSWITCH":1, "Asterisk":2, "Yate":3, "OpenSIPS":4, "Kamailio":5}
+CDR_TYPE = {"freeswitch":1, "asterisk":2, "yate":3, "opensips":4, "kamailio":5}
 
 #value 0 per default, 1 in process of import, 2 imported successfully and verified
 STATUS_SYNC = {"new":0, "in_process": 1, "verified":2}
+
+DISPOSITION_TRANSLATION = {
+    0: 0,
+    1: 16,  #ANSWER
+    2: 17,  #BUSY
+    3: 19,  #NOANSWER
+    4: 21,  #CANCEL
+    5: 34,  #CONGESTION
+    6: 47,  #CHANUNAVAIL
+    7: 0,   #DONTCALL
+    8: 0,   #TORTURE
+    9: 0,   #INVALIDARGS
+}
 
 # Assign collection names to variables
 CDR_COMMON = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COMMON]
@@ -97,182 +110,144 @@ def import_cdr_asterisk_mysql(shell=False):
 
         #Connect on Mysql Database
         db_name = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['db_name']
-        table = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['table']
+        table_name = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['table_name']
         user = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['user']
         password = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['password']
         host = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['host']
-        port = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['port']
         try:
-            connection = Database.connect(user=user, passwd=password, db=db_name, host=host, port=port)
+            connection = Database.connect(user=user, passwd=password, db=db_name, host=host)
             cursor = connection.cursor()
         except ConnectionFailure, e:
             sys.stderr.write("Could not connect to Mysql: %s - %s" % \
                                                             (e, ipaddress))
             sys.exit(1)
 
-        cursor = conn.cursor ()
-        cursor.execute ("SELECT VERSION()")
-        row = cursor.fetchone ()
-        print "server version:", row[0]
-        cursor.close ()
-        conn.close ()
-        sys.exit(1)
 
+        try:
+            cursor.execute ("SELECT VERSION() from %s WHERE import_cdr IS NOT NULL LIMIT 0,1" % table_name)
+            row = cursor.fetchone()
+        except:
+            #Add missing field to flag import
+            cursor.execute("ALTER TABLE %s  ADD import_cdr TINYINT NOT NULL DEFAULT '0'" % table_name)
+            cursor.execute ("ALTER TABLE %s ADD INDEX (import_cdr)" % table_name)
 
+        #cursor.execute ("SELECT count(*) FROM %s WHERE import_cdr=0" % table_name)
+        #row = cursor.fetchone()
+        #total_record = row[0]
 
-
-        #Connect to Mongo
-        importcdr_handler = DB_CONNECTION[settings.CDR_MONGO_IMPORT[ipaddress]['collection']]
-
-        total_record = importcdr_handler.find({'import_cdr': 0}).count()
-        #print total_record
-
-        PAGE_SIZE = int(5000)
-
-        total_loop_count = int( int(total_record) / PAGE_SIZE ) + 1
         #print total_loop_count
         count_import = 0
 
-        for j in range(1, total_loop_count+1):
-            PAGE_NUMBER = int(j)
+        cursor.execute ("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel, duration, billsec, disposition, accountcode, uniqueid FROM %s WHERE import_cdr=0" % table_name)
+        row = cursor.fetchone()
+        while row is not None:
+            print ", ".join([str(c) for c in row])
+
+            callerid = row[2]
+            try:
+                m = re.search('"(.+?)" <(.+?)>', callerid)
+                callerid_name = m.group(1)
+                callerid_number = m.group(2)
+            except:
+                callerid_name = ''
+                callerid_number = callerid
+
+            channel = row[3]
+            duration = int(row[4])
+            billsec = int(row[5])
+            ast_disposition = int(row[6])
+            try:
+                transdisposition = DISPOSITION_TRANSLATION[ast_disposition]
+            except:
+                transdisposition = 0
+            hangup_cause_id = get_hangupcause_id(transdisposition)
+
+            accountcode = int(row[7])
+            uniqueid = row[8]
+            start_uepoch = datetime.fromtimestamp(int(row[1]))
+            answer_uepoch = start_uepoch
+            end_uepoch = datetime.fromtimestamp(int(row[1]) + int(duration)) 
+
+            # Check Destination number
+            destination_number = row[0]
+
+            #country_id = 198 # spain default
+            # number startswith 0 or `+` sign
+
+            #remove leading +
+            sanitized_destination = re.sub("^\++","",destination_number)
+            #remove leading 011
+            sanitized_destination = re.sub("^011+","",sanitized_destination)
+            #remove leading 00
+            sanitized_destination = re.sub("^0+","",sanitized_destination)
             
-            result = importcdr_handler.find({'import_cdr': 0}, 
-                    {
-                        "callflow.caller_profile.caller_id_number":1,
-                        "callflow.caller_profile.caller_id_name":1,
-                        "callflow.caller_profile.destination_number": 1,
-                        "variables.duration":1,
-                        "variables.billsec":1,
-                        "variables.hangup_cause_q850":1,
-                        "variables.accountcode":1,
-                        "variables.direction":1,
-                        "variables.uuid":1,
-                        "variables.remote_media_ip":1,
-                        "variables.start_uepoch":1,
-                        "variables.answer_uepoch":1,
-                        "variables.end_uepoch":1,
-                        "variables.mduration": 1,
-                        "variables.billmsec":1,
-                        "variables.read_codec": 1,
-                        "variables.write_codec": 1,
-                        "import_cdr_monthly": 1,
-                        "import_cdr_daily": 1,
-                        "import_cdr_hourly": 1,
-                    }).sort([
-                        ('variables.start_uepoch', -1),
-                        ('callflow.caller_profile.destination_number', 1),
-                        ('variables.accountcode', 1),
-                        ('variables.hangup_cause_q850', 1)
-                            ]).limit(PAGE_SIZE).clone()
+            prefix_list = prefix_list_string(sanitized_destination)
 
-            #Retrieve FreeSWITCH CDRs
-            for cdr in result:
-                start_uepoch = datetime.fromtimestamp(int(cdr['variables']['start_uepoch'][:10]))
-                answer_uepoch = datetime.fromtimestamp(int(cdr['variables']['answer_uepoch'][:10]))
-                end_uepoch = datetime.fromtimestamp(int(cdr['variables']['end_uepoch'][:10]))
+            authorized = 1 # default
+            #check desti against whiltelist
+            authorized = chk_prefix_in_whitelist(prefix_list)
+            if authorized:
+                authorized = 1 # allowed destination
+            else:
+                #check desti against blacklist
+                authorized = chk_prefix_in_blacklist(prefix_list)
+                if not authorized:
+                    authorized = 0 # not allowed destination
 
-                # Check Destination number
-                destination_number = cdr['callflow']['caller_profile']['destination_number']
+            country_id = get_country_id(prefix_list)
 
-                #country_id = 198 # spain default
-                # number startswith 0 or `+` sign
+            if get_country_id==0:
+                #TODO: Add logger
+                print "Error to find the country_id %s" % destination_number
 
-                #remove leading +
-                sanitized_destination = re.sub("^\++","",destination_number)
-                #remove leading 011
-                sanitized_destination = re.sub("^011+","",sanitized_destination)
-                #remove leading 00
-                sanitized_destination = re.sub("^0+","",sanitized_destination)
-                
-                prefix_list = prefix_list_string(sanitized_destination)
+            # Prepare global CDR
+            cdr_record = {
+                'switch_id': switch.id,
+                'caller_id_number': callerid_number,
+                'caller_id_name': callerid_name,
+                'destination_number': destination_number,
+                'duration': duration,
+                'billsec': billsec,
+                'hangup_cause_id': hangup_cause_id,
+                'accountcode': accountcode,
+                'direction': "inbound",
+                'uuid': uniqueid,
+                'remote_media_ip': '',
+                'start_uepoch': start_uepoch,
+                'answer_uepoch': answer_uepoch,
+                'end_uepoch': end_uepoch,
+                'mduration': '',
+                'billmsec': '',
+                'read_codec': '',
+                'write_codec': '',
+                'cdr_type': CDR_TYPE["asterisk"],
+                'cdr_object_id': uniqueid,
+                'country_id': country_id,
+                'authorized': authorized,
+            }
 
-                authorized = 1 # default
-                #check desti against whiltelist
-                authorized = chk_prefix_in_whitelist(prefix_list)
-                if authorized:
-                    authorized = 1 # allowed destination
-                else:
-                    #check desti against blacklist
-                    authorized = chk_prefix_in_blacklist(prefix_list)
-                    if not authorized:
-                        authorized = 0 # not allowed destination
+            # record global CDR
+            CDR_COMMON.insert(cdr_record)
 
-                country_id = get_country_id(prefix_list)
+            print_shell(shell, "Sync CDR (cid:%s, dest:%s, dur:%s, hg:%s, country:%s, auth:%s)" % (
+                                        cdr['callflow']['caller_profile']['caller_id_number'],
+                                        cdr['callflow']['caller_profile']['destination_number'],
+                                        cdr['variables']['duration'],
+                                        cdr['variables']['hangup_cause_q850'],
+                                        country_id,
+                                        authorized,))
+            count_import = count_import + 1
 
-                if get_country_id==0:
-                    #TODO: Add logger
-                    print "Error to find the country_id %s" % destination_number
-
-                # Prepare global CDR
-                cdr_record = {
-                    'switch_id': switch.id,
-                    'caller_id_number': cdr['callflow']['caller_profile']['caller_id_number'],
-                    'caller_id_name': cdr['callflow']['caller_profile']['caller_id_name'],
-                    'destination_number': cdr['callflow']['caller_profile']['destination_number'],
-                    'duration': int(cdr['variables']['duration']),
-                    'billsec': int(cdr['variables']['billsec']),
-                    'hangup_cause_id': get_hangupcause_id(cdr['variables']['hangup_cause_q850']),
-                    'accountcode': cdr['variables']['accountcode'],
-                    'direction': cdr['variables']['direction'],
-                    'uuid': cdr['variables']['uuid'],
-                    'remote_media_ip': cdr['variables']['remote_media_ip'],
-                    'start_uepoch': start_uepoch,
-                    'answer_uepoch': answer_uepoch,
-                    'end_uepoch': end_uepoch,
-                    'mduration': cdr['variables']['mduration'],
-                    'billmsec': cdr['variables']['billmsec'],
-                    'read_codec': cdr['variables']['read_codec'],
-                    'write_codec': cdr['variables']['write_codec'],
-                    'cdr_type': CDR_TYPE["FreeSWITCH"],
-                    'cdr_object_id': cdr['_id'],
-                    'country_id': country_id,
-                    'authorized': authorized,
-                }
-
-                destination_number = cdr['callflow']['caller_profile']['destination_number']
-                hangup_cause_id = get_hangupcause_id(cdr['variables']['hangup_cause_q850'])
-                accountcode = cdr['variables']['accountcode']
-
-                # record global CDR
-                CDR_COMMON.insert(cdr_record)
-
-                print_shell(shell, "Sync CDR (cid:%s, dest:%s, dur:%s, hg:%s, country:%s, auth:%s)" % (
-                                            cdr['callflow']['caller_profile']['caller_id_number'],
-                                            cdr['callflow']['caller_profile']['destination_number'],
-                                            cdr['variables']['duration'],
-                                            cdr['variables']['hangup_cause_q850'],
-                                            country_id,
-                                            authorized,))
-                count_import = count_import + 1
-
-                # change import_cdr flag
-                #update_cdr_collection(importcdr_handler, cdr['_id'], 'import_cdr')
-                
-                # Store monthly cdr collection with unique import
-                if cdr['import_cdr_monthly'] == 0:
-                    # monthly collection
-                    current_y_m = datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
-                    CDR_MONTHLY.update(
-                                {
-                                    'start_uepoch': current_y_m,
-                                    'destination_number': destination_number,
-                                    'hangup_cause_id': hangup_cause_id,
-                                    'accountcode': accountcode,
-                                    'switch_id': switch.id,
-                                },
-                                {
-                                    '$inc':
-                                        {'calls': 1,
-                                         'duration': int(cdr['variables']['duration']) }
-                                }, upsert=True)
-
-                # Store daily cdr collection with unique import
-                if cdr['import_cdr_daily'] == 0:
-                    # daily collection
-                    current_y_m_d = datetime.strptime(str(start_uepoch)[:10], "%Y-%m-%d")
-                    CDR_DAILY.update(
+            # change import_cdr flag
+            #update_cdr_collection(importcdr_handler, cdr['_id'], 'import_cdr')
+            
+            # Store monthly cdr collection with unique import
+            if cdr['import_cdr_monthly'] == 0:
+                # monthly collection
+                current_y_m = datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
+                CDR_MONTHLY.update(
                             {
-                                'start_uepoch': current_y_m_d,
+                                'start_uepoch': current_y_m,
                                 'destination_number': destination_number,
                                 'hangup_cause_id': hangup_cause_id,
                                 'accountcode': accountcode,
@@ -282,43 +257,72 @@ def import_cdr_asterisk_mysql(shell=False):
                                 '$inc':
                                     {'calls': 1,
                                      'duration': int(cdr['variables']['duration']) }
+                            }, upsert=True)
+
+            # Store daily cdr collection with unique import
+            if cdr['import_cdr_daily'] == 0:
+                # daily collection
+                current_y_m_d = datetime.strptime(str(start_uepoch)[:10], "%Y-%m-%d")
+                CDR_DAILY.update(
+                        {
+                            'start_uepoch': current_y_m_d,
+                            'destination_number': destination_number,
+                            'hangup_cause_id': hangup_cause_id,
+                            'accountcode': accountcode,
+                            'switch_id': switch.id,
+                        },
+                        {
+                            '$inc':
+                                {'calls': 1,
+                                 'duration': int(cdr['variables']['duration']) }
+                        },upsert=True)
+
+            # Store hourly cdr collection with unique import
+            if cdr['import_cdr_hourly'] == 0:
+                # hourly collection
+                current_y_m_d_h = datetime.strptime(str(start_uepoch)[:13], "%Y-%m-%d %H")
+                CDR_HOURLY.update(
+                            {
+                                'start_uepoch': current_y_m_d_h,
+                                'destination_number': destination_number,
+                                'hangup_cause_id': hangup_cause_id,
+                                'accountcode': accountcode,
+                                'switch_id': switch.id,},
+                            {
+                                '$inc': {'calls': 1,
+                                         'duration': int(cdr['variables']['duration']) }
                             },upsert=True)
 
-                # Store hourly cdr collection with unique import
-                if cdr['import_cdr_hourly'] == 0:
-                    # hourly collection
-                    current_y_m_d_h = datetime.strptime(str(start_uepoch)[:13], "%Y-%m-%d %H")
-                    CDR_HOURLY.update(
-                                {
-                                    'start_uepoch': current_y_m_d_h,
-                                    'destination_number': destination_number,
-                                    'hangup_cause_id': hangup_cause_id,
-                                    'accountcode': accountcode,
-                                    'switch_id': switch.id,},
-                                {
-                                    '$inc': {'calls': 1,
-                                             'duration': int(cdr['variables']['duration']) }
-                                },upsert=True)
+                # Country report collection
+                current_y_m_d_h_m = datetime.strptime(str(start_uepoch)[:16], "%Y-%m-%d %H:%M")
+                CDR_COUNTRY_REPORT.update(
+                                    {
+                                        'start_uepoch': current_y_m_d_h_m,
+                                        'country_id': country_id,
+                                        'accountcode': accountcode,
+                                        'switch_id': switch.id,},
+                                    {
+                                        '$inc': {'calls': 1,
+                                                 'duration': int(cdr['variables']['duration']) }
+                                    },upsert=True)
 
-                    # Country report collection
-                    current_y_m_d_h_m = datetime.strptime(str(start_uepoch)[:16], "%Y-%m-%d %H:%M")
-                    CDR_COUNTRY_REPORT.update(
-                                        {
-                                            'start_uepoch': current_y_m_d_h_m,
-                                            'country_id': country_id,
-                                            'accountcode': accountcode,
-                                            'switch_id': switch.id,},
-                                        {
-                                            '$inc': {'calls': 1,
-                                                     'duration': int(cdr['variables']['duration']) }
-                                        },upsert=True)
+            # Flag the CDR as imported
+            #importcdr_handler.update(
+            #            {'_id': cdr['_id']},
+            #            {'$set': {'import_cdr': 1, 'import_cdr_monthly': 1, 'import_cdr_daily': 1, 'import_cdr_hourly': 1}}
+            #)
 
-                # Flag the CDR as imported
-                importcdr_handler.update(
-                            {'_id': cdr['_id']},
-                            {'$set': {'import_cdr': 1, 'import_cdr_monthly': 1, 'import_cdr_daily': 1, 'import_cdr_hourly': 1}}
-                )
 
+            print "Record inserted..."
+            sys.exit(1)
+
+            #Fetch a other record
+            row = cursor.fetchone()
+        
+        cursor.close()
+        connection.close()
+
+        if count_import > 0:
             # Apply index
             CDR_COMMON.ensure_index([("start_uepoch", -1)])
             CDR_MONTHLY.ensure_index([("start_uepoch", -1)])

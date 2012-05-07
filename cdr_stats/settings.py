@@ -310,7 +310,7 @@ ASTERISK_IMPORT_TYPE = 'mysql' # Only mysql supported
 ASTERISK_CDR_MYSQL_IMPORT = {
     '127.0.0.1': {
         'db_name': 'asteriskcdr',
-        'table': 'cdr',
+        'table_name': 'cdr',
         'host': 'localhost',
         'user': 'root',
         'password': 'password',

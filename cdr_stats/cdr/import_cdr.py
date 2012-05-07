@@ -39,7 +39,7 @@ random.seed()
 HANGUP_CAUSE = ['NORMAL_CLEARING','NORMAL_CLEARING','NORMAL_CLEARING','NORMAL_CLEARING',
                 'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED', 'INVALID_NUMBER_FORMAT']
 
-CDR_TYPE = {"FreeSWITCH":1, "Asterisk":2, "Yate":3, "OpenSIPS":4, "Kamailio":5}
+CDR_TYPE = {"freeswitch":1, "asterisk":2, "yate":3, "opensips":4, "kamailio":5}
 
 #value 0 per default, 1 in process of import, 2 imported successfully and verified
 STATUS_SYNC = {"new":0, "in_process": 1, "verified":2}
@@ -212,7 +212,7 @@ def import_cdr(shell=False):
                     'billmsec': cdr['variables']['billmsec'],
                     'read_codec': cdr['variables']['read_codec'],
                     'write_codec': cdr['variables']['write_codec'],
-                    'cdr_type': CDR_TYPE["FreeSWITCH"],
+                    'cdr_type': CDR_TYPE["freeswitch"],
                     'cdr_object_id': cdr['_id'],
                     'country_id': country_id,
                     'authorized': authorized,
