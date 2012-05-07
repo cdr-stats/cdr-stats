@@ -230,10 +230,10 @@ def import_cdr_asterisk_mysql(shell=False):
             CDR_COMMON.insert(cdr_record)
 
             print_shell(shell, "Sync CDR (cid:%s, dest:%s, dur:%s, hg:%s, country:%s, auth:%s)" % (
-                                        cdr['callflow']['caller_profile']['caller_id_number'],
-                                        cdr['callflow']['caller_profile']['destination_number'],
-                                        cdr['variables']['duration'],
-                                        cdr['variables']['hangup_cause_q850'],
+                                        callerid_number,
+                                        destination_number,
+                                        duration,
+                                        hangup_cause_id,
                                         country_id,
                                         authorized,))
             count_import = count_import + 1
@@ -242,30 +242,10 @@ def import_cdr_asterisk_mysql(shell=False):
             #update_cdr_collection(importcdr_handler, cdr['_id'], 'import_cdr')
             
             # Store monthly cdr collection with unique import
-            if cdr['import_cdr_monthly'] == 0:
-                # monthly collection
-                current_y_m = datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
-                CDR_MONTHLY.update(
-                            {
-                                'start_uepoch': current_y_m,
-                                'destination_number': destination_number,
-                                'hangup_cause_id': hangup_cause_id,
-                                'accountcode': accountcode,
-                                'switch_id': switch.id,
-                            },
-                            {
-                                '$inc':
-                                    {'calls': 1,
-                                     'duration': int(cdr['variables']['duration']) }
-                            }, upsert=True)
-
-            # Store daily cdr collection with unique import
-            if cdr['import_cdr_daily'] == 0:
-                # daily collection
-                current_y_m_d = datetime.strptime(str(start_uepoch)[:10], "%Y-%m-%d")
-                CDR_DAILY.update(
+            current_y_m = datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
+            CDR_MONTHLY.update(
                         {
-                            'start_uepoch': current_y_m_d,
+                            'start_uepoch': current_y_m,
                             'destination_number': destination_number,
                             'hangup_cause_id': hangup_cause_id,
                             'accountcode': accountcode,
@@ -274,37 +254,51 @@ def import_cdr_asterisk_mysql(shell=False):
                         {
                             '$inc':
                                 {'calls': 1,
-                                 'duration': int(cdr['variables']['duration']) }
-                        },upsert=True)
+                                 'duration': duration }
+                        }, upsert=True)
+
+            # Store daily cdr collection with unique import
+            current_y_m_d = datetime.strptime(str(start_uepoch)[:10], "%Y-%m-%d")
+            CDR_DAILY.update(
+                    {
+                        'start_uepoch': current_y_m_d,
+                        'destination_number': destination_number,
+                        'hangup_cause_id': hangup_cause_id,
+                        'accountcode': accountcode,
+                        'switch_id': switch.id,
+                    },
+                    {
+                        '$inc':
+                            {'calls': 1,
+                             'duration': duration }
+                    },upsert=True)
 
             # Store hourly cdr collection with unique import
-            if cdr['import_cdr_hourly'] == 0:
-                # hourly collection
-                current_y_m_d_h = datetime.strptime(str(start_uepoch)[:13], "%Y-%m-%d %H")
-                CDR_HOURLY.update(
-                            {
-                                'start_uepoch': current_y_m_d_h,
-                                'destination_number': destination_number,
-                                'hangup_cause_id': hangup_cause_id,
-                                'accountcode': accountcode,
-                                'switch_id': switch.id,},
-                            {
-                                '$inc': {'calls': 1,
-                                         'duration': int(cdr['variables']['duration']) }
-                            },upsert=True)
+            current_y_m_d_h = datetime.strptime(str(start_uepoch)[:13], "%Y-%m-%d %H")
+            CDR_HOURLY.update(
+                        {
+                            'start_uepoch': current_y_m_d_h,
+                            'destination_number': destination_number,
+                            'hangup_cause_id': hangup_cause_id,
+                            'accountcode': accountcode,
+                            'switch_id': switch.id,},
+                        {
+                            '$inc': {'calls': 1,
+                                     'duration': duration }
+                        },upsert=True)
 
-                # Country report collection
-                current_y_m_d_h_m = datetime.strptime(str(start_uepoch)[:16], "%Y-%m-%d %H:%M")
-                CDR_COUNTRY_REPORT.update(
-                                    {
-                                        'start_uepoch': current_y_m_d_h_m,
-                                        'country_id': country_id,
-                                        'accountcode': accountcode,
-                                        'switch_id': switch.id,},
-                                    {
-                                        '$inc': {'calls': 1,
-                                                 'duration': int(cdr['variables']['duration']) }
-                                    },upsert=True)
+            # Country report collection
+            current_y_m_d_h_m = datetime.strptime(str(start_uepoch)[:16], "%Y-%m-%d %H:%M")
+            CDR_COUNTRY_REPORT.update(
+                                {
+                                    'start_uepoch': current_y_m_d_h_m,
+                                    'country_id': country_id,
+                                    'accountcode': accountcode,
+                                    'switch_id': switch.id,},
+                                {
+                                    '$inc': {'calls': 1,
+                                             'duration': duration }
+                                },upsert=True)
 
             # Flag the CDR as imported
             #importcdr_handler.update(
