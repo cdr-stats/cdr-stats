@@ -314,7 +314,6 @@ ASTERISK_CDR_MYSQL_IMPORT = {
         'host': 'localhost',
         'user': 'root',
         'password': 'password',
-        'port': ,
     },
 }
 

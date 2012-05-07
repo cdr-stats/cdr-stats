@@ -13,7 +13,7 @@
 #
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.translation import ugettext_lazy as _
-from cdr.import_cdr import import_cdr_asterisk_mysql
+from cdr.import_cdr_asterisk_mysql import import_cdr_asterisk_mysql
 
 class Command(BaseCommand):
     # Usage : sync_cdr
