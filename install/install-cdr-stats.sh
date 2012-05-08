@@ -34,12 +34,10 @@ KERNELARCH=$(uname -p)
 INSTALL_DIR='/usr/share/cdr_stats'
 INSTALL_DIR_WELCOME='/var/www/cdr-stats'
 DATABASENAME=$INSTALL_DIR'/database/cdr-stats.db'
-MYSQLUSER=
-MYSQLPASSWORD=
-MYHOST=
-MYHOSTPORT=
-#Freeswitch update vars
-FS_INSTALLED_PATH=/usr/local/freeswitch
+MYSQLUSER=""
+MYSQLPASSWORD=""
+MYHOST=""
+MYHOSTPORT=""
 CELERYD_USER="celery"
 CELERYD_GROUP="celery"
 CDRSTATS_ENV="cdr-stats"
@@ -577,16 +575,6 @@ func_install_frontend(){
             /etc/init.d/cdr-stats-socketio start
         ;;
     esac
-    
-    #Update crontab to add Core.db Freeswitch Update
-    echo "* * * * * echo 'ALTER TABLE channels ADD accountcode VARCHAR(50);' | sqlite3 /usr/local/freeswitch/db/core.db" > /var/spool/cron/crontabs/root
-    /etc/init.d/cron restart
-    
-    #ADD XML Config files for FreeSwitch
-    cp /etc/freeswitch/dialplan/default.xml /etc/freeswitch/dialplan/default.xml.backup.cdrstats
-    cp /usr/src/cdr-stats/install/freeswitch-conf/default.xml /etc/freeswitch/dialplan/default.xml
-    cp /etc/freeswitch/dialplan/public.xml /etc/freeswitch/dialplan/public.xml.backup.cdrstats
-    cp /usr/src/cdr-stats/install/freeswitch-conf/public.xml /etc/freeswitch/dialplan/public.xml
     
     case $DIST in
         'DEBIAN')

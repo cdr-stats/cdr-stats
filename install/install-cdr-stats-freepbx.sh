@@ -15,9 +15,15 @@
 
 #
 # To download and run the script on your server :
-# cd /usr/src/ ; rm install-all.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-all.sh ; chmod +x install-all.sh ; ./install-all.sh
+# cd /usr/src/ ; rm install-all.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats-freepbx.sh ; chmod +x install-all.sh ; ./install-all.sh
 #
 
+INSTALL_DIR='/usr/share/cdr_stats'
+DATABASENAME=""
+MYSQLUSER=""
+MYSQLPASSWORD=""
+MYHOST=""
+MYHOSTPORT=""
 
 func_identify_os() {
     # Identify Linux Distribution type
@@ -38,6 +44,39 @@ func_identify_os() {
         echo "This script is only intended to run on Ubuntu LTS 10.04 / 12.04 or CentOS 6.2"
         echo ""
         exit 1
+    fi
+}
+
+#Function mysql db setting
+func_mysql_database_setting() {
+    echo ""
+    echo "Provide the MySQL settings to access to current CDR Database..."
+    echo ""
+    
+    echo "Enter Mysql hostname (default:localhost)"
+    read MYHOST
+    if [ -z "$MYHOST" ]; then
+        MYHOST="localhost"
+    fi
+    echo "Enter Mysql port (default:3306)"
+    read MYHOSTPORT
+    if [ -z "$MYHOSTPORT" ]; then
+        MYHOSTPORT="3306"
+    fi
+    echo "Enter Mysql Username (default:root)"
+    read MYSQLUSER
+    if [ -z "$MYSQLUSER" ]; then
+        MYSQLUSER="root"
+    fi
+    echo "Enter Mysql Password (default:password)"
+    read MYSQLPASSWORD
+    if [ -z "$MYSQLPASSWORD" ]; then
+        MYSQLPASSWORD="password"
+    fi
+    echo "Enter Database name (default:asteriskcdrdb)"
+    read DATABASENAME
+    if [ -z "$DATABASENAME" ]; then
+        DATABASENAME="asteriskcdrdb"
     fi
 }
 
@@ -66,13 +105,44 @@ case $DIST in
     ;;
 esac
 
+mysql -uroot -ppassw0rd -P3306 -hlocalhost -e ";"
+
+until mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST $DATABASENAME -e ";" ; do 
+	clear 
+	echo "Enter correct database settings"
+	func_mysql_database_setting
+done
+
 
 #Update Mysql schema
+echo "We will now add a Primary Key to your CDR database"
+echo "We advice you to first backup your database prior continuing"
+echo ""
+echo "Press Enter to continue or CTRL-C to exit"
+mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST $DATABASENAME -e "ALTER TABLE  cdr ADD acctid BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST;;"
 
 
 #Install CDR-Stats
 cd /usr/src/
 wget https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats.sh
 bash install-cdr-stats.sh
+
+
+#enable CDR-Stats for Asterisk
+sed -i "s/freeswitch/asterisk/g"  $INSTALL_DIR/settings_local.py
+
+#Restart Apache
+case $DIST in
+    'DEBIAN')
+        service apache2 restart
+    ;;
+    'CENTOS')
+        service httpd restart
+    ;;
+esac
+
+#Restart backend services
+/etc/init.d/cdr-stats-celeryd restart
+/etc/init.d/cdr-stats-socketio restart
 
 
