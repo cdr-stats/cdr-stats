@@ -60,48 +60,14 @@ case $DIST in
         apt-get -y install vim git-core
     ;;
     'CENTOS')
-        if [ ! -f /etc/yum.repos.d/rpmforge.repo ];
-       	then
-			# Install RPMFORGE Repo
-            #Check architecture
-        	KERNELARCH=$(uname -p)
-        	if [ $KERNELARCH = "x86_64" ]; then
-				rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm
-			else
-				rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
-			fi
-        fi
         yum -y update
         yum -y install mlocate vim git-core
         yum -y install policycoreutils-python
-        yum -y --enablerepo=rpmforge install sox sox-devel ffmpeg ffmpeg-devel mpg123 mpg123-devel libmad libmad-devel libid3tag libid3tag-devel lame lame-devel flac-devel libvorbis-devel
-        yum -y groupinstall 'Development Tools'
-        cd /usr/src/
-        wget http://switch.dl.sourceforge.net/project/sox/sox/14.3.2/sox-14.3.2.tar.gz
-        tar zxfv sox*
-        rm -rf sox*.tar.gz
-        mv sox* sox
-        cd /usr/src/sox
-        make distclean
-        make clean
-        ./configure --bindir=/usr/bin/
-        make -s
-        make install
     ;;
 esac
 
 
-#Install MongoDB
-cd /usr/src/
-wget https://raw.github.com/Star2Billing/cdr-stats/master/install/install-mongodb.sh
-bash install-mongodb.sh
-
-
-#Install Freeswitch
-cd /usr/src/
-wget https://raw.github.com/Star2Billing/cdr-stats/master/install/install-freeswitch.sh
-bash install-freeswitch.sh
-/etc/init.d/freeswitch start
+#Update Mysql schema
 
 
 #Install CDR-Stats
