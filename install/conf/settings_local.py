@@ -60,7 +60,6 @@ REDIS_PORT = 6379
 REDIS_DB = 0
 #REDIS_CONNECT_RETRY = True
 
-
 #EMAIL BACKEND
 #=============
 # Use only in Debug mode. Not in production
@@ -88,10 +87,26 @@ REALTIME_Y_AXIS_LIMIT = 10
 LOCAL_SWITCH_TYPE = 'freeswitch'
 LOCAL_SWITCH_ID = 1
 
+#ASTERISK IMPORT
+#===============
+ASTERISK_IMPORT_TYPE = 'mysql' # Only mysql supported
+ASTERISK_PRIMARY_KEY = 'acctid' # acctid, _id
+
+#Mysql Settings to use for import
+ASTERISK_CDR_MYSQL_IMPORT = {
+    '127.0.0.1': {
+        'db_name': 'asteriskcdr',
+        'table_name': 'cdr',
+        'host': 'localhost',
+        'user': 'root',
+        'password': 'password',
+    },
+}
+
 
 #MONGODB
 #=======
-CDR_MONGO_DB_NAME = 'freeswitch_cdr'
+CDR_MONGO_DB_NAME = 'cdr-stats'
 CDR_MONGO_HOST = 'localhost'
 CDR_MONGO_PORT = 27017
 CDR_MONGO_CDR_COMMON = 'cdr_common'
@@ -104,8 +119,7 @@ CDR_MONGO_CDR_HOURLY = 'cdr_hourly_analytic'
 CDR_MONGO_CDR_HANGUP = 'cdr_hangup_cause_analytic'
 CDR_MONGO_CDR_COUNTRY = 'cdr_country_analytic'
 
-
-#MongoDB(s) to use for import
+#MongoDB Setting(s) to use for import
 CDR_MONGO_IMPORT = {
     '127.0.0.1': {
         'db_name': 'freeswitch_cdr',
