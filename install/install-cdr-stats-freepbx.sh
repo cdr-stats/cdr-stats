@@ -15,7 +15,7 @@
 
 #
 # To download and run the script on your server :
-# cd /usr/src/ ; rm install-all.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats-freepbx.sh ; chmod +x install-all.sh ; ./install-all.sh
+# cd /usr/src/ ; rm install-cdr-stats-freepbx.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats-freepbx.sh ; chmod +x install-cdr-stats-freepbx.sh ; ./install-cdr-stats-freepbx.sh
 #
 
 INSTALL_DIR='/usr/share/cdr_stats'

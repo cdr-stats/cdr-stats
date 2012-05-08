@@ -15,7 +15,7 @@
 
 #
 # To download and run the script on your server :
-# cd /usr/src/ ; rm install-all.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-all-cdr-stats-freeswitch.sh ; chmod +x install-all.sh ; ./install-all.sh
+# cd /usr/src/ ; rm install-all-cdr-stats-freeswitch.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-all-cdr-stats-freeswitch.sh ; chmod +x install-all-cdr-stats-freeswitch.sh ; ./install-all-cdr-stats-freeswitch.sh
 #
 
 func_identify_os() {
