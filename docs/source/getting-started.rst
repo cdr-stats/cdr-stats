@@ -47,8 +47,9 @@ you would with a relational database, in MongoDB you store JSON-like documents w
 dynamic schemas. The goal of MongoDB is to bridge the gap between key-value stores
 (which are fast and scalable) and relational databases (which have rich functionality).
 
-??? talk about Voip Switch supported
-
+Version 2.0 of CDR-Stats supports Asterisk and Freeswitch using connectors that get the CDR. Connectors
+for other switch systems can be built. Additionally CDR-Stats features a CSV upload facility so that
+CDR from virtually any source can be imported and analysed by CDR-Stats.
 
 Screenshot Dashboard
 ~~~~~~~~~~~~~~~~~~~~
@@ -69,14 +70,33 @@ Screenshot Admin UI
 Utility
 -------
 
-CDR-Stats is a great tool to provide easy analysist of your calls, it's a needed addition to your VoIP servers, if you are reselling or using VoIP services you will find CDR-Stats useful.
-You will be able to keep an eye quickly of what calls passing through your Switches and detect errors, failure but also receive alert if unexpected calls or type of traffic is happening through your server.
+CDR-Stats is a simple-to-use tool to provide easy analysis of calls. It is a recommended addition to 
+telephony servers, whether it be a simple in-house PBX or large capacity VoIP switch. It shows in 
+in near realtime what calls are going through, can detect errors and failures, and alert the systems
+administrator is unexpected traffic is noted.
+
 
 
 .. _architecture:
 
 Architecture
 ------------
+ 
+CDR-Stats uses MongoDB as the underlying CDR store. MongoDB allows querying and analysis of many
+millions of records without noticeable loss of performance, and can easily be scaled as demand increases.
+
+One of the three popular databases (MySQL / Postgresql / SQLite) is used for for managing CDR-Stats, 
+such as users and managing the web framework, Django.
+
+Celery, a task manager runs in the background, and monitors the CDR coming into the system, and alerts
+the systems administrator when unusual behaviour is discovered. What is determined as unusual 
+behaviour is determined by the administrator who can configure alerts for increases in dropped calls,
+average length of calls, or calls to unusual destinations.
+
+Freeswitch is supported using the mod_mongo module to write CDR directly into MongoDB. For other 
+switches such as Asterisk, connectors can be built to connect to the switch's database store, such as
+MySQL, SQLite, or Postgresql.
+
 
 Add graph on Architect 
 
@@ -86,18 +106,18 @@ Add graph on Architect
 Features
 --------
  
-A lot of features are provided on CDR-Stats, from browsing millions of CDRs, providing efficient search to build rich reporting such as monthly report, concurrent calls view, compare call traffic to previous days.
+Many features are provided on CDR-Stats, from browsing millions of CDRs, providing efficient search to build rich reporting such as monthly reports, concurrent calls view, and comparing call traffic to previous days.
 
-- Visualize your traffic and help you to understand it
-- Map view, see where the traffic comes from and where it goes
-- Compare traffic to previous dates, see how your traffic evolve
-- Monitor your VoIP server, set alert to detect frauds
-- Send daily mail report of your VoIP traffic
-- See your traffic in Realtime
-- Blacklist Phone number paterns to receive alarm
+- Visualise traffic which helps to identify unusual patterns.
+- Map view, see where the traffic comes from and where it goes to
+- Compare traffic to previous dates, see how your traffic evolves, and patterns change.
+- Monitor VoIP server, set alerts to detect potential fraud
+- Send daily mail reports of your VoIP traffic
+- Traffic displayed in realtime
+- Blacklist Phone number patterns to receive alarms
 - Geographic alerts
-
-Add more features
+- Multi-tenant, allowing many customer to monitor their own CDR on one instance of CDR-Stats
+- Multi-switch, monitor traffic from many switches in one location
 
 
 .. _latest_documentation:

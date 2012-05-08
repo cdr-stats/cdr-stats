@@ -10,9 +10,9 @@ Install requirements
 ====================
 
 A Requirements file gives you a way to create an environment where you can put
-all optional dependencies which are needed for your Project/Application.
+all optional dependencies which are needed for the Project/Application.
 
-To get started with Cdr-stats you must have the following installed:
+To get started with CDR-Stats you must have the following installed:
 
 - python >= 2.5 (programming language)
 - Apache / http server with WSGI modules
@@ -63,7 +63,7 @@ To install CDR-Stats using the script,::
 
 .. _running-cdrstats:
 
-Running a CDR-Stats
+Running CDR-Stats
 ===================
 
 Inside CDR-Stats directory you should run::
@@ -87,5 +87,5 @@ Django documentation.
 ``static`` folder defined in the settings module.
 
 ``runserver`` runs an embedded webserver to test your site.
-By default it will run on http://localhost:8000. This is configurable and more
+By default it will run on http://localhost:8008. This is configurable and more
 information can be found on ``runserver`` in Django documentation.
