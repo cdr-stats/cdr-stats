@@ -139,7 +139,7 @@ def import_cdr_asterisk_mysql(shell=False):
         #print total_loop_count
         count_import = 0
 
-        cursor.execute("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel, duration, billsec, disposition, accountcode, uniqueid, acctid FROM %s WHERE import_cdr=0" % table_name)
+        cursor.execute("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel, duration, billsec, disposition, accountcode, uniqueid, %s FROM %s WHERE import_cdr=0" % (settings.ASTERISK_PRIMARY_KEY, table_name))
         row = cursor.fetchone()
 
         while row is not None:
@@ -230,7 +230,8 @@ def import_cdr_asterisk_mysql(shell=False):
             # record global CDR
             CDR_COMMON.insert(cdr_record)
 
-            print_shell(shell, "Sync CDR (acctid:%d, cid:%s, dest:%s, dur:%s, hg:%s, country:%s, auth:%s, calldate:%s)" % (
+            print_shell(shell, "Sync CDR (%s:%d, cid:%s, dest:%s, dur:%s, hg:%s, country:%s, auth:%s, calldate:%s)" % (
+                                        settings.ASTERISK_PRIMARY_KEY,
                                         acctid,
                                         callerid_number,
                                         destination_number,
@@ -305,9 +306,9 @@ def import_cdr_asterisk_mysql(shell=False):
 
             #Flag the CDR
             try:
-                cursor_update.execute("UPDATE %s SET import_cdr=1 WHERE acctid=%d" % (table_name, acctid))
+                cursor_update.execute("UPDATE %s SET import_cdr=1 WHERE %s=%d" % (table_name, settings.ASTERISK_PRIMARY_KEY, acctid))
             except:
-                print_shell(shell, "ERROR : Update failed (acctid:%d)" % acctid)
+                print_shell(shell, "ERROR : Update failed (%s:%d)" % (settings.ASTERISK_PRIMARY_KEY, acctid))
 
             #Fetch a other record
             row = cursor.fetchone()

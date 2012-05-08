@@ -305,6 +305,7 @@ LOCAL_SWITCH_ID = 1
 #ASTERISK IMPORT
 #===============
 ASTERISK_IMPORT_TYPE = 'mysql' # Only mysql supported
+ASTERISK_PRIMARY_KEY = 'acctid' # acctid, _id
 
 #Mysql Settings to use for import
 ASTERISK_CDR_MYSQL_IMPORT = {
