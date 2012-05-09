@@ -24,7 +24,9 @@ from django.core.urlresolvers import reverse
 from django.core.mail import send_mail, mail_admins
 from django.template.context import RequestContext
 from django.utils.translation import gettext as _
+from django.utils import simplejson
 from django.conf import settings
+
 from common.common_functions import *
 from cdr.forms import *
 from cdr.models import *
@@ -1729,6 +1731,12 @@ def mail_report(request):
     }
     return render_to_response(template, data,
            context_instance = RequestContext(request))
+
+
+def country_report_grid(request):
+    data = {"USA": "46", "DZA": "100", "AGO": "200", "EGY": "16"}
+    return HttpResponse(simplejson.dumps(data), mimetype='application/json',
+           content_type="application/json")
 
 
 def index(request):

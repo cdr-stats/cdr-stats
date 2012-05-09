@@ -29,6 +29,7 @@ urlpatterns = patterns('cdr.views',
     (r'^cdr_realtime/$', 'cdr_realtime'),
     (r'^mail_report/$', 'mail_report'),
     (r'^country_report/$', 'cdr_country_report'),
+    (r'^country_report_grid/$', 'country_report_grid'),
 
     (r'^login/$',   'login_view'),
     (r'^logout/$',  'logout_view'),

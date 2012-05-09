@@ -71,6 +71,7 @@
         var TUBERCULOSIS = {};
         var UNDER_FIVE_MORTALITY = {};
         var container ;
+        var country_call_report = {};
 
         function parseHash(hash, redrawing){
             res = the_regexp.exec(hash);
@@ -190,37 +191,13 @@
 
                 country_name.empty();
                 country_name.append("<span id='popup_country_name'> "+code_to_name[country] + "</span><table width='100%'>");
-                var pop = insertDecimalPoints(parseFloat(POP[country]).toFixed(0));
-                console.log(pop);
-                if (!pop || pop=="NaN")
-                    pop = "no data";
-                
-                country_name.append("<tr><th>Population</th><td style='text-align:right;'>" + pop+'</td></tr>');
-                var gdp = insertDecimalPoints(parseFloat(GDP[country]).toFixed(0)) ;
-                if (gdp && !isNaN(gdp))
-                    gdp = '$ '+gdp;
-                else
-                    gdp ="no data";
-                country_name.append("<tr><th>GDP per capita</th><td style='text-align:right;'>" + gdp+'</td></tr>');
-                var hiv = HIV[country];
-                if (hiv && !isNaN(hiv))
-                    hiv = hiv + ' %';
-                else
-                    hiv = "no data"
-                country_name.append("<tr><th>HIV Prevalence (age 15-49)</th><td style='text-align:right;'>" + hiv+'</td></tr>');
-                var tb = parseFloat(TUBERCULOSIS[country]/1000).toFixed(2);
-                if (tb && !isNaN(tb))
-                    tb = tb + ' %';
-                else
-                    tb = "no data";
-                country_name.append("<tr><th>Tuberculosis Prevalence</th><td style='text-align:right;'>" + tb +'</td></tr>');
-                var mortality =  parseFloat(UNDER_FIVE_MORTALITY[country]/10).toFixed(2);
-                if (mortality && !isNaN(mortality))
-                    mortality = mortality + ' %';
-                else
-                    mortality = "no data";
-                country_name.append("<tr><th>Mortality under Five</th><td style='text-align:right;'>" +mortality+'</td></tr></table>' );
 
+                // Sample code
+                var country_call = insertDecimalPoints(parseFloat(country_call_report[country]).toFixed(0));
+                console.log(country_call);
+                if (!country_call || country_call=="NaN")
+                    country_call = "no data";
+                country_name.append("<tr><th>Country call </th><td style='text-align:right;'>" + country_call +'</td></tr>');
 
                 country_name.css("display","block");
                 var canvasContainer = $("#canvas_container");
@@ -338,24 +315,10 @@
                 }
             });
 
-            $.getJSON("{{STATIC_URL}}cdr-stats/migration/" + "name_to_code.json", function(data) {
-                 name_to_code = data;
+            $.getJSON("/country_report_grid/", function(data) {
+                country_call_report = data;
             });
-            $.getJSON("{{STATIC_URL}}cdr-stats/migration/" + "GDP.json", function(data) {
-                 GDP = data;
-            });
-            $.getJSON("{{STATIC_URL}}cdr-stats/migration/" + "HIV.json", function(data) {
-                 HIV = data;
-             });
-            $.getJSON("{{STATIC_URL}}cdr-stats/migration/" + "TUBERCULOSIS.json", function(data) {
-                 TUBERCULOSIS = data;
-             });
-            $.getJSON("{{STATIC_URL}}cdr-stats/migration/" + "UNDER-FIVE-MORTALITY.json", function(data) {
-                 UNDER_FIVE_MORTALITY = data;
-             });
-            $.getJSON("{{STATIC_URL}}cdr-stats/migration/" + "POP.json", function(data) {
-                 POP = data;
-            });
+
             $.getJSON("{{STATIC_URL}}cdr-stats/migration/" + "code_to_name.json", function(data) {
                  code_to_name = data;
                  var country_select = $("#country_select");
@@ -376,6 +339,8 @@
                 code_to_coordinates = data;
                 redraw();
             });
+
+
 
 
         });
