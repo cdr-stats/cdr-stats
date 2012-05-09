@@ -50,7 +50,7 @@ func_identify_os() {
 #Function mysql db setting
 func_mysql_database_setting() {
     echo ""
-    echo "Provide the MySQL settings to access to current CDR Database..."
+    echo "Provide the MySQL settings to access the current Database storing the Asterisk CDRs..."
     echo ""
     
     echo "Enter Mysql hostname (default:localhost)"
