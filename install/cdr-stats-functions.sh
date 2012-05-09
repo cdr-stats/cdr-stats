@@ -744,12 +744,9 @@ show_menu_cdr_stats() {
 
 run_menu_cdr_stats_install() {
     ExitFinish=0
-
     while [ $ExitFinish -eq 0 ]; do
-
 	    # Show menu with Installation items
 	    show_menu_cdr_stats
-
 	    case $OPTION in
 		    1)
 		        func_install_mongodb

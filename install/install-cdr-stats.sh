@@ -24,8 +24,37 @@
 #
 
 
-#INSTALL TYPE (ASTERISK or FREESWITCH)
-INSTALL_TYPE='FREESWITCH'
+#Menu Section for Script
+show_menu_switch() {
+	clear
+	echo " > Do you want to install CDR-Stats for FreeSWITCH or Asterisk ?"
+	echo "================================================================"
+	echo "	1)  FreeSWITCH"
+	echo "	2)  Asterisk"
+	echo -n "(1-2) : "
+	read OPTION < /dev/tty
+}
+
+
+ExitFinish=0
+while [ $ExitFinish -eq 0 ]; do
+    show_menu_switch
+    case $OPTION in
+	    1)
+            INSTALL_TYPE='FREESWITCH'
+            echo "We will make some pre-configuration on CDR-Stats for FreeSWITCH..."
+            ExitFinish=1
+	    ;;
+	    2)
+	        INSTALL_TYPE='ASTERISK'
+	        echo "We will make some pre-configuration on CDR-Stats for Asterisk..."
+	        ExitFinish=1
+	    ;;
+	    *)
+    esac	
+
+done
+
 
 #Include general functions
 source bash-common-functions.sh
