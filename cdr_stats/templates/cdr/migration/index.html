@@ -65,11 +65,7 @@
         var code_to_coordinates;
         var userLatitude;
         var userLongitude;
-        var GDP ={};
-        var HIV = {};
-        var POP = {};
-        var TUBERCULOSIS = {};
-        var UNDER_FIVE_MORTALITY = {};
+
         var container ;
         var country_call_report = {};
 
@@ -241,7 +237,7 @@
                 if (country==currentCountry)
                     color_country(country,selected_color,'yellow');
                 else if (found)
-                  color_country(country,ten_colors[i])
+                  color_country(country,ten_colors[i]);
                 else
                     color_country(country,unselected_color);
             }
@@ -256,12 +252,13 @@
                 countries_div.empty();
                 country_name_div.empty()
                 country_name_div.append(code_to_name[currentCountry]);
-                $("#popsize").empty();
-                var popsize = insertDecimalPoints(parseFloat(POP[currentCountry]).toFixed(0));
-                if (popsize!="NaN")
-                    popsize = "Pop: "+popsize;
-                if (popsize )
-                    $("#popsize").append(popsize);
+                $("#country_call").empty();
+                //alert(country_call_report[currentCountry]);
+                var country_call = insertDecimalPoints(parseFloat(country_call_report[currentCountry]).toFixed(0));
+                if (country_call!="NaN")
+                    country_call = "Country call: "+country_call;
+                if (country_call)
+                    $("#country_call").append(country_call);
                 var counter =0;
                 $.each(data, function(country, val) {
                     var line;
@@ -314,7 +311,9 @@
                     svg_borders[country].push(line);
                 }
             });
-
+            $.getJSON("{{STATIC_URL}}cdr-stats/migration/" + "name_to_code.json", function(data) {
+                name_to_code = data;
+            });
             $.getJSON("/country_report_grid/", function(data) {
                 country_call_report = data;
             });
