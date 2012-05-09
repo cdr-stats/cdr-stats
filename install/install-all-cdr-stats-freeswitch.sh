@@ -18,6 +18,9 @@
 # cd /usr/src/ ; rm install-all-cdr-stats-freeswitch.sh ; rm bash-common-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-all-cdr-stats-freeswitch.sh ; chmod +x install-all-cdr-stats-freeswitch.sh ; ./install-all-cdr-stats-freeswitch.sh
 #
 
+#INSTALL TYPE (ASTERISK or FREESWITCH)
+INSTALL_TYPE='FREESWITCH'
+
 #Include general functions
 source bash-common-functions.sh
 

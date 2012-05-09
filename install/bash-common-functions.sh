@@ -61,8 +61,6 @@ func_identify_os() {
 
 #Function mysql db setting
 func_get_mysql_database_setting() {
-
-
     if mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST $DATABASENAME -e ";" ; then
         #Database settings correct
         echo "Mysql settings correct!"
@@ -97,9 +95,81 @@ func_get_mysql_database_setting() {
         if [ -z "$DATABASENAME" ]; then
             DATABASENAME="cdrstats"
         fi
-        
     fi
+}
 
+
+#Function mysql db setting
+func_get_mysql_database_setting_asteriskcdrdb() {
+    if mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST $DATABASENAME -e ";" ; then
+        #Database settings correct
+        echo "Mysql settings correct!"
+    else
+
+        echo ""
+        echo "Configure Mysql Settings to connect to the Asterisk CDR database..."
+        echo ""
+        
+        echo "Enter Mysql hostname (default:localhost)"
+        read MYHOST
+        if [ -z "$MYHOST" ]; then
+            MYHOST="localhost"
+        fi
+        echo "Enter Mysql port (default:3306)"
+        read MYHOSTPORT
+        if [ -z "$MYHOSTPORT" ]; then
+            MYHOSTPORT="3306"
+        fi
+        echo "Enter Mysql Username (default:root)"
+        read MYSQLUSER
+        if [ -z "$MYSQLUSER" ]; then
+            MYSQLUSER="root"
+        fi
+        echo "Enter Mysql Password (default:password)"
+        read MYSQLPASSWORD
+        if [ -z "$MYSQLPASSWORD" ]; then
+            MYSQLPASSWORD="password"
+        fi
+        echo "Enter Database name (default:asteriskcdrdb)"
+        read DATABASENAME
+        if [ -z "$DATABASENAME" ]; then
+            DATABASENAME="asteriskcdrdb"
+        fi
+    fi
+}
+
+#Function accept license mplv2
+func_accept_license_mplv2() {
+    echo ""
+    wget --no-check-certificate -q -O  MPL-V2.0.txt https://raw.github.com/Star2Billing/cdr-stats/develop/COPYING
+    more MPL-V2.0.txt
+    echo ""
+    echo ""
+    echo "CDR-Stats License MPL V2.0"
+    echo "Further information at http://www.cdr-stats.org/support/licensing/"
+    echo ""
+    echo "This Source Code Form is subject to the terms of the Mozilla Public"
+    echo "License, v. 2.0. If a copy of the MPL was not distributed with this file,"
+    echo "You can obtain one at http://mozilla.org/MPL/2.0/."
+    echo ""
+    echo "Copyright (C) 2011-2012 Star2Billing S.L."
+    echo ""
+    echo ""
+    echo "I agree to be bound by the terms of the license - [YES/NO]"
+    echo ""
+    read ACCEPT
+    
+    while [ "$ACCEPT" != "yes" ]  && [ "$ACCEPT" != "Yes" ] && [ "$ACCEPT" != "YES" ]  && [ "$ACCEPT" != "no" ]  && [ "$ACCEPT" != "No" ]  && [ "$ACCEPT" != "NO" ]; do
+        echo "I agree to be bound by the terms of the license - [YES/NO]"
+        read ACCEPT
+    done
+    
+    if [ "$ACCEPT" != "yes" ]  && [ "$ACCEPT" != "Yes" ] && [ "$ACCEPT" != "YES" ]; then
+        echo "License rejected !"
+        exit 0
+    else
+        echo "Licence accepted !"
+    fi
 }
 
 

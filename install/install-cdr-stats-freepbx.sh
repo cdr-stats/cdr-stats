@@ -19,19 +19,9 @@
 #
 
 INSTALL_DIR='/usr/share/cdr_stats'
-DATABASENAME=""
-MYSQLUSER=""
-MYSQLPASSWORD=""
-MYHOST=""
-MYHOSTPORT=""
 
-#Include general functions
-source bash-common-functions.sh
-
-
-#Identify the OS
-func_identify_os
-
+#INSTALL TYPE (ASTERISK or FREESWITCH)
+INSTALL_TYPE='ASTERISK'
 
 echo ""
 echo ""
@@ -55,43 +45,20 @@ case $DIST in
     ;;
 esac
 
-
-
-until mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST $DATABASENAME -e ";" ; do 
-    clear 
-    echo "Enter correct database settings"
-    func_get_mysql_database_setting
-done
-
-#Update Mysql schema
-echo "We will now add a Primary Key to your CDR database"
-echo "We advice you to first backup your database prior continuing"
-echo ""
-echo "Press Enter to continue or CTRL-C to exit"
-mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST $DATABASENAME -e "ALTER TABLE  cdr ADD acctid BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST;;"
-
-
-#Install CDR-Stats
+#Get files to install CDR-Stats
 cd /usr/src/
-wget https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats.sh
-bash install-cdr-stats.sh
+wget https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh
+wget https://raw.github.com/Star2Billing/cdr-stats/master/install/cdr-stats-functions.sh
 
 
-#enable CDR-Stats for Asterisk
-sed -i "s/freeswitch/asterisk/g"  $INSTALL_DIR/settings_local.py
+#Include general functions
+source bash-common-functions.sh
 
-#Restart Apache
-case $DIST in
-    'DEBIAN')
-        service apache2 restart
-    ;;
-    'CENTOS')
-        service httpd restart
-    ;;
-esac
+source cdr-stats-functions.sh
 
-#Restart backend services
-/etc/init.d/cdr-stats-celeryd restart
-/etc/init.d/cdr-stats-socketio restart
+#Identify the OS
+func_identify_os
+
+
 
 

@@ -18,12 +18,9 @@
 #
 # cd /usr/src/ ; rm install-mongodb.sh ; rm bash-common-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-mongodb.sh ; chmod +x install-mongodb.sh ; ./install-mongodb.sh
 
-KERNELARCH=$(uname -p)
-
 
 #Include general functions
 source bash-common-functions.sh
-
 
 
 #function to install mongoDB

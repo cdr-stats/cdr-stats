@@ -95,11 +95,11 @@ ASTERISK_PRIMARY_KEY = 'acctid' # acctid, _id
 #Mysql Settings to use for import
 ASTERISK_CDR_MYSQL_IMPORT = {
     '127.0.0.1': {
-        'db_name': 'asteriskcdr',
-        'table_name': 'cdr',
-        'host': 'localhost',
-        'user': 'root',
-        'password': 'password',
+        'db_name': 'MYSQL_IMPORT_CDR_DBNAME',
+        'table_name': 'MYSQL_IMPORT_CDR_TABLENAME',
+        'host': 'MYSQL_IMPORT_CDR_HOST',
+        'user': 'MYSQL_IMPORT_CDR_USER',
+        'password': 'MYSQL_IMPORT_CDR_PASSWORD',
     },
 }
 
