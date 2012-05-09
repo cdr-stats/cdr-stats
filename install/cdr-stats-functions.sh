@@ -430,6 +430,7 @@ func_install_frontend(){
             echo "We advice you to first backup your database prior continuing"
             echo ""
             echo "Press Enter to continue or CTRL-C to exit"
+            read TEMP
             mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST $DATABASENAME -e "ALTER TABLE cdr ADD acctid BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST;;"
 
             #enable CDR-Stats for Asterisk

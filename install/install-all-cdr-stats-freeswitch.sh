@@ -87,11 +87,26 @@ wget https://raw.github.com/Star2Billing/cdr-stats/master/install/install-freesw
 bash install-freeswitch.sh
 /etc/init.d/freeswitch start
 
-
 #Install CDR-Stats
 cd /usr/src/
-wget https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats.sh
-bash install-cdr-stats.sh
+rm bash-common-functions.sh
+wget https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh
+rm cdr-stats-functions.sh
+wget https://raw.github.com/Star2Billing/cdr-stats/master/install/cdr-stats-functions.sh
 
+
+#Include general functions
+source bash-common-functions.sh
+
+source cdr-stats-functions.sh
+
+#Identify the OS
+func_identify_os
+
+#Request the user to accept the license
+func_accept_license_mplv2
+
+#run install menu
+run_menu_cdr_stats_install
 
 
