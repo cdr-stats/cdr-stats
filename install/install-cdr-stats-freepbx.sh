@@ -59,6 +59,10 @@ source cdr-stats-functions.sh
 #Identify the OS
 func_identify_os
 
+#Request the user to accept the license
+func_accept_license_mplv2
 
+#run install menu
+run_menu_cdr_stats_install
 
 
