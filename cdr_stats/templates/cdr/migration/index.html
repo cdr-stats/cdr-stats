@@ -337,12 +337,13 @@
                     svg_borders[country].push(line);
                 }
             });
-             $.getJSON("{{STATIC_URL}}cdr-stats/migration/" + "name_to_code.json", function(data) {
+
+            $.getJSON("{{STATIC_URL}}cdr-stats/migration/" + "name_to_code.json", function(data) {
                  name_to_code = data;
-             });
-             $.getJSON("{{STATIC_URL}}cdr-stats/migration/" + "GDP.json", function(data) {
+            });
+            $.getJSON("{{STATIC_URL}}cdr-stats/migration/" + "GDP.json", function(data) {
                  GDP = data;
-             });
+            });
             $.getJSON("{{STATIC_URL}}cdr-stats/migration/" + "HIV.json", function(data) {
                  HIV = data;
              });
@@ -354,8 +355,7 @@
              });
             $.getJSON("{{STATIC_URL}}cdr-stats/migration/" + "POP.json", function(data) {
                  POP = data;
-             });
-
+            });
             $.getJSON("{{STATIC_URL}}cdr-stats/migration/" + "code_to_name.json", function(data) {
                  code_to_name = data;
                  var country_select = $("#country_select");
