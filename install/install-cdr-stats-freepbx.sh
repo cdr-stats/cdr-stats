@@ -25,63 +25,13 @@ MYSQLPASSWORD=""
 MYHOST=""
 MYHOSTPORT=""
 
-func_identify_os() {
-    # Identify Linux Distribution type
-    if [ -f /etc/debian_version ] ; then
-        DIST='DEBIAN'
-        if [ "$(lsb_release -cs)" != "lucid" ] && [ "$(lsb_release -cs)" != "precise" ]; then
-		    echo "This script is only intended to run on Ubuntu LTS 10.04 / 12.04 or CentOS 6.2"
-		    exit 255
-	    fi
-    elif [ -f /etc/redhat-release ] ; then
-        DIST='CENTOS'
-        if [ "$(awk '{print $3}' /etc/redhat-release)" != "6.2" ] ; then
-        	echo "This script is only intended to run on Ubuntu LTS 10.04 / 12.04 or CentOS 6.2"
-        	exit 255
-        fi
-    else
-        echo ""
-        echo "This script is only intended to run on Ubuntu LTS 10.04 / 12.04 or CentOS 6.2"
-        echo ""
-        exit 1
-    fi
-}
+#Include general functions
+source bash-common-functions.sh
 
-#Function mysql db setting
-func_mysql_database_setting() {
-    echo ""
-    echo "Provide the MySQL settings to access the current Database storing the Asterisk CDRs..."
-    echo ""
-    
-    echo "Enter Mysql hostname (default:localhost)"
-    read MYHOST
-    if [ -z "$MYHOST" ]; then
-        MYHOST="localhost"
-    fi
-    echo "Enter Mysql port (default:3306)"
-    read MYHOSTPORT
-    if [ -z "$MYHOSTPORT" ]; then
-        MYHOSTPORT="3306"
-    fi
-    echo "Enter Mysql Username (default:root)"
-    read MYSQLUSER
-    if [ -z "$MYSQLUSER" ]; then
-        MYSQLUSER="root"
-    fi
-    echo "Enter Mysql Password (default:password)"
-    read MYSQLPASSWORD
-    if [ -z "$MYSQLPASSWORD" ]; then
-        MYSQLPASSWORD="password"
-    fi
-    echo "Enter Database name (default:asteriskcdrdb)"
-    read DATABASENAME
-    if [ -z "$DATABASENAME" ]; then
-        DATABASENAME="asteriskcdrdb"
-    fi
-}
 
 #Identify the OS
 func_identify_os
+
 
 echo ""
 echo ""
@@ -105,14 +55,13 @@ case $DIST in
     ;;
 esac
 
-mysql -uroot -ppassw0rd -P3306 -hlocalhost -e ";"
+
 
 until mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST $DATABASENAME -e ";" ; do 
-	clear 
-	echo "Enter correct database settings"
-	func_mysql_database_setting
+    clear 
+    echo "Enter correct database settings"
+    func_get_mysql_database_setting
 done
-
 
 #Update Mysql schema
 echo "We will now add a Primary Key to your CDR database"

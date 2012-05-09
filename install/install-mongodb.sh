@@ -16,7 +16,7 @@
 #
 # To download and run the script on your server :
 #
-# cd /usr/src/ ; rm install-mongodb.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-mongodb.sh ; chmod +x install-mongodb.sh ; ./install-mongodb.sh
+# cd /usr/src/ ; rm install-mongodb.sh ; rm bash-common-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-mongodb.sh ; chmod +x install-mongodb.sh ; ./install-mongodb.sh
 
 KERNELARCH=$(uname -p)
 
@@ -94,3 +94,5 @@ func_install_mongodb() {
 
 #Install Mongo
 func_install_mongodb
+
+

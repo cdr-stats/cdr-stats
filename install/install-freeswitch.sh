@@ -15,20 +15,14 @@
 
 #
 # To download and run the script on your server :
-# cd /usr/src/ ; rm install-freeswitch.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-freeswitch.sh ; chmod +x install-freeswitch.sh ; ./install-freeswitch.sh
+# cd /usr/src/ ; rm install-freeswitch.sh ; rm bash-common-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-freeswitch.sh ; chmod +x install-freeswitch.sh ; ./install-freeswitch.sh
 
 
-# Identify Linux Distribution type
-if [ -f /etc/debian_version ] ; then
-    DIST='DEBIAN'
-elif [ -f /etc/redhat-release ] ; then
-    DIST='CENTOS'
-else
-    echo ""
-    echo "This Installer should be run on a CentOS or a Debian based system"
-    echo ""
-    exit 1
-fi
+#Include general functions
+source bash-common-functions.sh
+
+#Identify the OS
+func_identify_os
 
 
 FS_CONF_PATH=https://raw.github.com/Star2Billing/cdr-stats/master/install/freeswitch-conf
@@ -213,9 +207,6 @@ if [ "$YUMSOURCE" = "y" ] || [ "$YUMSOURCE" = "Y" ]; then
        	chkconfig --level 345 freeswitch on
        	sed -i "s@/usr/local/freeswitch/bin@/usr/bin@g" /etc/init.d/freeswitch
 		sed -i "s@/usr/local/freeswitch/run@/var/run/freeswitch@g" /etc/init.d/freeswitch
-		/etc/init.d/freeswitch start
-		#We will remove this when the bug is fixed.
-		    	
 else
        	echo "installing from source"
 		#Add alias fs_cli
@@ -226,6 +217,20 @@ else
 fi
 
 
+#Extra configuration for FreeSwitch
+
+#Update crontab to add Core.db Freeswitch Update
+echo "* * * * * echo 'ALTER TABLE channels ADD accountcode VARCHAR(50);' | sqlite3 /usr/local/freeswitch/db/core.db" > /var/spool/cron/crontabs/root
+/etc/init.d/cron restart
+
+#ADD XML Config files for FreeSwitch
+cp /etc/freeswitch/dialplan/default.xml /etc/freeswitch/dialplan/default.xml.backup.cdrstats
+wget --no-check-certificate $FS_CONF_PATH/default.xml -O /etc/freeswitch/dialplan/default.xml
+cp /etc/freeswitch/dialplan/public.xml /etc/freeswitch/dialplan/public.xml.backup.cdrstats
+wget --no-check-certificate $FS_CONF_PATH/public.xml -O /etc/freeswitch/dialplan/public.xml
+
+#Restart FreeSwitch
+/etc/init.d/freeswitch restart
 
 
 # Install Complete

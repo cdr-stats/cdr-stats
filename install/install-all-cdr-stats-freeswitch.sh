@@ -15,7 +15,7 @@
 
 #
 # To download and run the script on your server :
-# cd /usr/src/ ; rm install-all-cdr-stats-freeswitch.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-all-cdr-stats-freeswitch.sh ; chmod +x install-all-cdr-stats-freeswitch.sh ; ./install-all-cdr-stats-freeswitch.sh
+# cd /usr/src/ ; rm install-all-cdr-stats-freeswitch.sh ; rm bash-common-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-all-cdr-stats-freeswitch.sh ; chmod +x install-all-cdr-stats-freeswitch.sh ; ./install-all-cdr-stats-freeswitch.sh
 #
 
 #Include general functions
@@ -91,19 +91,4 @@ wget https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-st
 bash install-cdr-stats.sh
 
 
-
-#Extra configuration for FreeSwitch
-
-#Update crontab to add Core.db Freeswitch Update
-echo "* * * * * echo 'ALTER TABLE channels ADD accountcode VARCHAR(50);' | sqlite3 /usr/local/freeswitch/db/core.db" > /var/spool/cron/crontabs/root
-/etc/init.d/cron restart
-
-#ADD XML Config files for FreeSwitch
-cp /etc/freeswitch/dialplan/default.xml /etc/freeswitch/dialplan/default.xml.backup.cdrstats
-cp /usr/src/cdr-stats/install/freeswitch-conf/default.xml /etc/freeswitch/dialplan/default.xml
-cp /etc/freeswitch/dialplan/public.xml /etc/freeswitch/dialplan/public.xml.backup.cdrstats
-cp /usr/src/cdr-stats/install/freeswitch-conf/public.xml /etc/freeswitch/dialplan/public.xml
-
-#Restart FreeSwitch
-/etc/init.d/freeswitch start
 

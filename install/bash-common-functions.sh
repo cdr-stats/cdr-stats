@@ -13,8 +13,13 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
+DATETIME=$(date +"%Y%m%d%H%M%S")
+KERNELARCH=$(uname -p)
+
+
+# Identify Linux Distribution type
 func_identify_os() {
-    # Identify Linux Distribution type
+    
     if [ -f /etc/debian_version ] ; then
         DIST='DEBIAN'
         if [ "$(lsb_release -cs)" != "lucid" ] && [ "$(lsb_release -cs)" != "precise" ]; then
@@ -33,4 +38,68 @@ func_identify_os() {
         echo ""
         exit 1
     fi
+    
+    #Prepare settings for installation
+    case $DIST in
+        'DEBIAN')
+            SCRIPT_VIRTUALENVWRAPPER="/usr/local/bin/virtualenvwrapper.sh"
+            APACHE_CONF_DIR="/etc/apache2/sites-enabled/"
+            APACHE_USER="www-data"
+            WSGI_ADDITIONAL=""
+            WSGIApplicationGroup=""
+        ;;
+        'CENTOS')
+            SCRIPT_VIRTUALENVWRAPPER="/usr/bin/virtualenvwrapper.sh"
+            APACHE_CONF_DIR="/etc/httpd/conf.d/"
+            APACHE_USER="apache"
+            WSGI_ADDITIONAL="WSGISocketPrefix run/wsgi"
+            WSGIApplicationGroup="WSGIApplicationGroup %{GLOBAL}"
+        ;;
+    esac
 }
+
+
+#Function mysql db setting
+func_get_mysql_database_setting() {
+
+
+    if mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST $DATABASENAME -e ";" ; then
+        #Database settings correct
+        echo "Mysql settings correct!"
+    else
+
+        echo ""
+        echo "Configure Mysql Settings..."
+        echo ""
+        
+        echo "Enter Mysql hostname (default:localhost)"
+        read MYHOST
+        if [ -z "$MYHOST" ]; then
+            MYHOST="localhost"
+        fi
+        echo "Enter Mysql port (default:3306)"
+        read MYHOSTPORT
+        if [ -z "$MYHOSTPORT" ]; then
+            MYHOSTPORT="3306"
+        fi
+        echo "Enter Mysql Username (default:root)"
+        read MYSQLUSER
+        if [ -z "$MYSQLUSER" ]; then
+            MYSQLUSER="root"
+        fi
+        echo "Enter Mysql Password (default:password)"
+        read MYSQLPASSWORD
+        if [ -z "$MYSQLPASSWORD" ]; then
+            MYSQLPASSWORD="password"
+        fi
+        echo "Enter Database name (default:cdrstats)"
+        read DATABASENAME
+        if [ -z "$DATABASENAME" ]; then
+            DATABASENAME="cdrstats"
+        fi
+        
+    fi
+
+}
+
+

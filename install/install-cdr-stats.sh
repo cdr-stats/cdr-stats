@@ -17,20 +17,14 @@
 # To download and run the script on your server :
 #
 # >> Install with Master script :
-# cd /usr/src/ ; rm install-cdr-stats.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats.sh ; chmod +x install-cdr-stats.sh ; ./install-cdr-stats.sh
+# cd /usr/src/ ; rm install-cdr-stats.sh ; rm bash-common-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats.sh ; chmod +x install-cdr-stats.sh ; ./install-cdr-stats.sh
 #
 # >> Install with develop script :
-# cd /usr/src/ ; rm install-cdr-stats.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/develop/install/install-cdr-stats.sh ; chmod +x install-cdr-stats.sh ; ./install-cdr-stats.sh
+# cd /usr/src/ ; rm install-cdr-stats.sh ; rm bash-common-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/develop/install/install-cdr-stats.sh ; chmod +x install-cdr-stats.sh ; ./install-cdr-stats.sh
 #
-#
-#TODO:
-# - Memcached
-
 
 #Install mode can me either CLONE or DOWNLOAD
 INSTALL_MODE='CLONE'
-DATETIME=$(date +"%Y%m%d%H%M%S")
-KERNELARCH=$(uname -p)
 INSTALL_DIR='/usr/share/cdr_stats'
 INSTALL_DIR_WELCOME='/var/www/cdr-stats'
 DATABASENAME=$INSTALL_DIR'/database/cdr-stats.db'
@@ -46,27 +40,11 @@ SOUTH_SOURCE='hg+http://bitbucket.org/andrewgodwin/south/@ecaafda23e600e510e2527
 
 
 
-func_identify_os() {
-    # Identify Linux Distribution type
-    if [ -f /etc/debian_version ] ; then
-        DIST='DEBIAN'
-        if [ "$(lsb_release -cs)" != "lucid" ] && [ "$(lsb_release -cs)" != "precise" ]; then
-		    echo "This script is only intended to run on Ubuntu LTS 10.04 / 12.04 or CentOS 6.2"
-		    exit 255
-	    fi
-    elif [ -f /etc/redhat-release ] ; then
-        DIST='CENTOS'
-        if [ "$(awk '{print $3}' /etc/redhat-release)" != "6.2" ] ; then
-        	echo "This script is only intended to run on Ubuntu LTS 10.04 or CentOS 6.2"
-        	exit 255
-        fi
-    else
-        echo ""
-        echo "This script is only intended to run on Ubuntu LTS 10.04 or CentOS 6.2"
-        echo ""
-        exit 1
-    fi
-}
+#Include general functions
+source bash-common-functions.sh
+
+#Identify the OS
+func_identify_os
 
 
 #Function accept_license
@@ -206,38 +184,6 @@ func_check_dependencies() {
     echo ""
 }
 
-#Function mysql db setting
-func_mysql_database_setting() {
-    echo ""
-    echo "Configure Mysql Settings..."
-    echo ""
-    
-    echo "Enter Mysql hostname (default:localhost)"
-    read MYHOST
-    if [ -z "$MYHOST" ]; then
-        MYHOST="localhost"
-    fi
-    echo "Enter Mysql port (default:3306)"
-    read MYHOSTPORT
-    if [ -z "$MYHOSTPORT" ]; then
-        MYHOSTPORT="3306"
-    fi
-    echo "Enter Mysql Username (default:root)"
-    read MYSQLUSER
-    if [ -z "$MYSQLUSER" ]; then
-        MYSQLUSER="root"
-    fi
-    echo "Enter Mysql Password (default:password)"
-    read MYSQLPASSWORD
-    if [ -z "$MYSQLPASSWORD" ]; then
-        MYSQLPASSWORD="password"
-    fi
-    echo "Enter Database name (default:cdrstats)"
-    read DATABASENAME
-    if [ -z "$DATABASENAME" ]; then
-        DATABASENAME="cdrstats"
-    fi
-}
 
 func_iptables_configuration() {
     #add http port
@@ -315,7 +261,7 @@ func_install_frontend(){
 				until mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST -e ";" ; do 
 					clear 
                 	echo "Enter correct database settings"
-                	func_mysql_database_setting
+                	func_get_mysql_database_setting
                 done
             fi
             
@@ -353,7 +299,7 @@ func_install_frontend(){
 				until mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST -e ";" ; do 
 					clear 
                 	echo "Enter correct database settings"
-                	func_mysql_database_setting
+                	func_get_mysql_database_setting
                 done            
             fi
         ;;
@@ -664,28 +610,17 @@ func_install_backend() {
             # Add init-scripts
             cp /usr/src/cdr-stats/install/celery-init/debian/etc/default/cdr-stats-celeryd /etc/default/
             cp /usr/src/cdr-stats/install/celery-init/debian/etc/init.d/cdr-stats-celeryd /etc/init.d/
-            #celerybeat script disabled
-            #cp /usr/src/cdr-stats-dialer/install/celery-init/debian/etc/init.d/cdr-stats-celerybeat /etc/init.d/
-
+            
             # Configure init-scripts
             sed -i "s/CELERYD_USER='celery'/CELERYD_USER='$CELERYD_USER'/g"  /etc/default/cdr-stats-celeryd
             sed -i "s/CELERYD_GROUP='celery'/CELERYD_GROUP='$CELERYD_GROUP'/g"  /etc/default/cdr-stats-celeryd
 
             chmod +x /etc/default/cdr-stats-celeryd
             chmod +x /etc/init.d/cdr-stats-celeryd
-            #celerybeat script disabled
-            #chmod +x /etc/init.d/cdr-stats-celerybeat
-
-            #Debug
-            #python $INSTALL_DIR/manage.py celeryd -E -B -l debug
 
             /etc/init.d/cdr-stats-celeryd restart
-            #celerybeat script disabled
-            #/etc/init.d/cdr-stats-celerybeat restart
             
             cd /etc/init.d; update-rc.d cdr-stats-celeryd defaults 99
-            #celerybeat script disabled
-            #cd /etc/init.d; update-rc.d cdr-stats-celerybeat defaults 99
             
             #Check permissions on /dev/shm to ensure that celery can start and run for openVZ. 
 			DIR="/dev/shm"
@@ -707,30 +642,15 @@ func_install_backend() {
             # Add init-scripts
             cp /usr/src/cdr-stats/install/celery-init/centos/etc/default/cdr-stats-celeryd /etc/default/
             cp /usr/src/cdr-stats/install/celery-init/centos/etc/init.d/cdr-stats-celeryd /etc/init.d/
-            #celerybeat script disabled
-            #cp /usr/src/cdr-stats/install/celery-init/centos/etc/init.d/cdr-stats-celerybeat /etc/init.d/
 
             # Configure init-scripts
             sed -i "s/CELERYD_USER='celery'/CELERYD_USER='$CELERYD_USER'/g"  /etc/default/cdr-stats-celeryd
             sed -i "s/CELERYD_GROUP='celery'/CELERYD_GROUP='$CELERYD_GROUP'/g"  /etc/default/cdr-stats-celeryd
-
             chmod +x /etc/init.d/cdr-stats-celeryd
-            #celerybeat script disabled
-            #chmod +x /etc/init.d/cdr-stats-celerybeat
-
-            #Debug
-            #python $INSTALL_DIR/manage.py celeryd -E -B -l debug
-
             /etc/init.d/cdr-stats-celeryd restart
-            #celerybeat script disabled
-            #/etc/init.d/cdr-stats-celerybeat restart
             
             chkconfig --add cdr-stats-celeryd
             chkconfig --level 2345 cdr-stats-celeryd on
-            
-            #celerybeat script disabled
-            #chkconfig --add cdr-stats-celerybeat
-            #chkconfig --level 2345 cdr-stats-celerybeat on
         ;;
     esac
 
@@ -831,27 +751,6 @@ show_menu_cdr_stats() {
 
 # * * * * * * * * * * * * Start Script * * * * * * * * * * * *
 
-
-#Identify the OS
-func_identify_os
-
-#Prepare settings for installation
-case $DIST in
-    'DEBIAN')
-        SCRIPT_VIRTUALENVWRAPPER="/usr/local/bin/virtualenvwrapper.sh"
-        APACHE_CONF_DIR="/etc/apache2/sites-enabled/"
-        APACHE_USER="www-data"
-        WSGI_ADDITIONAL=""
-        WSGIApplicationGroup=""
-    ;;
-    'CENTOS')
-        SCRIPT_VIRTUALENVWRAPPER="/usr/bin/virtualenvwrapper.sh"
-        APACHE_CONF_DIR="/etc/httpd/conf.d/"
-        APACHE_USER="apache"
-        WSGI_ADDITIONAL="WSGISocketPrefix run/wsgi"
-        WSGIApplicationGroup="WSGIApplicationGroup %{GLOBAL}"
-    ;;
-esac
 
 #Request the user to accept the license
 func_accept_license
