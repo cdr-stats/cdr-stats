@@ -40,19 +40,18 @@ ExitFinish=0
 while [ $ExitFinish -eq 0 ]; do
     show_menu_switch
     case $OPTION in
-	    1)
-            INSTALL_TYPE='FREESWITCH'
-            echo "We will make some pre-configuration on CDR-Stats for FreeSWITCH..."
-            ExitFinish=1
-	    ;;
-	    2)
-	        INSTALL_TYPE='ASTERISK'
-	        echo "We will make some pre-configuration on CDR-Stats for Asterisk..."
-	        ExitFinish=1
-	    ;;
-	    *)
-    esac	
-
+    1)
+        INSTALL_TYPE='FREESWITCH'
+        echo "We will make some pre-configuration on CDR-Stats for FreeSWITCH..."
+        ExitFinish=1
+    ;;
+    2)
+        INSTALL_TYPE='ASTERISK'
+        echo "We will make some pre-configuration on CDR-Stats for Asterisk..."
+        ExitFinish=1
+    ;;
+    *)
+    esac
 done
 
 

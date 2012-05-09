@@ -745,31 +745,30 @@ show_menu_cdr_stats() {
 run_menu_cdr_stats_install() {
     ExitFinish=0
     while [ $ExitFinish -eq 0 ]; do
-	    # Show menu with Installation items
-	    show_menu_cdr_stats
-	    case $OPTION in
-		    1)
-		        func_install_mongodb
-			    func_install_frontend
-			    func_install_landing_page
-			    func_install_backend
-			    echo done
-		    ;;
-		    2)
-			    func_install_frontend
-			    func_install_landing_page
-		    ;;
-		    3)
-			    func_install_backend
-		    ;;
-		    4)
-		        func_install_mongodb
-		    ;;
-		    0)
-		    ExitFinish=1
-		    ;;
-		    *)
-	    esac	
-	
+        # Show menu with Installation items
+        show_menu_cdr_stats
+        case $OPTION in
+            1)
+                func_install_mongodb
+                func_install_frontend
+                func_install_landing_page
+                func_install_backend
+                echo done
+            ;;
+            2)
+                func_install_frontend
+                func_install_landing_page
+            ;;
+            3)
+                func_install_backend
+            ;;
+            4)
+                func_install_mongodb
+            ;;
+            0)
+                ExitFinish=1
+            ;;
+            *)
+        esac
     done
 }
