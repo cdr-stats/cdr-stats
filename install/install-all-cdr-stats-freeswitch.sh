@@ -18,30 +18,12 @@
 # cd /usr/src/ ; rm install-all-cdr-stats-freeswitch.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-all-cdr-stats-freeswitch.sh ; chmod +x install-all-cdr-stats-freeswitch.sh ; ./install-all-cdr-stats-freeswitch.sh
 #
 
-func_identify_os() {
-    # Identify Linux Distribution type
-    if [ -f /etc/debian_version ] ; then
-        DIST='DEBIAN'
-        if [ "$(lsb_release -cs)" != "lucid" ] && [ "$(lsb_release -cs)" != "precise" ]; then
-		    echo "This script is only intended to run on Ubuntu LTS 10.04 / 12.04 or CentOS 6.2"
-		    exit 255
-	    fi
-    elif [ -f /etc/redhat-release ] ; then
-        DIST='CENTOS'
-        if [ "$(awk '{print $3}' /etc/redhat-release)" != "6.2" ] ; then
-        	echo "This script is only intended to run on Ubuntu LTS 10.04 / 12.04 or CentOS 6.2"
-        	exit 255
-        fi
-    else
-        echo ""
-        echo "This script is only intended to run on Ubuntu LTS 10.04 / 12.04 or CentOS 6.2"
-        echo ""
-        exit 1
-    fi
-}
+#Include general functions
+source bash-common-functions.sh
 
 #Identify the OS
 func_identify_os
+
 
 echo ""
 echo ""

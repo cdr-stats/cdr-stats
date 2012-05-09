@@ -18,95 +18,79 @@
 #
 # cd /usr/src/ ; rm install-mongodb.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-mongodb.sh ; chmod +x install-mongodb.sh ; ./install-mongodb.sh
 
-
-DATETIME=$(date +"%Y%m%d%H%M%S")
 KERNELARCH=$(uname -p)
 
 
+#Include general functions
+source bash-common-functions.sh
 
-func_identify_os() {
-    # Identify Linux Distribution type
-    if [ -f /etc/debian_version ] ; then
-        DIST='DEBIAN'
-        if [ "$(lsb_release -cs)" != "lucid" ] && [ "$(lsb_release -cs)" != "precise" ]; then
-		    echo "This script is only intended to run on Ubuntu LTS 10.04 / 12.04 or CentOS 6.2"
-		    exit 255
-	    fi
-    elif [ -f /etc/redhat-release ] ; then
-        DIST='CENTOS'
-        if [ "$(awk '{print $3}' /etc/redhat-release)" != "6.2" ] ; then
-        	echo "This script is only intended to run on Ubuntu LTS 10.04 or CentOS 6.2"
-        	exit 255
-        fi
-    else
-        echo ""
-        echo "This script is only intended to run on Ubuntu LTS 10.04 or CentOS 6.2"
-        echo ""
-        exit 1
-    fi
-}
 
 
 #function to install mongoDB
 func_install_mongodb() {
-    echo ""
-    echo ""
-    echo "We will now install MongoDB on your server"
-	echo "============================================"
-    echo ""
-    case $DIST in
-        'DEBIAN')
-            #Install mongodb on Debian
-            apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
-            echo '
-#MongoDB
-deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' >> /etc/apt/sources.list
-            apt-get update 
-            apt-get install mongodb-10gen
-            cd /etc/init.d/
-            update-rc.d -f mongodb defaults
-        ;;
-        'CENTOS')
-            #Install mongodb on CentOS
-            if [ $KERNELARCH = "x86_64" ]; then
-	            echo '
-[10gen]
-name=10gen Repository
-baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64
-gpgcheck=0' > /etc/yum.repos.d/10gen-mongodb.repo
-        	else
-	            echo '
-[10gen]
-name=10gen Repository
-baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/i686
-gpgcheck=0' > /etc/yum.repos.d/10gen-mongodb.repo
-        	fi
-            yum install mongo-10gen mongo-10gen-server
-            chkconfig --add mongodb
-            chkconfig --levels 235 mongodb on
-        ;;
-    esac
-    
-    sed -i "s/#port = 27017/port = 27017/g" /etc/mongodb.conf
-    /etc/init.d/mongodb restart
+
+    if which mongo >/dev/null; then
+        echo ""
+        echo "MongoDB is already installed!"
+        echo ""
+        echo ""
+        
+    else
+        #Identify the OS
+        func_identify_os
+
+        echo ""
+        echo ""
+        echo "We will now install MongoDB on your server"
+	    echo "============================================"
+        echo ""
+        case $DIST in
+            'DEBIAN')
+                #Install mongodb on Debian
+                apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
+                echo '
+    #MongoDB
+    deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' >> /etc/apt/sources.list
+                apt-get update 
+                apt-get install mongodb-10gen
+                cd /etc/init.d/
+                update-rc.d -f mongodb defaults
+            ;;
+            'CENTOS')
+                #Install mongodb on CentOS
+                if [ $KERNELARCH = "x86_64" ]; then
+	                echo '
+    [10gen]
+    name=10gen Repository
+    baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64
+    gpgcheck=0' > /etc/yum.repos.d/10gen-mongodb.repo
+            	else
+	                echo '
+    [10gen]
+    name=10gen Repository
+    baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/i686
+    gpgcheck=0' > /etc/yum.repos.d/10gen-mongodb.repo
+            	fi
+                yum install mongo-10gen mongo-10gen-server
+                chkconfig --add mongodb
+                chkconfig --levels 235 mongodb on
+            ;;
+        esac
+        
+        sed -i "s/#port = 27017/port = 27017/g" /etc/mongodb.conf
+        /etc/init.d/mongodb restart
+        
+
+        echo ""
+        echo ""
+        echo "**************************************************************"
+        echo "Congratulations, MongoDB is now installed!"
+        echo "**************************************************************"
+        echo ""
+        echo ""
+    fi
 }
 
 
-if which mongo >/dev/null; then
-    echo "MongoDB is already installed!"
-else
-    #Identify the OS
-    func_identify_os
-
-    #Install Mongo
-    func_install_mongodb
-
-    echo ""
-    echo ""
-    echo "**************************************************************"
-    echo "Congratulations, MongoDB is now installed!"
-    echo "**************************************************************"
-    echo ""
-    echo ""
-fi
-
+#Install Mongo
+func_install_mongodb
