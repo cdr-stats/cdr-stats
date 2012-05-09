@@ -597,7 +597,6 @@ func_install_backend() {
 
     echo ""
     echo "Configure Celery..."
-
     
     case $DIST in
         'DEBIAN')
@@ -647,6 +646,9 @@ func_install_backend() {
             chkconfig --level 2345 cdr-stats-celeryd on
         ;;
     esac
+    
+    #Active logrotate
+    func_logrotate
 
     echo ""
     echo ""
@@ -716,6 +718,23 @@ func_install_redis_server() {
     esac
 }
 
+#Add Logrotate
+func_logrotate() {
+    touch /etc/logrotate.d/cdr_stats
+    echo '
+/var/log/cdr-stats/celery*log {
+    missingok
+    rotate 10
+    compress
+    size 10M
+    postrotate
+        /etc/init.d/cdr-stats-celeryd restart > /dev/null
+    endscript
+}
+'  > /etc/logrotate.d/cdr_stats
+
+    logrotate /etc/logrotate.d/cdr_stats
+}
 
 #Install MongoDB
 func_install_mongodb() {
@@ -724,7 +743,6 @@ func_install_mongodb() {
     wget https://raw.github.com/Star2Billing/cdr-stats/master/install/install-mongodb.sh
     bash install-mongodb.sh
 }
-
 
 
 #Menu Section for Script
