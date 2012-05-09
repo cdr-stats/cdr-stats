@@ -4,11 +4,13 @@ from parser import get_sorted_tuples, load_matrices
 from collections import OrderedDict
 import math
 code_to_xy={}
-def create_country_json(country_code,matrix,ccode_to_coordinates,file_prefix="in"):
-    sorted_tuples= get_sorted_tuples(matrix,country_code,code_to_name,10)
+
+def create_country_json(country_code, matrix, ccode_to_coordinates, file_prefix="in"):
+    sorted_tuples= get_sorted_tuples(matrix, country_code, code_to_name, 10)
     res=OrderedDict()
     from_point=[0,0]
-    from_point[0],from_point[1] = ccode_to_coordinates[country_code]["lng"], ccode_to_coordinates[country_code]["lat"]
+    from_point[0],from_point[1] = ccode_to_coordinates[country_code]["lng"], \
+                                  ccode_to_coordinates[country_code]["lat"]
     code_to_xy[country_code]= lolatoxy(from_point)
 
     for tuple in sorted_tuples:
@@ -39,14 +41,15 @@ def create_country_json(country_code,matrix,ccode_to_coordinates,file_prefix="in
             y1 = middle_point[1]-d/d_div
         svg_path = "M %s %s" %(lolatoxy(from_point)) + " Q %s %s "% (x1,y1) +"%s %s" %(lolatoxy(point))
         #print svg_path
-        res[code]=(svg_path,name, migration)
-    f = open('generated/'+file_prefix+country_code+".json","w")
-    print '/generated/'+file_prefix+country_code+".json"
+        res[code]=(svg_path, name, migration)
+    f = open('resources/migration/generated/'+file_prefix+country_code+".json","w")
+    #print 'resources/migration/generated/'+file_prefix+country_code+".json"
+
     f.write(json.dumps(res))
     f.close()
 
 
-geoloc_data = json.loads(open('geoloc.json').read())
+geoloc_data = json.loads(open('resources/migration/geoloc.json').read())
 
 matrix, reversed_matrix,code_to_name = load_matrices()
 wrong = []

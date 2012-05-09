@@ -5,7 +5,7 @@ import requests
 import time
 from collections import defaultdict
 def load_matrices():
-    reader = csv.reader(open('global_migrant_origin_database_version_4.csv', 'rU'), delimiter=',')
+    reader = csv.reader(open('resources/migration/global_migrant_origin_database_version_4.csv', 'rU'), delimiter=',')
     row = reader.next()
     state_codes  = row[2:]
     i=0
