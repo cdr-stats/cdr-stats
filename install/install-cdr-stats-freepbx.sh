@@ -47,7 +47,9 @@ esac
 
 #Get files to install CDR-Stats
 cd /usr/src/
+rm bash-common-functions.sh
 wget https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh
+rm cdr-stats-functions.sh
 wget https://raw.github.com/Star2Billing/cdr-stats/master/install/cdr-stats-functions.sh
 
 
