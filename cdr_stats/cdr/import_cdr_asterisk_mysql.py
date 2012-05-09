@@ -102,7 +102,7 @@ def import_cdr_asterisk_mysql(shell=False):
             switch.save()
 
         if not switch.id:
-            print "Error when adding new Switch!"
+            print_shell(shell, "Error when adding new Switch!")
             raise SystemExit
 
         if DEV_ADD_IP:
