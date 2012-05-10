@@ -61,6 +61,21 @@ def update_cdr_collection(mongohandler, cdr_id, field_name):
     return True
 
 
+def remove_prefix(phonenumber, removeprefix_list):
+    # remove the prefix from phone number
+    # @ removeprefix_list "+,0,00,000,0000,00000,011,55555,99999"
+    #
+    #clean : remove spaces
+    removeprefix_list = removeprefix_list.strip(' \t\n\r')
+    if removeprefix_list and len(removeprefix_list) > 0:
+        for rprefix in removeprefix_list.split(","):
+            rprefix = rprefix.strip(' \t\n\r')
+            rprefix = re.sub("\+", "\\\+", rprefix)
+            if rprefix and len(rprefix)>0:
+                phonenumber = re.sub("^%s" % rprefix, "", phonenumber)
+    return phonenumber
+
+
 def print_shell(shell, message):
     if shell:
         print message
@@ -163,34 +178,41 @@ def import_cdr(shell=False):
                 # Check Destination number
                 destination_number = cdr['callflow']['caller_profile']['destination_number']
 
-                #country_id = 198 # spain default
-                # number startswith 0 or `+` sign
+                #remove prefix
+                sanitized_destination = remove_prefix(destination_number, settings.PREFIX_TO_IGNORE)
 
-                #remove leading +
-                sanitized_destination = re.sub("^\++","",destination_number)
-                #remove leading 011
-                sanitized_destination = re.sub("^011+","",sanitized_destination)
-                #remove leading 00
-                sanitized_destination = re.sub("^0+","",sanitized_destination)
-                
                 prefix_list = prefix_list_string(sanitized_destination)
 
                 authorized = 1 # default
                 #check desti against whiltelist
                 authorized = chk_prefix_in_whitelist(prefix_list)
                 if authorized:
-                    authorized = 1 # allowed destination
+                    # allowed destination
+                    authorized = 1
                 else:
-                    #check desti against blacklist
+                    #check against blacklist
                     authorized = chk_prefix_in_blacklist(prefix_list)
                     if not authorized:
-                        authorized = 0 # not allowed destination
+                        # not allowed destination
+                        authorized = 0
 
-                country_id = get_country_id(prefix_list)
+                print sanitized_destination
+                if len(sanitized_destination) < settings.PHONENUMBER_MIN_DIGITS:
+                    #It might be an extension
+                    country_id = 0
+                elif len(sanitized_destination) >= settings.PHONENUMBER_MIN_DIGITS \
+                    and len(sanitized_destination) <= settings.PHONENUMBER_MAX_DIGITS:
+                    #It might be an local call
+                    print settings.LOCAL_DIALCODE
+                    #Need to add coma for get_country_id to eval correctly
+                    country_id = get_country_id(str(settings.LOCAL_DIALCODE) + ',')
+                else:
+                    #International call
+                    country_id = get_country_id(prefix_list)
 
                 if get_country_id==0:
                     #TODO: Add logger
-                    print "Error to find the country_id %s" % destination_number
+                    print_shell(shell, "Error to find the country_id %s" % destination_number)
 
                 # Prepare global CDR
                 cdr_record = {

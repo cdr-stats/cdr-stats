@@ -64,7 +64,7 @@ def generate_cdr_data (day_delta_int):
 
     caller_id = '' . join([choice(digit) for i in range(8)])
     channel_name = 'sofia/internal/' + caller_id +'@127.0.0.1'
-    destination_number  = '' . join([choice(digit) for i in range(5)])
+    destination_number  = '' . join([choice(digit) for i in range(8)])
 
     destination_number  = choice(COUNTRY_PREFIX) + destination_number
     
@@ -129,8 +129,8 @@ class Command(BaseCommand):
             (answer_stamp, start_uepoch, caller_id, channel_name, \
                 destination_number, hangup_cause, hangup_cause_q850, duration, \
                 billsec, end_stamp, uuid) = generate_cdr_data (day_delta_int)
-            print "CDR => date:%s, uuid:%s, duration:%s, hangup_cause:%s" % \
-                    (answer_stamp, uuid, duration, hangup_cause)
+            print "CDR => date:%s, uuid:%s, duration:%s, pn:%s, hangup_cause:%s" % \
+                    (answer_stamp, uuid, duration, destination_number, hangup_cause)
 
 
             cdr_json = {
@@ -339,4 +339,3 @@ class Command(BaseCommand):
             
             DB_CONNECTION[settings.CDR_MONGO_IMPORT[ipaddress]['collection']].\
                 insert(cdr_json)
-    

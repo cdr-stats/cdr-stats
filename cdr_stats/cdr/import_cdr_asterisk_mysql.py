@@ -172,30 +172,39 @@ def import_cdr_asterisk_mysql(shell=False):
             # Check Destination number
             destination_number = row[0]
 
-            #country_id = 198 # spain default
-            # number startswith 0 or `+` sign
+            #TODO : Improve DRY duplicate code with import_cdr.py
 
-            #remove leading +
-            sanitized_destination = re.sub("^\++","",destination_number)
-            #remove leading 011
-            sanitized_destination = re.sub("^011+","",sanitized_destination)
-            #remove leading 00
-            sanitized_destination = re.sub("^0+","",sanitized_destination)
-            
+            #remove prefix
+            sanitized_destination = remove_prefix(destination_number, settings.PREFIX_TO_IGNORE)
+
             prefix_list = prefix_list_string(sanitized_destination)
 
             authorized = 1 # default
             #check desti against whiltelist
             authorized = chk_prefix_in_whitelist(prefix_list)
             if authorized:
-                authorized = 1 # allowed destination
+                # allowed destination
+                authorized = 1
             else:
-                #check desti against blacklist
+                #check against blacklist
                 authorized = chk_prefix_in_blacklist(prefix_list)
                 if not authorized:
-                    authorized = 0 # not allowed destination
+                    # not allowed destination
+                    authorized = 0
 
-            country_id = get_country_id(prefix_list)
+            print sanitized_destination
+            if len(sanitized_destination) < settings.PHONENUMBER_MIN_DIGITS:
+                #It might be an extension
+                country_id = 0
+            elif len(sanitized_destination) >= settings.PHONENUMBER_MIN_DIGITS \
+                and len(sanitized_destination) <= settings.PHONENUMBER_MAX_DIGITS:
+                #It might be an local call
+                print settings.LOCAL_DIALCODE
+                #Need to add coma for get_country_id to eval correctly
+                country_id = get_country_id(str(settings.LOCAL_DIALCODE) + ',')
+            else:
+                #International call
+                country_id = get_country_id(prefix_list)
 
             if get_country_id==0:
                 #TODO: Add logger
