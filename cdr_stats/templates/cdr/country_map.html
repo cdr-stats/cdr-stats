@@ -10,7 +10,24 @@
     <script type="text/javascript">
         $(function(){
             //example 1
-            $('#example-map-1').vectorMap({map: 'world_en', markers: []});
+            $('#example-map-1').vectorMap({
+                map: 'world_en',
+                markers: [],
+                onLabelShow: function(event, label, code){
+                    if (code == 'ca') {
+                        event.preventDefault();
+                    } else if (code == 'es') {
+                        var temp_string = label.text();
+                        temp_string = temp_string + " - calls";
+                        label.text(temp_string);
+                    }
+                },
+                onRegionOver: function(event, code){
+                    if (code == 'in') {
+                        event.preventDefault();
+                    }
+                }
+            });
 
             //example 2
             var gdpData = {"af":16.63,"al":11.58,"dz":158.97};
@@ -54,6 +71,10 @@
                 normalizeFunction: 'polynomial',
                 hoverOpacity: 0.7,
                 hoverColor: false
+            });
+
+            $('#map-events').vectorMap({
+
             });
 
         });
