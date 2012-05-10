@@ -9,46 +9,38 @@
     <script type="text/javascript" src="{{STATIC_URL}}cdr-stats/js/jquery.vector-map/world-en.js"></script>
     <script type="text/javascript">
         $(function(){
+            // sample country call data
             var call_data = [{label: 'es', data: [100]},
                              {label: 'in', data: [20]}];
-
             //example 1
             $('#example-map-1').vectorMap({
                 map: 'world_en',
-                markers: [],
+                values: call_data,
                 onLabelShow: function(event, label, code){
 
-                    /*for(var i=0; i <= call_data.length; i++)
-                    {
-                        if(call_data[i].label == code)
+                    for (var k in call_data) {
+                        if (!call_data.hasOwnProperty(k)) continue;
+                        if(call_data[k].label == code)
                         {
                             var temp_string = label.text();
-                            temp_string = temp_string + " - " + String(call_data[i].data[0]);
+                            temp_string = temp_string + " - " + String(call_data[k].data[0]);
                             label.text(temp_string);
                             break;
                         }
-                        else{label.text();}
-                    }*/
 
-                    /*if (code == 'ca') {
-                        event.preventDefault();
-                    } else if (code == 'es') {
-                        var temp_string = label.text();
-                        temp_string = temp_string + " - calls";
-                        label.text(temp_string);
-                    }*/
+                    }
                 }
             });
 
             //example 2
             var gdpData = {"af":16.63,"al":11.58,"dz":158.97};
             var max = 0,
-                    min = Number.MAX_VALUE,
-                    cc,
-                    startColor = [200, 238, 255],
-                    endColor = [0, 100, 145],
-                    colors = {},
-                    hex;
+                min = Number.MAX_VALUE,
+                cc,
+                startColor = [200, 238, 255],
+                endColor = [0, 100, 145],
+                colors = {},
+                hex;
             for (cc in gdpData) {
                 if (parseFloat(gdpData[cc]) > max) {
                     max = parseFloat(gdpData[cc]);
@@ -84,10 +76,6 @@
                 hoverColor: false
             });
 
-            $('#map-events').vectorMap({
-
-            });
-
         });
     </script>
 
@@ -95,7 +83,7 @@
 
 {% block content %}
 
-    <div id="example-map-1" style="width: 600px; height: 400px"></div>
+    <div id="example-map-1" style="width: 1100px; height: 500px"></div>
     <p>&nbsp;</p>
     <div id="example-map-2" style="width: 600px; height: 400px"></div>
     <p>&nbsp;</p>
