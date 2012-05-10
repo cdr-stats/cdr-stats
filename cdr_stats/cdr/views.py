@@ -1931,17 +1931,88 @@ def world_map_view(request):
     if not check_cdr_data_exists(request):
         return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
 
-    logging.debug('CDR country report view start')
+    logging.debug('CDR world report view start')
     template = 'cdr/world_map.html'
-    form  = WorldForm()
-    data = {
-        'module': current_view(request),
-        'form': form,
-        'start_date': '',
-        'end_date': ''
-    }
-    return render_to_response(template, data,
-        context_instance = RequestContext(request))
+
+    switch_id = 0
+    query_var = {}
+    search_tag = 0
+    now = datetime.now()
+    start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
+    end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
+    from_date = start_date.strftime("%Y-%m-%d")
+    to_date = end_date.strftime("%Y-%m-%d")
+    form = WorldForm(initial={'from_date': from_date, 'to_date': to_date})
+
+    if request.method == 'POST':
+        logging.debug('CDR world report view with search option')
+        search_tag = 1
+        form = WorldForm(request.POST)
+        if form.is_valid():
+            if "from_date" in request.POST:
+                # From
+                from_date = form.cleaned_data.get('from_date')
+                start_date = datetime(int(from_date[0:4]),
+                    int(from_date[5:7]),
+                    int(from_date[8:10]), 0, 0, 0, 0)
+
+            if "to_date" in request.POST:
+                # To
+                to_date = form.cleaned_data.get('to_date')
+                end_date = datetime(int(to_date[0:4]),
+                    int(to_date[5:7]),
+                    int(to_date[8:10]), 23, 59, 59, 999999)
+
+            switch_id = form.cleaned_data.get('switch')
+            if switch_id and int(switch_id) != 0:
+                query_var['switch_id'] = int(switch_id)
+
+        else:
+            logging.debug('Error : CDR world report form')
+            variables = {'module': current_view(request),
+                         'form': form,
+                         'search_tag': search_tag,
+                         'start_date': start_date,
+                         'end_date': end_date,
+                         }
+
+            return render_to_response(template_name, variables,
+                   context_instance=RequestContext(request))
+
+    query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
+
+    if not request.user.is_superuser: # not superuser
+        acc_code_error = ''
+        if chk_account_code(request):
+            query_var['accountcode'] = chk_account_code(request)
+        else:
+            return HttpResponseRedirect('/?acc_code_error=true')
+
+    logging.debug('Map-reduce cdr world analytic')
+    #Retrieve Map Reduce
+    (map, reduce, finalize_fun, out) = mapreduce_cdr_world_report()
+
+    #Run Map Reduce
+    country_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY_REPORT]
+
+    calls = country_data.map_reduce(map, reduce, out, query=query_var)
+    calls = calls.find().sort([('_id.a_Year', 1),
+                               ('_id.b_Month', 1),
+                               ('_id.c_Day', 1),
+                               ('_id.d_Hour', 1),
+                               ('_id.e_Min', 1)])
+
+
+    logging.debug('CDR world report view end')
+    variables = {'module': current_view(request),
+                 'form': form,
+                 'search_tag': search_tag,
+                 'start_date': start_date,
+                 'end_date': end_date,
+                 }
+
+    return render_to_response(template, variables,
+           context_instance = RequestContext(request))
 
 
 def index(request):

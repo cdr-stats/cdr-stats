@@ -463,6 +463,59 @@ def mapreduce_cdr_country_report():
     return (map, reduce, False, out)
 
 
+def mapreduce_cdr_world_report():
+    """
+    To get the all countries call analytic
+
+       * Total calls per day-country
+       * Total call duration day-country
+
+    Attributes:
+
+        * ``map`` - Grouping perform on year, month, day, hour, min & country
+        * ``reduce`` - Calculate call count, sum of call duration based on map
+
+    Result Collection: ``aggregate_result_cdr_world_report``
+    """
+    (map, reduce, finalize_fun, out) = mapreduce_default()
+
+    # Get cdr world report
+    map = mark_safe(u'''
+        function(){
+            emit(
+                {
+                    a_Year: this.start_uepoch.getFullYear(),
+                    b_Month: this.start_uepoch.getMonth() + 1,
+                    c_Day: this.start_uepoch.getDate(),
+                    d_Hour: this.start_uepoch.getHours(),
+                    e_Min: this.start_uepoch.getMinutes(),
+                    f_Con: this.country_id,
+                },
+                {
+                    calldate__count: 1,
+                    duration__sum: this.duration,
+                })
+        }''')
+
+    reduce = mark_safe(u'''
+        function(key,vals) {
+            var ret = {
+                        calldate__count : 0,
+                        duration__sum: 0,
+                    };
+
+            for (var i=0; i < vals.length; i++){
+                    ret.calldate__count += parseInt(vals[i].calldate__count);
+                    ret.duration__sum += parseInt(vals[i].duration__sum);
+            }
+            return ret;
+        }
+        ''')
+
+    out = 'aggregate_result_cdr_world_report'
+    return (map, reduce, False, out)
+
+
 def mapreduce_task_cdr_alert():
     """
     To get
