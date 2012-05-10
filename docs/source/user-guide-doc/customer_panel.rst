@@ -8,7 +8,7 @@ User Interface :
 
 This application provides a user interface...
 
-http://localhost:8000/
+http://localhost:8008/
 
 
 
@@ -32,12 +32,12 @@ Index page for the customer interface after successful login with user credentia
 Dashboard
 ~~~~~~~~~
 
-In this view, you can get pictorial view of current date's calls and their
-call status statistics along with countries call statistics
+The dashboard displays a graphical representation of the last 24 hours calls, call status statistics
+and calls by country, either agregrated for all switches, or selectable by switch.
 
 **URL**:
 
-    * http://localhost:8000/dashboard/
+    * http://localhost:8008/dashboard/
 
 
 .. image:: ../_static/images/customer/dashboard.png
@@ -46,12 +46,15 @@ call status statistics along with countries call statistics
 CDR-View
 ~~~~~~~~
 
-In this view, you can get list of all call records in table format with day vise total
-call-count/call-duration detail in display
+Call detail records listed in table format which can be exported to CSV file. 
+
+Advanced Search allows further filtering and searching on a range of criteria
+
+The Report by Day shows a graphical illustration of the calls, minutes and average call time.
 
 **URL**:
 
-    * http://localhost:8000/cdr_view/
+    * http://localhost:8008/cdr_view/
 
 .. image:: ../_static/images/customer/cdr_view_I.png
     :width: 1000
@@ -68,7 +71,7 @@ from any date or date-range
 
 **URL**:
 
-    * http://localhost:8000/cdr_overview/
+    * http://localhost:8008/cdr_overview/
 
 
 .. image:: ../_static/images/customer/cdr_overview.png
@@ -83,7 +86,7 @@ You can compare different dates
 
 **URL**:
 
-    * http://localhost:8000/hourly_report/
+    * http://localhost:8008/hourly_report/
 
 .. image:: ../_static/images/customer/call_compare.png
     :width: 1000
@@ -105,12 +108,12 @@ In this view, you can get pictorial view of all calls
 CDR-Country-Report
 ~~~~~~~~~~~~~~~~~~
 
-In this view, you can get pictorial view of all calls country vise. Also
+In this view, you can get pictorial view of all calls by country. Also
 you can have 10 most called countries name with pie chart
 
 **URL**:
 
-    * http://localhost:8000/country_report/
+    * http://localhost:8008/country_report/
 
 
 .. image:: ../_static/images/customer/country_report.png
@@ -119,12 +122,12 @@ you can have 10 most called countries name with pie chart
 Mail-Report
 ~~~~~~~~~~~
 
-In this view, you can get report of last 10 calls of previous day. Also
-you can have total calls, call status & 5 most called countries detail
+In this view, there is a list of the last 10 calls of the previous day, along with total calls, a
+breakdown of the call status, and the top 5 countries called.
 
 **URL**:
 
-    * http://localhost:8000/mail_report/
+    * http://localhost:8008/mail_report/
 
 .. image:: ../_static/images/customer/mail_report.png
     :width: 1000
@@ -136,7 +139,7 @@ In this view, you can get report of concurrent calls
 
 **URL**:
 
-    * http://localhost:8000/cdr_concurrent_calls/
+    * http://localhost:8008/cdr_concurrent_calls/
 
 .. image:: ../_static/images/customer/concurrent_call.png
     :width: 1000
@@ -145,11 +148,12 @@ In this view, you can get report of concurrent calls
 Realtime-Report
 ~~~~~~~~~~~~~~~
 
-In this view, you can monitor in realtime the traffic on your voip servers
+In this view, you can monitor in realtime the traffic on your voip servers. Currently, only Freeswitch
+is supported.
 
 **URL**:
 
-    * http://localhost:8000/cdr_realtime/
+    * http://localhost:8008/cdr_realtime/
 
 .. image:: ../_static/images/customer/realtime.png
     :width: 1000
