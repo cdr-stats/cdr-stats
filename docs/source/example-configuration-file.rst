@@ -3,8 +3,8 @@
 Sample Configuration
 ====================
 
-This is a sample configuration to get you started.
-It should contain all you need to create a basic set-up.
+This is a sample configuration to get started should you chose not to use the install script.
+It should contain all that is needed to create a basic set-up.
  
 ------------------------
 The Configuration Module
@@ -18,7 +18,7 @@ Some of the more important parts of the configuration module for the cdr_stats,
 
 ``APPLICATION_DIR`` now contains the full path of your project folder and can be used elsewhere
 in the ``settings.py`` module so that your project may be moved around the system without you having to
-worry about changing any troublesome hard-coded paths. ::
+worry about changing any hard-coded paths. ::
 
   DEBUG = True
 
