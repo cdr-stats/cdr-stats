@@ -484,11 +484,6 @@ def mapreduce_cdr_world_report():
         function(){
             emit(
                 {
-                    a_Year: this.start_uepoch.getFullYear(),
-                    b_Month: this.start_uepoch.getMonth() + 1,
-                    c_Day: this.start_uepoch.getDate(),
-                    d_Hour: this.start_uepoch.getHours(),
-                    e_Min: this.start_uepoch.getMinutes(),
                     f_Con: this.country_id,
                 },
                 {

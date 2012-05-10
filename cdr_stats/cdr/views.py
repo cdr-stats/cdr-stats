@@ -1968,12 +1968,14 @@ def world_map_view(request):
                 query_var['switch_id'] = int(switch_id)
 
         else:
+            world_analytic_array = []
             logging.debug('Error : CDR world report form')
             variables = {'module': current_view(request),
                          'form': form,
                          'search_tag': search_tag,
                          'start_date': start_date,
                          'end_date': end_date,
+                         'world_analytic_array': world_analytic_array,
                          }
 
             return render_to_response(template_name, variables,
@@ -1996,19 +1998,24 @@ def world_map_view(request):
     country_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY_REPORT]
 
     calls = country_data.map_reduce(map, reduce, out, query=query_var)
-    calls = calls.find().sort([('_id.a_Year', 1),
-                               ('_id.b_Month', 1),
-                               ('_id.c_Day', 1),
-                               ('_id.d_Hour', 1),
-                               ('_id.e_Min', 1)])
+    calls = calls.find().sort([('_id.f_Con', 1)])
+
+    world_analytic_array = []
+    for i in calls:
+        #country id - country name - country_code - call count - call duration
+        world_analytic_array.append((int(i['_id']['f_Con']), int(i['_id']['f_Con']),
+                                     int(i['value']['calldate__count']),
+                                     i['value']['duration__sum']))
 
 
+    print world_analytic_array_final
     logging.debug('CDR world report view end')
     variables = {'module': current_view(request),
                  'form': form,
                  'search_tag': search_tag,
                  'start_date': start_date,
                  'end_date': end_date,
+                 'world_analytic_array': world_analytic_array,
                  }
 
     return render_to_response(template, variables,
