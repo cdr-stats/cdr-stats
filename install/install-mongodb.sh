@@ -57,16 +57,16 @@ func_install_mongodb() {
                 #Install mongodb on CentOS
                 if [ $KERNELARCH = "x86_64" ]; then
 	                echo '
-    [10gen]
-    name=10gen Repository
-    baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64
-    gpgcheck=0' > /etc/yum.repos.d/10gen-mongodb.repo
+[10gen]
+name=10gen Repository
+baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64
+gpgcheck=0' > /etc/yum.repos.d/10gen-mongodb.repo
             	else
 	                echo '
-    [10gen]
-    name=10gen Repository
-    baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/i686
-    gpgcheck=0' > /etc/yum.repos.d/10gen-mongodb.repo
+[10gen]
+name=10gen Repository
+baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/i686
+gpgcheck=0' > /etc/yum.repos.d/10gen-mongodb.repo
             	fi
                 yum install mongo-10gen mongo-10gen-server
                 chkconfig --add mongodb
