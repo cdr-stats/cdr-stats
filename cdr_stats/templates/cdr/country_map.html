@@ -18,7 +18,7 @@
             var max = 0,
                 min = Number.MAX_VALUE,
                 cc,
-                startColor = [220, 238, 255],
+                startColor = [160, 170, 200],
                 endColor = [0, 100, 145],
                 colors = {},
                 hex;
@@ -34,7 +34,7 @@
 
             }
             for (var k in call_data) {
-                //alert(call_data[k].data);
+
                 if (call_data[k].data > 0) {
                     colors[call_data[k].label] = '#';
                     for (var i = 0; i<3; i++) {
@@ -81,5 +81,5 @@
 {% block content %}
 
     <div id="example-map-1" style="width: 1200px; height: 500px"></div>
-    
+
 {% endblock %}
