@@ -1913,6 +1913,37 @@ def mail_report(request):
            context_instance = RequestContext(request))
 
 
+def world_map_view(request):
+    """CDR world report
+
+    **Attributes**:
+
+        * ``template`` - cdr/world_map.html
+        * ``form`` - WorldForm
+        * ``mongodb_data_set`` - CDR_MONGO_CDR_COUNTRY_REPORT / CDR_MONGO_CDR_COUNTRY
+        * ``map_reduce`` - mapreduce_cdr_country_report()
+
+    **Logic Description**:
+
+        get all call records from mongodb collection for all countries
+        to create country call
+    """
+    if not check_cdr_data_exists(request):
+        return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
+
+    logging.debug('CDR country report view start')
+    template = 'cdr/world_map.html'
+    form  = WorldForm()
+    data = {
+        'module': current_view(request),
+        'form': form,
+        'start_date': '',
+        'end_date': ''
+    }
+    return render_to_response(template, data,
+        context_instance = RequestContext(request))
+
+
 def index(request):
     """Index Page of CDR-Stats
 
@@ -2024,10 +2055,3 @@ def cust_password_reset_complete(request):
         extra_context=data)
     else:
         return HttpResponseRedirect("/")
-
-
-def world_map_view(request):
-    template = 'cdr/world_map.html'
-    data = {'module': current_view(request),}
-    return render_to_response(template, data,
-        context_instance = RequestContext(request))

@@ -225,6 +225,12 @@ class SwitchForm(SearchForm):
         self.fields.keyOrder = ['switch']
         self.fields['switch'].widget.attrs['onchange'] = 'this.form.submit();'
 
+class WorldForm(CdrSearchForm):
+    """Form used to get world overview of calls in the Customer UI."""
+    def __init__(self, *args, **kwargs):
+        super(WorldForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['from_date', 'to_date', 'switch']
+
 
 class loginForm(forms.Form):
     """Form used to login of a user in the Customer UI."""
