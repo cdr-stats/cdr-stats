@@ -1859,3 +1859,9 @@ def migration_view(request):
     data = {}
     return render_to_response(template, data,
            context_instance = RequestContext(request))
+
+def country_map_view(request):
+    template = 'cdr/country_map.html'
+    data = {}
+    return render_to_response(template, data,
+           context_instance = RequestContext(request))

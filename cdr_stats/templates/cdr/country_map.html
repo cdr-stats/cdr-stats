@@ -1,0 +1,72 @@
+{% extends "cdr/master.html" %}
+{% load i18n %}
+
+{% block extra_head %}
+    <!--css-->
+    <link type="text/css" media="screen" href="{{STATIC_URL}}cdr-stats/js/jquery.vector-map/jquery.vector-map.css" rel="stylesheet">
+    <!-- Javascript -->
+    <script type="text/javascript" src="{{STATIC_URL}}cdr-stats/js/jquery.vector-map/jquery.vector-map.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}cdr-stats/js/jquery.vector-map/world-en.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            //example 1
+            $('#example-map-1').vectorMap({map: 'world_en', markers: []});
+
+            //example 2
+            var gdpData = {"af":16.63,"al":11.58,"dz":158.97};
+            var max = 0,
+                    min = Number.MAX_VALUE,
+                    cc,
+                    startColor = [200, 238, 255],
+                    endColor = [0, 100, 145],
+                    colors = {},
+                    hex;
+            for (cc in gdpData) {
+                if (parseFloat(gdpData[cc]) > max) {
+                    max = parseFloat(gdpData[cc]);
+                }
+                if (gdpData[cc] < min) {
+                    min = parseFloat(gdpData[cc]);
+                }
+            }
+            for (cc in gdpData) {
+                if (gdpData[cc] > 0) {
+                    colors[cc] = '#';
+                    for (var i = 0; i<3; i++) {
+                        hex = Math.round(startColor[i] + (endColor[i] - startColor[i])*(gdpData[cc] / (max - min))).toString(16);
+                        if (hex.length == 1) {
+                            hex = '0'+hex;
+                        }
+                        colors[cc] += (hex.length == 1 ? '0' : '') + hex;
+                    }
+                }
+            }
+            $('#example-map-2').vectorMap({
+                colors: colors,
+                hoverOpacity: 0.7,
+                hoverColor: false
+            });
+
+            //example 3
+            $('#example-map-3').vectorMap({
+                values: gdpData,
+                scaleColors: ['#C8EEFF', '#006491'],
+                normalizeFunction: 'polynomial',
+                hoverOpacity: 0.7,
+                hoverColor: false
+            });
+
+        });
+    </script>
+
+{% endblock %}
+
+{% block content %}
+
+    <div id="example-map-1" style="width: 600px; height: 400px"></div>
+    <p>&nbsp;</p>
+    <div id="example-map-2" style="width: 600px; height: 400px"></div>
+    <p>&nbsp;</p>
+    <div id="example-map-3" style="width: 600px; height: 400px"></div>
+
+{% endblock %}
