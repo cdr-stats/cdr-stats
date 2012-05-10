@@ -125,8 +125,7 @@ Many features are provided on CDR-Stats, from browsing millions of CDRs, providi
 Latest documentation
 --------------------
 
-The `latest documentation`_ with user guides, tutorials and API reference
-is hosted at "Readthedocs".
+The `latest documentation`_ with user guides, tutorials and API references is hosted on CDR-Stats website : http://www.cdr-stats.org/documentation/
 
-.. _`latest documentation`: http://cdr-stats.readthedocs.org/
+.. _`latest documentation`: http://www.cdr-stats.org/documentation/
 

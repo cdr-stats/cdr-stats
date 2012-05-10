@@ -47,9 +47,9 @@ Applications
 Documentation
 -------------
 
-Complete documentation :
+Project documentation is hosted on CDR-Stats website :
 
-    - http://cdr-stats.readthedocs.org/
+    - http://www.cdr-stats.org/documentation/
 
 Beginner's Guide :
 

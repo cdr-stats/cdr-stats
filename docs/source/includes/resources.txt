@@ -21,19 +21,22 @@ Bug tracker
 If you have any suggestions, bug reports or annoyances please report them
 to our issue tracker at https://github.com/Star2Billing/cdr-stats/issues/
 
-.. _wiki:
+.. _website_documentation:
 
-Wiki
-====
+Documentation
+=============
 
-https://github.com/Star2Billing/cdr-stats/wiki/
+Project documentation is hosted on CDR-Stats website : http://cdr-stats.readthedocs.org/
+    
+Beginner's Guide : http://www.cdr-stats.org/documentation/beginners-guide/
+
 
 .. _contributing-short:
 
 Contributing
 ============
 
-Development of `CDR-Stats` happens at Github: https://github.com/Star2Billing/cdr-stats
+Development of `CDR-Stats` happens at Github : https://github.com/Star2Billing/cdr-stats
 
 You are highly encouraged to participate in the development of `CDR-Stats`.
 If you would prefer not to use Github, you are welcome to send us regular patches
