@@ -205,7 +205,7 @@ func_install_frontend(){
             pip install -e $SOUTH_SOURCE
                     
             if echo $db_backend | grep -i "^SQLITE" > /dev/null ; then
-                apt-get install sqlite3 libsqlite3-dev
+                apt-get -y install sqlite3 libsqlite3-dev
             else
                 apt-get -y install mysql-server libmysqlclient-dev
                 #Start MySQL

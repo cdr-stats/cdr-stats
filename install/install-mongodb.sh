@@ -49,7 +49,7 @@ func_install_mongodb() {
     #MongoDB
     deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' >> /etc/apt/sources.list
                 apt-get update 
-                apt-get install mongodb-10gen
+                apt-get -y install mongodb-10gen
                 cd /etc/init.d/
                 update-rc.d -f mongodb defaults
             ;;
@@ -68,7 +68,7 @@ name=10gen Repository
 baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/i686
 gpgcheck=0' > /etc/yum.repos.d/10gen-mongodb.repo
             	fi
-                yum install mongo-10gen mongo-10gen-server
+                yum -y install mongo-10gen mongo-10gen-server
                 chkconfig --add mongodb
                 chkconfig --levels 235 mongodb on
             ;;

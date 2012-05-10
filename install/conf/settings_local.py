@@ -77,8 +77,20 @@ SOCKETIO_CALLNUM_DEFAULT = 0
 
 #GENERAL
 #=======
-PHONE_NO_PREFIX_LIMIT_MIN = 2
-PHONE_NO_PREFIX_LIMIT_MAX = 5
+# PHONENUMBER_PREFIX_LIMIT_MIN & PHONENUMBER_PREFIX_LIMIT_MAX are used to know 
+# how many digits are used to match against the dialcode prefix database
+PHONENUMBER_PREFIX_LIMIT_MIN = 2
+PHONENUMBER_PREFIX_LIMIT_MAX = 5
+
+#If PhoneNumber is lower than PHONE_DIGITS_MIN it will be considered as an extension
+#If PhoneNumber is longer than PHONE_DIGITS_MIN but lower than PHONE_DIGITS_MAX then 
+#the PhoneNumber will be considered as local call and the LOCAL_DIALCODE will be added
+LOCAL_DIALCODE = 1 # Set the Dialcode of your country (44 for UK, 1 for US)
+PHONENUMBER_MIN_DIGITS = 6
+PHONENUMBER_MAX_DIGITS = 9
+
+#List of prefix to ignore, this will be remove from the phonenumber prior analysis
+PREFIX_TO_IGNORE = "+,0,00,000,0000,00000,011,55555,99999"
 
 #Realtime Graph : set the Y axis limit
 REALTIME_Y_AXIS_LIMIT = 10
