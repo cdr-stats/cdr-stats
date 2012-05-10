@@ -25,11 +25,20 @@
     <script type="text/javascript">
         $(function(){
             // sample country call data
+            var call_data = [
+                {% for rc in world_analytic_array %}
+                    {
+                        label: '{{ rc.1 }}',
+                        data: [{{ rc.2 }}, {{ rc.3 }}]
+                    },
+                {% endfor %}
+            ];
+            /*
             var call_data = [{label: 'es', data: [70]},
                              {label: 'pk', data: [50]},
                              {label: 'be', data: [30]},
                              {label: 'in', data: [20]}];
-
+            */
             var max = 0,
                 min = Number.MAX_VALUE,
                 cc,

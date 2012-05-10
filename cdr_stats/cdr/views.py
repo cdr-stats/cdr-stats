@@ -2003,12 +2003,13 @@ def world_map_view(request):
     world_analytic_array = []
     for i in calls:
         #country id - country name - country_code - call count - call duration
-        world_analytic_array.append((int(i['_id']['f_Con']), int(i['_id']['f_Con']),
+        world_analytic_array.append((int(i['_id']['f_Con']),
+                                     get_country_name(int(i['_id']['f_Con']), type='iso_alpha_2'),
                                      int(i['value']['calldate__count']),
                                      i['value']['duration__sum']))
 
 
-    print world_analytic_array_final
+    #print world_analytic_array
     logging.debug('CDR world report view end')
     variables = {'module': current_view(request),
                  'form': form,

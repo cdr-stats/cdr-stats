@@ -91,10 +91,13 @@ def get_country_id(prefix_list):
     return country_id
 
 
-def get_country_name(id):
+def get_country_name(id, type=''):
     try:
         obj = Country.objects.get(pk=id)
-        return obj.countryname
+        if type == 'iso_alpha_2':
+            return str(obj.iso2).lower()
+        else:
+            return obj.countryname
     except:
         return ''
 
