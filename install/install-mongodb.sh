@@ -52,6 +52,9 @@ func_install_mongodb() {
                 apt-get -y install mongodb-10gen
                 cd /etc/init.d/
                 update-rc.d -f mongodb defaults
+                
+                sed -i "s/#port = 27017/port = 27017/g" /etc/mongodb.conf
+                /etc/init.d/mongodb restart
             ;;
             'CENTOS')
                 #Install mongodb on CentOS
@@ -71,11 +74,11 @@ gpgcheck=0' > /etc/yum.repos.d/10gen-mongodb.repo
                 yum -y install mongo-10gen mongo-10gen-server
                 chkconfig --add mongodb
                 chkconfig --levels 235 mongodb on
+                
+                sed -i "s/#port = 27017/port = 27017/g" /etc/mongod.conf
+                /etc/init.d/mongod start
             ;;
         esac
-        
-        sed -i "s/#port = 27017/port = 27017/g" /etc/mongodb.conf
-        /etc/init.d/mongodb restart
         
 
         echo ""
