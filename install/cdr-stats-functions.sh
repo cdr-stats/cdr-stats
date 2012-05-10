@@ -543,6 +543,7 @@ func_install_frontend(){
             semanage port -a -t http_port_t -p tcp $HTTP_PORT
             #Allowing Apache to access Redis port
             semanage port -a -t http_port_t -p tcp 6379
+            semanage port -a -t http_port_t -p tcp 27017
             
             service httpd restart
         ;;

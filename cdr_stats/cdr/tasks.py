@@ -68,6 +68,7 @@ class get_channels_info(PeriodicTask):
             #settings.LOCAL_SWITCH_TYPE = 'freeswitch'
             
             if settings.LOCAL_SWITCH_TYPE == 'freeswitch':
+                con = False
                 try:
                     con = sqlite3.connect('/usr/local/freeswitch/db/core.db')
                     cur = con.cursor()
