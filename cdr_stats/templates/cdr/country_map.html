@@ -9,23 +9,34 @@
     <script type="text/javascript" src="{{STATIC_URL}}cdr-stats/js/jquery.vector-map/world-en.js"></script>
     <script type="text/javascript">
         $(function(){
+            var call_data = [{label: 'es', data: [100]},
+                             {label: 'in', data: [20]}];
+
             //example 1
             $('#example-map-1').vectorMap({
                 map: 'world_en',
                 markers: [],
                 onLabelShow: function(event, label, code){
-                    if (code == 'ca') {
+
+                    /*for(var i=0; i <= call_data.length; i++)
+                    {
+                        if(call_data[i].label == code)
+                        {
+                            var temp_string = label.text();
+                            temp_string = temp_string + " - " + String(call_data[i].data[0]);
+                            label.text(temp_string);
+                            break;
+                        }
+                        else{label.text();}
+                    }*/
+
+                    /*if (code == 'ca') {
                         event.preventDefault();
                     } else if (code == 'es') {
                         var temp_string = label.text();
                         temp_string = temp_string + " - calls";
                         label.text(temp_string);
-                    }
-                },
-                onRegionOver: function(event, code){
-                    if (code == 'in') {
-                        event.preventDefault();
-                    }
+                    }*/
                 }
             });
 
