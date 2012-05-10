@@ -2024,3 +2024,10 @@ def cust_password_reset_complete(request):
         extra_context=data)
     else:
         return HttpResponseRedirect("/")
+
+
+def world_map_view(request):
+    template = 'cdr/world_map.html'
+    data = {'module': current_view(request),}
+    return render_to_response(template, data,
+        context_instance = RequestContext(request))

@@ -1,0 +1,85 @@
+{% extends "cdr/master.html" %}
+{% load i18n %}
+
+{% block extra_head %}
+    <!--css-->
+    <link type="text/css" media="screen" href="{{STATIC_URL}}cdr-stats/js/jquery.vector-map/jquery.vector-map.css" rel="stylesheet">
+    <!-- Javascript -->
+    <script type="text/javascript" src="{{STATIC_URL}}cdr-stats/js/jquery.vector-map/jquery.vector-map.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}cdr-stats/js/jquery.vector-map/world-en.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            // sample country call data
+            var call_data = [{label: 'es', data: [70]},
+                {label: 'pk', data: [50]},
+                {label: 'be', data: [30]},
+                {label: 'in', data: [20]}];
+
+            var max = 0,
+                    min = Number.MAX_VALUE,
+                    cc,
+                    startColor = [160, 170, 200],
+                    endColor = [0, 100, 145],
+                    colors = {},
+                    hex;
+
+            for (var k in call_data) {
+                if (!call_data.hasOwnProperty(k)) continue;
+                if (parseFloat(call_data[k].data[0]) > max) {
+                    max = parseFloat(call_data[k].data[0]);
+                }
+                if (call_data[k].data[0] < min) {
+                    min = parseFloat(call_data[k].data[0]);
+                }
+
+            }
+            for (var k in call_data) {
+
+                if (call_data[k].data > 0) {
+                    colors[call_data[k].label] = '#';
+                    for (var i = 0; i<3; i++) {
+                        hex = Math.round(startColor[i] + (endColor[i] - startColor[i])*(parseFloat(call_data[k].data) / (max - min))).toString(16);
+                        if (hex.length == 1) {
+                            hex = '0'+hex;
+                        }
+                        colors[call_data[k].label] += (hex.length == 1 ? '0' : '') + hex;
+                    }
+
+                }
+            }
+
+
+            //example 1
+            $('#example-map-1').vectorMap({
+                map: 'world_en',
+                values: call_data,
+                colors: colors,
+                //scaleColors: colors,
+                hoverOpacity: 0.7,
+                hoverColor: false,
+                onLabelShow: function(event, label, code){
+
+                    for (var k in call_data) {
+                        if (!call_data.hasOwnProperty(k)) continue;
+                        if(call_data[k].label == code)
+                        {
+                            var temp_string = label.text();
+                            temp_string = temp_string + " - " + String(call_data[k].data[0]);
+                            label.text(temp_string);
+                            break;
+                        }
+
+                    }
+                }
+            });
+
+        });
+    </script>
+
+{% endblock %}
+
+{% block content %}
+
+    <div id="example-map-1" style="width: 1200px; height: 500px"></div>
+
+{% endblock %}
