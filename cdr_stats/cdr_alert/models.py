@@ -59,8 +59,8 @@ ALARM_REPROT_STATUS  = (
 
 class AlertRemovePrefix(models.Model):
     """This defines the Alert Remove Prefix
-    Here you can define the list of prefix that needs to be removed from the dialed number,
-    imagine all your phonenumber comes in the format 5555004432111321
+    Here you can define the list of prefixes that need to be removed from the dialed digits,
+    imagine all your phone numbers are in the format 5555004432111321
     You will need to remove the prefix 5555 in order to analyze the phone numbers
 
     **Attributes**:

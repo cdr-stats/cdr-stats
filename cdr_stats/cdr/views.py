@@ -752,7 +752,7 @@ def cdr_dashboard(request):
     **Logic Description**:
 
         get all call records from mongodb collection for current day
-        to create hourly report as well as to hungupcause/country analytic
+        to create hourly report as well as hangup cause/country analytics
     """
 
     if not check_cdr_data_exists(request):
