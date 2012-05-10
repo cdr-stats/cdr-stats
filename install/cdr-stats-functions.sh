@@ -232,9 +232,14 @@ func_install_frontend(){
 						rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
 					fi
         	fi
-            #Install Python dep  and pip
+        	
             #Install epel repo for pip and mod_python
-            rpm -ivh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-5.noarch.rpm
+            if [ $KERNELARCH = "x86_64" ]; then
+				rpm -ivh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-6.noarch.rpm
+			else
+				rpm -ivh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-6.noarch.rpm
+			fi
+			
             # disable epel repository since by default it is enabled.
             sed -i "s/enabled=1/enable=0/" /etc/yum.repos.d/epel.repo
             yum -y --enablerepo=epel install python-pip mod_python python-setuptools python-tools python-devel mercurial mod_wsgi libevent libevent-devel
