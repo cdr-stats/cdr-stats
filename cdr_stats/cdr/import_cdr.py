@@ -152,7 +152,7 @@ def import_cdr(shell=False):
                         ('callflow.caller_profile.destination_number', 1),
                         ('variables.accountcode', 1),
                         ('variables.hangup_cause_q850', 1)
-                            ]).limit(PAGE_SIZE).clone()
+                           ]).limit(PAGE_SIZE)
 
             #Retrieve FreeSWITCH CDRs
             for cdr in result:
@@ -308,11 +308,11 @@ def import_cdr(shell=False):
                             {'$set': {'import_cdr': 1, 'import_cdr_monthly': 1, 'import_cdr_daily': 1, 'import_cdr_hourly': 1}}
                 )
 
-            # Apply index
-            CDR_COMMON.ensure_index([("start_uepoch", -1)])
-            CDR_MONTHLY.ensure_index([("start_uepoch", -1)])
-            CDR_DAILY.ensure_index([("start_uepoch", -1)])
-            CDR_HOURLY.ensure_index([("start_uepoch", -1)])
-            CDR_COUNTRY_REPORT.ensure_index([("start_uepoch", -1)])
+        # Apply index
+        CDR_COMMON.ensure_index([("start_uepoch", -1)])
+        CDR_MONTHLY.ensure_index([("start_uepoch", -1)])
+        CDR_DAILY.ensure_index([("start_uepoch", -1)])
+        CDR_HOURLY.ensure_index([("start_uepoch", -1)])
+        CDR_COUNTRY_REPORT.ensure_index([("start_uepoch", -1)])
 
         print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" % (ipaddress, count_import))
