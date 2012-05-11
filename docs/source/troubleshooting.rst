@@ -9,32 +9,6 @@ Troubleshooting
     :depth: 1
 
 
-.. _find-help:
-
-Where to find help
-==================
-
-Documentation:
-~~~~~~~~~~~~~~
-http://www.cdr-stats.org/documentation/
-
-
-Mailing list:
-~~~~~~~~~~~~~
-We have set up a mailing list at http://groups.google.com/group/cdr-stats
-
-
-Forum:
-~~~~~~
-We have a forum at http://forum.cdr-stats.org/
-
-
-Support:
-~~~~~~~~
-Star2Billing S.L. offers consultancy including installation, training and customisation
-
-
-
 .. _find-log-files:
 
 Where to find the log files
@@ -110,6 +84,5 @@ For a complete listing of the command line arguments available, with a short des
 
 
 Now you can visit the webserver celerymon starts by going to: http://localhost:8989
-
 
 

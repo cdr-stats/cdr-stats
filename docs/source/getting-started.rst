@@ -61,7 +61,7 @@ Dashboard
 User Dashboard helps the user to monitor in realtime the most relevant factors of his swiches.
 
 .. image:: ./_static/images/customer/dashboard.png
-    :width: 1000
+    :width: 650
 
 .. _screenshot_admin_panel:
 
@@ -71,7 +71,7 @@ Admin Panel
 Admin Panels will allow the administrators to configure the entire reporting platform, import CDR in csv and much more.
 
 .. image:: ./_static/images/admin/admin_dashboard.png
-    :width: 1000
+    :width: 950
 
 
 
@@ -96,7 +96,7 @@ connectors can be built to connect to the CDR database store and import them in 
 
 
 .. image:: ./_static/images/CDR-Stats-Architecture.png
-    :width: 680
+    :width: 600
 
 
 
@@ -117,6 +117,29 @@ Features
 --------
  
 Many features are provided on CDR-Stats, from browsing millions of CDRs, providing efficient search to build rich reporting such as monthly reports, concurrent calls view, and comparing call traffic to previous days.
+
+
+
+    +-----------------+----------------------------------------------------+
+    | Telephony PBX   | Based on leading open source Freeswitch, Asterisk  |
+    |                 |                                                    |
+    +-----------------+----------------------------------------------------+
+    | Distributed     | Runs on one or more machines. Supports             |
+    |                 | broker `clustering` and `HA` when used in          |
+    |                 | combination with `RabbitMQ`.  You can set up new   |
+    |                 | workers without central configuration (e.g. use    |
+    |                 | your grandma's laptop to help if the queue is      |
+    |                 | temporarily congested).                            |
+    +-----------------+----------------------------------------------------+
+    | Fraud detection | Send emails to the administrator when fraud are    |
+    |                 | or suspicious paterns occur                        |
+    +-----------------+----------------------------------------------------+
+    | Error Emails    | Can be configured to send emails to the            |
+    |                 | administrator if a tasks fails.                    |
+    +-----------------+----------------------------------------------------+
+    | Import CDR      | Import CDR files in custom format                  |
+    +-----------------+----------------------------------------------------+
+
 
 - Visualise traffic which helps to identify unusual patterns.
 - Map view, see where the traffic comes from and where it goes to

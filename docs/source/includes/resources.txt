@@ -30,6 +30,12 @@ Project documentation is hosted on CDR-Stats website : http://cdr-stats.readthed
     
 Beginner's Guide : http://www.cdr-stats.org/documentation/beginners-guide/
 
+.. _support:
+
+Support
+=======
+Star2Billing S.L. offers consultancy including installation, training and customisation
+
 .. _license:
 
 License
