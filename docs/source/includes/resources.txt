@@ -30,20 +30,6 @@ Project documentation is hosted on CDR-Stats website : http://cdr-stats.readthed
     
 Beginner's Guide : http://www.cdr-stats.org/documentation/beginners-guide/
 
-
-.. _contributing-short:
-
-Contributing
-============
-
-Development of `CDR-Stats` happens at Github : https://github.com/Star2Billing/cdr-stats
-
-You are highly encouraged to participate in the development of `CDR-Stats`.
-If you would prefer not to use Github, you are welcome to send us regular patches
-
-Be sure to also read the :ref:`contributing` section in the documentation.
-
-
 .. _license:
 
 License
