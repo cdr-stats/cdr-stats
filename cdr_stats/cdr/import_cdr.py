@@ -128,7 +128,7 @@ def import_cdr(shell=False):
         #Connect to Mongo
         importcdr_handler = DB_CONNECTION[settings.CDR_MONGO_IMPORT[ipaddress]['collection']]
 
-        total_record = importcdr_handler.find({'import_cdr': 0}).count()
+        total_record = importcdr_handler.find({'import_cdr': {'$exists': False}}).count()
         #print total_record
 
         PAGE_SIZE = int(5000)
@@ -140,7 +140,7 @@ def import_cdr(shell=False):
         for j in range(1, total_loop_count+1):
             PAGE_NUMBER = int(j)
             
-            result = importcdr_handler.find({'import_cdr': 0}, 
+            result = importcdr_handler.find({'import_cdr': {'$exists': False}}, 
                     {
                         "callflow.caller_profile.caller_id_number":1,
                         "callflow.caller_profile.caller_id_name":1,
@@ -214,16 +214,23 @@ def import_cdr(shell=False):
                     #TODO: Add logger
                     print_shell(shell, "Error to find the country_id %s" % destination_number)
 
+                destination_number = cdr['callflow']['caller_profile']['destination_number']
+                hangup_cause_id = get_hangupcause_id(cdr['variables']['hangup_cause_q850'])
+                try:
+                    accountcode = cdr['variables']['accountcode']
+                except:
+                    accountcode = ''
+
                 # Prepare global CDR
                 cdr_record = {
                     'switch_id': switch.id,
                     'caller_id_number': cdr['callflow']['caller_profile']['caller_id_number'],
                     'caller_id_name': cdr['callflow']['caller_profile']['caller_id_name'],
-                    'destination_number': cdr['callflow']['caller_profile']['destination_number'],
+                    'destination_number': destination_number,
                     'duration': int(cdr['variables']['duration']),
                     'billsec': int(cdr['variables']['billsec']),
-                    'hangup_cause_id': get_hangupcause_id(cdr['variables']['hangup_cause_q850']),
-                    'accountcode': cdr['variables']['accountcode'],
+                    'hangup_cause_id': hangup_cause_id,
+                    'accountcode': accountcode,
                     'direction': cdr['variables']['direction'],
                     'uuid': cdr['variables']['uuid'],
                     'remote_media_ip': cdr['variables']['remote_media_ip'],
@@ -239,10 +246,6 @@ def import_cdr(shell=False):
                     'country_id': country_id,
                     'authorized': authorized,
                 }
-
-                destination_number = cdr['callflow']['caller_profile']['destination_number']
-                hangup_cause_id = get_hangupcause_id(cdr['variables']['hangup_cause_q850'])
-                accountcode = cdr['variables']['accountcode']
 
                 # record global CDR
                 CDR_COMMON.insert(cdr_record)
@@ -260,7 +263,7 @@ def import_cdr(shell=False):
                 #update_cdr_collection(importcdr_handler, cdr['_id'], 'import_cdr')
                 
                 # Store monthly cdr collection with unique import
-                if cdr['import_cdr_monthly'] == 0:
+                if not hasattr(cdr, 'import_cdr_monthly') or cdr['import_cdr_monthly'] == 0:
                     # monthly collection
                     current_y_m = datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
                     CDR_MONTHLY.update(
@@ -278,7 +281,7 @@ def import_cdr(shell=False):
                                 }, upsert=True)
 
                 # Store daily cdr collection with unique import
-                if cdr['import_cdr_daily'] == 0:
+                if not hasattr(cdr, 'import_cdr_daily') or cdr['import_cdr_daily'] == 0:
                     # daily collection
                     current_y_m_d = datetime.strptime(str(start_uepoch)[:10], "%Y-%m-%d")
                     CDR_DAILY.update(
@@ -296,7 +299,7 @@ def import_cdr(shell=False):
                             },upsert=True)
 
                 # Store hourly cdr collection with unique import
-                if cdr['import_cdr_hourly'] == 0:
+                if not hasattr(cdr, 'import_cdr_hourly') or cdr['import_cdr_hourly'] == 0:
                     # hourly collection
                     current_y_m_d_h = datetime.strptime(str(start_uepoch)[:13], "%Y-%m-%d %H")
                     CDR_HOURLY.update(
