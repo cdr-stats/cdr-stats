@@ -229,7 +229,7 @@ man_pages = [
      [u'Arezqui Belaid'], 1)
 ]
 
-html_theme = "celery"
+html_theme = "cdr-stats"
 html_theme_path = ["_theme"]
 html_sidebars = {
     'index': ['sidebarintro.html', 'sourcelink.html', 'searchbox.html'],
