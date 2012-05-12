@@ -52,7 +52,8 @@ func_identify_os() {
             SCRIPT_VIRTUALENVWRAPPER="/usr/bin/virtualenvwrapper.sh"
             APACHE_CONF_DIR="/etc/httpd/conf.d/"
             APACHE_USER="apache"
-            WSGI_ADDITIONAL="WSGISocketPrefix run/wsgi"
+            #WSGI_ADDITIONAL="WSGISocketPrefix run/wsgi"
+            WSGI_ADDITIONAL="WSGISocketPrefix        /var/run/wsgi"
             WSGIApplicationGroup="WSGIApplicationGroup %{GLOBAL}"
         ;;
     esac

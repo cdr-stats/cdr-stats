@@ -228,3 +228,6 @@ man_pages = [
     ('index', 'cdr-stats', u'CDR-Stats Documentation',
      [u'Arezqui Belaid'], 1)
 ]
+
+html_theme = "celery"
+html_theme_path = ["_theme"]
