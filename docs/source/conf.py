@@ -231,3 +231,8 @@ man_pages = [
 
 html_theme = "celery"
 html_theme_path = ["_theme"]
+html_sidebars = {
+    'index': ['sidebarintro.html', 'sourcelink.html', 'searchbox.html'],
+    '**': ['sidebarlogo.html', 'relations.html',
+           'sourcelink.html', 'searchbox.html'],
+}

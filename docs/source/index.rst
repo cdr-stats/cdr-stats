@@ -40,11 +40,11 @@ Contents:
     :maxdepth: 1
 
     developer-doc
-    
+    api-reference
+        
 .. toctree::
     :maxdepth: 2
 
-    api-reference
     contributing
     faq
     troubleshooting
