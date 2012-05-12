@@ -50,7 +50,6 @@
                 if (call_data[k].data[0] < min) {
                     min = parseFloat(call_data[k].data[0]);
                 }
-
             }
 
             for (var k in call_data) {
@@ -58,14 +57,14 @@
                 if (call_data[k].data[0] > 0) {
 
                     colors[call_data[k].label] = '#';
+                    //TODO : need to be reviewed
                     for (var i = 0; i<3; i++) {
-                        hex = Math.round(startColor[i] + (endColor[i] - startColor[i])*(parseFloat(call_data[k].data[0]) / (max - min))).toString(16);
+                        hex = Math.round(startColor[i] + (endColor[i] - startColor[i])*(call_data[k].data[0] / (max - min))).toString(16);
                         if (hex.length == 1) {
                             hex = '0'+hex;
                         }
                         colors[call_data[k].label] += (hex.length == 1 ? '0' : '') + hex;
                     }
-
                 }
             }
 
@@ -83,10 +82,10 @@
             }
             //example 1
             $('#example-map-1').vectorMap({
+                backgroundColor: '#006491',
                 map: 'world_en',
                 values: call_data,
                 colors: colors,
-                //scaleColors: ['#C8EEFF', '#006491'],
                 hoverOpacity: 0.7,
                 hoverColor: false,
                 onLabelShow: function(event, label, code){
