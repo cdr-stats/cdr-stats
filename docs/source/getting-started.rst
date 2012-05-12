@@ -48,7 +48,7 @@ you would with a relational database, in MongoDB you store JSON-like documents w
 dynamic schemas. The goal of MongoDB is to bridge the gap between key-value stores
 (which are fast and scalable) and relational databases (which have rich functionality).
 
-Version 2.0 of CDR-Stats supports Asterisk and Freeswitch using connectors that get the CDR. Connectors
+CDR-Stats supports Freeswitch and Asterisk using connectors that get the CDR. Connectors
 for other switch systems can be built. Additionally CDR-Stats features a CSV upload facility so that
 CDR from virtually any source can be imported and analysed by CDR-Stats.
 
