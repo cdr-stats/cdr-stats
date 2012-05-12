@@ -118,39 +118,41 @@ Features
  
 Many features are provided on CDR-Stats, from browsing millions of CDRs, providing efficient search to build rich reporting such as monthly reports, concurrent calls view, and comparing call traffic to previous days.
 
-
-
-    +-----------------+----------------------------------------------------+
-    | Telephony PBX   | Based on leading open source Freeswitch, Asterisk  |
-    |                 |                                                    |
-    +-----------------+----------------------------------------------------+
-    | Distributed     | Runs on one or more machines. Supports             |
-    |                 | broker `clustering` and `HA` when used in          |
-    |                 | combination with `RabbitMQ`.  You can set up new   |
-    |                 | workers without central configuration (e.g. use    |
-    |                 | your grandma's laptop to help if the queue is      |
-    |                 | temporarily congested).                            |
-    +-----------------+----------------------------------------------------+
-    | Fraud detection | Send emails to the administrator when fraud are    |
-    |                 | or suspicious paterns occur                        |
-    +-----------------+----------------------------------------------------+
-    | Error Emails    | Can be configured to send emails to the            |
-    |                 | administrator if a tasks fails.                    |
-    +-----------------+----------------------------------------------------+
-    | Import CDR      | Import CDR files in custom format                  |
-    +-----------------+----------------------------------------------------+
-
-
-- Visualise traffic which helps to identify unusual patterns.
-- Map view, see where the traffic comes from and where it goes to
-- Compare traffic to previous dates, see how your traffic evolves, and patterns change.
-- Monitor VoIP server, set alerts to detect potential fraud
-- Send daily mail reports of your VoIP traffic
-- Traffic displayed in realtime
-- Blacklist Phone number patterns to receive alarms
-- Geographic alerts
-- Multi-tenant, allowing many customer to monitor their own CDR on one instance of CDR-Stats
-- Multi-switch, monitor traffic from many switches in one location
+    +-----------------------+----------------------------------------------------+
+    | Telephony Reporting   | Based on leading open source Freeswitch, Asterisk  |
+    +-----------------------+----------------------------------------------------+
+    | Multi-switch          | monitor traffic from many switches in one location |
+    +-----------------------+----------------------------------------------------+
+    | Multi-tenant          | allowing many customer to monitor their own CDR on |
+    |                       | one instance of CDR-Stats.                         |
+    +-----------------------+----------------------------------------------------+
+    | Distributed           | Runs on one or more machines. Supports             |
+    |                       | broker `clustering` and `HA`. You can set up new   |
+    |                       | workers without central configuration.             |
+    +-----------------------+----------------------------------------------------+
+    | Fraud detection       | Visualise traffic which helps to identify unusual  |
+    |                       | patterns.                                          |
+    +-----------------------+----------------------------------------------------+
+    | Fraud Alert           | Send emails to the administrator when fraud are    |
+    |                       | or suspicious paterns occur                        |
+    +-----------------------+----------------------------------------------------+
+    | Error Emails          | Can be configured to send emails to the            |
+    |                       | administrator if a tasks fails.                    |
+    +-----------------------+----------------------------------------------------+
+    | Import CDR            | Import CDR files in custom format                  |
+    +-----------------------+----------------------------------------------------+
+    | World Map view        | see where the traffic comes goes to on a Map       |
+    +-----------------------+----------------------------------------------------+
+    | Compare traffic       | see how your traffic evolves, and patterns change. |
+    +-----------------------+----------------------------------------------------+
+    | Mail Reporting        | Send daily mail reports of your VoIP traffic       |
+    +-----------------------+----------------------------------------------------+
+    | Realtime Reporting    | Traffic displayed in realtime                      |
+    +-----------------------+----------------------------------------------------+
+    | Blacklist             | Blacklist Phone number patterns to receive alarms  |
+    +-----------------------+----------------------------------------------------+
+    | Geographic alerts     | Set alert if calls goes to disallower countries    |
+    +-----------------------+----------------------------------------------------+
 
 
 .. _utility:
