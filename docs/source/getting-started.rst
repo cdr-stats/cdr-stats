@@ -1,15 +1,16 @@
-:Web: http://www.cdr-stats.org/
-:Download: http://www.cdr-stats.org/download/
-:Source: https://github.com/Star2Billing/cdr-stats/
-:Keywords: voip, freeswitch, asterisk, django, python, call, reporting, 
-   CDR, mongoDB
-
---
 
 .. _getting_started:
 
 Getting Started
 ===============
+
+:Web: http://www.cdr-stats.org/
+:Download: http://www.cdr-stats.org/download/
+:Source: https://github.com/Star2Billing/cdr-stats/
+:Keywords: voip, freeswitch, asterisk, django, python, call, reporting, CDR, mongoDB
+
+--
+
 
 CDR-Stats is free and open source call detail record analysis and reporting software for Freeswitch, 
 Asterisk and other type of VoIP Switch. It allows you to interrogate your CDR to provide reports 
@@ -47,33 +48,30 @@ you would with a relational database, in MongoDB you store JSON-like documents w
 dynamic schemas. The goal of MongoDB is to bridge the gap between key-value stores
 (which are fast and scalable) and relational databases (which have rich functionality).
 
-Version 2.0 of CDR-Stats supports Asterisk and Freeswitch using connectors that get the CDR. Connectors
+CDR-Stats supports Freeswitch and Asterisk using connectors that get the CDR. Connectors
 for other switch systems can be built. Additionally CDR-Stats features a CSV upload facility so that
 CDR from virtually any source can be imported and analysed by CDR-Stats.
 
-Screenshot Dashboard
-~~~~~~~~~~~~~~~~~~~~
+
+.. _screenshot_dashboard:
+
+Dashboard
+---------
+
+User Dashboard helps the user to monitor in realtime the most relevant factors of his swiches.
 
 .. image:: ./_static/images/customer/dashboard.png
-    :width: 1000
+    :width: 650
 
+.. _screenshot_admin_panel:
 
-Screenshot Admin UI
-~~~~~~~~~~~~~~~~~~~
+Admin Panel
+-----------
+
+Admin Panels will allow the administrators to configure the entire reporting platform, import CDR in csv and much more.
 
 .. image:: ./_static/images/admin/admin_dashboard.png
-    :width: 1000
-
-
-.. _utility:
-
-Utility
--------
-
-CDR-Stats is a simple-to-use tool to provide easy analysis of calls. It is a recommended addition to 
-telephony servers, whether it be a simple in-house PBX or large capacity VoIP switch. It shows in 
-in near realtime what calls are going through, can detect errors and failures, and alert the systems
-administrator is unexpected traffic is noted.
+    :width: 950
 
 
 
@@ -85,7 +83,7 @@ Architecture
 CDR-Stats uses MongoDB as the underlying CDR store. MongoDB allows querying and analysis of many
 millions of records without noticeable loss of performance, and can easily be scaled as demand increases.
 
-One of the three popular databases (MySQL / Postgresql / SQLite) is used for for managing CDR-Stats, 
+One of the three popular databases (MySQL / Postgresql / SQLite) is used for managing CDR-Stats, 
 such as users and managing the web framework, Django.
 
 Celery, a task manager runs in the background, and monitors the CDR coming into the system, and alerts
@@ -93,12 +91,24 @@ the systems administrator when unusual behaviour is discovered. What is determin
 behaviour is determined by the administrator who can configure alerts for increases in dropped calls,
 average length of calls, or calls to unusual destinations.
 
+At the moment Freeswitch and Asterisk are supported, for other switches such as OpenSIPs or Kamailio, 
+connectors can be built to connect to the CDR database store and import them in realtime to CDR-Stats.
+
+
+.. image:: ./_static/images/CDR-Stats-Architecture.png
+    :width: 600
+
+
+
+.. _notes:
+
+Notes for later
+---------------
+
 Freeswitch is supported using the mod_mongo module to write CDR directly into MongoDB. For other 
 switches such as Asterisk, connectors can be built to connect to the switch's database store, such as
 MySQL, SQLite, or Postgresql.
 
-
-Add graph on Architect 
 
 
 .. _features:
@@ -108,17 +118,52 @@ Features
  
 Many features are provided on CDR-Stats, from browsing millions of CDRs, providing efficient search to build rich reporting such as monthly reports, concurrent calls view, and comparing call traffic to previous days.
 
-- Visualise traffic which helps to identify unusual patterns.
-- Map view, see where the traffic comes from and where it goes to
-- Compare traffic to previous dates, see how your traffic evolves, and patterns change.
-- Monitor VoIP server, set alerts to detect potential fraud
-- Send daily mail reports of your VoIP traffic
-- Traffic displayed in realtime
-- Blacklist Phone number patterns to receive alarms
-- Geographic alerts
-- Multi-tenant, allowing many customer to monitor their own CDR on one instance of CDR-Stats
-- Multi-switch, monitor traffic from many switches in one location
+    +-----------------------+----------------------------------------------------+
+    | Telephony Reporting   | Based on leading open source Freeswitch, Asterisk  |
+    +-----------------------+----------------------------------------------------+
+    | Multi-switch          | monitor traffic from many switches in one location |
+    +-----------------------+----------------------------------------------------+
+    | Multi-tenant          | allowing many customer to monitor their own CDR on |
+    |                       | one instance of CDR-Stats.                         |
+    +-----------------------+----------------------------------------------------+
+    | Distributed           | Runs on one or more machines. Supports             |
+    |                       | broker `clustering` and `HA`. You can set up new   |
+    |                       | workers without central configuration.             |
+    +-----------------------+----------------------------------------------------+
+    | Fraud detection       | Visualise traffic which helps to identify unusual  |
+    |                       | patterns.                                          |
+    +-----------------------+----------------------------------------------------+
+    | Fraud Alert           | Send emails to the administrator when fraud are    |
+    |                       | or suspicious paterns occur                        |
+    +-----------------------+----------------------------------------------------+
+    | Error Emails          | Can be configured to send emails to the            |
+    |                       | administrator if a tasks fails.                    |
+    +-----------------------+----------------------------------------------------+
+    | Import CDR            | Import CDR files in custom format                  |
+    +-----------------------+----------------------------------------------------+
+    | World Map view        | see where the traffic comes goes to on a Map       |
+    +-----------------------+----------------------------------------------------+
+    | Compare traffic       | see how your traffic evolves, and patterns change. |
+    +-----------------------+----------------------------------------------------+
+    | Mail Reporting        | Send daily mail reports of your VoIP traffic       |
+    +-----------------------+----------------------------------------------------+
+    | Realtime Reporting    | Traffic displayed in realtime                      |
+    +-----------------------+----------------------------------------------------+
+    | Blacklist             | Blacklist Phone number patterns to receive alarms  |
+    +-----------------------+----------------------------------------------------+
+    | Geographic alerts     | Set alert if calls goes to disallower countries    |
+    +-----------------------+----------------------------------------------------+
 
+
+.. _utility:
+
+Utility
+-------
+
+CDR-Stats is a simple-to-use tool to provide easy analysis of calls. It is a recommended addition to 
+telephony servers, whether it be a simple in-house PBX or large capacity VoIP switch. It shows in 
+in near realtime what calls are going through, can detect errors and failures, and alert the systems
+administrator is unexpected traffic is noted.
 
 .. _latest_documentation:
 

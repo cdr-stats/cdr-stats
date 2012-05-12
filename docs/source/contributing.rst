@@ -156,6 +156,7 @@ issue tracker.
 * CDR-Stats: http://github.com/Star2Billing/cdr-stats/issues/
 * Celery: https://github.com/ask/celery/issues/
 * Freeswitch: http://jira.freeswitch.org/secure/Dashboard.jspa
+* Asterisk: http://issues.asterisk.org/jira/
 
 If you are unsure of the origin of the bug you can ask the
 :ref:`mailing-list`, or just use the CDR-Stats issue tracker.

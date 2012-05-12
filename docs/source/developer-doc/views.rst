@@ -77,6 +77,14 @@ CDR-Stats Views
   .. autofunction:: cdr_concurrent_calls
 
 
+.. _cdr-world-calls:
+
+:class:`world_map_view`
+-----------------------
+
+  .. autofunction:: world_map_view
+
+
 .. automodule:: user_profile.views
 
 .. _customer-detail-change:

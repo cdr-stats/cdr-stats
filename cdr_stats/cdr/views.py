@@ -2008,8 +2008,6 @@ def world_map_view(request):
                                      int(i['value']['calldate__count']),
                                      i['value']['duration__sum']))
 
-
-    #print world_analytic_array
     logging.debug('CDR world report view end')
     variables = {'module': current_view(request),
                  'form': form,

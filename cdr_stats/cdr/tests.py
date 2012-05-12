@@ -231,6 +231,10 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'cdr/cdr_mail_report.html')
 
+        response = self.client.get('/world_map/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'cdr/world_map.html')
+
 
 test_cases = [
 
