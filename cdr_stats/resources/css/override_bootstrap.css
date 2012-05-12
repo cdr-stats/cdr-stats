@@ -110,6 +110,10 @@ label {
     #graph_responsive, #placeholder_cdr_analytic {
         width: 700px; height:300px;
     }
+    #call-world-map {
+        width: 1000px; height:500px;
+        margin:auto;
+    }
     #overview_analytic {
         width: 500px;
     }
@@ -125,6 +129,10 @@ label {
     }
     #graph_responsive, #placeholder_cdr_analytic {
         width: 350px; height:300px;
+    }
+    #call-world-map {
+        width: 1000px; height:500px;
+        margin:auto;
     }
     #overview_analytic {
         width:300px;
@@ -142,6 +150,10 @@ label {
     #graph_responsive, #placeholder_cdr_analytic {
         width: 450px; height:300px;
     }
+    #call-world-map {
+        width: 1000px; height:500px;
+        margin:auto;
+    }
     #overview_analytic {
         width:350px;
     }
@@ -158,6 +170,10 @@ label {
     #graph_responsive, #placeholder_cdr_analytic {
         width: 800px; height:300px;
     }
+    #call-world-map {
+        width: 1000px; height:500px;
+        margin:auto;
+    }
     #overview_analytic {
         width:500px;
     }
@@ -173,6 +189,10 @@ label {
     }
     #graph_responsive, #placeholder_cdr_analytic {
         width: 1050px; height:300px;
+        margin:auto;
+    }
+    #call-world-map {
+        width: 500px; height:500px;
         margin:auto;
     }
     #overview_analytic {

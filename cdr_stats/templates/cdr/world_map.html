@@ -80,8 +80,8 @@
                 {return String('00:00 minutes');}
 
             }
-            //example 1
-            $('#example-map-1').vectorMap({
+
+            $('#call-world-map').vectorMap({
                 backgroundColor: '#006491',
                 map: 'world_en',
                 values: call_data,
@@ -89,7 +89,6 @@
                 hoverOpacity: 0.7,
                 hoverColor: false,
                 onLabelShow: function(event, label, code){
-
                     for (var k in call_data) {
                         if (!call_data.hasOwnProperty(k)) continue;
                         if(call_data[k].label == code)
@@ -99,11 +98,9 @@
                             label.text(temp_string);
                             break;
                         }
-
                     }
                 }
             });
-
         });
     </script>
 
@@ -169,7 +166,7 @@
 
 <div class="row">
     <div class="span12">
-        <div id="example-map-1" style="margin:auto; width: 1000px; height: 500px"></div>
+        <div id="call-world-map" style="margin:auto; width: 1000px; height: 500px"></div>
     </div>
 </div>
 
