@@ -107,6 +107,6 @@ func_identify_os
 func_accept_license_mplv2
 
 #run install menu
-run_menu_cdr_stats_install
+run_menu_cdr_stats_install_landingpage
 
 
