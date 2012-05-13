@@ -428,12 +428,10 @@ func_install_frontend(){
             MYHOST='localhost'
             MYHOSTPORT='3306'
 
-            until mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST $DATABASENAME -e ";" ; do 
-                clear 
-                echo "Enter correct database settings"
-                func_get_mysql_database_setting_asteriskcdrdb
-            done
-
+            echo ""
+            echo "Enter database settings for Asterisk..."
+            echo ""
+            func_get_mysql_database_setting_asteriskcdrdb
 
             #Update Mysql schema
             echo "We will now add a Primary Key to your CDR database"
