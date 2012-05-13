@@ -223,7 +223,10 @@ func_install_frontend(){
             apt-get -y install libsox-fmt-mp3 libsox-fmt-all mpg321 ffmpeg
         ;;
         'CENTOS')
-			if [ ! -f /etc/yum.repos.d/rpmforge.repo ];
+            yum -y update
+            yum -y install autoconf automake bzip2 cpio curl curl-devel curl-devel expat-devel fileutils gcc-c++ gettext-devel gnutls-devel libjpeg-devel libogg-devel libtiff-devel libtool libvorbis-devel make ncurses-devel nmap openssl openssl-devel openssl-devel perl patch unzip wget zip zlib zlib-devel
+        
+            if [ ! -f /etc/yum.repos.d/rpmforge.repo ];
             	then
                 	# Install RPMFORGE Repo
         			if [ $KERNELARCH = "x86_64" ]; then
@@ -232,6 +235,8 @@ func_install_frontend(){
 						rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
 					fi
         	fi
+        	
+        	yum -y --enablerepo=rpmforge install git-core
         	
             #Install epel repo for pip and mod_python
             if [ $KERNELARCH = "x86_64" ]; then
@@ -767,6 +772,35 @@ show_menu_cdr_stats() {
 
 
 run_menu_cdr_stats_install() {
+    ExitFinish=0
+    while [ $ExitFinish -eq 0 ]; do
+        # Show menu with Installation items
+        show_menu_cdr_stats
+        case $OPTION in
+            1)
+                func_install_mongodb
+                func_install_frontend
+                func_install_backend
+                echo done
+            ;;
+            2)
+                func_install_frontend
+            ;;
+            3)
+                func_install_backend
+            ;;
+            4)
+                func_install_mongodb
+            ;;
+            0)
+                ExitFinish=1
+            ;;
+            *)
+        esac
+    done
+}
+
+run_menu_cdr_stats_install_landingpage() {
     ExitFinish=0
     while [ $ExitFinish -eq 0 ]; do
         # Show menu with Installation items

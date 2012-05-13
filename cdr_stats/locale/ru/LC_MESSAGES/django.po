@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-10 10:49+0200\n"
+"POT-Creation-Date: 2012-05-13 15:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -60,7 +60,7 @@ msgstr ""
 msgid "Import CDR"
 msgstr ""
 
-#: cdr/admin.py:343 cdr/forms.py:107 cdr/forms.py:317 cdr/models.py:62
+#: cdr/admin.py:343 cdr/forms.py:107 cdr/forms.py:323 cdr/models.py:62
 #: templates/cdr/cdr_graph_realtime.html:89
 msgid "Switch"
 msgstr ""
@@ -192,105 +192,105 @@ msgstr ""
 msgid "Same day of the week"
 msgstr ""
 
-#: cdr/forms.py:231 templates/cdr/login_option.html:11
+#: cdr/forms.py:237 templates/cdr/login_option.html:11
 #: templates/cdr/master.html:153
 msgid "Login"
 msgstr "Войти"
 
-#: cdr/forms.py:234 templates/cdr/registration/user_detail_change.html:17
+#: cdr/forms.py:240 templates/cdr/registration/user_detail_change.html:17
 msgid "Password"
 msgstr "Пароль"
 
-#: cdr/forms.py:243
+#: cdr/forms.py:249
 msgid "Enter email addresses to receive the report separated by a comma"
 msgstr ""
 
-#: cdr/forms.py:275
+#: cdr/forms.py:281
 msgid "Upload CSV File "
 msgstr ""
 
-#: cdr/forms.py:277
+#: cdr/forms.py:283
 msgid "Browse CSV file"
 msgstr ""
 
-#: cdr/forms.py:284
+#: cdr/forms.py:290
 #, python-format
 msgid "Document types accepted: %s"
 msgstr ""
 
-#: cdr/forms.py:318
+#: cdr/forms.py:324
 msgid "Select switch"
 msgstr ""
 
-#: cdr/forms.py:319
+#: cdr/forms.py:325
 msgid "Account code"
 msgstr ""
 
-#: cdr/forms.py:321 templates/admin/cdr/switch/import_cdr.html:23
+#: cdr/forms.py:327 templates/admin/cdr/switch/import_cdr.html:23
 msgid "caller_id_number"
 msgstr ""
 
-#: cdr/forms.py:322 templates/admin/cdr/switch/import_cdr.html:24
+#: cdr/forms.py:328 templates/admin/cdr/switch/import_cdr.html:24
 msgid "caller_id_name"
 msgstr ""
 
-#: cdr/forms.py:323 templates/admin/cdr/switch/import_cdr.html:25
+#: cdr/forms.py:329 templates/admin/cdr/switch/import_cdr.html:25
 msgid "destination_number"
 msgstr ""
 
-#: cdr/forms.py:324 templates/admin/cdr/switch/import_cdr.html:26
+#: cdr/forms.py:330 templates/admin/cdr/switch/import_cdr.html:26
 msgid "duration"
 msgstr ""
 
-#: cdr/forms.py:325 templates/admin/cdr/switch/import_cdr.html:27
+#: cdr/forms.py:331 templates/admin/cdr/switch/import_cdr.html:27
 msgid "billsec"
 msgstr ""
 
-#: cdr/forms.py:326 templates/admin/cdr/switch/import_cdr.html:28
+#: cdr/forms.py:332 templates/admin/cdr/switch/import_cdr.html:28
 msgid "hangup_cause_id"
 msgstr ""
 
-#: cdr/forms.py:327 templates/admin/cdr/switch/import_cdr.html:29
+#: cdr/forms.py:333 templates/admin/cdr/switch/import_cdr.html:29
 msgid "direction"
 msgstr ""
 
-#: cdr/forms.py:328 templates/admin/cdr/switch/import_cdr.html:30
+#: cdr/forms.py:334 templates/admin/cdr/switch/import_cdr.html:30
 msgid "uuid"
 msgstr ""
 
-#: cdr/forms.py:329 templates/admin/cdr/switch/import_cdr.html:31
+#: cdr/forms.py:335 templates/admin/cdr/switch/import_cdr.html:31
 msgid "remote_media_ip"
 msgstr ""
 
-#: cdr/forms.py:330 templates/admin/cdr/switch/import_cdr.html:32
+#: cdr/forms.py:336 templates/admin/cdr/switch/import_cdr.html:32
 msgid "start_uepoch"
 msgstr ""
 
-#: cdr/forms.py:331 templates/admin/cdr/switch/import_cdr.html:33
+#: cdr/forms.py:337 templates/admin/cdr/switch/import_cdr.html:33
 msgid "answer_uepoch"
 msgstr ""
 
-#: cdr/forms.py:332 templates/admin/cdr/switch/import_cdr.html:34
+#: cdr/forms.py:338 templates/admin/cdr/switch/import_cdr.html:34
 msgid "end_uepoch"
 msgstr ""
 
-#: cdr/forms.py:333 templates/admin/cdr/switch/import_cdr.html:35
+#: cdr/forms.py:339 templates/admin/cdr/switch/import_cdr.html:35
 msgid "mduration"
 msgstr ""
 
-#: cdr/forms.py:334 templates/admin/cdr/switch/import_cdr.html:36
+#: cdr/forms.py:340 templates/admin/cdr/switch/import_cdr.html:36
 msgid "billmsec"
 msgstr ""
 
-#: cdr/forms.py:335 templates/admin/cdr/switch/import_cdr.html:37
+#: cdr/forms.py:341 templates/admin/cdr/switch/import_cdr.html:37
 msgid "read_codec"
 msgstr ""
 
-#: cdr/forms.py:336 templates/admin/cdr/switch/import_cdr.html:38
+#: cdr/forms.py:342 templates/admin/cdr/switch/import_cdr.html:38
 msgid "write_codec"
 msgstr ""
 
-#: cdr/forms.py:337
+#: cdr/forms.py:343
 msgid "accountcode"
 msgstr ""
 
@@ -386,15 +386,15 @@ msgstr ""
 msgid "Email ids are saved successfully."
 msgstr ""
 
-#: cdr/views.py:1931
+#: cdr/views.py:2039
 msgid "Mongodb Database connection is closed!"
 msgstr ""
 
-#: cdr/views.py:1933
+#: cdr/views.py:2041
 msgid "Mongodb Database is locked!"
 msgstr ""
 
-#: cdr/views.py:1935
+#: cdr/views.py:2043
 msgid "Account code is not assigned!"
 msgstr ""
 
@@ -654,7 +654,7 @@ msgstr ""
 msgid "Change password"
 msgstr ""
 
-#: custom_admin_tools/dashboard.py:108 templates/cdr/bootstrap_menu.html:56
+#: custom_admin_tools/dashboard.py:108 templates/cdr/bootstrap_menu.html:57
 msgid "Log out"
 msgstr ""
 
@@ -670,7 +670,7 @@ msgstr ""
 msgid "Applications"
 msgstr ""
 
-#: custom_admin_tools/menu.py:33 templates/cdr/bootstrap_menu.html:53
+#: custom_admin_tools/menu.py:33 templates/cdr/bootstrap_menu.html:54
 msgid "Administration"
 msgstr ""
 
@@ -795,6 +795,7 @@ msgstr "Приборная панель"
 #: templates/cdr/cdr_graph_by_hour.html:64
 #: templates/cdr/cdr_graph_concurrent_calls.html:29
 #: templates/cdr/cdr_overview.html:74 templates/cdr/cdr_view.html:149
+#: templates/cdr/world_map.html:142
 msgid "Search"
 msgstr "Поиск"
 
@@ -836,23 +837,28 @@ msgstr ""
 msgid "Mail Report"
 msgstr "Глобальный доклад"
 
-#: templates/cdr/bootstrap_menu.html:46
+#: templates/cdr/bootstrap_menu.html:35
+#, fuzzy
+msgid "World Map Report"
+msgstr "Глобальный доклад"
+
+#: templates/cdr/bootstrap_menu.html:47
 msgid "Account settings"
 msgstr ""
 
-#: templates/cdr/bootstrap_menu.html:48
+#: templates/cdr/bootstrap_menu.html:49
 #: templates/cdr/registration/user_detail_change.html:18
 msgid "Notifications"
 msgstr ""
 
-#: templates/cdr/bootstrap_menu.html:50
+#: templates/cdr/bootstrap_menu.html:51
 msgid "Change Language"
 msgstr ""
 
 #: templates/cdr/cdr_country_report.html:88
 #: templates/cdr/cdr_graph_by_hour.html:70 templates/cdr/cdr_overview.html:80
 #: templates/cdr/cdr_view.html:154 templates/cdr/master.html:96
-#: templates/cdr/master.html.py:101
+#: templates/cdr/master.html.py:101 templates/cdr/world_map.html:148
 msgid "advanced search"
 msgstr ""
 
@@ -1182,7 +1188,7 @@ msgid "Count"
 msgstr ""
 
 #: templates/cdr/cdr_overview.html:532 templates/cdr/cdr_view.html:167
-#: templates/cdr/cdr_view.html.py:338
+#: templates/cdr/cdr_view.html.py:338 templates/cdr/world_map.html:160
 msgid "to"
 msgstr ""
 
@@ -1438,6 +1444,11 @@ msgstr ""
 #: templates/cdr/master.html:160
 msgid "Display language"
 msgstr ""
+
+#: templates/cdr/world_map.html:154
+#, fuzzy
+msgid "World map Report"
+msgstr "Глобальный доклад"
 
 #: templates/cdr/registration/password_reset_complete.html:4
 #: templates/cdr/registration/password_reset_complete.html:8
@@ -2463,4 +2474,3 @@ msgstr ""
 #, python-format
 msgid "%(count)s notification(s) are marked as read."
 msgstr ""
-

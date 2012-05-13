@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-11 18:09+0200\n"
+"POT-Creation-Date: 2012-05-13 14:59+0200\n"
 "PO-Revision-Date: 2011-10-24 21:31+0100\n"
 "Last-Translator: Sylvain Gomez <sylvaingomez@free.fr>\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -399,15 +399,15 @@ msgstr ""
 msgid "Email ids are saved successfully."
 msgstr ""
 
-#: cdr/views.py:2041
+#: cdr/views.py:2039
 msgid "Mongodb Database connection is closed!"
 msgstr ""
 
-#: cdr/views.py:2043
+#: cdr/views.py:2041
 msgid "Mongodb Database is locked!"
 msgstr ""
 
-#: cdr/views.py:2045
+#: cdr/views.py:2043
 msgid "Account code is not assigned!"
 msgstr ""
 
@@ -822,7 +822,7 @@ msgstr "Tableau de bord"
 #: templates/cdr/cdr_graph_by_hour.html:64
 #: templates/cdr/cdr_graph_concurrent_calls.html:29
 #: templates/cdr/cdr_overview.html:74 templates/cdr/cdr_view.html:149
-#: templates/cdr/world_map.html:138
+#: templates/cdr/world_map.html:142
 msgid "Search"
 msgstr "Recherche"
 
@@ -885,7 +885,7 @@ msgstr ""
 #: templates/cdr/cdr_country_report.html:88
 #: templates/cdr/cdr_graph_by_hour.html:70 templates/cdr/cdr_overview.html:80
 #: templates/cdr/cdr_view.html:154 templates/cdr/master.html:96
-#: templates/cdr/master.html.py:101 templates/cdr/world_map.html:144
+#: templates/cdr/master.html.py:101 templates/cdr/world_map.html:148
 msgid "advanced search"
 msgstr ""
 
@@ -1215,7 +1215,7 @@ msgid "Count"
 msgstr ""
 
 #: templates/cdr/cdr_overview.html:532 templates/cdr/cdr_view.html:167
-#: templates/cdr/cdr_view.html.py:338 templates/cdr/world_map.html:156
+#: templates/cdr/cdr_view.html.py:338 templates/cdr/world_map.html:160
 msgid "to"
 msgstr ""
 
@@ -1475,7 +1475,7 @@ msgstr ""
 msgid "Display language"
 msgstr ""
 
-#: templates/cdr/world_map.html:150
+#: templates/cdr/world_map.html:154
 #, fuzzy
 msgid "World map Report"
 msgstr "Rapport global"
@@ -2510,4 +2510,3 @@ msgstr ""
 #, python-format
 msgid "%(count)s notification(s) are marked as read."
 msgstr ""
-
