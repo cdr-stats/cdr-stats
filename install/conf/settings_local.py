@@ -46,7 +46,6 @@ DATABASES = {
     }
 }
 
-
 #CELERY SETTINGS
 #===============
 CARROT_BACKEND = 'redis'
@@ -82,8 +81,8 @@ SOCKETIO_CALLNUM_DEFAULT = 0
 PHONENUMBER_PREFIX_LIMIT_MIN = 2
 PHONENUMBER_PREFIX_LIMIT_MAX = 5
 
-#If PhoneNumber is lower than PHONE_DIGITS_MIN it will be considered as an extension
-#If PhoneNumber is longer than PHONE_DIGITS_MIN but lower than PHONE_DIGITS_MAX then 
+#If PhoneNumber is lower than PHONENUMBER_MIN_DIGITS it will be considered as an extension
+#If PhoneNumber is longer than PHONENUMBER_MIN_DIGITS but lower than PHONENUMBER_MAX_DIGITS then 
 #the PhoneNumber will be considered as local call and the LOCAL_DIALCODE will be added
 LOCAL_DIALCODE = 1 # Set the Dialcode of your country (44 for UK, 1 for US)
 PHONENUMBER_MIN_DIGITS = 6
@@ -114,7 +113,6 @@ ASTERISK_CDR_MYSQL_IMPORT = {
         'password': 'MYSQL_IMPORT_CDR_PASSWORD',
     },
 }
-
 
 #MONGODB
 #=======
