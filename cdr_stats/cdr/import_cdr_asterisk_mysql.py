@@ -45,8 +45,9 @@ CDR_TYPE = {"freeswitch":1, "asterisk":2, "yate":3, "opensips":4, "kamailio":5}
 #value 0 per default, 1 in process of import, 2 imported successfully and verified
 STATUS_SYNC = {"new":0, "in_process": 1, "verified":2}
 
-dic_disposition = {'ANSWER': '1', 'ANSWERED': '1', 'BUSY': '2', 'NOANSWER': '3', 'NO ANSWER': '3', 'CANCEL': '4', 'CONGESTION': '5', 'CHANUNAVAIL': '6', 'DONTCALL': '7', 'TORTURE': '8', 'INVALIDARGS': '9'}
+dic_disposition = {'ANSWER': 1, 'ANSWERED': 1, 'BUSY': 2, 'NOANSWER': 3, 'NO ANSWER': 3, 'CANCEL': 4, 'CONGESTION': 5, 'CHANUNAVAIL': 6, 'DONTCALL': 7, 'TORTURE': 8, 'INVALIDARGS': 9, 'FAIL': 10, 'FAILED': 10}
 
+#TODO: We should review the Asterisk Q.850 against this list
 DISPOSITION_TRANSLATION = {
     0: 0,
     1: 16,  #ANSWER
@@ -58,6 +59,7 @@ DISPOSITION_TRANSLATION = {
     7: 0,   #DONTCALL
     8: 0,   #TORTURE
     9: 0,   #INVALIDARGS
+    10: 41,   #FAILED
 }
 
 # Assign collection names to variables
@@ -180,7 +182,7 @@ def import_cdr_asterisk_mysql(shell=False):
                 billsec = 0
             ast_disposition = row[6]
             try:
-                id_disposition = dic_disposition.get(disposition.encode("utf-8"), 0)
+                id_disposition = dic_disposition.get(ast_disposition.encode("utf-8"), 0)
                 transdisposition = DISPOSITION_TRANSLATION[id_disposition]
             except:
                 transdisposition = 0

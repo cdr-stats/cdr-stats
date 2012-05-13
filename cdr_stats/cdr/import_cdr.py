@@ -195,8 +195,7 @@ def import_cdr(shell=False):
                     if not authorized:
                         # not allowed destination
                         authorized = 0
-
-                print sanitized_destination
+                
                 if len(sanitized_destination) < settings.PHONENUMBER_MIN_DIGITS:
                     #It might be an extension
                     country_id = 0

@@ -23,6 +23,8 @@ import time
 
 def chk_prefix_in_whitelist(prefix_list):
     """Check destination no with allowed prefix"""
+    if not prefix_list:
+        return False
     white_prefix_list = Whitelist.objects.all()
     flag = False
     if white_prefix_list:
@@ -46,6 +48,8 @@ def chk_prefix_in_whitelist(prefix_list):
 
 def chk_prefix_in_blacklist(prefix_list):
     """Check destination no with ban prefix"""
+    if not prefix_list:
+        return True
     banned_prefix_list = Blacklist.objects.all()
     flag = False
     if banned_prefix_list:

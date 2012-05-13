@@ -57,7 +57,7 @@ def get_hangupcause_id(hangupcause_code):
         obj = HangupCause.objects.get(code=hangupcause_code)
         return obj.id
     except:
-        return ''
+        return 0
 
 
 def prefix_list_string(phone_number):
@@ -67,6 +67,10 @@ def prefix_list_string(phone_number):
     phone_no = 34650XXXXXX
     prefix_string = (34650, 3465, 346, 34)
     """
+    try:
+        int(phone_number)
+    except ValueError:
+        return False
     phone_number = str(phone_number)
     prefix_range = range(settings.PHONENUMBER_PREFIX_LIMIT_MIN,
         settings.PHONENUMBER_PREFIX_LIMIT_MAX + 1)
