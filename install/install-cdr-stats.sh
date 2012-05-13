@@ -16,12 +16,13 @@
 #
 # To download and run the script on your server :
 #
-# >> Install with Master script :
-# cd /usr/src/ ; rm install-cdr-stats.sh ; rm bash-common-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh ; rm cdr-stats-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/cdr-stats-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats.sh ; chmod +x install-cdr-stats.sh ; ./install-cdr-stats.sh
+# cd /usr/src/ ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats.sh -O install-cdr-stats.sh ; bash install-cdr-stats.sh
 #
-# >> Install with develop script :
-# cd /usr/src/ ; rm install-cdr-stats.sh ; rm bash-common-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/develop/install/bash-common-functions.sh; rm cdr-stats-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/develop/install/cdr-stats-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/develop/install/install-cdr-stats.sh ; chmod +x install-cdr-stats.sh ; ./install-cdr-stats.sh
-#
+
+
+#Get Scripts dependencies
+wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh -O bash-common-functions.sh
+wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
 
 
 #Menu Section for Script
