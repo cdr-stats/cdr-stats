@@ -8,7 +8,7 @@ User Interface :
 
 This application provides a user interface...
 
-http://localhost:8008/
+http://localhost:8000/
 
 
 
@@ -37,7 +37,7 @@ and calls by country, either agregrated for all switches, or selectable by switc
 
 **URL**:
 
-    * http://localhost:8008/dashboard/
+    * http://localhost:8000/dashboard/
 
 
 .. image:: ../_static/images/customer/dashboard.png
@@ -54,7 +54,7 @@ The Report by Day shows a graphical illustration of the calls, minutes and avera
 
 **URL**:
 
-    * http://localhost:8008/cdr_view/
+    * http://localhost:8000/cdr_view/
 
 .. image:: ../_static/images/customer/cdr_view_I.png
     :width: 1000
@@ -71,7 +71,7 @@ from any date or date-range
 
 **URL**:
 
-    * http://localhost:8008/cdr_overview/
+    * http://localhost:8000/cdr_overview/
 
 
 .. image:: ../_static/images/customer/cdr_overview.png
@@ -86,7 +86,7 @@ You can compare different dates
 
 **URL**:
 
-    * http://localhost:8008/hourly_report/
+    * http://localhost:8000/hourly_report/
 
 .. image:: ../_static/images/customer/call_compare.png
     :width: 1000
@@ -113,7 +113,7 @@ you can have 10 most called countries name with pie chart
 
 **URL**:
 
-    * http://localhost:8008/country_report/
+    * http://localhost:8000/country_report/
 
 
 .. image:: ../_static/images/customer/country_report.png
@@ -127,7 +127,7 @@ breakdown of the call status, and the top 5 countries called.
 
 **URL**:
 
-    * http://localhost:8008/mail_report/
+    * http://localhost:8000/mail_report/
 
 .. image:: ../_static/images/customer/mail_report.png
     :width: 1000
@@ -139,7 +139,7 @@ In this view, you can get report of concurrent calls
 
 **URL**:
 
-    * http://localhost:8008/cdr_concurrent_calls/
+    * http://localhost:8000/cdr_concurrent_calls/
 
 .. image:: ../_static/images/customer/concurrent_call.png
     :width: 1000
@@ -148,12 +148,12 @@ In this view, you can get report of concurrent calls
 Realtime-Report
 ~~~~~~~~~~~~~~~
 
-In this view, you can monitor in realtime the traffic on your voip servers. Currently, only Freeswitch
-is supported.
+This view provides realtime monitoring of the traffic on the connected telecoms servers. 
+Currently, only Freeswitch is supported.
 
 **URL**:
 
-    * http://localhost:8008/cdr_realtime/
+    * http://localhost:8000/cdr_realtime/
 
 .. image:: ../_static/images/customer/realtime.png
     :width: 1000

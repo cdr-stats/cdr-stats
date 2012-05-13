@@ -87,5 +87,5 @@ Django documentation.
 ``static`` folder defined in the settings module.
 
 ``runserver`` runs an embedded webserver to test your site.
-By default it will run on http://localhost:8008. This is configurable and more
+By default it will run on http://localhost:8000. This is configurable and more
 information can be found on ``runserver`` in Django documentation.

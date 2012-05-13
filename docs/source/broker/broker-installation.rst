@@ -144,4 +144,4 @@ Never use :program:`kill` to stop the RabbitMQ server, but rather use the
 
     $ sudo rabbitmqctl stop
 
-When the server is running, you can continue reading `Setting up RabbitMQ`_.
+When the server is running, continue reading `Setting up RabbitMQ`_.
