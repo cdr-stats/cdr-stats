@@ -45,6 +45,8 @@ CDR_TYPE = {"freeswitch":1, "asterisk":2, "yate":3, "opensips":4, "kamailio":5}
 #value 0 per default, 1 in process of import, 2 imported successfully and verified
 STATUS_SYNC = {"new":0, "in_process": 1, "verified":2}
 
+dic_disposition = {'ANSWER': '1', 'ANSWERED': '1', 'BUSY': '2', 'NOANSWER': '3', 'NO ANSWER': '3', 'CANCEL': '4', 'CONGESTION': '5', 'CHANUNAVAIL': '6', 'DONTCALL': '7', 'TORTURE': '8', 'INVALIDARGS': '9'}
+
 DISPOSITION_TRANSLATION = {
     0: 0,
     1: 16,  #ANSWER
@@ -65,6 +67,20 @@ CDR_DAILY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_DAILY]
 CDR_HOURLY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HOURLY]
 CDR_COUNTRY_REPORT = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY_REPORT]
 
+
+def remove_prefix(phonenumber, removeprefix_list):
+    # remove the prefix from phone number
+    # @ removeprefix_list "+,0,00,000,0000,00000,011,55555,99999"
+    #
+    #clean : remove spaces
+    removeprefix_list = removeprefix_list.strip(' \t\n\r')
+    if removeprefix_list and len(removeprefix_list) > 0:
+        for rprefix in removeprefix_list.split(","):
+            rprefix = rprefix.strip(' \t\n\r')
+            rprefix = re.sub("\+", "\\\+", rprefix)
+            if rprefix and len(rprefix)>0:
+                phonenumber = re.sub("^%s" % rprefix, "", phonenumber)
+    return phonenumber
 
 
 def print_shell(shell, message):
@@ -154,16 +170,28 @@ def import_cdr_asterisk_mysql(shell=False):
                 callerid_number = callerid
 
             channel = row[3]
-            duration = int(row[4])
-            billsec = int(row[5])
-            ast_disposition = int(row[6])
             try:
-                transdisposition = DISPOSITION_TRANSLATION[ast_disposition]
+                duration = int(row[4])
+            except:
+                duration = 0
+            try:
+                billsec = int(row[5])
+            except:
+                billsec = 0
+            ast_disposition = row[6]
+            try:
+                id_disposition = dic_disposition.get(disposition.encode("utf-8"), 0)
+                transdisposition = DISPOSITION_TRANSLATION[id_disposition]
             except:
                 transdisposition = 0
+
             hangup_cause_id = get_hangupcause_id(transdisposition)
 
-            accountcode = int(row[7])
+            try:
+                accountcode = int(row[7])
+            except:
+                accountcode = ''
+
             uniqueid = row[8]
             start_uepoch = datetime.fromtimestamp(int(row[1]))
             answer_uepoch = start_uepoch

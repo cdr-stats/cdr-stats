@@ -21,20 +21,29 @@ Bug tracker
 If you have any suggestions, bug reports or annoyances please report them
 to our issue tracker at https://github.com/Star2Billing/cdr-stats/issues/
 
-.. _website_documentation:
+.. _documentation:
 
 Documentation
 =============
 
-Project documentation is hosted on CDR-Stats website : http://cdr-stats.readthedocs.org/
-    
+The `latest documentation`_ with user guides, tutorials and API references is hosted on CDR-Stats website : http://www.cdr-stats.org/documentation/
+
 Beginner's Guide : http://www.cdr-stats.org/documentation/beginners-guide/
+
+.. _`latest documentation`: http://www.cdr-stats.org/documentation/
+
 
 .. _support:
 
 Support
 =======
+
 Star2Billing S.L. offers consultancy including installation, training and customisation
+
+Website : http://www.star2billing.com
+
+Email : cdr-stats@star2billing.com
+
 
 .. _license:
 

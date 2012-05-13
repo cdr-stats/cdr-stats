@@ -40,15 +40,24 @@ Contents:
     :maxdepth: 1
 
     developer-doc
+
+
+.. toctree::
+    :maxdepth: 1
+    
     api-reference
         
 .. toctree::
     :maxdepth: 2
 
     contributing
-    faq
     troubleshooting
     resources
+
+.. toctree::
+    :maxdepth: 1
+    
+    faq
     
 
 Indices and tables

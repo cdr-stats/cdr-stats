@@ -165,12 +165,3 @@ telephony servers, whether it be a simple in-house PBX or large capacity VoIP sw
 in near realtime what calls are going through, can detect errors and failures, and alert the systems
 administrator is unexpected traffic is noted.
 
-.. _latest_documentation:
-
-Latest documentation
---------------------
-
-The `latest documentation`_ with user guides, tutorials and API references is hosted on CDR-Stats website : http://www.cdr-stats.org/documentation/
-
-.. _`latest documentation`: http://www.cdr-stats.org/documentation/
-
