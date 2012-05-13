@@ -133,7 +133,7 @@ view, and comparing call traffic with previous days.
     +-----------------------+----------------------------------------------------+
     | Distributed           | Runs on one or more machines. Supports             |
     |                       | broker `clustering` and `HA`. New workers  can be  |
-	|                       |set up without central configuration.               |
+    |                       |set up without central configuration.               |
     +-----------------------+----------------------------------------------------+
     | Fraud detection       | Visualise traffic which helps to identify unusual  |
     |                       | patterns.                                          |

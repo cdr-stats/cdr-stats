@@ -20,6 +20,11 @@ Contents:
 
 
 .. toctree::
+    :maxdepth: 3
+
+    mongodb-architecture
+
+.. toctree::
     :maxdepth: 2
 
     installation    
