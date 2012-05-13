@@ -15,11 +15,16 @@
 
 #
 # To download and run the script on your server :
-# cd /usr/src/ ; rm install-all-cdr-stats-freeswitch.sh ; rm bash-common-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-all-cdr-stats-freeswitch.sh ; chmod +x install-all-cdr-stats-freeswitch.sh ; ./install-all-cdr-stats-freeswitch.sh
+# cd /usr/src/ ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-all-cdr-stats-freeswitch.sh -O install-all-cdr-stats-freeswitch.sh; bash install-all-cdr-stats-freeswitch.sh
 #
 
 #INSTALL TYPE (ASTERISK or FREESWITCH)
 INSTALL_TYPE='FREESWITCH'
+
+
+#Get Scripts dependencies
+wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh -O bash-common-functions.sh
+wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
 
 #Include general functions
 source bash-common-functions.sh

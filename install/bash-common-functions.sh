@@ -139,6 +139,7 @@ func_get_mysql_database_setting_asteriskcdrdb() {
     fi
 }
 
+
 #Function accept license mplv2
 func_accept_license_mplv2() {
     echo ""
@@ -172,5 +173,4 @@ func_accept_license_mplv2() {
         echo "Licence accepted !"
     fi
 }
-
 
