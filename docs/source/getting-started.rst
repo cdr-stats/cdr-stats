@@ -33,7 +33,7 @@ It is based on the Django Python Framework, Celery, SocketIO, Gevent and MongoDB
 Overview
 --------
 
-CDR-Stats is an application that allows you to browse and analyse CDR (Call Detail Records).
+CDR-Stats is an application that allows browsing and analysing CDR (Call Detail Records).
 
 Different reporting tools are provided:
 
@@ -58,7 +58,7 @@ CDR from virtually any source can be imported and analysed by CDR-Stats.
 Dashboard
 ---------
 
-User Dashboard helps the user to monitor in realtime the most relevant factors of his swiches.
+User Dashboard provides realtime monitoring of the most relevant metrics of connected switches.
 
 .. image:: ./_static/images/customer/dashboard.png
     :width: 650
@@ -68,7 +68,8 @@ User Dashboard helps the user to monitor in realtime the most relevant factors o
 Admin Panel
 -----------
 
-Admin Panels will allow the administrators to configure the entire reporting platform, import CDR in csv and much more.
+The Admin Panel allows the administrators to configure the entire reporting platform, 
+import CDR in csv format, configure users, switch connections and automatic alarms. 
 
 .. image:: ./_static/images/admin/admin_dashboard.png
     :width: 950
@@ -105,8 +106,9 @@ connectors can be built to connect to the CDR database store and import them in 
 Notes for later
 ---------------
 
-Freeswitch is supported using the mod_mongo module to write CDR directly into MongoDB. For other 
-switches such as Asterisk, connectors can be built to connect to the switch's database store, such as
+Freeswitch is supported using the mod_cdr_mongo module to write CDR directly into MongoDB. 
+Asterisk is supported with a connector that links to the CDR store in MySQL. For other 
+switches, connectors can be built to connect to the switch's CDR database store, such as
 MySQL, SQLite, or Postgresql.
 
 
@@ -116,19 +118,22 @@ MySQL, SQLite, or Postgresql.
 Features
 --------
  
-Many features are provided on CDR-Stats, from browsing millions of CDRs, providing efficient search to build rich reporting such as monthly reports, concurrent calls view, and comparing call traffic to previous days.
+Many features are provided on CDR-Stats, from browsing millions of CDRs, providing 
+efficient search facilities to build reporting such as monthly reports, concurrent calls 
+view, and comparing call traffic with previous days.
 
     +-----------------------+----------------------------------------------------+
-    | Telephony Reporting   | Based on leading open source Freeswitch, Asterisk  |
+    | Telephony Reporting   | Leading open source switches Freeswitch, Asterisk, |
+    |                       | supported as standard.                             |
     +-----------------------+----------------------------------------------------+
     | Multi-switch          | monitor traffic from many switches in one location |
     +-----------------------+----------------------------------------------------+
-    | Multi-tenant          | allowing many customer to monitor their own CDR on |
-    |                       | one instance of CDR-Stats.                         |
+    | Multi-tenant          | allowing many customers to monitor their own CDR   |
+    |                       | on one instance of CDR-Stats.                      |
     +-----------------------+----------------------------------------------------+
     | Distributed           | Runs on one or more machines. Supports             |
-    |                       | broker `clustering` and `HA`. You can set up new   |
-    |                       | workers without central configuration.             |
+    |                       | broker `clustering` and `HA`. New workers  can be  |
+	|                       |set up without central configuration.               |
     +-----------------------+----------------------------------------------------+
     | Fraud detection       | Visualise traffic which helps to identify unusual  |
     |                       | patterns.                                          |
@@ -141,17 +146,18 @@ Many features are provided on CDR-Stats, from browsing millions of CDRs, providi
     +-----------------------+----------------------------------------------------+
     | Import CDR            | Import CDR files in custom format                  |
     +-----------------------+----------------------------------------------------+
-    | World Map view        | see where the traffic comes goes to on a Map       |
+    | World Map view        | see where the traffic originates and terminates on |
+    |                       |a Map                                               |
     +-----------------------+----------------------------------------------------+
     | Compare traffic       | see how your traffic evolves, and patterns change. |
     +-----------------------+----------------------------------------------------+
-    | Mail Reporting        | Send daily mail reports of your VoIP traffic       |
+    | Mail Reporting        | Send daily mail reports of telecoms traffic        |
     +-----------------------+----------------------------------------------------+
     | Realtime Reporting    | Traffic displayed in realtime                      |
     +-----------------------+----------------------------------------------------+
     | Blacklist             | Blacklist Phone number patterns to receive alarms  |
     +-----------------------+----------------------------------------------------+
-    | Geographic alerts     | Set alert if calls goes to disallower countries    |
+    | Geographic alerts     | Set alert if calls go to disallowed countries      |
     +-----------------------+----------------------------------------------------+
 
 
