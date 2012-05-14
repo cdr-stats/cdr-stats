@@ -208,7 +208,7 @@ $(function () {
 <div class="row">
     <div class="span12">
         <div class="graph_header">
-            <h2>{% trans "Countries Call Statistics" %}</h2>
+            <h2>{% trans "country call statistics"|title %}</h2>
         </div>
     </div>
 </div>
@@ -331,14 +331,14 @@ $(function () {
 
     <div class="row">
         <div class="span6 welldashboard">
-            <h2 align="center">{% trans "Countries per calls"|title %}</h2>
+            <h2 align="center">{% trans "calls by country"|title %}</h2>
             <hr/>
             <div id="country_pie_calls" style="width:350px;height:350px;margin:auto;"></div>
             <div id="country_hover_calls"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
 
             <br/>
             <div class="span6">
-                <h3 align="left">{{ DISPLAY_NO_OF_COUNTRY }} {% trans "most called countries per calls"|title %}</h3>
+                <h3 align="left">{% trans "top"|title %} {{ DISPLAY_NO_OF_COUNTRY }} {% trans "calls by country"|title %}</h3>
                 <table>
                     <tbody>
                     {% for country_data in top_ten_country_analytic %}
@@ -363,13 +363,13 @@ $(function () {
             </div>
         </div>
         <div class="span6 welldashboard">
-            <h2 align="center">{% trans "Countries per duration"|title %}</h2>
+            <h2 align="center">{% trans "Duration by Country"|title %}</h2>
             <hr/>
             <div id="country_pie_duration" style="width:350px;height:350px;margin:auto;"></div>
             <div id="country_hover_duration"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
             <br/>
             <div class="span6">
-                <h3 align="left">{{ DISPLAY_NO_OF_COUNTRY }} {% trans "most called countries per duration"|title %}</h3>
+                <h3 align="left">{% trans "top"|title %} {{ DISPLAY_NO_OF_COUNTRY }} {% trans "duration by country"|title %}</h3>
                 <table>
                     <tbody>
                     {% for country_data in top_ten_country_analytic %}
