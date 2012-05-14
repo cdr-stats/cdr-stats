@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-13 15:00+0200\n"
+"POT-Creation-Date: 2012-05-14 17:22+0200\n"
 "PO-Revision-Date: 2012-05-04 13:44-0300\n"
 "Last-Translator: Emerson Reis <eluizbr@gmail.com>\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -115,7 +115,7 @@ msgstr "Código de conta"
 #: cdr/forms.py:99 templates/cdr/cdr_country_report.html:195
 #: templates/cdr/cdr_dashboard.html:114 templates/cdr/cdr_overview.html:355
 #: templates/cdr/cdr_overview.html:508 templates/cdr/cdr_view.html:205
-#: templates/cdr/cdr_view.html.py:345
+#: templates/cdr/cdr_view.html.py:344
 #: templates/cdr/mail_report_template.html:14
 msgid "Duration"
 msgstr "Duração"
@@ -521,7 +521,7 @@ msgid "Prefix"
 msgstr "Prefixo"
 
 #: cdr_alert/models.py:77 cdr_alert/models.py:126 cdr_alert/models.py:159
-#: templates/cdr/cdr_overview.html:353 templates/cdr/cdr_view.html:344
+#: templates/cdr/cdr_overview.html:353 templates/cdr/cdr_view.html:343
 #: templates/cdr/mail_report_template.html:11
 msgid "Date"
 msgstr "Data"
@@ -874,7 +874,7 @@ msgstr "pesquisa avançada"
 #: templates/cdr/cdr_country_report.html:359
 #: templates/cdr/cdr_dashboard.html:114 templates/cdr/cdr_dashboard.html:319
 #: templates/cdr/cdr_graph_by_hour.html:166
-#: templates/cdr/cdr_overview.html:354 templates/cdr/cdr_view.html:347
+#: templates/cdr/cdr_overview.html:354 templates/cdr/cdr_view.html:346
 #: templates/cdr/mail_report_template.html:102
 msgid "Calls"
 msgstr "Chamadas"
@@ -885,18 +885,21 @@ msgid "secs"
 msgstr "segs"
 
 #: templates/cdr/cdr_country_report.html:211
-msgid "Countries Call Statistics"
+#, fuzzy
+msgid "country call statistics"
 msgstr "Estatísticas de chamadas por país"
 
 #: templates/cdr/cdr_country_report.html:334
-#, fuzzy
-msgid "Countries per calls"
-msgstr "Estatísticas de chamadas por país"
-
 #: templates/cdr/cdr_country_report.html:341
 #, fuzzy
-msgid "most called countries per calls"
-msgstr "5 mais que os chamados países"
+msgid "calls by country"
+msgstr "Lista negra por país"
+
+#: templates/cdr/cdr_country_report.html:341
+#: templates/cdr/cdr_country_report.html:372
+#, fuzzy
+msgid "top"
+msgstr "para"
 
 #: templates/cdr/cdr_country_report.html:357
 #: templates/cdr/cdr_country_report.html:388
@@ -904,19 +907,19 @@ msgid "World"
 msgstr "Mundo"
 
 #: templates/cdr/cdr_country_report.html:358
-#: templates/cdr/cdr_country_report.html:389 templates/cdr/cdr_view.html:365
+#: templates/cdr/cdr_country_report.html:389 templates/cdr/cdr_view.html:364
 msgid "Total"
 msgstr "Total"
 
 #: templates/cdr/cdr_country_report.html:366
 #, fuzzy
-msgid "Countries per duration"
-msgstr "países relatam"
+msgid "Duration by Country"
+msgstr "Duração"
 
 #: templates/cdr/cdr_country_report.html:372
 #, fuzzy
-msgid "most called countries per duration"
-msgstr "5 mais que os chamados países"
+msgid "duration by country"
+msgstr "Lista negra por país"
 
 #: templates/cdr/cdr_country_report.html:379
 #: templates/cdr/cdr_country_report.html:390
@@ -1188,7 +1191,7 @@ msgid "Count"
 msgstr "Contar"
 
 #: templates/cdr/cdr_overview.html:532 templates/cdr/cdr_view.html:167
-#: templates/cdr/cdr_view.html.py:338 templates/cdr/world_map.html:160
+#: templates/cdr/cdr_view.html.py:337 templates/cdr/world_map.html:160
 msgid "to"
 msgstr "para"
 
@@ -1239,48 +1242,48 @@ msgstr "Chamada não autorizada"
 msgid "call"
 msgstr "chamar"
 
-#: templates/cdr/cdr_view.html:274
+#: templates/cdr/cdr_view.html:273
 msgid "Show details"
 msgstr "Exibir detalhes"
 
-#: templates/cdr/cdr_view.html:289
+#: templates/cdr/cdr_view.html:288
 msgid "Call Details"
 msgstr "Detalhes das ligações"
 
-#: templates/cdr/cdr_view.html:294
+#: templates/cdr/cdr_view.html:293
 msgid "Close"
 msgstr "Fechar"
 
-#: templates/cdr/cdr_view.html:305
+#: templates/cdr/cdr_view.html:304
 #: templates/cdr/registration/user_detail_change.html:190
 msgid "no records found"
 msgstr "Não encontramos nenhuma"
 
-#: templates/cdr/cdr_view.html:311
+#: templates/cdr/cdr_view.html:310
 msgid "show rows"
 msgstr "mostrar linhas"
 
-#: templates/cdr/cdr_view.html:313
+#: templates/cdr/cdr_view.html:312
 msgid "total calls"
 msgstr "Total de Chamadas"
 
-#: templates/cdr/cdr_view.html:324
+#: templates/cdr/cdr_view.html:323
 msgid "Export CSV file"
 msgstr "Exportar para um arquivo CSV"
 
-#: templates/cdr/cdr_view.html:332
+#: templates/cdr/cdr_view.html:331
 msgid "daily report"
 msgstr "Relatório diário"
 
-#: templates/cdr/cdr_view.html:346
+#: templates/cdr/cdr_view.html:345
 msgid "Graphic"
 msgstr "Gráfico"
 
-#: templates/cdr/cdr_view.html:348
+#: templates/cdr/cdr_view.html:347
 msgid "Average Connection Time"
 msgstr "Tempo médio de conexão"
 
-#: templates/cdr/cdr_view.html:348
+#: templates/cdr/cdr_view.html:347
 msgid "ACT"
 msgstr "ACT"
 
@@ -2465,3 +2468,19 @@ msgstr "%(count)s de notificação (s) são excluídos."
 #, fuzzy, python-format
 msgid "%(count)s notification(s) are marked as read."
 msgstr "Todas as notificações são marcadas como lidas."
+
+#, fuzzy
+#~ msgid "Countries per calls"
+#~ msgstr "Estatísticas de chamadas por país"
+
+#, fuzzy
+#~ msgid "most called countries per calls"
+#~ msgstr "5 mais que os chamados países"
+
+#, fuzzy
+#~ msgid "Countries per duration"
+#~ msgstr "países relatam"
+
+#, fuzzy
+#~ msgid "most called countries per duration"
+#~ msgstr "5 mais que os chamados países"
