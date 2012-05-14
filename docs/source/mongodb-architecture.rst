@@ -11,8 +11,7 @@ MongoDB
 
 
 MongoDB is a scalable, high-performance, document-oriented schemaless 
-database, everything in MongoDB is a document. Because MongoDB is 
-document-oriented, it is schema-less. There is no notion of a rigid table 
+database, everything in MongoDB is a document. There is no notion of a rigid table 
 structure composed of columns and types. Because data in mongo is stored 
 as documents, there are no joins. 
 
@@ -26,29 +25,29 @@ as documents, there are no joins.
 Why MongoDB
 -----------
 
-Why did we choose MongoDB and what are the benefits, to answer this questions I think we should enumarete some of the major features of MongoDB.
+Why did we choose MongoDB and what are the benefits?
+To answer this questions I think we should enumerate some of the major features of MongoDB.
 
 **Document-oriented**:
-    * Documents (objects) map nicely to programming language data types
+    * Documents (objects) map well to programming language data types
     * Embedded documents and arrays reduce need for joins
-    * Dynamically-typed (schemaless) for easy schema evolution
+    * Dynamically-typed (schema-less) for easy schema evolution
     
 **High performance**:
-    * No joins and embedding makes reads and writes fast
+    * No joins and embedding make reads and writes fast
     * Indexes including indexing of keys from embedded documents and arrays
     
     
 **High availability**:
-    * Replicated servers with automatic master failover
+    * Replicating servers with automatic master failover
     
 
 A more detailed list of everything provided by mongoDB can be found at 
 http://www.mongodb.org/display/DOCS/Introduction
 
 As MongoDB is a Document-oriented datastore, it had a huge potentiel to store 
-CDRs, Call Details Record vary in times, and from a Telecom Switch to an other 
-you will certainly find yourself dealing with different type of data in 
-different format. For this reasons a NoSQL is a very good candidate for a CDR warehouse.
+CDR's, Call Detail Record formats vary between Telecom Switch types, For these 
+reasons a NoSQL database is a very good candidate for a CDR warehouse.
 
 
 .. _datastore_architecture:
@@ -85,36 +84,36 @@ decrement by using a negative “value”.
 
 
 **1) cdr_common:** 
-    To collect all cdrs from different switches & store into one common format which includes following fields 
+    To collect all CDR's from different switches & store into one common format which include the following fields 
     switch_id,  caller_id_number, caller_id_name, destination_number, duration, billsec, hangup_cause_id, accountcode, direction, uuid, remote_media_ip, start_uepoch, answer_uepoch, end_uepoch, mduration,
     billmsec, read_codec, write_codec, cdr_type, cdr_object_id, country_id, authorized.
     This cdr_common collection used to view cdr records on customer panel 
 
 
 **2) cdr_monthly_analytic:**
-    To collect monthly analytics from cdrs which includes following fields 
+    To collect monthly analytics from CDR's which include following fields 
     start_uepoch, destination_number, hangup_cause_id, accountcode, switch_id, calls, duration.
-    This cdr_monthly_analytic collection used to view monthly graph on customer panel
+    This cdr_monthly_analytic collection is used to view monthly graph on customer panel
  
 **3) cdr_daily_analytic:**
-    To collect daily analytics from cdrs which includes following fields start_uepoch,
+    To collect daily analytics from CDR's which include following fields start_uepoch,
     destination_number, hangup_cause_id, accountcode, switch_id, calls, duration.
     This cdr_daily_analytic collection used to view daily graph on customer panel.
 
 **4) cdr_hourly_analytic:**
-    To collect hourly analytics from cdrs which includes following fields 
+    To collect hourly analytics from CDR's which include following fields 
     start_uepoch, destination_number, hangup_cause_id, accountcode, switch_id, calls, duration.
-    This cdr_hourly_analytic collection used to view hourly graph on customer panel 
+    This cdr_hourly_analytic collection used to view the hourly graph on customer panel 
 
 **5) cdr_country_report:**
-    To collect country vise analytics from cdr which includes following fields 
+    To collect country based analytics from the CDR which include following fields 
     start_uepoch, country_id, accountcode, switch_id, calls, duration.
-    This cdr_country_report collection used to view country graph on customer panel 
+    This cdr_country_report collection is used to view country graph on customer panel 
 
 **6) concurrent_call:**
-    To collect concurrent calls which includes following fields 
+    To collect concurrent calls which include following fields 
     switch_id, call_date, numbercall, accountcode.
-    This concurrent_call collection used to view concurrent call real-time graph on customer panel 
+    This concurrent_call collection is used to view concurrent call real-time graph on customer panel 
 
 
 .. image:: ./_static/images/CDR-Stats-MongoDB.png
