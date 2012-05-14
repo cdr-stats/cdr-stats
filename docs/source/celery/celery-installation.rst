@@ -28,9 +28,9 @@ To Download the latest version `click here`_.
 
 You can install it by doing the following::
 
-    $ tar xvfz celery-0.0.0.tar.gz
+    $ tar xvfz celery-X.X.X.tar.gz
 
-    $ cd celery-0.0.0
+    $ cd celery-X.X.X
 
     $ python setup.py build
 
