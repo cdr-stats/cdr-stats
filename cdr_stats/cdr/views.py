@@ -385,7 +385,6 @@ def cdr_view(request):
         else:
             query_var['accountcode'] = chk_account_code(request)
 
-
     cli = source_desti_field_chk_mongodb(caller, caller_type)
     if cli:
         query_var['caller_id_number'] = cli

@@ -111,8 +111,8 @@ def chk_account_code(request):
     try:
         if not request.user.is_superuser and request.user.get_profile().accountcode is not None:
             acc_code = request.user.get_profile().accountcode
-            return acc_code
+            return "%s" % str(acc_code)
         else:
-            return acc_code
+            return "%s" % str(acc_code)
     except :
         return acc_code
