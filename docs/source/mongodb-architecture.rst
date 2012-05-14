@@ -10,11 +10,11 @@ MongoDB
 --
 
 
-MongoDB is a scalable, high-performance, document-oriented schemaless database.  
-MongoDB is a Document-oriented datastore, everything in MongoDB is a document. 
-Because MongoDB is document-oriented, it is schema-less. There is no notion of a rigid 
-table structure composed of columns and types. Because data in mongo is stored as documents, there are no joins. 
-
+MongoDB is a scalable, high-performance, document-oriented schemaless 
+database, everything in MongoDB is a document. Because MongoDB is 
+document-oriented, it is schema-less. There is no notion of a rigid table 
+structure composed of columns and types. Because data in mongo is stored 
+as documents, there are no joins. 
 
 
 .. contents::
