@@ -136,7 +136,7 @@ def import_cdr_asterisk_mysql(shell=False):
             connection = Database.connect(user=user, passwd=password, db=db_name, host=host)
             cursor = connection.cursor()
             cursor_update = connection.cursor()
-        except ConnectionFailure, e:
+        except:
             sys.stderr.write("Could not connect to Mysql: %s - %s" % \
                                                             (e, ipaddress))
             sys.exit(1)
@@ -261,7 +261,7 @@ def import_cdr_asterisk_mysql(shell=False):
                 'read_codec': '',
                 'write_codec': '',
                 'cdr_type': CDR_TYPE["asterisk"],
-                'cdr_object_id': uniqueid,
+                'cdr_object_id': acctid,
                 'country_id': country_id,
                 'authorized': authorized,
             }

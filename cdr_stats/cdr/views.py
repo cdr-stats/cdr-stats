@@ -618,24 +618,49 @@ def cdr_detail(request, id, switch_id):
     """
     c_switch = Switch.objects.get(id=switch_id)
     ipaddress = c_switch.ipaddress
-
-    #Connect on MongoDB Database
-    host = settings.CDR_MONGO_IMPORT[ipaddress]['host']
-    port = settings.CDR_MONGO_IMPORT[ipaddress]['port']
-    db_name = settings.CDR_MONGO_IMPORT[ipaddress]['db_name']
-    try:
-        connection = Connection(host, port)
-        DB_CONNECTION = connection[db_name]
-    except ConnectionFailure, e:
-        raise Http404
-
     try:
         menu = request.GET.get('menu')
     except:
         menu = 'on'
-    doc = DB_CONNECTION[settings.CDR_MONGO_IMPORT[ipaddress]['collection']].find({'_id': ObjectId(id)})
-    return render_to_response('cdr/cdr_detail.html', {'row': list(doc), 'menu': menu,},
-                              context_instance=RequestContext(request))
+
+    if settings.LOCAL_SWITCH_TYPE == 'freeswitch':
+        #Connect on MongoDB Database
+        host = settings.CDR_MONGO_IMPORT[ipaddress]['host']
+        port = settings.CDR_MONGO_IMPORT[ipaddress]['port']
+        db_name = settings.CDR_MONGO_IMPORT[ipaddress]['db_name']
+        try:
+            connection = Connection(host, port)
+            DB_CONNECTION = connection[db_name]
+        except ConnectionFailure, e:
+            raise Http404
+
+        doc = DB_CONNECTION[settings.CDR_MONGO_IMPORT[ipaddress]['collection']].find({'_id': ObjectId(id)})
+        return render_to_response('cdr/cdr_detail_freeswitch.html', {'row': list(doc), 'menu': menu,},
+                                  context_instance=RequestContext(request))
+
+    elif settings.LOCAL_SWITCH_TYPE == 'asterisk':
+        #Connect on Mysql Database
+        #TODO support other DBMS
+        import MySQLdb as Database
+        db_name = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['db_name']
+        table_name = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['table_name']
+        user = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['user']
+        password = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['password']
+        host = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['host']
+        try:
+            connection = Database.connect(user=user, passwd=password, db=db_name, host=host)
+            cursor = connection.cursor()
+            cursor_update = connection.cursor()
+        except:
+            raise Http404
+
+        cursor.execute("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel, duration, billsec, disposition, accountcode, uniqueid, %s FROM %s WHERE %s=%s" % (settings.ASTERISK_PRIMARY_KEY, table_name, settings.ASTERISK_PRIMARY_KEY, id))
+        row = cursor.fetchone()
+        if not row:
+            raise Http404
+
+        return render_to_response('cdr/cdr_detail_asterisk.html', {'row': list(row), 'menu': menu,},
+                                  context_instance=RequestContext(request))
 
 
 @login_required
