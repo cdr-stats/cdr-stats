@@ -2468,19 +2468,3 @@ msgstr "%(count)s de notificação (s) são excluídos."
 #, fuzzy, python-format
 msgid "%(count)s notification(s) are marked as read."
 msgstr "Todas as notificações são marcadas como lidas."
-
-#, fuzzy
-#~ msgid "Countries per calls"
-#~ msgstr "Estatísticas de chamadas por país"
-
-#, fuzzy
-#~ msgid "most called countries per calls"
-#~ msgstr "5 mais que os chamados países"
-
-#, fuzzy
-#~ msgid "Countries per duration"
-#~ msgstr "países relatam"
-
-#, fuzzy
-#~ msgid "most called countries per duration"
-#~ msgstr "5 mais que os chamados países"
