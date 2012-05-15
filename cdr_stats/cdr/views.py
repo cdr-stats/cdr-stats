@@ -2022,15 +2022,16 @@ def world_map_view(request):
     country_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY_REPORT]
 
     calls = country_data.map_reduce(map, reduce, out, query=query_var)
-    calls = calls.find().sort([('_id.f_Con', 1)])
+    calls = calls.find().sort([('value.calldate__count', -1)])
 
     world_analytic_array = []
     for i in calls:
         #country id - country name - country_code - call count - call duration
         world_analytic_array.append((int(i['_id']['f_Con']),
-                                     get_country_name(int(i['_id']['f_Con']), type='iso_alpha_2'),
+                                     get_country_name(int(i['_id']['f_Con']), type='iso2'),
                                      int(i['value']['calldate__count']),
-                                     i['value']['duration__sum']))
+                                     i['value']['duration__sum'],
+                                     get_country_name(int(i['_id']['f_Con']))))
 
     logging.debug('CDR world report view end')
     variables = {'module': current_view(request),
