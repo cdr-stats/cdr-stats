@@ -80,88 +80,97 @@
 {% endblock %}
 
 {% block content %}
+<div class="tabbable">
+    <ul class="nav nav-tabs">
+        <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "country calls detail"|title %}</a></li>
+        <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "country list"|title %}</a></li>
+    </ul>
 
-<div id="form_collapse" class="collapse">
-    <form class="well" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
-        <div class="row">
-            <div class="span12">
-                <div class="row">
-                    <div class="span4">
-                        <label class="control-label" for="id_{{ form.from_date.name }}">{{ form.from_date.label }}</label>
-                        <div class="input">
-                            {{ form.from_date }}
-                            <span class="help-block">{{ form.from_date.help_text|safe }} </span>
+    <div id="form_collapse" class="collapse">
+        <form class="well" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
+            <div class="row">
+                <div class="span12">
+                    <div class="row">
+                        <div class="span4">
+                            <label class="control-label" for="id_{{ form.from_date.name }}">{{ form.from_date.label }}</label>
+                            <div class="input">
+                                {{ form.from_date }}
+                                <span class="help-block">{{ form.from_date.help_text|safe }} </span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="span4">
-                        <label class="control-label" for="id_{{ form.to_date.name }}">{{ form.to_date.label }}</label>
-                        <div class="input">
-                            {{ form.to_date }}
-                            <span class="help-block">{{ form.to_date.help_text|safe }} </span>
+                        <div class="span4">
+                            <label class="control-label" for="id_{{ form.to_date.name }}">{{ form.to_date.label }}</label>
+                            <div class="input">
+                                {{ form.to_date }}
+                                <span class="help-block">{{ form.to_date.help_text|safe }} </span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="span4">
-                        <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }}</label>
-                        <div class="input">
-                            {{ form.switch }}
-                            <span class="help-block">{{ form.switch.help_text|safe }} </span>
+                        <div class="span4">
+                            <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }}</label>
+                            <div class="input">
+                                {{ form.switch }}
+                                <span class="help-block">{{ form.switch.help_text|safe }} </span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <label></label>
-        <div class="actions">
-            <input type="submit" class="btn-primary" name="search" value={% trans "Search" %} />
-        </div>
-    </form>
-</div>
+            <label></label>
+            <div class="actions">
+                <input type="submit" class="btn-primary" name="search" value={% trans "Search" %} />
+            </div>
+        </form>
+    </div>
 
-<a class="btn btn-small" id="toggle_btn" href="#" data-toggle="collapse" data-target="#form_collapse">
-    <i class="icon-search"></i> <span>{% trans "advanced search"|title %}</span>
-</a>
+    <a class="btn btn-small" id="toggle_btn" href="#" data-toggle="collapse" data-target="#form_collapse">
+        <i class="icon-search"></i> <span>{% trans "advanced search"|title %}</span>
+    </a>
 
-<div class="row">
-    <div class="span12">
-        <div class="graph_header">
-            <span id="id_title_span">{% trans "World map Report"|title %}</span> -
-            <b>
-                {% if start_date  %}
-                    {{ start_date|date:"jS N Y" }}
-                {% endif %}
-                {% if end_date  %}
-                    {% trans "to" %} {{ end_date|date:"jS N Y" }}
-                {% endif %}
-            </b>
+    <div class="tab-content">
+        <div id="tabs-1" class="tab-pane {% if action == "tabs-1" or action == "" %}active{% endif %}">
+            <div class="row">
+                <div class="span12">
+                    <div class="graph_header">
+                        <span id="id_title_span">{% trans "World map Report"|title %}</span> -
+                        <b>
+                            {% if start_date  %}
+                                {{ start_date|date:"jS N Y" }}
+                            {% endif %}
+                            {% if end_date  %}
+                                {% trans "to" %} {{ end_date|date:"jS N Y" }}
+                            {% endif %}
+                        </b>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="span12">
+                    <div id="call-world-map" style="margin:auto; width: 1000px; height: 500px"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tabs-2" class="tab-pane {% if action == "tabs-2" %}active{% endif %}">
+            <table class="table table-striped table-bordered table-condensed">
+                <thead>
+                <tr>
+                    <th>{% trans "Country"  %}</th>
+                    <th>{% trans "Calls"  %}</th>
+                    <th>{% trans "Duration"  %}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for country_data in world_analytic_array %}
+                    <tr>
+                        <td><img src="{{STATIC_URL}}cdr-stats/{{ country_data.0|iso_flag }}" class="elemtooltip" title="{{ country_data.0|country_name }}"> {{ country_data.4 }}</td>
+                        <td>{{ country_data.2 }} {% trans "Calls"%}</td>
+                        <td>{{ country_data.3|conv_min }} {% trans "minutes"%}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
-
-<div class="row">
-    <div class="span12">
-        <div id="call-world-map" style="margin:auto; width: 1000px; height: 500px"></div>
-    </div>
-</div>
-
-<p>&nbsp;</p>
-<table class="table table-striped table-bordered table-condensed">
-    <thead>
-    <tr>
-        <th>{% trans "Country"  %}</th>
-        <th>{% trans "Calls"  %}</th>
-        <th>{% trans "Duration"  %}</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for country_data in world_analytic_array %}
-        <tr>
-            <td><img src="{{STATIC_URL}}cdr-stats/{{ country_data.0|iso_flag }}" class="elemtooltip" title="{{ country_data.0|country_name }}"> {{ country_data.4 }}</td>
-            <td>{{ country_data.2 }} {% trans "Calls"%}</td>
-            <td>{{ country_data.3|conv_min }} {% trans "minutes"%}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
-
 
 {% endblock %}

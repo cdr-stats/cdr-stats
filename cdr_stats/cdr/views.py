@@ -1967,6 +1967,7 @@ def world_map_view(request):
     from_date = start_date.strftime("%Y-%m-%d")
     to_date = end_date.strftime("%Y-%m-%d")
     form = WorldForm(initial={'from_date': from_date, 'to_date': to_date})
+    action = 'tabs-1'
 
     if request.method == 'POST':
         logging.debug('CDR world report view with search option')
@@ -2000,6 +2001,7 @@ def world_map_view(request):
                          'start_date': start_date,
                          'end_date': end_date,
                          'world_analytic_array': world_analytic_array,
+                         'action': action,
                          }
 
             return render_to_response(template_name, variables,
@@ -2040,6 +2042,7 @@ def world_map_view(request):
                  'start_date': start_date,
                  'end_date': end_date,
                  'world_analytic_array': world_analytic_array,
+                 'action': action,
                  }
 
     return render_to_response(template, variables,
