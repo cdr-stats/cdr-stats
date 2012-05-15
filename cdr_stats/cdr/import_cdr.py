@@ -128,8 +128,8 @@ def import_cdr(shell=False):
         #Connect to Mongo
         importcdr_handler = DB_CONNECTION[settings.CDR_MONGO_IMPORT[ipaddress]['collection']]
 
-        total_record = importcdr_handler.find({'import_cdr': {'$exists': False}}).count()
-        #print total_record
+        #total_record = importcdr_handler.find({'import_cdr': {'$exists': False}}).count()
+        total_record = importcdr_handler.find({ '$or': [ {'import_cdr': {'$exists': False}}, {'import_cdr': 0} ] }).count()
 
         PAGE_SIZE = int(5000)
 
@@ -140,7 +140,7 @@ def import_cdr(shell=False):
         for j in range(1, total_loop_count+1):
             PAGE_NUMBER = int(j)
             
-            result = importcdr_handler.find({'import_cdr': {'$exists': False}}, 
+            result = importcdr_handler.find({ '$or': [ {'import_cdr': {'$exists': False}}, {'import_cdr': 0} ] }, 
                     {
                         "callflow.caller_profile.caller_id_number":1,
                         "callflow.caller_profile.caller_id_name":1,

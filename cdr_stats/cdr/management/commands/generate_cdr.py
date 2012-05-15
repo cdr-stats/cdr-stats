@@ -332,10 +332,10 @@ class Command(BaseCommand):
                       }
                     }
 
-            cdr_json['import_cdr'] = 0
-            cdr_json['import_cdr_monthly'] = 0
-            cdr_json['import_cdr_daily'] = 0
-            cdr_json['import_cdr_hourly'] = 0
+            #cdr_json['import_cdr'] = 0
+            #cdr_json['import_cdr_monthly'] = 0
+            #cdr_json['import_cdr_daily'] = 0
+            #cdr_json['import_cdr_hourly'] = 0
             
             DB_CONNECTION[settings.CDR_MONGO_IMPORT[ipaddress]['collection']].\
                 insert(cdr_json)

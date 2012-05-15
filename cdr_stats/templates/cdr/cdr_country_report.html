@@ -343,8 +343,20 @@ $(function () {
                     <tbody>
                     {% for country_data in top_ten_country_analytic %}
                         <tr>
-                            <td class="td-dashboard"><img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}"></td>
-                            <td class="td-dashboard" width="100">{{ country_data.0 }}</td>
+                            <td class="td-dashboard">
+                                {% if country_data.3 %}
+                                    <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
+                                {% else %}
+                                    <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip">
+                                {% endif %}
+                            </td>
+                            <td class="td-dashboard" width="100">
+                                {% if country_data.0 %}
+                                    {{ country_data.0 }}
+                                {% else %}
+                                    {% trans "world"|title  %}
+                                {% endif %}                                
+                            </td>
                             <td width="100">{{ country_data.1 }} {% trans "Calls"%}</td>
                         </tr>
                     {% endfor %}
@@ -374,8 +386,20 @@ $(function () {
                     <tbody>
                     {% for country_data in top_ten_country_analytic %}
                         <tr>
-                            <td class="td-dashboard"><img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}"></td>
-                            <td class="td-dashboard" width="100">{{ country_data.0 }}</td>
+                            <td class="td-dashboard">
+                                {% if country_data.3 %}
+                                    <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
+                                {% else %}
+                                    <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip">
+                                {% endif %}
+                            </td>
+                            <td class="td-dashboard" width="100">
+                                {% if country_data.0 %}
+                                    {{ country_data.0 }}
+                                {% else %}
+                                    {% trans "world"|title  %}
+                                {% endif %}                  
+                            </td>
                             <td>{{ country_data.2|conv_min }} {% trans "minutes"%}</td>
                         </tr>
                     {% endfor %}
