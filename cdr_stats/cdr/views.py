@@ -207,8 +207,8 @@ def cdr_view(request):
             request.session['session_hangup_cause_id'] = ''
             request.session['session_switch_id'] = ''
             request.session['session_direction'] = ''
-
             request.session['session_country_id'] = ''
+
             if "from_date" in request.POST:
                 # From
                 from_date = request.POST['from_date']
@@ -269,7 +269,7 @@ def cdr_view(request):
             if records_per_page:
                 request.session['session_records_per_page'] = records_per_page
 
-            country_id = variable_value(request, 'country_id')
+            country_id = form.cleaned_data.get('country_id')
             # convert list value in int
             country_id = [int(row) for row in country_id]
             if len(country_id) >= 1:
