@@ -19,6 +19,8 @@
 # cd /usr/src/ ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats.sh -O install-cdr-stats.sh ; bash install-cdr-stats.sh
 #
 
+INSTALLMODE='FULL' # Set to FULL to update Selinux / Firewall / etc...
+
 
 #Get Scripts dependencies
 wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh -O bash-common-functions.sh

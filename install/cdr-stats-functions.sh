@@ -27,6 +27,8 @@ CELERYD_GROUP="celery"
 CDRSTATS_ENV="cdr-stats"
 HTTP_PORT="8008"
 SOUTH_SOURCE='hg+http://bitbucket.org/andrewgodwin/south/@ecaafda23e600e510e252734d67bf8f9f2362dc9#egg=South-dev'
+branch=STABLE
+db_backend=MySQL
 
 
 #Include general functions
@@ -63,12 +65,9 @@ func_install_landing_page() {
     case $DIST in
         'DEBIAN')
             mv /etc/apache2/sites-enabled/000-default /tmp/
-            service apache2 restart
-        ;;
-        'CENTOS')
-            service httpd restart
         ;;
     esac
+    service $APACHE_SERVICE restart
     
     #Update Welcome page IP
     sed -i "s/LOCALHOST/$IPADDR:$HTTP_PORT/g" $INSTALL_DIR_WELCOME/index.html
@@ -139,14 +138,6 @@ func_check_dependencies() {
 }
 
 
-func_iptables_configuration() {
-    #add http port
-    iptables -I INPUT 2 -p tcp -m state --state NEW -m tcp --dport $HTTP_PORT -j ACCEPT
-    iptables -I INPUT 3 -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
-    
-    service iptables save
-}
-
 #Fuction to create the virtual env
 func_setup_virtualenv() {
 
@@ -184,11 +175,8 @@ func_install_frontend(){
     echo "We will now install CDR-Stats on your server"
 	echo "============================================"
     echo ""
-    branch=STABLE
     echo "Which version do you want to install ? DEVEL or STABLE [DEVEL/STABLE] (default:STABLE)"
     read branch
-
-    db_backend=MySQL
     echo "Do you want to install CDR-Stats with SQLite or MySQL? [SQLite/MySQL] (default:MySQL)"
     read db_backend
 
@@ -196,9 +184,7 @@ func_install_frontend(){
     echo "Install Dependencies and python modules..."
     case $DIST in
         'DEBIAN')
-            apt-get -y install python-setuptools python-dev build-essential libevent-dev
-            apt-get -y install libapache2-mod-python libapache2-mod-wsgi
-            apt-get -y install git-core mercurial gawk
+            apt-get -y install python-setuptools python-dev build-essential libevent-dev libapache2-mod-python libapache2-mod-wsgi git-core mercurial gawk
             easy_install pip
             
             #|FIXME: Strangely South need to be installed outside the Virtualenv
@@ -210,11 +196,15 @@ func_install_frontend(){
                 apt-get -y install mysql-server libmysqlclient-dev
                 #Start MySQL
                 /etc/init.d/mysql start
+                
                 #Configure MySQL
-                /usr/bin/mysql_secure_installation
+                if [ "$INSTALLMODE" = "FULL" ]; then
+                    /usr/bin/mysql_secure_installation
+                fi
+                
 				until mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST -e ";" ; do 
 					clear 
-                	echo "Enter correct database settings"
+                	echo "Enter your database settings"
                 	func_get_mysql_database_setting
                 done
             fi
@@ -224,7 +214,7 @@ func_install_frontend(){
         ;;
         'CENTOS')
             yum -y update
-            yum -y install autoconf automake bzip2 cpio curl curl-devel curl-devel expat-devel fileutils gcc-c++ gettext-devel gnutls-devel libjpeg-devel libogg-devel libtiff-devel libtool libvorbis-devel make ncurses-devel nmap openssl openssl-devel openssl-devel perl patch unzip wget zip zlib zlib-devel policycoreutils-python mlocate
+            yum -y install autoconf automake bzip2 cpio curl curl-devel curl-devel expat-devel fileutils gcc-c++ gettext-devel gnutls-devel libjpeg-devel libogg-devel libtiff-devel libtool libvorbis-devel make ncurses-devel nmap openssl openssl-devel openssl-devel perl patch unzip wget zip zlib zlib-devel policycoreutils-python
         
             if [ ! -f /etc/yum.repos.d/rpmforge.repo ];
             	then
@@ -259,16 +249,17 @@ func_install_frontend(){
                 #Start Mysql
                 /etc/init.d/mysqld start
                 #Configure MySQL
-                /usr/bin/mysql_secure_installation
+                if [ "$INSTALLMODE" = "FULL" ]; then
+                    /usr/bin/mysql_secure_installation
+                fi
 				until mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST -e ";" ; do 
 					clear 
-                	echo "Enter correct database settings"
+                	echo "Enter your database settings"
                 	func_get_mysql_database_setting
                 done            
             fi
         ;;
     esac
-    
 
     if [ -d "$INSTALL_DIR" ]; then
         # CDR-Stats is already installed
@@ -524,6 +515,7 @@ func_install_frontend(){
         ;;
     esac
     
+    #Setup Timezone
     case $DIST in
         'DEBIAN')
             service apache2 restart
@@ -533,30 +525,39 @@ func_install_frontend(){
         'CENTOS')
         	#Get TZ
 			. /etc/sysconfig/clock
-            echo ""
-            echo "We will now add port $HTTP_PORT  and port 80 to your Firewall"
-            echo "Press Enter to continue or CTRL-C to exit"
-            read TEMP
-        
-            func_iptables_configuration
-            
-            #Selinux to allow apache to access this directory
-            chcon -Rv --type=httpd_sys_content_t /usr/share/virtualenvs/cdr-stats/
-            chcon -Rv --type=httpd_sys_content_t $INSTALL_DIR/usermedia
-            semanage port -a -t http_port_t -p tcp $HTTP_PORT
-            #Allowing Apache to access Redis port
-            semanage port -a -t http_port_t -p tcp 6379
-            semanage port -a -t http_port_t -p tcp 27017
-            
-            service httpd restart
         ;;
     esac
-    
     #Set Timezone in settings_local.py
     sed -i "s@Europe/Madrid@$ZONE@g" $INSTALL_DIR/settings_local.py
+        
+    if [ "$INSTALLMODE" = "FULL" ]; then
+        #Setup Firewall / SELINUX
+        case $DIST in
+            'CENTOS')
+                echo ""
+                echo "We will now add port $HTTP_PORT  and port 80 to your Firewall"
+                echo "Press Enter to continue or CTRL-C to exit"
+                read TEMP
+            
+                #add HTTP port
+                iptables -I INPUT 2 -p tcp -m state --state NEW -m tcp --dport $HTTP_PORT -j ACCEPT
+                iptables -I INPUT 3 -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
+                service iptables save
+                
+                #Selinux to allow apache to access this directory
+                chcon -Rv --type=httpd_sys_content_t /usr/share/virtualenvs/cdr-stats/
+                chcon -Rv --type=httpd_sys_content_t $INSTALL_DIR/usermedia
+                semanage port -a -t http_port_t -p tcp $HTTP_PORT
+                #Allowing Apache to access Redis port
+                semanage port -a -t http_port_t -p tcp 6379
+                semanage port -a -t http_port_t -p tcp 27017
+            ;;
+        esac
+    fi
     
+    #Restart HTTP Server
+    service $APACHE_SERVICE restart
 
-    echo ""
     echo ""
     echo ""
     echo "**************************************************************"
@@ -571,8 +572,6 @@ func_install_frontend(){
     echo "Yours"
     echo "The Star2Billing Team"
     echo "http://www.star2billing.com and http://www.cdr-stats.org/"
-    echo
-    echo "**************************************************************"
     echo ""
     echo ""
 }
@@ -585,6 +584,8 @@ func_install_backend() {
     echo "This will install CDR-Stats Backend, Celery & Redis on your server"
     echo "Press Enter to continue or CTRL-C to exit"
     read TEMP
+    
+    #TODO Add install of dependencies...
 
     IFCONFIG=`which ifconfig 2>/dev/null||echo /sbin/ifconfig`
     IPADDR=`$IFCONFIG eth0|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'`
@@ -661,18 +662,13 @@ func_install_backend() {
 
     echo ""
     echo ""
-    echo ""
     echo "**************************************************************"
-    echo "Congratulations, CDR-Stats Backend is now installed!"
+    echo "Congratulations, CDR-Stats Backend is now installed"
     echo "**************************************************************"
     echo ""
-    echo ""
-    echo "Thank you for installing CDR-Stats"
     echo "Yours"
     echo "The Star2Billing Team"
     echo "http://www.star2billing.com and http://www.cdr-stats.org/"
-    echo
-    echo "**************************************************************"
     echo ""
     echo ""
 }
@@ -689,16 +685,15 @@ func_install_redis_server() {
             else
                 #Ubuntu 10.04 TLS
                 cd /usr/src
-                wget http://redis.googlecode.com/files/redis-2.2.11.tar.gz
-                tar -zxf redis-2.2.11.tar.gz
-                cd redis-2.2.11
+                wget http://redis.googlecode.com/files/redis-2.4.13.tar.gz
+                tar -zxf redis-2.4.13.tar.gz
+                cd redis-2.4.13
                 make
                 make install
-
+                
                 cp /usr/src/cdr-stats/install/redis/debian/etc/redis.conf /etc/redis.conf
                 cp /usr/src/cdr-stats/install/redis/debian/etc/init.d/redis-server /etc/init.d/redis-server
                 chmod +x /etc/init.d/redis-server
-
                 useradd redis
                 mkdir -p /var/lib/redis
                 mkdir -p /var/log/redis

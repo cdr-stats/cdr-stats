@@ -45,6 +45,7 @@ func_identify_os() {
             SCRIPT_VIRTUALENVWRAPPER="/usr/local/bin/virtualenvwrapper.sh"
             APACHE_CONF_DIR="/etc/apache2/sites-enabled/"
             APACHE_USER="www-data"
+            APACHE_SERVICE='apache2'
             WSGI_ADDITIONAL=""
             WSGIApplicationGroup=""
         ;;
@@ -52,6 +53,7 @@ func_identify_os() {
             SCRIPT_VIRTUALENVWRAPPER="/usr/bin/virtualenvwrapper.sh"
             APACHE_CONF_DIR="/etc/httpd/conf.d/"
             APACHE_USER="apache"
+            APACHE_SERVICE='httpd'
             #WSGI_ADDITIONAL="WSGISocketPrefix run/wsgi"
             WSGI_ADDITIONAL="WSGISocketPrefix        /var/run/wsgi"
             WSGIApplicationGroup="WSGIApplicationGroup %{GLOBAL}"

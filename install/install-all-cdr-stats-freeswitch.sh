@@ -21,6 +21,8 @@
 #INSTALL TYPE (ASTERISK or FREESWITCH)
 INSTALL_TYPE='FREESWITCH'
 
+INSTALLMODE='FULL' # Set to FULL to update Selinux / Firewall / etc...
+
 
 #Get Scripts dependencies
 wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh -O bash-common-functions.sh
@@ -82,28 +84,26 @@ esac
 
 #Install MongoDB
 cd /usr/src/
-wget https://raw.github.com/Star2Billing/cdr-stats/master/install/install-mongodb.sh
+wget https://raw.github.com/Star2Billing/cdr-stats/master/install/install-mongodb.sh -O install-mongodb.sh
 bash install-mongodb.sh
 
 
 #Install Freeswitch
 cd /usr/src/
-wget https://raw.github.com/Star2Billing/cdr-stats/master/install/install-freeswitch.sh
+wget https://raw.github.com/Star2Billing/cdr-stats/master/install/install-freeswitch.sh -O install-freeswitch.sh
 bash install-freeswitch.sh
 /etc/init.d/freeswitch start
 
 #Install CDR-Stats
 cd /usr/src/
-rm bash-common-functions.sh
-wget https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh
-rm cdr-stats-functions.sh
-wget https://raw.github.com/Star2Billing/cdr-stats/master/install/cdr-stats-functions.sh
+wget https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh -O bash-common-functions.sh
+wget https://raw.github.com/Star2Billing/cdr-stats/master/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
 
 
 #Include general functions
 source bash-common-functions.sh
-
 source cdr-stats-functions.sh
+
 
 #Identify the OS
 func_identify_os

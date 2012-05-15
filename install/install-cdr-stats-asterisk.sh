@@ -15,13 +15,15 @@
 
 #
 # To download and run the script on your server :
-# cd /usr/src/ ; rm install-cdr-stats-freepbx.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats-freepbx.sh ; chmod +x install-cdr-stats-freepbx.sh ; ./install-cdr-stats-freepbx.sh
+# cd /usr/src/ ; rm install-cdr-stats-asterisk.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats-asterisk.sh -O install-cdr-stats-asterisk.sh; bash install-cdr-stats-asterisk.sh
 #
 
 INSTALL_DIR='/usr/share/cdr_stats'
 
 #INSTALL TYPE (ASTERISK or FREESWITCH)
 INSTALL_TYPE='ASTERISK'
+
+INSTALLMODE='GENTLE' # Set to FULL to update Selinux, Firewall, etc if not Set to GENTLE
 
 echo ""
 echo ""
@@ -33,24 +35,9 @@ echo ""
 read TEMP
 
 
-case $DIST in
-    'DEBIAN') 
-        apt-get -y update
-        apt-get -y install vim git-core
-    ;;
-    'CENTOS')
-        yum -y update
-        yum -y install mlocate vim git-core
-        yum -y install policycoreutils-python
-    ;;
-esac
-
-#Get files to install CDR-Stats
-cd /usr/src/
-rm bash-common-functions.sh
-wget https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh
-rm cdr-stats-functions.sh
-wget https://raw.github.com/Star2Billing/cdr-stats/master/install/cdr-stats-functions.sh
+#Get Scripts dependencies
+wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh -O bash-common-functions.sh
+wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
 
 
 #Include general functions
@@ -66,5 +53,3 @@ func_accept_license_mplv2
 
 #run install menu
 run_menu_cdr_stats_install
-
-
