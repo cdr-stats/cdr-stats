@@ -158,3 +158,18 @@ Currently, only Freeswitch is supported.
 .. image:: ../_static/images/customer/realtime.png
     :width: 1000
 
+
+World Map Report
+~~~~~~~~~~~~~~~~
+
+This view provides a mapping view of all calls / durations by country. You can select date criteria
+and on mouse over on the world map you can get information about each country.
+
+
+**URL**:
+
+    * http://localhost:8000/world_map/
+
+.. image:: ../_static/images/customer/world_map.png
+    :width: 1000
+
