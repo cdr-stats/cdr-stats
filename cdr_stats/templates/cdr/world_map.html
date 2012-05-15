@@ -33,40 +33,11 @@
                     },
                 {% endfor %}
             ];
+            values = {};
 
-            var max = 0,
-                min = Number.MAX_VALUE,
-                cc,
-                startColor = [200, 238, 255],
-                endColor = [0, 100, 145],
-                colors = {},
-                hex;
-
-            for (var k in call_data) {
-                if (!call_data.hasOwnProperty(k)) continue;
-                if (parseFloat(call_data[k].data[0]) > max) {
-                    max = parseFloat(call_data[k].data[0]);
-                }
-                if (call_data[k].data[0] < min) {
-                    min = parseFloat(call_data[k].data[0]);
-                }
-            }
-
-            for (var k in call_data) {
-                if (!call_data.hasOwnProperty(k)) continue;
-                if (call_data[k].data[0] > 0) {
-
-                    colors[call_data[k].label] = '#';
-                    //TODO : need to be reviewed
-                    for (var i = 0; i<3; i++) {
-                        hex = Math.round(startColor[i] + (endColor[i] - startColor[i])*(call_data[k].data[0] / (max - min))).toString(16);
-                        if (hex.length == 1) {
-                            hex = '0'+hex;
-                        }
-                        colors[call_data[k].label] += (hex.length == 1 ? '0' : '') + hex;
-                    }
-                }
-            }
+            {% for rc in world_analytic_array %}
+                values['{{ rc.1 }}'] = '{{ rc.2 }}';
+            {% endfor %}
 
             function conve_min(val)
             {
@@ -82,10 +53,12 @@
             }
 
             $('#call-world-map').vectorMap({
-                backgroundColor: '#006491',
+                //backgroundColor: '#006491',
                 map: 'world_en',
-                values: call_data,
-                colors: colors,
+                //values: call_data,
+                values: values,
+                scaleColors: ['#C8EEFF', '#006491'],
+                //colors: colors,
                 hoverOpacity: 0.7,
                 hoverColor: false,
                 onLabelShow: function(event, label, code){
