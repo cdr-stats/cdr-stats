@@ -42,11 +42,9 @@ Different reporting tools are provided:
 - Analyse CDR : Analyse and compare call volumes with the previous day’s traffic.
 - Daily Traffic : Graph and filter traffic loads by hour during the day.
 
-MongoDB is an open source, document-oriented database designed with both scalability
-and developer agility in mind. Instead of storing your data in tables and rows as
-you would with a relational database, in MongoDB you store JSON-like documents with
-dynamic schemas. The goal of MongoDB is to bridge the gap between key-value stores
-(which are fast and scalable) and relational databases (which have rich functionality).
+CDR Stats uses MongoDB, a scalable, high performance database system used to analyse 
+large quantities of CDR data. MongoDB is an open source, document-oriented database 
+designed with both scalability and developer agility in mind. 
 
 CDR-Stats supports Freeswitch and Asterisk using connectors that get the CDR. Connectors
 for other switch systems can be built. Additionally CDR-Stats features a CSV upload facility so that

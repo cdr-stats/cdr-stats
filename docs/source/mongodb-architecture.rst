@@ -15,6 +15,11 @@ database, everything in MongoDB is a document. There is no notion of a rigid tab
 structure composed of columns and types. Because data in mongo is stored 
 as documents, there are no joins. 
 
+Instead of storing your data in tables and rows as you would with a relational database, 
+in MongoDB you store JSON-like documents with dynamic schemas. The goal of MongoDB is 
+to bridge the gap between key-value stores (which are fast and scalable) and relational 
+databases (which have rich functionality).
+
 
 .. contents::
     :local:
