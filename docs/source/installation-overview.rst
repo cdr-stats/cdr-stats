@@ -1,8 +1,8 @@
 .. _installation-overview:
 
-=====================
-Installation overview
-=====================
+========
+Overview
+========
 
 .. _install-requirements:
 
@@ -42,37 +42,25 @@ Use PIP to install all the requirements,::
 
     $ pip install -r requirements.txt
 
+We advice you to install those requirements into a virtual environement, you can find more information about virtualenv here :
+http://pypi.python.org/pypi/virtualenv
 
-.. _installation-script:
-
-Installation Script
-===================
-
-You can install CDR-Stats manually or using the shell script provided.
-
-To install CDR-Stats using the script,::
-
-    $ chmod +x install/install-cdrstats.sh
-
-    $ ./install/install-cdrstats.sh
-
-    $ chmod +x install/install-celery.sh
-
-    $ ./install/install-celery.sh
 
 
 .. _running-cdrstats:
 
 Running CDR-Stats
-===================
+=================
 
-Inside CDR-Stats directory you should run::
+Inside CDR-Stats directory you should run, the following::
 
-    $ mkdir database
-
-    $ python manage.py syncdb
+    $ python manage.py syncdb --noinput
 
     $ python manage.py collectstatic
+    
+    $ python manage.py migrate
+
+    $ python manage.py createsuperuser
 
     $ python manage.py runserver
 
@@ -85,6 +73,10 @@ Django documentation.
 
 ``collectstatic`` will fetch all necessary media files and put them into
 ``static`` folder defined in the settings module.
+
+``migrate`` will applying database migration to update the database schemas of CDR-Stats to its latest version.
+
+``createsuperuser`` will create a super user, to access to the admin section of CDR-Stats.
 
 ``runserver`` runs an embedded webserver to test your site.
 By default it will run on http://localhost:8000. This is configurable and more

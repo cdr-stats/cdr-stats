@@ -7,11 +7,12 @@ Overview
 CDR-Stats is a web based application built on the Django framework, which uses MongoDB as the CDR
 data stare, and uses MySQL, SQLite or Postgresql for Django framework management and user control.
 
-Celery is used to monitor CDR for user defined unusual activity, and react by sending an alert email.
+Celery (http://celeryproject.org/) is an asynchronous task queue/job queue based on distributed message.
+It is used to build our backend system to monitor CDR, detect unusual activity, and react by sending alert email.
 
-coming soon..
 
-**CDR Stats Management Features**::
+
+**CDR Stats Management Features**
     
 - Multi-tenant design that allows call detail records from multiple switches or PBX systems.
 - Custom alarm triggers can be set to email the administrator for a range of conditions including unusual average call durations, failed calls, and unexpected destinations called.
@@ -21,7 +22,8 @@ coming soon..
 - Create Customer and assign accountcode
 - Configure alert to detect unsual increase/decrease of Traffic
 
-**CDR Stats Customer Portal Features**::
+
+**CDR Stats Customer Portal Features**
 
 - Password management
 - Call Details Record
@@ -35,4 +37,3 @@ coming soon..
 - Top 10 destination Traffic
 - Export to CSV
 - Automated daily reporting.
-

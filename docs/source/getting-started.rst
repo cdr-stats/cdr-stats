@@ -101,18 +101,6 @@ connectors can be built to connect to the CDR database store and import them in 
 
 
 
-.. _notes:
-
-Notes for later
----------------
-
-Freeswitch is supported using the mod_cdr_mongo module to write CDR directly into MongoDB. 
-Asterisk is supported with a connector that links to the CDR store in MySQL. For other 
-switches, connectors can be built to connect to the switch's CDR database store, such as
-MySQL, SQLite, or Postgresql.
-
-
-
 .. _features:
 
 Features
@@ -133,7 +121,7 @@ view, and comparing call traffic with previous days.
     +-----------------------+----------------------------------------------------+
     | Distributed           | Runs on one or more machines. Supports             |
     |                       | broker `clustering` and `HA`. New workers  can be  |
-    |                       |set up without central configuration.               |
+    |                       | set up without central configuration.              |
     +-----------------------+----------------------------------------------------+
     | Fraud detection       | Visualise traffic which helps to identify unusual  |
     |                       | patterns.                                          |
@@ -147,7 +135,7 @@ view, and comparing call traffic with previous days.
     | Import CDR            | Import CDR files in custom format                  |
     +-----------------------+----------------------------------------------------+
     | World Map view        | see where the traffic originates and terminates on |
-    |                       |a Map                                               |
+    |                       | a Map                                              |
     +-----------------------+----------------------------------------------------+
     | Compare traffic       | see how your traffic evolves, and patterns change. |
     +-----------------------+----------------------------------------------------+
@@ -159,6 +147,7 @@ view, and comparing call traffic with previous days.
     +-----------------------+----------------------------------------------------+
     | Geographic alerts     | Set alert if calls go to disallowed countries      |
     +-----------------------+----------------------------------------------------+
+
 
 
 .. _utility:
