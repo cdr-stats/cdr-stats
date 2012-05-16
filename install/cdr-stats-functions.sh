@@ -213,7 +213,9 @@ func_install_frontend(){
             apt-get -y install libsox-fmt-mp3 libsox-fmt-all mpg321 ffmpeg
         ;;
         'CENTOS')
-            yum -y update
+            if [ "$INSTALLMODE" = "FULL" ]; then
+                yum -y update
+            fi
             yum -y install autoconf automake bzip2 cpio curl curl-devel curl-devel expat-devel fileutils gcc-c++ gettext-devel gnutls-devel libjpeg-devel libogg-devel libtiff-devel libtool libvorbis-devel make ncurses-devel nmap openssl openssl-devel openssl-devel perl patch unzip wget zip zlib zlib-devel policycoreutils-python
         
             if [ ! -f /etc/yum.repos.d/rpmforge.repo ];

@@ -9,5 +9,5 @@ Contents:
 .. toctree::
     :maxdepth: 2
 
-    example-configuration-file
+    configuration-file
     ./celery/celery-configuration
