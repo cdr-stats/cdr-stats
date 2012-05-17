@@ -141,7 +141,6 @@ def import_cdr_asterisk_mysql(shell=False):
                                                             (e, ipaddress))
             sys.exit(1)
 
-
         try:
             cursor.execute("SELECT VERSION() from %s WHERE import_cdr IS NOT NULL LIMIT 0,1" % table_name)
             row = cursor.fetchone()
