@@ -1,7 +1,7 @@
 # CDR-Stats - PO File
-# Copyright (C) 2010 - Star2Billing S.L.
+# Copyright (C) 2010-2012 - Star2Billing S.L.
 # This file is distributed under the same license as the CDR-Stats application.
-# Areski Belaid <areski@gmail.com>, 2010.
+# Areski Belaid <areski@gmail.com>, 2010-2012.
 #
 msgid ""
 msgstr ""
@@ -261,9 +261,8 @@ msgstr ""
 
 #: cdr/forms.py:329
 #: templates/admin/cdr/switch/import_cdr.html:25
-#, fuzzy
 msgid "destination_number"
-msgstr "Destination"
+msgstr "destination_numero"
 
 #: cdr/forms.py:330
 #: templates/admin/cdr/switch/import_cdr.html:26
@@ -312,9 +311,8 @@ msgstr ""
 
 #: cdr/forms.py:339
 #: templates/admin/cdr/switch/import_cdr.html:35
-#, fuzzy
 msgid "mduration"
-msgstr "Durée"
+msgstr "MicroDurée"
 
 #: cdr/forms.py:340
 #: templates/admin/cdr/switch/import_cdr.html:36
@@ -332,9 +330,8 @@ msgid "write_codec"
 msgstr ""
 
 #: cdr/forms.py:343
-#, fuzzy
 msgid "accountcode"
-msgstr "Code"
+msgstr "Code Compte"
 
 #: cdr/models.py:26
 msgid "ANSWER"
@@ -393,9 +390,8 @@ msgid "ITU-T Q.850 Code"
 msgstr "Code ITU-T Q.850"
 
 #: cdr/models.py:82
-#, fuzzy
 msgid "Enumeration"
-msgstr "Durée"
+msgstr "Enumération"
 
 #: cdr/models.py:84
 msgid "Cause"
@@ -993,9 +989,8 @@ msgstr "Appels"
 
 #: templates/cdr/cdr_dashboard.html:278
 #: templates/cdr/mail_report_template.html:71
-#, fuzzy
 msgid "Amount Calls"
-msgstr "Appels simultanés"
+msgstr ""
 
 #: templates/cdr/cdr_dashboard.html:282
 #: templates/cdr/mail_report_template.html:75
@@ -1037,9 +1032,8 @@ msgid "CDR"
 msgstr "CDR"
 
 #: templates/cdr/cdr_detail.html:13
-#, fuzzy
 msgid "channel_data"
-msgstr "Canal"
+msgstr ""
 
 #: templates/cdr/cdr_detail.html:15
 msgid "callflow"
@@ -1097,18 +1091,16 @@ msgid "days"
 msgstr "jours"
 
 #: templates/cdr/cdr_graph_concurrent_calls.html:101
-#, fuzzy
 msgid "concurrent calls"
-msgstr "Appels simultanés"
+msgstr "appels simultanés"
 
 #: templates/cdr/cdr_graph_concurrent_calls.html:118
 msgid "Concurrent Calls"
 msgstr "Appels simultanés"
 
 #: templates/cdr/cdr_mail_report.html:4
-#, fuzzy
 msgid "CDR Mail Report"
-msgstr "Rapport global"
+msgstr "CDR Rapport via Email"
 
 #: templates/cdr/cdr_mail_report.html:35
 #: templates/cdr/registration/user_detail_change.html:91
@@ -1263,9 +1255,8 @@ msgstr ""
 
 #: templates/cdr/cdr_view.html:30
 #: templates/cdr/cdr_view.html.py:161
-#, fuzzy
 msgid "calls detail records"
-msgstr "Détail des appels"
+msgstr ""
 
 #: templates/cdr/cdr_view.html:31
 msgid "report by day"
