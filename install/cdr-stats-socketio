@@ -1,4 +1,9 @@
 #!/bin/bash
+#
+# chkconfig: 2345 90 60
+# description:  CDR-Stat SocketIO daemon
+# processname: cdr-stats-socketio
+#
 
 #####################################################
 PREFIX=/usr/share/cdr_stats
