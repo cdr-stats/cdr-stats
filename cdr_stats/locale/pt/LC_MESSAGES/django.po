@@ -64,7 +64,7 @@ msgstr "Importar CDR"
 #: cdr/admin.py:343 cdr/forms.py:107 cdr/forms.py:323 cdr/models.py:62
 #: templates/cdr/cdr_graph_realtime.html:89
 msgid "Switch"
-msgstr "Trocar"
+msgstr "Servidor"
 
 #: cdr/forms.py:28
 msgid "Begins with"
@@ -713,7 +713,7 @@ msgstr "Por  %(filter_title)s "
 #: templates/admin/cdr_alert/whitelist/whitelist_by_country.html:6
 #: templates/registration/logged_out.html:4
 msgid "Home"
-msgstr "Casa"
+msgstr "Home"
 
 #: templates/admin/cdr/switch/import_cdr.html:21
 msgid "Sample File"
@@ -800,7 +800,7 @@ msgstr "Canal"
 
 #: templates/cdr/bootstrap_menu.html:21
 msgid "Dashboard"
-msgstr "Painel de instrumentos"
+msgstr "Dashboard"
 
 #: templates/cdr/bootstrap_menu.html:22
 #: templates/cdr/cdr_country_report.html:82
@@ -956,21 +956,21 @@ msgstr "Chamadas por hora"
 #: templates/cdr/cdr_dashboard.html:286
 #: templates/cdr/mail_report_template.html:79
 msgid "Minutes Total Duration"
-msgstr "Minutos Duração Total"
+msgstr "Tempo total do minutos"
 
 #: templates/cdr/cdr_dashboard.html:290
 #: templates/cdr/mail_report_template.html:83
 msgid "Minutes Average Call Duration"
-msgstr "Minutos duração média de chamada"
+msgstr "Tempo de duração media em minutos"
 
 #: templates/cdr/cdr_dashboard.html:297
 msgid "countries report"
-msgstr "países relatam"
+msgstr "relatório de países"
 
 #: templates/cdr/cdr_dashboard.html:304
 #: templates/cdr/mail_report_template.html:93
 msgid "5 most called countries"
-msgstr "5 mais que os chamados países"
+msgstr "Os 5 países mais chamados"
 
 #: templates/cdr/cdr_dashboard.html:327
 #: templates/cdr/mail_report_template.html:56
@@ -1205,7 +1205,7 @@ msgstr "Registro de ligação detalhada"
 
 #: templates/cdr/cdr_view.html:31
 msgid "report by day"
-msgstr "relatar a dia"
+msgstr "relatório por dia"
 
 #: templates/cdr/cdr_view.html:178
 msgid "Call-date"
