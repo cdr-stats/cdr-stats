@@ -21,6 +21,7 @@ import calendar
 import string
 import urllib
 import time
+import re
 
 
 def get_switch_list():

@@ -32,7 +32,6 @@ import time
 import sys
 import random
 import json, ast
-import re
 
 random.seed()
 
