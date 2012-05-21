@@ -467,12 +467,12 @@ def mapreduce_cdr_world_report():
     """
     To get the all countries call analytic
 
-       * Total calls per day-country
-       * Total call duration day-country
+       * Total calls per country
+       * Total call duration per country
 
     Attributes:
 
-        * ``map`` - Grouping perform on year, month, day, hour, min & country
+        * ``map`` - Grouping perform on country
         * ``reduce`` - Calculate call count, sum of call duration based on map
 
     Result Collection: ``aggregate_result_cdr_world_report``
