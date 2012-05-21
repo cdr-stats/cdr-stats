@@ -70,21 +70,6 @@ CDR_HOURLY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HOURLY]
 CDR_COUNTRY_REPORT = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY_REPORT]
 
 
-def remove_prefix(phonenumber, removeprefix_list):
-    # remove the prefix from phone number
-    # @ removeprefix_list "+,0,00,000,0000,00000,011,55555,99999"
-    #
-    #clean : remove spaces
-    removeprefix_list = removeprefix_list.strip(' \t\n\r')
-    if removeprefix_list and len(removeprefix_list) > 0:
-        for rprefix in removeprefix_list.split(","):
-            rprefix = rprefix.strip(' \t\n\r')
-            rprefix = re.sub("\+", "\\\+", rprefix)
-            if rprefix and len(rprefix)>0:
-                phonenumber = re.sub("^%s" % rprefix, "", phonenumber)
-    return phonenumber
-
-
 def print_shell(shell, message):
     if shell:
         print message

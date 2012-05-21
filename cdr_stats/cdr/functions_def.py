@@ -60,6 +60,23 @@ def get_hangupcause_id(hangupcause_code):
         return 0
 
 
+def remove_prefix(phonenumber, removeprefix_list):
+    # remove the prefix from phone number
+    # @ removeprefix_list "+,0,00,000,0000,00000,011,55555,99999"
+    #
+    #clean : remove spaces
+    removeprefix_list = removeprefix_list.strip(' \t\n\r')
+    if removeprefix_list and len(removeprefix_list) > 0:
+        removeprefix_list = removeprefix_list.split(",")
+        removeprefix_list = sorted(removeprefix_list, key=len, reverse=True)
+        for rprefix in removeprefix_list:
+            rprefix = rprefix.strip(' \t\n\r')
+            rprefix = re.sub("\+", "\\\+", rprefix)
+            if rprefix and len(rprefix) > 0:
+                phonenumber = re.sub("^%s" % rprefix, "", phonenumber)
+    return phonenumber
+
+
 def prefix_list_string(phone_number):
     """
     To return prefix string
