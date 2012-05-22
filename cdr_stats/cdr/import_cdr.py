@@ -119,10 +119,8 @@ def import_cdr(shell=False):
             PAGE_NUMBER = int(j)
 
             result = importcdr_handler.find({ '$or': [ {'import_cdr': {'$exists': False}},
-                                                       {'import_cdr': 0} ]},
-                    {   "channel_data": 0,
-                        "app_log": 0,
-                        "times": 0,
+                                                       {'import_cdr': 0}]},
+                    {
                         "callflow.caller_profile.caller_id_number":1,
                         "callflow.caller_profile.caller_id_name":1,
                         "callflow.caller_profile.destination_number": 1,
