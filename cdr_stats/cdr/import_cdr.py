@@ -148,6 +148,7 @@ def import_cdr(shell=False):
                         ('variables.hangup_cause_q850', 1)
                            ]).limit(PAGE_SIZE)
 
+            cdr_bulk_record = []
             #Retrieve FreeSWITCH CDRs
             for cdr in result:
                 start_uepoch = datetime.fromtimestamp(int(cdr['variables']['start_uepoch'][:10]))
@@ -225,8 +226,11 @@ def import_cdr(shell=False):
                     'authorized': authorized,
                 }
 
+                # append cdr to bulk_cdr list
+                cdr_bulk_record.append(cdr_record)
+
                 # record global CDR
-                CDR_COMMON.insert(cdr_record)
+                #CDR_COMMON.insert(cdr_record)
 
                 print_shell(shell, "Sync CDR (cid:%s, dest:%s, dur:%s, hg:%s, country:%s, auth:%s)" % (
                                             cdr['callflow']['caller_profile']['caller_id_number'],
@@ -235,6 +239,7 @@ def import_cdr(shell=False):
                                             cdr['variables']['hangup_cause_q850'],
                                             country_id,
                                             authorized,))
+
                 count_import = count_import + 1
 
                 # Store monthly cdr collection with unique import
@@ -307,6 +312,9 @@ def import_cdr(shell=False):
                             {'_id': cdr['_id']},
                             {'$set': {'import_cdr': 1, 'import_cdr_monthly': 1, 'import_cdr_daily': 1, 'import_cdr_hourly': 1}}
                 )
+
+            # Bulk cdr list insert into cdr_common
+            CDR_COMMON.insert(cdr_bulk_record)
 
         if count_import > 0:
             # Apply index
