@@ -51,15 +51,6 @@ CDR_HOURLY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HOURLY]
 CDR_COUNTRY_REPORT = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY_REPORT]
 
 
-def update_cdr_collection(mongohandler, cdr_id, field_name):
-    # change import_cdr_xxxx flag in cdr_common collection
-    mongohandler.update(
-                {'_id': cdr_id},
-                {'$set': {field_name: 1}}
-    )
-    return True
-
-
 def print_shell(shell, message):
     if shell:
         print message
@@ -118,12 +109,12 @@ def import_cdr(shell=False):
         PAGE_SIZE = int(5000)
 
         total_loop_count = int( int(total_record) / PAGE_SIZE ) + 1
-        #print total_loop_count
+        print total_loop_count
         count_import = 0
 
         for j in range(1, total_loop_count+1):
             PAGE_NUMBER = int(j)
-            
+
             result = importcdr_handler.find({ '$or': [ {'import_cdr': {'$exists': False}}, {'import_cdr': 0} ] }, 
                     {
                         "callflow.caller_profile.caller_id_number":1,
@@ -242,9 +233,6 @@ def import_cdr(shell=False):
                                             authorized,))
                 count_import = count_import + 1
 
-                # change import_cdr flag
-                #update_cdr_collection(importcdr_handler, cdr['_id'], 'import_cdr')
-                
                 # Store monthly cdr collection with unique import
                 if not hasattr(cdr, 'import_cdr_monthly') or cdr['import_cdr_monthly'] == 0:
                     # monthly collection
@@ -279,7 +267,7 @@ def import_cdr(shell=False):
                                 '$inc':
                                     {'calls': 1,
                                      'duration': int(cdr['variables']['duration']) }
-                            },upsert=True)
+                            }, upsert=True)
 
                 # Store hourly cdr collection with unique import
                 if not hasattr(cdr, 'import_cdr_hourly') or cdr['import_cdr_hourly'] == 0:
@@ -295,7 +283,7 @@ def import_cdr(shell=False):
                                 {
                                     '$inc': {'calls': 1,
                                              'duration': int(cdr['variables']['duration']) }
-                                },upsert=True)
+                                }, upsert=True)
 
                     # Country report collection
                     current_y_m_d_h_m = datetime.strptime(str(start_uepoch)[:16], "%Y-%m-%d %H:%M")
@@ -308,7 +296,7 @@ def import_cdr(shell=False):
                                         {
                                             '$inc': {'calls': 1,
                                                      'duration': int(cdr['variables']['duration']) }
-                                        },upsert=True)
+                                        }, upsert=True)
 
                 # Flag the CDR as imported
                 importcdr_handler.update(

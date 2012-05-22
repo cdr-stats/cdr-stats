@@ -264,9 +264,6 @@ def import_cdr_asterisk_mysql(shell=False):
                                         authorized,
                                         start_uepoch.strftime('%Y-%m-%d %M:%S'),))
             count_import = count_import + 1
-
-            # change import_cdr flag
-            #update_cdr_collection(importcdr_handler, cdr['_id'], 'import_cdr')
             
             # Store monthly cdr collection with unique import
             current_y_m = datetime.strptime(str(start_uepoch)[:7], "%Y-%m")

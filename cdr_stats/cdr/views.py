@@ -405,8 +405,9 @@ def cdr_view(request):
     if len(country_id) >= 1 and country_id[0] != 0:
         query_var['country_id'] = {'$in': country_id}
 
-    final_result = cdr_data.find(query_var)
-    total_result_count = cdr_data.find(query_var).count()
+    final_result = cdr_data.find(query_var, {"channel_data": 0, "app_log": 0,
+                                             "callflow": 0, "times": 0})
+    total_result_count = final_result.count()
 
     # Define no of records per page
     PAGE_SIZE = int(records_per_page)
@@ -489,6 +490,10 @@ def cdr_view(request):
 
     final_result = \
     final_result.skip(PAGE_SIZE * (PAGE_NUMBER - 1)).limit(PAGE_SIZE).sort([(sort_field, default_order)]).clone()
+
+    # change cursor batch_size
+    final_result.batch_size(1000)
+
     logging.debug('Create cdr result')
     for i in final_result:
         # duration convert into min
