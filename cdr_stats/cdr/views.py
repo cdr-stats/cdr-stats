@@ -405,8 +405,11 @@ def cdr_view(request):
     if len(country_id) >= 1 and country_id[0] != 0:
         query_var['country_id'] = {'$in': country_id}
 
-    final_result = cdr_data.find(query_var, {"channel_data": 0, "app_log": 0,
-                                             "callflow": 0, "times": 0})
+
+    final_result = cdr_data.find(query_var, {"uuid": 0, "answer_uepoch": 0,
+                                             "end_uepoch": 0, "mduration": 0,
+                                             "billmsec": 0, "read_codec": 0,
+                                             "write_codec": 0, "remote_media_ip": 0})
     total_result_count = final_result.count()
 
     # Define no of records per page
@@ -420,7 +423,7 @@ def cdr_view(request):
     docs = []
     docs_pages = []
 
-    docs_pages = [[] for x in range(1, int(final_result.count()))]
+    docs_pages = [[] for x in range(1, int(total_result_count))]
 
     form = CdrSearchForm(initial={'from_date': from_date, 'to_date': to_date,
                                   'destination': destination, 'destination_type': destination_type,

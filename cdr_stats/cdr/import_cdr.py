@@ -103,20 +103,26 @@ def import_cdr(shell=False):
         #Connect to Mongo
         importcdr_handler = DB_CONNECTION[settings.CDR_MONGO_IMPORT[ipaddress]['collection']]
 
-        #total_record = importcdr_handler.find({'import_cdr': {'$exists': False}}).count()
-        total_record = importcdr_handler.find({ '$or': [ {'import_cdr': {'$exists': False}}, {'import_cdr': 0} ] }).count()
+        not_require_data = {"channel_data": 0, "app_log": 0,
+                            "callflow": 0, "times": 0}
+        total_record = importcdr_handler.find({ '$or': [ {'import_cdr': {'$exists': False}},
+                                                         {'import_cdr': 0} ]},
+                                                         not_require_data).count()
 
         PAGE_SIZE = int(5000)
 
         total_loop_count = int( int(total_record) / PAGE_SIZE ) + 1
-        print total_loop_count
+
         count_import = 0
 
         for j in range(1, total_loop_count+1):
             PAGE_NUMBER = int(j)
 
-            result = importcdr_handler.find({ '$or': [ {'import_cdr': {'$exists': False}}, {'import_cdr': 0} ] }, 
-                    {
+            result = importcdr_handler.find({ '$or': [ {'import_cdr': {'$exists': False}},
+                                                       {'import_cdr': 0} ]},
+                    {   "channel_data": 0,
+                        "app_log": 0,
+                        "times": 0,
                         "callflow.caller_profile.caller_id_number":1,
                         "callflow.caller_profile.caller_id_name":1,
                         "callflow.caller_profile.destination_number": 1,
