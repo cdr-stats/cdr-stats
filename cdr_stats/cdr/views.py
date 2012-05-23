@@ -1031,7 +1031,7 @@ def cdr_country_report(request):
                                                                                  'duration': int(d['value']['duration__sum'])}
                                                                       }, upsert=True)
 
-    country_calls_final = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY].find()
+    country_calls_final = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY].find().sort([('count', -1)])
     country_analytic_array = []
     country_analytic_array_final = []
     for i in country_calls_final:
@@ -1040,9 +1040,6 @@ def cdr_country_report(request):
                                        int(i['count']),
                                        int(i['duration']),
                                        int(i['country_id'])))
-
-    # sort array based on call count in desc order
-    country_analytic_array = sorted(country_analytic_array, key=lambda record: record[1], reverse=True)
 
     # Top countries list
     for i in country_analytic_array[0: DISPLAY_NO_OF_COUNTRY ]:
