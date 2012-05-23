@@ -145,6 +145,7 @@ $(function () {
 
 
 {% if hangup_analytic %}
+
     <script type="text/javascript">
     function pieHover(event, pos, obj){
         if (!obj)
@@ -164,7 +165,7 @@ $(function () {
 
         var data = [
             {% for td in hangup_analytic %}
-                { label: '{{ td.0|title }}' , data: [[1, {{ td.1 }}]]},
+                { label: '{{ td.hangup_cause_id|get_hangupcause_name_with_title }}' , data: [[1, {{ td.count }}]]},
             {% endfor %}
         ];
         /*
@@ -204,7 +205,8 @@ $(function () {
     </script>
 {% endif %}
 
-{% if country_analytic_array_final %}
+{% if country_calls_final %}
+
     <script type="text/javascript">
     //country pi
     function pieHoverCountry(event, pos, obj){
@@ -224,8 +226,8 @@ $(function () {
     $(function () {
 
         var data = [
-            {% for td in country_analytic_array_final %}
-                { label: '{{ td.0 }}' , data: [[1, {{ td.1 }}]]},
+            {% for td in country_calls_final %}
+                { label: '{{ td.country_id|country_name }}' , data: [[1, {{ td.count }}]]},
             {% endfor %}
         ];
 
@@ -296,28 +298,28 @@ $(function () {
     <div class="span6 welldashboard">
         <h2 align="center">{% trans "countries report"|title %}</h2>
         <hr/>
-    {% if country_analytic_array_final %}
+    {% if country_calls_final %}
         <div id="country_pie" style="width:350px;height:350px;margin:auto;"></div>
         <div id="country_hover"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
     {% endif %}
         <br/>
         <div class="dashboard_summary_header span6">{% trans "5 most called countries"|title %}</div>
-        {% if country_analytic_array_final %}
+        {% if country_calls_final_clone %}
         <div class="span6">
             <table>
                 <tbody>
-                {% for country_data in country_analytic_array_final %}
+                {% for country_data in country_calls_final_clone %}
                 <tr>
                     <td class="td-dashboard">
-                        {% if country_data.3 %}
-                        <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
+                        {% if country_data.country_id %}
+                            <img src="{{STATIC_URL}}cdr-stats/{{ country_data.country_id|iso_flag }}" class="elemtooltip" title="{{ country_data.country_id|country_name }}">
                         {% else %}
-                        <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip">
+                            <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip">
                         {% endif %}
                     </td>
-                    <td class="td-dashboard" width="100">{{ country_data.0 }}</td>
-                    <td width="100">{{ country_data.1 }} {% trans "Calls"%}</td>
-                    <td>{{ country_data.2|conv_min }} {% trans "minutes"%}</td>
+                    <td class="td-dashboard" width="100">{{ country_data.country_id|country_name }}</td>
+                    <td width="100">{{ country_data.count }} {% trans "Calls"%}</td>
+                    <td>{{ country_data.duration|conv_min }} {% trans "minutes"%}</td>
                 </tr>
                 {% endfor %}
                 </tbody>

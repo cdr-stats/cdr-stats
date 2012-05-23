@@ -23,6 +23,7 @@ from cdr.models import Switch, HangupCause
 from datetime import datetime
 import operator
 import copy
+import re
 
 register = template.Library()
 
@@ -80,9 +81,23 @@ def get_hangupcause_name(id):
     except:
         return ''
 
+
+@register.filter()
+def get_hangupcause_name_with_title(id):
+    try:
+        obj = HangupCause.objects.get(pk=id)
+        val = obj.enumeration
+        t = re.sub("([a-z])'([A-Z])", lambda m: m.group(0).lower(), val.title())
+        return re.sub("\d([A-Z])", lambda m: m.group(0).lower(), t)
+    except:
+        return ''
+
+
+
 register.filter('cal_width', cal_width)
 register.filter('seen_unseen', seen_unseen)
 register.filter('seen_unseen_word', seen_unseen_word)
 register.filter('notice_count', notice_count)
 register.filter('get_switch_ip', get_switch_ip)
 register.filter('get_hangupcause_name', get_hangupcause_name)
+register.filter('get_hangupcause_name_with_title', get_hangupcause_name_with_title)

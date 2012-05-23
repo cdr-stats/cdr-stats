@@ -822,10 +822,13 @@ def cdr_dashboard(request):
                                ('_id.d_Hour', 1),
                                ('_id.e_Min', 1)])
 
+    # if exists, drop previous collection
+    settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HANGUP].drop()
+    settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY].drop()
+
     total_calls = 0
     total_duration = 0
     total_record_final = []
-
     for d in calls:
         graph_day = str(int(d['_id']['a_Year'])) + "-" + str(int(d['_id']['b_Month'])) + "-" + str(int(d['_id']['c_Day'])) + " "
         day = graph_day + str(int(d['_id']['d_Hour'])) + ":" + str(int(d['_id']['e_Min']))
@@ -846,15 +849,11 @@ def cdr_dashboard(request):
 
         if int_hangup_cause_id:
             settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HANGUP].update({'hangup_cause_id': int(d['value']['hangup_cause_id'])},
-                                                                     {'$inc': {'count': 1}}, upsert=True)
+                                                                         {'$inc': {'count': 1}}, upsert=True)
 
-    hangup_analytic_array = []
-    hangup_analytic = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HANGUP].find({})
-    for i in hangup_analytic:
-        hangup_analytic_array.append((get_hangupcause_name(int(i['hangup_cause_id'])), i['count']))
+    hangup_analytic = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HANGUP].find()
 
-    # remove mapreduce output & hangup analytic from database (no longer required)
-    settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HANGUP].drop()
+    # remove mapreduce output from database (no longer required)
     settings.DB_CONNECTION[out].drop()
 
     # Country call analytic start
@@ -874,22 +873,11 @@ def cdr_dashboard(request):
                                                                                  'duration': int(d['value']['duration__sum'])}
                                                                       }, upsert=True)
 
-    country_calls_final = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY].find()
-    country_analytic_array = []
-    country_analytic_array_final = []
-    for i in country_calls_final:
-        # All countries list
-        country_analytic_array.append((get_country_name(int(i['country_id'])),
-                                       int(i['count']),
-                                       int(i['duration']),
-                                       int(i['country_id'])))
-
-    country_analytic_array = sorted(country_analytic_array, key=lambda record: record[1], reverse=True)
+    # Top 5 countries list
+    country_calls_final = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY].find().sort([('count', -1)]).limit(5)
 
     # remove mapreduce output & country analytic from database (no longer required)
-    settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY].drop()
     settings.DB_CONNECTION[out].drop()
-    # Country call analytic end
 
     #Calculate the Average Time of Call
     ACT = math.floor(total_calls / 24)
@@ -905,10 +893,11 @@ def cdr_dashboard(request):
                  'ACT': ACT,
                  'ACD': ACD,
                  'total_record': sorted(total_record_final, key=lambda record: record[0]),
-                 'hangup_analytic': hangup_analytic_array,
-                 'country_analytic_array_final': country_analytic_array[0:5],# Top 5 countries list
+                 'hangup_analytic': hangup_analytic,
                  'form': form,
                  'search_tag': search_tag,
+                 'country_calls_final': country_calls_final,
+                 'country_calls_final_clone': country_calls_final.clone(),
                 }
 
     return render_to_response('cdr/cdr_dashboard.html', variables,
