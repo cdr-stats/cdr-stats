@@ -147,6 +147,7 @@ def logout_view(request):
 	logout(request)
 	return HttpResponseRedirect('/')
 
+
 def cdr_view_daily_report(query_var):
     logging.debug('Map-reduce cdr analytic')
     #Retrieve Map Reduce
@@ -235,6 +236,7 @@ def cdr_view(request):
         if form.is_valid():
             # set session var value
             request.session['session_destination'] = ''
+            request.session['session_result'] = ''
             request.session['session_destination_type'] = ''
             request.session['session_accountcode'] = ''
             request.session['session_accountcode_type'] = ''
@@ -316,7 +318,7 @@ def cdr_view(request):
         else:
             # form is not valid
             logging.debug('Error : CDR search form')
-            docs = []
+            rows = []
             docs_pages = 0
             PAGE_SIZE = settings.PAGE_SIZE
             total_data = []
@@ -331,7 +333,7 @@ def cdr_view(request):
             last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) + relativedelta(months=1)) - relativedelta(days=1)).strftime('%d')
             end_date = tday.strftime('%Y-%m-'+last_day)
             template_data = {'module': current_view(request),
-                             'rows': docs,
+                             'rows': rows,
                              'form': form,
                              'pages': docs_pages,
                              'PAGE_SIZE': PAGE_SIZE,
@@ -347,6 +349,7 @@ def cdr_view(request):
                              'start_date': start_date,
                              'end_date': end_date,
                              'action': action,
+                             'result': result,
                              }
             logging.debug('CDR View End')
             return render_to_response(template_name, template_data,
@@ -372,7 +375,7 @@ def cdr_view(request):
             direction = request.session.get('session_direction')
             switch_id = request.session.get('session_switch_id')
             hangup_cause_id = request.session.get('session_hangup_cause_id')
-            result = request.session.get('session_result')
+            result = int(request.session.get('session_result'))
             search_tag = request.session.get('session_search_tag')
             records_per_page = request.session.get('session_records_per_page')
             country_id = request.session['session_country_id']
@@ -388,7 +391,7 @@ def cdr_view(request):
         country_id = ''
         records_per_page = settings.PAGE_SIZE
         # unset session var value
-        request.session['session_result'] = ''
+        request.session['session_result'] = 1
         request.session['session_from_date'] = from_date
         request.session['session_to_date'] = to_date
         request.session['session_destination'] = ''
@@ -460,9 +463,6 @@ def cdr_view(request):
     except:
         PAGE_NUMBER = 1
         #PAGE_SIZE = settings.PAGE_SIZE
-
-    docs = []
-    docs_pages = []
 
     docs_pages = [[] for x in range(1, int(total_result_count))]
 
@@ -539,35 +539,7 @@ def cdr_view(request):
     final_result.batch_size(100)#1000000000
 
     logging.debug('Create cdr result')
-    for i in final_result:
-        # duration convert into min
-        if result == 1 or result == '':
-            duration = int_convert_to_minute(int(i['duration']))
-            billsec = int_convert_to_minute(int(i['billsec']))
-        else:
-            duration = i['duration']
-            billsec = i['duration']
-
-        if "cdr_object_id" in i:
-            cdr_id = i['cdr_object_id']
-        else:
-            cdr_id = ''
-
-        docs.append({
-                     'id': cdr_id,
-                     'start_uepoch': i['start_uepoch'],
-                     'caller_id_number': i['caller_id_number'],
-                     'caller_id_name': i['caller_id_name'],
-                     'destination_number': i['destination_number'],
-                     'duration': duration,
-                     'billsec': billsec,
-                     'country': i['country_id'],
-                     'hangup_cause': get_hangupcause_name(i['hangup_cause_id']),
-                     'accountcode': i['accountcode'],
-                     'direction': i['direction'],
-                     'authorized': i['authorized'],
-                     'switch_id': i['switch_id'],
-                   })
+    rows = final_result.clone()
 
     # Get daily report from session while using pagination & sorting
     if request.GET.get('page') or request.GET.get('sort_by'):
@@ -575,9 +547,8 @@ def cdr_view(request):
     else:
         request.session['session_cdr_view_daily_data'] = cdr_view_daily_data = cdr_view_daily_report(query_var)
 
-
     template_data = {'module': current_view(request),
-                     'rows': docs,
+                     'rows': rows,
                      'form': form,
                      'pages': docs_pages,
                      'PAGE_SIZE': PAGE_SIZE,
@@ -593,6 +564,7 @@ def cdr_view(request):
                      'start_date': start_date,
                      'end_date': end_date,
                      'action': action,
+                     'result': int(result),
                      }
     logging.debug('CDR View End')
     return render_to_response(template_name, template_data,
@@ -877,7 +849,6 @@ def cdr_dashboard(request):
         if int_hangup_cause_id:
             settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HANGUP].update({'hangup_cause_id': int(d['value']['hangup_cause_id'])},
                                                                      {'$inc': {'count': 1}}, upsert=True)
-        
 
     hangup_analytic_array = []
     hangup_analytic = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HANGUP].find({})

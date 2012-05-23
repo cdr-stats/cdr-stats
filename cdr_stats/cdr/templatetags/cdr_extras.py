@@ -19,7 +19,7 @@ from django.utils import simplejson
 from django.utils.translation import gettext as _
 from django import forms
 from django.utils.datastructures import SortedDict
-from cdr.models import Switch
+from cdr.models import Switch, HangupCause
 from datetime import datetime
 import operator
 import copy
@@ -72,9 +72,17 @@ def get_switch_ip(id):
         return u''
 
 
+@register.filter()
+def get_hangupcause_name(id):
+    try:
+        obj = HangupCause.objects.get(pk=id)
+        return obj.enumeration
+    except:
+        return ''
 
 register.filter('cal_width', cal_width)
 register.filter('seen_unseen', seen_unseen)
 register.filter('seen_unseen_word', seen_unseen_word)
 register.filter('notice_count', notice_count)
 register.filter('get_switch_ip', get_switch_ip)
+register.filter('get_hangupcause_name', get_hangupcause_name)
