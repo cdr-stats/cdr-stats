@@ -264,9 +264,9 @@ def cdr_view(request):
                                     int(to_date[8:10]), 23, 59, 59, 999999)
                 request.session['session_to_date'] = to_date
 
-            result = int(variable_value(request, 'result'))
+            result = request.POST['result']
             if result:
-                request.session['session_result'] = result
+                request.session['session_result'] = int(result)
 
             destination = variable_value(request, 'destination')
             destination_type = variable_value(request, 'destination_type')
