@@ -147,6 +147,43 @@ def logout_view(request):
 	logout(request)
 	return HttpResponseRedirect('/')
 
+def cdr_view_daily_report(query_var):
+    logging.debug('Map-reduce cdr analytic')
+    #Retrieve Map Reduce
+    (map, reduce, finalize_fun, out) = mapreduce_cdr_view()
+
+    total_data = cdr_data.map_reduce(map, reduce, out, query=query_var, finalize=finalize_fun,)
+    total_data = total_data.find().sort([('_id.a_Year', -1), ('_id.b_Month', -1), ('_id.c_Day', -1)])
+
+    detail_data = []
+    for doc in total_data:
+        detail_data.append({'calldate': datetime(int(doc['_id']['a_Year']),
+                                        int(doc['_id']['b_Month']), int(doc['_id']['c_Day'])),
+                            'duration__sum': int(doc['value']['duration__sum']),
+                            'calldate__count': int(doc['value']['calldate__count']),
+                            'duration__avg': doc['value']['duration__avg'],
+                            })
+
+    if total_data.count() != 0:
+        max_duration = max([int(x['value']['duration__sum']) for x in total_data.clone()])
+        total_duration = sum([int(x['value']['duration__sum']) for x in total_data.clone()])
+        total_calls = sum([int(x['value']['calldate__count']) for x in total_data.clone()])
+        total_avg_duration = (sum([float(x['value']['duration__avg']) for x in total_data.clone()]))/total_data.count()
+    else:
+        max_duration = 0
+        total_duration = 0
+        total_calls = 0
+        total_avg_duration = 0
+
+    cdr_view_daily_data = {
+        'total_data': detail_data,
+        'total_duration': total_duration,
+        'total_calls': total_calls,
+        'total_avg_duration': total_avg_duration,
+        'max_duration': max_duration,
+    }
+    return cdr_view_daily_data
+
 
 @login_required
 def cdr_view(request):
@@ -189,6 +226,7 @@ def cdr_view(request):
     search_tag = 0
     action = 'tabs-1'
     menu = 'on'
+    cdr_view_daily_data = {}
     if request.method == 'POST':
         logging.debug('CDR Search View')
         search_tag = 1
@@ -208,6 +246,7 @@ def cdr_view(request):
             request.session['session_switch_id'] = ''
             request.session['session_direction'] = ''
             request.session['session_country_id'] = ''
+            request.session['session_cdr_view_daily_data'] = {}
 
             if "from_date" in request.POST:
                 # From
@@ -337,6 +376,7 @@ def cdr_view(request):
             search_tag = request.session.get('session_search_tag')
             records_per_page = request.session.get('session_records_per_page')
             country_id = request.session['session_country_id']
+            cdr_view_daily_data = request.session.get('session_cdr_view_daily_data')
         else:
             from_date
     except NameError:
@@ -365,6 +405,7 @@ def cdr_view(request):
         request.session['session_search_tag'] = search_tag
         request.session['session_records_per_page'] = records_per_page
         request.session['session_country_id'] = ''
+        request.session['session_cdr_view_daily_data'] = {}
 
     start_date = datetime(int(from_date[0:4]), int(from_date[5:7]), int(from_date[8:10]), 0, 0, 0, 0)
     end_date = datetime(int(to_date[0:4]), int(to_date[5:7]), int(to_date[8:10]), 23, 59, 59, 999999)
@@ -495,7 +536,7 @@ def cdr_view(request):
     final_result.skip(PAGE_SIZE * (PAGE_NUMBER - 1)).limit(PAGE_SIZE).sort([(sort_field, default_order)]).clone()
 
     # change cursor batch_size
-    final_result.batch_size(1000)
+    final_result.batch_size(100)#1000000000
 
     logging.debug('Create cdr result')
     for i in final_result:
@@ -528,44 +569,23 @@ def cdr_view(request):
                      'switch_id': i['switch_id'],
                    })
 
-    logging.debug('Map-reduce cdr analytic')
-    #Retrieve Map Reduce
-    (map, reduce, finalize_fun, out) = mapreduce_cdr_view()
-
-    total_data = cdr_data.map_reduce(map, reduce, out, query=query_var, finalize=finalize_fun,)
-    total_data = total_data.find().sort([('_id.a_Year', -1), ('_id.b_Month', -1), ('_id.c_Day', -1)])
-
-    detail_data = []
-    for doc in total_data:
-        detail_data.append({'calldate': datetime(int(doc['_id']['a_Year']),
-                                                 int(doc['_id']['b_Month']),
-                                                 int(doc['_id']['c_Day'])),
-                            'duration__sum': int(doc['value']['duration__sum']),
-                            'calldate__count': int(doc['value']['calldate__count']),
-                            'duration__avg': doc['value']['duration__avg'],
-                            })
-
-    if total_data.count() != 0:
-        max_duration = max([int(x['value']['duration__sum']) for x in total_data.clone()])
-        total_duration = sum([int(x['value']['duration__sum']) for x in total_data.clone()])
-        total_calls = sum([int(x['value']['calldate__count']) for x in total_data.clone()])
-        total_avg_duration = (sum([float(x['value']['duration__avg']) for x in total_data.clone()]))/total_data.count()
+    # Get daily report from session while using pagination & sorting
+    if request.GET.get('page') or request.GET.get('sort_by'):
+        cdr_view_daily_data = request.session['session_cdr_view_daily_data']
     else:
-        max_duration = 0
-        total_duration = 0
-        total_calls = 0
-        total_avg_duration = 0
+        request.session['session_cdr_view_daily_data'] = cdr_view_daily_data = cdr_view_daily_report(query_var)
+
 
     template_data = {'module': current_view(request),
                      'rows': docs,
                      'form': form,
                      'pages': docs_pages,
                      'PAGE_SIZE': PAGE_SIZE,
-                     'total_data': detail_data,
-                     'total_duration': total_duration,
-                     'total_calls': total_calls,
-                     'total_avg_duration': total_avg_duration,
-                     'max_duration': max_duration,
+                     'total_data': cdr_view_daily_data['total_data'],
+                     'total_duration': cdr_view_daily_data['total_duration'],
+                     'total_calls': cdr_view_daily_data['total_calls'],
+                     'total_avg_duration': cdr_view_daily_data['total_avg_duration'],
+                     'max_duration': cdr_view_daily_data['max_duration'],
                      'user': request.user,
                      'search_tag': search_tag,
                      'col_name_with_order': col_name_with_order,
