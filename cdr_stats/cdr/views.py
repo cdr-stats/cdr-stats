@@ -532,14 +532,12 @@ def cdr_view(request):
 
     col_name_with_order['sort_field'] = sort_field
 
-    final_result = \
+    logging.debug('Create cdr result')
+    rows = \
     final_result.skip(PAGE_SIZE * (PAGE_NUMBER - 1)).limit(PAGE_SIZE).sort([(sort_field, default_order)]).clone()
 
     # change cursor batch_size
-    final_result.batch_size(100)#1000000000
-
-    logging.debug('Create cdr result')
-    rows = final_result.clone()
+    rows.batch_size(1000)#1000000000
 
     # Get daily report from session while using pagination & sorting
     if request.GET.get('page') or request.GET.get('sort_by'):
