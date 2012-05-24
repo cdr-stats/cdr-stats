@@ -1636,25 +1636,13 @@ def cdr_concurrent_calls(request):
 
     if query_var:
         calls_in_day = settings.DB_CONNECTION[settings.CDR_MONGO_CONC_CALL_AGG]
-        final_data = []
+        calls_in_day = calls_in_day.find(query_var).sort([ ('_id.g_Millisec', 1)])
 
-        calls_in_day = calls_in_day.find(query_var).sort([('_id.a_Year', -1), ('_id.b_Month', -1),
-                                                          ('_id.c_Day', -1), ('_id.d_Hour', -1),
-                                                          ('_id.e_Min', -1)])
-        #new total data
-        for d in calls_in_day.clone():
-            c_date = datetime(int(d['_id']['a_Year']), int(d['_id']['b_Month']),
-                              int(d['_id']['c_Day']), int(d['_id']['d_Hour']), int(d['_id']['e_Min']), 0, 0)
-
-            dt = int(1000*time.mktime(c_date.timetuple())- time.timezone)
-            final_data.append((dt, int(d['value']['numbercall__max'])))
-            ms = time.mktime(c_date.timetuple())
-            
         logging.debug('CDR concurrent view end')
         variables = {'module': current_view(request),
                      'form': form,
-                     'final_data': final_data,
-                     'start_date': start_date
+                     'start_date': start_date,
+                     'calls_in_day': calls_in_day,
                     }
 
     return render_to_response('cdr/cdr_graph_concurrent_calls.html', variables,

@@ -94,12 +94,14 @@ class Command(BaseCommand):
         #TODO: Map-reduce collection
         map = mark_safe(u'''
               function(){
+                 var year = this.call_date.getFullYear();
+                 var month = this.call_date.getMonth();
+                 var day = this.call_date.getDate();
+                 var hours = this.call_date.getHours();
+                 var minutes = this.call_date.getMinutes();
+                 var d = new Date(year, month, day, hours, minutes);
                  emit( {
-                        a_Year: this.call_date.getFullYear(),
-                        b_Month: this.call_date.getMonth() + 1,
-                        c_Day: this.call_date.getDate(),
-                        d_Hour: this.call_date.getHours(),
-                        e_Min: this.call_date.getMinutes(),
+                        g_Millisec: d.getTime(),
                        },
                        {numbercall__max: this.numbercall, call_date: this.call_date,
                         switch_id: this.switch_id, accountcode: this.accountcode } )

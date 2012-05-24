@@ -39,11 +39,11 @@ $(function() {
 $(function () {
 
     var d = [
-      {% for call in final_data %}
-         [{{ call.0 }}, {{ call.1 }}],
-      {% endfor %}
+        {% for call in calls_in_day %}
+            [{{ call|mongo_id:"g_Millisec" }}, {{ call.value.numbercall__max }}],
+        {% endfor %}
     ];
-        
+
     var options = {
         legend: {
                 position: "ne",
