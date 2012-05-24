@@ -769,7 +769,7 @@ def cdr_dashboard(request):
         * ``template`` - cdr/cdr_dashboard.html
         * ``form`` - SwitchForm
         * ``mongodb_data_set`` - CDR_MONGO_CDR_COMMON
-        * ``map_reduce`` - mapreduce_cdr_minute_report()
+        * ``map_reduce`` - mapreduce_cdr_dashboard()
 
     **Logic Description**:
 
@@ -812,15 +812,11 @@ def cdr_dashboard(request):
 
     logging.debug('Map-reduce cdr dashboard analytic')
     #Retrieve Map Reduce
-    (map, reduce, finalize_fun, out) = mapreduce_cdr_minute_report()
+    (map, reduce, finalize_fun, out) = mapreduce_cdr_dashboard()
 
     #Run Map Reduce
     calls = cdr_data.map_reduce(map, reduce, out, query=query_var)
-    calls = calls.find().sort([('_id.a_Year', 1),
-                               ('_id.b_Month', 1),
-                               ('_id.c_Day', 1),
-                               ('_id.d_Hour', 1),
-                               ('_id.e_Min', 1)])
+    calls = calls.find().sort([ ('_id.g_Millisec', 1)])
 
     # if exists, drop previous collection
     settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HANGUP].drop()
@@ -829,12 +825,7 @@ def cdr_dashboard(request):
     total_duration = 0
     total_record_final = []
     for d in calls:
-        graph_day = str(int(d['_id']['a_Year'])) + "-" + str(int(d['_id']['b_Month'])) + "-" + str(int(d['_id']['c_Day'])) + " "
-        day = graph_day + str(int(d['_id']['d_Hour'])) + ":" + str(int(d['_id']['e_Min']))
-        day = datetime.strptime(str(day), "%Y-%m-%d %H:%M")
-        dt = (1000*time.mktime(day.timetuple())) #  - time.timezone
-
-        total_record_final.append([dt, #str(dtime),
+        total_record_final.append([d['_id']['g_Millisec'],
                                    d['value']['calldate__count'],
                                    d['value']['duration__sum']])
         total_calls += int(d['value']['calldate__count'])
@@ -862,9 +853,9 @@ def cdr_dashboard(request):
     # Top 5 countries list
     country_calls = country_calls.find().sort([('value.calldate__count', -1)]).limit(5)
 
-    country_analytic_array = []
+    country_analytic = []
     for i in country_calls:
-        country_analytic_array.append((get_country_name(int(i['_id']['f_Con'])),
+        country_analytic.append((get_country_name(int(i['_id']['f_Con'])),
                                        int(i['value']['calldate__count']),
                                        int(i['value']['duration__sum']),
                                        int(i['_id']['f_Con'])))
@@ -887,7 +878,7 @@ def cdr_dashboard(request):
                  'ACD': ACD,
                  'total_record': sorted(total_record_final, key=lambda record: record[0]),
                  'hangup_analytic': hangup_analytic,
-                 'country_analytic_array': country_analytic_array,
+                 'country_analytic': country_analytic,
                  'form': form,
                  'search_tag': search_tag,
                 }

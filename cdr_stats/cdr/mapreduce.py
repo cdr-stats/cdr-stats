@@ -300,7 +300,7 @@ def mapreduce_cdr_daily_overview():
     return (map, reduce, False, out)
 
 
-def mapreduce_cdr_minute_report():
+def mapreduce_cdr_dashboard():
     """
     To get the minutly analytic of cdr
 
@@ -313,23 +313,24 @@ def mapreduce_cdr_minute_report():
         * ``map`` - Grouping perform on year, month, day, hour & min
         * ``reduce`` - Calculate call count, sum of call duration, hangupcause based on map
 
-    Result Collection: ``aggregate_result_cdr_minute_report``
+    Result Collection: ``aggregate_result_cdr_dashboard_report``
     """
     (map, reduce, finalize_fun, out) = mapreduce_default()
 
     # Get cdr graph by hour report
     map = mark_safe(u'''
         function(){
+            var year = this.start_uepoch.getFullYear();
+            var month = this.start_uepoch.getMonth();
+            var day = this.start_uepoch.getDate();
+            var hours = this.start_uepoch.getHours();
+            var minutes = this.start_uepoch.getMinutes();
+            var d = new Date(year, month, day, hours, minutes);
             emit( {
-                a_Year: this.start_uepoch.getFullYear(),
-                b_Month: this.start_uepoch.getMonth() + 1,
-                c_Day: this.start_uepoch.getDate(),
-                d_Hour: this.start_uepoch.getHours(),
-                e_Min: this.start_uepoch.getMinutes(),
+                g_Millisec: d.getTime(),
             },
             {
                 calldate__count: 1,
-                calldate: this.start_uepoch,
                 duration__sum: this.duration,
                 hangup_cause_id: this.hangup_cause_id,
             } )
@@ -339,74 +340,16 @@ def mapreduce_cdr_minute_report():
             var ret = {
                 calldate__count : 0,
                 duration__sum: 0,
-                calldate: '',
                 hangup_cause_id: 0,
             };
             for (var i=0; i < vals.length; i++){
                 ret.calldate__count += parseInt(vals[i].calldate__count);
                 ret.duration__sum += parseInt(vals[i].duration__sum);
-                ret.calldate = vals[i].calldate;
                 ret.hangup_cause_id = vals[i].hangup_cause_id;
             }
             return ret;
         }''')
-    out = 'aggregate_result_cdr_minute_report'
-    return (map, reduce, False, out)
-
-
-def mapreduce_cdr_dashboard():
-    """
-    To get the today's analytic of cdr
-
-       * Total calls per hour-min
-       * Total call duration per hour-min
-       * Total hangup-cause  per hour-min
-
-    Attributes:
-
-        * ``map`` - Grouping perform mainly on hour & min
-        * ``reduce`` - Calculate call count, sum of call duration, hangupcause based on map
-
-    Result Collection: ``aggregate_result_cdr_dashboard``
-    """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
-
-    # Get cdr dashboard report
-    map = mark_safe(u'''
-        function(){
-            emit(
-                {
-                    a_Year: this.start_uepoch.getFullYear(),
-                    b_Month: this.start_uepoch.getMonth() + 1,
-                    c_Day: this.start_uepoch.getDate(),
-                    d_Hour: this.start_uepoch.getHours(),
-                    e_Min: this.start_uepoch.getMinutes(),
-                },
-                {
-                    calldate__count: 1, 
-                    duration__sum: this.duration,
-                    hangup_cause_id: this.hangup_cause_id
-                } )
-        }''')
-
-    reduce = mark_safe(u'''
-        function(key,vals) {
-            var ret = {
-                    calldate__count : 0,
-                    duration__sum: 0,
-                    hangup_cause_id: 0,
-                    };
-
-            for (var i=0; i < vals.length; i++){
-                ret.calldate__count += parseInt(vals[i].calldate__count);
-                ret.duration__sum += parseInt(vals[i].duration__sum);
-                ret.hangup_cause_id = parseInt(vals[i].hangup_cause_id);
-            }
-            return ret;
-        }
-        ''')
-
-    out = 'aggregate_result_cdr_dashboard'
+    out = 'aggregate_result_cdr_dashboard_report'
     return (map, reduce, False, out)
 
 
