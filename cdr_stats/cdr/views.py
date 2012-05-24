@@ -816,7 +816,7 @@ def cdr_dashboard(request):
 
     #Run Map Reduce
     calls = cdr_data.map_reduce(map, reduce, out, query=query_var)
-    calls = calls.find().sort([ ('_id.g_Millisec', 1)])
+    calls = calls.find().sort([('_id.g_Millisec', 1)])
 
     # if exists, drop previous collection
     settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HANGUP].drop()
@@ -856,9 +856,9 @@ def cdr_dashboard(request):
     country_analytic = []
     for i in country_calls:
         country_analytic.append((get_country_name(int(i['_id']['f_Con'])),
-                                       int(i['value']['calldate__count']),
-                                       int(i['value']['duration__sum']),
-                                       int(i['_id']['f_Con'])))
+                                 int(i['value']['calldate__count']),
+                                 int(i['value']['duration__sum']),
+                                 int(i['_id']['f_Con'])))
 
     # remove mapreduce output & country analytic from database (no longer required)
     settings.DB_CONNECTION[out].drop()
@@ -876,7 +876,7 @@ def cdr_dashboard(request):
                  'total_duration': int_convert_to_minute(total_duration),
                  'ACT': ACT,
                  'ACD': ACD,
-                 'total_record': sorted(total_record_final, key=lambda record: record[0]),
+                 'total_record': total_record_final,
                  'hangup_analytic': hangup_analytic,
                  'country_analytic': country_analytic,
                  'form': form,
