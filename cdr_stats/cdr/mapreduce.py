@@ -372,14 +372,16 @@ def mapreduce_cdr_country_report():
     # Get cdr dashboard report
     map = mark_safe(u'''
         function(){
+            var year = this.start_uepoch.getFullYear();
+            var month = this.start_uepoch.getMonth();
+            var day = this.start_uepoch.getDate();
+            var hours = this.start_uepoch.getHours();
+            var minutes = this.start_uepoch.getMinutes();
+            var d = new Date(year, month, day, hours, minutes);
             emit(
                 {
-                    a_Year: this.start_uepoch.getFullYear(),
-                    b_Month: this.start_uepoch.getMonth() + 1,
-                    c_Day: this.start_uepoch.getDate(),
-                    d_Hour: this.start_uepoch.getHours(),
-                    e_Min: this.start_uepoch.getMinutes(),
                     f_Con: this.country_id,
+                    g_Millisec: d.getTime(),
                 },
                 {
                     calldate__count: 1,
@@ -390,9 +392,9 @@ def mapreduce_cdr_country_report():
     reduce = mark_safe(u'''
         function(key,vals) {
             var ret = {
-                    calldate__count : 0,
-                    duration__sum: 0,
-                    };
+                        calldate__count : 0,
+                        duration__sum: 0,
+                      };
 
             for (var i=0; i < vals.length; i++){
                     ret.calldate__count += parseInt(vals[i].calldate__count);

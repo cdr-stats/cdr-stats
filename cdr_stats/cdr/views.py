@@ -993,19 +993,10 @@ def cdr_country_report(request):
     country_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY_REPORT]
 
     calls = country_data.map_reduce(map, reduce, out, query=query_var)
-    calls = calls.find().sort([('_id.a_Year', 1),
-                               ('_id.b_Month', 1),
-                               ('_id.c_Day', 1),
-                               ('_id.d_Hour', 1),
-                               ('_id.e_Min', 1)])
+    calls = calls.find().sort([('_id.g_Millisec', 1)])
 
     for d in calls:
-        graph_day = str(int(d['_id']['a_Year'])) + "-" + str(int(d['_id']['b_Month'])) + "-" + str(int(d['_id']['c_Day'])) + " "
-        day = graph_day + str(int(d['_id']['d_Hour'])) + ":" + str(int(d['_id']['e_Min']))
-
-        day = datetime.strptime(str(day), "%Y-%m-%d %H:%M")
-        dt = int(1000*time.mktime(day.timetuple())) #- time.timezone
-        total_record_final.append({'dt': dt,
+        total_record_final.append({'dt': int(d['_id']['g_Millisec']),
                                    'calldate__count': int(d['value']['calldate__count']),
                                    'duration__sum': int(d['value']['duration__sum']),
                                    'country_id': int(d['_id']['f_Con'])})
@@ -1905,7 +1896,7 @@ def world_map_view(request):
         * ``template`` - cdr/world_map.html
         * ``form`` - WorldForm
         * ``mongodb_data_set`` - CDR_MONGO_CDR_COUNTRY_REPORT / CDR_MONGO_CDR_COUNTRY
-        * ``map_reduce`` - mapreduce_cdr_country_report()
+        * ``map_reduce`` - mapreduce_cdr_world_report()
 
     **Logic Description**:
 
