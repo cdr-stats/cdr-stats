@@ -1188,8 +1188,8 @@ def cdr_overview(request):
 
         (map, reduce, finalize_fun, out) = mapreduce_cdr_hourly_overview()
         calls_in_day = hourly_data.map_reduce(map, reduce, out, query=query_var)
-        calls_in_day = calls_in_day.find().sort([('_id.a_Year', -1), ('_id.b_Month', -1), ('_id.c_Day', -1),
-                                                 ('_id.d_Hour', -1), ('_id.f_Switch', 1)])
+        calls_in_day = calls_in_day.find().sort([('_id.g_Millisec', -1),
+                                                 ('_id.f_Switch', 1)])
 
         total_hour_record = []
         total_hour_call_count = []
@@ -1198,10 +1198,7 @@ def cdr_overview(request):
             hour_data_call_count = dict()
             hour_data_call_duration = dict()
             for i in calls_in_day.clone():
-                graph_day = str(int(i['_id']['a_Year'])) + "-" + str(int(i['_id']['b_Month'])) + "-" + str(int(i['_id']['c_Day'])) + " "
-                day = graph_day + str(int(i['_id']['d_Hour']))
-                day = datetime.strptime(str(day), "%Y-%m-%d %H")
-                dt = int(1000*time.mktime(day.timetuple())) #- time.timezone
+                dt = int(i['_id']['g_Millisec'])
                 total_hour_record.append({'dt': dt,
                                           'calldate__count': int(i['value']['calldate__count']),
                                           'duration__sum': int(i['value']['duration__sum']),
@@ -1231,8 +1228,8 @@ def cdr_overview(request):
 
         (map, reduce, finalize_fun, out) = mapreduce_cdr_daily_overview()
         calls_in_day = daily_data.map_reduce(map, reduce, out, query=query_var)
-        calls_in_day = calls_in_day.find().sort([('_id.a_Year', -1), ('_id.b_Month', -1),
-                                                 ('_id.c_Day', -1), ('_id.f_Switch', 1)])
+        calls_in_day = calls_in_day.find().sort([('_id.g_Millisec', -1),
+                                                 ('_id.f_Switch', 1)])
         total_day_record = []
         total_day_call_duration = []
         total_day_call_count = []
@@ -1240,9 +1237,7 @@ def cdr_overview(request):
             day_call_duration = dict()
             day_call_count = dict()
             for i in calls_in_day.clone():
-                day = str(int(i['_id']['a_Year'])) + "-" + str(int(i['_id']['b_Month'])) + "-" + str(int(i['_id']['c_Day']))
-                day = datetime.strptime(str(day), "%Y-%m-%d")
-                dt = int(1000*time.mktime(day.timetuple()))
+                dt = int(i['_id']['g_Millisec'])
                 total_day_record.append({'dt': dt,
                                          'calldate__count': int(i['value']['calldate__count']),
                                          'duration__sum': int(i['value']['duration__sum']),
@@ -1274,8 +1269,7 @@ def cdr_overview(request):
 
         #Run Map Reduce
         calls_in_month = monthly_data.map_reduce(map, reduce, out, query=query_var)
-        calls_in_month = calls_in_month.find().sort([('_id.a_Year', -1),
-                                                     ('_id.b_Month', -1),
+        calls_in_month = calls_in_month.find().sort([('_id.g_Millisec', -1),
                                                      ('_id.f_Switch', 1)])
 
         total_month_record = []
@@ -1285,9 +1279,7 @@ def cdr_overview(request):
             month_call_duration = dict()
             month_call_count = dict()
             for i in calls_in_month.clone():
-                graph_day = str(int(i['_id']['a_Year'])) + "-" + str(int(i['_id']['b_Month']))
-                day = datetime.strptime(str(graph_day), "%Y-%m")
-                dt = int(1000*time.mktime(day.timetuple()))
+                dt = int(i['_id']['g_Millisec'])
                 total_month_record.append({'dt': dt,
                                            'calldate__count': int(i['value']['calldate__count']),
                                            'duration__sum': int(i['value']['duration__sum']),

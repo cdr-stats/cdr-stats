@@ -217,12 +217,15 @@ def mapreduce_cdr_hourly_overview():
     # Get cdr graph by overview report
     map = mark_safe(u'''
         function(){
+            var year = this.start_uepoch.getFullYear();
+            var month = this.start_uepoch.getMonth();
+            var day = this.start_uepoch.getDate();
+            var hours = this.start_uepoch.getHours();
+
+            var d = new Date(year, month, day, hours);
             emit( {
-                a_Year: this.start_uepoch.getFullYear(),
-                b_Month: this.start_uepoch.getMonth() + 1,
-                c_Day: this.start_uepoch.getDate(),
-                d_Hour: this.start_uepoch.getHours(),
-                f_Switch: this.switch_id
+                f_Switch: this.switch_id,
+                g_Millisec: d.getTime(),
             },
             {
                 calldate__count: 1,
@@ -253,10 +256,13 @@ def mapreduce_cdr_monthly_overview():
     # Get cdr graph by overview report
     map = mark_safe(u'''
         function(){
+            var year = this.start_uepoch.getFullYear();
+            var month = this.start_uepoch.getMonth();
+
+            var d = new Date(year, month);
             emit( {
-                a_Year: this.start_uepoch.getFullYear(),
-                b_Month: this.start_uepoch.getMonth() + 1,
-                f_Switch: this.switch_id
+                f_Switch: this.switch_id,
+                g_Millisec: d.getTime(),
             },
             {
                 calldate__count: 1,
@@ -287,11 +293,14 @@ def mapreduce_cdr_daily_overview():
     # Get cdr graph by day report
     map = mark_safe(u'''
         function(){
+            var year = this.start_uepoch.getFullYear();
+            var month = this.start_uepoch.getMonth();
+            var day = this.start_uepoch.getDate();
+
+            var d = new Date(year, month, day);
             emit( {
-                    a_Year: this.start_uepoch.getFullYear(),
-                    b_Month: this.start_uepoch.getMonth() + 1,
-                    c_Day: this.start_uepoch.getDate(),
-                    f_Switch: this.switch_id
+                    f_Switch: this.switch_id,
+                    g_Millisec: d.getTime(),
                   },
                   {calldate__count: 1, duration__sum: this.duration} )
         }''')
