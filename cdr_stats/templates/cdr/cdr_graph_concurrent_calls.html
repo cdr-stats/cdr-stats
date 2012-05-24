@@ -33,14 +33,22 @@ $(function() {
 </div>
 </form>
 
-
-
 <script id="source">
 $(function () {
 
-    var d = [
-        {% for call in calls_in_day %}
-            [{{ call|mongo_id:"g_Millisec" }}, {{ call.value.numbercall__max }}],
+    var data = [
+        {% regroup final_data|dictsort:"switch_id" by switch_id as switch_list %}
+        {% for rc in switch_list %}
+            {% ifnotequal rc.grouper 0 %}
+                 {
+                     label: '{{ rc.grouper|get_switch_ip }}',
+                     data: [
+                     {% for item in rc.list %}
+                         [ {{ item.millisec }}, {{ item.call__count }}],
+                     {% endfor %}
+                     ]
+                 },
+            {% endifnotequal %}
         {% endfor %}
     ];
 
@@ -64,7 +72,7 @@ $(function () {
 
     };
 
-    var plot = $.plot($("#graph_responsive"), [d], options);
+    var plot = $.plot($("#graph_responsive"), data, options);
 
     $("#graph_responsive").bind("plothover", function (event, pos, item) {
 

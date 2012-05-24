@@ -1617,7 +1617,7 @@ def cdr_concurrent_calls(request):
 
             switch_id = form.cleaned_data.get('switch')
             if switch_id and int(switch_id) != 0:
-                query_var['value.switch_id'] = int(switch_id)
+                query_var['_id.f_Switch'] = int(switch_id)
     else:
         now = datetime.today()
         from_date = to_date = now.strftime('%Y-%m-%d')
@@ -1634,15 +1634,21 @@ def cdr_concurrent_calls(request):
         else:
             return HttpResponseRedirect('/?acc_code_error=true')
 
+    final_data = []
     if query_var:
         calls_in_day = settings.DB_CONNECTION[settings.CDR_MONGO_CONC_CALL_AGG]
         calls_in_day = calls_in_day.find(query_var).sort([ ('_id.g_Millisec', 1)])
 
+        for d in calls_in_day.clone():
+            final_data.append({'millisec': int(d['_id']['g_Millisec']),
+                               'call__count': int(d['value']['numbercall__max']),
+                               'switch_id': int(d['_id']['f_Switch'])})
+
         logging.debug('CDR concurrent view end')
         variables = {'module': current_view(request),
                      'form': form,
+                     'final_data': final_data,
                      'start_date': start_date,
-                     'calls_in_day': calls_in_day,
                     }
 
     return render_to_response('cdr/cdr_graph_concurrent_calls.html', variables,

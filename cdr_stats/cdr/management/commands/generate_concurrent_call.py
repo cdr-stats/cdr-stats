@@ -101,17 +101,18 @@ class Command(BaseCommand):
                  var minutes = this.call_date.getMinutes();
                  var d = new Date(year, month, day, hours, minutes);
                  emit( {
-                        g_Millisec: d.getTime(),
+                        f_Switch: this.switch_id,
+                        g_Millisec: d.getTime()
                        },
                        {numbercall__max: this.numbercall, call_date: this.call_date,
-                        switch_id: this.switch_id, accountcode: this.accountcode } )
+                        accountcode: this.accountcode } )
               }''')
 
 
         reduce = mark_safe(u'''
                  function(key,vals) {
                      var ret = {numbercall__max: 0, call_date: '',
-                                switch_id: 0, accountcode: ''};
+                                 accountcode: ''};
                      max = vals[0].numbercall__max;
 
                      for (var i=0; i < vals.length; i++){
@@ -122,7 +123,6 @@ class Command(BaseCommand):
                      }
                      ret.numbercall__max = max;
                      ret.call_date = vals[0].call_date;
-                     ret.switch_id = vals[0].switch_id;
                      ret.accountcode = vals[0].accountcode;
                      return ret;
                  }
