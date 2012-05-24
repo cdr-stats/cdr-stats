@@ -231,16 +231,15 @@ def import_cdr(shell=False):
 
                 # record global CDR
                 #CDR_COMMON.insert(cdr_record)
+                count_import = count_import + 1
 
-                print_shell(shell, "Sync CDR (cid:%s, dest:%s, dur:%s, hg:%s, country:%s, auth:%s)" % (
+                print_shell(shell, "Sync CDR (cid:%s, dest:%s, dur:%s, hg:%s, country:%s, auth:%s, row_count:%s)" % (
                                             cdr['callflow']['caller_profile']['caller_id_number'],
                                             cdr['callflow']['caller_profile']['destination_number'],
                                             cdr['variables']['duration'],
                                             cdr['variables']['hangup_cause_q850'],
                                             country_id,
-                                            authorized,))
-
-                count_import = count_import + 1
+                                            authorized, count_import))
 
                 # Store monthly cdr collection with unique import
                 if not hasattr(cdr, 'import_cdr_monthly') or cdr['import_cdr_monthly'] == 0:
@@ -313,10 +312,9 @@ def import_cdr(shell=False):
                             {'$set': {'import_cdr': 1, 'import_cdr_monthly': 1, 'import_cdr_daily': 1, 'import_cdr_hourly': 1}}
                 )
 
+        if count_import > 0:
             # Bulk cdr list insert into cdr_common
             CDR_COMMON.insert(cdr_bulk_record)
-
-        if count_import > 0:
             # Apply index
             CDR_COMMON.ensure_index([("start_uepoch", -1)])
             CDR_MONTHLY.ensure_index([("start_uepoch", -1)])
