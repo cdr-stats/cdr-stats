@@ -93,6 +93,17 @@ def get_hangupcause_name_with_title(id):
         return ''
 
 
+@register.filter()
+def mongo_id(value, sub_val):
+    if type(value) == type({}):
+        if value.has_key('_id'):
+            if value['_id'].has_key(sub_val):
+                value = int(value['_id'][sub_val])
+            else:
+                value = value['_id']
+    # Return value
+    return value
+
 
 register.filter('cal_width', cal_width)
 register.filter('seen_unseen', seen_unseen)
@@ -101,3 +112,4 @@ register.filter('notice_count', notice_count)
 register.filter('get_switch_ip', get_switch_ip)
 register.filter('get_hangupcause_name', get_hangupcause_name)
 register.filter('get_hangupcause_name_with_title', get_hangupcause_name_with_title)
+register.filter('mongo_id', mongo_id)
