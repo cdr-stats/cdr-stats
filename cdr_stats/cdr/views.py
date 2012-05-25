@@ -596,7 +596,7 @@ def cdr_export_to_csv(request):
                          cdr['duration'],
                          cdr['billsec'],
                          get_hangupcause_name(cdr['hangup_cause_id']),
-                         cdr['accountcode'].encode("utf-8"),
+                         cdr['accountcode'],
                          cdr['direction'].encode("utf-8")
                        ])
     return response
