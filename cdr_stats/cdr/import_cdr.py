@@ -132,12 +132,12 @@ def import_cdr(shell=False):
                         "variables.uuid":1,
                         "variables.remote_media_ip":1,
                         "variables.start_uepoch":1,
-                        "variables.answer_uepoch":1,
-                        "variables.end_uepoch":1,
-                        "variables.mduration": 1,
-                        "variables.billmsec":1,
-                        "variables.read_codec": 1,
-                        "variables.write_codec": 1,
+                        #"variables.answer_uepoch":1,
+                        #"variables.end_uepoch":1,
+                        #"variables.mduration": 1,
+                        #"variables.billmsec":1,
+                        #"variables.read_codec": 1,
+                        #"variables.write_codec": 1,
                         "import_cdr_monthly": 1,
                         "import_cdr_daily": 1,
                         "import_cdr_hourly": 1,
@@ -152,8 +152,8 @@ def import_cdr(shell=False):
             #Retrieve FreeSWITCH CDRs
             for cdr in result:
                 start_uepoch = datetime.fromtimestamp(int(cdr['variables']['start_uepoch'][:10]))
-                answer_uepoch = datetime.fromtimestamp(int(cdr['variables']['answer_uepoch'][:10]))
-                end_uepoch = datetime.fromtimestamp(int(cdr['variables']['end_uepoch'][:10]))
+                #answer_uepoch = datetime.fromtimestamp(int(cdr['variables']['answer_uepoch'][:10]))
+                #end_uepoch = datetime.fromtimestamp(int(cdr['variables']['end_uepoch'][:10]))
 
                 # Check Destination number
                 destination_number = cdr['callflow']['caller_profile']['destination_number']
@@ -214,12 +214,12 @@ def import_cdr(shell=False):
                     'uuid': cdr['variables']['uuid'],
                     'remote_media_ip': cdr['variables']['remote_media_ip'],
                     'start_uepoch': start_uepoch,
-                    'answer_uepoch': answer_uepoch,
-                    'end_uepoch': end_uepoch,
-                    'mduration': cdr['variables']['mduration'],
-                    'billmsec': cdr['variables']['billmsec'],
-                    'read_codec': cdr['variables']['read_codec'],
-                    'write_codec': cdr['variables']['write_codec'],
+                    #'answer_uepoch': answer_uepoch,
+                    #'end_uepoch': end_uepoch,
+                    #'mduration': cdr['variables']['mduration'],
+                    #'billmsec': cdr['variables']['billmsec'],
+                    #'read_codec': cdr['variables']['read_codec'],
+                    #'write_codec': cdr['variables']['write_codec'],
                     'cdr_type': CDR_TYPE["freeswitch"],
                     'cdr_object_id': cdr['_id'],
                     'country_id': country_id,
