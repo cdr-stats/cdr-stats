@@ -255,7 +255,7 @@ LANGUAGES = (
     ('es', gettext('Spanish')),
     ('pt', gettext('Portuguese')),
     ('de', gettext('German')),
-#    ('ru', gettext('Russian')),
+    ('ru', gettext('Russian')),
 )
 
 # News URL
