@@ -14,8 +14,6 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-import os
-
 from django.utils.translation import ugettext as _
 from django.db import models
 from django.conf import settings
@@ -65,7 +63,8 @@ LANGUAGES = (
     ('ch', _('Chamorro')),
     ('ce', _('Chechen')),
     ('zh', _('Chinese')),
-    ('cu', _('Church Slavic; Old Slavonic; Church Slavonic; Old Bulgarian; Old Church Slavonic')),
+    ('cu', _('Church Slavic; Old Slavonic; '
+             'Church Slavonic; Old Bulgarian; Old Church Slavonic')),
     ('cv', _('Chuvash')),
     ('kw', _('Cornish')),
     ('co', _('Corsican')),

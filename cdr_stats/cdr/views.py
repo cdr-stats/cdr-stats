@@ -418,12 +418,12 @@ def cdr_view(request):
     if dst:
         query_var['destination_number'] = dst
 
-    if request.user.is_superuser: # superuser
+    if request.user.is_superuser:  # superuser
         acc = source_desti_field_chk_mongodb(accountcode, accountcode_type)
         if acc:
             query_var['accountcode'] = acc
 
-    if not request.user.is_superuser: # not superuser
+    if not request.user.is_superuser:  # not superuser
         if not chk_account_code(request):
             return HttpResponseRedirect('/?acc_code_error=true')
         else:
@@ -449,11 +449,16 @@ def cdr_view(request):
     if len(country_id) >= 1 and country_id[0] != 0:
         query_var['country_id'] = {'$in': country_id}
 
-
-    final_result = cdr_data.find(query_var, {"uuid": 0, "answer_uepoch": 0,
-                                             "end_uepoch": 0, "mduration": 0,
-                                             "billmsec": 0, "read_codec": 0,
-                                             "write_codec": 0, "remote_media_ip": 0})
+    final_result = cdr_data.find(query_var, {
+                    "uuid": 0,
+                    "answer_uepoch": 0,
+                    "end_uepoch": 0,
+                    "mduration": 0,
+                    "billmsec": 0,
+                    "read_codec": 0,
+                    "write_codec": 0,
+                    "remote_media_ip": 0
+                })
     total_result_count = final_result.count()
 
     # Define no of records per page
