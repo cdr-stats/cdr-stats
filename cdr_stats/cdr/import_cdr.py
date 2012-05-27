@@ -199,20 +199,48 @@ def import_cdr(shell=False):
                     accountcode = cdr['variables']['accountcode']
                 except:
                     accountcode = ''
+                try:
+                    remote_media_ip = cdr['variables']['remote_media_ip']
+                except:
+                    remote_media_ip = ''
+                try:
+                    caller_id_number = cdr['callflow']['caller_profile']['caller_id_number']
+                except:
+                    caller_id_number = ''
+                try:
+                    caller_id_name = cdr['callflow']['caller_profile']['caller_id_name']
+                except:
+                    caller_id_name = ''
+                try:
+                    duration = int(cdr['variables']['duration'])
+                except:
+                    duration = 0
+                try:
+                    billsec = int(cdr['variables']['billsec'])
+                except:
+                    billsec = 0
+                try:
+                    direction = cdr['variables']['direction']
+                except:
+                    direction = 'inbound'
+                try:
+                    uuid = cdr['variables']['uuid']
+                except:
+                    uuid = ''
 
                 # Prepare global CDR
                 cdr_record = {
                     'switch_id': switch.id,
-                    'caller_id_number': cdr['callflow']['caller_profile']['caller_id_number'],
-                    'caller_id_name': cdr['callflow']['caller_profile']['caller_id_name'],
+                    'caller_id_number': caller_id_number,
+                    'caller_id_name': caller_id_name,
                     'destination_number': destination_number,
-                    'duration': int(cdr['variables']['duration']),
-                    'billsec': int(cdr['variables']['billsec']),
+                    'duration': duration,
+                    'billsec': billsec,
                     'hangup_cause_id': hangup_cause_id,
                     'accountcode': accountcode,
-                    'direction': cdr['variables']['direction'],
-                    'uuid': cdr['variables']['uuid'],
-                    'remote_media_ip': cdr['variables']['remote_media_ip'],
+                    'direction': direction,
+                    'uuid': uuid,
+                    'remote_media_ip': remote_media_ip,
                     'start_uepoch': start_uepoch,
                     #'answer_uepoch': answer_uepoch,
                     #'end_uepoch': end_uepoch,
@@ -233,16 +261,19 @@ def import_cdr(shell=False):
                 #CDR_COMMON.insert(cdr_record)
                 count_import = count_import + 1
 
-                print_shell(shell, "Sync CDR (cid:%s, dest:%s, dur:%s, hg:%s, country:%s, auth:%s, row_count:%s)" % (
-                                            cdr['callflow']['caller_profile']['caller_id_number'],
-                                            cdr['callflow']['caller_profile']['destination_number'],
-                                            cdr['variables']['duration'],
-                                            cdr['variables']['hangup_cause_q850'],
-                                            country_id,
-                                            authorized, count_import))
+                print_shell(shell, "Sync CDR (cid:%s, dest:%s, dur:%s, " \
+                            " hg:%s,country:%s, auth:%s, row_count:%s)" % (
+                            caller_id_number,
+                            destination_number,
+                            duration,
+                            cdr['variables']['hangup_cause_q850'],
+                            country_id,
+                            authorized,
+                            count_import))
 
                 # Store monthly cdr collection with unique import
-                if not hasattr(cdr, 'import_cdr_monthly') or cdr['import_cdr_monthly'] == 0:
+                if not hasattr(cdr, 'import_cdr_monthly') \
+                    or cdr['import_cdr_monthly'] == 0:
                     # monthly collection
                     current_y_m = datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
                     CDR_MONTHLY.update(
@@ -256,11 +287,12 @@ def import_cdr(shell=False):
                                 {
                                     '$inc':
                                         {'calls': 1,
-                                         'duration': int(cdr['variables']['duration']) }
+                                         'duration': duration}
                                 }, upsert=True)
 
                 # Store daily cdr collection with unique import
-                if not hasattr(cdr, 'import_cdr_daily') or cdr['import_cdr_daily'] == 0:
+                if not hasattr(cdr, 'import_cdr_daily') \
+                    or cdr['import_cdr_daily'] == 0:
                     # daily collection
                     current_y_m_d = datetime.strptime(str(start_uepoch)[:10], "%Y-%m-%d")
                     CDR_DAILY.update(
@@ -274,7 +306,7 @@ def import_cdr(shell=False):
                             {
                                 '$inc':
                                     {'calls': 1,
-                                     'duration': int(cdr['variables']['duration']) }
+                                     'duration': duration}
                             }, upsert=True)
 
                 # Store hourly cdr collection with unique import
@@ -287,10 +319,10 @@ def import_cdr(shell=False):
                                     'destination_number': destination_number,
                                     'hangup_cause_id': hangup_cause_id,
                                     'accountcode': accountcode,
-                                    'switch_id': switch.id,},
+                                    'switch_id': switch.id},
                                 {
                                     '$inc': {'calls': 1,
-                                             'duration': int(cdr['variables']['duration']) }
+                                             'duration': duration}
                                 }, upsert=True)
 
                     # Country report collection
@@ -300,10 +332,10 @@ def import_cdr(shell=False):
                                             'start_uepoch': current_y_m_d_h_m,
                                             'country_id': country_id,
                                             'accountcode': accountcode,
-                                            'switch_id': switch.id,},
+                                            'switch_id': switch.id},
                                         {
                                             '$inc': {'calls': 1,
-                                                     'duration': int(cdr['variables']['duration']) }
+                                                     'duration': duration}
                                         }, upsert=True)
 
                 # Flag the CDR as imported
@@ -322,4 +354,5 @@ def import_cdr(shell=False):
             CDR_HOURLY.ensure_index([("start_uepoch", -1)])
             CDR_COUNTRY_REPORT.ensure_index([("start_uepoch", -1)])
 
-        print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" % (ipaddress, count_import))
+        print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" % \
+                            (ipaddress, count_import))
