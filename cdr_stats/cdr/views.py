@@ -604,7 +604,7 @@ def cdr_export_to_csv(request):
 
     for cdr in final_result:
         writer.writerow([
-                         str(cdr['start_uepoch']),
+                         cdr['start_uepoch'],
                          cdr['caller_id_number'] + '-' + cdr['caller_id_name'],
                          cdr['destination_number'],
                          cdr['duration'],
