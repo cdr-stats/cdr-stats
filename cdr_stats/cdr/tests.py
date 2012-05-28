@@ -194,16 +194,27 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         response = self.client.get('/dashboard/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'cdr/cdr_dashboard.html')
+        self.assertTrue('total_calls' in response.context)
+        response = self.client.post('/dashboard/', {'switch_id': '1'})
+        self.assertEqual(response.status_code, 200)
 
     def test_cdr_view(self):
         """Test Function to check cdr_view"""
         response = self.client.get('/cdr_view/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'cdr/cdr_view.html')
+        response = self.client.post('/cdr_view/', {'switch_id': '1',
+                                                   'from_date': '2012-05-01',
+                                                   'to_date': '2012-05-20',
+                                                   'result': 1,
+                                                   'records_per_page': 10})
+        self.assertEqual(response.status_code, 200)
 
         response = self.client.get('/cdr_overview/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'cdr/cdr_overview.html')
+        response = self.client.post('/cdr_overview/', {'switch_id': '1'})
+        self.assertEqual(response.status_code, 200)
 
     def test_cdr_report_view(self):
         """Test Function to check cdr-stats view"""
