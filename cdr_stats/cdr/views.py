@@ -587,22 +587,31 @@ def cdr_export_to_csv(request):
     # force download
     response['Content-Disposition'] = 'attachment;filename=export.csv'
     # the csv writer
-    writer = csv.writer(response)
-    query_var = request.session['query_var']
-    final_result = cdr_data.find(query_var).clone()
 
-    writer.writerow(['Answer stamp', 'Clid', 'Destination',
-                     'Duration', 'Bill sec', 'Hangup cause', 'AccountCode', 'Direction'])
+    query_var = request.session['query_var']
+    final_result = cdr_data.find(query_var,  {"uuid": 0,
+                                              "answer_uepoch": 0,
+                                              "end_uepoch": 0,
+                                              "mduration": 0,
+                                              "billmsec": 0,
+                                              "read_codec": 0,
+                                              "write_codec": 0,
+                                              "remote_media_ip": 0
+                                            })
+
+    writer = csv.writer(response, delimiter='\t')
+    writer.writerow(['Call-date', 'CLID', 'Destination', 'Duration', 'Bill_sec', 'Hangup_cause', 'AccountCode', 'Direction'])
+
     for cdr in final_result:
         writer.writerow([
-                         cdr['start_uepoch'],
-                         cdr['caller_id_number'].encode("utf-8") + '-' + cdr['caller_id_name'].encode("utf-8"),
+                         str(cdr['start_uepoch']),
+                         cdr['caller_id_number'] + '-' + cdr['caller_id_name'],
                          cdr['destination_number'],
                          cdr['duration'],
                          cdr['billsec'],
                          get_hangupcause_name(cdr['hangup_cause_id']),
                          cdr['accountcode'],
-                         cdr['direction'].encode("utf-8")
+                         cdr['direction']
                        ])
     return response
 
