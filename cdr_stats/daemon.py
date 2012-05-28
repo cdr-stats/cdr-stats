@@ -10,11 +10,13 @@
 
     Changes:    23rd Jan 2009 (David Mytton <david@boxedice.com>)
                 - Replaced hard coded '/dev/null in __init__ with os.devnull
-                - Added OS check to conditionally remove code that doesn't work on OS X
+                - Added OS check to conditionally remove code that doesn't work
+                  on OS X
                 - Added output to console on completion
                 - Tidied up formatting
                 11th Mar 2009 (David Mytton <david@boxedice.com>)
-                - Fixed problem with daemon exiting on Python 2.4 (before SystemExit was part of the Exception base)
+                - Fixed problem with daemon exiting on Python 2.4
+                  (before SystemExit was part of the Exception base)
                 13th Aug 2010 (David Mytton <david@boxedice.com>
                 - Fixed unhandled exception if PID file is empty
 '''
@@ -34,7 +36,8 @@ class Daemon:
 
     Usage: subclass the Daemon class and override the run() method
     """
-    def __init__(self, pidfile, stdin=os.devnull, stdout=os.devnull, stderr=os.devnull):
+    def __init__(self, pidfile, stdin=os.devnull, \
+                stdout=os.devnull, stderr=os.devnull):
         self.stdin = stdin
         self.stdout = stdout
         self.stderr = stderr
@@ -52,7 +55,8 @@ class Daemon:
                 # Exit first parent
                 sys.exit(0)
         except OSError, e:
-            sys.stderr.write("fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
+            sys.stderr.write("fork #1 failed: %d (%s)\n" % \
+                                (e.errno, e.strerror))
             sys.exit(1)
 
         # Decouple from parent environment
@@ -67,10 +71,11 @@ class Daemon:
                 # Exit from second parent
                 sys.exit(0)
         except OSError, e:
-            sys.stderr.write("fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
+            sys.stderr.write("fork #2 failed: %d (%s)\n" % \
+                                (e.errno, e.strerror))
             sys.exit(1)
 
-        if sys.platform != 'darwin': # This block breaks on OS X
+        if sys.platform != 'darwin':  # This block breaks on OS X
             # Redirect standard file descriptors
             sys.stdout.flush()
             sys.stderr.flush()
@@ -81,12 +86,11 @@ class Daemon:
             os.dup2(so.fileno(), sys.stdout.fileno())
             os.dup2(se.fileno(), sys.stderr.fileno())
 
-        print "Started"
-
         # Write pidfile
-        atexit.register(self.delpid) # Make sure pid file is removed if we quit
+        # Make sure pid file is removed if we quit
+        atexit.register(self.delpid)
         pid = str(os.getpid())
-        file(self.pidfile,'w+').write("%s\n" % pid)
+        file(self.pidfile, 'w+').write("%s\n" % pid)
 
     def delpid(self):
         os.remove(self.pidfile)
@@ -100,7 +104,7 @@ class Daemon:
 
         # Check for a pidfile to see if the daemon already runs
         try:
-            pf = file(self.pidfile,'r')
+            pf = file(self.pidfile, 'r')
             pid = int(pf.read().strip())
             pf.close()
         except IOError:
@@ -126,7 +130,7 @@ class Daemon:
 
         # Get the pid from the pidfile
         try:
-            pf = file(self.pidfile,'r')
+            pf = file(self.pidfile, 'r')
             pid = int(pf.read().strip())
             pf.close()
         except IOError:
@@ -138,11 +142,13 @@ class Daemon:
             message = "pidfile %s does not exist. Not running?\n"
             sys.stderr.write(message % self.pidfile)
 
-            # Just to be sure. A ValueError might occur if the PID file is empty but does actually exist
+            # Just to be sure. A ValueError might occur if the PID file is
+            # empty but does actually exist
             if os.path.exists(self.pidfile):
                 os.remove(self.pidfile)
 
-            return # Not an error in a restart
+            # Not an error in a restart
+            return
 
         # Try killing the daemon process
         try:
@@ -169,6 +175,7 @@ class Daemon:
 
     def run(self):
         """
-        You should override this method when you subclass Daemon. It will be called after the process has been
+        You should override this method when you subclass Daemon.
+        It will be called after the process has been
         daemonized by start() or restart().
         """
