@@ -136,6 +136,9 @@ class CdrStatsAdminInterfaceTestCase(TestCase):
         self.failUnlessEqual(response.status_code, 200)
         response = self.client.get('/admin/cdr/switch/add/')
         self.failUnlessEqual(response.status_code, 200)
+        response = self.client.post('/admin/cdr/switch/import_cdr/', {'switch_id': 1,})
+        self.failUnlessEqual(response.status_code, 200)
+
         
         response = self.client.get('/admin/cdr/hangupcause/')
         self.failUnlessEqual(response.status_code, 200)
@@ -159,10 +162,16 @@ class CdrStatsAdminInterfaceTestCase(TestCase):
         self.failUnlessEqual(response.status_code, 200)
         response = self.client.get('/admin/cdr_alert/whitelist/whitelist_by_country/')
         self.failUnlessEqual(response.status_code, 200)
+        response = self.client.post('/admin/cdr_alert/whitelist/whitelist_by_country/',
+                                    {'country': 198,})
+        self.failUnlessEqual(response.status_code, 200)
 
         response = self.client.get('/admin/cdr_alert/blacklist/')
         self.failUnlessEqual(response.status_code, 200)
         response = self.client.get('/admin/cdr_alert/blacklist/blacklist_by_country/')
+        self.failUnlessEqual(response.status_code, 200)
+        response = self.client.post('/admin/cdr_alert/blacklist/blacklist_by_country/',
+                                    {'country': 198,})
         self.failUnlessEqual(response.status_code, 200)
 
         response = self.client.get('/admin/country_dialcode/country/')
