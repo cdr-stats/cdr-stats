@@ -17,7 +17,7 @@ import djcelery
 
 djcelery.setup_loader()
 
-APPLICATION_DIR = os.path.dirname( globals()[ '__file__' ] )
+APPLICATION_DIR = os.path.dirname(globals()['__file__'])
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -35,9 +35,9 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         # Add 'postgresql_psycopg2','postgresql','mysql','sqlite3','oracle'
-        'ENGINE': 'django.db.backends.postgresql_psycopg2', #'django.db.backends.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         # Or path to database file if using sqlite3.
-        'NAME': 'cdr_stats_psql', #os.path.dirname(os.path.abspath(__file__)) + '/database/local.db',
+        'NAME': 'cdr_stats_psql',
         'USER': 'postgres',       # Not used with sqlite3.
         'PASSWORD': 'postgres',   # Not used with sqlite3.
         'HOST': 'localhost',      # Set to empty string for localhost.
@@ -47,11 +47,9 @@ DATABASES = {
     }
 }
 
-CDR_TABLE_NAME = 'cdr' # Name of the table containing the Asterisk/FreeSwitch CDR
-
-# Only the Asterisk CDR table is supported at the moment, 
+# Only the Asterisk CDR table is supported at the moment,
 # but Freeswitch and other platform will be soon
-VOIP_PLATFORM = 'asterisk' # asterisk, freeswitch
+VOIP_PLATFORM = 'asterisk'  # asterisk, freeswitch
 
 
 # Local time zone for this installation. Choices can be found here:
@@ -82,7 +80,7 @@ USE_L10N = True
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT =  APPLICATION_DIR + "/static/"
+STATIC_ROOT = APPLICATION_DIR + "/static/"
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -159,10 +157,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 ROOT_URLCONF = 'cdr_stats.urls'
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    # Put strings here, like "/home/html/django_templates"
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join( APPLICATION_DIR, 'templates' ), 
+    os.path.join(APPLICATION_DIR, 'templates' ),
 )
 
 INTERNAL_IPS = ('127.0.0.1')
@@ -210,9 +208,9 @@ try:
 except ImportError:
     pass
 else:
-    INSTALLED_APPS = INSTALLED_APPS #+ ('debug_toolbar',)
-    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES #+ \
-        #('debug_toolbar.middleware.DebugToolbarMiddleware',)
+    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar',)
+    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + \
+        ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     DEBUG_TOOLBAR_CONFIG = {
         'INTERCEPT_REDIRECTS': False,
     }
@@ -237,10 +235,10 @@ LOGIN_URL = '/pleaselog/'
 #==============
 DICTIONARY = "/usr/share/dict/words"
 DILLA_USE_LOREM_IPSUM = False  # set to True ignores dictionary
-DILLA_APPS = [                          
+DILLA_APPS = [
                 'cdr',
              ]
-DILLA_SPAMLIBS = [                
+DILLA_SPAMLIBS = [
                 'cdr.cdr_custom_spamlib',
                 ]
 # To use Dilla
@@ -292,13 +290,13 @@ SOCKETIO_CALLNUM_DEFAULT = 0
 
 #GENERAL
 #=======
-# PHONENUMBER_PREFIX_LIMIT_MIN & PHONENUMBER_PREFIX_LIMIT_MAX are used to know 
+# PHONENUMBER_PREFIX_LIMIT_MIN & PHONENUMBER_PREFIX_LIMIT_MAX are used to know
 # how many digits are used to match against the dialcode prefix database
 PHONENUMBER_PREFIX_LIMIT_MIN = 2
 PHONENUMBER_PREFIX_LIMIT_MAX = 5
 
 #If PhoneNumber is lower than PHONENUMBER_MIN_DIGITS it will be considered as an extension
-#If PhoneNumber is longer than PHONENUMBER_MIN_DIGITS but lower than PHONENUMBER_MAX_DIGITS then 
+#If PhoneNumber is longer than PHONENUMBER_MIN_DIGITS but lower than PHONENUMBER_MAX_DIGITS then
 #the PhoneNumber will be considered as local call and the LOCAL_DIALCODE will be added
 LOCAL_DIALCODE = 1 # Set the Dialcode of your country (44 for UK, 1 for US)
 PHONENUMBER_MIN_DIGITS = 6
@@ -316,8 +314,8 @@ LOCAL_SWITCH_ID = 1
 
 #ASTERISK IMPORT
 #===============
-ASTERISK_IMPORT_TYPE = 'mysql' # Only mysql supported
-ASTERISK_PRIMARY_KEY = 'acctid' # acctid, _id
+ASTERISK_IMPORT_TYPE = 'mysql'  # Only mysql supported
+ASTERISK_PRIMARY_KEY = 'acctid'  # acctid, _id
 
 #Mysql Settings to use for import
 ASTERISK_CDR_MYSQL_IMPORT = {
@@ -349,7 +347,7 @@ CDR_MONGO_CDR_COUNTRY = 'cdr_country_analytic'
 #MongoDB setting(s) to use for import
 CDR_MONGO_IMPORT = {
     '127.0.0.1': {
-        'db_name': 'freeswitch_cdr', # cdr-stats
+        'db_name': 'freeswitch_cdr',  # cdr-stats
         'host': 'localhost',
         'port': 27017,
         'collection': 'cdr',
@@ -411,7 +409,7 @@ LOGGING = {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
             'filename': '/var/log/cdr-stats/cdr-stats-db.log',
-            'maxBytes': 1024*1024*5, # 5 MB
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 20,
             'formatter':'verbose',
         },
