@@ -599,8 +599,8 @@ def cdr_export_to_csv(request):
                                               "remote_media_ip": 0
                                             })
 
-    writer = csv.writer(response, delimiter='\t')
-    writer.writerow(['Call-date', 'CLID', 'Destination', 'Duration', 'Bill_sec', 'Hangup_cause', 'AccountCode', 'Direction'])
+    writer = csv.writer(response, dialect=csv.excel_tab)
+    writer.writerow(['Call-date', 'CLID', 'Destination', 'Duration', 'Bill sec', 'Hangup cause', 'AccountCode', 'Direction'])
 
     for cdr in final_result:
         writer.writerow([
