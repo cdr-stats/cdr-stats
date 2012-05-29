@@ -15,6 +15,8 @@ from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from django.http import HttpRequest
 from common.test_utils import build_test_suite_from
+from cdr.tasks import *
+from cdr_alert.tasks import *
 
 import base64
 import simplejson
@@ -280,11 +282,23 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
 
+class CdrStatsTaskTestCase(TestCase):
+
+    def testTask(self):
+        result = blacklist_whitelist_notification.delay(3) # notice_type = 3 blacklist
+        self.assertEquals(result.get(), True)
+        result = blacklist_whitelist_notification.delay(4) # notice_type = 4 whitelist
+        self.assertEquals(result.get(), True)
+        #result = chk_alarm.delay()
+        #self.assertEquals(result.get(), True)
+
+
 test_cases = [
 
     CdrStatsTastypieApiTestCase,
     CdrStatsAdminInterfaceTestCase,
     CdrStatsCustomerInterfaceTestCase,
+    CdrStatsTaskTestCase,
 ]
 
 
