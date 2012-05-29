@@ -22,6 +22,7 @@ from cdr.models import Switch, HangupCause
 from cdr.tasks import sync_cdr_pending, get_channels_info
 from cdr_alert.models import AlertRemovePrefix, Alarm, AlarmReport, Blacklist, Whitelist
 from cdr_alert.tasks import send_cdr_report, blacklist_whitelist_notification, chk_alarm
+from user_profile.models import UserProfile
 
 import base64
 import simplejson
@@ -306,7 +307,7 @@ class CdrStatsTaskTestCase(TestCase):
         self.assertEqual(sync_cdr_pending().timedelta_seconds(delta), 1)
 
         delta = timedelta(seconds=1)
-        self.assertEqual(send_cdr_report().timedelta_seconds(delta), 1)        
+        self.assertEqual(send_cdr_report().timedelta_seconds(delta), 1)
 
 
 class CdrStatsModelTestCase(TestCase):
@@ -359,6 +360,13 @@ class CdrStatsModelTestCase(TestCase):
         obj = Whitelist(phonenumber_prefix=32, country_id=198)
         obj.save()
         self.assertEquals(32, obj.phonenumber_prefix)
+        self.assertNotEquals(obj.id, None)
+        obj.delete()
+
+    def testUserProfile(self):
+        obj = UserProfile(user_id=1, address='xyz', city='abc')
+        obj.save()
+        self.assertEquals(1, obj.user_id)
         self.assertNotEquals(obj.id, None)
         obj.delete()
 
