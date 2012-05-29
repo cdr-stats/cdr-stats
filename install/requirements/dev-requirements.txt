@@ -1,3 +1,10 @@
 sphinx
 #git+git://github.com/aerosol/identicon.git
 #git+git://github.com/aerosol/django-dilla.git
+
+django-debug-toolbar
+
+#Pull request waiting to be in, fix setup and template for this plugins
+#django-debug-toolbar-mongo
+#for now we use :
+#git+git://github.com/d0ugal/django-debug-toolbar-mongo.git

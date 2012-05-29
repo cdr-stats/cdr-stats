@@ -215,6 +215,31 @@ else:
         'INTERCEPT_REDIRECTS': False,
     }
 
+# Debug Toolbar mongo
+"""
+try:
+    import debug_toolbar_mongo
+except ImportError:
+    pass
+else:
+    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar_mongo',)
+    #DEBUG_TOOLBAR_PANELS = DEBUG_TOOLBAR_PANELS + \
+    #    ('debug_toolbar_mongo.panel.MongoDebugPanel',)
+    DEBUG_TOOLBAR_MONGO_STACKTRACES = False
+    DEBUG_TOOLBAR_PANELS = (
+        'debug_toolbar.panels.version.VersionDebugPanel',
+        'debug_toolbar.panels.timer.TimerDebugPanel',
+        'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
+        'debug_toolbar.panels.headers.HeaderDebugPanel',
+        'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
+        'debug_toolbar.panels.template.TemplateDebugPanel',
+        'debug_toolbar_mongo.panel.MongoDebugPanel',
+        'debug_toolbar.panels.sql.SQLDebugPanel',
+        'debug_toolbar.panels.signals.SignalDebugPanel',
+        'debug_toolbar.panels.logger.LoggingPanel',
+    )
+"""
+
 # Django extensions
 try:
     import django_extensions
