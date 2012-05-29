@@ -561,16 +561,18 @@ def cdr_view(request):
 
     logging.debug('Create cdr result')
     rows = \
-    final_result.skip(PAGE_SIZE * (PAGE_NUMBER - 1)).limit(PAGE_SIZE).sort([(sort_field, default_order)]).clone()
+    final_result.skip(PAGE_SIZE * (PAGE_NUMBER - 1)).\
+            limit(PAGE_SIZE).sort([(sort_field, default_order)]).clone()
 
     # change cursor batch_size
-    rows.batch_size(1000)#1000000000
+    rows.batch_size(1000)  # 1000000000
 
     # Get daily report from session while using pagination & sorting
     if request.GET.get('page') or request.GET.get('sort_by'):
         cdr_view_daily_data = request.session['session_cdr_view_daily_data']
     else:
-        request.session['session_cdr_view_daily_data'] = cdr_view_daily_data = cdr_view_daily_report(query_var)
+        cdr_view_daily_data = cdr_view_daily_report(query_var)
+        request.session['session_cdr_view_daily_data'] = cdr_view_daily_data
 
     template_data = {'module': current_view(request),
                      'rows': rows,
@@ -622,7 +624,8 @@ def cdr_export_to_csv(request):
                                             })
 
     writer = csv.writer(response, dialect=csv.excel_tab)
-    writer.writerow(['Call-date', 'CLID', 'Destination', 'Duration', 'Bill sec', 'Hangup cause', 'AccountCode', 'Direction'])
+    writer.writerow(['Call-date', 'CLID', 'Destination', 'Duration', \
+                     'Bill sec', 'Hangup cause', 'AccountCode', 'Direction'])
 
     for cdr in final_result:
         writer.writerow([
@@ -665,12 +668,14 @@ def cdr_detail(request, id, switch_id):
         try:
             connection = Connection(host, port)
             DB_CONNECTION = connection[db_name]
-        except ConnectionFailure, e:
+        except ConnectionFailure:
             raise Http404
 
         doc = DB_CONNECTION[settings.CDR_MONGO_IMPORT[ipaddress]['collection']].find({'_id': ObjectId(id)})
-        return render_to_response('cdr/cdr_detail_freeswitch.html', {'row': list(doc), 'menu': menu,},
-                                  context_instance=RequestContext(request))
+        return render_to_response(
+                        'cdr/cdr_detail_freeswitch.html',
+                        {'row': list(doc), 'menu': menu},
+                        context_instance=RequestContext(request))
 
     elif settings.LOCAL_SWITCH_TYPE == 'asterisk':
         #Connect on Mysql Database
@@ -693,8 +698,10 @@ def cdr_detail(request, id, switch_id):
         if not row:
             raise Http404
 
-        return render_to_response('cdr/cdr_detail_asterisk.html', {'row': list(row), 'menu': menu,},
-                                  context_instance=RequestContext(request))
+        return render_to_response(
+                            'cdr/cdr_detail_asterisk.html',
+                            {'row': list(row), 'menu': menu},
+                            context_instance=RequestContext(request))
 
 
 @login_required
@@ -715,7 +722,9 @@ def cdr_global_report(request):
     """
 
     if not check_cdr_data_exists(request):
-        return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
+        return render_to_response(
+                    'cdr/error_import.html',
+                    context_instance=RequestContext(request))
 
     logging.debug('CDR global report view start')
     query_var = {}
@@ -730,8 +739,7 @@ def cdr_global_report(request):
             if switch_id and int(switch_id) != 0:
                 query_var['switch_id'] = int(switch_id)
 
-    if not request.user.is_superuser: # not superuser
-        acc_code_error = ''
+    if not request.user.is_superuser:  # not superuser
         if chk_account_code(request):
             query_var['accountcode'] = chk_account_code(request)
         else:
@@ -814,7 +822,9 @@ def cdr_dashboard(request):
     """
 
     if not check_cdr_data_exists(request):
-        return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
+        return render_to_response(
+                    'cdr/error_import.html',
+                    context_instance=RequestContext(request))
 
     logging.debug('CDR dashboard view start')
     now = datetime.now()
@@ -887,7 +897,8 @@ def cdr_dashboard(request):
     country_calls = cdr_data.map_reduce(map, reduce, out, query=query_var)
 
     # Top 5 countries list
-    country_calls = country_calls.find().sort([('value.calldate__count', -1)]).limit(5)
+    country_calls = country_calls.find().\
+                        sort([('value.calldate__count', -1)]).limit(5)
 
     country_analytic = []
     for i in country_calls:
@@ -896,12 +907,13 @@ def cdr_dashboard(request):
                                  int(i['value']['duration__sum']),
                                  int(i['_id']['f_Con'])))
 
-    # remove mapreduce output & country analytic from database (no longer required)
+    # remove mapreduce output & country analytic from database
+    # TODO : Check if (no longer required)
     settings.DB_CONNECTION[out].drop()
 
     #Calculate the Average Time of Call
     ACT = math.floor(total_calls / 24)
-    if total_calls==0:
+    if total_calls == 0:
         ACD = 0
     else:
         ACD = int_convert_to_minute(math.floor(total_duration / total_calls))
@@ -931,7 +943,8 @@ def cdr_country_report(request):
 
         * ``template`` - cdr/cdr_country_report.html
         * ``form`` - CountryReportForm
-        * ``mongodb_data_set`` - CDR_MONGO_CDR_COUNTRY_REPORT / CDR_MONGO_CDR_COUNTRY
+        * ``mongodb_data_set`` - CDR_MONGO_CDR_COUNTRY_REPORT /
+                                 CDR_MONGO_CDR_COUNTRY
         * ``map_reduce`` - mapreduce_cdr_country_report()
 
     **Logic Description**:
@@ -940,7 +953,9 @@ def cdr_country_report(request):
         to create country call
     """
     if not check_cdr_data_exists(request):
-        return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
+        return render_to_response(
+                    'cdr/error_import.html',
+                    context_instance=RequestContext(request))
 
     logging.debug('CDR country report view start')
     template_name = 'cdr/cdr_country_report.html'
@@ -1014,8 +1029,7 @@ def cdr_country_report(request):
 
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
-    if not request.user.is_superuser: # not superuser
-        acc_code_error = ''
+    if not request.user.is_superuser:  # not superuser
         if chk_account_code(request):
             query_var['accountcode'] = chk_account_code(request)
         else:
@@ -1041,13 +1055,14 @@ def cdr_country_report(request):
         total_duration += int(d['value']['duration__sum'])
 
         # created cdr_country_analytic
-        settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY].update({
-                                                                        'country_id': int(d['_id']['f_Con']),
-                                                                      },
-                                                                      {
-                                                                        '$inc': {'count': int(d['value']['calldate__count']),
-                                                                                 'duration': int(d['value']['duration__sum'])}
-                                                                      }, upsert=True)
+        settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY].update(
+            {
+                'country_id': int(d['_id']['f_Con']),
+            },
+            {
+                '$inc': {'count': int(d['value']['calldate__count']),
+                'duration': int(d['value']['duration__sum'])}
+            }, upsert=True)
 
     country_calls_final = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY].find().sort([('count', -1)])
     country_analytic_array = []
@@ -1060,8 +1075,9 @@ def cdr_country_report(request):
                                        int(i['country_id'])))
 
     # Top countries list
-    for i in country_analytic_array[0: DISPLAY_NO_OF_COUNTRY ]:
-        #i[0] - country name, i[1] - call count, i[2] - call duration, i[3] - country id,
+    for i in country_analytic_array[0: DISPLAY_NO_OF_COUNTRY]:
+        # i[0] - country name, i[1] - call count,
+        # i[2] - call duration, i[3] - country id,
         country_analytic_array_final.append((i[0], int(i[1]), int(i[2]), int(i[3])))
 
     # Other countries analytic
@@ -1076,7 +1092,8 @@ def cdr_country_report(request):
                                          other_country_call_count,
                                          other_country_call_duration))
 
-    # remove mapreduce output & country analytic from database (no longer required)
+    # remove mapreduce output & country analytic from database
+    # TODO Check if (no longer required)
     settings.DB_CONNECTION[out].drop()
     settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY].drop()
 
@@ -1105,8 +1122,9 @@ def cdr_overview(request):
         * ``template`` - cdr/cdr_overview.html.html
         * ``form`` - CdrOverviewForm
         * ``mongodb_data_set`` - CDR_MONGO_CDR_DAILY, CDR_MONGO_CDR_HOURLY
-        * ``map_reduce`` - mapreduce_cdr_hourly_overview() | mapreduce_cdr_monthly_overview()
-                           mapreduce_cdr_daily_overview
+        * ``map_reduce`` - mapreduce_cdr_hourly_overview()
+                           mapreduce_cdr_monthly_overview()
+                           mapreduce_cdr_daily_overview()
 
     **Logic Description**:
 
@@ -1115,7 +1133,9 @@ def cdr_overview(request):
     """
 
     if not check_cdr_data_exists(request):
-        return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
+        return render_to_response(
+                    'cdr/error_import.html',
+                    context_instance=RequestContext(request))
     template_name = 'cdr/cdr_overview.html'
     logging.debug('CDR overview start')
     query_var = {}
@@ -1201,7 +1221,7 @@ def cdr_overview(request):
         form = CdrOverviewForm(initial={'from_date': tday.strftime('%Y-%m-%d'),
                                         'to_date': tday.strftime('%Y-%m-%d'),
                                         'destination_type': 1,
-                                        'switch': switch_id,})
+                                        'switch': switch_id})
 
         start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
         end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
@@ -1210,8 +1230,7 @@ def cdr_overview(request):
 
         query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
-    if not request.user.is_superuser: # not superuser
-        acc_code_error = ''
+    if not request.user.is_superuser:  # not superuser
         if chk_account_code(request):
             query_var['accountcode'] = chk_account_code(request)
         else:
@@ -1223,22 +1242,26 @@ def cdr_overview(request):
         hourly_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HOURLY]
 
         (map, reduce, finalize_fun, out) = mapreduce_cdr_hourly_overview()
-        calls_in_day = hourly_data.map_reduce(map, reduce, out, query=query_var)
+        calls_in_day = hourly_data.map_reduce(map, reduce, \
+                                                out, query=query_var)
         calls_in_day = calls_in_day.find().sort([('_id.g_Millisec', -1),
                                                  ('_id.f_Switch', 1)])
 
         total_hour_record = []
         total_hour_call_count = []
         total_hour_call_duration = []
-        if calls_in_day.count()!=0:
+        if calls_in_day.count() != 0:
             hour_data_call_count = dict()
             hour_data_call_duration = dict()
             for i in calls_in_day.clone():
                 dt = int(i['_id']['g_Millisec'])
-                total_hour_record.append({'dt': dt,
-                                          'calldate__count': int(i['value']['calldate__count']),
-                                          'duration__sum': int(i['value']['duration__sum']),
-                                          'switch_id': int(i['_id']['f_Switch'])})
+                total_hour_record.append(
+                    {
+                        'dt': dt,
+                        'calldate__count': int(i['value']['calldate__count']),
+                        'duration__sum': int(i['value']['duration__sum']),
+                        'switch_id': int(i['_id']['f_Switch'])
+                    })
 
                 if dt in hour_data_call_count:
                     hour_data_call_count[dt] += int(i['value']['calldate__count'])
@@ -1269,15 +1292,18 @@ def cdr_overview(request):
         total_day_record = []
         total_day_call_duration = []
         total_day_call_count = []
-        if calls_in_day.count()!=0:
+        if calls_in_day.count() != 0:
             day_call_duration = dict()
             day_call_count = dict()
             for i in calls_in_day.clone():
                 dt = int(i['_id']['g_Millisec'])
-                total_day_record.append({'dt': dt,
-                                         'calldate__count': int(i['value']['calldate__count']),
-                                         'duration__sum': int(i['value']['duration__sum']),
-                                         'switch_id': int(i['_id']['f_Switch'])})
+                total_day_record.append(
+                    {
+                        'dt': dt,
+                        'calldate__count': int(i['value']['calldate__count']),
+                        'duration__sum': int(i['value']['duration__sum']),
+                        'switch_id': int(i['_id']['f_Switch'])
+                    })
 
                 if dt in day_call_duration:
                     day_call_duration[dt] += int(i['value']['duration__sum'])
@@ -1311,15 +1337,18 @@ def cdr_overview(request):
         total_month_record = []
         total_month_call_duration = []
         total_month_call_count = []
-        if calls_in_month.count()!=0:
+        if calls_in_month.count() != 0:
             month_call_duration = dict()
             month_call_count = dict()
             for i in calls_in_month.clone():
                 dt = int(i['_id']['g_Millisec'])
-                total_month_record.append({'dt': dt,
-                                           'calldate__count': int(i['value']['calldate__count']),
-                                           'duration__sum': int(i['value']['duration__sum']),
-                                           'switch_id': int(i['_id']['f_Switch'])})
+                total_month_record.append(
+                    {
+                        'dt': dt,
+                        'calldate__count': int(i['value']['calldate__count']),
+                        'duration__sum': int(i['value']['duration__sum']),
+                        'switch_id': int(i['_id']['f_Switch'])
+                    })
 
                 if dt in month_call_duration:
                     month_call_duration[dt] += int(i['value']['duration__sum'])
@@ -1357,8 +1386,10 @@ def cdr_overview(request):
                      'TOTAL_GRAPH_COLOR': TOTAL_GRAPH_COLOR,
                      }
 
-        return render_to_response(template_name, variables,
-                                  context_instance = RequestContext(request))
+        return render_to_response(
+                        template_name,
+                        variables,
+                        context_instance=RequestContext(request))
 
 
 def get_hourly_data_for_date(start_date, end_date, query_var, graph_view):
@@ -1377,9 +1408,9 @@ def get_hourly_data_for_date(start_date, end_date, query_var, graph_view):
     total_call_count = []
 
     #get the dates of the period
-    #return [datetime.datetime(2012, 3, 20, 0, 0), datetime.datetime(2012, 3, 21, 0, 0)]
-    dateList = date_range(datetime(start_date.year, start_date.month,start_date.day),
-        datetime(end_date.year, end_date.month, end_date.day))
+    dateList = date_range(
+                datetime(start_date.year, start_date.month, start_date.day),
+                datetime(end_date.year, end_date.month, end_date.day))
 
     for i in calls_in_day:
         date_in_list = datetime(int(i['_id']['a_Year']), int(i['_id']['b_Month']), int(i['_id']['c_Day']))
