@@ -11,14 +11,8 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.utils.translation import gettext as _
 from cdr_alert.models import Blacklist, Whitelist
 from cdr_alert.tasks import blacklist_whitelist_notification
-from random import *
-import calendar
-import string
-import urllib
-import time
 
 
 def chk_prefix_in_whitelist(prefix_list):
@@ -35,11 +29,10 @@ def chk_prefix_in_whitelist(prefix_list):
                     flag = True
                     break
 
-            # if flag is true
-            # allowed
+            # if flag is true - allowed
             if flag:
-                # TODO: Send alert
-                blacklist_whitelist_notification.delay(4) # notice_type = 4 whitelist
+                # notice_type = 4 whitelist
+                blacklist_whitelist_notification.delay(4)
                 return True
 
     # no whitelist define
@@ -60,11 +53,10 @@ def chk_prefix_in_blacklist(prefix_list):
                     flag = True
                     break
 
-            # if flag is true
-            # not allowed
+            # if flag is true - not allowed
             if flag:
-                # TODO: Send alert
-                blacklist_whitelist_notification.delay(3) # notice_type = 3 blacklist
+                # notice_type = 3 blacklist
+                blacklist_whitelist_notification.delay(3)
                 return False
 
     # no blacklist is defined

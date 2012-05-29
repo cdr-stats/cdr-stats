@@ -181,7 +181,7 @@ def import_cdr_asterisk_mysql(shell=False):
             uniqueid = row[8]
             start_uepoch = datetime.fromtimestamp(int(row[1]))
             answer_uepoch = start_uepoch
-            end_uepoch = datetime.fromtimestamp(int(row[1]) + int(duration)) 
+            end_uepoch = datetime.fromtimestamp(int(row[1]) + int(duration))
 
             # Check Destination number
             destination_number = row[0]
@@ -220,7 +220,7 @@ def import_cdr_asterisk_mysql(shell=False):
                 #International call
                 country_id = get_country_id(prefix_list)
 
-            if get_country_id==0:
+            if get_country_id == 0:
                 #TODO: Add logger
                 print_shell(shell, "Error to find the country_id %s" % destination_number)
 
@@ -264,7 +264,7 @@ def import_cdr_asterisk_mysql(shell=False):
                                         authorized,
                                         start_uepoch.strftime('%Y-%m-%d %M:%S'),))
             count_import = count_import + 1
-            
+
             # Store monthly cdr collection with unique import
             current_y_m = datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
             CDR_MONTHLY.update(
@@ -332,7 +332,7 @@ def import_cdr_asterisk_mysql(shell=False):
 
             #Fetch a other record
             row = cursor.fetchone()
-        
+
         cursor.close()
         cursor_update.close()
         connection.close()
