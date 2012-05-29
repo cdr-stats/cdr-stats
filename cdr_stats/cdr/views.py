@@ -43,19 +43,17 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 import operator
-import time, math
-import csv, codecs
+import time
+import math
+import csv
 import logging
+
 
 TOTAL_GRAPH_COLOR = '#A61700'
 DISPLAY_NO_OF_COUNTRY = 10
-
 news_url = settings.NEWS_URL
-
 cdr_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COMMON]
 #db.cdr.ensureIndex({"variables.answer_stamp":1}, {background:true});
-
-
 (map, reduce, finalize_fun, out) = mapreduce_cdr_view()
 
 
@@ -98,7 +96,7 @@ def check_cdr_data_exists(request):
         return False
     else:
         return True
-    
+
 
 def login_view(request):
     """Login view
@@ -117,40 +115,45 @@ def login_view(request):
         except (KeyError):
             action = "login"
 
-        if action=="logout":
+        if action == "logout":
             logout(request)
         else:
             loginform = loginForm(request.POST)
             if loginform.is_valid():
                 cd = loginform.cleaned_data
-                user = authenticate(username=cd['user'], password=cd['password'])
+                user = authenticate(
+                            username=cd['user'],
+                            password=cd['password'])
                 if user is not None:
                     if user.is_active:
                         login(request, user)
                         # Redirect to a success page.
                     else:
                         # Return a 'disabled account' error message
-                        errorlogin = _('Disabled Account') #True
+                        errorlogin = _('Disabled Account')  # True
                 else:
                     # Return an 'invalid login' error message.
-                    errorlogin = _('Invalid Login.') #True
+                    errorlogin = _('Invalid Login.')  # True
             else:
                 return HttpResponseRedirect('/')
-    else :
-        loginform = None;
+    else:
+        loginform = None
 
     data = {
-        'loginform' : loginform,
-        'errorlogin' : errorlogin,
-        'news' : get_news(news_url),
-        'is_authenticated' : request.user.is_authenticated()
+        'loginform': loginform,
+        'errorlogin': errorlogin,
+        'news': get_news(news_url),
+        'is_authenticated': request.user.is_authenticated()
     }
-    return render_to_response(template, data,context_instance = RequestContext(request))
+    return render_to_response(
+                template,
+                data,
+                context_instance=RequestContext(request))
 
 
 def logout_view(request):
-	logout(request)
-	return HttpResponseRedirect('/')
+    logout(request)
+    return HttpResponseRedirect('/')
 
 
 def cdr_view_daily_report(query_var):
@@ -163,12 +166,14 @@ def cdr_view_daily_report(query_var):
 
     detail_data = []
     for doc in total_data:
-        detail_data.append({'calldate': datetime(int(doc['_id']['a_Year']),
-                                        int(doc['_id']['b_Month']), int(doc['_id']['c_Day'])),
-                            'duration__sum': int(doc['value']['duration__sum']),
-                            'calldate__count': int(doc['value']['calldate__count']),
-                            'duration__avg': doc['value']['duration__avg'],
-                            })
+        detail_data.append(
+            {
+                'calldate': datetime(int(doc['_id']['a_Year']),
+                int(doc['_id']['b_Month']), int(doc['_id']['c_Day'])),
+                'duration__sum': int(doc['value']['duration__sum']),
+                'calldate__count': int(doc['value']['calldate__count']),
+                'duration__avg': doc['value']['duration__avg'],
+            })
 
     if total_data.count() != 0:
         max_duration = max([int(x['value']['duration__sum']) for x in total_data.clone()])
@@ -209,13 +214,15 @@ def cdr_view(request):
     """
 
     if not check_cdr_data_exists(request):
-        return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
+        return render_to_response(
+                    'cdr/error_import.html',
+                    context_instance=RequestContext(request))
     template_name = 'cdr/cdr_view.html'
     logging.debug('CDR View Start')
     query_var = {}
-    result = 1 # default min
-    switch_id = 0 # default all
-    hangup_cause_id = 0 #default all
+    result = 1  # default min
+    switch_id = 0  # default all
+    hangup_cause_id = 0  # default all
     destination = ''
     destination_type = ''
     dst = ''
@@ -326,7 +333,6 @@ def cdr_view(request):
             rows = []
             docs_pages = 0
             PAGE_SIZE = settings.PAGE_SIZE
-            total_data = []
             total_duration = 0
             total_calls = 0
             total_avg_duration = 0
@@ -390,8 +396,10 @@ def cdr_view(request):
     except NameError:
         tday = datetime.today()
         from_date = tday.strftime('%Y-%m-01')
-        last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) + relativedelta(months=1)) - relativedelta(days=1)).strftime('%d')
-        to_date = tday.strftime('%Y-%m-'+last_day)
+        last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) + \
+                    relativedelta(months=1)) - \
+                    relativedelta(days=1)).strftime('%d')
+        to_date = tday.strftime('%Y-%m-' + last_day)
         search_tag = 0
         country_id = ''
         records_per_page = settings.PAGE_SIZE
@@ -476,15 +484,24 @@ def cdr_view(request):
 
     docs_pages = [[] for x in range(1, int(total_result_count))]
 
-    form = CdrSearchForm(initial={'from_date': from_date, 'to_date': to_date,
-                                  'destination': destination, 'destination_type': destination_type,
-                                  'accountcode': accountcode, 'accountcode_type': accountcode_type,
-                                  'caller': caller, 'caller_type': caller_type,
-                                  'duration': duration, 'duration_type': duration_type,
-                                  'result': result, 'direction': direction,
-                                  'hangup_cause': hangup_cause_id,
-                                  'switch': switch_id, 'country_id': country_id,
-                                  'records_per_page': records_per_page})
+    form = CdrSearchForm(initial={
+                            'from_date': from_date,
+                            'to_date': to_date,
+                            'destination': destination,
+                            'destination_type': destination_type,
+                            'accountcode': accountcode,
+                            'accountcode_type': accountcode_type,
+                            'caller': caller,
+                            'caller_type': caller_type,
+                            'duration': duration,
+                            'duration_type': duration_type,
+                            'result': result,
+                            'direction': direction,
+                            'hangup_cause': hangup_cause_id,
+                            'switch': switch_id,
+                            'country_id': country_id,
+                            'records_per_page': records_per_page
+                            })
 
     request.session['query_var'] = query_var
 
@@ -529,8 +546,8 @@ def cdr_view(request):
 
     sort_field = variable_value(request, 'sort_by')
     if not sort_field:
-        sort_field = 'start_uepoch' # default sort field
-        default_order = -1 # desc
+        sort_field = 'start_uepoch'  # default sort field
+        default_order = -1  # desc
     else:
         if "-" in sort_field:
             default_order = -1
@@ -727,7 +744,7 @@ def cdr_global_report(request):
     #Run Map Reduce
     calls = cdr_data.map_reduce(map, reduce, out, query=query_var, finalize=finalize_fun,)
     calls = calls.find().sort([('_id.a_Year', -1), ('_id.b_Month', -1), ('_id.c_Day', -1)])
-    
+
     if calls.count() != 0:
         maxtime = datetime(int(calls[0]['_id']['a_Year']),
                            int(calls[0]['_id']['b_Month']),
@@ -849,7 +866,7 @@ def cdr_dashboard(request):
                                    d['value']['duration__sum']])
         total_calls += int(d['value']['calldate__count'])
         total_duration += int(d['value']['duration__sum'])
-        
+
         # created cdr_hangup_analytic
         try:
             int_hangup_cause_id = int(d['value']['hangup_cause_id'])
@@ -1699,7 +1716,7 @@ def cdr_realtime(request):
         for d in calls_in_day.clone():
             dt = int(d['_id']['g_Millisec'])
             final_data.append((dt, int(d['value']['numbercall__max'])))
-            
+
         logging.debug('Realtime view end')
         list_switch = Switch.objects.all()
         user_obj = User.objects.get(username=request.user)
@@ -1742,7 +1759,7 @@ def get_cdr_mail_report():
         # duration convert into min
         duration = int_convert_to_minute(int(i['duration']))
         billsec = int_convert_to_minute(int(i['billsec']))
-        
+
         final_last_ten_calls.append({
                              'id': i['cdr_object_id'],
                              'start_uepoch': i['start_uepoch'],
@@ -1766,23 +1783,30 @@ def get_cdr_mail_report():
     total_hour_count = total_data.count()
     detail_data = []
     for doc in total_data:
-        detail_data.append({
-                            'duration__sum': int(doc['value']['duration__sum']),
-                            'calldate__count': int(doc['value']['calldate__count']),
-                            'duration__avg': doc['value']['duration__avg'],
-                            })
+        detail_data.append(
+            {
+                'duration__sum': int(doc['value']['duration__sum']),
+                'calldate__count': int(doc['value']['calldate__count']),
+                'duration__avg': doc['value']['duration__avg'],
+            })
         # created cdr_hangup_analytic
-        settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HANGUP].update({'hangup_cause_id': int(doc['value']['hangup_cause_id'])},
-                                                                     {'$inc': {'count': 1}}, upsert=True)
+        settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HANGUP].update(
+            {
+                'hangup_cause_id': int(doc['value']['hangup_cause_id'])
+            },
+            {
+                '$inc': {'count': 1}
+            }, upsert=True)
 
         # created cdr_country_analytic
-        settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY].update({
-                                                                      'country_id': int(doc['_id']['f_Con']),
-                                                                      },
-                                                                      {
-                                                                        '$inc': {'count': int(doc['value']['calldate__count']),
-                                                                                 'duration': int(doc['value']['duration__sum'])}
-                                                                      }, upsert=True)
+        settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY].update(
+            {
+                'country_id': int(doc['_id']['f_Con']),
+            },
+            {
+                '$inc': {'count': int(doc['value']['calldate__count']),
+                'duration': int(doc['value']['duration__sum'])}
+            }, upsert=True)
 
     if total_data.count() != 0:
         total_duration = sum([int(x['value']['duration__sum']) for x in total_data.clone()])
@@ -1801,7 +1825,6 @@ def get_cdr_mail_report():
     # Top 5 called countries
     country_calls_final = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY].find().sort([('count', -1)]).limit(5)
     country_analytic_array = []
-    country_analytic_array_final = []
     for i in country_calls_final:
         # All countries list
         country_analytic_array.append((get_country_name(int(i['country_id'])),
@@ -1817,8 +1840,9 @@ def get_cdr_mail_report():
     if hangup_analytic.count() != 0:
         total_hangup = sum([int(x['count']) for x in hangup_analytic.clone()])
         for i in hangup_analytic.clone():
-            hangup_analytic_array.append((get_hangupcause_name(int(i['hangup_cause_id'])),
-                                          "{0:.0f}%".format((float(i['count']) / float(total_hangup)) * 100) ))
+            hangup_analytic_array.append(
+                (get_hangupcause_name(int(i['hangup_cause_id'])),
+                "{0:.0f}%".format((float(i['count']) / float(total_hangup)) * 100)))
 
     settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HANGUP].drop()
     # remove mapreduce output from database (no longer required)
@@ -1854,8 +1878,10 @@ def mail_report(request):
     """
 
     if not check_cdr_data_exists(request):
-        return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
-    
+        return render_to_response(
+                    'cdr/error_import.html',
+                    context_instance=RequestContext(request))
+
     logging.debug('CDR mail report view start')
     template = 'cdr/cdr_mail_report.html'
     user_obj = User.objects.get(username=request.user)
@@ -1866,10 +1892,13 @@ def mail_report(request):
         #create UserProfile
         user_profile_obj = UserProfile(user=user_obj)
         user_profile_obj.save()
-        
+
     form = EmailReportForm(request.user, instance=user_profile_obj)
-    if request.method == 'POST' :
-        form = EmailReportForm(request.user, request.POST, instance=user_profile_obj)
+    if request.method == 'POST':
+        form = EmailReportForm(
+                    request.user,
+                    request.POST,
+                    instance=user_profile_obj)
         if form.is_valid():
             form.save()
             msg = _('Email ids are saved successfully.')
@@ -1879,7 +1908,7 @@ def mail_report(request):
     data = {'module': current_view(request),
             'yesterday_date': mail_data['yesterday_date'],
             'rows': mail_data['rows'],
-            'form' : form,
+            'form': form,
             'total_duration': mail_data['total_duration'],
             'total_calls': mail_data['total_calls'],
             'ACT': mail_data['ACT'],
@@ -1889,7 +1918,7 @@ def mail_report(request):
             'msg': msg,
     }
     return render_to_response(template, data,
-           context_instance = RequestContext(request))
+           context_instance=RequestContext(request))
 
 
 def world_map_view(request):
@@ -1899,7 +1928,8 @@ def world_map_view(request):
 
         * ``template`` - cdr/world_map.html
         * ``form`` - WorldForm
-        * ``mongodb_data_set`` - CDR_MONGO_CDR_COUNTRY_REPORT / CDR_MONGO_CDR_COUNTRY
+        * ``mongodb_data_set`` - CDR_MONGO_CDR_COUNTRY_REPORT /
+                                 CDR_MONGO_CDR_COUNTRY
         * ``map_reduce`` - mapreduce_cdr_world_report()
 
     **Logic Description**:
@@ -1908,7 +1938,9 @@ def world_map_view(request):
         to create country call
     """
     if not check_cdr_data_exists(request):
-        return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
+        return render_to_response(
+                    'cdr/error_import.html',
+                    context_instance=RequestContext(request))
 
     logging.debug('CDR world report view start')
     template = 'cdr/world_map.html'
@@ -1964,8 +1996,7 @@ def world_map_view(request):
 
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
-    if not request.user.is_superuser: # not superuser
-        acc_code_error = ''
+    if not request.user.is_superuser:  # not superuser
         if chk_account_code(request):
             query_var['accountcode'] = chk_account_code(request)
         else:
@@ -1985,10 +2016,11 @@ def world_map_view(request):
     for i in calls:
         #country id - country name - country_code - call count - call duration
         world_analytic_array.append((int(i['_id']['f_Con']),
-                                     get_country_name(int(i['_id']['f_Con']), type='iso2'),
-                                     int(i['value']['calldate__count']),
-                                     i['value']['duration__sum'],
-                                     get_country_name(int(i['_id']['f_Con']))))
+                             get_country_name(int(i['_id']['f_Con']),
+                            type='iso2'),
+                             int(i['value']['calldate__count']),
+                             i['value']['duration__sum'],
+                             get_country_name(int(i['_id']['f_Con']))))
 
     logging.debug('CDR world report view end')
     variables = {'module': current_view(request),
@@ -2001,7 +2033,7 @@ def world_map_view(request):
                  }
 
     return render_to_response(template, variables,
-           context_instance = RequestContext(request))
+           context_instance=RequestContext(request))
 
 
 def index(request):
@@ -2015,7 +2047,6 @@ def index(request):
     template = 'cdr/index.html'
     errorlogin = ''
     loginform = loginForm()
-    db_error = ''
 
     if request.GET.get('db_error'):
         if request.GET['db_error'] == 'closed':
@@ -2029,25 +2060,25 @@ def index(request):
             errorlogin = code_error
 
     data = {'module': current_view(request),
-            'loginform' : loginform,
-            'errorlogin' : errorlogin,
-            'news' : get_news(news_url),
+            'loginform': loginform,
+            'errorlogin': errorlogin,
+            'news': get_news(news_url),
     }
     return render_to_response(template, data,
-           context_instance = RequestContext(request))
+           context_instance=RequestContext(request))
 
 
 def pleaselog(request):
     template = 'cdr/index.html'
     loginform = loginForm()
-    
+
     data = {
-        'loginform' : loginform,
-        'notlogged' : True,
-        'news' : get_news(news_url),
+        'loginform': loginform,
+        'notlogged': True,
+        'news': get_news(news_url),
     }
     return render_to_response(template, data,
-           context_instance = RequestContext(request))
+            context_instance=RequestContext(request))
 
 
 def cust_password_reset(request):

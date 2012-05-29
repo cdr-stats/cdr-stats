@@ -13,7 +13,6 @@
 #
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
-from django.http import HttpRequest
 from datetime import datetime, timedelta
 
 from common.test_utils import build_test_suite_from

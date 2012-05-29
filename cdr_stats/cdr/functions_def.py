@@ -12,7 +12,6 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.conf import settings
-from django.utils.translation import gettext as _
 from cdr.models import Switch, HangupCause
 from country_dialcode.models import Country, Prefix
 
