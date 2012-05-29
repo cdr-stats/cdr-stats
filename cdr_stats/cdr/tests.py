@@ -83,7 +83,6 @@ class CdrStatsTastypieApiTestCase(BaseAuthenticatedClient):
         self.client.delete('/api/v1/hangup_cause/1/', **self.extra)
         self.assertEqual(response.status_code, 204)
 
-
     def test_switch(self):
         """Test Function to create a switch"""
         # Create
@@ -144,7 +143,7 @@ class CdrStatsAdminInterfaceTestCase(TestCase):
         response = self.client.post('/admin/cdr/switch/import_cdr/', {'switch_id': 1,})
         self.failUnlessEqual(response.status_code, 200)
 
-        
+
         response = self.client.get('/admin/cdr/hangupcause/')
         self.failUnlessEqual(response.status_code, 200)
         response = self.client.get('/admin/cdr/hangupcause/add/')
@@ -201,7 +200,6 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         response = self.client.get('/user_detail_change/')
         self.failUnlessEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'cdr/registration/user_detail_change.html')
-
 
     def test_dashboard(self):
         """Test Function to check customer dashboard"""
@@ -288,9 +286,11 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 class CdrStatsTaskTestCase(TestCase):
 
     def testTask(self):
-        result = blacklist_whitelist_notification.delay(3) # notice_type = 3 blacklist
+        # notice_type = 3 blacklist
+        result = blacklist_whitelist_notification.delay(3)
         self.assertEquals(result.get(), True)
-        result = blacklist_whitelist_notification.delay(4) # notice_type = 4 whitelist
+        # notice_type = 4 whitelist
+        result = blacklist_whitelist_notification.delay(4)
         self.assertEquals(result.get(), True)
 
         # PeriodicTask
@@ -313,9 +313,7 @@ class CdrStatsTaskTestCase(TestCase):
         #self.assertEquals(result, True)
 
 
-
 test_cases = [
-
     CdrStatsTastypieApiTestCase,
     CdrStatsAdminInterfaceTestCase,
     CdrStatsCustomerInterfaceTestCase,

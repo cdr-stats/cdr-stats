@@ -65,7 +65,7 @@ def get_start_end_date(alert_condition_add_on):
     dt_list['p_end_date'] = datetime(start_date.year, start_date.month, start_date.day, 23, 59, 59, 999999)
     dt_list['c_start_date'] = datetime(end_date.year, end_date.month, end_date.day, 0, 0, 0, 0)
     dt_list['c_end_date'] = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
-    
+
     return dt_list
 
 
@@ -277,7 +277,7 @@ class chk_alarm(PeriodicTask):
     def run(self, **kwargs):
         logger = self.get_logger(**kwargs)
         logger.info("TASK :: chk_alarm called")
-                        
+
         alarm_objs = Alarm.objects.filter(status=1) # all active alarms
         for alarm_obj in alarm_objs:
             try:
@@ -308,7 +308,7 @@ class chk_alarm(PeriodicTask):
                 AlarmReport.objects.create(alarm=alarm_obj,
                                            calculatedvalue=alarm_obj.alert_value,
                                            status=1)
-                
+
         logger.debug("TASK :: chk_alarm finished")
         return True
 
@@ -380,7 +380,7 @@ class send_cdr_report(PeriodicTask):
     def run(self, **kwargs):
         logger = self.get_logger()
         logger.info("TASK :: send_cdr_report")
-            
+
         list_users = User.objects.filter(is_staff=True, is_active=True)
         for c_user in list_users:
             from_email = c_user.email
@@ -393,7 +393,7 @@ class send_cdr_report(PeriodicTask):
             mail_data = get_cdr_mail_report()
 
             subject = _('CDR Report')
-            
+
             html_content = get_template('cdr/mail_report_template.html').render(
                             Context({
                                 'yesterday_date': mail_data['yesterday_date'],

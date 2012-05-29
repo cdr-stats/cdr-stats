@@ -127,10 +127,11 @@ def get_country_name(id, type=''):
 def chk_account_code(request):
     acc_code = ''
     try:
-        if not request.user.is_superuser and request.user.get_profile().accountcode is not None:
+        if not request.user.is_superuser \
+            and request.user.get_profile().accountcode is not None:
             acc_code = request.user.get_profile().accountcode
             return "%s" % str(acc_code)
         else:
             return "%s" % str(acc_code)
-    except :
+    except:
         return acc_code
