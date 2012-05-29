@@ -86,6 +86,7 @@ class AlertRemovePrefix(models.Model):
         verbose_name_plural = _("Alert Remove Prefixes")
         db_table = "alert_remove_prefix"
 
+
 class Alarm(models.Model):
     """This defines the Alarm
 

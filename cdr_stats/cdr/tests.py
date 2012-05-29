@@ -18,8 +18,10 @@ from datetime import datetime, timedelta
 
 from common.test_utils import build_test_suite_from
 
-from cdr.tasks import *
-from cdr_alert.tasks import *
+from cdr.models import Switch, HangupCause
+from cdr.tasks import sync_cdr_pending, get_channels_info
+from cdr_alert.models import AlertRemovePrefix, Alarm, AlarmReport, Blacklist, Whitelist
+from cdr_alert.tasks import send_cdr_report, blacklist_whitelist_notification, chk_alarm
 
 import base64
 import simplejson
@@ -299,18 +301,66 @@ class CdrStatsTaskTestCase(TestCase):
 
         delta = timedelta(seconds=1)
         self.assertEqual(get_channels_info().timedelta_seconds(delta), 1)
-        #result = get_channels_info().run()
-        #self.assertEquals(result, True)
 
         delta = timedelta(seconds=1)
         self.assertEqual(sync_cdr_pending().timedelta_seconds(delta), 1)
-        #result = sync_cdr_pending().run()
-        self.assertEquals(result, True)
 
         delta = timedelta(seconds=1)
-        self.assertEqual(send_cdr_report().timedelta_seconds(delta), 1)
-        result = send_cdr_report().run()
-        #self.assertEquals(result, True)
+        self.assertEqual(send_cdr_report().timedelta_seconds(delta), 1)        
+
+
+class CdrStatsModelTestCase(TestCase):
+
+    def testSwitch(self):
+        obj = Switch(name='localhost', ipaddress='127.0.0.1')
+        obj.save()
+        self.assertEquals('localhost', obj.name)
+        self.assertNotEquals(obj.id, None)
+        obj.delete()
+
+    def testHangupCause(self):
+        obj = HangupCause(code=1, enumeration='UNALLOCATED_NUMBER')
+        obj.save()
+        self.assertEquals(1, obj.code)
+        self.assertNotEquals(obj.id, None)
+        obj.delete()
+
+    def testAlertRemovePrefix(self):
+        obj = AlertRemovePrefix(label='test', prefix=32)
+        obj.save()
+        self.assertEquals('test', obj.label)
+        self.assertNotEquals(obj.id, None)
+        obj.delete()
+
+    def testAlarm(self):
+        obj = Alarm(name='Alarm name', period=1, type=1, alert_condition=1,
+            alert_value=10, alert_condition_add_on=1, status=1,
+            email_to_send_alarm='localhost@cdr-stats.org')
+        obj.save()
+        self.assertEquals('Alarm name', obj.name)
+        self.assertNotEquals(obj.id, None)
+        obj.delete()
+
+    def testAlarmReport(self):
+        obj = AlarmReport(alarm_id=1, calculatedvalue=10, status=1)
+        obj.save()
+        self.assertEquals(1, obj.alarm_id)
+        self.assertNotEquals(obj.id, None)
+        obj.delete()
+
+    def testBlacklist(self):
+        obj = Blacklist(phonenumber_prefix=32, country_id=198)
+        obj.save()
+        self.assertEquals(32, obj.phonenumber_prefix)
+        self.assertNotEquals(obj.id, None)
+        obj.delete()
+
+    def testWhitelist(self):
+        obj = Whitelist(phonenumber_prefix=32, country_id=198)
+        obj.save()
+        self.assertEquals(32, obj.phonenumber_prefix)
+        self.assertNotEquals(obj.id, None)
+        obj.delete()
 
 
 test_cases = [
@@ -318,6 +368,7 @@ test_cases = [
     CdrStatsAdminInterfaceTestCase,
     CdrStatsCustomerInterfaceTestCase,
     CdrStatsTaskTestCase,
+    CdrStatsModelTestCase,
 ]
 
 
