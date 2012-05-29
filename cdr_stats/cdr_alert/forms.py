@@ -11,15 +11,9 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-
 from django import forms
-from django.forms import ModelForm
-from django.contrib.auth.models import User
-from django.contrib.admin.widgets import *
 from django.utils.translation import ugettext_lazy as _
-from cdr_alert.models import *
 from cdr.functions_def import get_country_list
-# place form definition here
 
 
 class BWCountryForm(forms.Form):

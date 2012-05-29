@@ -15,10 +15,8 @@
 from django import forms
 from django.forms import ModelForm
 from django.contrib.auth.models import User
-from django.contrib.admin.widgets import *
 from django.utils.translation import ugettext_lazy as _
-from user_profile.models import *
-# place form definition here
+from user_profile.models import UserProfile, Customer, Staff
 
 
 class UserChangeDetailForm(ModelForm):

@@ -11,18 +11,14 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django import *
 from django import forms
-from django.forms import *
-from django.contrib import *
-from django.contrib.admin.widgets import *
 from django.conf import settings
 from django.core.validators import validate_email
 from django.utils.translation import ugettext_lazy as _
 
 from common.common_functions import comp_day_range
-from cdr.models import *
-from cdr.functions_def import *
+from cdr.models import Switch, HangupCause
+from cdr.functions_def import get_switch_list, get_country_list, get_hc_list
 from user_profile.models import UserProfile
 
 STRING_SEARCH_TYPE_LIST = ((2, _('Begins with')),
@@ -158,8 +154,8 @@ class SearchForm(forms.Form):
 
 class CdrSearchForm(SearchForm):
     """Form used to search calls in the Customer UI."""
-    from_date = CharField(label=_('From'), required=True, max_length=10)
-    to_date = CharField(label=_('To'), required=True, max_length=10)
+    from_date = forms.CharField(label=_('From'), required=True, max_length=10)
+    to_date = forms.CharField(label=_('To'), required=True, max_length=10)
     direction = forms.TypedChoiceField(label=_('Direction'), required=False, coerce=bool,
                 choices=(('all', _('All')), ('inbound', _('Inbound')), ('outbound', _('Outbound'))))
     result = forms.TypedChoiceField(label=_('Result'), required=False, coerce=bool,
@@ -243,7 +239,7 @@ class loginForm(forms.Form):
     password.widget.attrs['placeholder'] = 'Password'
 
     
-class EmailReportForm(ModelForm):
+class EmailReportForm(forms.ModelForm):
     """Form used to change the detail of a user in the Customer UI."""
     multiple_email = forms.CharField(max_length=300, required=False,
                            label=_("Enter email addresses to receive the report separated by a comma"))

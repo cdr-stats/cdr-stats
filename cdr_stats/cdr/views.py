@@ -43,7 +43,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 import operator
-import time
+import time, math
 import csv, codecs
 import logging
 

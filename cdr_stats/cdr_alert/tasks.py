@@ -24,15 +24,14 @@ from celery.schedules import crontab
 from celery.decorators import task, periodic_task
 from notification import models as notification
 from cdr.common_tasks import single_instance_task
-from cdr_alert.models import *
-from cdr.mapreduce import *
+from cdr_alert.models import AlertRemovePrefix, Alarm, AlarmReport, Blacklist, Whitelist
+from cdr.mapreduce import mapreduce_task_cdr_alert
 from cdr.functions_def import get_hangupcause_id
 from cdr.views import get_cdr_mail_report
 from user_profile.models import UserProfile
-from pymongo import *
-from datetime import *
+
 from datetime import datetime, timedelta
-from dateutil.relativedelta import *
+from dateutil.relativedelta import relativedelta
 
 
 # Lock expires in 30 minutes
