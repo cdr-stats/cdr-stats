@@ -14,7 +14,10 @@
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from django.http import HttpRequest
+from datetime import datetime, timedelta
+
 from common.test_utils import build_test_suite_from
+
 from cdr.tasks import *
 from cdr_alert.tasks import *
 
@@ -289,8 +292,26 @@ class CdrStatsTaskTestCase(TestCase):
         self.assertEquals(result.get(), True)
         result = blacklist_whitelist_notification.delay(4) # notice_type = 4 whitelist
         self.assertEquals(result.get(), True)
-        #result = chk_alarm.delay()
-        #self.assertEquals(result.get(), True)
+
+        # PeriodicTask
+        result = chk_alarm().run()
+        self.assertEquals(result, True)
+
+        delta = timedelta(seconds=1)
+        self.assertEqual(get_channels_info().timedelta_seconds(delta), 1)
+        #result = get_channels_info().run()
+        #self.assertEquals(result, True)
+
+        delta = timedelta(seconds=1)
+        self.assertEqual(sync_cdr_pending().timedelta_seconds(delta), 1)
+        #result = sync_cdr_pending().run()
+        self.assertEquals(result, True)
+
+        delta = timedelta(seconds=1)
+        self.assertEqual(send_cdr_report().timedelta_seconds(delta), 1)
+        result = send_cdr_report().run()
+        #self.assertEquals(result, True)
+
 
 
 test_cases = [
