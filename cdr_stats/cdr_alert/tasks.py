@@ -16,33 +16,27 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.mail import send_mail, mail_admins
-from django.utils.safestring import mark_safe
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.template import Context
-
 from celery.task import Task, PeriodicTask
 from celery.schedules import crontab
 from celery.decorators import task, periodic_task
-from cdr.common_tasks import single_instance_task
-
 from notification import models as notification
-from pymongo import *
-
-from datetime import *
-from datetime import datetime, timedelta
-from dateutil import parser
-from dateutil.relativedelta import *
-
+from cdr.common_tasks import single_instance_task
 from cdr_alert.models import *
 from cdr.mapreduce import *
 from cdr.functions_def import get_hangupcause_id
-from user_profile.models import UserProfile
 from cdr.views import get_cdr_mail_report
-import sys
+from user_profile.models import UserProfile
+from pymongo import *
+from datetime import *
+from datetime import datetime, timedelta
+from dateutil.relativedelta import *
 
 
-LOCK_EXPIRE = 60 * 30 # Lock expires in 30 minutes
+# Lock expires in 30 minutes
+LOCK_EXPIRE = 60 * 30
 
 
 cdr_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COMMON]
@@ -54,9 +48,9 @@ def get_start_end_date(alert_condition_add_on):
     dt_list = {}
     # yesterday's date
     end_date = datetime.today() + relativedelta(days=-1)
-    if alert_condition_add_on == 1: # same day
+    if alert_condition_add_on == 1:  # same day
         comp_days = 1
-    if alert_condition_add_on == 2: # Same day in the previous week
+    if alert_condition_add_on == 2:  # Same day in the previous week
         comp_days = 7
 
     start_date= end_date + relativedelta(days=-int(comp_days))
@@ -84,15 +78,15 @@ def notify_admin_with_mail(notice_id, email_id):
                           sender=user)
     # Send mail to ADMINS
     subject = _('Alert')
-    message = \
-    _('Alert Message "%(user)s" - "%(user_id)s"') % {'user': user, 'user_id': user.id}
+    message = _('Alert Message "%(user)s" - "%(user_id)s"') \
+                % {'user': user, 'user_id': user.id}
 
     try:
         send_mail(subject, message, settings.SERVER_EMAIL, email_id)
     except:
         # mail_admins() is a shortcut for sending an email to the site admins,
         # as defined in the ADMINS setting
-        mail_admins(subject, message) # html_message='text/html'
+        mail_admins(subject, message)  # html_message='text/html'
     return True
 
 
@@ -113,21 +107,21 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
         *   Decrease by more than | Increase by more than
         *   % decrease by more than | % Increase by more than
     """
-    if alarm_obj.alert_condition == 1: # Is less than
+    if alarm_obj.alert_condition == 1:  # Is less than
         if alarm_obj.alert_value < current_value:
             notify_admin_with_mail(alarm_obj.type, alarm_obj.email_to_send_alarm)
             create_alarm_report_object(alarm_obj, status=2)
         else:
             create_alarm_report_object(alarm_obj, status=1)
 
-    if alarm_obj.alert_condition == 2: # Is greater than
+    if alarm_obj.alert_condition == 2:  # Is greater than
         if alarm_obj.alert_value > current_value:
             notify_admin_with_mail(alarm_obj.type, alarm_obj.email_to_send_alarm)
             create_alarm_report_object(alarm_obj, status=2)
         else:
             create_alarm_report_object(alarm_obj, status=1)
 
-    if alarm_obj.alert_condition == 3: # Decrease by more than
+    if alarm_obj.alert_condition == 3:  # Decrease by more than
         diff = abs(current_value - previous_value)
         if diff < alarm_obj.alert_value:
             notify_admin_with_mail(alarm_obj.type, alarm_obj.email_to_send_alarm)
@@ -135,7 +129,7 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
         else:
             create_alarm_report_object(alarm_obj, status=1)
 
-    if alarm_obj.alert_condition == 4: # Increase by more than
+    if alarm_obj.alert_condition == 4:  # Increase by more than
         diff = abs(current_value - previous_value)
         if diff > alarm_obj.alert_value:
             notify_admin_with_mail(alarm_obj.type, alarm_obj.email_to_send_alarm)
@@ -144,20 +138,20 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
             create_alarm_report_object(alarm_obj, status=1)
 
     # http://www.mathsisfun.com/percentage-difference.html
-    if alarm_obj.alert_condition == 5: # % decrease by more than
+    if alarm_obj.alert_condition == 5:  # % decrease by more than
         diff = abs(current_value - previous_value)
         avg = (current_value + previous_value)/2
-        percentage = (diff/avg) * 100
+        percentage = (diff / avg) * 100
         if percentage < alarm_obj.alert_value:
             notify_admin_with_mail(alarm_obj.type, alarm_obj.email_to_send_alarm)
             create_alarm_report_object(alarm_obj, status=2)
         else:
             create_alarm_report_object(alarm_obj, status=1)
 
-    if alarm_obj.alert_condition == 6: # % Increase by more than
+    if alarm_obj.alert_condition == 6:  # % Increase by more than
         diff = abs(current_value - previous_value)
-        avg = (current_value + previous_value)/2
-        percentage = (diff/avg) * 100
+        avg = (current_value + previous_value) / 2
+        percentage = (diff / avg) * 100
         if percentage > alarm_obj.alert_value:
             notify_admin_with_mail(alarm_obj.type, alarm_obj.email_to_send_alarm)
             create_alarm_report_object(alarm_obj, status=2)
@@ -169,7 +163,7 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
 
 def run_alarm(alarm_obj):
     """Alarm object"""
-    if alarm_obj.type == 1: # ALOC (average length of call)
+    if alarm_obj.type == 1:  # ALOC (average length of call)
         logger.debug("ALOC (average length of call)")
         # return start and end date of previous/current day
         dt_list = get_start_end_date(alarm_obj.alert_condition_add_on)
@@ -216,7 +210,7 @@ def run_alarm(alarm_obj):
                 current_date_duration = doc['value']['duration__avg']
                 chk_alert_value(alarm_obj, current_date_duration, previous_date_duration)
 
-    if alarm_obj.type == 2: # ASR (Answer Seize Ratio)
+    if alarm_obj.type == 2:  # ASR (Answer Seize Ratio)
         logger.debug("ASR (Answer Seize Ratio)")
         # return start and end date of previous/current day
         dt_list = get_start_end_date(alarm_obj.alert_condition_add_on)
@@ -231,9 +225,7 @@ def run_alarm(alarm_obj):
 
         pre_total_record = cdr_data.find(query_var).count()
         query_var['hangup_cause_id'] = get_hangupcause_id(hangup_cause_q850)
-
         pre_total_answered_record = cdr_data.find(query_var).count()
-
         previous_asr = pre_total_answered_record / pre_total_record
 
         if alarm_obj.alert_condition == 1 or alarm_obj.alert_condition == 2:
@@ -271,43 +263,42 @@ class chk_alarm(PeriodicTask):
 
         chk_alarm.delay()
     """
-    run_every = timedelta(seconds=86400) # every day
+    run_every = timedelta(seconds=86400)  # every day
     #run_every = crontab(hours=12, minute=30) #"Execute every day at 12:30AM."
 
     def run(self, **kwargs):
         logger = self.get_logger(**kwargs)
         logger.info("TASK :: chk_alarm called")
 
-        alarm_objs = Alarm.objects.filter(status=1) # all active alarms
+        alarm_objs = Alarm.objects.filter(status=1)  # all active alarms
         for alarm_obj in alarm_objs:
             try:
                 alarm_report = AlarmReport.objects.filter(alarm=alarm_obj).latest('daterun')
-                # (datetime.now() - alarm_report.daterun).days
                 diff_between_task_run = (datetime.now() - alarm_report.daterun).days
 
-                if alarm_obj.period == 1: # Day
-                    if diff_between_task_run == 1: # every day
+                if alarm_obj.period == 1:  # Day
+                    if diff_between_task_run == 1:  # every day
                         # Run alert task
                         logger.debug("Run alarm")
                         run_alarm(alarm_obj)
 
-                if alarm_obj.period == 2: # Week
-                    if diff_between_task_run == 7: # every week
+                if alarm_obj.period == 2:  # Week
+                    if diff_between_task_run == 7:  # every week
                         # Run alert task
                         logger.debug("Run alarm")
                         run_alarm(alarm_obj)
 
-
-                if alarm_obj.period == 3: # Month
-                    if diff_between_task_run == 30: # days in month # every month
+                if alarm_obj.period == 3:  # Month
+                    if diff_between_task_run == 30:  # every month
                         # Run alert task
                         logger.debug("Run alarm")
                         run_alarm(alarm_obj)
             except:
                 # create alarm report
-                AlarmReport.objects.create(alarm=alarm_obj,
-                                           calculatedvalue=alarm_obj.alert_value,
-                                           status=1)
+                AlarmReport.objects.create(
+                                alarm=alarm_obj,
+                               calculatedvalue=alarm_obj.alert_value,
+                               status=1)
 
         logger.debug("TASK :: chk_alarm finished")
         return True
@@ -348,7 +339,9 @@ def blacklist_whitelist_notification(notice_type):
     logger.info("TASK :: %s_notification called" % notice_type_name)
     notice_type_obj = notification.NoticeType.objects.get(default=notice_type)
     try:
-        notice_obj = notification.Notice.objects.filter(notice_type=notice_type_obj).latest('added')
+        notice_obj = notification.Notice.objects.filter(
+                            notice_type=notice_type_obj
+                            ).latest('added')
 
         # Get time difference between two time intervals
         previous_time = str(datetime.time(notice_obj.added.replace(microsecond=0)))
@@ -356,7 +349,7 @@ def blacklist_whitelist_notification(notice_type):
         FMT = '%H:%M:%S'
         diff = datetime.strptime(current_time, FMT) - datetime.strptime(previous_time, FMT)
         # if difference is more than 30 min than notification resend
-        if int(diff.seconds/60) >= 30:
+        if int(diff.seconds / 60) >= 30:
             # blacklist notification id - 3 | whitelist notification type - 4
             notify_admin_without_mail(notice_type, 'admin@localhost.com')
     except:
@@ -374,7 +367,7 @@ class send_cdr_report(PeriodicTask):
 
         send_cdr_report.delay()
     """
-    run_every = timedelta(seconds=86400) # every day
+    run_every = timedelta(seconds=86400)  # every day
 
     @single_instance_task(key="send_cdr_report", timeout=LOCK_EXPIRE)
     def run(self, **kwargs):
