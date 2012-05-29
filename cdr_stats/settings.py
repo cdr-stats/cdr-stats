@@ -217,6 +217,8 @@ else:
 
 # Debug Toolbar mongo
 """
+# commented cause this module doesn't work at the moment
+
 try:
     import debug_toolbar_mongo
 except ImportError:
