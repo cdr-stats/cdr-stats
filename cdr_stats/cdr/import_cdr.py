@@ -145,9 +145,15 @@ def import_cdr(shell=False):
 
         not_require_data = {"channel_data": 0, "app_log": 0,
                             "callflow": 0, "times": 0}
-        total_record = importcdr_handler.find({ '$or': [ {'import_cdr': {'$exists': False}},
-                                                         {'import_cdr': 0} ]},
-                                                         not_require_data).count()
+        total_record = importcdr_handler.find(
+                                    {
+                                        '$or':
+                                        [
+                                            {'import_cdr': {'$exists': False}},
+                                            {'import_cdr': 0}
+                                        ]
+                                    },
+                                    not_require_data).count()
 
         PAGE_SIZE = int(5000)
 
@@ -192,18 +198,23 @@ def import_cdr(shell=False):
             cdr_bulk_record = []
             #Retrieve FreeSWITCH CDRs
             for cdr in result:
-                start_uepoch = datetime.fromtimestamp(int(cdr['variables']['start_uepoch'][:10]))
-                #answer_uepoch = datetime.fromtimestamp(int(cdr['variables']['answer_uepoch'][:10]))
-                #end_uepoch = datetime.fromtimestamp(int(cdr['variables']['end_uepoch'][:10]))
+                start_uepoch = datetime.fromtimestamp(
+                                int(cdr['variables']['start_uepoch'][:10]))
+                #answer_uepoch = datetime.fromtimestamp(
+                #    int(cdr['variables']['answer_uepoch'][:10]))
+                #end_uepoch = datetime.fromtimestamp(
+                #    int(cdr['variables']['end_uepoch'][:10]))
 
                 # Check Destination number
-                destination_number = cdr['callflow']['caller_profile']['destination_number']
+                destination_number = cdr['callflow']['caller_profile'][ \
+                                                    'destination_number']
 
                 destination_data = chk_destination(destination_number)
                 authorized = destination_data['authorized']
                 country_id = destination_data['country_id']
 
-                hangup_cause_id = get_hangupcause_id(cdr['variables']['hangup_cause_q850'])
+                hangup_cause_id = get_hangupcause_id(cdr['variables'][ \
+                                                    'hangup_cause_q850'])
                 try:
                     accountcode = cdr['variables']['accountcode']
                 except:
@@ -213,11 +224,13 @@ def import_cdr(shell=False):
                 except:
                     remote_media_ip = ''
                 try:
-                    caller_id_number = cdr['callflow']['caller_profile']['caller_id_number']
+                    caller_id_number = cdr['callflow']['caller_profile'][ \
+                                                    'caller_id_number']
                 except:
                     caller_id_number = ''
                 try:
-                    caller_id_name = cdr['callflow']['caller_profile']['caller_id_name']
+                    caller_id_name = cdr['callflow']['caller_profile'][ \
+                                                    'caller_id_name']
                 except:
                     caller_id_name = ''
                 try:
