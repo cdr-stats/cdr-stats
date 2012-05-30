@@ -307,17 +307,18 @@ class chk_alarm(PeriodicTask):
 
 def notify_admin_without_mail(notice_id, email_id):
     """Send notification to admin as well as mail to recipient of alarm"""
-    # TODO : Get all the admin users
-    user = User.objects.get(pk=1)
-    recipient = user
+    # Get all the admin super users
+    all_admin_user = User.objects.filter(is_superuser=True)
+    for user in all_admin_user:
+        recipient = user
 
-    # send notification
-    if notification:
-        note_label = notification.NoticeType.objects.get(default=notice_id)
-        notification.send([recipient],
-                          note_label.label,
-                          {"from_user": user},
-                          sender=user)
+        # send notification
+        if notification:
+            note_label = notification.NoticeType.objects.get(default=notice_id)
+            notification.send([recipient],
+                              note_label.label,
+                              {"from_user": user},
+                              sender=user)
     return True
 
 
