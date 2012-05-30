@@ -509,44 +509,6 @@ def cdr_view(request):
     request.session['query_var'] = query_var
 
     col_name_with_order = {}
-
-    #TODO: Clean and optimize the col_name_with_order
-    # default
-    col_name_start_uepoch = '-start_uepoch'
-    col_name_with_order['start_uepoch_up'] = col_name_start_uepoch[1:]
-    col_name_with_order['start_uepoch_down'] = col_name_start_uepoch
-    col_name_with_order['start_uepoch'] = col_name_start_uepoch
-
-    col_name_caller_id_number = '-caller_id_number'
-    col_name_with_order['caller_id_number_up'] = col_name_caller_id_number[1:]
-    col_name_with_order['caller_id_number_down'] = col_name_caller_id_number
-    col_name_with_order['caller_id_number'] = col_name_caller_id_number
-
-    col_name_destination_number = '-destination_number'
-    col_name_with_order['destination_number_up'] = col_name_destination_number[1:]
-    col_name_with_order['destination_number_down'] = col_name_destination_number
-    col_name_with_order['destination_number'] = col_name_destination_number
-
-    col_name_duration = '-duration'
-    col_name_with_order['duration_up'] = col_name_duration[1:]
-    col_name_with_order['duration_down'] = col_name_duration
-    col_name_with_order['duration'] = col_name_duration
-
-    col_name_billsec = '-billsec'
-    col_name_with_order['billsec_up'] = col_name_billsec[1:]
-    col_name_with_order['billsec_down'] = col_name_billsec
-    col_name_with_order['billsec'] = col_name_billsec
-
-    col_name_hangup_cause = '-hangup_cause_id'
-    col_name_with_order['hangup_cause_id_up'] = col_name_hangup_cause[1:]
-    col_name_with_order['hangup_cause_id_down'] = col_name_hangup_cause
-    col_name_with_order['hangup_cause_id'] = col_name_hangup_cause
-
-    col_name_accountcode = '-accountcode'
-    col_name_with_order['accountcode_up'] = col_name_accountcode[1:]
-    col_name_with_order['accountcode_down'] = col_name_accountcode
-    col_name_with_order['accountcode'] = col_name_accountcode
-
     sort_field = variable_value(request, 'sort_by')
     if not sort_field:
         sort_field = 'start_uepoch'  # default sort field
