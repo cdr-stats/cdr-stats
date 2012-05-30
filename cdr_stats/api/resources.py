@@ -51,7 +51,7 @@ logger = logging.getLogger('cdr-stats.filelog')
 
 
 class CustomJSONSerializer(Serializer):
-    
+
     def from_json(self, content):
         decoded_content = urllib.unquote(content.decode("utf8"))
         #data = simplejson.loads(content)
@@ -259,8 +259,8 @@ class CdrDailyResource(ModelResource):
         if 'switch_id' in query_var:
             query_var['switch_id'] = int(temp_var['switch_id'])
 
-        
-        daily_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_DAILY]
+
+        daily_data = settings.DB_CONNECTION[settings.MG_CDR_DAILY]
 
         if query_var:
             daily_data = daily_data.find(query_var)
@@ -421,9 +421,9 @@ class CdrResource(ModelResource):
             }
 
         # Create CDR record
-        settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COMMON].insert(cdr_record)
+        settings.DB_CONNECTION[settings.MG_CDR_COMMON].insert(cdr_record)
         # get last inserted cdr record
-        new_obj = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COMMON].find_one()
+        new_obj = settings.DB_CONNECTION[settings.MG_CDR_COMMON].find_one()
 
         #print new_obj['_id']
         logger.debug('CDR API : result ok 200')

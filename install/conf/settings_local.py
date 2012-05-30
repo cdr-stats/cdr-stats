@@ -116,21 +116,21 @@ ASTERISK_CDR_MYSQL_IMPORT = {
 
 #MONGODB
 #=======
-CDR_MONGO_DB_NAME = 'cdr-stats'
-CDR_MONGO_HOST = 'localhost'
-CDR_MONGO_PORT = 27017
-CDR_MONGO_CDR_COMMON = 'cdr_common'
-CDR_MONGO_CONC_CALL = 'concurrent_call'
-CDR_MONGO_CDR_COUNTRY_REPORT = 'cdr_country_report'
-CDR_MONGO_CONC_CALL_AGG = 'concurrent_call_map_reduce'
-CDR_MONGO_CDR_MONTHLY = 'cdr_monthly_analytic'
-CDR_MONGO_CDR_DAILY = 'cdr_daily_analytic'
-CDR_MONGO_CDR_HOURLY = 'cdr_hourly_analytic'
-CDR_MONGO_CDR_HANGUP = 'cdr_hangup_cause_analytic'
-CDR_MONGO_CDR_COUNTRY = 'cdr_country_analytic'
+MG_DB_NAME = 'cdr-stats'
+MG_HOST = 'localhost'
+MG_PORT = 27017
+MG_CDR_COMMON = 'cdr_common'
+MG_CONC_CALL = 'concurrent_call'
+MG_CDR_COUNTRY_REPORT = 'cdr_country_report'
+MG_CONC_CALL_AGG = 'concurrent_call_map_reduce'
+MG_CDR_MONTHLY = 'cdr_monthly_analytic'
+MG_CDR_DAILY = 'cdr_daily_analytic'
+MG_CDR_HOURLY = 'cdr_hourly_analytic'
+MG_CDR_HANGUP = 'cdr_hangup_cause_analytic'
+MG_CDR_COUNTRY = 'cdr_country_analytic'
 
 #MongoDB Setting(s) to use for import
-CDR_MONGO_IMPORT = {
+MG_IMPORT = {
     '127.0.0.1': {
         'db_name': 'freeswitch_cdr',
         'host': 'localhost',

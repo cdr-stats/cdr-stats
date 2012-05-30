@@ -39,11 +39,11 @@ import re
 import csv
 
 # Assign collection names to variables
-CDR_COMMON = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COMMON]
-CDR_MONTHLY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_MONTHLY]
-CDR_DAILY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_DAILY]
-CDR_HOURLY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HOURLY]
-CDR_COUNTRY_REPORT = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY_REPORT]
+CDR_COMMON = settings.DB_CONNECTION[settings.MG_CDR_COMMON]
+CDR_MONTHLY = settings.DB_CONNECTION[settings.MG_CDR_MONTHLY]
+CDR_DAILY = settings.DB_CONNECTION[settings.MG_CDR_DAILY]
+CDR_HOURLY = settings.DB_CONNECTION[settings.MG_CDR_HOURLY]
+CDR_COUNTRY_REPORT = settings.DB_CONNECTION[settings.MG_CDR_COUNTRY_REPORT]
 
 # Switch
 class SwitchAdmin(admin.ModelAdmin):
@@ -238,7 +238,7 @@ class SwitchAdmin(admin.ModelAdmin):
 
                                 try:
                                     # check if cdr is already existing in cdr_common
-                                    cdr_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COMMON]
+                                    cdr_data = settings.DB_CONNECTION[settings.MG_CDR_COMMON]
                                     query_var = {}
                                     query_var['uuid'] = uuid
                                     record_count = cdr_data.find(query_var).count()

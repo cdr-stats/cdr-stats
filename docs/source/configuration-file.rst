@@ -70,9 +70,9 @@ sends all errors from the production server to the admin's email address. ::
 
       #MONGODB
       #=======
-      CDR_MONGO_DB_NAME = 'cdr-stats'
-      CDR_MONGO_HOST = 'localhost'
-      CDR_MONGO_PORT = 27017
+      MG_DB_NAME = 'cdr-stats'
+      MG_HOST = 'localhost'
+      MG_PORT = 27017
 
 sets up the options required for Django to connect to your database. ::
 
@@ -192,9 +192,9 @@ To add a new remote Asterisk MySQL CDR store, you would ensure connection to the
 Import configuration for FreeSWITCH
 ------------------------------------
 
-Freeswitch settings are under the CDR_MONGO_IMPORT section, and should look as follows::
+Freeswitch settings are under the MG_IMPORT section, and should look as follows::
 
-    CDR_MONGO_IMPORT = {
+    MG_IMPORT = {
         '127.0.0.1': {
             'db_name': 'freeswitch_cdr',
             'host': 'localhost',

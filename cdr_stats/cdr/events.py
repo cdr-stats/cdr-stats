@@ -55,7 +55,7 @@ def get_user(user_id):
         return User.objects.get(id=user_id)
     except:
         return False
-    
+
 
 @on_message
 def my_message_handler(request, socket, context, message):
@@ -63,7 +63,7 @@ def my_message_handler(request, socket, context, message):
     logger.debug(message)
     result = {}
     result["message"] = "VoIP-Switch"
-    
+
     key_uuid = message['voipswitch']
     switch_id = get_switch_id(key_uuid)
     logger.debug(switch_id)
@@ -87,7 +87,7 @@ def my_message_handler(request, socket, context, message):
         result[message['voipswitch']] = settings.SOCKETIO_CALLNUM_DEFAULT
         socket.send(result)
         return True
-    
+
     query_var = {}
     now = datetime.today()
     start_date = datetime(now.year, now.month, now.day, now.hour, now.minute, now.second, 0)
@@ -98,7 +98,7 @@ def my_message_handler(request, socket, context, message):
     if not user.is_superuser:
         #use accountcode in filter
         query_var['accountcode'] = str(user.userprofile.accountcode)
-    collectionresult = settings.DB_CONNECTION[settings.CDR_MONGO_CONC_CALL].find(query_var)
+    collectionresult = settings.DB_CONNECTION[settings.MG_CONC_CALL].find(query_var)
     if not collectionresult:
         logger.debug('No collection')
 
@@ -110,7 +110,7 @@ def my_message_handler(request, socket, context, message):
             socket.send(result)
             value = True
             break
-    
+
     #No record found in collection
     if not value:
         result[message['voipswitch']] = 0

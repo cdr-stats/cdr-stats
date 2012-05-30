@@ -27,8 +27,8 @@ import json, ast
 
 random.seed()
 
-HANGUP_CAUSE = ['NORMAL_CLEARING', 'NORMAL_CLEARING', 'NORMAL_CLEARING', 
-                'NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED', 
+HANGUP_CAUSE = ['NORMAL_CLEARING', 'NORMAL_CLEARING', 'NORMAL_CLEARING',
+                'NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED',
                 'INVALID_NUMBER_FORMAT']
 HANGUP_CAUSE_Q850 = ['16', '17', '18', '19', '20', '21']
 
@@ -58,7 +58,7 @@ def generate_cdr_data (day_delta_int):
     answer_stamp = (datetime.datetime.now() - \
                     datetime.timedelta(minutes=delta_minutes) - \
                     datetime.timedelta(days=delta_days))
-    
+
     # convert answer_stamp into milliseconds
     start_uepoch = int(time.mktime(answer_stamp.timetuple()))
 
@@ -67,7 +67,7 @@ def generate_cdr_data (day_delta_int):
     destination_number  = '' . join([choice(digit) for i in range(8)])
 
     destination_number  = choice(COUNTRY_PREFIX) + destination_number
-    
+
     hangup_cause = choice(HANGUP_CAUSE)
     hangup_cause_q850 = choice(HANGUP_CAUSE_Q850)
     if hangup_cause == 'NORMAL_CLEARING':
@@ -76,7 +76,7 @@ def generate_cdr_data (day_delta_int):
     else:
         duration = 0
         billsec = 0
-        
+
     end_stamp = str(datetime.datetime.now() - \
                     datetime.timedelta(minutes=delta_minutes) - \
                     datetime.timedelta(days=delta_days) + \
@@ -96,26 +96,26 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Note that subscriber created this way are only for devel purposes"""
-        
+
         if not args or len(args)!=2:
             print self.help
             #print >> sys.stderr
             raise SystemExit
-        
+
         no_of_record = args[0]
         day_delta = args[1]
         try:
             day_delta_int = int(day_delta)
         except ValueError:
             day_delta_int = 30
-        
+
         #Retrieve the field collection in the mongo_import list
-        ipaddress = settings.CDR_MONGO_IMPORT.items()[0][0]
+        ipaddress = settings.MG_IMPORT.items()[0][0]
 
         #Connect on MongoDB Database
-        host = settings.CDR_MONGO_IMPORT[ipaddress]['host']
-        port = settings.CDR_MONGO_IMPORT[ipaddress]['port']
-        db_name = settings.CDR_MONGO_IMPORT[ipaddress]['db_name']
+        host = settings.MG_IMPORT[ipaddress]['host']
+        port = settings.MG_IMPORT[ipaddress]['port']
+        db_name = settings.MG_IMPORT[ipaddress]['db_name']
         try:
             connection = Connection(host, port)
             DB_CONNECTION = connection[db_name]
@@ -125,7 +125,7 @@ class Command(BaseCommand):
             sys.exit(1)
 
         for i in range(1, int(no_of_record) + 1):
-            
+
             (answer_stamp, start_uepoch, caller_id, channel_name, \
                 destination_number, hangup_cause, hangup_cause_q850, duration, \
                 billsec, end_stamp, uuid) = generate_cdr_data (day_delta_int)
@@ -331,6 +331,6 @@ class Command(BaseCommand):
                         }
                       }
                     }
-            
-            DB_CONNECTION[settings.CDR_MONGO_IMPORT[ipaddress]['collection']].\
+
+            DB_CONNECTION[settings.MG_IMPORT[ipaddress]['collection']].\
                 insert(cdr_json)

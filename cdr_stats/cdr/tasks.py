@@ -27,7 +27,7 @@ LOCK_EXPIRE = 60 * 30 # Lock expires in 30 minutes
 class sync_cdr_pending(PeriodicTask):
     """
     A periodic task that checks for pending calls to import
-    """ 
+    """
     run_every = timedelta(seconds=60) # every minute
 
     @single_instance_task(key="sync_cdr_pending", timeout=LOCK_EXPIRE)
@@ -49,12 +49,12 @@ class sync_cdr_pending(PeriodicTask):
 class get_channels_info(PeriodicTask):
     """
     A periodic task to retrieve channels info
-    """ 
+    """
     run_every = timedelta(seconds=1) # every minute
 
     @single_instance_task(key="get_channels_info", timeout=60) #60 seconds
     def run(self, **kwargs):
-        
+
         if settings.LOCAL_SWITCH_TYPE=='freeswitch':
             logger = self.get_logger()
             logger.info("TASK :: get_channels_info")
@@ -62,11 +62,11 @@ class get_channels_info(PeriodicTask):
             #Get calldate
             now = datetime.datetime.today()
             date_now = datetime.datetime(now.year, now.month, now.day, now.hour, now.minute, now.second, 0)
-            
+
             #Retrieve SwitchID
             switch_id = settings.LOCAL_SWITCH_ID
             #settings.LOCAL_SWITCH_TYPE = 'freeswitch'
-            
+
             if settings.LOCAL_SWITCH_TYPE == 'freeswitch':
                 con = False
                 try:
@@ -77,18 +77,18 @@ class get_channels_info(PeriodicTask):
                     for row in rows:
                         if not row[0]:
                             accountcode = ''
-                        else:    
+                        else:
                             accountcode = row[0]
-                        number_call = row[1] 
+                        number_call = row[1]
                         logger.debug("\n%s (accountcode:%s, switch_id:%d) ==> %s" % (date_now, accountcode, switch_id, str(number_call)))
-                        
+
                         call_json = {
                                 "switch_id" : switch_id,
                                 "call_date": date_now,
                                 "numbercall": number_call,
                                 "accountcode": accountcode,
                                 }
-                        settings.DB_CONNECTION[settings.CDR_MONGO_CONC_CALL].insert(call_json)
+                        settings.DB_CONNECTION[settings.MG_CONC_CALL].insert(call_json)
 
                 except sqlite3.Error, e:
                     logger.error("Error %s:" % e.args[0])

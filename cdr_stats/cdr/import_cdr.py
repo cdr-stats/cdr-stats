@@ -41,11 +41,11 @@ CDR_TYPE = {"freeswitch":1, "asterisk":2, "yate":3, "opensips":4, "kamailio":5}
 STATUS_SYNC = {"new":0, "in_process": 1, "verified":2}
 
 # Assign collection names to variables
-CDR_COMMON = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COMMON]
-CDR_MONTHLY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_MONTHLY]
-CDR_DAILY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_DAILY]
-CDR_HOURLY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HOURLY]
-CDR_COUNTRY_REPORT = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY_REPORT]
+CDR_COMMON = settings.DB_CONNECTION[settings.MG_CDR_COMMON]
+CDR_MONTHLY = settings.DB_CONNECTION[settings.MG_CDR_MONTHLY]
+CDR_DAILY = settings.DB_CONNECTION[settings.MG_CDR_DAILY]
+CDR_HOURLY = settings.DB_CONNECTION[settings.MG_CDR_HOURLY]
+CDR_COUNTRY_REPORT = settings.DB_CONNECTION[settings.MG_CDR_COUNTRY_REPORT]
 
 
 def print_shell(shell, message):
@@ -93,14 +93,14 @@ def chk_destination(destination_number):
 
 def import_cdr(shell=False):
     #TODO : dont use the args here
-    # Browse settings.CDR_MONGO_IMPORT and for each IP check if the IP exist
+    # Browse settings.MG_IMPORT and for each IP check if the IP exist
     # in our Switch objects. If it does we will connect to that Database
     # and import the data as we do below
 
     print_shell(shell, "Starting the synchronization...")
 
     #loop within the Mongo CDR Import List
-    for ipaddress in settings.CDR_MONGO_IMPORT:
+    for ipaddress in settings.MG_IMPORT:
         #Select the Switch ID
         print_shell(shell, "Switch : %s" % ipaddress)
 
@@ -125,9 +125,9 @@ def import_cdr(shell=False):
             ipaddress = previous_ip
 
         #Connect on MongoDB Database
-        host = settings.CDR_MONGO_IMPORT[ipaddress]['host']
-        port = settings.CDR_MONGO_IMPORT[ipaddress]['port']
-        db_name = settings.CDR_MONGO_IMPORT[ipaddress]['db_name']
+        host = settings.MG_IMPORT[ipaddress]['host']
+        port = settings.MG_IMPORT[ipaddress]['port']
+        db_name = settings.MG_IMPORT[ipaddress]['db_name']
         try:
             connection = Connection(host, port)
             DB_CONNECTION = connection[db_name]
@@ -137,7 +137,7 @@ def import_cdr(shell=False):
             sys.exit(1)
 
         #Connect to Mongo
-        importcdr_handler = DB_CONNECTION[settings.CDR_MONGO_IMPORT[ipaddress]['collection']]
+        importcdr_handler = DB_CONNECTION[settings.MG_IMPORT[ipaddress]['collection']]
 
         not_require_data = {"channel_data": 0, "app_log": 0,
                             "callflow": 0, "times": 0}
