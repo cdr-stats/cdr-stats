@@ -17,7 +17,7 @@
 from django.conf import settings
 from celery.task import Task, PeriodicTask
 from celery.decorators import task, periodic_task
-from cdr.import_cdr import import_cdr
+from cdr.import_cdr_freeswitch_mongodb import import_cdr_freeswitch_mongodb
 from cdr.import_cdr_asterisk_mysql import import_cdr_asterisk_mysql
 from cdr.common_tasks import single_instance_task
 from datetime import datetime, timedelta
@@ -47,7 +47,7 @@ class sync_cdr_pending(PeriodicTask):
 
             # Import from Freeswitch Mongo
 
-            import_cdr()
+            import_cdr_freeswitch_mongodb()
 
         return True
 

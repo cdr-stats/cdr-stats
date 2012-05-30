@@ -13,7 +13,7 @@
 #
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.translation import ugettext_lazy as _
-from cdr.import_cdr import import_cdr
+from cdr.import_cdr_freeswitch_mongodb import import_cdr_freeswitch_mongodb
 
 class Command(BaseCommand):
     # Usage : sync_cdr
@@ -23,4 +23,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        import_cdr(shell=True)
+        import_cdr_freeswitch_mongodb(shell=True)

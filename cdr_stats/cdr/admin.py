@@ -22,7 +22,9 @@ from common.common_functions import striplist
 
 from cdr.models import Switch, HangupCause
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
-from cdr.import_cdr import chk_destination
+
+#TODO : maybe find a better place for chk_destination
+from cdr.import_cdr_freeswitch_mongodb import chk_destination
 
 from datetime import datetime
 import csv

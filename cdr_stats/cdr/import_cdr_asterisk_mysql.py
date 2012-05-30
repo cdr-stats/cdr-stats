@@ -14,7 +14,7 @@
 from django.conf import settings
 import MySQLdb as Database
 from cdr.models import Switch
-from cdr.import_cdr import chk_destination
+from cdr.import_cdr_freeswitch_mongodb import chk_destination
 from cdr.functions_def import get_hangupcause_id
 
 import sys

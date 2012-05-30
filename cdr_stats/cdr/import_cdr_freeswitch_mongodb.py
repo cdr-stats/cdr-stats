@@ -95,7 +95,7 @@ def chk_destination(destination_number):
     return destination_data
 
 
-def import_cdr(shell=False):
+def import_cdr_freeswitch_mongodb(shell=False):
     #TODO : dont use the args here
     # Browse settings.MG_IMPORT and for each IP check if the IP exist
     # in our Switch objects. If it does we will connect to that Database
