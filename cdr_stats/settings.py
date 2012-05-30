@@ -360,6 +360,7 @@ MG_DB_NAME = 'cdr-stats'
 MG_HOST = 'localhost'
 MG_PORT = 27017
 MG_CDR_COMMON = 'cdr_common'
+MG_CDR_ANALYTIC = 'cdr_analytic'
 MG_CONC_CALL = 'concurrent_call'
 MG_CDR_COUNTRY_REPORT = 'cdr_country_report'
 MG_CONC_CALL_AGG = 'concurrent_call_map_reduce'
