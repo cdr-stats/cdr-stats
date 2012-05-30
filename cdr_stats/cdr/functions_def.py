@@ -14,6 +14,8 @@
 from django.conf import settings
 from cdr.models import Switch, HangupCause
 from country_dialcode.models import Country, Prefix
+
+from datetime import *
 import re
 
 
@@ -83,12 +85,12 @@ def prefix_list_string(phone_number):
     except ValueError:
         return False
     phone_number = str(phone_number)
-    prefix_range = range(settings.PHONENUMBER_PREFIX_LIMIT_MIN,
-                         settings.PHONENUMBER_PREFIX_LIMIT_MAX + 1)
+    prefix_range = range(settings.PREFIX_LIMIT_MIN,
+                         settings.PREFIX_LIMIT_MAX + 1)
     prefix_range.reverse()
     destination_prefix_list = ''
     for i in prefix_range:
-        if i == settings.PHONENUMBER_PREFIX_LIMIT_MIN:
+        if i == settings.PREFIX_LIMIT_MIN:
             destination_prefix_list = destination_prefix_list +\
                                       phone_number[0:i]
         else:

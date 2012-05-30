@@ -318,10 +318,10 @@ SOCKETIO_CALLNUM_DEFAULT = 0
 
 #GENERAL
 #=======
-# PHONENUMBER_PREFIX_LIMIT_MIN & PHONENUMBER_PREFIX_LIMIT_MAX are used to know
+# PREFIX_LIMIT_MIN & PREFIX_LIMIT_MAX are used to know
 # how many digits are used to match against the dialcode prefix database
-PHONENUMBER_PREFIX_LIMIT_MIN = 2
-PHONENUMBER_PREFIX_LIMIT_MAX = 5
+PREFIX_LIMIT_MIN = 2
+PREFIX_LIMIT_MAX = 5
 
 #If PhoneNumber is lower than PHONENUMBER_MIN_DIGITS it will be considered as an extension
 #If PhoneNumber is longer than PHONENUMBER_MIN_DIGITS but lower than PHONENUMBER_MAX_DIGITS then

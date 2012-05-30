@@ -111,25 +111,25 @@ these custom applications.
 Country Reporting
 -----------------
 
-CDR-Stats is able to identify the destination country of the call. This is a 
-useful fraud prevention measure, so that calls to unexpected destinations 
-are immediately apparent. Places that should not be called should be added 
-in the Blacklist in the admin section so that these destinations are 
+CDR-Stats is able to identify the destination country of the call. This is a
+useful fraud prevention measure, so that calls to unexpected destinations
+are immediately apparent. Places that should not be called should be added
+in the Blacklist in the admin section so that these destinations are
 highlighted in the call data records.
 
-However, in order to get accurate reporting, the call detail records have to 
-be in international format, e.g. in the USA, this means 11 digit numbers, 
-beginning with a 1, and for other countries, the numbers called should be 
+However, in order to get accurate reporting, the call detail records have to
+be in international format, e.g. in the USA, this means 11 digit numbers,
+beginning with a 1, and for other countries, the numbers called should be
 prefixed with the international dial code.
 
-There is a facility for manipulating the dialled digits reported in the call 
-detail records, as well as identifying calls as internal calls. This is done 
+There is a facility for manipulating the dialled digits reported in the call
+detail records, as well as identifying calls as internal calls. This is done
 in the "general" section of /usr/share/cdr-stats/settings_local.py.
 
-PHONENUMBER_PREFIX_LIMIT_MIN & PHONENUMBER_PREFIX_LIMIT_MAX are used to determine how many digits are used to match against the dialcode prefix database, e.g
-    
-* **PHONENUMBER_PREFIX_LIMIT_MIN = 2**
-* **PHONENUMBER_PREFIX_LIMIT_MAX = 5**
+PREFIX_LIMIT_MIN & PREFIX_LIMIT_MAX are used to determine how many digits are used to match against the dialcode prefix database, e.g
+
+* **PREFIX_LIMIT_MIN = 2**
+* **PREFIX_LIMIT_MAX = 5**
 
 If a phone number has less digits  than PHONENUMBER_MIN_DIGITS it will be considered an extension::
 
@@ -210,9 +210,9 @@ Freeswitch settings are under the CDR_MONGO_IMPORT section, and should look as f
     }
 
 
-To connect a new Freeswitch system to CDR-Stats, you would ensure that port 27017 TCP 
-was open to ONLY the CDR-Stats server on the remote system, uncomment the settings 
-by removing the #, and then configure the IP address and db_name to match those in 
-the mod_cdr_mongodb configuration as described at 
+To connect a new Freeswitch system to CDR-Stats, you would ensure that port 27017 TCP
+was open to ONLY the CDR-Stats server on the remote system, uncomment the settings
+by removing the #, and then configure the IP address and db_name to match those in
+the mod_cdr_mongodb configuration as described at
 http://www.cdr-stats.org/documentation/beginners-guide/howto-installing-on-freeswitch/
 
