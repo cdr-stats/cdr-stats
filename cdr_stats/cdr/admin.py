@@ -76,6 +76,11 @@ class SwitchAdmin(admin.ModelAdmin):
         error_import_list = []
         type_error_import_list = []
 
+        #TODO : Too many indentation in the code, refact, less if, for
+
+        #TODO : respect DRY principale, some of the code is duplicate
+        #from import tasks
+
         if request.method == 'POST':
             form = CDR_FileImport(request.user, request.POST, request.FILES)
 
