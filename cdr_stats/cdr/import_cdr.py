@@ -72,11 +72,11 @@ def chk_destination(destination_number):
             # not allowed destination
             authorized = 0
 
-    if len(sanitized_destination) < settings.PHONENUMBER_MIN_DIGITS:
+    if len(sanitized_destination) < settings.PN_MIN_DIGITS:
         # It might be an extension
         country_id = 0
-    elif len(sanitized_destination) >= settings.PHONENUMBER_MIN_DIGITS\
-        and len(sanitized_destination) <= settings.PHONENUMBER_MAX_DIGITS:
+    elif len(sanitized_destination) >= settings.PN_MIN_DIGITS\
+        and len(sanitized_destination) <= settings.PN_MAX_DIGITS:
         # It might be an local call
         # Need to add coma for get_country_id to eval correctly
         country_id = get_country_id(str(settings.LOCAL_DIALCODE) + ',')

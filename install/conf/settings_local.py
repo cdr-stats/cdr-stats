@@ -2,12 +2,12 @@
 # CDR-Stats License
 # http://www.cdr-stats.org
 #
-# This Source Code Form is subject to the terms of the Mozilla Public 
+# This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 # Copyright (C) 2011-2012 Star2Billing S.L.
-# 
+#
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
@@ -76,17 +76,17 @@ SOCKETIO_CALLNUM_DEFAULT = 0
 
 #GENERAL
 #=======
-# PHONENUMBER_PREFIX_LIMIT_MIN & PHONENUMBER_PREFIX_LIMIT_MAX are used to know 
+# PHONENUMBER_PREFIX_LIMIT_MIN & PHONENUMBER_PREFIX_LIMIT_MAX are used to know
 # how many digits are used to match against the dialcode prefix database
 PHONENUMBER_PREFIX_LIMIT_MIN = 2
 PHONENUMBER_PREFIX_LIMIT_MAX = 5
 
-#If PhoneNumber is lower than PHONENUMBER_MIN_DIGITS it will be considered as an extension
-#If PhoneNumber is longer than PHONENUMBER_MIN_DIGITS but lower than PHONENUMBER_MAX_DIGITS then 
+#If PhoneNumber is lower than PN_MIN_DIGITS it will be considered as an extension
+#If PhoneNumber is longer than PN_MIN_DIGITS but lower than PN_MAX_DIGITS then
 #the PhoneNumber will be considered as local call and the LOCAL_DIALCODE will be added
 LOCAL_DIALCODE = 1 # Set the Dialcode of your country (44 for UK, 1 for US)
-PHONENUMBER_MIN_DIGITS = 6
-PHONENUMBER_MAX_DIGITS = 9
+PN_MIN_DIGITS = 6
+PN_MAX_DIGITS = 9
 
 #List of prefix to ignore, this will be remove from the phonenumber prior analysis
 PREFIX_TO_IGNORE = "+,0,00,000,0000,00000,011,55555,99999"

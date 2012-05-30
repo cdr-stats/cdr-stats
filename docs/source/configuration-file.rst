@@ -131,10 +131,10 @@ PREFIX_LIMIT_MIN & PREFIX_LIMIT_MAX are used to determine how many digits are us
 * **PREFIX_LIMIT_MIN = 2**
 * **PREFIX_LIMIT_MAX = 5**
 
-If a phone number has less digits  than PHONENUMBER_MIN_DIGITS it will be considered an extension::
+If a phone number has less digits  than PN_MIN_DIGITS it will be considered an extension::
 
-* **PHONENUMBER_MIN_DIGITS = 6**
-* **PHONENUMBER_MAX_DIGITS = 9**
+* **PN_MIN_DIGITS = 6**
+* **PN_MAX_DIGITS = 9**
 
 If a phone number has more digits than PHONENUMBER_DIGITS_MIN but less than PHONE_DIGITS_MAX then the phone number will be considered as local or national call and the LOCAL_DIALCODE will be added.
 
@@ -150,11 +150,11 @@ List of prefixes to ignore, these prefixes are removed from the phone number pri
 Examples
 ~~~~~~~~
 
-So for the USA, to cope with 10 or 11 digit dialling, PHONENUMBER_MAX_DIGITS would be set to 10, and LOCAL_DIALCODE set to 1. Thus 10 digit numbers would have a 1 added, but 11 digit numbers are left untouched.
+So for the USA, to cope with 10 or 11 digit dialling, PN_MAX_DIGITS would be set to 10, and LOCAL_DIALCODE set to 1. Thus 10 digit numbers would have a 1 added, but 11 digit numbers are left untouched.
 
-In the UK, the number of significant digits is either 9 or 10 after the "0" trunk code. So to ensure that all UK numbers had 44 prefixed to them and the single leading 0 removed, the prefixes to ignore would include 0, the PHONENUMBER_MAX_DIGITS would be set to 10, and the LOCAL_DIALCODE would be 44.
+In the UK, the number of significant digits is either 9 or 10 after the "0" trunk code. So to ensure that all UK numbers had 44 prefixed to them and the single leading 0 removed, the prefixes to ignore would include 0, the PN_MAX_DIGITS would be set to 10, and the LOCAL_DIALCODE would be 44.
 
-In Spain, where there is no "0" trunk code, and the length of all numbers is 9, then the PHONENUMBER_MAX_DIGITS  would be set to 9, and the LOCAL_DIALCODE set to 34.
+In Spain, where there is no "0" trunk code, and the length of all numbers is 9, then the PN_MAX_DIGITS  would be set to 9, and the LOCAL_DIALCODE set to 34.
 
 NB: After changing this file, then both celery and apache should be restarted.
 
