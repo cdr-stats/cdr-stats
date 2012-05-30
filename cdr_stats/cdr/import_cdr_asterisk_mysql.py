@@ -18,47 +18,59 @@ import MySQLdb as Database
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.safestring import mark_safe
 
-from pymongo.connection import Connection
-from pymongo.errors import ConnectionFailure
-
-from cdr.models import Switch, HangupCause
+from cdr.models import Switch
 from cdr.import_cdr import chk_destination
 from cdr.functions_def import get_hangupcause_id, remove_prefix, prefix_list_string, get_country_id
 from cdr_alert.functions_blacklist import chk_prefix_in_whitelist, chk_prefix_in_blacklist
 from country_dialcode.models import Prefix
 
-from datetime import datetime
-
 import sys
+from datetime import datetime
 import random
-import json
 import re
 
 random.seed()
 
-HANGUP_CAUSE = ['NORMAL_CLEARING','NORMAL_CLEARING','NORMAL_CLEARING','NORMAL_CLEARING',
-                'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED', 'INVALID_NUMBER_FORMAT']
+HANGUP_CAUSE = ['NORMAL_CLEARING', 'NORMAL_CLEARING', 'NORMAL_CLEARING',
+                'NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED',
+                'INVALID_NUMBER_FORMAT']
 
-CDR_TYPE = {"freeswitch":1, "asterisk":2, "yate":3, "opensips":4, "kamailio":5}
+CDR_TYPE = {
+            "freeswitch": 1,
+            "asterisk": 2,
+            "yate": 3,
+            "opensips": 4,
+            "kamailio": 5}
 
-#value 0 per default, 1 in process of import, 2 imported successfully and verified
-STATUS_SYNC = {"new":0, "in_process": 1, "verified":2}
+# value 0 per default
+# 1 in process of import, 2 imported successfully and verified
+STATUS_SYNC = {"new": 0, "in_process": 1, "verified": 2}
 
-dic_disposition = {'ANSWER': 1, 'ANSWERED': 1, 'BUSY': 2, 'NOANSWER': 3, 'NO ANSWER': 3, 'CANCEL': 4, 'CONGESTION': 5, 'CHANUNAVAIL': 6, 'DONTCALL': 7, 'TORTURE': 8, 'INVALIDARGS': 9, 'FAIL': 10, 'FAILED': 10}
+dic_disposition = {
+            'ANSWER': 1, 'ANSWERED': 1,
+            'BUSY': 2,
+            'NOANSWER': 3, 'NO ANSWER': 3,
+            'CANCEL': 4,
+            'CONGESTION': 5,
+            'CHANUNAVAIL': 6,
+            'DONTCALL': 7,
+            'TORTURE': 8,
+            'INVALIDARGS': 9,
+            'FAIL': 10, 'FAILED': 10}
 
 #TODO: We should review the Asterisk Q.850 against this list
 DISPOSITION_TRANSLATION = {
     0: 0,
-    1: 16,  #ANSWER
-    2: 17,  #BUSY
-    3: 19,  #NOANSWER
-    4: 21,  #CANCEL
-    5: 34,  #CONGESTION
-    6: 47,  #CHANUNAVAIL
-    7: 0,   #DONTCALL
-    8: 0,   #TORTURE
-    9: 0,   #INVALIDARGS
-    10: 41,   #FAILED
+    1: 16,      # ANSWER
+    2: 17,      # BUSY
+    3: 19,      # NOANSWER
+    4: 21,      # CANCEL
+    5: 34,      # CONGESTION
+    6: 47,      # CHANUNAVAIL
+    7: 0,       # DONTCALL
+    8: 0,       # TORTURE
+    9: 0,       # INVALIDARGS
+    10: 41,     # FAILED
 }
 
 # Assign collection names to variables
@@ -76,13 +88,14 @@ def print_shell(shell, message):
 
 def import_cdr_asterisk_mysql(shell=False):
     #TODO : dont use the args here
-    # Browse settings.ASTERISK_CDR_MYSQL_IMPORT and for each IP check if the IP exist in our Switch objects
-    # If it does we will connect to that Database and import the data as we do below
+    # Browse settings.ASTERISK_CDR_MYSQL_IMPORT and for each IP
+    # check if the IP exist in our Switch objects if it does we will
+    # connect to that Database and import the data as we do below
 
     print_shell(shell, "Starting the synchronization...")
 
     if settings.LOCAL_SWITCH_TYPE != 'asterisk':
-        print_shell(shell, "The switch is not configured to import Asterisk...")
+        print_shell(shell, "The switch is not configured to import Asterisk")
         return False
 
     #loop within the Mongo CDR Import List
@@ -91,9 +104,8 @@ def import_cdr_asterisk_mysql(shell=False):
         print_shell(shell, "Switch : %s" % ipaddress)
 
         DEV_ADD_IP = False
-        #uncomment this if you need to import from a fake different IP / used for dev
-        #DEV_ADD_IP = '127.0.0.2'
-
+        # uncomment this to import from a fake different IP / used for dev
+        # DEV_ADD_IP = '127.0.0.2'
         if DEV_ADD_IP:
             previous_ip = ipaddress
             ipaddress = DEV_ADD_IP
@@ -117,7 +129,8 @@ def import_cdr_asterisk_mysql(shell=False):
         password = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['password']
         host = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['host']
         try:
-            connection = Database.connect(user=user, passwd=password, db=db_name, host=host)
+            connection = Database.connect(user=user, passwd=password, \
+                                            db=db_name, host=host)
             cursor = connection.cursor()
             cursor_update = connection.cursor()
         except:
