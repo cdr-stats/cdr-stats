@@ -11,11 +11,7 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-
-from django.conf.urls.defaults import *
-from django.conf import settings
-from cdr_alert.views import *
-
+from django.conf.urls.defaults import patterns
 
 urlpatterns = patterns('',
 

@@ -13,9 +13,9 @@
 #
 from django.contrib import admin
 from django.contrib import messages
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import patterns, url
 from django.utils.translation import ugettext as _
-from django.db.models import *
+
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
@@ -26,23 +26,15 @@ from django.conf import settings
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 
-from cdr.models import *
-from cdr.forms import *
-from cdr.functions_def import *
-from cdr_alert.models import Blacklist, Whitelist
-from cdr_alert.functions_blacklist import *
-
 from country_dialcode.models import Prefix
 from common.common_functions import striplist
 
-from random import choice
-from uuid import uuid1
-from datetime import *
-import calendar
-import time
-import sys
-import random
-import json, ast
+from cdr.models import Switch, HangupCause
+from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
+from cdr_alert.models import Blacklist, Whitelist
+from cdr_alert.functions_blacklist import chk_prefix_in_whitelist, chk_prefix_in_blacklist
+
+from datetime import datetime
 import re
 import csv
 

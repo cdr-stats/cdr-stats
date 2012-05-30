@@ -31,15 +31,16 @@ from common.common_functions import current_view, get_news, variable_value, \
                                     validate_days, date_range
 
 from cdr.models import Switch, HangupCause
-from cdr.functions_def import get_country_name, chk_account_code
+from cdr.functions_def import get_country_name, chk_account_code, get_hangupcause_name
 from cdr.forms import SearchForm, CdrSearchForm, CountryReportForm, CdrOverviewForm, \
                       CompareCallSearchForm, ConcurrentCallForm, SwitchForm, WorldForm, \
                       loginForm, EmailReportForm
 from cdr.mapreduce import *
+from user_profile.models import UserProfile
 
 from bson.objectid import ObjectId
 
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
 
 import operator

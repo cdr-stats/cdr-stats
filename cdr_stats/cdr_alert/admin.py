@@ -18,7 +18,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
 from django.utils.translation import ugettext_lazy as _
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import patterns, url
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
