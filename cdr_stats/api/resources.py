@@ -35,18 +35,13 @@ from tastypie.exceptions import BadRequest, NotFound, ImmediateHttpResponse
 from tastypie import http
 from tastypie import fields
 
-from pymongo import *
-
-from cdr.models import *
-from cdr.functions_def import *
+from cdr.models import Switch, HangupCause
 
 from settings import API_ALLOWED_IP
 from datetime import datetime
 from random import choice, seed
 
 import urllib
-import time
-import uuid
 import simplejson
 
 seed()
