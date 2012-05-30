@@ -19,7 +19,6 @@ from admin_tools.dashboard import modules, Dashboard, AppIndexDashboard
 from admin_tools.utils import get_admin_site_name
 
 
-
 class HistoryDashboardModule(modules.LinkList):
     title = 'History'
 
@@ -27,10 +26,10 @@ class HistoryDashboardModule(modules.LinkList):
         request = context['request']
         # we use sessions to store the visited pages stack
         history = request.session.get('history', [])
-        
+
         for item in history:
             self.children.append(item)
-            
+
         # add the current page to the history
         history.insert(0, {
             'title': context['title'],
@@ -43,29 +42,29 @@ class HistoryDashboardModule(modules.LinkList):
 
 class CustomIndexDashboard(Dashboard):
     """
-    Custom index dashboard for admin_telechat.
+    Custom index dashboard
     """
-    
+
     def init_with_context(self, context):
-    
+
         request = context['request']
-    
+
         # we want a 3 columns layout
         self.columns = 3
-        
+
         site_name = get_admin_site_name(context)
-                
+
         #self.children.append(
         #            HistoryDashboardModule()
         #)
-        
+
         self.children.append(modules.Group(
             title="General",
             display="tabs",
             children=[
                 modules.AppList(
                     title='User',
-                    models=('django.contrib.*', 'user_profile.*' ),
+                    models=('django.contrib.*', 'user_profile.*'),
                 ),
                 modules.AppList(
                     _('Task Manager'),
@@ -93,7 +92,7 @@ class CustomIndexDashboard(Dashboard):
             _('Country Dialcode'),
             models=('country_dialcode.*', ),
         ))
-        
+
         # append a link list module for "quick links"
         self.children.append(modules.LinkList(
             _('Quick links'),
@@ -115,7 +114,7 @@ class CustomIndexDashboard(Dashboard):
             feed_url='http://www.cdr-stats.org/category/blog/feed/',
             limit=5
         ))
-        
+
 
 class CustomAppIndexDashboard(AppIndexDashboard):
     """
