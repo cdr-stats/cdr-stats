@@ -174,67 +174,67 @@
             <tr>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'start_uepoch' %}
-                      {% sort_link "<i class='icon-chevron-up'></i>" col_name_with_order.start_uepoch_up  %}
+                      {% sort_link "<i class='icon-chevron-up'></i>" "start_uepoch"  %}
                       {% trans "Call-date" %}
-                      {% sort_link "<i class='icon-chevron-down'></i>" col_name_with_order.start_uepoch_down  %}
+                      {% sort_link "<i class='icon-chevron-down'></i>" "-start_uepoch"  %}
                     {% else %}
-                      {% sort_link "Call-date" col_name_with_order.start_uepoch  %}
+                      {% sort_link "Call-date" "-start_uepoch"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'caller_id_number' %}
-                      {% sort_link "<i class='icon-chevron-up'></i>" col_name_with_order.caller_id_number_up  %}
+                      {% sort_link "<i class='icon-chevron-up'></i>" "caller_id_number"  %}
                       {% trans "CLID" %}
-                      {% sort_link "<i class='icon-chevron-down'></i>" col_name_with_order.caller_id_number_down  %}
+                      {% sort_link "<i class='icon-chevron-down'></i>" "-caller_id_number"  %}
                     {% else %}
-                      {% sort_link "CLID" col_name_with_order.caller_id_number  %}
+                      {% sort_link "CLID" "-caller_id_number"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'destination_number' %}
-                      {% sort_link "<i class='icon-chevron-up'></i>" col_name_with_order.destination_number_up  %}
+                      {% sort_link "<i class='icon-chevron-up'></i>" "destination_number"  %}
                       {% trans "Destination" %}
-                      {% sort_link "<i class='icon-chevron-down'></i>" col_name_with_order.destination_number_down  %}
+                      {% sort_link "<i class='icon-chevron-down'></i>" "-destination_number"  %}
                     {% else %}
-                      {% sort_link "Destination" col_name_with_order.destination_number  %}
+                      {% sort_link "Destination" "-destination_number"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'duration' %}
-                      {% sort_link "<i class='icon-chevron-up'></i>" col_name_with_order.duration_up  %}
+                      {% sort_link "<i class='icon-chevron-up'></i>" "duration"  %}
                       {% trans "Duration" %}
-                      {% sort_link "<i class='icon-chevron-down'></i>" col_name_with_order.duration_down  %}
+                      {% sort_link "<i class='icon-chevron-down'></i>" "-duration"  %}
                     {% else %}
-                      {% sort_link "Duration" col_name_with_order.duration  %}
+                      {% sort_link "Duration" "-duration"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'billsec' %}
-                      {% sort_link "<i class='icon-chevron-up'></i>" col_name_with_order.billsec_up  %}
+                      {% sort_link "<i class='icon-chevron-up'></i>" "billsec"  %}
                       <abbr title='{% trans "Bill Seconds" %}'>{% trans "Bill" %}</abbr>
-                      {% sort_link "<i class='icon-chevron-down'></i>" col_name_with_order.billsec_down  %}
+                      {% sort_link "<i class='icon-chevron-down'></i>" "-billsec"  %}
                     {% else %}
                         <abbr title={% trans 'Bill Seconds' %}>
-                        {% sort_link "Bill" col_name_with_order.billsec  %}
+                        {% sort_link "Bill" "-billsec"  %}
                         </abbr>
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'hangup_cause_id' %}
-                      {% sort_link "<i class='icon-chevron-up'></i>" col_name_with_order.hangup_cause_id_up  %}
+                      {% sort_link "<i class='icon-chevron-up'></i>" "hangup_cause_id"  %}
                       {% trans "Hangup cause" %}
-                      {% sort_link "<i class='icon-chevron-down'></i>" col_name_with_order.hangup_cause_id_down  %}
+                      {% sort_link "<i class='icon-chevron-down'></i>" "-hangup_cause_id"  %}
                     {% else %}
-                      {% sort_link "Hangup Cause" col_name_with_order.hangup_cause_id  %}
+                      {% sort_link "Hangup Cause" "-hangup_cause_id"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'accountcode' %}
-                      {% sort_link "<i class='icon-chevron-up'></i>" col_name_with_order.accountcode_up  %}
+                      {% sort_link "<i class='icon-chevron-up'></i>" "accountcode"  %}
                       {% trans "Account" %}
-                      {% sort_link "<i class='icon-chevron-down'></i>" col_name_with_order.accountcode_down  %}
+                      {% sort_link "<i class='icon-chevron-down'></i>" "-accountcode"  %}
                     {% else %}
-                      {% sort_link "Account" col_name_with_order.accountcode  %}
+                      {% sort_link "Account" "-accountcode"  %}
                     {% endifequal %}
                 </th>
                 <th>
