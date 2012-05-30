@@ -323,14 +323,14 @@ SOCKETIO_CALLNUM_DEFAULT = 0
 PREFIX_LIMIT_MIN = 2
 PREFIX_LIMIT_MAX = 5
 
-#If PhoneNumber is lower than PN_MIN_DIGITS it will be considered as an extension
-#If PhoneNumber is longer than PN_MIN_DIGITS but lower than PN_MAX_DIGITS then
-#the PhoneNumber will be considered as local call and the LOCAL_DIALCODE will be added
-LOCAL_DIALCODE = 1 # Set the Dialcode of your country (44 for UK, 1 for US)
+# If PN is lower than PN_MIN_DIGITS it will be considered as an extension
+# If PN is longer than PN_MIN_DIGITS but lower than PN_MAX_DIGITS then
+# The PN will be considered as local call and the LOCAL_DIALCODE will be added
+LOCAL_DIALCODE = 1  # Set the Dialcode of your country (44 for UK, 1 for US)
 PN_MIN_DIGITS = 6
 PN_MAX_DIGITS = 9
 
-#List of prefix to ignore, this will be remove from the phonenumber prior analysis
+# List of phonenumber prefix to ignore, this will be remove prior analysis
 PREFIX_TO_IGNORE = "+,0,00,000,0000,00000,011,55555,99999"
 
 #Realtime Graph : set the Y axis limit
