@@ -118,7 +118,7 @@ class Command(BaseCommand):
         db_name = settings.MG_IMPORT[ipaddress]['db_name']
         try:
             connection = Connection(host, port)
-            dbcon = connection[db_name]
+            DBCON = connection[db_name]
         except ConnectionFailure, e:
             sys.stderr.write("Could not connect to MongoDB: %s - %s" % \
                                                             (e, ipaddress))
@@ -332,5 +332,5 @@ class Command(BaseCommand):
                       }
                     }
 
-            dbcon[settings.MG_IMPORT[ipaddress]['collection']].\
+            DBCON[settings.MG_IMPORT[ipaddress]['collection']].\
                 insert(cdr_json)

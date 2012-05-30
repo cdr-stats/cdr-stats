@@ -25,22 +25,22 @@ from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 from common.common_functions import current_view, get_news, variable_value, \
                                     source_desti_field_chk_mongodb, \
-                                    duration_field_chk_mongodb, int_convert_to_minute, \
+                                    duration_field_chk_mongodb, \
+                                    int_convert_to_minute, \
                                     validate_days, date_range
 
 from cdr.models import Switch
-from cdr.functions_def import get_country_name, chk_account_code, get_hangupcause_name
-from cdr.forms import SearchForm, CdrSearchForm, CountryReportForm, CdrOverviewForm, \
-                      CompareCallSearchForm, ConcurrentCallForm, SwitchForm, WorldForm, \
-                      loginForm, EmailReportForm
-from cdr.mapreduce import *
+from cdr.functions_def import get_country_name, chk_account_code, \
+                                get_hangupcause_name
+from cdr.forms import CdrSearchForm, CountryReportForm, \
+                        CdrOverviewForm, CompareCallSearchForm, \
+                        ConcurrentCallForm, SwitchForm, WorldForm, \
+                        loginForm, EmailReportForm
 from user_profile.models import UserProfile
-
+from cdr.mapreduce import *
 from bson.objectid import ObjectId
-
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
-
 import operator
 import math
 import csv
@@ -48,9 +48,9 @@ import logging
 
 
 TOTAL_GRAPH_COLOR = '#A61700'
-DISPLAY_NO_OF_COUNTRY = 10
+NUM_COUNTRY = 10
 news_url = settings.NEWS_URL
-cdr_data = settings.dbcon[settings.MG_CDR_COMMON]
+cdr_data = settings.DBCON[settings.MG_CDR_COMMON]
 #db.cdr.ensureIndex({"variables.answer_stamp":1}, {background:true});
 (map, reduce, finalize_fun, out) = mapreduce_cdr_view()
 
@@ -627,11 +627,12 @@ def cdr_detail(request, id, switch_id):
         db_name = settings.MG_IMPORT[ipaddress]['db_name']
         try:
             connection = Connection(host, port)
-            dbcon = connection[db_name]
+            DBCON = connection[db_name]
         except ConnectionFailure:
             raise Http404
 
-        doc = dbcon[settings.MG_IMPORT[ipaddress]['collection']].find({'_id': ObjectId(id)})
+        doc = DBCON[settings.MG_IMPORT[ipaddress]['collection']].\
+                    find({'_id': ObjectId(id)})
         return render_to_response(
                         'cdr/cdr_detail_freeswitch.html',
                         {'row': list(doc), 'menu': menu},
@@ -647,13 +648,17 @@ def cdr_detail(request, id, switch_id):
         password = settings.ASTERISK_MYSQL[ipaddress]['password']
         host = settings.ASTERISK_MYSQL[ipaddress]['host']
         try:
-            connection = Database.connect(user=user, passwd=password, db=db_name, host=host)
+            connection = Database.connect(user=user, passwd=password,
+                                            db=db_name, host=host)
             cursor = connection.cursor()
-            cursor_update = connection.cursor()
         except:
             raise Http404
 
-        cursor.execute("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel, duration, billsec, disposition, accountcode, uniqueid, %s FROM %s WHERE %s=%s" % (settings.ASTERISK_PRIMARY_KEY, table_name, settings.ASTERISK_PRIMARY_KEY, id))
+        cursor.execute("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel, "\
+                        "duration, billsec, disposition, accountcode, " \
+                        "uniqueid, %s FROM %s WHERE %s=%s" % \
+                        (settings.ASTERISK_PRIMARY_KEY, table_name,
+                        settings.ASTERISK_PRIMARY_KEY, id))
         row = cursor.fetchone()
         if not row:
             raise Http404
@@ -753,7 +758,7 @@ def cdr_global_report(request):
             i += 1
 
     # remove mapreduce output from database (no longer required)
-    settings.dbcon[out].drop()
+    settings.DBCON[out].drop()
 
     logging.debug('CDR global report view end')
     template_data = {'module': current_view(request),
@@ -825,7 +830,7 @@ def cdr_dashboard(request):
     calls = calls.find().sort([('_id.g_Millisec', 1)])
 
     # if exists, drop previous collection
-    settings.dbcon[settings.MG_CDR_HANGUP].drop()
+    settings.DBCON[settings.MG_CDR_HANGUP].drop()
 
     total_calls = 0
     total_duration = 0
@@ -844,13 +849,13 @@ def cdr_dashboard(request):
             int_hangup_cause_id = False
 
         if int_hangup_cause_id:
-            settings.dbcon[settings.MG_CDR_HANGUP].update({'hangup_cause_id': int(d['value']['hangup_cause_id'])},
+            settings.DBCON[settings.MG_CDR_HANGUP].update({'hangup_cause_id': int(d['value']['hangup_cause_id'])},
                                                                          {'$inc': {'count': 1}}, upsert=True)
 
-    hangup_analytic = settings.dbcon[settings.MG_CDR_HANGUP].find()
+    hangup_analytic = settings.DBCON[settings.MG_CDR_HANGUP].find()
 
     # remove mapreduce output from database (no longer required)
-    settings.dbcon[out].drop()
+    settings.DBCON[out].drop()
 
     # Country call analytic start
     (map, reduce, finalize_fun, out) = mapreduce_cdr_world_report()
@@ -869,7 +874,7 @@ def cdr_dashboard(request):
 
     # remove mapreduce output & country analytic from database
     # TODO : Check if (no longer required)
-    settings.dbcon[out].drop()
+    settings.DBCON[out].drop()
 
     #Calculate the Average Time of Call
     ACT = math.floor(total_calls / 24)
@@ -981,7 +986,7 @@ def cdr_country_report(request):
                          'top_ten_country_analytic' : country_analytic_array[0:11],
                          'form': form,
                          'search_tag': search_tag,
-                         'DISPLAY_NO_OF_COUNTRY': DISPLAY_NO_OF_COUNTRY,
+                         'NUM_COUNTRY': NUM_COUNTRY,
                          }
 
             return render_to_response(template_name, variables,
@@ -1000,7 +1005,7 @@ def cdr_country_report(request):
     (map, reduce, finalize_fun, out) = mapreduce_cdr_country_report()
 
     #Run Map Reduce
-    country_data = settings.dbcon[settings.MG_CDR_COUNTRY_REPORT]
+    country_data = settings.DBCON[settings.MG_CDR_COUNTRY_REPORT]
 
     calls = country_data.map_reduce(map, reduce, out, query=query_var)
     calls = calls.find().sort([('_id.g_Millisec', 1)])
@@ -1015,7 +1020,7 @@ def cdr_country_report(request):
         total_duration += int(d['value']['duration__sum'])
 
         # created cdr_country_analytic
-        settings.dbcon[settings.MG_CDR_COUNTRY].update(
+        settings.DBCON[settings.MG_CDR_COUNTRY].update(
             {
                 'country_id': int(d['_id']['f_Con']),
             },
@@ -1024,7 +1029,7 @@ def cdr_country_report(request):
                 'duration': int(d['value']['duration__sum'])}
             }, upsert=True)
 
-    country_calls_final = settings.dbcon[settings.MG_CDR_COUNTRY].find().sort([('count', -1)])
+    country_calls_final = settings.DBCON[settings.MG_CDR_COUNTRY].find().sort([('count', -1)])
     country_analytic_array = []
     country_analytic_array_final = []
     for i in country_calls_final:
@@ -1035,7 +1040,7 @@ def cdr_country_report(request):
                                        int(i['country_id'])))
 
     # Top countries list
-    for i in country_analytic_array[0: DISPLAY_NO_OF_COUNTRY]:
+    for i in country_analytic_array[0: NUM_COUNTRY]:
         # i[0] - country name, i[1] - call count,
         # i[2] - call duration, i[3] - country id,
         country_analytic_array_final.append((i[0], int(i[1]), int(i[2]), int(i[3])))
@@ -1043,7 +1048,7 @@ def cdr_country_report(request):
     # Other countries analytic
     other_country_call_count = 0
     other_country_call_duration = 0
-    for i in country_analytic_array[DISPLAY_NO_OF_COUNTRY:]:
+    for i in country_analytic_array[NUM_COUNTRY:]:
         #i[0] - country name, i[1] - call count, i[2] - call duration
         other_country_call_count += int(i[1])
         other_country_call_duration += int(i[2])
@@ -1054,8 +1059,8 @@ def cdr_country_report(request):
 
     # remove mapreduce output & country analytic from database
     # TODO Check if (no longer required)
-    settings.dbcon[out].drop()
-    settings.dbcon[settings.MG_CDR_COUNTRY].drop()
+    settings.DBCON[out].drop()
+    settings.DBCON[settings.MG_CDR_COUNTRY].drop()
 
     logging.debug('CDR country report view end')
     variables = {'module': current_view(request),
@@ -1063,10 +1068,11 @@ def cdr_country_report(request):
                  'total_duration': total_duration,
                  'total_record': total_record_final,
                  'country_analytic_array_final': country_analytic_array_final,
-                 'top_ten_country_analytic' : country_analytic_array[0:DISPLAY_NO_OF_COUNTRY],
+                 'top_ten_country_analytic': \
+                            country_analytic_array[0:NUM_COUNTRY],
                  'form': form,
                  'search_tag': search_tag,
-                 'DISPLAY_NO_OF_COUNTRY': DISPLAY_NO_OF_COUNTRY,
+                 'NUM_COUNTRY': NUM_COUNTRY,
                 }
 
     return render_to_response(template_name, variables,
@@ -1131,12 +1137,19 @@ def cdr_overview(request):
                 query_var['switch_id'] = int(switch_id)
 
             if from_date != '' and to_date != '':
-                start_date = datetime(from_date.year, from_date.month, from_date.day, 0, 0, 0, 0)
-                end_date = datetime(to_date.year, to_date.month, to_date.day, 23, 59, 59, 999999)
-                query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
+                start_date = datetime(from_date.year, from_date.month,
+                                        from_date.day, 0, 0, 0, 0)
+                end_date = datetime(to_date.year, to_date.month,
+                                        to_date.day, 23, 59, 59, 999999)
+                query_var['start_uepoch'] = {
+                                                '$gte': start_date,
+                                                '$lt': end_date
+                                            }
 
-                month_start_date = datetime(start_date.year, start_date.month, 1, 0, 0, 0, 0)
-                month_end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
+                month_start_date = datetime(start_date.year, start_date.month,
+                                            1, 0, 0, 0, 0)
+                month_end_date = datetime(end_date.year, end_date.month,
+                                            end_date.day, 23, 59, 59, 999999)
 
         else:
             # form is not valid
@@ -1152,8 +1165,10 @@ def cdr_overview(request):
             total_month_call_count = []
 
             tday = datetime.today()
-            start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
-            end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
+            start_date = datetime(tday.year, tday.month,
+                                tday.day, 0, 0, 0, 0)
+            end_date = datetime(tday.year, tday.month,
+                                tday.day, 23, 59, 59, 999999)
 
             variables = {'module': current_view(request),
                          'form': form,
@@ -1165,15 +1180,18 @@ def cdr_overview(request):
                          'total_day_call_count': total_day_call_count,
                          'total_day_call_duration': total_day_call_duration,
                          'total_month_record': total_month_record,
-                         'total_month_call_duration': total_month_call_duration,
+                         'total_month_call_duration': \
+                                                total_month_call_duration,
                          'total_month_call_count': total_month_call_count,
                          'start_date': start_date,
                          'end_date': end_date,
                          'TOTAL_GRAPH_COLOR': TOTAL_GRAPH_COLOR,
                          }
 
-            return render_to_response(template_name, variables,
-                                      context_instance = RequestContext(request))
+            return render_to_response(
+                                template_name, variables,
+                                context_instance=RequestContext(request)
+                                )
 
     if len(query_var) == 0:
         tday = datetime.today()
@@ -1184,9 +1202,12 @@ def cdr_overview(request):
                                         'switch': switch_id})
 
         start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
-        end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
-        month_start_date = datetime(start_date.year, start_date.month, 1, 0, 0, 0, 0)
-        month_end_date = datetime(end_date.year, end_date.month, end_date.day,  23, 59, 59, 999999)
+        end_date = datetime(tday.year, tday.month,
+                            tday.day, 23, 59, 59, 999999)
+        month_start_date = datetime(start_date.year,
+                            start_date.month, 1, 0, 0, 0, 0)
+        month_end_date = datetime(end_date.year, end_date.month,
+                            end_date.day,  23, 59, 59, 999999)
 
         query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
@@ -1199,7 +1220,7 @@ def cdr_overview(request):
     if query_var:
         logging.debug('Map-reduce cdr overview analytic')
         # Collect Hourly data
-        hourly_data = settings.dbcon[settings.MG_CDR_HOURLY]
+        hourly_data = settings.DBCON[settings.MG_CDR_HOURLY]
 
         (map, reduce, finalize_fun, out) = mapreduce_cdr_hourly_overview()
         calls_in_day = hourly_data.map_reduce(map, reduce, \
@@ -1240,10 +1261,10 @@ def cdr_overview(request):
             total_hour_call_duration = sorted(total_hour_call_duration, key=lambda k: k[0])
 
         # remove mapreduce output from database (no longer required)
-        settings.dbcon[out].drop()
+        settings.DBCON[out].drop()
 
         # Collect daily data
-        daily_data = settings.dbcon[settings.MG_CDR_DAILY]
+        daily_data = settings.DBCON[settings.MG_CDR_DAILY]
 
         (map, reduce, finalize_fun, out) = mapreduce_cdr_daily_overview()
         calls_in_day = daily_data.map_reduce(map, reduce, out, query=query_var)
@@ -1281,10 +1302,10 @@ def cdr_overview(request):
             total_day_call_count = sorted(total_day_call_count, key=lambda k: k[0])
 
         # remove mapreduce output from database (no longer required)
-        settings.dbcon[out].drop()
+        settings.DBCON[out].drop()
 
         # Collect monthly data
-        monthly_data = settings.dbcon[settings.MG_CDR_MONTHLY]
+        monthly_data = settings.DBCON[settings.MG_CDR_MONTHLY]
 
         (map, reduce, finalize_fun, out) = mapreduce_cdr_monthly_overview()
         query_var['start_uepoch'] = {'$gte': month_start_date, '$lt': month_end_date}
@@ -1326,7 +1347,7 @@ def cdr_overview(request):
             total_month_call_count = sorted(total_month_call_count, key=lambda k: k[0])
 
         # remove mapreduce output from database (no longer required)
-        settings.dbcon[out].drop()
+        settings.DBCON[out].drop()
 
         logging.debug('CDR daily view end')
         variables = {'module': current_view(request),
@@ -1353,7 +1374,7 @@ def cdr_overview(request):
 
 
 def get_hourly_data_for_date(start_date, end_date, query_var, graph_view):
-    hourly_data = settings.dbcon[settings.MG_CDR_HOURLY]
+    hourly_data = settings.DBCON[settings.MG_CDR_HOURLY]
     logging.debug('Map-reduce cdr hourly analytic')
     #Retrieve Map Reduce
     (map, reduce, finalize_fun, out) = mapreduce_cdr_hour_report()
@@ -1419,7 +1440,7 @@ def get_hourly_data_for_date(start_date, end_date, query_var, graph_view):
                 for j in range(0, 24):
                     total_record_final.append((sd, j, 0))
     else:
-        total_record_final=[]
+        total_record_final = []
 
     total_record = {}
     for i in total_record_final:
@@ -1430,7 +1451,7 @@ def get_hourly_data_for_date(start_date, end_date, query_var, graph_view):
             total_record[i[0]][i[1]] = i[2]
 
     # remove mapreduce output from database (no longer required)
-    settings.dbcon[out].drop()
+    settings.DBCON[out].drop()
     variables = {
         'total_record': total_record,
         }
@@ -1637,7 +1658,7 @@ def cdr_concurrent_calls(request):
 
     final_data = []
     if query_var:
-        calls_in_day = settings.dbcon[settings.MG_CONC_CALL_AGG]
+        calls_in_day = settings.DBCON[settings.MG_CONC_CALL_AGG]
         calls_in_day = calls_in_day.find(query_var).sort([ ('_id.g_Millisec', 1)])
 
         for d in calls_in_day.clone():
@@ -1700,7 +1721,7 @@ def cdr_realtime(request):
             return HttpResponseRedirect('/?acc_code_error=true')
 
     if query_var:
-        calls_in_day = settings.dbcon[settings.MG_CONC_CALL_AGG]
+        calls_in_day = settings.DBCON[settings.MG_CONC_CALL_AGG]
         calls_in_day = calls_in_day.find(query_var).sort([('_id.g_Millisec', -1)])
 
         final_data = []
@@ -1781,7 +1802,7 @@ def get_cdr_mail_report():
                 'duration__avg': doc['value']['duration__avg'],
             })
         # created cdr_hangup_analytic
-        settings.dbcon[settings.MG_CDR_HANGUP].update(
+        settings.DBCON[settings.MG_CDR_HANGUP].update(
             {
                 'hangup_cause_id': int(doc['value']['hangup_cause_id'])
             },
@@ -1790,7 +1811,7 @@ def get_cdr_mail_report():
             }, upsert=True)
 
         # created cdr_country_analytic
-        settings.dbcon[settings.MG_CDR_COUNTRY].update(
+        settings.DBCON[settings.MG_CDR_COUNTRY].update(
             {
                 'country_id': int(doc['_id']['f_Con']),
             },
@@ -1814,7 +1835,7 @@ def get_cdr_mail_report():
         ACD = int_convert_to_minute(math.floor(total_duration / total_calls))
 
     # Top 5 called countries
-    country_calls_final = settings.dbcon[settings.MG_CDR_COUNTRY].find().sort([('count', -1)]).limit(5)
+    country_calls_final = settings.DBCON[settings.MG_CDR_COUNTRY].find().sort([('count', -1)]).limit(5)
     country_analytic_array = []
     for i in country_calls_final:
         # All countries list
@@ -1823,11 +1844,11 @@ def get_cdr_mail_report():
                                        int(i['duration']),
                                        int(i['country_id'])))
 
-    settings.dbcon[settings.MG_CDR_COUNTRY].drop()
+    settings.DBCON[settings.MG_CDR_COUNTRY].drop()
     # Country call analytic end
 
     hangup_analytic_array = []
-    hangup_analytic = settings.dbcon[settings.MG_CDR_HANGUP].find({})
+    hangup_analytic = settings.DBCON[settings.MG_CDR_HANGUP].find({})
     if hangup_analytic.count() != 0:
         total_hangup = sum([int(x['count']) for x in hangup_analytic.clone()])
         for i in hangup_analytic.clone():
@@ -1835,9 +1856,9 @@ def get_cdr_mail_report():
                 (get_hangupcause_name(int(i['hangup_cause_id'])),
                 "{0:.0f}%".format((float(i['count']) / float(total_hangup)) * 100)))
 
-    settings.dbcon[settings.MG_CDR_HANGUP].drop()
+    settings.DBCON[settings.MG_CDR_HANGUP].drop()
     # remove mapreduce output from database (no longer required)
-    settings.dbcon[out].drop()
+    settings.DBCON[out].drop()
 
     mail_data = {
                 'yesterday_date': start_date,
@@ -1998,7 +2019,7 @@ def world_map_view(request):
     (map, reduce, finalize_fun, out) = mapreduce_cdr_world_report()
 
     #Run Map Reduce
-    country_data = settings.dbcon[settings.MG_CDR_COUNTRY_REPORT]
+    country_data = settings.DBCON[settings.MG_CDR_COUNTRY_REPORT]
 
     calls = country_data.map_reduce(map, reduce, out, query=query_var)
     calls = calls.find().sort([('value.calldate__count', -1)])

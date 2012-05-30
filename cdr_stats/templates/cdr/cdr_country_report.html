@@ -125,12 +125,12 @@ $(function () {
         }
 
     }
- 
+
     var options = {
         xaxis: { mode: "time", tickLength: 5 },
         yaxis: { min: 0, tickDecimals: false },
         selection: { mode: "x" },
-        grid: { 
+        grid: {
                 hoverable: true,
                 xaxis: false
               },
@@ -169,7 +169,7 @@ $(function () {
     $("#overview").bind("plotselected", function (event, ranges) {
         plot.setSelection(ranges);
     });
-    
+
     $("#graph_responsive").bind("plothover", function (event, pos, item) {
         if (item) {
             if (previousPoint != item.dataIndex) {
@@ -338,7 +338,7 @@ $(function () {
 
             <br/>
             <div class="span6">
-                <h3 align="left">{% trans "top"|title %} {{ DISPLAY_NO_OF_COUNTRY }} {% trans "calls by country"|title %}</h3>
+                <h3 align="left">{% trans "top"|title %} {{ NUM_COUNTRY }} {% trans "calls by country"|title %}</h3>
                 <table>
                     <tbody>
                     {% for country_data in top_ten_country_analytic %}
@@ -355,7 +355,7 @@ $(function () {
                                     {{ country_data.0 }}
                                 {% else %}
                                     {% trans "world"|title  %}
-                                {% endif %}                                
+                                {% endif %}
                             </td>
                             <td width="100">{{ country_data.1 }} {% trans "Calls"%}</td>
                         </tr>
@@ -381,7 +381,7 @@ $(function () {
             <div id="country_hover_duration"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
             <br/>
             <div class="span6">
-                <h3 align="left">{% trans "top"|title %} {{ DISPLAY_NO_OF_COUNTRY }} {% trans "duration by country"|title %}</h3>
+                <h3 align="left">{% trans "top"|title %} {{ NUM_COUNTRY }} {% trans "duration by country"|title %}</h3>
                 <table>
                     <tbody>
                     {% for country_data in top_ten_country_analytic %}
@@ -398,7 +398,7 @@ $(function () {
                                     {{ country_data.0 }}
                                 {% else %}
                                     {% trans "world"|title  %}
-                                {% endif %}                  
+                                {% endif %}
                             </td>
                             <td>{{ country_data.2|conv_min }} {% trans "minutes"%}</td>
                         </tr>

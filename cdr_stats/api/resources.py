@@ -260,7 +260,7 @@ class CdrDailyResource(ModelResource):
             query_var['switch_id'] = int(temp_var['switch_id'])
 
 
-        daily_data = settings.dbcon[settings.MG_CDR_DAILY]
+        daily_data = settings.DBCON[settings.MG_CDR_DAILY]
 
         if query_var:
             daily_data = daily_data.find(query_var)
@@ -421,9 +421,9 @@ class CdrResource(ModelResource):
             }
 
         # Create CDR record
-        settings.dbcon[settings.MG_CDR_COMMON].insert(cdr_record)
+        settings.DBCON[settings.MG_CDR_COMMON].insert(cdr_record)
         # get last inserted cdr record
-        new_obj = settings.dbcon[settings.MG_CDR_COMMON].find_one()
+        new_obj = settings.DBCON[settings.MG_CDR_COMMON].find_one()
 
         #print new_obj['_id']
         logger.debug('CDR API : result ok 200')

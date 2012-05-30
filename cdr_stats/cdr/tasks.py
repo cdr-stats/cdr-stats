@@ -102,7 +102,7 @@ class get_channels_info(PeriodicTask):
                             'numbercall': number_call,
                             'accountcode': accountcode,
                             }
-                        settings.dbcon[settings.MG_CONC_CALL].insert(call_json)
+                        settings.DBCON[settings.MG_CONC_CALL].insert(call_json)
                 except sqlite3.Error, e:
 
                     logger.error('Error %s:' % e.args[0])

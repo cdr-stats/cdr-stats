@@ -488,7 +488,10 @@ from pymongo.errors import ConnectionFailure
 import sys
 try:
     connection = Connection(MG_HOST, MG_PORT)
-    dbcon = connection[MG_DB_NAME]
+    DBCON = connection[MG_DB_NAME]
+    #TODO: It seems we are opening this connection more than 1 time
+    print "**********************"
+    print DBCON
 except ConnectionFailure, e:
     sys.stderr.write("Could not connect to MongoDB: %s" % e)
     sys.exit(1)

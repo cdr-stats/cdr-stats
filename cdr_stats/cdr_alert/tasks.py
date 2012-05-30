@@ -38,7 +38,7 @@ from dateutil.relativedelta import relativedelta
 LOCK_EXPIRE = 60 * 30
 
 
-cdr_data = settings.dbcon[settings.MG_CDR_COMMON]
+cdr_data = settings.DBCON[settings.MG_CDR_COMMON]
 (map, reduce, finalize_fun, out) = mapreduce_task_cdr_alert()
 
 
