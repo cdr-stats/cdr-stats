@@ -24,7 +24,7 @@ from celery.schedules import crontab
 from celery.decorators import task, periodic_task
 from notification import models as notification
 from cdr.common_tasks import single_instance_task
-from cdr_alert.models import AlertRemovePrefix, Alarm, AlarmReport, Blacklist, Whitelist
+from cdr_alert.models import Alarm, AlarmReport
 from cdr.mapreduce import mapreduce_task_cdr_alert
 from cdr.functions_def import get_hangupcause_id
 from cdr.views import get_cdr_mail_report
@@ -38,7 +38,7 @@ from dateutil.relativedelta import relativedelta
 LOCK_EXPIRE = 60 * 30
 
 
-cdr_data = settings.DB_CONNECTION[settings.MG_CDR_COMMON]
+cdr_data = settings.dbcon[settings.MG_CDR_COMMON]
 (map, reduce, finalize_fun, out) = mapreduce_task_cdr_alert()
 
 
@@ -52,12 +52,16 @@ def get_start_end_date(alert_condition_add_on):
     if alert_condition_add_on == 2:  # Same day in the previous week
         comp_days = 7
 
-    start_date= end_date + relativedelta(days=-int(comp_days))
+    start_date = end_date + relativedelta(days=-int(comp_days))
     #get Previous dates and Current dates
-    dt_list['p_start_date'] = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, 0)
-    dt_list['p_end_date'] = datetime(start_date.year, start_date.month, start_date.day, 23, 59, 59, 999999)
-    dt_list['c_start_date'] = datetime(end_date.year, end_date.month, end_date.day, 0, 0, 0, 0)
-    dt_list['c_end_date'] = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
+    dt_list['p_start_date'] = datetime(start_date.year, start_date.month, \
+                                        start_date.day, 0, 0, 0, 0)
+    dt_list['p_end_date'] = datetime(start_date.year, start_date.month, \
+                                        start_date.day, 23, 59, 59, 999999)
+    dt_list['c_start_date'] = datetime(end_date.year, end_date.month, \
+                                        end_date.day, 0, 0, 0, 0)
+    dt_list['c_end_date'] = datetime(end_date.year, end_date.month, \
+                                        end_date.day, 23, 59, 59, 999999)
 
     return dt_list
 
@@ -188,7 +192,8 @@ def run_alarm(alarm_obj, logger):
         pre_day_data = {}
         for doc in pre_total_data:
             pre_date = dt_list['p_start_date']
-            pre_day_data[pre_date.strftime('%Y-%m-%d')] = doc['value']['duration__avg']
+            pre_day_data[pre_date.strftime('%Y-%m-%d')] = \
+                            doc['value']['duration__avg']
             if alarm_obj.alert_condition == 1 \
                 or alarm_obj.alert_condition == 2:
                 chk_alert_value(alarm_obj, doc['value']['duration__avg'])
@@ -210,13 +215,17 @@ def run_alarm(alarm_obj, logger):
         cur_day_data = {}
         for doc in cur_total_data:
             cur_date = dt_list['c_start_date']
-            cur_day_data[cur_date.strftime('%Y-%m-%d')] = doc['value']['duration__avg']
+            cur_day_data[cur_date.strftime('%Y-%m-%d')] = \
+                                doc['value']['duration__avg']
             if alarm_obj.alert_condition == 1 \
                 or alarm_obj.alert_condition == 2:
                 chk_alert_value(alarm_obj, doc['value']['duration__avg'])
             else:
                 current_date_duration = doc['value']['duration__avg']
-                chk_alert_value(alarm_obj, current_date_duration, previous_date_duration)
+                chk_alert_value(
+                        alarm_obj,
+                        current_date_duration,
+                        previous_date_duration)
 
     if alarm_obj.type == 2:  # ASR (Answer Seize Ratio)
         logger.debug("ASR (Answer Seize Ratio)")
@@ -281,23 +290,24 @@ class chk_alarm(PeriodicTask):
         alarm_objs = Alarm.objects.filter(status=1)  # all active alarms
         for alarm_obj in alarm_objs:
             try:
-                alarm_report = AlarmReport.objects.filter(alarm=alarm_obj).latest('daterun')
-                diff_between_task_run = (datetime.now() - alarm_report.daterun).days
+                alarm_report = AlarmReport.objects.filter(alarm=alarm_obj).\
+                                        latest('daterun')
+                diff_run = (datetime.now() - alarm_report.daterun).days
 
                 if alarm_obj.period == 1:  # Day
-                    if diff_between_task_run == 1:  # every day
+                    if diff_run == 1:  # every day
                         # Run alert task
                         logger.debug("Run alarm")
                         run_alarm(alarm_obj, logger)
 
                 if alarm_obj.period == 2:  # Week
-                    if diff_between_task_run == 7:  # every week
+                    if diff_run == 7:  # every week
                         # Run alert task
                         logger.debug("Run alarm")
                         run_alarm(alarm_obj, logger)
 
                 if alarm_obj.period == 3:  # Month
-                    if diff_between_task_run == 30:  # every month
+                    if diff_run == 30:  # every month
                         # Run alert task
                         logger.debug("Run alarm")
                         run_alarm(alarm_obj, logger)
@@ -314,18 +324,17 @@ class chk_alarm(PeriodicTask):
 
 def notify_admin_without_mail(notice_id, email_id):
     """Send notification to admin as well as mail to recipient of alarm"""
-    # Get all the admin super users
-    all_admin_user = User.objects.filter(is_superuser=True)
-    for user in all_admin_user:
-        recipient = user
+    # TODO : Get all the admin users
+    user = User.objects.get(pk=1)
+    recipient = user
 
-        # send notification
-        if notification:
-            note_label = notification.NoticeType.objects.get(default=notice_id)
-            notification.send([recipient],
-                              note_label.label,
-                              {"from_user": user},
-                              sender=user)
+    # send notification
+    if notification:
+        note_label = notification.NoticeType.objects.get(default=notice_id)
+        notification.send([recipient],
+                          note_label.label,
+                          {"from_user": user},
+                          sender=user)
     return True
 
 
@@ -353,10 +362,11 @@ def blacklist_whitelist_notification(notice_type):
                             ).latest('added')
 
         # Get time difference between two time intervals
-        previous_time = str(datetime.time(notice_obj.added.replace(microsecond=0)))
-        current_time = str(datetime.time(datetime.now().replace(microsecond=0)))
+        prevtime = str(datetime.time(notice_obj.added.replace(microsecond=0)))
+        curtime = str(datetime.time(datetime.now().replace(microsecond=0)))
         FMT = '%H:%M:%S'
-        diff = datetime.strptime(current_time, FMT) - datetime.strptime(previous_time, FMT)
+        diff = datetime.strptime(curtime, FMT) - \
+                    datetime.strptime(prevtime, FMT)
         # if difference is more than 30 min than notification resend
         if int(diff.seconds / 60) >= 30:
             # blacklist notification id - 3 | whitelist notification type - 4
@@ -397,19 +407,24 @@ class send_cdr_report(PeriodicTask):
 
             subject = _('CDR Report')
 
-            html_content = get_template('cdr/mail_report_template.html').render(
-                            Context({
-                                'yesterday_date': mail_data['yesterday_date'],
-                                'rows': mail_data['rows'],
-                                'total_duration': mail_data['total_duration'],
-                                'total_calls': mail_data['total_calls'],
-                                'ACT': mail_data['ACT'],
-                                'ACD': mail_data['ACD'],
-                                'country_analytic_array': mail_data['country_analytic_array'],
-                                'hangup_analytic_array': mail_data['hangup_analytic_array'],
-                            })
-                        )
-            msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
+            html_content = get_template('cdr/mail_report_template.html').\
+                render(
+                    Context({
+                        'yesterday_date': mail_data['yesterday_date'],
+                        'rows': mail_data['rows'],
+                        'total_duration': mail_data['total_duration'],
+                        'total_calls': mail_data['total_calls'],
+                        'ACT': mail_data['ACT'],
+                        'ACD': mail_data['ACD'],
+                        'country_analytic_array': mail_data['country_analytic_array'],
+                        'hangup_analytic_array': mail_data['hangup_analytic_array']
+                    })
+                )
+            msg = EmailMultiAlternatives(
+                        subject,
+                        html_content,
+                        from_email,
+                        [to])
             logger.info("Email sent to %s" % to)
             msg.content_subtype = "html"
             msg.send()

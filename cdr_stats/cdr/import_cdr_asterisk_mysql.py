@@ -133,21 +133,22 @@ def import_cdr_asterisk_mysql(shell=False):
             sys.exit(1)
 
         try:
-            cursor.execute("SELECT VERSION() from %s WHERE import_cdr IS NOT NULL LIMIT 0,1" % table_name)
+            cursor.execute("SELECT VERSION() from %s WHERE import_cdr "\
+                            "IS NOT NULL LIMIT 0,1" % table_name)
             row = cursor.fetchone()
         except Exception, e:
             #Add missing field to flag import
-            cursor.execute("ALTER TABLE %s  ADD import_cdr TINYINT NOT NULL DEFAULT '0'" % table_name)
-            cursor.execute("ALTER TABLE %s ADD INDEX (import_cdr)" % table_name)
+            cursor.execute("ALTER TABLE %s  ADD import_cdr TINYINT NOT NULL "\
+                            "DEFAULT '0'" % table_name)
+            cursor.execute("ALTER TABLE %s ADD INDEX (import_cdr)" % \
+                            table_name)
 
-        #cursor.execute ("SELECT count(*) FROM %s WHERE import_cdr=0" % table_name)
-        #row = cursor.fetchone()
-        #total_record = row[0]
-
-        #print total_loop_count
         count_import = 0
 
-        cursor.execute("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel, duration, billsec, disposition, accountcode, uniqueid, %s FROM %s WHERE import_cdr=0" % (settings.ASTERISK_PRIMARY_KEY, table_name))
+        cursor.execute("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel," \
+                    "duration, billsec, disposition, accountcode, uniqueid," \
+                    " %s FROM %s WHERE import_cdr=0" % \
+                    (settings.ASTERISK_PRIMARY_KEY, table_name))
         row = cursor.fetchone()
 
         while row is not None:

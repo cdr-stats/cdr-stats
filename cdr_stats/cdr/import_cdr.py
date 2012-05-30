@@ -12,18 +12,14 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.conf import settings
-from django.utils.translation import gettext as _
-
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils.safestring import mark_safe
-
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 
-from cdr.models import Switch, HangupCause
-from cdr.functions_def import get_hangupcause_id, remove_prefix, prefix_list_string, get_country_id
-from cdr_alert.functions_blacklist import chk_prefix_in_whitelist, chk_prefix_in_blacklist
-from country_dialcode.models import Prefix
+from cdr.models import Switch
+from cdr.functions_def import get_hangupcause_id, remove_prefix, \
+                              prefix_list_string, get_country_id
+from cdr_alert.functions_blacklist import chk_prefix_in_whitelist, \
+                              chk_prefix_in_blacklist
 
 from datetime import datetime
 import sys
