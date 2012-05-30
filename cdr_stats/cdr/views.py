@@ -14,8 +14,10 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import password_reset, password_reset_done,\
-password_reset_confirm, password_reset_complete
+from django.contrib.auth.views import password_reset, \
+                                    password_reset_done,\
+                                    password_reset_confirm, \
+                                    password_reset_complete
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
@@ -23,19 +25,27 @@ from django.utils.translation import gettext as _
 from django.conf import settings
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
-from common.common_functions import current_view, get_news, variable_value, \
+from common.common_functions import current_view, get_news, \
+                                    variable_value, \
                                     source_desti_field_chk_mongodb, \
                                     duration_field_chk_mongodb, \
                                     int_convert_to_minute, \
-                                    validate_days, date_range
+                                    validate_days, \
+                                    date_range
 
 from cdr.models import Switch
-from cdr.functions_def import get_country_name, chk_account_code, \
+from cdr.functions_def import get_country_name, \
+                                chk_account_code, \
                                 get_hangupcause_name
-from cdr.forms import CdrSearchForm, CountryReportForm, \
-                        CdrOverviewForm, CompareCallSearchForm, \
-                        ConcurrentCallForm, SwitchForm, WorldForm, \
-                        loginForm, EmailReportForm
+from cdr.forms import CdrSearchForm, \
+                        CountryReportForm, \
+                        CdrOverviewForm, \
+                        CompareCallSearchForm, \
+                        ConcurrentCallForm, \
+                        SwitchForm, \
+                        WorldForm, \
+                        loginForm, \
+                        EmailReportForm
 from user_profile.models import UserProfile
 from cdr.mapreduce import *
 from bson.objectid import ObjectId
@@ -50,6 +60,7 @@ import logging
 TOTAL_GRAPH_COLOR = '#A61700'
 NUM_COUNTRY = 10
 news_url = settings.NEWS_URL
+print settings
 cdr_data = settings.DBCON[settings.MG_CDR_COMMON]
 #db.cdr.ensureIndex({"variables.answer_stamp":1}, {background:true});
 (map, reduce, finalize_fun, out) = mapreduce_cdr_view()

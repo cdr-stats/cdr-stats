@@ -30,8 +30,6 @@ MANAGERS = ADMINS
 
 SERVER_EMAIL = 'cdr-stats@localhost.com'
 
-MANAGERS = ADMINS
-
 DATABASES = {
     'default': {
         # Add 'postgresql_psycopg2','postgresql','mysql','sqlite3','oracle'
@@ -160,7 +158,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates"
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(APPLICATION_DIR, 'templates' ),
+    os.path.join(APPLICATION_DIR, 'templates'),
 )
 
 INTERNAL_IPS = ('127.0.0.1')
