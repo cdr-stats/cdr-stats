@@ -55,39 +55,34 @@ def print_shell(shell, message):
 
 def chk_destination(destination_number):
     #remove prefix
-    sanitized_destination = remove_prefix(destination_number, settings.PREFIX_TO_IGNORE)
+    sanitized_destination = remove_prefix(destination_number,
+                                    settings.PREFIX_TO_IGNORE)
 
     prefix_list = prefix_list_string(sanitized_destination)
 
-    authorized = 1 # default
-    #check desti against whiltelist
+    authorized = 1  # default
+    # check destion against whitelist
     authorized = chk_prefix_in_whitelist(prefix_list)
     if authorized:
-        # allowed destination
         authorized = 1
     else:
-        #check against blacklist
+        # check against blacklist
         authorized = chk_prefix_in_blacklist(prefix_list)
         if not authorized:
             # not allowed destination
             authorized = 0
 
     if len(sanitized_destination) < settings.PHONENUMBER_MIN_DIGITS:
-        #It might be an extension
+        # It might be an extension
         country_id = 0
     elif len(sanitized_destination) >= settings.PHONENUMBER_MIN_DIGITS\
-    and len(sanitized_destination) <= settings.PHONENUMBER_MAX_DIGITS:
-        #It might be an local call
-        print settings.LOCAL_DIALCODE
-        #Need to add coma for get_country_id to eval correctly
+        and len(sanitized_destination) <= settings.PHONENUMBER_MAX_DIGITS:
+        # It might be an local call
+        # Need to add coma for get_country_id to eval correctly
         country_id = get_country_id(str(settings.LOCAL_DIALCODE) + ',')
     else:
-        #International call
+        # International call
         country_id = get_country_id(prefix_list)
-
-    if get_country_id==0:
-        #TODO: Add logger
-        print_shell(shell, "Error to find the country_id %s" % destination_number)
 
     destination_data = {
         'authorized': authorized,
@@ -98,8 +93,9 @@ def chk_destination(destination_number):
 
 def import_cdr(shell=False):
     #TODO : dont use the args here
-    # Browse settings.CDR_MONGO_IMPORT and for each IP check if the IP exist in our Switch objects
-    # If it does we will connect to that Database and import the data as we do below
+    # Browse settings.CDR_MONGO_IMPORT and for each IP check if the IP exist
+    # in our Switch objects. If it does we will connect to that Database
+    # and import the data as we do below
 
     print_shell(shell, "Starting the synchronization...")
 
@@ -109,8 +105,8 @@ def import_cdr(shell=False):
         print_shell(shell, "Switch : %s" % ipaddress)
 
         DEV_ADD_IP = False
-        #uncomment this if you need to import from a fake different IP / used for dev
-        #DEV_ADD_IP = '127.0.0.2'
+        # uncomment this to import from a fake different IP / used for dev
+        # DEV_ADD_IP = '127.0.0.2'
 
         if DEV_ADD_IP:
             previous_ip = ipaddress
@@ -151,31 +147,32 @@ def import_cdr(shell=False):
 
         PAGE_SIZE = int(5000)
 
-        total_loop_count = int( int(total_record) / PAGE_SIZE ) + 1
+        total_loop_count = int(int(total_record) / PAGE_SIZE) + 1
 
         count_import = 0
 
-        for j in range(1, total_loop_count+1):
-            PAGE_NUMBER = int(j)
-
-            result = importcdr_handler.find({ '$or': [ {'import_cdr': {'$exists': False}},
-                                                       {'import_cdr': 0}]},
+        for j in range(1, total_loop_count + 1):
+            result = importcdr_handler.find(
                     {
-                        "callflow.caller_profile.caller_id_number":1,
-                        "callflow.caller_profile.caller_id_name":1,
+                        '$or': [{'import_cdr': {'$exists': False}},
+                                {'import_cdr': 0}]
+                    },
+                    {
+                        "callflow.caller_profile.caller_id_number": 1,
+                        "callflow.caller_profile.caller_id_name": 1,
                         "callflow.caller_profile.destination_number": 1,
-                        "variables.duration":1,
-                        "variables.billsec":1,
-                        "variables.hangup_cause_q850":1,
-                        "variables.accountcode":1,
-                        "variables.direction":1,
-                        "variables.uuid":1,
-                        "variables.remote_media_ip":1,
-                        "variables.start_uepoch":1,
-                        #"variables.answer_uepoch":1,
-                        #"variables.end_uepoch":1,
+                        "variables.duration": 1,
+                        "variables.billsec": 1,
+                        "variables.hangup_cause_q850": 1,
+                        "variables.accountcode": 1,
+                        "variables.direction": 1,
+                        "variables.uuid": 1,
+                        "variables.remote_media_ip": 1,
+                        "variables.start_uepoch": 1,
+                        #"variables.answer_uepoch": 1,
+                        #"variables.end_uepoch": 1,
                         #"variables.mduration": 1,
-                        #"variables.billmsec":1,
+                        #"variables.billmsec": 1,
                         #"variables.read_codec": 1,
                         #"variables.write_codec": 1,
                         "import_cdr_monthly": 1,
@@ -318,7 +315,8 @@ def import_cdr(shell=False):
                             }, upsert=True)
 
                 # Store hourly cdr collection with unique import
-                if not hasattr(cdr, 'import_cdr_hourly') or cdr['import_cdr_hourly'] == 0:
+                if not hasattr(cdr, 'import_cdr_hourly') \
+                    or cdr['import_cdr_hourly'] == 0:
                     # hourly collection
                     current_y_m_d_h = datetime.strptime(str(start_uepoch)[:13], "%Y-%m-%d %H")
                     CDR_HOURLY.update(
@@ -349,7 +347,14 @@ def import_cdr(shell=False):
                 # Flag the CDR as imported
                 importcdr_handler.update(
                             {'_id': cdr['_id']},
-                            {'$set': {'import_cdr': 1, 'import_cdr_monthly': 1, 'import_cdr_daily': 1, 'import_cdr_hourly': 1}}
+                            {'$set':
+                                {
+                                    'import_cdr': 1,
+                                    'import_cdr_monthly': 1,
+                                    'import_cdr_daily': 1,
+                                    'import_cdr_hourly': 1
+                                }
+                            }
                 )
 
         if count_import > 0:
