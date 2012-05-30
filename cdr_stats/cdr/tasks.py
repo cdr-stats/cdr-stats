@@ -92,7 +92,7 @@ class get_channels_info(PeriodicTask):
                         else:
                             accountcode = row[0]
                         number_call = row[1]
-                        logger.debug('\n%s (accountcode:%s, switch_id:%d) ==> %s'
+                        logger.debug('%s (accountcode:%s, switch_id:%d) ==> %s'
                                  % (date_now, accountcode, switch_id,
                                 str(number_call)))
 
