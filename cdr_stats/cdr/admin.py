@@ -31,6 +31,7 @@ from common.common_functions import striplist
 
 from cdr.models import Switch, HangupCause
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
+from cdr.import_cdr import chk_destination
 from cdr_alert.models import Blacklist, Whitelist
 from cdr_alert.functions_blacklist import chk_prefix_in_whitelist, chk_prefix_in_blacklist
 
@@ -181,28 +182,9 @@ class SwitchAdmin(admin.ModelAdmin):
                                 destination_number = get_cdr_from_row['destination_number']
                                 uuid = get_cdr_from_row['uuid']
 
-                                # number startswith 0 or `+` sign
-                                #remove leading +
-                                sanitized_destination = re.sub("^\++", "", destination_number)
-                                #remove leading 011
-                                sanitized_destination = re.sub("^011+", "", sanitized_destination)
-                                #remove leading 00
-                                sanitized_destination = re.sub("^0+", "", sanitized_destination)
-
-                                prefix_list = prefix_list_string(sanitized_destination)
-
-                                authorized = 1 # default
-                                #check desti against whiltelist
-                                authorized = chk_prefix_in_whitelist(prefix_list)
-                                if authorized:
-                                    authorized = 1 # allowed destination
-                                else:
-                                    #check desti against blacklist
-                                    authorized = chk_prefix_in_blacklist(prefix_list)
-                                    if not authorized:
-                                        authorized = 0 # not allowed destination
-
-                                country_id = get_country_id(prefix_list)
+                                destination_data = chk_destination(destination_number)
+                                authorized = destination_data['authorized']
+                                country_id = destination_data['country_id']
 
                                 # Extra fields to import
                                 if answer_uepoch:

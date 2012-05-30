@@ -868,7 +868,6 @@ def cdr_dashboard(request):
                                  int(i['_id']['f_Con'])))
 
     # remove mapreduce output & country analytic from database
-    # TODO : Check if (no longer required)
     settings.DB_CONNECTION[out].drop()
 
     #Calculate the Average Time of Call
@@ -1053,7 +1052,6 @@ def cdr_country_report(request):
                                          other_country_call_duration))
 
     # remove mapreduce output & country analytic from database
-    # TODO Check if (no longer required)
     settings.DB_CONNECTION[out].drop()
     settings.DB_CONNECTION[settings.MG_CDR_COUNTRY].drop()
 
