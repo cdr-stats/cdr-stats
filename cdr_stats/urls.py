@@ -12,12 +12,12 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import url, patterns, include
 from django.conf import settings
-from django.conf.urls.i18n import *
-
+from django.conf.urls.i18n import i18n_patterns
 from tastypie.api import Api
-from api.resources import *
+from api.resources import UserResource, SwitchResource, HangupCauseResource,\
+                          CdrDailyResource, CdrResource
 from cdr.urls import urlpatterns as urlpatterns_cdr
 from user_profile.urls import urlpatterns as urlpatterns_user_profile
 

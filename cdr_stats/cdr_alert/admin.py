@@ -29,7 +29,6 @@ from cdr_alert.models import AlertRemovePrefix, Alarm, AlarmReport, Blacklist, W
 from cdr_alert.forms import BWCountryForm
 
 
-
 # AlertRemovePrefix
 class AlertRemovePrefixAdmin(admin.ModelAdmin):
     list_display = ('id', 'label', 'prefix')

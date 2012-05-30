@@ -12,9 +12,10 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import patterns, url, include
 from django.conf import settings
-from user_profile.views import *
+from user_profile.views import customer_detail_change, \
+                               notification_del_read, update_notice_status_cust
 
 
 urlpatterns = patterns('',
