@@ -284,7 +284,8 @@ def import_cdr(shell=False):
                 if not hasattr(cdr, 'import_cdr_monthly') \
                     or cdr['import_cdr_monthly'] == 0:
                     # monthly collection
-                    current_y_m = datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
+                    current_y_m = datetime.strptime(str(start_uepoch)[:7], \
+                                                "%Y-%m")
                     CDR_MONTHLY.update(
                                 {
                                     'start_uepoch': current_y_m,
@@ -303,7 +304,9 @@ def import_cdr(shell=False):
                 if not hasattr(cdr, 'import_cdr_daily') \
                     or cdr['import_cdr_daily'] == 0:
                     # daily collection
-                    current_y_m_d = datetime.strptime(str(start_uepoch)[:10], "%Y-%m-%d")
+                    current_y_m_d = datetime.strptime(
+                                            str(start_uepoch)[:10],
+                                            "%Y-%m-%d")
                     CDR_DAILY.update(
                             {
                                 'start_uepoch': current_y_m_d,
@@ -322,7 +325,9 @@ def import_cdr(shell=False):
                 if not hasattr(cdr, 'import_cdr_hourly') \
                     or cdr['import_cdr_hourly'] == 0:
                     # hourly collection
-                    current_y_m_d_h = datetime.strptime(str(start_uepoch)[:13], "%Y-%m-%d %H")
+                    current_y_m_d_h = datetime.strptime(
+                                            str(start_uepoch)[:13],
+                                            "%Y-%m-%d %H")
                     CDR_HOURLY.update(
                                 {
                                     'start_uepoch': current_y_m_d_h,
@@ -336,7 +341,9 @@ def import_cdr(shell=False):
                                 }, upsert=True)
 
                     # Country report collection
-                    current_y_m_d_h_m = datetime.strptime(str(start_uepoch)[:16], "%Y-%m-%d %H:%M")
+                    current_y_m_d_h_m = datetime.strptime(
+                                            str(start_uepoch)[:16],
+                                            "%Y-%m-%d %H:%M")
                     CDR_COUNTRY_REPORT.update(
                                         {
                                             'start_uepoch': current_y_m_d_h_m,
