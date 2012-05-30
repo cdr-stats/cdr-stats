@@ -84,11 +84,12 @@ class Command(BaseCommand):
 
             settings.DB_CONNECTION[settings.MG_CONC_CALL].insert(call_json)
 
-        #TODO : Add unique index with sorting
+        # Add unique index with sorting
         settings.DB_CONNECTION[settings.MG_CONC_CALL].ensure_index([('call_date', -1),
-                                                                           ('switch_id', 1),
-                                                                           ('accountcode', 1)], unique=True)
-        #TODO: Map-reduce collection
+                                                                    ('switch_id', 1),
+                                                                    ('accountcode', 1)],
+                                                                    unique=True)
+        # Map-reduce collection
         map = mark_safe(u'''
               function(){
                  var year = this.call_date.getFullYear();
