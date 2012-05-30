@@ -258,6 +258,31 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
                         count_import))
             """
 
+            cdr_record = {
+                'switch_id': switch.id,
+                'caller_id_number': caller_id_number,
+                'caller_id_name': caller_id_name,
+                'destination_number': destination_number,
+                'duration': duration,
+                'billsec': billsec,
+                'hangup_cause_id': hangup_cause_id,
+                'accountcode': accountcode,
+                'direction': direction,
+                'uuid': uuid,
+                'remote_media_ip': remote_media_ip,
+                'start_uepoch': start_uepoch,
+                #'answer_uepoch': answer_uepoch,
+                #'end_uepoch': end_uepoch,
+                #'mduration': cdr['variables']['mduration'],
+                #'billmsec': cdr['variables']['billmsec'],
+                #'read_codec': cdr['variables']['read_codec'],
+                #'write_codec': cdr['variables']['write_codec'],
+                'cdr_type': CDR_TYPE["freeswitch"],
+                'cdr_object_id': cdr['_id'],
+                'country_id': country_id,
+                'authorized': authorized,
+            }
+
             """
             # Commented the part below as it's not efficient
 
