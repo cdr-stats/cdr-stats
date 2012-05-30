@@ -28,7 +28,6 @@ from country_dialcode.models import Prefix
 from datetime import datetime
 import sys
 import random
-import json
 
 random.seed()
 

@@ -16,7 +16,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import password_reset, password_reset_done,\
 password_reset_confirm, password_reset_complete
-#from django.db.models import *
 from django.db.models.loading import get_model
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render_to_response
@@ -46,7 +45,6 @@ from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
 
 import operator
-import time
 import math
 import csv
 import logging
