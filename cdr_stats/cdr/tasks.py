@@ -17,9 +17,9 @@ from celery.decorators import task, periodic_task
 from cdr.import_cdr import import_cdr
 from cdr.import_cdr_asterisk_mysql import import_cdr_asterisk_mysql
 from cdr.common_tasks import single_instance_task
-from datetime import timedelta
-import datetime
+from datetime import datetime, timedelta
 import sqlite3
+
 
 LOCK_EXPIRE = 60 * 30 # Lock expires in 30 minutes
 

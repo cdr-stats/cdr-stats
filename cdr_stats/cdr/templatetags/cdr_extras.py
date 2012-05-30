@@ -12,13 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django import template
-from django.template.defaultfilters import *
-from django.core.serializers import serialize
-from django.db.models.query import QuerySet
-from django.utils import simplejson
 from django.utils.translation import gettext as _
-from django import forms
-from django.utils.datastructures import SortedDict
 from cdr.models import Switch, HangupCause
 from datetime import datetime
 import operator

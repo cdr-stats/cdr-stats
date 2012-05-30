@@ -25,21 +25,24 @@ from django.core.mail import send_mail, mail_admins
 from django.template.context import RequestContext
 from django.utils.translation import gettext as _
 from django.conf import settings
+from pymongo.connection import Connection
+from pymongo.errors import ConnectionFailure
 from common.common_functions import current_view, get_news, variable_value, \
                                     source_desti_field_chk, source_desti_field_chk_mongodb, \
                                     duration_field_chk_mongodb, int_convert_to_minute, \
                                     validate_days, date_range
 
 from cdr.models import Switch, HangupCause
-from cdr.functions_def import get_country_name, chk_account_code
+from cdr.functions_def import get_country_name, chk_account_code, get_hangupcause_name
 from cdr.forms import SearchForm, CdrSearchForm, CountryReportForm, CdrOverviewForm, \
                       CompareCallSearchForm, ConcurrentCallForm, SwitchForm, WorldForm, \
                       loginForm, EmailReportForm
 from cdr.mapreduce import *
+from user_profile.models import UserProfile
 
 from bson.objectid import ObjectId
 
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
 
 import operator

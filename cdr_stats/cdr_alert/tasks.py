@@ -63,29 +63,31 @@ def get_start_end_date(alert_condition_add_on):
 
 
 def notify_admin_with_mail(notice_id, email_id):
-    """Send notification to admin as well as mail to recipient of alarm"""
-    # TODO : Get all the admin users
-    user = User.objects.get(pk=1)
-    recipient = user
+    """Send notification to all admin as well as mail to recipient of alarm"""
+    # Get all the admin users - admin staff
+    all_admin_user = User.objects.filter(is_staff=True) # is_superuser=True
+    for user in all_admin_user:
+        recipient = user
 
-    # send notification
-    if notification:
-        note_label = notification.NoticeType.objects.get(default=notice_id)
-        notification.send([recipient],
-                          note_label.label,
-                          {"from_user": user},
-                          sender=user)
-    # Send mail to ADMINS
-    subject = _('Alert')
-    message = _('Alert Message "%(user)s" - "%(user_id)s"') \
-                % {'user': user, 'user_id': user.id}
+        # send notification
+        if notification:
+            note_label = notification.NoticeType.objects.get(default=notice_id)
+            notification.send([recipient],
+                              note_label.label,
+                              {"from_user": user},
+                              sender=user)
+        # Send mail to ADMINS
+        subject = _('Alert')
+        message = _('Alert Message "%(user)s" - "%(user_id)s"') \
+                    % {'user': user, 'user_id': user.id}
 
-    try:
-        send_mail(subject, message, settings.SERVER_EMAIL, email_id)
-    except:
-        # mail_admins() is a shortcut for sending an email to the site admins,
-        # as defined in the ADMINS setting
-        mail_admins(subject, message)  # html_message='text/html'
+        try:
+            send_mail(subject, message, settings.SERVER_EMAIL, email_id)
+        except:
+            # mail_admins() is a shortcut for sending an email to the site admins,
+            # as defined in the ADMINS setting
+            mail_admins(subject, message)  # html_message='text/html'
+
     return True
 
 
