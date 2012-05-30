@@ -16,13 +16,10 @@ from django.core.management.base import BaseCommand, CommandError
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from random import choice
-from uuid import uuid1
-from datetime import *
-from datetime import datetime
+from datetime import datetime, date, timedelta
 import sys
 import random
-import datetime
-import json, ast
+
 
 random.seed()
 

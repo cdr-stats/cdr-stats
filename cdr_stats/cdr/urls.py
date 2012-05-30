@@ -11,9 +11,14 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import patterns, url
 from django.conf import settings
-from cdr.views import *
+from cdr.views import index, cdr_view, cdr_export_to_csv, cdr_detail,\
+                      cdr_global_report, cdr_dashboard, cdr_graph_by_hour,\
+                      cdr_overview, cdr_concurrent_calls, cdr_realtime, mail_report,\
+                      cdr_country_report, world_map_view, login_view, logout_view,\
+                      pleaselog, cust_password_reset, cust_password_reset_done,\
+                      cust_password_reset_confirm, cust_password_reset_complete
 
 
 urlpatterns = patterns('cdr.views',

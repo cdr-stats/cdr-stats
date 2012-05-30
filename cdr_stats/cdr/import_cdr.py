@@ -24,14 +24,11 @@ from cdr.models import Switch, HangupCause
 from cdr.functions_def import get_hangupcause_id, remove_prefix, prefix_list_string, get_country_id
 from cdr_alert.functions_blacklist import chk_prefix_in_whitelist, chk_prefix_in_blacklist
 from country_dialcode.models import Prefix
-from random import choice
-from uuid import uuid1
+
 from datetime import datetime
-import calendar
-import time
 import sys
 import random
-import json, ast
+import json
 
 random.seed()
 

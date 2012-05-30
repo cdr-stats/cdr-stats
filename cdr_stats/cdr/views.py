@@ -25,6 +25,8 @@ from django.core.mail import send_mail, mail_admins
 from django.template.context import RequestContext
 from django.utils.translation import gettext as _
 from django.conf import settings
+from pymongo.connection import Connection
+from pymongo.errors import ConnectionFailure
 from common.common_functions import current_view, get_news, variable_value, \
                                     source_desti_field_chk, source_desti_field_chk_mongodb, \
                                     duration_field_chk_mongodb, int_convert_to_minute, \
