@@ -36,6 +36,7 @@ from tastypie import http
 from tastypie import fields
 
 from cdr.models import Switch, HangupCause
+from cdr.functions_def import get_hangupcause_id
 
 from settings import API_ALLOWED_IP
 from datetime import datetime
