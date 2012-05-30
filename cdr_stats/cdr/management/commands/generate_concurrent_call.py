@@ -82,10 +82,10 @@ class Command(BaseCommand):
                         "accountcode": accountcode,
                       }
 
-            settings.DB_CONNECTION[settings.MG_CONC_CALL].insert(call_json)
+            settings.dbcon[settings.MG_CONC_CALL].insert(call_json)
 
         # Add unique index with sorting
-        settings.DB_CONNECTION[settings.MG_CONC_CALL].ensure_index([('call_date', -1),
+        settings.dbcon[settings.MG_CONC_CALL].ensure_index([('call_date', -1),
                                                                     ('switch_id', 1),
                                                                     ('accountcode', 1)],
                                                                     unique=True)
@@ -126,6 +126,6 @@ class Command(BaseCommand):
                  }
                  ''')
 
-        cdr_conn_call = settings.DB_CONNECTION[settings.MG_CONC_CALL]
+        cdr_conn_call = settings.dbcon[settings.MG_CONC_CALL]
 
         cdr_conn_call.map_reduce(map, reduce, out=settings.MG_CONC_CALL_AGG)

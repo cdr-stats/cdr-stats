@@ -68,11 +68,11 @@ DISPOSITION_TRANSLATION = {
 }
 
 # Assign collection names to variables
-CDR_COMMON = settings.DB_CONNECTION[settings.MG_CDR_COMMON]
-CDR_MONTHLY = settings.DB_CONNECTION[settings.MG_CDR_MONTHLY]
-CDR_DAILY = settings.DB_CONNECTION[settings.MG_CDR_DAILY]
-CDR_HOURLY = settings.DB_CONNECTION[settings.MG_CDR_HOURLY]
-CDR_COUNTRY_REPORT = settings.DB_CONNECTION[settings.MG_CDR_COUNTRY_REPORT]
+CDR_COMMON = settings.dbcon[settings.MG_CDR_COMMON]
+CDR_MONTHLY = settings.dbcon[settings.MG_CDR_MONTHLY]
+CDR_DAILY = settings.dbcon[settings.MG_CDR_DAILY]
+CDR_HOURLY = settings.dbcon[settings.MG_CDR_HOURLY]
+CDR_COUNTRY_REPORT = settings.dbcon[settings.MG_CDR_COUNTRY_REPORT]
 
 
 def print_shell(shell, message):

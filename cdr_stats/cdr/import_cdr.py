@@ -45,11 +45,11 @@ CDR_TYPE = {
 STATUS_SYNC = {"new": 0, "in_process": 1, "verified": 2}
 
 # Assign collection names to variables
-CDR_COMMON = settings.DB_CONNECTION[settings.MG_CDR_COMMON]
-CDR_MONTHLY = settings.DB_CONNECTION[settings.MG_CDR_MONTHLY]
-CDR_DAILY = settings.DB_CONNECTION[settings.MG_CDR_DAILY]
-CDR_HOURLY = settings.DB_CONNECTION[settings.MG_CDR_HOURLY]
-CDR_COUNTRY_REPORT = settings.DB_CONNECTION[settings.MG_CDR_COUNTRY_REPORT]
+CDR_COMMON = settings.dbcon[settings.MG_CDR_COMMON]
+CDR_MONTHLY = settings.dbcon[settings.MG_CDR_MONTHLY]
+CDR_DAILY = settings.dbcon[settings.MG_CDR_DAILY]
+CDR_HOURLY = settings.dbcon[settings.MG_CDR_HOURLY]
+CDR_COUNTRY_REPORT = settings.dbcon[settings.MG_CDR_COUNTRY_REPORT]
 
 
 def print_shell(shell, message):
@@ -134,14 +134,14 @@ def import_cdr(shell=False):
         db_name = settings.MG_IMPORT[ipaddress]['db_name']
         try:
             connection = Connection(host, port)
-            DB_CONNECTION = connection[db_name]
+            dbcon = connection[db_name]
         except ConnectionFailure, e:
             sys.stderr.write("Could not connect to MongoDB: %s - %s" % \
                                                             (e, ipaddress))
             sys.exit(1)
 
         #Connect to Mongo
-        importcdr_handler = DB_CONNECTION[settings.MG_IMPORT[ipaddress]['collection']]
+        importcdr_handler = dbcon[settings.MG_IMPORT[ipaddress]['collection']]
 
         not_require_data = {"channel_data": 0, "app_log": 0,
                             "callflow": 0, "times": 0}

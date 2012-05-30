@@ -488,7 +488,7 @@ from pymongo.errors import ConnectionFailure
 import sys
 try:
     connection = Connection(MG_HOST, MG_PORT)
-    DB_CONNECTION = connection[MG_DB_NAME]
+    dbcon = connection[MG_DB_NAME]
 except ConnectionFailure, e:
     sys.stderr.write("Could not connect to MongoDB: %s" % e)
     sys.exit(1)
