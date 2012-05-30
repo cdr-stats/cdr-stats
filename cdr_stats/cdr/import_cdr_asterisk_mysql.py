@@ -22,6 +22,7 @@ from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 
 from cdr.models import Switch, HangupCause
+from cdr.import_cdr import chk_destination
 from cdr.functions_def import get_hangupcause_id, remove_prefix, prefix_list_string, get_country_id
 from cdr_alert.functions_blacklist import chk_prefix_in_whitelist, chk_prefix_in_blacklist
 from country_dialcode.models import Prefix
@@ -184,43 +185,9 @@ def import_cdr_asterisk_mysql(shell=False):
             # Check Destination number
             destination_number = row[0]
 
-            #TODO : Improve DRY duplicate code with import_cdr.py
-
-            #remove prefix
-            sanitized_destination = remove_prefix(destination_number, settings.PREFIX_TO_IGNORE)
-
-            prefix_list = prefix_list_string(sanitized_destination)
-
-            authorized = 1 # default
-            #check desti against whiltelist
-            authorized = chk_prefix_in_whitelist(prefix_list)
-            if authorized:
-                # allowed destination
-                authorized = 1
-            else:
-                #check against blacklist
-                authorized = chk_prefix_in_blacklist(prefix_list)
-                if not authorized:
-                    # not allowed destination
-                    authorized = 0
-
-            print sanitized_destination
-            if len(sanitized_destination) < settings.PHONENUMBER_MIN_DIGITS:
-                #It might be an extension
-                country_id = 0
-            elif len(sanitized_destination) >= settings.PHONENUMBER_MIN_DIGITS \
-                and len(sanitized_destination) <= settings.PHONENUMBER_MAX_DIGITS:
-                #It might be an local call
-                print settings.LOCAL_DIALCODE
-                #Need to add coma for get_country_id to eval correctly
-                country_id = get_country_id(str(settings.LOCAL_DIALCODE) + ',')
-            else:
-                #International call
-                country_id = get_country_id(prefix_list)
-
-            if get_country_id == 0:
-                #TODO: Add logger
-                print_shell(shell, "Error to find the country_id %s" % destination_number)
+            destination_data = chk_destination(destination_number)
+            authorized = destination_data['authorized']
+            country_id = destination_data['country_id']
 
             # Prepare global CDR
             cdr_record = {
