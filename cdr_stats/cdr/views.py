@@ -16,22 +16,19 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import password_reset, password_reset_done,\
 password_reset_confirm, password_reset_complete
-from django.db.models.loading import get_model
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render_to_response
-from django.core.urlresolvers import reverse
-from django.core.mail import send_mail, mail_admins
 from django.template.context import RequestContext
 from django.utils.translation import gettext as _
 from django.conf import settings
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 from common.common_functions import current_view, get_news, variable_value, \
-                                    source_desti_field_chk, source_desti_field_chk_mongodb, \
+                                    source_desti_field_chk_mongodb, \
                                     duration_field_chk_mongodb, int_convert_to_minute, \
                                     validate_days, date_range
 
-from cdr.models import Switch, HangupCause
+from cdr.models import Switch
 from cdr.functions_def import get_country_name, chk_account_code, get_hangupcause_name
 from cdr.forms import SearchForm, CdrSearchForm, CountryReportForm, CdrOverviewForm, \
                       CompareCallSearchForm, ConcurrentCallForm, SwitchForm, WorldForm, \

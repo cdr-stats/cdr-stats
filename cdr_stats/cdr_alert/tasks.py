@@ -65,7 +65,7 @@ def get_start_end_date(alert_condition_add_on):
 def notify_admin_with_mail(notice_id, email_id):
     """Send notification to all admin as well as mail to recipient of alarm"""
     # Get all the admin users - admin staff
-    all_admin_user = User.objects.filter(is_staff=True) # is_superuser=True
+    all_admin_user = User.objects.filter(is_staff=True)  # is_superuser=True
     for user in all_admin_user:
         recipient = user
 
@@ -84,8 +84,7 @@ def notify_admin_with_mail(notice_id, email_id):
         try:
             send_mail(subject, message, settings.SERVER_EMAIL, email_id)
         except:
-            # mail_admins() is a shortcut for sending an email to the site admins,
-            # as defined in the ADMINS setting
+            # send an email to the site admins as defined in the ADMINS setting
             mail_admins(subject, message)  # html_message='text/html'
 
     return True
@@ -110,14 +109,16 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
     """
     if alarm_obj.alert_condition == 1:  # Is less than
         if alarm_obj.alert_value < current_value:
-            notify_admin_with_mail(alarm_obj.type, alarm_obj.email_to_send_alarm)
+            notify_admin_with_mail(alarm_obj.type,
+                                    alarm_obj.email_to_send_alarm)
             create_alarm_report_object(alarm_obj, status=2)
         else:
             create_alarm_report_object(alarm_obj, status=1)
 
     if alarm_obj.alert_condition == 2:  # Is greater than
         if alarm_obj.alert_value > current_value:
-            notify_admin_with_mail(alarm_obj.type, alarm_obj.email_to_send_alarm)
+            notify_admin_with_mail(alarm_obj.type,
+                                    alarm_obj.email_to_send_alarm)
             create_alarm_report_object(alarm_obj, status=2)
         else:
             create_alarm_report_object(alarm_obj, status=1)
@@ -125,7 +126,8 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
     if alarm_obj.alert_condition == 3:  # Decrease by more than
         diff = abs(current_value - previous_value)
         if diff < alarm_obj.alert_value:
-            notify_admin_with_mail(alarm_obj.type, alarm_obj.email_to_send_alarm)
+            notify_admin_with_mail(alarm_obj.type,
+                                    alarm_obj.email_to_send_alarm)
             create_alarm_report_object(alarm_obj, status=2)
         else:
             create_alarm_report_object(alarm_obj, status=1)
@@ -133,7 +135,8 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
     if alarm_obj.alert_condition == 4:  # Increase by more than
         diff = abs(current_value - previous_value)
         if diff > alarm_obj.alert_value:
-            notify_admin_with_mail(alarm_obj.type, alarm_obj.email_to_send_alarm)
+            notify_admin_with_mail(alarm_obj.type,
+                                    alarm_obj.email_to_send_alarm)
             create_alarm_report_object(alarm_obj, status=2)
         else:
             create_alarm_report_object(alarm_obj, status=1)
@@ -141,10 +144,11 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
     # http://www.mathsisfun.com/percentage-difference.html
     if alarm_obj.alert_condition == 5:  # % decrease by more than
         diff = abs(current_value - previous_value)
-        avg = (current_value + previous_value)/2
+        avg = (current_value + previous_value) / 2
         percentage = (diff / avg) * 100
         if percentage < alarm_obj.alert_value:
-            notify_admin_with_mail(alarm_obj.type, alarm_obj.email_to_send_alarm)
+            notify_admin_with_mail(alarm_obj.type,
+                                    alarm_obj.email_to_send_alarm)
             create_alarm_report_object(alarm_obj, status=2)
         else:
             create_alarm_report_object(alarm_obj, status=1)
@@ -154,7 +158,8 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
         avg = (current_value + previous_value) / 2
         percentage = (diff / avg) * 100
         if percentage > alarm_obj.alert_value:
-            notify_admin_with_mail(alarm_obj.type, alarm_obj.email_to_send_alarm)
+            notify_admin_with_mail(alarm_obj.type,
+                                    alarm_obj.email_to_send_alarm)
             create_alarm_report_object(alarm_obj, status=2)
         else:
             create_alarm_report_object(alarm_obj, status=1)
@@ -162,7 +167,7 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
     return True
 
 
-def run_alarm(alarm_obj):
+def run_alarm(alarm_obj, logger):
     """Alarm object"""
     if alarm_obj.type == 1:  # ALOC (average length of call)
         logger.debug("ALOC (average length of call)")
@@ -184,7 +189,8 @@ def run_alarm(alarm_obj):
         for doc in pre_total_data:
             pre_date = dt_list['p_start_date']
             pre_day_data[pre_date.strftime('%Y-%m-%d')] = doc['value']['duration__avg']
-            if alarm_obj.alert_condition == 1 or alarm_obj.alert_condition == 2:
+            if alarm_obj.alert_condition == 1 \
+                or alarm_obj.alert_condition == 2:
                 chk_alert_value(alarm_obj, doc['value']['duration__avg'])
             else:
                 previous_date_duration = doc['value']['duration__avg']
@@ -205,7 +211,8 @@ def run_alarm(alarm_obj):
         for doc in cur_total_data:
             cur_date = dt_list['c_start_date']
             cur_day_data[cur_date.strftime('%Y-%m-%d')] = doc['value']['duration__avg']
-            if alarm_obj.alert_condition == 1 or alarm_obj.alert_condition == 2:
+            if alarm_obj.alert_condition == 1 \
+                or alarm_obj.alert_condition == 2:
                 chk_alert_value(alarm_obj, doc['value']['duration__avg'])
             else:
                 current_date_duration = doc['value']['duration__avg']
@@ -281,19 +288,19 @@ class chk_alarm(PeriodicTask):
                     if diff_between_task_run == 1:  # every day
                         # Run alert task
                         logger.debug("Run alarm")
-                        run_alarm(alarm_obj)
+                        run_alarm(alarm_obj, logger)
 
                 if alarm_obj.period == 2:  # Week
                     if diff_between_task_run == 7:  # every week
                         # Run alert task
                         logger.debug("Run alarm")
-                        run_alarm(alarm_obj)
+                        run_alarm(alarm_obj, logger)
 
                 if alarm_obj.period == 3:  # Month
                     if diff_between_task_run == 30:  # every month
                         # Run alert task
                         logger.debug("Run alarm")
-                        run_alarm(alarm_obj)
+                        run_alarm(alarm_obj, logger)
             except:
                 # create alarm report
                 AlarmReport.objects.create(
@@ -382,7 +389,8 @@ class send_cdr_report(PeriodicTask):
                 user_profile_obj = UserProfile.objects.get(user=c_user)
                 to = user_profile_obj.multiple_email
             except UserProfile.DoesNotExist:
-                logger.error("Error send_cdr_report : UserProfile don't exist for this user (user_id:%d)" % c_user.id)
+                logger.error("Error : UserProfile notfound (user_id:%d)" % \
+                                c_user.id)
 
             mail_data = get_cdr_mail_report()
 
