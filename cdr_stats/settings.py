@@ -346,7 +346,7 @@ ASTERISK_IMPORT_TYPE = 'mysql'  # Only mysql supported
 ASTERISK_PRIMARY_KEY = 'acctid'  # acctid, _id
 
 #Mysql Settings to use for import
-ASTERISK_CDR_MYSQL_IMPORT = {
+ASTERISK_MYSQL = {
     '127.0.0.1': {
         'db_name': 'asteriskcdr',
         'table_name': 'cdr',

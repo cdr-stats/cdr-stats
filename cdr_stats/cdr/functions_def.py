@@ -14,8 +14,6 @@
 from django.conf import settings
 from cdr.models import Switch, HangupCause
 from country_dialcode.models import Country, Prefix
-
-from datetime import *
 import re
 
 

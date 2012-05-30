@@ -31,13 +31,22 @@ import random
 
 random.seed()
 
-HANGUP_CAUSE = ['NORMAL_CLEARING','NORMAL_CLEARING','NORMAL_CLEARING','NORMAL_CLEARING',
-                'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED', 'INVALID_NUMBER_FORMAT']
 
-CDR_TYPE = {"freeswitch":1, "asterisk":2, "yate":3, "opensips":4, "kamailio":5}
+HANGUP_CAUSE = ['NORMAL_CLEARING', 'NORMAL_CLEARING', 'NORMAL_CLEARING',
+                'NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED',
+                'INVALID_NUMBER_FORMAT']
 
-#value 0 per default, 1 in process of import, 2 imported successfully and verified
-STATUS_SYNC = {"new":0, "in_process": 1, "verified":2}
+#TODO this code is not DRY
+CDR_TYPE = {
+            "freeswitch": 1,
+            "asterisk": 2,
+            "yate": 3,
+            "opensips": 4,
+            "kamailio": 5}
+
+# value 0 per default
+# 1 in process of import, 2 imported successfully and verified
+STATUS_SYNC = {"new": 0, "in_process": 1, "verified": 2}
 
 # Assign collection names to variables
 CDR_COMMON = settings.DB_CONNECTION[settings.MG_CDR_COMMON]

@@ -12,17 +12,10 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.conf import settings
-from django.utils.translation import gettext as _
 import MySQLdb as Database
-
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils.safestring import mark_safe
-
 from cdr.models import Switch
 from cdr.import_cdr import chk_destination
-from cdr.functions_def import get_hangupcause_id, remove_prefix, prefix_list_string, get_country_id
-from cdr_alert.functions_blacklist import chk_prefix_in_whitelist, chk_prefix_in_blacklist
-from country_dialcode.models import Prefix
+from cdr.functions_def import get_hangupcause_id
 
 import sys
 from datetime import datetime
@@ -35,6 +28,7 @@ HANGUP_CAUSE = ['NORMAL_CLEARING', 'NORMAL_CLEARING', 'NORMAL_CLEARING',
                 'NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED',
                 'INVALID_NUMBER_FORMAT']
 
+#TODO this code is not DRY
 CDR_TYPE = {
             "freeswitch": 1,
             "asterisk": 2,
@@ -88,7 +82,7 @@ def print_shell(shell, message):
 
 def import_cdr_asterisk_mysql(shell=False):
     #TODO : dont use the args here
-    # Browse settings.ASTERISK_CDR_MYSQL_IMPORT and for each IP
+    # Browse settings.ASTERISK_MYSQL and for each IP
     # check if the IP exist in our Switch objects if it does we will
     # connect to that Database and import the data as we do below
 
@@ -99,7 +93,7 @@ def import_cdr_asterisk_mysql(shell=False):
         return False
 
     #loop within the Mongo CDR Import List
-    for ipaddress in settings.ASTERISK_CDR_MYSQL_IMPORT:
+    for ipaddress in settings.ASTERISK_MYSQL:
         #Select the Switch ID
         print_shell(shell, "Switch : %s" % ipaddress)
 
@@ -123,17 +117,17 @@ def import_cdr_asterisk_mysql(shell=False):
             ipaddress = previous_ip
 
         #Connect on Mysql Database
-        db_name = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['db_name']
-        table_name = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['table_name']
-        user = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['user']
-        password = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['password']
-        host = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['host']
+        db_name = settings.ASTERISK_MYSQL[ipaddress]['db_name']
+        table_name = settings.ASTERISK_MYSQL[ipaddress]['table_name']
+        user = settings.ASTERISK_MYSQL[ipaddress]['user']
+        password = settings.ASTERISK_MYSQL[ipaddress]['password']
+        host = settings.ASTERISK_MYSQL[ipaddress]['host']
         try:
             connection = Database.connect(user=user, passwd=password, \
                                             db=db_name, host=host)
             cursor = connection.cursor()
             cursor_update = connection.cursor()
-        except:
+        except Exception, e:
             sys.stderr.write("Could not connect to Mysql: %s - %s" % \
                                                             (e, ipaddress))
             sys.exit(1)
@@ -141,7 +135,7 @@ def import_cdr_asterisk_mysql(shell=False):
         try:
             cursor.execute("SELECT VERSION() from %s WHERE import_cdr IS NOT NULL LIMIT 0,1" % table_name)
             row = cursor.fetchone()
-        except:
+        except Exception, e:
             #Add missing field to flag import
             cursor.execute("ALTER TABLE %s  ADD import_cdr TINYINT NOT NULL DEFAULT '0'" % table_name)
             cursor.execute("ALTER TABLE %s ADD INDEX (import_cdr)" % table_name)
@@ -178,7 +172,8 @@ def import_cdr_asterisk_mysql(shell=False):
                 billsec = 0
             ast_disposition = row[6]
             try:
-                id_disposition = dic_disposition.get(ast_disposition.encode("utf-8"), 0)
+                id_disposition = dic_disposition.get(
+                                        ast_disposition.encode("utf-8"), 0)
                 transdisposition = DISPOSITION_TRANSLATION[id_disposition]
             except:
                 transdisposition = 0
@@ -222,6 +217,7 @@ def import_cdr_asterisk_mysql(shell=False):
                 'billmsec': '',
                 'read_codec': '',
                 'write_codec': '',
+                'channel': channel,
                 'cdr_type': CDR_TYPE["asterisk"],
                 'cdr_object_id': acctid,
                 'country_id': country_id,
@@ -231,16 +227,17 @@ def import_cdr_asterisk_mysql(shell=False):
             # record global CDR
             CDR_COMMON.insert(cdr_record)
 
-            print_shell(shell, "Sync CDR (%s:%d, cid:%s, dest:%s, dur:%s, hg:%s, country:%s, auth:%s, calldate:%s)" % (
-                                        settings.ASTERISK_PRIMARY_KEY,
-                                        acctid,
-                                        callerid_number,
-                                        destination_number,
-                                        duration,
-                                        hangup_cause_id,
-                                        country_id,
-                                        authorized,
-                                        start_uepoch.strftime('%Y-%m-%d %M:%S'),))
+            print_shell(shell, "Sync CDR (%s:%d, cid:%s, dest:%s, dur:%s, "\
+                                "hg:%s, country:%s, auth:%s, calldate:%s)" % (
+                                    settings.ASTERISK_PRIMARY_KEY,
+                                    acctid,
+                                    callerid_number,
+                                    destination_number,
+                                    duration,
+                                    hangup_cause_id,
+                                    country_id,
+                                    authorized,
+                                    start_uepoch.strftime('%Y-%m-%d %M:%S'),))
             count_import = count_import + 1
 
             # Store monthly cdr collection with unique import
@@ -256,11 +253,12 @@ def import_cdr_asterisk_mysql(shell=False):
                         {
                             '$inc':
                                 {'calls': 1,
-                                 'duration': duration }
+                                 'duration': duration}
                         }, upsert=True)
 
             # Store daily cdr collection with unique import
-            current_y_m_d = datetime.strptime(str(start_uepoch)[:10], "%Y-%m-%d")
+            current_y_m_d = datetime.strptime(str(start_uepoch)[:10],
+                                                            "%Y-%m-%d")
             CDR_DAILY.update(
                     {
                         'start_uepoch': current_y_m_d,
@@ -272,41 +270,46 @@ def import_cdr_asterisk_mysql(shell=False):
                     {
                         '$inc':
                             {'calls': 1,
-                             'duration': duration }
-                    },upsert=True)
+                             'duration': duration}
+                    }, upsert=True)
 
             # Store hourly cdr collection with unique import
-            current_y_m_d_h = datetime.strptime(str(start_uepoch)[:13], "%Y-%m-%d %H")
+            current_y_m_d_h = datetime.strptime(str(start_uepoch)[:13],
+                                                                "%Y-%m-%d %H")
             CDR_HOURLY.update(
                         {
                             'start_uepoch': current_y_m_d_h,
                             'destination_number': destination_number,
                             'hangup_cause_id': hangup_cause_id,
                             'accountcode': accountcode,
-                            'switch_id': switch.id,},
+                            'switch_id': switch.id},
                         {
                             '$inc': {'calls': 1,
-                                     'duration': duration }
-                        },upsert=True)
+                                     'duration': duration}
+                        }, upsert=True)
 
             # Country report collection
-            current_y_m_d_h_m = datetime.strptime(str(start_uepoch)[:16], "%Y-%m-%d %H:%M")
+            current_y_m_d_h_m = datetime.strptime(str(start_uepoch)[:16],
+                                                        "%Y-%m-%d %H:%M")
             CDR_COUNTRY_REPORT.update(
                                 {
                                     'start_uepoch': current_y_m_d_h_m,
                                     'country_id': country_id,
                                     'accountcode': accountcode,
-                                    'switch_id': switch.id,},
+                                    'switch_id': switch.id},
                                 {
                                     '$inc': {'calls': 1,
-                                             'duration': duration }
-                                },upsert=True)
+                                             'duration': duration}
+                                }, upsert=True)
 
             #Flag the CDR
             try:
-                cursor_update.execute("UPDATE %s SET import_cdr=1 WHERE %s=%d" % (table_name, settings.ASTERISK_PRIMARY_KEY, acctid))
+                cursor_update.execute(
+                        "UPDATE %s SET import_cdr=1 WHERE %s=%d" % \
+                        (table_name, settings.ASTERISK_PRIMARY_KEY, acctid))
             except:
-                print_shell(shell, "ERROR : Update failed (%s:%d)" % (settings.ASTERISK_PRIMARY_KEY, acctid))
+                print_shell(shell, "ERROR : Update failed (%s:%d)" % \
+                                    (settings.ASTERISK_PRIMARY_KEY, acctid))
 
             #Fetch a other record
             row = cursor.fetchone()
@@ -323,4 +326,5 @@ def import_cdr_asterisk_mysql(shell=False):
             CDR_HOURLY.ensure_index([("start_uepoch", -1)])
             CDR_COUNTRY_REPORT.ensure_index([("start_uepoch", -1)])
 
-        print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" % (ipaddress, count_import))
+        print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" % \
+                            (ipaddress, count_import))

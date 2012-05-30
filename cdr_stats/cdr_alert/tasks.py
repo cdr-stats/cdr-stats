@@ -64,8 +64,8 @@ def get_start_end_date(alert_condition_add_on):
 
 def notify_admin_with_mail(notice_id, email_id):
     """Send notification to all admin as well as mail to recipient of alarm"""
-    # Get all the admin users - admin staff
-    all_admin_user = User.objects.filter(is_staff=True)  # is_superuser=True
+    # Get all the admin users - admin superuser
+    all_admin_user = User.objects.filter(is_superuser=True)
     for user in all_admin_user:
         recipient = user
 

@@ -167,7 +167,7 @@ Import configuration for Asterisk
 
 The asterisk settings may be as follows::
 
-    ASTERISK_CDR_MYSQL_IMPORT = {
+    ASTERISK_MYSQL = {
         '127.0.0.1': {
            'db_name': 'asteriskcdrdb',
            'table_name': 'cdr',

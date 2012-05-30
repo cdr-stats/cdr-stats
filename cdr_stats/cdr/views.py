@@ -641,11 +641,11 @@ def cdr_detail(request, id, switch_id):
         #Connect on Mysql Database
         #TODO support other DBMS
         import MySQLdb as Database
-        db_name = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['db_name']
-        table_name = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['table_name']
-        user = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['user']
-        password = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['password']
-        host = settings.ASTERISK_CDR_MYSQL_IMPORT[ipaddress]['host']
+        db_name = settings.ASTERISK_MYSQL[ipaddress]['db_name']
+        table_name = settings.ASTERISK_MYSQL[ipaddress]['table_name']
+        user = settings.ASTERISK_MYSQL[ipaddress]['user']
+        password = settings.ASTERISK_MYSQL[ipaddress]['password']
+        host = settings.ASTERISK_MYSQL[ipaddress]['host']
         try:
             connection = Database.connect(user=user, passwd=password, db=db_name, host=host)
             cursor = connection.cursor()
