@@ -240,8 +240,9 @@ def import_cdr_asterisk_mysql(shell=False):
                                     start_uepoch.strftime('%Y-%m-%d %M:%S'),))
             count_import = count_import + 1
 
-            daily_date = datetime.datetime.fromtimestamp(
-                int(str(start_uepoch)[:10]))
+            # start_uepoch = row[1]
+            daily_date = \
+            datetime.datetime.fromtimestamp(int(row[1][:10]))
 
             id_daily = daily_date.strftime('%Y%m%d/') + "%d/%d" %\
                                                         (switch.id, country_id)
