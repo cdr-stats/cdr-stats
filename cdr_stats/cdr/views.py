@@ -2203,7 +2203,7 @@ def cdr_analytic_dashboard(request):
         if form.is_valid():
             switch_id = form.cleaned_data.get('switch')
             if switch_id and int(switch_id) != 0:
-                query_var['switch_id'] = int(switch_id)
+                query_var['metadata.switch_id'] = int(switch_id)
 
     #start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
     #end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
@@ -2211,14 +2211,21 @@ def cdr_analytic_dashboard(request):
         now.hour, now.minute, now.second, now.microsecond)
     start_date = end_date+relativedelta(days=-int(1))
 
-    query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
+    query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser: # not superuser
         acc_code_error = ''
         if chk_account_code(request):
-            query_var['accountcode'] = chk_account_code(request)
+            query_var['metadata.accountcode'] = chk_account_code(request)
         else:
             return HttpResponseRedirect('/?acc_code_error=true')
+
+    cdr_analytic = settings.DBCON[settings.MG_CDR_ANALYTIC].find(query_var)\
+                   .sort([("metadata.date", -1)])
+
+    #for i in cdr_analytic:
+    #    print i['metadata']['date']
+
 
     logging.debug('Map-reduce cdr dashboard analytic')
     #Retrieve Map Reduce

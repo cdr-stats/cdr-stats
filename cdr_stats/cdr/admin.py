@@ -246,7 +246,8 @@ class SwitchAdmin(admin.ModelAdmin):
                                                 "metadata": {
                                                     "date": d,
                                                     "switch_id": switch.id,
-                                                    'country_id': country_id,
+                                                    "country_id": country_id,
+                                                    "accountcode": accountcode,
                                                     },
                                                 },
                                                 {

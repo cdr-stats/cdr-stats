@@ -250,7 +250,8 @@ def import_cdr_asterisk_mysql(shell=False):
                     "metadata": {
                         "date": d,
                         "switch_id": switch.id,
-                        'country_id': country_id,
+                        "country_id": country_id,
+                        "accountcode": accountcode,
                         },
                     },
                     {

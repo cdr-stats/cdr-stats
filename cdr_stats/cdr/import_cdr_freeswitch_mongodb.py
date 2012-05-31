@@ -264,7 +264,8 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
                     "metadata": {
                         "date": d,
                         "switch_id": switch.id,
-                        'country_id': country_id,
+                        "country_id": country_id,
+                        "accountcode": accountcode,
                     },
                 },
                 {

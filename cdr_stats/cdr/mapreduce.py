@@ -491,4 +491,3 @@ def mapreduce_task_cdr_alert():
     
     out = 'aggregate_result_alert'
     return (map, reduce, finalize_fun, out)
-
