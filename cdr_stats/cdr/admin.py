@@ -23,6 +23,7 @@ from common.common_functions import striplist
 from cdr.models import Switch, HangupCause
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.functions_def import get_hangupcause_id
+from cdr.import_cdr_freeswitch_mongodb import apply_index
 from cdr_alert.functions_blacklist import chk_destination
 
 import datetime
@@ -333,6 +334,12 @@ class SwitchAdmin(admin.ModelAdmin):
                             except:
                                 msg = _("Error : invalid value for import")
                                 type_error_import_list.append(row)
+
+                    if cdr_record_count > 0:
+                        apply_index()
+                        # Apply index
+                        CDR_ANALYTIC.ensure_index([("metadata.date", -1)])
+                        CDR_COMMON.ensure_index([("start_uepoch", -1)])
                 else:
                     msg = _("Error : importing several times the same column")
         else:

@@ -109,6 +109,17 @@ def get_element(cdr):
     return data_element
 
 
+def apply_index():
+    #TODO Add index one time, create a build function
+    CDR_ANALYTIC.ensure_index([("metadata.date", -1)])
+    CDR_COMMON.ensure_index([("start_uepoch", -1)])
+    #CDR_MONTHLY.ensure_index([("start_uepoch", -1)])
+    #CDR_DAILY.ensure_index([("start_uepoch", -1)])
+    #CDR_HOURLY.ensure_index([("start_uepoch", -1)])
+    #CDR_COUNTRY_REPORT.ensure_index([("start_uepoch", -1)])
+    return True
+
+
 def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
     """
     function go through the current mongodb, then will
@@ -371,14 +382,8 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             print_shell(shell, "Switch(%s) - currently imported CDRs:%d" % \
                             (ipaddress, count_import))
 
-            #TODO Add index one time, create a build function
-
             # Apply index
-            #CDR_COMMON.ensure_index([("start_uepoch", -1)])
-            #CDR_MONTHLY.ensure_index([("start_uepoch", -1)])
-            #CDR_DAILY.ensure_index([("start_uepoch", -1)])
-            #CDR_HOURLY.ensure_index([("start_uepoch", -1)])
-            #CDR_COUNTRY_REPORT.ensure_index([("start_uepoch", -1)])
+            apply_index()
 
         print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" % \
                             (ipaddress, count_import))

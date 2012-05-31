@@ -14,7 +14,7 @@
 from django.conf import settings
 import MySQLdb as Database
 from cdr.models import Switch
-from cdr.import_cdr_freeswitch_mongodb import chk_destination
+from cdr.import_cdr_freeswitch_mongodb import apply_index
 from cdr.functions_def import get_hangupcause_id
 from cdr_alert.functions_blacklist import chk_destination
 
@@ -354,12 +354,8 @@ def import_cdr_asterisk_mysql(shell=False):
         connection.close()
 
         if count_import > 0:
-            # Apply index
-            CDR_COMMON.ensure_index([("start_uepoch", -1)])
-            CDR_MONTHLY.ensure_index([("start_uepoch", -1)])
-            CDR_DAILY.ensure_index([("start_uepoch", -1)])
-            CDR_HOURLY.ensure_index([("start_uepoch", -1)])
-            CDR_COUNTRY_REPORT.ensure_index([("start_uepoch", -1)])
+            apply_index()
+
 
         print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" % \
                             (ipaddress, count_import))
