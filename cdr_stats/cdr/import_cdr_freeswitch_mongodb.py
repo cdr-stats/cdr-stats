@@ -16,10 +16,7 @@ from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 
 from cdr.models import Switch
-from cdr.functions_def import get_hangupcause_id, remove_prefix, \
-                              prefix_list_string, get_country_id
-from cdr_alert.functions_blacklist import chk_prefix_in_whitelist, \
-                              chk_prefix_in_blacklist
+from cdr.functions_def import get_hangupcause_id, chk_destination
 
 import datetime
 import sys
@@ -56,44 +53,6 @@ CDR_ANALYTIC = settings.DBCON[settings.MG_CDR_ANALYTIC]
 def print_shell(shell, message):
     if shell:
         print message
-
-
-def chk_destination(destination_number):
-    #remove prefix
-    sanitized_destination = remove_prefix(destination_number,
-                                    settings.PREFIX_TO_IGNORE)
-
-    prefix_list = prefix_list_string(sanitized_destination)
-
-    authorized = 1  # default
-    # check destion against whitelist
-    authorized = chk_prefix_in_whitelist(prefix_list)
-    if authorized:
-        authorized = 1
-    else:
-        # check against blacklist
-        authorized = chk_prefix_in_blacklist(prefix_list)
-        if not authorized:
-            # not allowed destination
-            authorized = 0
-
-    if len(sanitized_destination) < settings.PN_MIN_DIGITS:
-        # It might be an extension
-        country_id = 0
-    elif len(sanitized_destination) >= settings.PN_MIN_DIGITS\
-        and len(sanitized_destination) <= settings.PN_MAX_DIGITS:
-        # It might be an local call
-        # Need to add coma for get_country_id to eval correctly
-        country_id = get_country_id(str(settings.LOCAL_DIALCODE) + ',')
-    else:
-        # International call
-        country_id = get_country_id(prefix_list)
-
-    destination_data = {
-        'authorized': authorized,
-        'country_id': country_id,
-    }
-    return destination_data
 
 
 def get_element(cdr):
@@ -142,7 +101,7 @@ def get_element(cdr):
         'direction': direction,
         'uuid': uuid
     }
-    
+
     return data_element
 
 
@@ -224,8 +183,8 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             hangup_cause_id = get_hangupcause_id(cdr['variables'][ \
                                                 'hangup_cause_q850'])
 
-            #TODO refactor with function
             data_element = get_element(cdr)
+
             accountcode = data_element['accountcode']
             remote_media_ip = data_element['remote_media_ip']
             caller_id_number = data_element['caller_id_number']

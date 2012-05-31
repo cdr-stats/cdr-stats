@@ -22,11 +22,9 @@ from common.common_functions import striplist
 
 from cdr.models import Switch, HangupCause
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
+from cdr.functions_def import get_hangupcause_id, chk_destination
 
-#TODO : maybe find a better place for chk_destination
-from cdr.import_cdr_freeswitch_mongodb import chk_destination
-
-from datetime import datetime
+import datetime
 import csv
 
 # Assign collection names to variables
@@ -35,6 +33,7 @@ CDR_MONTHLY = settings.DBCON[settings.MG_CDR_MONTHLY]
 CDR_DAILY = settings.DBCON[settings.MG_CDR_DAILY]
 CDR_HOURLY = settings.DBCON[settings.MG_CDR_HOURLY]
 CDR_COUNTRY_REPORT = settings.DBCON[settings.MG_CDR_COUNTRY_REPORT]
+CDR_ANALYTIC = settings.DBCON[settings.MG_CDR_ANALYTIC]
 
 
 # Switch
@@ -174,7 +173,7 @@ class SwitchAdmin(admin.ModelAdmin):
                                 duration = int(get_cdr_from_row['duration'])
                                 billsec = int(get_cdr_from_row['billsec'])
                                 hangup_cause_id = get_hangupcause_id(int(get_cdr_from_row['hangup_cause_id']))
-                                start_uepoch = datetime.fromtimestamp(int(get_cdr_from_row['start_uepoch']))
+                                start_uepoch = datetime.datetime.fromtimestamp(int(get_cdr_from_row['start_uepoch']))
                                 destination_number = get_cdr_from_row['destination_number']
                                 uuid = get_cdr_from_row['uuid']
 
@@ -184,9 +183,9 @@ class SwitchAdmin(admin.ModelAdmin):
 
                                 # Extra fields to import
                                 if answer_uepoch:
-                                    answer_uepoch = datetime.fromtimestamp(int(answer_uepoch[:10]))
+                                    answer_uepoch = datetime.datetime.fromtimestamp(int(answer_uepoch[:10]))
                                 if end_uepoch:
-                                    end_uepoch = datetime.fromtimestamp(int(end_uepoch[:10]))
+                                    end_uepoch = datetime.datetime.fromtimestamp(int(end_uepoch[:10]))
 
                                 # Prepare global CDR
                                 cdr_record = {
@@ -228,6 +227,38 @@ class SwitchAdmin(admin.ModelAdmin):
                                         # record global CDR
                                         CDR_COMMON.insert(cdr_record)
 
+                                        daily_date = datetime.datetime.fromtimestamp(
+                                            int(str(start_uepoch)[:10]))
+
+                                        id_daily = daily_date.strftime('%Y%m%d/') + "%d/%d" %\
+                                                                                    (switch.id, country_id)
+                                        hour = daily_date.hour
+                                        minute = daily_date.minute
+                                        # Get a datetime that only include date info
+                                        d = datetime.datetime.combine(daily_date.date(), datetime.time.min)
+
+                                        # preaggregate update
+                                        CDR_ANALYTIC.update(
+                                                {
+                                                "_id": id_daily,
+                                                "metadata": {
+                                                    "date": d,
+                                                    "switch_id": switch.id,
+                                                    'country_id': country_id,
+                                                    },
+                                                },
+                                                {
+                                                "$inc": {
+                                                    "call_daily": 1,
+                                                    "call_hourly.%d" % (hour,): 1,
+                                                    "call_minute.%d.%d" % (hour, minute): 1,
+                                                    "duration_daily": duration,
+                                                    "duration_hourly.%d" % (hour,): duration,
+                                                    "duration_minute.%d.%d" % (hour, minute): duration,
+                                                    }
+                                            }, upsert=True)
+
+                                        """
                                         # monthly collection
                                         current_y_m = datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
                                         CDR_MONTHLY.update(
@@ -286,8 +317,9 @@ class SwitchAdmin(admin.ModelAdmin):
                                                 '$inc': {'calls': 1,
                                                          'duration': duration}
                                             }, upsert=True)
-
+                                        """
                                         cdr_record_count = cdr_record_count + 1
+
                                         msg =\
                                         _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
                                         % {'cdr_record_count': cdr_record_count,

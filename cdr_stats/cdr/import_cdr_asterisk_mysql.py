@@ -14,8 +14,7 @@
 from django.conf import settings
 import MySQLdb as Database
 from cdr.models import Switch
-from cdr.import_cdr_freeswitch_mongodb import chk_destination
-from cdr.functions_def import get_hangupcause_id
+from cdr.functions_def import get_hangupcause_id, chk_destination
 
 import sys
 from datetime import datetime
@@ -73,6 +72,7 @@ CDR_MONTHLY = settings.DBCON[settings.MG_CDR_MONTHLY]
 CDR_DAILY = settings.DBCON[settings.MG_CDR_DAILY]
 CDR_HOURLY = settings.DBCON[settings.MG_CDR_HOURLY]
 CDR_COUNTRY_REPORT = settings.DBCON[settings.MG_CDR_COUNTRY_REPORT]
+CDR_ANALYTIC = settings.DBCON[settings.MG_CDR_ANALYTIC]
 
 
 def print_shell(shell, message):
@@ -241,6 +241,38 @@ def import_cdr_asterisk_mysql(shell=False):
                                     start_uepoch.strftime('%Y-%m-%d %M:%S'),))
             count_import = count_import + 1
 
+            daily_date = datetime.datetime.fromtimestamp(
+                int(str(start_uepoch)[:10]))
+
+            id_daily = daily_date.strftime('%Y%m%d/') + "%d/%d" %\
+                                                        (switch.id, country_id)
+            hour = daily_date.hour
+            minute = daily_date.minute
+            # Get a datetime that only include date info
+            d = datetime.datetime.combine(daily_date.date(), datetime.time.min)
+
+            # preaggregate update
+            CDR_ANALYTIC.update(
+                    {
+                    "_id": id_daily,
+                    "metadata": {
+                        "date": d,
+                        "switch_id": switch.id,
+                        'country_id': country_id,
+                        },
+                    },
+                    {
+                    "$inc": {
+                        "call_daily": 1,
+                        "call_hourly.%d" % (hour,): 1,
+                        "call_minute.%d.%d" % (hour, minute): 1,
+                        "duration_daily": duration,
+                        "duration_hourly.%d" % (hour,): duration,
+                        "duration_minute.%d.%d" % (hour, minute): duration,
+                        }
+                }, upsert=True)
+
+            """
             # Store monthly cdr collection with unique import
             current_y_m = datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
             CDR_MONTHLY.update(
@@ -302,7 +334,7 @@ def import_cdr_asterisk_mysql(shell=False):
                                     '$inc': {'calls': 1,
                                              'duration': duration}
                                 }, upsert=True)
-
+            """
             #Flag the CDR
             try:
                 cursor_update.execute(
