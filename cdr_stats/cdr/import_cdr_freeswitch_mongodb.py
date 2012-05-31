@@ -96,14 +96,63 @@ def chk_destination(destination_number):
     return destination_data
 
 
+def get_element(cdr):
+    try:
+        accountcode = cdr['variables']['accountcode']
+    except:
+        accountcode = ''
+    try:
+        remote_media_ip = cdr['variables']['remote_media_ip']
+    except:
+        remote_media_ip = ''
+    try:
+        caller_id_number = cdr['callflow']['caller_profile'][\
+                           'caller_id_number']
+    except:
+        caller_id_number = ''
+    try:
+        caller_id_name = cdr['callflow']['caller_profile'][\
+                         'caller_id_name']
+    except:
+        caller_id_name = ''
+    try:
+        duration = int(cdr['variables']['duration'])
+    except:
+        duration = 0
+    try:
+        billsec = int(cdr['variables']['billsec'])
+    except:
+        billsec = 0
+    try:
+        direction = cdr['variables']['direction']
+    except:
+        direction = 'inbound'
+    try:
+        uuid = cdr['variables']['uuid']
+    except:
+        uuid = ''
+
+    data_element = {
+        'accountcode': accountcode,
+        'remote_media_ip': remote_media_ip,
+        'caller_id_number': caller_id_number,
+        'caller_id_name': caller_id_name,
+        'duration': duration,
+        'billsec': billsec,
+        'direction': direction,
+        'uuid': uuid
+    }
+    
+    return data_element
+
+
 def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
     """
     function go through the current mongodb, then will
     - create CDR_COMMON
     - build the pre-aggregate
     """
-    not_require_data = {"channel_data": 0, "app_log": 0,
-                        "callflow": 0, "times": 0}
+    not_require_data = {"channel_data": 0, "callflow": 0}
     total_record = importcdr_handler.find(
                         {
                             '$or':
@@ -176,41 +225,16 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
                                                 'hangup_cause_q850'])
 
             #TODO refactor with function
-            #def get_element()
-            try:
-                accountcode = cdr['variables']['accountcode']
-            except:
-                accountcode = ''
-            try:
-                remote_media_ip = cdr['variables']['remote_media_ip']
-            except:
-                remote_media_ip = ''
-            try:
-                caller_id_number = cdr['callflow']['caller_profile'][ \
-                                                'caller_id_number']
-            except:
-                caller_id_number = ''
-            try:
-                caller_id_name = cdr['callflow']['caller_profile'][ \
-                                                'caller_id_name']
-            except:
-                caller_id_name = ''
-            try:
-                duration = int(cdr['variables']['duration'])
-            except:
-                duration = 0
-            try:
-                billsec = int(cdr['variables']['billsec'])
-            except:
-                billsec = 0
-            try:
-                direction = cdr['variables']['direction']
-            except:
-                direction = 'inbound'
-            try:
-                uuid = cdr['variables']['uuid']
-            except:
-                uuid = ''
+            data_element = get_element(cdr)
+            accountcode = data_element['accountcode']
+            remote_media_ip = data_element['remote_media_ip']
+            caller_id_number = data_element['caller_id_number']
+            caller_id_name = data_element['caller_id_name']
+            duration = data_element['duration']
+            billsec = data_element['billsec']
+            direction = data_element['direction']
+            uuid = data_element['uuid']
+
 
             # Prepare global CDR
             cdr_record = {
