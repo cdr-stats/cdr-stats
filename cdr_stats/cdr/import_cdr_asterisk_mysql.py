@@ -237,8 +237,8 @@ def import_cdr_asterisk_mysql(shell=False):
             daily_date = \
                 datetime.datetime.fromtimestamp(int(row[1][:10]))
 
-            id_daily = daily_date.strftime('%Y%m%d/') + "%d/%d" %\
-                                                        (switch.id, country_id)
+            id_daily = daily_date.strftime('%Y%m%d/') + "%d/%s/%d" %\
+                                (switch.id, accountcode, country_id)
             hour = daily_date.hour
             minute = daily_date.minute
             # Get a datetime that only include date info

@@ -54,6 +54,7 @@ from dateutil.relativedelta import relativedelta
 import operator
 import math
 import csv
+import time
 import logging
 
 
@@ -1067,7 +1068,6 @@ def cdr_country_report(request):
                                          other_country_call_duration))
 
     # remove mapreduce output & country analytic from database
-    # TODO Check if (no longer required)
     settings.DBCON[out].drop()
     settings.DBCON[settings.MG_CDR_COUNTRY].drop()
 
@@ -2221,47 +2221,75 @@ def cdr_analytic_dashboard(request):
             return HttpResponseRedirect('/?acc_code_error=true')
 
     cdr_analytic = settings.DBCON[settings.MG_CDR_ANALYTIC].find(query_var)\
-                   .sort([("metadata.date", -1)])
+                    .sort([('call_hourly', 1), ('call_minute', 1)])
 
-    #for i in cdr_analytic:
-    #    print i['metadata']['date']
+    total_analytic_final = []
+    total_analytic_calls = 0
+    total_analytic_duration = 0
+    total_calls = 0
+    total_duration = 0
+    total_record_final = []
+    for i in cdr_analytic.clone():
+        #print i['call_minute']
+        for j in range(0, 24):
+            try:
+                #print i['call_minute'][str(j)]
+                for k in range(0, 59):
+                    try:
+                        #print i['call_minute'][str(j)][str(k)]
+                        daily_date = (i['metadata']['date']).strftime('%Y-%m-%d') + " "
+                        graph_day = daily_date + str(j) + ":" + str(k)
+                        graph_day = datetime.strptime(graph_day, "%Y-%m-%d %H:%M")
+                        dt = int(1000*time.mktime(graph_day.timetuple()))
+
+                        calldate__count = i['call_minute'][str(j)][str(k)]
+                        duration__sum = i['duration_minute'][str(j)][str(k)]
+
+                        total_record_final.append([dt,
+                                                   calldate__count,
+                                                   duration__sum])
+                        total_calls += int(calldate__count)
+                        total_duration += int(duration__sum)
+                    except:
+                        pass
+            except:
+                pass
 
 
     logging.debug('Map-reduce cdr dashboard analytic')
     #Retrieve Map Reduce
-    (map, reduce, finalize_fun, out) = mapreduce_cdr_dashboard()
+    #(map, reduce, finalize_fun, out) = mapreduce_cdr_dashboard() # analytic_
 
     #Run Map Reduce
-    calls = cdr_data.map_reduce(map, reduce, out, query=query_var)
-    calls = calls.find().sort([('_id.g_Millisec', 1)])
+    #calls = cdr_analytic.map_reduce(map, reduce, out, query=query_var)
+    #calls = calls.find().sort([('_id.g_Millisec', 1)])
+
 
     # if exists, drop previous collection
     settings.DBCON[settings.MG_CDR_HANGUP].drop()
 
-    total_calls = 0
-    total_duration = 0
-    total_record_final = []
-    for d in calls:
-        total_record_final.append([d['_id']['g_Millisec'],
-                                   d['value']['calldate__count'],
-                                   d['value']['duration__sum']])
-        total_calls += int(d['value']['calldate__count'])
-        total_duration += int(d['value']['duration__sum'])
 
-        # created cdr_hangup_analytic
-        try:
-            int_hangup_cause_id = int(d['value']['hangup_cause_id'])
-        except:
-            int_hangup_cause_id = False
+    #for d in calls:
+    #    total_record_final.append([d['_id']['g_Millisec'],
+    #                               d['value']['calldate__count'],
+    #                               d['value']['duration__sum']])
+    #    total_calls += int(d['value']['calldate__count'])
+    #    total_duration += int(d['value']['duration__sum'])
 
-        if int_hangup_cause_id:
-            settings.DBCON[settings.MG_CDR_HANGUP].update({'hangup_cause_id': int(d['value']['hangup_cause_id'])},
-                    {'$inc': {'count': 1}}, upsert=True)
+    #    # created cdr_hangup_analytic
+    #    try:
+    #        int_hangup_cause_id = int(d['value']['hangup_cause_id'])
+    #    except:
+    #        int_hangup_cause_id = False
 
-    hangup_analytic = settings.DBCON[settings.MG_CDR_HANGUP].find()
+    #    if int_hangup_cause_id:
+    #        settings.DBCON[settings.MG_CDR_HANGUP].update({'hangup_cause_id': int(d['value']['hangup_cause_id'])},
+    #                {'$inc': {'count': 1}}, upsert=True)
+    hangup_analytic = []
+    #hangup_analytic = settings.DBCON[settings.MG_CDR_HANGUP].find()
 
     # remove mapreduce output from database (no longer required)
-    settings.DBCON[out].drop()
+    #settings.DBCON[out].drop()
 
     # Country call analytic start
     (map, reduce, finalize_fun, out) = mapreduce_cdr_world_report()

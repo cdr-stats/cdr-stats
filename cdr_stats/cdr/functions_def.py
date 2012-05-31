@@ -18,16 +18,19 @@ import re
 
 
 def get_switch_list():
+    """Switch list used in form"""
     list = Switch.objects.all()
     return ((l.id, l.name) for l in list)
 
 
 def get_country_list():
+    """Country list used in form"""
     list = Country.objects.all()
     return ((l.id, l.countryname) for l in list)
 
 
 def get_hc_list():
+    """hangupcause list used in form"""
     list = HangupCause.objects.all()
     result = []
     for l in list:
@@ -39,6 +42,7 @@ def get_hc_list():
 
 
 def get_hangupcause_name(id):
+    """Get hangupcause name from its id"""
     try:
         obj = HangupCause.objects.get(pk=id)
         return obj.enumeration
@@ -47,6 +51,7 @@ def get_hangupcause_name(id):
 
 
 def get_hangupcause_id(hangupcause_code):
+    """Get hangupcause id from its code"""
     try:
         obj = HangupCause.objects.get(code=hangupcause_code)
         return obj.id
@@ -98,6 +103,7 @@ def prefix_list_string(phone_number):
 
 
 def get_country_id(prefix_list):
+    """Get country id from prefix_list else return 0"""
     try:
         prefix_obj = Prefix.objects.filter(prefix__in=eval(prefix_list))
         country_id = prefix_obj[0].country_id.id
@@ -107,6 +113,8 @@ def get_country_id(prefix_list):
 
 
 def get_country_name(id, type=''):
+    """Get country name from its id & return iso2 type name (e.g 'fr')
+     or country name"""
     try:
         obj = Country.objects.get(pk=id)
         if type == 'iso2':
@@ -118,6 +126,7 @@ def get_country_name(id, type=''):
 
 
 def chk_account_code(request):
+    """Get account code from  request"""
     acc_code = ''
     try:
         if not request.user.is_superuser \

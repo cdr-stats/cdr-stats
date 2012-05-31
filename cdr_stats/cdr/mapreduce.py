@@ -491,3 +491,55 @@ def mapreduce_task_cdr_alert():
     
     out = 'aggregate_result_alert'
     return (map, reduce, finalize_fun, out)
+
+def mapreduce_cdr_analytic_dashboard():
+    """
+    To get the minutly analytic of cdr
+
+       * Total calls per year-month-day-hour-min
+       * Total call duration per year-month-day-hour-min
+       * Total hangup-cause  per year-month-day-hour-min
+
+    Attributes:
+
+        * ``map`` - Grouping perform on year, month, day, hour & min
+        * ``reduce`` - Calculate call count, sum of call duration, hangupcause based on map
+
+    Result Collection: ``aggregate_result_cdr_dashboard_report``
+    """
+    (map, reduce, finalize_fun, out) = mapreduce_default()
+
+    # Get cdr graph by hour report
+    map = mark_safe(u'''
+        function(){
+            var year = this.metadata.date.getFullYear();
+            var month = this.metadata.date.getMonth();
+            var day = this.metadata.date.getDate();
+            var hours = this.metadata.date.getHours();
+            var minutes = this.metadata.date.getMinutes();
+            var d = new Date(year, month, day, hours, minutes);
+            emit( {
+                g_Millisec: d.getTime(),
+            },
+            {
+                calldate__count: this.call_minute.hours,
+                duration__sum: this.duration_minute.hours,
+                hangup_cause_id: 1,
+            } )
+          }''')
+    reduce = mark_safe(u'''
+        function(key,vals) {
+            var ret = {
+                calldate__count : 0,
+                duration__sum: 0,
+                hangup_cause_id: 0,
+            };
+            for (var i=0; i < vals.length; i++){
+                ret.calldate__count += parseInt(vals[i].calldate__count);
+                ret.duration__sum += parseInt(vals[i].duration__sum);
+                ret.hangup_cause_id = vals[i].hangup_cause_id;
+            }
+            return ret;
+        }''')
+    out = 'aggregate_result_cdr_analytic_dashboard_report'
+    return (map, reduce, False, out)

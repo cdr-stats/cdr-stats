@@ -233,8 +233,8 @@ class SwitchAdmin(admin.ModelAdmin):
                                         daily_date = datetime.datetime.\
                                             fromtimestamp(int(get_cdr_from_row['start_uepoch'][:10]))
 
-                                        id_daily = daily_date.strftime('%Y%m%d/') + "%d/%d" %\
-                                                                        (switch.id, country_id)
+                                        id_daily = daily_date.strftime('%Y%m%d/') + "%d/%s/%d" %\
+                                                            (switch.id, accountcode, country_id)
                                         hour = daily_date.hour
                                         minute = daily_date.minute
                                         # Get a datetime that only include date info
