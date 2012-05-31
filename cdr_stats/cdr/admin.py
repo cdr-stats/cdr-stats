@@ -23,19 +23,17 @@ from common.common_functions import striplist
 from cdr.models import Switch, HangupCause
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.functions_def import get_hangupcause_id
-from cdr.import_cdr_freeswitch_mongodb import apply_index
+from cdr.import_cdr_freeswitch_mongodb import apply_index,\
+                                              CDR_COMMON,\
+                                              CDR_ANALYTIC,\
+                                              CDR_MONTHLY,\
+                                              CDR_DAILY,\
+                                              CDR_HOURLY,\
+                                              CDR_COUNTRY_REPORT
 from cdr_alert.functions_blacklist import chk_destination
 
 import datetime
 import csv
-
-# Assign collection names to variables
-CDR_COMMON = settings.DBCON[settings.MG_CDR_COMMON]
-CDR_MONTHLY = settings.DBCON[settings.MG_CDR_MONTHLY]
-CDR_DAILY = settings.DBCON[settings.MG_CDR_DAILY]
-CDR_HOURLY = settings.DBCON[settings.MG_CDR_HOURLY]
-CDR_COUNTRY_REPORT = settings.DBCON[settings.MG_CDR_COUNTRY_REPORT]
-CDR_ANALYTIC = settings.DBCON[settings.MG_CDR_ANALYTIC]
 
 
 # Switch
