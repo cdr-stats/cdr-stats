@@ -229,15 +229,15 @@ class SwitchAdmin(admin.ModelAdmin):
 
                                         # start_uepoch = get_cdr_from_row['start_uepoch']
                                         daily_date = datetime.datetime.\
-                                        fromtimestamp(int(get_cdr_from_row['start_uepoch'][:10]))
+                                            fromtimestamp(int(get_cdr_from_row['start_uepoch'][:10]))
 
                                         id_daily = daily_date.strftime('%Y%m%d/') + "%d/%d" %\
                                                                         (switch.id, country_id)
                                         hour = daily_date.hour
                                         minute = daily_date.minute
                                         # Get a datetime that only include date info
-                                        d =  datetime.datetime.combine(daily_date.date(),
-                                                                       datetime.time.min)
+                                        d = datetime.datetime.combine(daily_date.date(),
+                                                                      datetime.time.min)
 
                                         # preaggregate update
                                         CDR_ANALYTIC.update(

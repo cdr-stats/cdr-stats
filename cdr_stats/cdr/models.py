@@ -20,6 +20,13 @@ from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from django_extensions.db.fields import UUIDField
 
+CDR_TYPE = {
+    "freeswitch": 1,
+    "asterisk": 2,
+    "yate": 3,
+    "opensips": 4,
+    "kamailio": 5
+}
 
 
 DISPOSITION = (

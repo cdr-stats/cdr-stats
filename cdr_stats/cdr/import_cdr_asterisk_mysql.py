@@ -13,7 +13,7 @@
 #
 from django.conf import settings
 import MySQLdb as Database
-from cdr.models import Switch
+from cdr.models import Switch, CDR_TYPE
 from cdr.import_cdr_freeswitch_mongodb import apply_index,\
                                               CDR_COMMON,\
                                               CDR_ANALYTIC,\
@@ -34,14 +34,6 @@ random.seed()
 HANGUP_CAUSE = ['NORMAL_CLEARING', 'NORMAL_CLEARING', 'NORMAL_CLEARING',
                 'NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED',
                 'INVALID_NUMBER_FORMAT']
-
-#TODO this code is not DRY
-CDR_TYPE = {
-            "freeswitch": 1,
-            "asterisk": 2,
-            "yate": 3,
-            "opensips": 4,
-            "kamailio": 5}
 
 # value 0 per default
 # 1 in process of import, 2 imported successfully and verified
@@ -242,7 +234,7 @@ def import_cdr_asterisk_mysql(shell=False):
 
             # start_uepoch = row[1]
             daily_date = \
-            datetime.datetime.fromtimestamp(int(row[1][:10]))
+                datetime.datetime.fromtimestamp(int(row[1][:10]))
 
             id_daily = daily_date.strftime('%Y%m%d/') + "%d/%d" %\
                                                         (switch.id, country_id)

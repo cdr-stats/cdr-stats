@@ -15,7 +15,7 @@ from django.conf import settings
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 
-from cdr.models import Switch
+from cdr.models import Switch, CDR_TYPE
 from cdr.functions_def import get_hangupcause_id, remove_prefix, \
                               prefix_list_string, get_country_id
 from cdr_alert.functions_blacklist import chk_prefix_in_whitelist, \
@@ -33,14 +33,6 @@ random.seed()
 HANGUP_CAUSE = ['NORMAL_CLEARING', 'NORMAL_CLEARING', 'NORMAL_CLEARING',
                 'NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED',
                 'INVALID_NUMBER_FORMAT']
-
-#TODO this code is not DRY
-CDR_TYPE = {
-            "freeswitch": 1,
-            "asterisk": 2,
-            "yate": 3,
-            "opensips": 4,
-            "kamailio": 5}
 
 # value 0 per default
 # 1 in process of import, 2 imported successfully and verified

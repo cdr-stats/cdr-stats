@@ -60,7 +60,7 @@ import logging
 TOTAL_GRAPH_COLOR = '#A61700'
 NUM_COUNTRY = 10
 news_url = settings.NEWS_URL
-print settings
+
 cdr_data = settings.DBCON[settings.MG_CDR_COMMON]
 #db.cdr.ensureIndex({"variables.answer_stamp":1}, {background:true});
 (map, reduce, finalize_fun, out) = mapreduce_cdr_view()
@@ -796,7 +796,6 @@ def cdr_dashboard(request):
         get all call records from mongodb collection for current day
         to create hourly report as well as hangup cause/country analytics
     """
-
     if not check_cdr_data_exists(request):
         return render_to_response(
                     'cdr/error_import.html',
@@ -884,7 +883,6 @@ def cdr_dashboard(request):
                                  int(i['_id']['f_Con'])))
 
     # remove mapreduce output & country analytic from database
-    # TODO : Check if (no longer required)
     settings.DBCON[out].drop()
 
     #Calculate the Average Time of Call
@@ -2169,3 +2167,132 @@ def cust_password_reset_complete(request):
         extra_context=data)
     else:
         return HttpResponseRedirect("/")
+
+
+@login_required
+def cdr_analytic_dashboard(request):
+    """CDR analytic dashboard for a current day
+
+    **Attributes**:
+
+        * ``template`` - cdr/cdr_dashboard.html
+        * ``form`` - SwitchForm
+        * ``mongodb_data_set`` - MG_CDR_COMMON
+        * ``map_reduce`` - mapreduce_cdr_dashboard()
+
+    **Logic Description**:
+
+        get all call records from mongodb collection for current day
+        to create hourly report as well as hangup cause/country analytics
+    """
+    if not check_cdr_data_exists(request):
+        return render_to_response(
+            'cdr/error_import.html',
+            context_instance=RequestContext(request))
+
+    logging.debug('CDR dashboard view start')
+    now = datetime.now()
+    form = SwitchForm()
+    switch_id = 0
+    query_var = {}
+    search_tag = 0
+    if request.method == 'POST':
+        logging.debug('CDR dashboard view with search option')
+        search_tag = 1
+        form = SwitchForm(request.POST)
+        if form.is_valid():
+            switch_id = form.cleaned_data.get('switch')
+            if switch_id and int(switch_id) != 0:
+                query_var['switch_id'] = int(switch_id)
+
+    #start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
+    #end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
+    end_date = datetime(now.year, now.month, now.day,
+        now.hour, now.minute, now.second, now.microsecond)
+    start_date = end_date+relativedelta(days=-int(1))
+
+    query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
+
+    if not request.user.is_superuser: # not superuser
+        acc_code_error = ''
+        if chk_account_code(request):
+            query_var['accountcode'] = chk_account_code(request)
+        else:
+            return HttpResponseRedirect('/?acc_code_error=true')
+
+    logging.debug('Map-reduce cdr dashboard analytic')
+    #Retrieve Map Reduce
+    (map, reduce, finalize_fun, out) = mapreduce_cdr_dashboard()
+
+    #Run Map Reduce
+    calls = cdr_data.map_reduce(map, reduce, out, query=query_var)
+    calls = calls.find().sort([('_id.g_Millisec', 1)])
+
+    # if exists, drop previous collection
+    settings.DBCON[settings.MG_CDR_HANGUP].drop()
+
+    total_calls = 0
+    total_duration = 0
+    total_record_final = []
+    for d in calls:
+        total_record_final.append([d['_id']['g_Millisec'],
+                                   d['value']['calldate__count'],
+                                   d['value']['duration__sum']])
+        total_calls += int(d['value']['calldate__count'])
+        total_duration += int(d['value']['duration__sum'])
+
+        # created cdr_hangup_analytic
+        try:
+            int_hangup_cause_id = int(d['value']['hangup_cause_id'])
+        except:
+            int_hangup_cause_id = False
+
+        if int_hangup_cause_id:
+            settings.DBCON[settings.MG_CDR_HANGUP].update({'hangup_cause_id': int(d['value']['hangup_cause_id'])},
+                    {'$inc': {'count': 1}}, upsert=True)
+
+    hangup_analytic = settings.DBCON[settings.MG_CDR_HANGUP].find()
+
+    # remove mapreduce output from database (no longer required)
+    settings.DBCON[out].drop()
+
+    # Country call analytic start
+    (map, reduce, finalize_fun, out) = mapreduce_cdr_world_report()
+    country_calls = cdr_data.map_reduce(map, reduce, out, query=query_var)
+
+    # Top 5 countries list
+    country_calls = country_calls.find().\
+    sort([('value.calldate__count', -1)]).limit(5)
+
+    country_analytic = []
+    for i in country_calls:
+        country_analytic.append((get_country_name(int(i['_id']['f_Con'])),
+                                 int(i['value']['calldate__count']),
+                                 int(i['value']['duration__sum']),
+                                 int(i['_id']['f_Con'])))
+
+    # remove mapreduce output & country analytic from database
+    settings.DBCON[out].drop()
+
+    #Calculate the Average Time of Call
+    ACT = math.floor(total_calls / 24)
+    if total_calls == 0:
+        ACD = 0
+    else:
+        ACD = int_convert_to_minute(math.floor(total_duration / total_calls))
+
+    logging.debug('CDR dashboard view end')
+    variables = {'module': current_view(request),
+                 'total_calls': total_calls,
+                 'total_duration': int_convert_to_minute(total_duration),
+                 'ACT': ACT,
+                 'ACD': ACD,
+                 'total_record': total_record_final,
+                 'hangup_analytic': hangup_analytic,
+                 'country_analytic': country_analytic,
+                 'form': form,
+                 'search_tag': search_tag,
+                 }
+
+    return render_to_response('cdr/cdr_analytic_dashboard.html', variables,
+        context_instance=RequestContext(request))
