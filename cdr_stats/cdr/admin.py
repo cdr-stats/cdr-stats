@@ -22,7 +22,8 @@ from common.common_functions import striplist
 
 from cdr.models import Switch, HangupCause
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
-from cdr.functions_def import get_hangupcause_id, chk_destination
+from cdr.functions_def import get_hangupcause_id
+from cdr_alert.functions_blacklist import chk_destination
 
 import datetime
 import csv

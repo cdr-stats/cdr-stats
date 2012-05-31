@@ -16,7 +16,11 @@ from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 
 from cdr.models import Switch
-from cdr.functions_def import get_hangupcause_id, chk_destination
+from cdr.functions_def import get_hangupcause_id, remove_prefix, \
+                              prefix_list_string, get_country_id
+from cdr_alert.functions_blacklist import chk_prefix_in_whitelist, \
+                              chk_prefix_in_blacklist, \
+                              chk_destination
 
 import datetime
 import sys
