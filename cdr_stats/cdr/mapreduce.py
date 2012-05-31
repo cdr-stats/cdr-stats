@@ -488,7 +488,7 @@ def mapreduce_task_cdr_alert():
                         duration__avg: 0
                     } )
             }''')
-    
+
     out = 'aggregate_result_alert'
     return (map, reduce, finalize_fun, out)
 

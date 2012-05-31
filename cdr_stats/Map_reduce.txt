@@ -6,46 +6,130 @@ List Map Reduce used in CDR-Stats
 01. MAP REDUCE : ANALYTIC
 -------------------------
 
+
+// Get from daily Report from date A to date B
+================================================
+
 map = function(){
-        var year = this.metadata.date.getFullYear();
-        var month = this.metadata.date.getMonth();
-        var day = this.metadata.date.getDate();
-        var hours = this.metadata.date.getHours();
-        var minutes = this.metadata.date.getMinutes();
-        var d = new Date(year, month, day, hours, minutes);
-        emit( {
-            g_Millisec: d.getTime(),
-        },
-        {
-            call__count: this.call_minute.hours,
-            duration__sum: this.duration_minute.hours,
-        } )
-      };
+    var year = this.metadata.date.getFullYear();
+    var month = this.metadata.date.getMonth();
+    var day = this.metadata.date.getDate();
+    var d = new Date(year, month, day);
+    emit( {
+        g_Millisec: d.getTime(),
+    },
+    {
+        call__count: this.call_daily,
+        duration__sum: this.duration_daily,
+    } )
+};
 
 reduce = function(key,vals) {
-        var ret = {
-            call__count : 0,
-            duration__sum: 0,
-        };
-        for (var i=0; i < vals.length; i++){
-            ret.call__count += vals[i].call__count;
-            ret.duration__sum += vals[i].duration__sum;
-        }
-        return ret;
+    var ret = {
+        call__count : 0,
+        duration__sum: 0,
     };
+    for (var i=0; i < vals.length; i++){
+        ret.call__count += vals[i].call__count;
+        ret.duration__sum += vals[i].duration__sum;
+    }
+    return ret;
+};
 
-query = {'metadata.date': { '$gte': new Date(2000,10,10), '$lt': new Date(2000,10,11)} };
-
-//db.cdr_analytic.mapReduce(map, reduce, out="foo", query);
+query = {'metadata.accountcode': '1000' };
 
 db.foo.drop();
-db.runCommand( { mapreduce:"cdr_analytic",
-			      map:map,
-			      reduce:reduce,
-			      out: { reduce: "foo" },
-			    });
-			    
+db.runCommand( { mapreduce:"daily_analytic", map:map, reduce:reduce, out: { reduce: "foo" }, query: query});
+		    
 db.foo.find();
+
+
+
+
+// Get from hourly Report from one day, use query to apply this to one day only
+================================================================================
+
+   
+map = function(){
+    var year = this.metadata.date.getFullYear();
+    var month = this.metadata.date.getMonth();
+    var day = this.metadata.date.getDate();
+    var d = new Date(year, month, day);
+    emit( 
+        { g_Millisec: d.getTime(), },
+        {
+            call__count: this.call_hourly,
+            duration__sum: this.duration_hourly,
+        }
+    )
+};
+
+reduce = function(key, vals) {
+    var ret = {
+        call__count : [],
+        duration__sum: [],
+    };
+    for(var k=0; k < 24; k++){
+        ret.call__count[k]=0;
+        ret.duration__sum[k]=0;
+    }
+    for (var i=0; i < vals.length; i++) {
+        for (var k=0; k < 24; k++) {
+            if (vals[i].call__count[k]) {
+                ret.call__count[k] += vals[i].call__count[k];
+                ret.duration__sum[k] += vals[i].duration__sum[k];
+            }
+        }
+    }
+    return ret;
+};
+
+query = {'metadata.accountcode': '1000' };
+
+db.foo.drop();
+db.runCommand( { mapreduce:"daily_analytic", map:map, reduce:reduce, out: { reduce: "foo" }, query: query});
+		    
+db.foo.find();
+
+
+
+
+
+
+
+*************** TEst *******
+
+// Get from daily Report from date A to date B
+
+function map() {
+    var year = this.metadata.date.getFullYear();
+    var month = this.metadata.date.getMonth();
+    var day = this.metadata.date.getDate();
+    var d = new Date(year, month, day);
+    emit( {
+        g_Millisec: d.getTime(),
+    },
+    {
+        call__count: this.call_daily,
+        duration__sum: this.duration_daily,
+    } )
+}
+
+function emit(k, v) {
+    print("emit");
+    print("  k:" + k + " v:" + tojson(v));
+}
+
+x = db.daily_analytic.findOne();
+map.apply(x);
+
+
+
+
+
+
+
+
 
 
 1. MAP REDUCE : ACCOUNT / DURATION
