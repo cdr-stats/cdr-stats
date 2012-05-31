@@ -247,8 +247,8 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             daily_date = datetime.datetime.fromtimestamp(
                             int(cdr['variables']['start_uepoch'][:10]))
 
-            id_daily = daily_date.strftime('%Y%m%d/') + "%d/%d" % \
-                                    (switch.id, country_id)
+            id_daily = daily_date.strftime('%Y%m%d/') + "%d/%s/%d" % \
+                                    (switch.id, accountcode, country_id)
             hour = daily_date.hour
             minute = daily_date.minute
             # Get a datetime that only include date info
