@@ -1,0 +1,147 @@
+
+
+List Map Reduce used in CDR-Stats
+=================================
+
+01. MAP REDUCE : ANALYTIC
+-------------------------
+
+map = function(){
+        var year = this.metadata.date.getFullYear();
+        var month = this.metadata.date.getMonth();
+        var day = this.metadata.date.getDate();
+        var hours = this.metadata.date.getHours();
+        var minutes = this.metadata.date.getMinutes();
+        var d = new Date(year, month, day, hours, minutes);
+        emit( {
+            g_Millisec: d.getTime(),
+        },
+        {
+            call__count: this.call_minute.hours,
+            duration__sum: this.duration_minute.hours,
+        } )
+      };
+
+reduce = function(key,vals) {
+        var ret = {
+            call__count : 0,
+            duration__sum: 0,
+        };
+        for (var i=0; i < vals.length; i++){
+            ret.call__count += vals[i].call__count;
+            ret.duration__sum += vals[i].duration__sum;
+        }
+        return ret;
+    };
+
+query = {'metadata.date': { '$gte': new Date(2000,10,10), '$lt': new Date(2000,10,11)} };
+
+//db.cdr_analytic.mapReduce(map, reduce, out="foo", query);
+
+db.foo.drop();
+db.runCommand( { mapreduce:"cdr_analytic",
+			      map:map,
+			      reduce:reduce,
+			      out: { reduce: "foo" },
+			    });
+			    
+db.foo.find();
+
+
+1. MAP REDUCE : ACCOUNT / DURATION
+----------------------------------
+
+This is just a simple example, it's not used in the code.
+
+MapReduce::
+
+    map = function() {
+        emit( this.accountcode, {count: 1, duration: this.duration} );
+    }      
+
+    reduce = function(key, values) {
+        var result = {count: 0, duration: 0};
+
+        values.forEach(function(value) {
+              result.count += value.count;
+              result.duration += value.duration;
+        });
+
+        return result;
+    }
+    
+    db.cdr_common.mapReduce(map, reduce, out="foo");
+
+
+
+
+2. MAP REDUCE : Date aggregate, Duration SUM, Duration AVG
+----------------------------------------------------------
+
+This MapReduce is used on the CDR view to display the amount of calls per day
+
+MapReduce::
+
+    map = function(){
+       emit( {
+            a_Year: this.start_uepoch.getFullYear(),
+            b_Month: this.start_uepoch.getMonth() + 1,
+            c_Day: this.start_uepoch.getDate(),
+       },
+       {
+            calldate__count: 1,
+            calldate: this.start_uepoch,
+            duration__sum: this.duration,
+            duration__avg: 0
+        } )
+    }
+
+    reduce = function(key,vals) {
+         var ret = {
+                calldate__count : 0,
+                duration__sum: 0,
+                duration__avg: 0
+           };
+
+         for (var i=0; i < vals.length; i++){
+            ret.calldate__count += parseInt(vals[i].calldate__count);
+            ret.duration__sum += parseInt(vals[i].duration__sum);
+         }
+         return ret;
+    }
+    
+    db.cdr_common.mapReduce(map, reduce, out="foo");
+
+
+
+
+3. MAP REDUCE : Date aggregate, Duration SUM, Duration AVG
+----------------------------------------------------------
+
+    map = mark_safe(u'''
+          function(){
+             emit( {a_Year: this.start_uepoch.getFullYear(),
+                    b_Month: this.start_uepoch.getMonth() + 1,
+                    c_Day: this.start_uepoch.getDate(),
+                    d_Hour: this.start_uepoch.getHours(),
+                    e_Min: this.start_uepoch.getMinutes(),
+                   },
+                   {calldate__count: 1, duration__sum: this.duration, hangup_cause_id: this.hangup_cause_id} )
+          }''')
+    reduce = mark_safe(u'''
+             function(key,vals) {
+                 var ret = {
+                                calldate__count : 0,
+                                duration__sum: 0,
+                                hangup_cause_id: 0,
+                           };
+
+                 for (var i=0; i < vals.length; i++){
+                    ret.calldate__count += parseInt(vals[i].calldate__count);
+                    ret.duration__sum += parseInt(vals[i].duration__sum);
+                    ret.hangup_cause_id = parseInt(vals[i].hangup_cause_id);
+                 }
+                 return ret;
+             }
+             ''')
+

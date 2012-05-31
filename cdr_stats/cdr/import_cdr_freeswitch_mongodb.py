@@ -41,7 +41,7 @@ CDR_MONTHLY = settings.DBCON[settings.MG_CDR_MONTHLY]
 CDR_DAILY = settings.DBCON[settings.MG_CDR_DAILY]
 CDR_HOURLY = settings.DBCON[settings.MG_CDR_HOURLY]
 CDR_COUNTRY_REPORT = settings.DBCON[settings.MG_CDR_COUNTRY_REPORT]
-CDR_ANALYTIC = settings.DBCON[settings.MG_CDR_ANALYTIC]
+DAILY_ANALYTIC = settings.DBCON[settings.MG_DAILY_ANALYTIC]
 
 
 def print_shell(shell, message):
@@ -101,7 +101,7 @@ def get_element(cdr):
 
 def apply_index():
     #TODO Add index one time, create a build function
-    CDR_ANALYTIC.ensure_index([("metadata.date", -1)])
+    DAILY_ANALYTIC.ensure_index([("metadata.date", -1)])
     CDR_COMMON.ensure_index([("start_uepoch", -1)])
     #CDR_MONTHLY.ensure_index([("start_uepoch", -1)])
     #CDR_DAILY.ensure_index([("start_uepoch", -1)])
@@ -255,7 +255,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             d = datetime.datetime.combine(daily_date.date(), datetime.time.min)
 
             # preaggregate update
-            CDR_ANALYTIC.update(
+            DAILY_ANALYTIC.update(
                 {
                     "_id": id_daily,
                     "metadata": {
@@ -269,12 +269,26 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
                     "$inc": {
                         "call_daily": 1,
                         "call_hourly.%d" % (hour,): 1,
-                        "call_minute.%d.%d" % (hour, minute): 1,
+                        "call_minute.%d.%d" % (hour, minute,): 1,
                         "duration_daily": duration,
                         "duration_hourly.%d" % (hour,): duration,
-                        "duration_minute.%d.%d" % (hour, minute): duration,
+                        "duration_minute.%d.%d" % (hour, minute,): duration,
+                        "hangupid_daily.%d" % (hangup_cause_id,): 1,
+                        "hangupid_hourly.%d.%d" % (hour, hangup_cause_id,): 1,
+                        "hangupid_minute.%d.%d.%d" % \
+                                        (hour, minute, hangup_cause_id,): 1,
                             }
                 }, upsert=True)
+
+            #TODO : Create index
+            #db.stats.DAILY_ANALYTIC.ensure_index([
+            #...     ('metadata.switch_id', 1),
+            #...     ('metadata.country_id', 1),
+            #...     ('metadata.accountcode', 1),
+            #...     ('metadata.date', 1)])
+
+            #TODO : MONTHLY_ANALYTIC
+            #same as above but just keep monthly information
 
             # Flag the CDR as imported
             importcdr_handler.update(
@@ -288,7 +302,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
 
             """
             # Commented the part below as it's not efficient
-            # trying to replace by the CDR_ANALYTIC collection
+            # trying to replace by the DAILY_ANALYTIC collection
 
             # Store monthly cdr collection with unique import
             if not hasattr(cdr, 'import_cdr_monthly') \

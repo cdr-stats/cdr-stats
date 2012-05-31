@@ -16,7 +16,7 @@ import MySQLdb as Database
 from cdr.models import Switch, CDR_TYPE
 from cdr.import_cdr_freeswitch_mongodb import apply_index,\
                                               CDR_COMMON,\
-                                              CDR_ANALYTIC,\
+                                              DAILY_ANALYTIC,\
                                               CDR_MONTHLY,\
                                               CDR_DAILY,\
                                               CDR_HOURLY,\
@@ -245,7 +245,7 @@ def import_cdr_asterisk_mysql(shell=False):
             d = datetime.datetime.combine(daily_date.date(), datetime.time.min)
 
             # preaggregate update
-            CDR_ANALYTIC.update(
+            DAILY_ANALYTIC.update(
                     {
                     "_id": id_daily,
                     "metadata": {

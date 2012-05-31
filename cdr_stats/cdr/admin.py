@@ -25,7 +25,7 @@ from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.functions_def import get_hangupcause_id
 from cdr.import_cdr_freeswitch_mongodb import apply_index,\
                                               CDR_COMMON,\
-                                              CDR_ANALYTIC,\
+                                              DAILY_ANALYTIC,\
                                               CDR_MONTHLY,\
                                               CDR_DAILY,\
                                               CDR_HOURLY,\
@@ -242,7 +242,7 @@ class SwitchAdmin(admin.ModelAdmin):
                                                                       datetime.time.min)
 
                                         # preaggregate update
-                                        CDR_ANALYTIC.update(
+                                        DAILY_ANALYTIC.update(
                                                 {
                                                 "_id": id_daily,
                                                 "metadata": {
@@ -341,7 +341,7 @@ class SwitchAdmin(admin.ModelAdmin):
                     if cdr_record_count > 0:
                         apply_index()
                         # Apply index
-                        CDR_ANALYTIC.ensure_index([("metadata.date", -1)])
+                        DAILY_ANALYTIC.ensure_index([("metadata.date", -1)])
                         CDR_COMMON.ensure_index([("start_uepoch", -1)])
                 else:
                     msg = _("Error : importing several times the same column")

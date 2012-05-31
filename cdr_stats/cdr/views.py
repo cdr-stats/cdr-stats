@@ -2220,7 +2220,7 @@ def cdr_analytic_dashboard(request):
         else:
             return HttpResponseRedirect('/?acc_code_error=true')
 
-    cdr_analytic = settings.DBCON[settings.MG_CDR_ANALYTIC].find(query_var)\
+    cdr_analytic = settings.DBCON[settings.MG_DAILY_ANALYTIC].find(query_var)\
                     .sort([('call_hourly', 1), ('call_minute', 1)])
 
     total_analytic_final = []
