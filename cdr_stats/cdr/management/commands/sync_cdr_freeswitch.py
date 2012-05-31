@@ -11,9 +11,10 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.core.management.base import BaseCommand, CommandError
-from django.utils.translation import ugettext_lazy as _
+
+from django.core.management.base import BaseCommand
 from cdr.import_cdr_freeswitch_mongodb import import_cdr_freeswitch_mongodb
+
 
 class Command(BaseCommand):
     # Usage : sync_cdr

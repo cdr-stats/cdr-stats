@@ -69,6 +69,7 @@ class SwitchAdmin(admin.ModelAdmin):
               The CSV file
         """
         opts = Switch._meta
+        #TODO : Do we need app_label / file_exts
         app_label = opts.app_label
         file_exts = ('.csv', )
         rdr = ''  # will contain CSV data
@@ -87,23 +88,24 @@ class SwitchAdmin(admin.ModelAdmin):
 
             if form.is_valid():
 
-                cdr_field_list = {}
-                cdr_field_not_in_list = []
+                field_list = {}
+                field_notin_list = []
                 for i in CDR_FIELD_LIST:
                     if int(request.POST[i]) != 0:
-                        cdr_field_list[i] = int(request.POST[i])
+                        field_list[i] = int(request.POST[i])
                     else:
-                        cdr_field_not_in_list.append((i))
+                        field_notin_list.append((i))
 
                 # perform sorting & get unique order list
                 countMap = {}
-                for v in cdr_field_list.itervalues():
+                for v in field_list.itervalues():
                     countMap[v] = countMap.get(v, 0) + 1
-                uni = [ (k, v) for k, v in cdr_field_list.iteritems() if countMap[v] == 1]
+                uni = [(k, v) for k, v in field_list.iteritems() \
+                            if countMap[v] == 1]
                 uni = sorted(uni, key=lambda uni: uni[1])
 
                 # if order list matched with CDR_FIELD_LIST count
-                if len(uni) == len(CDR_FIELD_LIST) - len(cdr_field_not_in_list):
+                if len(uni) == len(CDR_FIELD_LIST) - len(field_notin_list):
 
                     # To count total rows of CSV file
                     records = csv.reader(request.FILES['csv_file'],
@@ -158,8 +160,8 @@ class SwitchAdmin(admin.ModelAdmin):
 
                                     row_counter = row_counter + 1
 
-                                if len(cdr_field_not_in_list) != 0:
-                                    for i in cdr_field_not_in_list:
+                                if len(field_notin_list) != 0:
+                                    for i in field_notin_list:
                                         if i == 'accountcode':
                                             accountcode = int(request.POST[i + "_csv"])
 
