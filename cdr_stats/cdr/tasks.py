@@ -15,8 +15,7 @@
 #
 
 from django.conf import settings
-from celery.task import Task, PeriodicTask
-from celery.decorators import task, periodic_task
+from celery.task import PeriodicTask
 from cdr.import_cdr_freeswitch_mongodb import import_cdr_freeswitch_mongodb
 from cdr.import_cdr_asterisk_mysql import import_cdr_asterisk_mysql
 from cdr.common_tasks import single_instance_task

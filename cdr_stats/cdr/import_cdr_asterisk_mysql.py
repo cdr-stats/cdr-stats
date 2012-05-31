@@ -66,6 +66,7 @@ DISPOSITION_TRANSLATION = {
     10: 41,     # FAILED
 }
 
+
 def print_shell(shell, message):
     if shell:
         print message

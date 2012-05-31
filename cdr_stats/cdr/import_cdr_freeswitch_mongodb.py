@@ -16,11 +16,8 @@ from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 
 from cdr.models import Switch, CDR_TYPE
-from cdr.functions_def import get_hangupcause_id, remove_prefix, \
-                              prefix_list_string, get_country_id
-from cdr_alert.functions_blacklist import chk_prefix_in_whitelist, \
-                              chk_prefix_in_blacklist, \
-                              chk_destination
+from cdr.functions_def import get_hangupcause_id
+from cdr_alert.functions_blacklist import chk_destination
 
 import datetime
 import sys
@@ -45,6 +42,7 @@ CDR_DAILY = settings.DBCON[settings.MG_CDR_DAILY]
 CDR_HOURLY = settings.DBCON[settings.MG_CDR_HOURLY]
 CDR_COUNTRY_REPORT = settings.DBCON[settings.MG_CDR_COUNTRY_REPORT]
 CDR_ANALYTIC = settings.DBCON[settings.MG_CDR_ANALYTIC]
+
 
 def print_shell(shell, message):
     if shell:
@@ -200,7 +198,6 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             billsec = data_element['billsec']
             direction = data_element['direction']
             uuid = data_element['uuid']
-
 
             # Prepare global CDR
             cdr_record = {
