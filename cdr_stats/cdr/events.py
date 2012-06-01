@@ -1,14 +1,12 @@
 from django.conf import settings
-from django.shortcuts import get_object_or_404
-from django.utils.html import strip_tags
 from django_socketio import events
 from django_socketio.events import on_message
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 
 from cdr.models import Switch
-import time
-import random
+#import time
+#import random
 
 
 import logging
@@ -19,14 +17,15 @@ def cached(ctime=3600):
     """
     A `seconds` value of `0` means that we will not memcache it.
 
-    If a result is cached on instance, return that first.  If that fails, check
-    memcached. If all else fails, hit the db and cache on instance and in memcache.
+    If a result is cached on instance, return that first.
+    If that fails, check memcached.
+    If all else fails, hit the db and cache on instance and in memcache.
     """
     from django.core.cache import cache
     from hashlib import sha256
 
     def decr(func):
-        def wrp(*args,**kargs):
+        def wrp(*args, **kargs):
             key = sha256(func.func_name+repr(args)+repr(kargs)).hexdigest()
             res = cache.get(key)
             if res is None:
