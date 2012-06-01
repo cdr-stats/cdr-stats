@@ -101,41 +101,62 @@ map = function(){
     emit( 
         { g_Millisec: d.getTime(), },
         {
-            call__count: this.call_hourly,
-            duration__sum: this.duration_hourly,
+            call__count: this.call_minute,
+            duration__sum: this.duration_minute,
         }
     )
 };
 
+
 // '2012-06-01 00:02' - 10 - 22 |  '2012-06-01 01:23' - 2 - 10
 reduce = function(key, vals) {
-    var ret = {
-        call__count : [],
-        duration__sum: [],
-    };
+    var result = new Object();
     
     for(var k=0; k < 24; k++){
-        ret.call__count[k] = [];
-        ret.duration__sum[k] = [];
-        for(var l=0; l<59; l++){
-            ret.call__count[k][l]=0;
-            ret.duration__sum[k][l]=0;
+        for(var l=0; l < 60; l++){
+            if (k < 10) {
+                rkey = '0' + k + ':';
+            } else {
+                rkey = k + ':';
+            }
+            if (l < 10) {
+                rkey = rkey + '0' + l;
+            } else {
+                rkey = rkey + l;
+            }
+            result['c/'+rkey] = 0;
+            result['d/'+rkey] = 0;
+            
         }
     }
     for (var i=0; i < vals.length; i++) {
         for (var k=0; k < 24; k++) {
             for(var l=0; l < 60; l++){
+                if (k < 10) {
+                    rkey = '0' + k + ':';
+                } else {
+                    rkey = k + ':';
+                }
+                if (l < 10) {
+                    rkey = rkey + '0' + l;
+                } else {
+                    rkey = rkey + l;
+                }
+                
                 if (vals[i].call__count[k] && vals[i].call__count[k][l]) {
-                    ret.call__count[k][l] += vals[i].call__count[k][l];
-                    ret.duration__sum[k][l] += vals[i].duration__sum[k][l];
+                    result['c/'+rkey] += parseInt(vals[i].call__count[k][l]);
+                    if (vals[i].duration__sum[k] && vals[i].duration__sum[k][l]) {
+                        result['d/'+rkey] += parseInt(vals[i].duration__sum[k][l]);
+                    }
                 }
             }
         }
     }
-    return ret;
+    return result;
 };
 
 query = {'metadata.accountcode': '1000' };
+query = {'metadata.accountcode': '1000', 'metadata.date': {$gte: ISODate("2012-05-31T00:00:00Z"), $lte: ISODate("2012-06-31T23:59:59Z")} };
 
 db.foo.drop();
 db.runCommand( { mapreduce:"daily_analytic", map:map, reduce:reduce, out: { reduce: "foo" }, query: query});
@@ -143,8 +164,10 @@ db.runCommand( { mapreduce:"daily_analytic", map:map, reduce:reduce, out: { redu
 db.foo.find();
 
 
+###############################################
+db.daily_analytic.count({'metadata.accountcode': '1000', 'metadata.date': {$gte: ISODate("2012-05-31T00:00:00Z"), $lte: ISODate("2012-05-31T23:59:59Z")} })
 
-
+db.daily_analytic.find({'metadata.accountcode': '1000', 'metadata.date': {$gte: ISODate("2012-05-31T00:00:00Z"), $lte: ISODate("2012-05-31T23:59:59Z")} }, { 'call_daily' : 1});
 
 
 
