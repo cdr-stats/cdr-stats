@@ -2223,9 +2223,6 @@ def cdr_analytic_dashboard(request):
     cdr_analytic = settings.DBCON[settings.MG_DAILY_ANALYTIC].find(query_var)\
                     .sort([('call_hourly', 1), ('call_minute', 1)])
 
-    total_analytic_final = []
-    total_analytic_calls = 0
-    total_analytic_duration = 0
     total_calls = 0
     total_duration = 0
     total_record_final = []
@@ -2255,41 +2252,19 @@ def cdr_analytic_dashboard(request):
             except:
                 pass
 
-
     logging.debug('Map-reduce cdr dashboard analytic')
+    print "Daily analytic"
     #Retrieve Map Reduce
-    #(map, reduce, finalize_fun, out) = mapreduce_cdr_dashboard() # analytic_
+    (map, reduce, finalize_fun, out) = mapreduce_cdr_daily_analytic_dashboard() # analytic_
 
     #Run Map Reduce
-    #calls = cdr_analytic.map_reduce(map, reduce, out, query=query_var)
-    #calls = calls.find().sort([('_id.g_Millisec', 1)])
+    cdr_analytic = settings.DBCON[settings.MG_DAILY_ANALYTIC]
+    calls = cdr_analytic.map_reduce(map, reduce, out, query=query_var)
+    calls = calls.find().sort([('_id.g_Millisec', 1)])
+    for i in calls:
+        print i
 
-
-    # if exists, drop previous collection
-    settings.DBCON[settings.MG_CDR_HANGUP].drop()
-
-
-    #for d in calls:
-    #    total_record_final.append([d['_id']['g_Millisec'],
-    #                               d['value']['calldate__count'],
-    #                               d['value']['duration__sum']])
-    #    total_calls += int(d['value']['calldate__count'])
-    #    total_duration += int(d['value']['duration__sum'])
-
-    #    # created cdr_hangup_analytic
-    #    try:
-    #        int_hangup_cause_id = int(d['value']['hangup_cause_id'])
-    #    except:
-    #        int_hangup_cause_id = False
-
-    #    if int_hangup_cause_id:
-    #        settings.DBCON[settings.MG_CDR_HANGUP].update({'hangup_cause_id': int(d['value']['hangup_cause_id'])},
-    #                {'$inc': {'count': 1}}, upsert=True)
     hangup_analytic = []
-    #hangup_analytic = settings.DBCON[settings.MG_CDR_HANGUP].find()
-
-    # remove mapreduce output from database (no longer required)
-    #settings.DBCON[out].drop()
 
     # Country call analytic start
     (map, reduce, finalize_fun, out) = mapreduce_cdr_world_report()
@@ -2331,3 +2306,248 @@ def cdr_analytic_dashboard(request):
 
     return render_to_response('cdr/cdr_analytic_dashboard.html', variables,
         context_instance=RequestContext(request))
+
+
+def get_hourly_analytic_for_date(start_date, end_date, query_var, graph_view):
+    hourly_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
+    logging.debug('Map-reduce cdr hourly analytic')
+    #Retrieve Map Reduce
+    (map, reduce, finalize_fun, out) = mapreduce_cdr_hourly_analytic_dashboard()
+
+    #Run Map Reduce
+    calls_in_day = hourly_data.map_reduce(map, reduce, out, query=query_var)
+    calls_in_day = calls_in_day.find()
+    total_analytic_final = []
+    for i in calls_in_day:
+        called_time = datetime(int(i['_id']['a_Year']), int(i['_id']['b_Month']), int(i['_id']['c_Day']))
+        for j in range(0, 24):
+            total_analytic_final.append((str(called_time)[:10],
+                                         j,
+                                         int(i['value']['call__count'][j]),
+                                         i['value']['duration__sum'][j]))
+
+
+    total_record = {}
+    for i in total_analytic_final:
+        if (i[0] in total_record.keys()) and (i[1] not in total_record[i[0]].keys()):
+            total_record[i[0]][i[1]] = i[2]
+        elif i[0] not in total_record.keys():
+            total_record[i[0]] = {}
+            total_record[i[0]][i[1]] = i[2]
+
+    """
+    record_dates = []
+    total_record = []
+    total_call_count = []
+
+    #get the dates of the period
+    dateList = date_range(
+        datetime(start_date.year, start_date.month, start_date.day),
+        datetime(end_date.year, end_date.month, end_date.day))
+
+    for i in calls_in_day:
+        date_in_list = datetime(int(i['_id']['a_Year']), int(i['_id']['b_Month']), int(i['_id']['c_Day']))
+        if date_in_list in dateList:
+            called_time = datetime.strptime(str(i['value']['calldate']), "%Y-%m-%d %H:%M:%S")
+            record_dates.append(( str(date_in_list)[0:10] ))
+            if graph_view == '1':
+                total_record.append(( called_time, i['value']['calldate__count']))
+                total_call_count.append((int(i['value']['calldate__count'])))
+            else:
+                total_record.append(( called_time, i['value']['duration__sum']))
+                total_call_count.append((int(i['value']['duration__sum'])))
+
+    record_dates = list(set(record_dates))
+
+    if calls_in_day.count() != 0:
+        total_record_final = []
+
+        for rd in record_dates:
+            list_of_hour = []
+            list_of_count= []
+            l_o_c = {}
+            for i in calls_in_day.clone():
+                string_date = datetime(int(i['_id']['a_Year']), int(i['_id']['b_Month']), int(i['_id']['c_Day']))
+                string_date = str(string_date)[0:10]
+                if string_date == rd:
+                    list_of_hour.append(int((i['_id']['d_Hour'])))
+                    if graph_view == '1':
+                        list_of_count.append((int(i['_id']['d_Hour']), i['value']['calldate__count']))
+                        l_o_c[int(i['_id']['d_Hour'])] = i['value']['calldate__count']
+                    else:
+                        list_of_count.append((int(i['_id']['d_Hour']), i['value']['duration__sum']))
+                        l_o_c[int(i['_id']['d_Hour'])] = i['value']['duration__sum']
+
+            x = 0
+            for j in range(0, 24):
+                if j not in list_of_hour:
+                    total_record_final.append((rd, j, 0))
+                else:
+                    total_record_final.append((rd, j, l_o_c[j]))
+                    x = x + 1
+
+        for d in dateList:
+            sd = d.strftime('%Y-%m-%d')
+            if sd not in record_dates:
+                for j in range(0, 24):
+                    total_record_final.append((sd, j, 0))
+    else:
+        total_record_final = []
+
+    total_record = {}
+    for i in total_record_final:
+        if (i[0] in total_record.keys()) and (i[1] not in total_record[i[0]].keys()):
+            total_record[i[0]][i[1]] = i[2]
+        elif i[0] not in total_record.keys():
+            total_record[i[0]] = {}
+            total_record[i[0]][i[1]] = i[2]
+    """
+    # remove mapreduce output from database (no longer required)
+    settings.DBCON[out].drop()
+    variables = {
+        'total_record': total_record,
+    }
+    return variables
+
+
+@login_required
+def cdr_analytic_by_hour(request):
+    """CDR graph by hourly basis
+
+    **Attributes**:
+
+        * ``template`` - cdr/cdr_graph_by_hour.html
+        * ``form`` - CompareCallSearchForm
+        * ``mongodb_data_set`` - MG_CDR_HOURLY
+        * ``map_reduce`` - mapreduce_cdr_hour_report()
+
+    **Logic Description**:
+
+        get all call records from mongodb collection for
+        hourly analytics for given date
+    """
+    if not check_cdr_data_exists(request):
+        return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
+
+    logging.debug('CDR hourly view start')
+    template_name = 'cdr/cdr_analytic_by_hour.html'
+    query_var = {}
+    total_record = []
+    #default
+    comp_days = 2
+    graph_view = '1'
+    check_days = 1
+    search_tag = 0
+    tday = datetime.today()
+    from_date = tday.strftime('%Y-%m-%d')
+    form = CompareCallSearchForm(initial={'from_date': from_date,
+                                          'comp_days': comp_days,
+                                          'check_days': check_days,
+                                          'destination_type': 1,
+                                          'switch': 0,
+                                          'graph_view': graph_view})
+    if request.method == 'POST':
+        logging.debug('CDR hourly view with search option')
+        search_tag = 1
+        form = CompareCallSearchForm(request.POST)
+        if form.is_valid():
+            if "from_date" in request.POST:
+                from_date = request.POST['from_date']
+                select_date = datetime(int(from_date[0:4]),
+                    int(from_date[5:7]),
+                    int(from_date[8:10]), 0, 0, 0, 0)
+            else:
+                from_date = tday.strftime('%Y-%m-%d')
+                select_date = tday
+
+            comp_days = int(variable_value(request, 'comp_days'))
+            destination = variable_value(request, 'destination')
+            destination_type = variable_value(request, 'destination_type')
+            graph_view = int(variable_value(request, 'graph_view'))
+            check_days = int(variable_value(request, 'check_days'))
+            # check previous days
+            if check_days == 2:
+                compare_date_list = []
+                compare_date_list.append(select_date)
+
+                for i in range(1, int(comp_days)+1):
+                    #select_date+relativedelta(weeks=-i)
+                    interval_date = select_date+relativedelta(weeks=-i)
+                    compare_date_list.append(interval_date)
+
+            dst = source_desti_field_chk_mongodb(destination, destination_type)
+            #if dst:
+            #    query_var['destination_number'] = dst
+
+            switch_id = form.cleaned_data.get('switch')
+            if switch_id and int(switch_id) != 0:
+                query_var['metadata.switch_id'] = int(switch_id)
+
+            if from_date != '':
+                end_date = from_date = select_date
+                start_date= end_date+relativedelta(days=-int(comp_days))
+                start_date = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, 0)
+                end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
+                if check_days==1:
+                    query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+        else:
+            # form is not valid
+            logging.debug('Error : CDR hourly search form')
+            total_record = []
+            variables = {'module': current_view(request),
+                         'form': form,
+                         'result': 'min',
+                         'graph_view': graph_view,
+                         'search_tag': search_tag,
+                         'from_date': from_date,
+                         'comp_days': comp_days,
+                         'total_record': total_record,
+                         }
+
+            return render_to_response(template_name, variables,
+                context_instance = RequestContext(request))
+
+    if len(query_var) == 0:
+        from_date = datetime.today()
+        from_day = validate_days(from_date.year, from_date.month, from_date.day)
+        from_year=from_date.year
+        from_month= from_date.month
+        end_date = datetime(from_year, from_month, from_day)
+        start_date= end_date+relativedelta(days=-comp_days)
+        start_date = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, 0)
+        end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
+        query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+
+    if not request.user.is_superuser: # not superuser
+        acc_code_error = ''
+        if chk_account_code(request):
+            query_var['metadata.accountcode'] = chk_account_code(request)
+        else:
+            return HttpResponseRedirect('/?acc_code_error=true')
+
+    if query_var:
+        if check_days == 2:
+            for i in compare_date_list:
+                s_date = datetime(i.year, i.month, i.day, 0, 0, 0, 0)
+                e_date = datetime(i.year, i.month, i.day, 23, 59, 59, 999999)
+                query_var['metadata.date'] = {'$gte': s_date, '$lt': e_date}
+                result_data = get_hourly_analytic_for_date(s_date, e_date, query_var, graph_view)
+                total_record.append((result_data['total_record']))
+
+        if check_days == 1:
+            result_data = get_hourly_analytic_for_date(start_date, end_date, query_var, graph_view)
+            total_record.append((result_data['total_record']))
+
+        logging.debug('CDR hourly view end')
+        variables = {'module': current_view(request),
+                     'form': form,
+                     'result': 'min',
+                     'graph_view': graph_view,
+                     'search_tag': search_tag,
+                     'from_date': from_date,
+                     'comp_days': comp_days,
+                     'total_record': total_record,
+                     }
+
+        return render_to_response(template_name, variables,
+            context_instance = RequestContext(request))

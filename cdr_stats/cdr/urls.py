@@ -36,7 +36,11 @@ urlpatterns = patterns('cdr.views',
     (r'^mail_report/$', 'mail_report'),
     (r'^country_report/$', 'cdr_country_report'),
     (r'^world_map/$', 'world_map_view'),
+
+    # For Test New view for new collections
     (r'^analytic_dashboard/$', 'cdr_analytic_dashboard'),
+    (r'^analytic_hourly_report/$', 'cdr_analytic_by_hour'),
+    # Test End
 
     (r'^login/$',   'login_view'),
     (r'^logout/$',  'logout_view'),

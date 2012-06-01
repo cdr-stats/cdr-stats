@@ -492,7 +492,65 @@ def mapreduce_task_cdr_alert():
     out = 'aggregate_result_alert'
     return (map, reduce, finalize_fun, out)
 
-def mapreduce_cdr_analytic_dashboard():
+
+def mapreduce_cdr_hourly_analytic_dashboard():
+    """
+    To get the hourly analytic of cdr
+
+       * Total calls per year-month-day-hour-min
+       * Total call duration per year-month-day-hour-min
+       * Total hangup-cause  per year-month-day-hour-min
+
+    Attributes:
+
+        * ``map`` - Grouping perform on year, month, day, hour & min
+        * ``reduce`` - Calculate call count, sum of call duration, hangupcause based on map
+
+    Result Collection: ``aggregate_result_cdr_dashboard_report``
+    """
+    (map, reduce, finalize_fun, out) = mapreduce_default()
+
+    # Get cdr graph by hour report
+    map = mark_safe(u'''
+        function(){
+            emit(
+                {
+                    a_Year: this.metadata.date.getFullYear(),
+                    b_Month: this.metadata.date.getMonth() + 1,
+                    c_Day: this.metadata.date.getDate(),
+                },
+                {
+                    call__count: this.call_hourly,
+                    duration__sum: this.duration_hourly,
+                }
+            )
+          }''')
+
+    reduce = mark_safe(u'''
+        function(key,vals) {
+            var ret = {
+                call__count : [],
+                duration__sum: [],
+            };
+            for(var k=0; k < 24; k++){
+                ret.call__count[k]=0;
+                ret.duration__sum[k]=0;
+            }
+            for (var i=0; i < vals.length; i++) {
+                for (var k=0; k < 24; k++) {
+                    if (vals[i].call__count[k]) {
+                        ret.call__count[k] += vals[i].call__count[k];
+                        ret.duration__sum[k] += vals[i].duration__sum[k];
+                    }
+                }
+            }
+            return ret;
+        }''')
+    out = 'aggregate_cdr_hourly_analytic_dashboard'
+    return (map, reduce, False, out)
+
+
+def mapreduce_cdr_daily_analytic_dashboard():
     """
     To get the minutly analytic of cdr
 
@@ -515,31 +573,27 @@ def mapreduce_cdr_analytic_dashboard():
             var year = this.metadata.date.getFullYear();
             var month = this.metadata.date.getMonth();
             var day = this.metadata.date.getDate();
-            var hours = this.metadata.date.getHours();
-            var minutes = this.metadata.date.getMinutes();
-            var d = new Date(year, month, day, hours, minutes);
+
+            var d = new Date(year, month, day);
             emit( {
                 g_Millisec: d.getTime(),
             },
             {
-                calldate__count: this.call_minute.hours,
-                duration__sum: this.duration_minute.hours,
-                hangup_cause_id: 1,
+                calldate__count: this.call_daily,
+                duration__sum: this.duration_daily,
             } )
           }''')
     reduce = mark_safe(u'''
         function(key,vals) {
             var ret = {
-                calldate__count : 0,
+                call__count : 0,
                 duration__sum: 0,
-                hangup_cause_id: 0,
             };
             for (var i=0; i < vals.length; i++){
-                ret.calldate__count += parseInt(vals[i].calldate__count);
-                ret.duration__sum += parseInt(vals[i].duration__sum);
-                ret.hangup_cause_id = vals[i].hangup_cause_id;
+                ret.call__count += vals[i].call__count;
+                ret.duration__sum += vals[i].duration__sum;
             }
             return ret;
         }''')
-    out = 'aggregate_result_cdr_analytic_dashboard_report'
+    out = 'aggregate_cdr_daily_analytic_dashboard'
     return (map, reduce, False, out)
