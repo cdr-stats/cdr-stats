@@ -2209,12 +2209,11 @@ def cdr_analytic_dashboard(request):
     #end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
     end_date = datetime(now.year, now.month, now.day,
         now.hour, now.minute, now.second, now.microsecond)
-    start_date = end_date+relativedelta(days=-int(1))
+    start_date = end_date + relativedelta(days=-int(1))
 
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
-    if not request.user.is_superuser: # not superuser
-        acc_code_error = ''
+    if not request.user.is_superuser:  # not superuser
         if chk_account_code(request):
             query_var['metadata.accountcode'] = chk_account_code(request)
         else:
@@ -2234,10 +2233,12 @@ def cdr_analytic_dashboard(request):
                 for k in range(0, 59):
                     try:
                         #print i['call_minute'][str(j)][str(k)]
-                        daily_date = (i['metadata']['date']).strftime('%Y-%m-%d') + " "
+                        daily_date = (i['metadata']['date']).\
+                                            strftime('%Y-%m-%d') + " "
                         graph_day = daily_date + str(j) + ":" + str(k)
-                        graph_day = datetime.strptime(graph_day, "%Y-%m-%d %H:%M")
-                        dt = int(1000*time.mktime(graph_day.timetuple()))
+                        graph_day = datetime.strptime(graph_day,
+                                                        "%Y-%m-%d %H:%M")
+                        dt = int(1000 * time.mktime(graph_day.timetuple()))
 
                         calldate__count = i['call_minute'][str(j)][str(k)]
                         duration__sum = i['duration_minute'][str(j)][str(k)]
@@ -2255,7 +2256,7 @@ def cdr_analytic_dashboard(request):
     logging.debug('Map-reduce cdr dashboard analytic')
     print "Daily analytic"
     #Retrieve Map Reduce
-    (map, reduce, finalfc, out) = mapreduce_cdr_daily_analytic() # analytic_
+    (map, reduce, finalfc, out) = mapreduce_cdr_daily_analytic()  # analytic
 
     #Run Map Reduce
     cdr_analytic = settings.DBCON[settings.MG_DAILY_ANALYTIC]
@@ -2369,7 +2370,9 @@ def cdr_analytic_by_hour(request):
         hourly analytics for given date
     """
     if not check_cdr_data_exists(request):
-        return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
+        return render_to_response(
+                    'cdr/error_import.html',
+                    context_instance=RequestContext(request))
 
     logging.debug('CDR hourly view start')
     template_name = 'cdr/cdr_analytic_by_hour.html'
@@ -2412,12 +2415,14 @@ def cdr_analytic_by_hour(request):
                 compare_date_list = []
                 compare_date_list.append(select_date)
 
-                for i in range(1, int(comp_days)+1):
+                for i in range(1, int(comp_days) + 1):
                     #select_date+relativedelta(weeks=-i)
-                    interval_date = select_date+relativedelta(weeks=-i)
+                    interval_date = select_date + relativedelta(weeks=-i)
                     compare_date_list.append(interval_date)
 
-            dst = source_desti_field_chk_mongodb(destination, destination_type)
+            dst = source_desti_field_chk_mongodb(
+                            destination,
+                            destination_type)
             #if dst:
             #    query_var['destination_number'] = dst
 
@@ -2427,11 +2432,16 @@ def cdr_analytic_by_hour(request):
 
             if from_date != '':
                 end_date = from_date = select_date
-                start_date= end_date+relativedelta(days=-int(comp_days))
-                start_date = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, 0)
-                end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
-                if check_days==1:
-                    query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+                start_date = end_date + \
+                                relativedelta(days=-int(comp_days))
+                start_date = datetime(start_date.year, start_date.month,
+                                        start_date.day, 0, 0, 0, 0)
+                end_date = datetime(end_date.year, end_date.month,
+                                        end_date.day, 23, 59, 59, 999999)
+                if check_days == 1:
+                    query_var['metadata.date'] = {
+                                                '$gte': start_date,
+                                                '$lt': end_date}
         else:
             # form is not valid
             logging.debug('Error : CDR hourly search form')
@@ -2447,21 +2457,23 @@ def cdr_analytic_by_hour(request):
                          }
 
             return render_to_response(template_name, variables,
-                context_instance = RequestContext(request))
+                            context_instance=RequestContext(request))
 
     if len(query_var) == 0:
         from_date = datetime.today()
-        from_day = validate_days(from_date.year, from_date.month, from_date.day)
-        from_year=from_date.year
-        from_month= from_date.month
+        from_day = validate_days(from_date.year, from_date.month,
+                                    from_date.day)
+        from_year = from_date.year
+        from_month = from_date.month
         end_date = datetime(from_year, from_month, from_day)
-        start_date= end_date+relativedelta(days=-comp_days)
-        start_date = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, 0)
-        end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
+        start_date = end_date + relativedelta(days=-comp_days)
+        start_date = datetime(start_date.year, start_date.month,
+                                    start_date.day, 0, 0, 0, 0)
+        end_date = datetime(end_date.year, end_date.month,
+                                    end_date.day, 23, 59, 59, 999999)
         query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
-    if not request.user.is_superuser: # not superuser
-        acc_code_error = ''
+    if not request.user.is_superuser:  # not superuser
         if chk_account_code(request):
             query_var['metadata.accountcode'] = chk_account_code(request)
         else:
@@ -2473,11 +2485,13 @@ def cdr_analytic_by_hour(request):
                 s_date = datetime(i.year, i.month, i.day, 0, 0, 0, 0)
                 e_date = datetime(i.year, i.month, i.day, 23, 59, 59, 999999)
                 query_var['metadata.date'] = {'$gte': s_date, '$lt': e_date}
-                result_data = get_hourly_analytic_for_date(s_date, e_date, query_var, graph_view)
+                result_data = get_hourly_analytic_for_date(s_date, e_date,
+                                                    query_var, graph_view)
                 total_record.append((result_data['total_record']))
 
         if check_days == 1:
-            result_data = get_hourly_analytic_for_date(start_date, end_date, query_var, graph_view)
+            result_data = get_hourly_analytic_for_date(start_date, end_date,
+                                                    query_var, graph_view)
             total_record.append((result_data['total_record']))
 
         logging.debug('CDR hourly view end')
@@ -2492,4 +2506,4 @@ def cdr_analytic_by_hour(request):
                      }
 
         return render_to_response(template_name, variables,
-            context_instance = RequestContext(request))
+                                context_instance=RequestContext(request))
