@@ -202,8 +202,8 @@ class CompareCallSearchForm(SearchForm):
 
     def __init__(self, *args, **kwargs):
         super(CompareCallSearchForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['from_date','comp_days', 'check_days', 'destination',
-                                'destination_type', 'graph_view', 'switch']
+        self.fields.keyOrder = ['from_date','comp_days', 'check_days',
+                                'graph_view', 'switch']
 
 
 class ConcurrentCallForm(CdrSearchForm):
