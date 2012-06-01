@@ -1528,9 +1528,9 @@ def cdr_graph_by_hour(request):
                 compare_date_list = []
                 compare_date_list.append(select_date)
 
-                for i in range(1, int(comp_days)+1):
+                for i in range(1, int(comp_days) + 1):
                     #select_date+relativedelta(weeks=-i)
-                    interval_date = select_date+relativedelta(weeks=-i)
+                    interval_date = select_date + relativedelta(weeks=-i)
                     compare_date_list.append(interval_date)
 
             dst = source_desti_field_chk_mongodb(destination, destination_type)
@@ -1543,11 +1543,14 @@ def cdr_graph_by_hour(request):
 
             if from_date != '':
                 end_date = from_date = select_date
-                start_date= end_date+relativedelta(days=-int(comp_days))
-                start_date = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, 0)
-                end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
-                if check_days==1:
-                    query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
+                start_date= end_date + relativedelta(days=-int(comp_days))
+                start_date = datetime(start_date.year, start_date.month,
+                                            start_date.day, 0, 0, 0, 0)
+                end_date = datetime(end_date.year, end_date.month,
+                                            end_date.day, 23, 59, 59, 999999)
+                if check_days == 1:
+                    query_var['start_uepoch'] = {'$gte': start_date,
+                                                 '$lt': end_date}
         else:
             # form is not valid
             logging.debug('Error : CDR hourly search form')
@@ -1561,14 +1564,13 @@ def cdr_graph_by_hour(request):
                          'comp_days': comp_days,
                          'total_record': total_record,
                          }
-
             return render_to_response(template_name, variables,
-                   context_instance = RequestContext(request))
+                   context_instance=RequestContext(request))
 
     if len(query_var) == 0:
         from_date = datetime.today()
         from_day = validate_days(from_date.year, from_date.month, from_date.day)
-        from_year=from_date.year
+        from_year = from_date.year
         from_month= from_date.month
         end_date = datetime(from_year, from_month, from_day)
         start_date= end_date+relativedelta(days=-comp_days)
