@@ -150,7 +150,7 @@
                         var time = x;
                         var date = item.series.label;
                         output = '<div class="graph_tooltip_header">' + date + '</div><div class="graph_tooltip_info">{% trans "Hour" %}: ' + Info(date,time,1) + '<br>';
-                        {% if graph_view == '1' %}
+                        {% if graph_view == 1 %}
                             output +=  '{% trans "Calls" %}: ' + Info(date, time, 2) + '</div>';
                         {% else %}
                             output += '{% trans "Minutes" %}: ' + Info(date, time, 2) + ' min</div>';
