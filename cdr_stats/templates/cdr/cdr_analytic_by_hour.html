@@ -34,17 +34,6 @@
             </div>
             <div class="row">
                 <div class="span6">
-                    <label class="control-label" for="id_{{ form.destination.name }}">{{ form.destination.label }}</label>
-                    <div class="input">
-                        {{ form.destination }}&nbsp;&nbsp;{{ form.destination_type }}
-                    </div>
-                    {% if form.destination.errors %}
-                        <span class="help-inline error">{{ form.destination.errors }}</span>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="row">
-                <div class="span6">
                     <label class="control-label" for="id_{{ form.graph_view.name }}">{{ form.graph_view.label }}</label>
                     <div class="input">
                         {{ form.graph_view }}

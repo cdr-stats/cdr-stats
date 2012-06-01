@@ -502,16 +502,15 @@ def mapreduce_cdr_hourly_analytic():
     To get the hourly analytic of cdr
 
        * Total calls per year-month-day-hour-min
-       * Total call duration per year-month-day-hour-min
-       * Total hangup-cause  per year-month-day-hour-min
+       * Total call duration per year-month-day
 
     Attributes:
 
-        * ``map`` - Grouping perform on year, month, day, hour & min
+        * ``map`` - Grouping perform on year, month & day
         * ``reduce`` - Calculate call count, sum of call duration,
-                       hangupcause based on map
+                       based on map
 
-    Result Collection: ``aggregate_result_cdr_dashboard_report``
+    Result Collection: ``aggregate_cdr_hourly_analytic``
     """
     (map, reduce, finalfc, out) = mapreduce_default()
 
@@ -551,7 +550,7 @@ def mapreduce_cdr_hourly_analytic():
             }
             return ret;
         }''')
-    out = 'aggregate_cdr_hourly_analytic_dashboard'
+    out = 'aggregate_cdr_hourly_analytic'
     return (map, reduce, False, out)
 
 
