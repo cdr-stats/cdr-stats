@@ -26,7 +26,8 @@ def mapreduce_default():
 
         * ``map`` - Grouping perform on year, month & day
         * ``reduce`` - Calculate call count, sum of call duration based on map
-        * ``finalfc`` - To get avg of call duration (sum_call_duration / sum_call_count)
+        * ``finalfc`` - To get avg of call duration
+                        (sum_call_duration / sum_call_count)
 
     Result Collection: ``aggregate_result_dashboard``
     """
@@ -85,8 +86,10 @@ def mapreduce_cdr_mail_report():
     Attributes:
 
         * ``map`` - Grouping perform on day, hour, min & country_id
-        * ``reduce`` - Calculate call count, sum of call duration, hangup-causes based on map
-        * ``finalfc`` - To get avg of call duration (sum_call_duration / sum_call_count)
+        * ``reduce`` - Calculate call count, sum of call duration,
+                       hangup-causes based on map
+        * ``finalfc`` - To get avg of call duration
+                        (sum_call_duration / sum_call_count)
 
     Result Collection: ``aggregate_result_cdr_mail_report``
     """
@@ -320,7 +323,8 @@ def mapreduce_cdr_dashboard():
     Attributes:
 
         * ``map`` - Grouping perform on year, month, day, hour & min
-        * ``reduce`` - Calculate call count, sum of call duration, hangupcause based on map
+        * ``reduce`` - Calculate call count, sum of call duration,
+                       hangupcause based on map
 
     Result Collection: ``aggregate_result_cdr_dashboard_report``
     """
@@ -504,7 +508,8 @@ def mapreduce_cdr_hourly_analytic_dashboard():
     Attributes:
 
         * ``map`` - Grouping perform on year, month, day, hour & min
-        * ``reduce`` - Calculate call count, sum of call duration, hangupcause based on map
+        * ``reduce`` - Calculate call count, sum of call duration,
+                       hangupcause based on map
 
     Result Collection: ``aggregate_result_cdr_dashboard_report``
     """
@@ -561,7 +566,8 @@ def mapreduce_cdr_daily_analytic_dashboard():
     Attributes:
 
         * ``map`` - Grouping perform on year, month, day, hour & min
-        * ``reduce`` - Calculate call count, sum of call duration, hangupcause based on map
+        * ``reduce`` - Calculate call count, sum of call duration,
+                       hangupcause based on map
 
     Result Collection: ``aggregate_result_cdr_dashboard_report``
     """
