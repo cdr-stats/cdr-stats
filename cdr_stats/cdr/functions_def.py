@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 #
 # CDR-Stats License
 # http://www.cdr-stats.org
@@ -63,16 +65,16 @@ def remove_prefix(phonenumber, removeprefix_list):
     # remove the prefix from phone number
     # @ removeprefix_list "+,0,00,000,0000,00000,011,55555,99999"
     #
-    #clean : remove spaces
+    # clean : remove spaces
     removeprefix_list = removeprefix_list.strip(' \t\n\r')
     if removeprefix_list and len(removeprefix_list) > 0:
-        removeprefix_list = removeprefix_list.split(",")
+        removeprefix_list = removeprefix_list.split(',')
         removeprefix_list = sorted(removeprefix_list, key=len, reverse=True)
         for rprefix in removeprefix_list:
             rprefix = rprefix.strip(' \t\n\r')
             rprefix = re.sub("\+", "\\\+", rprefix)
             if rprefix and len(rprefix) > 0:
-                phonenumber = re.sub("^%s" % rprefix, "", phonenumber)
+                phonenumber = re.sub('^%s' % rprefix, '', phonenumber)
     return phonenumber
 
 
@@ -88,17 +90,17 @@ def prefix_list_string(phone_number):
     except ValueError:
         return False
     phone_number = str(phone_number)
-    prefix_range = range(settings.PREFIX_LIMIT_MIN,
-                         settings.PREFIX_LIMIT_MAX + 1)
+    prefix_range = range(settings.PREFIX_LIMIT_MIN, settings.PREFIX_LIMIT_MAX
+                         + 1)
     prefix_range.reverse()
     destination_prefix_list = ''
     for i in prefix_range:
         if i == settings.PREFIX_LIMIT_MIN:
-            destination_prefix_list = destination_prefix_list +\
-                                      phone_number[0:i]
+            destination_prefix_list = destination_prefix_list \
+                + phone_number[0:i]
         else:
-            destination_prefix_list = destination_prefix_list +\
-                                      phone_number[0:i] + ', '
+            destination_prefix_list = destination_prefix_list \
+                + phone_number[0:i] + ', '
     return str(destination_prefix_list)
 
 
@@ -132,8 +134,8 @@ def chk_account_code(request):
         if not request.user.is_superuser \
             and request.user.get_profile().accountcode is not None:
             acc_code = request.user.get_profile().accountcode
-            return "%s" % str(acc_code)
+            return '%s' % str(acc_code)
         else:
-            return "%s" % str(acc_code)
+            return '%s' % str(acc_code)
     except:
         return acc_code
