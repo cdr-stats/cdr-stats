@@ -17,7 +17,6 @@ from django.core.validators import validate_email
 from django.utils.translation import ugettext_lazy as _
 
 from common.common_functions import comp_day_range
-from cdr.models import Switch, HangupCause
 from cdr.functions_def import get_switch_list, get_country_list, get_hc_list
 from user_profile.models import UserProfile
 
@@ -41,7 +40,7 @@ PAGE_SIZE_LIST = ((10, '10'),
                   (500, '500'),
                   (1000, '1000'))
 
-DATE_HELP_TEXT = _("Please use the following format")+": <em>YYYY-MM-DD</em>."
+DATE_HELP_TEXT = _("Please use the following format") + ": <em>YYYY-MM-DD</em>."
 COUNTRY_HELP_TEXT = _('Hold down "Ctrl", "Command" on Mac, to select more than one.')
 
 
