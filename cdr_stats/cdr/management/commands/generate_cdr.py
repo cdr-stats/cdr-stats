@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 #
 # CDR-Stats License
 # http://www.cdr-stats.org
@@ -52,20 +54,20 @@ def generate_cdr_data(day_delta_int):
     TODO:Add function documentation
     """
 
-    digit = "1234567890"
+    digit = '1234567890'
 
     delta_days = random.randint(0, day_delta_int)
     delta_minutes = random.randint(1, 1440)
-    answer_stamp = (datetime.datetime.now() - \
-                    datetime.timedelta(minutes=delta_minutes) - \
-                    datetime.timedelta(days=delta_days))
+    answer_stamp = datetime.datetime.now() \
+        - datetime.timedelta(minutes=delta_minutes) \
+        - datetime.timedelta(days=delta_days)
 
     # convert answer_stamp into milliseconds
     start_uepoch = int(time.mktime(answer_stamp.timetuple()))
 
-    caller_id = '' . join([choice(digit) for i in range(8)])
+    caller_id = ''.join([choice(digit) for i in range(8)])
     channel_name = 'sofia/internal/' + caller_id + '@127.0.0.1'
-    destination_number = '' . join([choice(digit) for i in range(8)])
+    destination_number = ''.join([choice(digit) for i in range(8)])
 
     destination_number = choice(COUNTRY_PREFIX) + destination_number
 
@@ -78,22 +80,35 @@ def generate_cdr_data(day_delta_int):
         duration = 0
         billsec = 0
 
-    end_stamp = str(datetime.datetime.now() - \
-                    datetime.timedelta(minutes=delta_minutes) - \
-                    datetime.timedelta(days=delta_days) + \
-                    datetime.timedelta(seconds=duration))
+    end_stamp = str(datetime.datetime.now()
+                    - datetime.timedelta(minutes=delta_minutes)
+                    - datetime.timedelta(days=delta_days)
+                    + datetime.timedelta(seconds=duration))
     uuid = str(uuid1())
 
-    return (answer_stamp, start_uepoch, caller_id, channel_name, \
-                destination_number, hangup_cause, hangup_cause_q850, \
-                duration, billsec, end_stamp, uuid)
+    return (
+        answer_stamp,
+        start_uepoch,
+        caller_id,
+        channel_name,
+        destination_number,
+        hangup_cause,
+        hangup_cause_q850,
+        duration,
+        billsec,
+        end_stamp,
+        uuid,
+        )
 
 
 class Command(BaseCommand):
+
     # Usage : generate_cdr 500
     args = ' no_of_record, delta_day '
-    help = "Generate random CDRs \n---------------------------------\n" + \
-            "python manage.py generate_cdr <NUMBER_OF_CDR> <DELTA_DAYS>"
+    help = '''Generate random CDRs
+---------------------------------
+''' \
+        + 'python manage.py generate_cdr <NUMBER_OF_CDR> <DELTA_DAYS>'
 
     def handle(self, *args, **options):
         """
@@ -102,7 +117,7 @@ class Command(BaseCommand):
 
         if not args or len(args) != 2:
             print self.help
-            #print >> sys.stderr
+            # print >> sys.stderr
             raise SystemExit
 
         no_of_record = args[0]
@@ -112,10 +127,10 @@ class Command(BaseCommand):
         except ValueError:
             day_delta_int = 30
 
-        #Retrieve the field collection in the mongo_import list
+        # Retrieve the field collection in the mongo_import list
         ipaddress = settings.MG_IMPORT.items()[0][0]
 
-        #Connect on MongoDB Database
+        # Connect on MongoDB Database
         host = settings.MG_IMPORT[ipaddress]['host']
         port = settings.MG_IMPORT[ipaddress]['port']
         db_name = settings.MG_IMPORT[ipaddress]['db_name']
@@ -123,100 +138,94 @@ class Command(BaseCommand):
             connection = Connection(host, port)
             DBCON = connection[db_name]
         except ConnectionFailure, e:
-            sys.stderr.write("Could not connect to MongoDB: %s - %s" % \
-                                                            (e, ipaddress))
+            sys.stderr.write('Could not connect to MongoDB: %s - %s' % (e,
+                             ipaddress))
             sys.exit(1)
 
         for i in range(1, int(no_of_record) + 1):
 
-            (answer_stamp, start_uepoch, caller_id, channel_name, \
-            destination_number, hangup_cause, hangup_cause_q850, duration, \
-            billsec, end_stamp, uuid) = generate_cdr_data(day_delta_int)
+            (
+                answer_stamp,
+                start_uepoch,
+                caller_id,
+                channel_name,
+                destination_number,
+                hangup_cause,
+                hangup_cause_q850,
+                duration,
+                billsec,
+                end_stamp,
+                uuid,
+                ) = generate_cdr_data(day_delta_int)
 
             if i % 100 == 0:
-                print "%d CDRs created..." % i
+                print '%d CDRs created...' % i
 
-            #print "CDR => date:%s, uuid:%s, dur:%s, pn:%s, hg_cause:%s" % \
+            # print "CDR => date:%s, uuid:%s, dur:%s, pn:%s, hg_cause:%s" % \
             #        (answer_stamp, uuid, duration, destination_number, \
             #        hangup_cause)
 
-            cdr_json = \
-                {
-                    "channel_data":
-                    {
-                        "state": "CS_REPORTING",
-                        "direction": "inbound",
-                    },
-                    "variables":
-                    {
-                        "direction": "inbound",
-                        "uuid": uuid,
-                        "session_id": "3",
-                        "sip_network_ip": "192.168.1.21",
-                        "sip_network_port": "60536",
-                        "sip_authorized": "true",
-                        "sip_number_alias": "1000",
-                        "sip_auth_username": "1000",
-                        "sip_auth_realm": "127.0.0.1",
-                        "user_name": "1000",
-                        "accountcode": "1000",
-                        "channel_name": str(channel_name),
-                        "sip_via_host": "192.168.1.21",
-                        "sip_via_port": "60536",
-                        "presence_id": "1000@127.0.0.1",
-                        "sip_use_codec_name": "G722",
-                        "sip_use_codec_rate": "8000",
-                        "read_codec": "G722",
-                        "read_rate": "16000",
-                        "write_codec": "G722",
-                        "write_rate": "16000",
-                        "call_uuid": uuid,
-                        "remote_media_ip": "192.168.1.21",
-                        "endpoint_disposition": "ANSWER",
-                        "current_application_data": "2000",
-                        "current_application": "delay_echo",
-                        "sip_term_status": "200",
-                        "proto_specific_hangup_cause": "sip:200",
-                        "sip_term_cause": "16",
-                        "hangup_cause": str(hangup_cause),
-                        "hangup_cause_q850": str(hangup_cause_q850),
-                        "start_stamp": str(answer_stamp),
-                        "profile_start_stamp": str(answer_stamp),
-                        "answer_stamp": str(answer_stamp),
-                        "end_stamp": str(end_stamp),
-                        "start_epoch": "1327521953",
-                        "start_uepoch": str(start_uepoch),
-                        "answer_epoch": "1327521953",
-                        "answer_uepoch": "1327521953952257",
-                        "end_epoch": "1327521966",
-                        "end_uepoch": "1327521966912241",
-                        "last_app": "delay_echo",
-                        "last_arg": "2000",
-                        "caller_id": str(caller_id),
-                        "duration": str(duration),
-                        "billsec": str(billsec),
-                        "answersec": "0",
-                        "waitsec": "0",
-                        "mduration": "12960",
-                        "billmsec": "12960",
-                        "uduration": "12959984",
-                        "billusec": "12959984",
-                    },
-                    "callflow":
-                    {
-                        "dialplan": "XML",
-                        "caller_profile":
-                        {
-                            "caller_id_name": str(caller_id),
-                            "ani": str(caller_id),
-                            "caller_id_number": str(caller_id),
-                            "network_addr": "192.168.1.21",
-                            "destination_number": str(destination_number),
-                            "uuid": uuid,
-                            "chan_name": "sofia/internal/1000@127.0.0.1"
-                        },
-                    }
-                }
+            cdr_json = {'channel_data': {'state': 'CS_REPORTING',
+                        'direction': 'inbound'}, 'variables': {
+                'direction': 'inbound',
+                'uuid': uuid,
+                'session_id': '3',
+                'sip_network_ip': '192.168.1.21',
+                'sip_network_port': '60536',
+                'sip_authorized': 'true',
+                'sip_number_alias': '1000',
+                'sip_auth_username': '1000',
+                'sip_auth_realm': '127.0.0.1',
+                'user_name': '1000',
+                'accountcode': '1000',
+                'channel_name': str(channel_name),
+                'sip_via_host': '192.168.1.21',
+                'sip_via_port': '60536',
+                'presence_id': '1000@127.0.0.1',
+                'sip_use_codec_name': 'G722',
+                'sip_use_codec_rate': '8000',
+                'read_codec': 'G722',
+                'read_rate': '16000',
+                'write_codec': 'G722',
+                'write_rate': '16000',
+                'call_uuid': uuid,
+                'remote_media_ip': '192.168.1.21',
+                'endpoint_disposition': 'ANSWER',
+                'current_application_data': '2000',
+                'current_application': 'delay_echo',
+                'sip_term_status': '200',
+                'proto_specific_hangup_cause': 'sip:200',
+                'sip_term_cause': '16',
+                'hangup_cause': str(hangup_cause),
+                'hangup_cause_q850': str(hangup_cause_q850),
+                'start_stamp': str(answer_stamp),
+                'profile_start_stamp': str(answer_stamp),
+                'answer_stamp': str(answer_stamp),
+                'end_stamp': str(end_stamp),
+                'start_epoch': '1327521953',
+                'start_uepoch': str(start_uepoch),
+                'answer_epoch': '1327521953',
+                'answer_uepoch': '1327521953952257',
+                'end_epoch': '1327521966',
+                'end_uepoch': '1327521966912241',
+                'last_app': 'delay_echo',
+                'last_arg': '2000',
+                'caller_id': str(caller_id),
+                'duration': str(duration),
+                'billsec': str(billsec),
+                'answersec': '0',
+                'waitsec': '0',
+                'mduration': '12960',
+                'billmsec': '12960',
+                'uduration': '12959984',
+                'billusec': '12959984',
+                }, 'callflow': {'dialplan': 'XML',
+                                'caller_profile': {'caller_id_name': str(caller_id),
+                                'ani': str(caller_id),
+                                'caller_id_number': str(caller_id),
+                                'network_addr': '192.168.1.21',
+                                'destination_number': str(destination_number),
+                                'uuid': uuid,
+                                'chan_name': 'sofia/internal/1000@127.0.0.1'}}}
 
-            DBCON[settings.MG_IMPORT[ipaddress]['collection']].\
-                insert(cdr_json)
+            DBCON[settings.MG_IMPORT[ipaddress]['collection']].insert(cdr_json)
