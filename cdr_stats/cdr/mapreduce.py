@@ -578,44 +578,64 @@ def mapreduce_hourly_analytic_overview():
             var month = this.metadata.date.getMonth();
             var day = this.metadata.date.getDate();
             var hours = this.metadata.date.getHours();
+            var minutes = this.metadata.date.getMinutes();
 
-            var d = new Date(year, month, day, hours);
+            var d = new Date(year, month, day, hours, minutes);
             emit( {
                     a_Year: this.metadata.date.getFullYear(),
                     b_Month: this.metadata.date.getMonth() + 1,
                     c_Day: this.metadata.date.getDate(),
-                    //d_Hour: this.metadata.date.getHours(),
+                    d_Hour: this.metadata.date.getHours(),
+                    e_Min: this.metadata.date.getMinutes(),
                     f_Switch: this.metadata.switch_id,
-                    //g_Millisec: d.getTime(),
             },
             {
-                    call__count: this.call_hourly,
-                    duration__sum: this.duration_hourly,
+                    call__count: this.call_minute,
+                    duration__sum: this.duration_minute,
             } )
         }''')
 
     reduce = mark_safe(u'''
         function(key,vals) {
             var ret = {
-                call__count : [],
-                duration__sum: [],
+                call__count : new Array(2),
+                duration__sum: new Array(2),
             };
             for(var k=0; k < 24; k++){
-                ret.call__count[k]=0;
-                ret.duration__sum[k]=0;
+                for(var j=0; j < 60; j++){
+                    ret.call__count[k][j]=0;
+                    ret.duration__sum[k][j]=0;
+                }
             }
             for (var i=0; i < vals.length; i++) {
                 for (var k=0; k < 24; k++) {
-                    if (vals[i].call__count[k]) {
-                        ret.call__count[k] += vals[i].call__count[k];
-                        ret.duration__sum[k] += vals[i].duration__sum[k];
+                    for(var j=0; j < 60; j++){
+                        if (vals[i].call__count[k][j]) {
+                            ret.call__count[k][j] += vals[i].call__count[k][j];
+                            ret.duration__sum[k][j] += vals[i].duration__sum[k][j];
+                        }
                     }
                 }
             }
 
             return ret;
         }''')
+    """
+    reduce = mark_safe(u'''
+        function(key,vals) {
+            var ret = {
+                            calldate__count : 0,
+                            duration__sum: 0,
+                       };
 
+            for (var i=0; i < vals.length; i++){
+                ret.calldate__count += parseInt(vals[i].calldate__count);
+                ret.duration__sum += parseInt(vals[i].duration__sum);
+            }
+            return ret;
+        }
+    ''')
+    """
     out = 'aggregate_hourly_analytic_overview'
     return (map, reduce, False, out)
 

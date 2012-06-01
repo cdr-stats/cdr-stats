@@ -120,6 +120,16 @@ reduce = function(key, vals) {
             ret.duration__sum[k][l]=0;
         }
     }
+    for (var i=0; i < vals.length; i++) {
+        for (var k=0; k < 24; k++) {
+            for(var l=0; l < 60; l++){
+                if (vals[i].call__count[k][l]) {
+                    ret.call__count[k][l] += vals[i].call__count[k][l];
+                    ret.duration__sum[k][l] += vals[i].duration__sum[k][l];
+                }
+            }
+        }
+    }
     return ret;
 };
 

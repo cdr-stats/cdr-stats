@@ -2426,6 +2426,7 @@ def cdr_analytic_overview(request):
             hour_data_call_count = dict()
             hour_data_call_duration = dict()
             for i in calls_in_day.clone():
+                print i
                 for j in range(0, 24):
                     if int(i['value']['call__count'][j]) != 0:
                         calldate__count = int(i['value']['call__count'][j])
