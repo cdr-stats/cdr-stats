@@ -287,9 +287,8 @@ class chk_alarm(PeriodicTask):
         alarm_objs = Alarm.objects.filter(status=1)  # all active alarms
         for alarm_obj in alarm_objs:
             try:
-                alarm_report = \
-                    AlarmReport.objects.filter(alarm=alarm_obj).latest('daterun'
-                        )
+                alarm_report = AlarmReport.objects.filter(alarm=alarm_obj).\
+                                latest('daterun')
                 diff_run = (datetime.now() - alarm_report.daterun).days
 
                 if alarm_obj.period == 1:  # Day
@@ -351,10 +350,9 @@ def blacklist_whitelist_notification(notice_type):
     logger.info('TASK :: %s_notification called' % notice_type_name)
     notice_type_obj = notification.NoticeType.objects.get(default=notice_type)
     try:
-        notice_obj = \
-            notification.Notice.objects.filter(notice_type=notice_type_obj).latest('added'
-                )
-
+        notice_obj = notification.Notice.objects.\
+                        filter(notice_type=notice_type_obj).\
+                        latest('added')
         # Get time difference between two time intervals
         prevtime = str(datetime.time(notice_obj.added.replace(microsecond=0)))
         curtime = str(datetime.time(datetime.now().replace(microsecond=0)))
@@ -405,15 +403,18 @@ class send_cdr_report(PeriodicTask):
             subject = _('CDR Report')
 
             html_content = get_template('cdr/mail_report_template.html'
-                    ).render(Context({'yesterday_date': mail_data['yesterday_date'
-                             ], 'rows': mail_data['rows'],
-                             'total_duration': mail_data['total_duration'],
-                             'total_calls': mail_data['total_calls'],
-                             'ACT': mail_data['ACT'], 'ACD': mail_data['ACD'],
-                             'country_analytic_array': mail_data['country_analytic_array'
-                             ],
-                             'hangup_analytic_array': mail_data['hangup_analytic_array'
-                             ]}))
+                    ).render(Context(
+                        {'yesterday_date': mail_data['yesterday_date'],
+                        'rows': mail_data['rows'],
+                        'total_duration': mail_data['total_duration'],
+                        'total_calls': mail_data['total_calls'],
+                        'ACT': mail_data['ACT'],
+                        'ACD': mail_data['ACD'],
+                        'country_analytic_array': \
+                                mail_data['country_analytic_array'],
+                        'hangup_analytic_array': \
+                             mail_data['hangup_analytic_array']
+                        }))
 
             msg = EmailMultiAlternatives(subject, html_content, from_email,
                     [to])
