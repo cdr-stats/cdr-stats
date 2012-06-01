@@ -64,7 +64,7 @@ news_url = settings.NEWS_URL
 
 cdr_data = settings.DBCON[settings.MG_CDR_COMMON]
 #db.cdr.ensureIndex({"variables.answer_stamp":1}, {background:true});
-(map, reduce, finalize_fun, out) = mapreduce_cdr_view()
+(map, reduce, finalfc, out) = mapreduce_cdr_view()
 
 
 def common_send_notification(request, status, recipient=None):
@@ -169,9 +169,9 @@ def logout_view(request):
 def cdr_view_daily_report(query_var):
     logging.debug('Map-reduce cdr analytic')
     #Retrieve Map Reduce
-    (map, reduce, finalize_fun, out) = mapreduce_cdr_view()
+    (map, reduce, finalfc, out) = mapreduce_cdr_view()
 
-    total_data = cdr_data.map_reduce(map, reduce, out, query=query_var, finalize=finalize_fun,)
+    total_data = cdr_data.map_reduce(map, reduce, out, query=query_var, finalize=finalfc,)
     total_data = total_data.find().sort([('_id.a_Year', -1), ('_id.b_Month', -1), ('_id.c_Day', -1)])
 
     detail_data = []
@@ -724,10 +724,10 @@ def cdr_global_report(request):
 
     logging.debug('Map-reduce cdr global report analytic')
     #Retrieve Map Reduce
-    (map, reduce, finalize_fun, out) = mapreduce_cdr_view()
+    (map, reduce, finalfc, out) = mapreduce_cdr_view()
 
     #Run Map Reduce
-    calls = cdr_data.map_reduce(map, reduce, out, query=query_var, finalize=finalize_fun,)
+    calls = cdr_data.map_reduce(map, reduce, out, query=query_var, finalize=finalfc,)
     calls = calls.find().sort([('_id.a_Year', -1), ('_id.b_Month', -1), ('_id.c_Day', -1)])
 
     if calls.count() != 0:
@@ -834,7 +834,7 @@ def cdr_dashboard(request):
 
     logging.debug('Map-reduce cdr dashboard analytic')
     #Retrieve Map Reduce
-    (map, reduce, finalize_fun, out) = mapreduce_cdr_dashboard()
+    (map, reduce, finalfc, out) = mapreduce_cdr_dashboard()
 
     #Run Map Reduce
     calls = cdr_data.map_reduce(map, reduce, out, query=query_var)
@@ -869,7 +869,7 @@ def cdr_dashboard(request):
     settings.DBCON[out].drop()
 
     # Country call analytic start
-    (map, reduce, finalize_fun, out) = mapreduce_cdr_world_report()
+    (map, reduce, finalfc, out) = mapreduce_cdr_world_report()
     country_calls = cdr_data.map_reduce(map, reduce, out, query=query_var)
 
     # Top 5 countries list
@@ -1012,7 +1012,7 @@ def cdr_country_report(request):
 
     logging.debug('Map-reduce cdr dashboard analytic')
     #Retrieve Map Reduce
-    (map, reduce, finalize_fun, out) = mapreduce_cdr_country_report()
+    (map, reduce, finalfc, out) = mapreduce_cdr_country_report()
 
     #Run Map Reduce
     country_data = settings.DBCON[settings.MG_CDR_COUNTRY_REPORT]
@@ -1231,7 +1231,7 @@ def cdr_overview(request):
         # Collect Hourly data
         hourly_data = settings.DBCON[settings.MG_CDR_HOURLY]
 
-        (map, reduce, finalize_fun, out) = mapreduce_cdr_hourly_overview()
+        (map, reduce, finalfc, out) = mapreduce_cdr_hourly_overview()
         calls_in_day = hourly_data.map_reduce(map, reduce, \
                                                 out, query=query_var)
         calls_in_day = calls_in_day.find().sort([('_id.g_Millisec', -1),
@@ -1275,7 +1275,7 @@ def cdr_overview(request):
         # Collect daily data
         daily_data = settings.DBCON[settings.MG_CDR_DAILY]
 
-        (map, reduce, finalize_fun, out) = mapreduce_cdr_daily_overview()
+        (map, reduce, finalfc, out) = mapreduce_cdr_daily_overview()
         calls_in_day = daily_data.map_reduce(map, reduce, out, query=query_var)
         calls_in_day = calls_in_day.find().sort([('_id.g_Millisec', -1),
                                                  ('_id.f_Switch', 1)])
@@ -1316,7 +1316,7 @@ def cdr_overview(request):
         # Collect monthly data
         monthly_data = settings.DBCON[settings.MG_CDR_MONTHLY]
 
-        (map, reduce, finalize_fun, out) = mapreduce_cdr_monthly_overview()
+        (map, reduce, finalfc, out) = mapreduce_cdr_monthly_overview()
         query_var['start_uepoch'] = {'$gte': month_start_date, '$lt': month_end_date}
 
         #Run Map Reduce
@@ -1386,7 +1386,7 @@ def get_hourly_data_for_date(start_date, end_date, query_var, graph_view):
     hourly_data = settings.DBCON[settings.MG_CDR_HOURLY]
     logging.debug('Map-reduce cdr hourly analytic')
     #Retrieve Map Reduce
-    (map, reduce, finalize_fun, out) = mapreduce_cdr_hour_report()
+    (map, reduce, finalfc, out) = mapreduce_cdr_hour_report()
 
     #Run Map Reduce
     calls_in_day = hourly_data.map_reduce(map, reduce, out, query=query_var)
@@ -1796,9 +1796,9 @@ def get_cdr_mail_report():
                             })
 
     #Retrieve Map Reduce
-    (map, reduce, finalize_fun, out) = mapreduce_cdr_mail_report()
+    (map, reduce, finalfc, out) = mapreduce_cdr_mail_report()
 
-    total_data = cdr_data.map_reduce(map, reduce, out, query=query_var, finalize=finalize_fun,)
+    total_data = cdr_data.map_reduce(map, reduce, out, query=query_var, finalize=finalfc,)
 
     total_data = total_data.find().sort([('_id.c_Day', -1), ('_id.d_Hour', -1)])
     total_hour_count = total_data.count()
@@ -2025,7 +2025,7 @@ def world_map_view(request):
 
     logging.debug('Map-reduce cdr world analytic')
     #Retrieve Map Reduce
-    (map, reduce, finalize_fun, out) = mapreduce_cdr_world_report()
+    (map, reduce, finalfc, out) = mapreduce_cdr_world_report()
 
     #Run Map Reduce
     country_data = settings.DBCON[settings.MG_CDR_COUNTRY_REPORT]
@@ -2255,7 +2255,7 @@ def cdr_analytic_dashboard(request):
     logging.debug('Map-reduce cdr dashboard analytic')
     print "Daily analytic"
     #Retrieve Map Reduce
-    (map, reduce, finalize_fun, out) = mapreduce_cdr_daily_analytic_dashboard() # analytic_
+    (map, reduce, finalfc, out) = mapreduce_cdr_daily_analytic_dashboard() # analytic_
 
     #Run Map Reduce
     cdr_analytic = settings.DBCON[settings.MG_DAILY_ANALYTIC]
@@ -2267,7 +2267,7 @@ def cdr_analytic_dashboard(request):
     hangup_analytic = []
 
     # Country call analytic start
-    (map, reduce, finalize_fun, out) = mapreduce_cdr_world_report()
+    (map, reduce, finalfc, out) = mapreduce_cdr_world_report()
     country_calls = cdr_data.map_reduce(map, reduce, out, query=query_var)
 
     # Top 5 countries list
@@ -2312,14 +2312,17 @@ def get_hourly_analytic_for_date(start_date, end_date, query_var, graph_view):
     hourly_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
     logging.debug('Map-reduce cdr hourly analytic')
     #Retrieve Map Reduce
-    (map, reduce, finalize_fun, out) = mapreduce_cdr_hourly_analytic_dashboard()
+    (map, reduce, finalfc, out) = mapreduce_cdr_hourly_analytic_dashboard()
 
     #Run Map Reduce
     calls_in_day = hourly_data.map_reduce(map, reduce, out, query=query_var)
     calls_in_day = calls_in_day.find()
     total_analytic_final = []
     for i in calls_in_day:
-        called_time = datetime(int(i['_id']['a_Year']), int(i['_id']['b_Month']), int(i['_id']['c_Day']))
+        called_time = datetime(
+                            int(i['_id']['a_Year']),
+                            int(i['_id']['b_Month']),
+                            int(i['_id']['c_Day']))
         for j in range(0, 24):
             if graph_view == 1:
                 call__count = int(i['value']['call__count'][j])
@@ -2334,14 +2337,15 @@ def get_hourly_analytic_for_date(start_date, end_date, query_var, graph_view):
                                              duration__sum))
     total_record = {}
     for i in total_analytic_final:
-        if (i[0] in total_record.keys()) and (i[1] not in total_record[i[0]].keys()):
+        if (i[0] in total_record.keys()) \
+            and (i[1] not in total_record[i[0]].keys()):
             total_record[i[0]][i[1]] = i[2]
         elif i[0] not in total_record.keys():
             total_record[i[0]] = {}
             total_record[i[0]][i[1]] = i[2]
 
     # remove mapreduce output from database (no longer required)
-    settings.DBCON[out].drop()
+    #settings.DBCON[out].drop()
     variables = {
         'total_record': total_record,
     }

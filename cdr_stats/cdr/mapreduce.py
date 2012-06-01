@@ -26,7 +26,7 @@ def mapreduce_default():
 
         * ``map`` - Grouping perform on year, month & day
         * ``reduce`` - Calculate call count, sum of call duration based on map
-        * ``finalize_fun`` - To get avg of call duration (sum_call_duration / sum_call_count)
+        * ``finalfc`` - To get avg of call duration (sum_call_duration / sum_call_count)
 
     Result Collection: ``aggregate_result_dashboard``
     """
@@ -61,7 +61,7 @@ def mapreduce_default():
         }
         ''')
 
-    finalize_fun = mark_safe(u'''
+    finalfc = mark_safe(u'''
         function(key, value) {
                     if (parseInt(value.calldate__count) > 0)
                         value.duration__avg = parseFloat( parseFloat(value.duration__sum) / parseInt(value.calldate__count) );
@@ -70,7 +70,7 @@ def mapreduce_default():
 
     out = 'aggregate_result_dashboard'
 
-    return (map, reduce, finalize_fun, out)
+    return (map, reduce, finalfc, out)
 
 
 def mapreduce_cdr_mail_report():
@@ -86,11 +86,11 @@ def mapreduce_cdr_mail_report():
 
         * ``map`` - Grouping perform on day, hour, min & country_id
         * ``reduce`` - Calculate call count, sum of call duration, hangup-causes based on map
-        * ``finalize_fun`` - To get avg of call duration (sum_call_duration / sum_call_count)
+        * ``finalfc`` - To get avg of call duration (sum_call_duration / sum_call_count)
 
     Result Collection: ``aggregate_result_cdr_mail_report``
     """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
+    (map, reduce, finalfc, out) = mapreduce_default()
     map = mark_safe(u'''
         function(){
             emit( {
@@ -125,7 +125,7 @@ def mapreduce_cdr_mail_report():
         }
         ''')
 
-    finalize_fun = mark_safe(u'''
+    finalfc = mark_safe(u'''
         function(key, value) {
                     if (parseInt(value.calldate__count) > 0)
                         value.duration__avg = parseFloat( parseFloat(value.duration__sum) / parseInt(value.calldate__count) );
@@ -133,7 +133,7 @@ def mapreduce_cdr_mail_report():
         }''')
 
     out = 'aggregate_result_cdr_mail_report'
-    return (map, reduce, finalize_fun, out)
+    return (map, reduce, finalfc, out)
 
 
 def mapreduce_cdr_view():
@@ -143,10 +143,10 @@ def mapreduce_cdr_view():
     Result Collection: ``aggregate_result_cdr_view``
     """
 
-    (map, reduce, finalize_fun, out) = mapreduce_default()
+    (map, reduce, finalfc, out) = mapreduce_default()
 
     out = 'aggregate_result_cdr_view'
-    return (map, reduce, finalize_fun, out)
+    return (map, reduce, finalfc, out)
 
 
 def mapreduce_cdr_hour_report():
@@ -163,7 +163,7 @@ def mapreduce_cdr_hour_report():
 
     Result Collection: ``aggregate_result_cdr_hour_report``
     """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
+    (map, reduce, finalfc, out) = mapreduce_default()
 
     # Get cdr graph by hour report
     map = mark_safe(u'''
@@ -212,7 +212,7 @@ def mapreduce_cdr_hourly_overview():
 
     Result Collection: ``aggregate_result_cdr_hourly_overview``
     """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
+    (map, reduce, finalfc, out) = mapreduce_default()
 
     # Get cdr graph by overview report
     map = mark_safe(u'''
@@ -251,7 +251,7 @@ def mapreduce_cdr_monthly_overview():
 
     Result Collection: ``aggregate_result_cdr_monthly_overview``
     """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
+    (map, reduce, finalfc, out) = mapreduce_default()
 
     # Get cdr graph by overview report
     map = mark_safe(u'''
@@ -288,7 +288,7 @@ def mapreduce_cdr_daily_overview():
 
     Result Collection: ``aggregate_result_cdr_daily_overview``
     """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
+    (map, reduce, finalfc, out) = mapreduce_default()
 
     # Get cdr graph by day report
     map = mark_safe(u'''
@@ -324,7 +324,7 @@ def mapreduce_cdr_dashboard():
 
     Result Collection: ``aggregate_result_cdr_dashboard_report``
     """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
+    (map, reduce, finalfc, out) = mapreduce_default()
 
     # Get cdr graph by hour report
     map = mark_safe(u'''
@@ -376,7 +376,7 @@ def mapreduce_cdr_country_report():
 
     Result Collection: ``aggregate_result_cdr_country_report``
     """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
+    (map, reduce, finalfc, out) = mapreduce_default()
 
     # Get cdr dashboard report
     map = mark_safe(u'''
@@ -431,7 +431,7 @@ def mapreduce_cdr_world_report():
 
     Result Collection: ``aggregate_result_cdr_world_report``
     """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
+    (map, reduce, finalfc, out) = mapreduce_default()
 
     # Get cdr world report
     map = mark_safe(u'''
@@ -473,7 +473,7 @@ def mapreduce_task_cdr_alert():
 
     Result Collection: ``aggregate_result_alert``
     """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
+    (map, reduce, finalfc, out) = mapreduce_default()
 
     map = mark_safe(u'''
         function(){
@@ -490,7 +490,7 @@ def mapreduce_task_cdr_alert():
             }''')
 
     out = 'aggregate_result_alert'
-    return (map, reduce, finalize_fun, out)
+    return (map, reduce, finalfc, out)
 
 
 def mapreduce_cdr_hourly_analytic_dashboard():
@@ -508,7 +508,7 @@ def mapreduce_cdr_hourly_analytic_dashboard():
 
     Result Collection: ``aggregate_result_cdr_dashboard_report``
     """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
+    (map, reduce, finalfc, out) = mapreduce_default()
 
     # Get cdr graph by hour report
     map = mark_safe(u'''
@@ -565,7 +565,7 @@ def mapreduce_cdr_daily_analytic_dashboard():
 
     Result Collection: ``aggregate_result_cdr_dashboard_report``
     """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
+    (map, reduce, finalfc, out) = mapreduce_default()
 
     # Get cdr graph by hour report
     map = mark_safe(u'''

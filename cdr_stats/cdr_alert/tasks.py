@@ -39,7 +39,7 @@ LOCK_EXPIRE = 60 * 30
 
 
 cdr_data = settings.DBCON[settings.MG_CDR_COMMON]
-(map, reduce, finalize_fun, out) = mapreduce_task_cdr_alert()
+(map, reduce, finalfc, out) = mapreduce_task_cdr_alert()
 
 
 def get_start_end_date(alert_condition_add_on):
@@ -185,7 +185,7 @@ def run_alarm(alarm_obj, logger):
         # previous date map_reduce
         pre_total_data = cdr_data.map_reduce(map, reduce, out,
                                              query=query_var,
-                                             finalize=finalize_fun,)
+                                             finalize=finalfc,)
         pre_total_data = pre_total_data.find().sort([('_id.a_Year', -1),
                                                      ('_id.b_Month', -1)])
 
@@ -207,7 +207,7 @@ def run_alarm(alarm_obj, logger):
         # current date map_reduce
         cur_total_data = cdr_data.map_reduce(map, reduce, out,
                                              query=query_var,
-                                             finalize=finalize_fun,)
+                                             finalize=finalfc,)
 
         cur_total_data = cur_total_data.find().sort([('_id.a_Year', -1),
                                                      ('_id.b_Month', -1)])
