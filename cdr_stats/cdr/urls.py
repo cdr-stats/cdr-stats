@@ -39,6 +39,7 @@ urlpatterns = patterns('cdr.views',
 
     # For Test New view for new collections
     (r'^analytic_dashboard/$', 'cdr_analytic_dashboard'),
+    (r'^cdr_analytic/$', 'cdr_analytic_overview'),
     # Test End
 
     (r'^login/$',   'login_view'),

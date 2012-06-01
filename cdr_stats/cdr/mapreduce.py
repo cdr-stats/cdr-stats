@@ -553,3 +553,140 @@ def mapreduce_cdr_daily_analytic():
         }''')
     out = 'aggregate_cdr_daily_analytic_dashboard'
     return (map, reduce, False, out)
+
+
+def mapreduce_hourly_analytic_overview():
+    """
+    To get the overview analytic of cdr
+
+       * Total calls per year-month-day-hour-switch
+       * Total call duration per year-month-day-hour-switch
+
+    Attributes:
+
+        * ``map`` - Grouping perform on year, month, day, hour & switch
+        * ``reduce`` - Calculate call count, sum of call duration based on map
+
+    Result Collection: ``aggregate_result_cdr_hourly_overview``
+    """
+    (map, reduce, finalfc, out) = mapreduce_default()
+
+    # Get cdr graph by overview report
+    map = mark_safe(u'''
+        function(){
+            var year = this.metadata.date.getFullYear();
+            var month = this.metadata.date.getMonth();
+            var day = this.metadata.date.getDate();
+            var hours = this.metadata.date.getHours();
+
+            var d = new Date(year, month, day, hours);
+            emit( {
+                    a_Year: this.metadata.date.getFullYear(),
+                    b_Month: this.metadata.date.getMonth() + 1,
+                    c_Day: this.metadata.date.getDate(),
+                    //d_Hour: this.metadata.date.getHours(),
+                    f_Switch: this.metadata.switch_id,
+                    //g_Millisec: d.getTime(),
+            },
+            {
+                    call__count: this.call_hourly,
+                    duration__sum: this.duration_hourly,
+            } )
+        }''')
+
+    reduce = mark_safe(u'''
+        function(key,vals) {
+            var ret = {
+                call__count : [],
+                duration__sum: [],
+            };
+            for(var k=0; k < 24; k++){
+                ret.call__count[k]=0;
+                ret.duration__sum[k]=0;
+            }
+            for (var i=0; i < vals.length; i++) {
+                for (var k=0; k < 24; k++) {
+                    if (vals[i].call__count[k]) {
+                        ret.call__count[k] += vals[i].call__count[k];
+                        ret.duration__sum[k] += vals[i].duration__sum[k];
+                    }
+                }
+            }
+
+            return ret;
+        }''')
+
+    out = 'aggregate_hourly_analytic_overview'
+    return (map, reduce, False, out)
+
+
+def mapreduce_daily_analytic_overview():
+    """
+    To get the daily analytic of cdr
+
+       * Total calls per year-month-day-switch
+       * Total call duration per year-month-day-switch
+
+    Attributes:
+
+        * ``map`` - Grouping perform on year, month, day & switch
+        * ``reduce`` - Calculate call count based on map
+
+    Result Collection: ``aggregate_result_cdr_daily_overview``
+    """
+    (map, reduce, finalfc, out) = mapreduce_default()
+
+    # Get cdr graph by day report
+    map = mark_safe(u'''
+        function(){
+            var year = this.metadata.date.getFullYear();
+            var month = this.metadata.date.getMonth();
+            var day = this.metadata.date.getDate();
+
+            var d = new Date(year, month, day);
+            emit( {
+                    f_Switch: this.metadata.switch_id,
+                    g_Millisec: d.getTime(),
+                  },
+                  {calldate__count: 1, duration__sum: this.duration} )
+        }''')
+
+    out = 'aggregate_daily_analytic_overview'
+    return (map, reduce, False, out)
+
+
+def mapreduce_monthly_analytic_overview():
+    """
+    To get the overview analytic of cdr
+
+       * Total calls per year-month-switch
+       * Total call duration per year-month-switch
+
+    Attributes:
+
+        * ``map`` - Grouping perform on year, month & switch
+        * ``reduce`` - Calculate call count, sum of call duration based on map
+
+    Result Collection: ``aggregate_result_cdr_monthly_overview``
+    """
+    (map, reduce, finalfc, out) = mapreduce_default()
+
+    # Get cdr graph by overview report
+    map = mark_safe(u'''
+        function(){
+            var year = this.metadata.date.getFullYear();
+            var month = this.metadata.date.getMonth();
+
+            var d = new Date(year, month);
+            emit( {
+                f_Switch: this.metadata.switch_id,
+                g_Millisec: d.getTime(),
+            },
+            {
+                calldate__count: 1,
+                duration__sum: this.duration
+            } )
+          }''')
+
+    out = 'aggregate_monthly_analytic_overview'
+    return (map, reduce, False, out)
