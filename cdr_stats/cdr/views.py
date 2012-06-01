@@ -2321,12 +2321,17 @@ def get_hourly_analytic_for_date(start_date, end_date, query_var, graph_view):
     for i in calls_in_day:
         called_time = datetime(int(i['_id']['a_Year']), int(i['_id']['b_Month']), int(i['_id']['c_Day']))
         for j in range(0, 24):
-            total_analytic_final.append((str(called_time)[:10],
-                                         j,
-                                         int(i['value']['call__count'][j]),
-                                         i['value']['duration__sum'][j]))
-
-
+            if graph_view == 1:
+                call__count = int(i['value']['call__count'][j])
+                total_analytic_final.append((str(called_time)[:10],
+                                             j,
+                                             call__count,
+                                             ))
+            if graph_view == 2:
+                duration__sum = int(i['value']['duration__sum'][j])
+                total_analytic_final.append((str(called_time)[:10],
+                                             j,
+                                             duration__sum))
     total_record = {}
     for i in total_analytic_final:
         if (i[0] in total_record.keys()) and (i[1] not in total_record[i[0]].keys()):
@@ -2335,73 +2340,6 @@ def get_hourly_analytic_for_date(start_date, end_date, query_var, graph_view):
             total_record[i[0]] = {}
             total_record[i[0]][i[1]] = i[2]
 
-    """
-    record_dates = []
-    total_record = []
-    total_call_count = []
-
-    #get the dates of the period
-    dateList = date_range(
-        datetime(start_date.year, start_date.month, start_date.day),
-        datetime(end_date.year, end_date.month, end_date.day))
-
-    for i in calls_in_day:
-        date_in_list = datetime(int(i['_id']['a_Year']), int(i['_id']['b_Month']), int(i['_id']['c_Day']))
-        if date_in_list in dateList:
-            called_time = datetime.strptime(str(i['value']['calldate']), "%Y-%m-%d %H:%M:%S")
-            record_dates.append(( str(date_in_list)[0:10] ))
-            if graph_view == '1':
-                total_record.append(( called_time, i['value']['calldate__count']))
-                total_call_count.append((int(i['value']['calldate__count'])))
-            else:
-                total_record.append(( called_time, i['value']['duration__sum']))
-                total_call_count.append((int(i['value']['duration__sum'])))
-
-    record_dates = list(set(record_dates))
-
-    if calls_in_day.count() != 0:
-        total_record_final = []
-
-        for rd in record_dates:
-            list_of_hour = []
-            list_of_count= []
-            l_o_c = {}
-            for i in calls_in_day.clone():
-                string_date = datetime(int(i['_id']['a_Year']), int(i['_id']['b_Month']), int(i['_id']['c_Day']))
-                string_date = str(string_date)[0:10]
-                if string_date == rd:
-                    list_of_hour.append(int((i['_id']['d_Hour'])))
-                    if graph_view == '1':
-                        list_of_count.append((int(i['_id']['d_Hour']), i['value']['calldate__count']))
-                        l_o_c[int(i['_id']['d_Hour'])] = i['value']['calldate__count']
-                    else:
-                        list_of_count.append((int(i['_id']['d_Hour']), i['value']['duration__sum']))
-                        l_o_c[int(i['_id']['d_Hour'])] = i['value']['duration__sum']
-
-            x = 0
-            for j in range(0, 24):
-                if j not in list_of_hour:
-                    total_record_final.append((rd, j, 0))
-                else:
-                    total_record_final.append((rd, j, l_o_c[j]))
-                    x = x + 1
-
-        for d in dateList:
-            sd = d.strftime('%Y-%m-%d')
-            if sd not in record_dates:
-                for j in range(0, 24):
-                    total_record_final.append((sd, j, 0))
-    else:
-        total_record_final = []
-
-    total_record = {}
-    for i in total_record_final:
-        if (i[0] in total_record.keys()) and (i[1] not in total_record[i[0]].keys()):
-            total_record[i[0]][i[1]] = i[2]
-        elif i[0] not in total_record.keys():
-            total_record[i[0]] = {}
-            total_record[i[0]][i[1]] = i[2]
-    """
     # remove mapreduce output from database (no longer required)
     settings.DBCON[out].drop()
     variables = {
