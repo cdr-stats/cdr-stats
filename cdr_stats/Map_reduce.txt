@@ -165,9 +165,9 @@ db.foo.find();
 
 
 ###############################################
-db.daily_analytic.count({'metadata.accountcode': '1000', 'metadata.date': {$gte: ISODate("2012-05-31T00:00:00Z"), $lte: ISODate("2012-05-31T23:59:59Z")} })
+db.daily_analytic.count({'metadata.accountcode': '1000', 'metadata.date': {$gte: ISODate("2012-05-31T00:00:00Z"), $lte: ISODate("2012-06-31T23:59:59Z")} })
 
-db.daily_analytic.find({'metadata.accountcode': '1000', 'metadata.date': {$gte: ISODate("2012-05-31T00:00:00Z"), $lte: ISODate("2012-05-31T23:59:59Z")} }, { 'call_daily' : 1});
+db.daily_analytic.find({'metadata.accountcode': '1000', 'metadata.date': {$gte: ISODate("2012-05-31T00:00:00Z"), $lte: ISODate("2012-06-31T23:59:59Z")} }, { 'call_daily' : 1});
 
 
 
