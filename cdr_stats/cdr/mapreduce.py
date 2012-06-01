@@ -497,7 +497,7 @@ def mapreduce_task_cdr_alert():
     return (map, reduce, finalfc, out)
 
 
-def mapreduce_cdr_hourly_analytic_dashboard():
+def mapreduce_cdr_hourly_analytic():
     """
     To get the hourly analytic of cdr
 
@@ -555,7 +555,7 @@ def mapreduce_cdr_hourly_analytic_dashboard():
     return (map, reduce, False, out)
 
 
-def mapreduce_cdr_daily_analytic_dashboard():
+def mapreduce_cdr_daily_analytic():
     """
     To get the minutly analytic of cdr
 

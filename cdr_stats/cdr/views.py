@@ -2255,7 +2255,7 @@ def cdr_analytic_dashboard(request):
     logging.debug('Map-reduce cdr dashboard analytic')
     print "Daily analytic"
     #Retrieve Map Reduce
-    (map, reduce, finalfc, out) = mapreduce_cdr_daily_analytic_dashboard() # analytic_
+    (map, reduce, finalfc, out) = mapreduce_cdr_daily_analytic() # analytic_
 
     #Run Map Reduce
     cdr_analytic = settings.DBCON[settings.MG_DAILY_ANALYTIC]
@@ -2312,7 +2312,7 @@ def get_hourly_analytic_for_date(start_date, end_date, query_var, graph_view):
     hourly_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
     logging.debug('Map-reduce cdr hourly analytic')
     #Retrieve Map Reduce
-    (map, reduce, finalfc, out) = mapreduce_cdr_hourly_analytic_dashboard()
+    (map, reduce, finalfc, out) = mapreduce_cdr_hourly_analytic()
 
     #Run Map Reduce
     calls_in_day = hourly_data.map_reduce(map, reduce, out, query=query_var)
