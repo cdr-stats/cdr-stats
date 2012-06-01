@@ -238,7 +238,7 @@ class loginForm(forms.Form):
     password.widget.attrs['class'] = 'input-small'
     password.widget.attrs['placeholder'] = 'Password'
 
-    
+
 class EmailReportForm(forms.ModelForm):
     """Form used to change the detail of a user in the Customer UI."""
     multiple_email = forms.CharField(max_length=300, required=False,
