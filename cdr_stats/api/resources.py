@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 #
 # CDR-Stats License
 # http://www.cdr-stats.org
@@ -30,7 +32,8 @@ from tastypie.serializers import Serializer
 from tastypie.validation import Validation
 from tastypie.throttle import BaseThrottle
 from tastypie.utils import dict_strip_unicode_keys, trailing_slash
-from tastypie.http import HttpCreated, HttpNoContent, HttpNotFound, HttpBadRequest
+from tastypie.http import HttpCreated, HttpNoContent, HttpNotFound, \
+    HttpBadRequest
 from tastypie.exceptions import BadRequest, NotFound, ImmediateHttpResponse
 from tastypie import http
 from tastypie import fields
@@ -53,8 +56,8 @@ logger = logging.getLogger('cdr-stats.filelog')
 class CustomJSONSerializer(Serializer):
 
     def from_json(self, content):
-        decoded_content = urllib.unquote(content.decode("utf8"))
-        #data = simplejson.loads(content)
+        decoded_content = urllib.unquote(content.decode('utf8'))
+        # data = simplejson.loads(content)
         data = {}
         data['cdr'] = decoded_content[4:]
         return data
@@ -83,6 +86,7 @@ def save_if_set(record, fproperty, value):
 
 
 class IpAddressAuthorization(Authorization):
+
     def is_authorized(self, request, object=None):
         if request.META['REMOTE_ADDR'] in API_ALLOWED_IP:
             return True
@@ -90,7 +94,9 @@ class IpAddressAuthorization(Authorization):
             raise ImmediateHttpResponse(response=http.HttpUnauthorized())
             return False
 
+
 class IpAddressAuthentication(Authentication):
+
     def is_authorized(self, request, object=None):
         if request.META['REMOTE_ADDR'] in API_ALLOWED_IP:
             return True
@@ -100,19 +106,21 @@ class IpAddressAuthentication(Authentication):
 
 
 class UserResource(ModelResource):
+
     """User Model"""
+
     class Meta:
+
         allowed_methods = ['get']
         queryset = User.objects.all()
         resource_name = 'user'
         fields = ['username', 'first_name', 'last_name', 'last_login', 'id']
-        filtering = {
-            'username': 'exact',
-        }
-        throttle = BaseThrottle(throttle_at=1000, timeframe=3600) #default 1000 calls / hour
+        filtering = {'username': 'exact'}
+        throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
 
 
 class SwitchResource(ModelResource):
+
     """
     **Attributes Details**:
 
@@ -126,17 +134,20 @@ class SwitchResource(ModelResource):
             curl -u username:password -H 'Accept: application/json' -X GET http://localhost:8000/api/v1/switch/?format=json
 
     """
+
     class Meta:
+
         queryset = Switch.objects.all()
         resource_name = 'switch'
         authorization = Authorization()
         authentication = BasicAuthentication()
         list_allowed_methods = ['get', 'post', 'put', 'delete']
         detail_allowed_methods = ['get', 'post', 'put', 'delete']
-        throttle = BaseThrottle(throttle_at=1000, timeframe=3600) #default 1000 calls / hour
+        throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
 
 
 class HangupCauseResource(ModelResource):
+
     """
     **Attributes Details**:
 
@@ -152,14 +163,16 @@ class HangupCauseResource(ModelResource):
             curl -u username:password -H 'Accept: application/json' -X GET http://localhost:8000/api/v1/hangup_cause/?format=json
 
     """
+
     class Meta:
+
         queryset = HangupCause.objects.all()
         resource_name = 'hangup_cause'
         authorization = Authorization()
         authentication = BasicAuthentication()
         list_allowed_methods = ['get', 'post', 'put', 'delete']
         detail_allowed_methods = ['get', 'post', 'put', 'delete']
-        throttle = BaseThrottle(throttle_at=1000, timeframe=3600) #default 1000 calls / hour
+        throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
 
 
 def get_contact(id):
@@ -171,6 +184,7 @@ def get_contact(id):
 
 
 class CdrDailyResource(ModelResource):
+
     """
     **Attributes Details**:
 
@@ -208,25 +222,28 @@ class CdrDailyResource(ModelResource):
                 ]
 
     """
+
     class Meta:
+
         resource_name = 'cdr_daily_report'
         authorization = Authorization()
         authentication = BasicAuthentication()
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get']
-        throttle = BaseThrottle(throttle_at=1000, timeframe=3600) #default 1000 calls / hour
+        throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
 
     def override_urls(self):
 
-        return [
-            url(r'^(?P<resource_name>%s)/$' % self._meta.resource_name, self.wrap_view('read')),
-        ]
+        return [url(r'^(?P<resource_name>%s)/$' % self._meta.resource_name,
+                self.wrap_view('read'))]
 
-    def read_response(self, request, data, response_class=HttpResponse, **response_kwargs):
+    def read_response(self, request, data, response_class=HttpResponse,
+                      **response_kwargs):
 
         desired_format = self.determine_format(request)
         serialized = self.serialize(request, data, desired_format)
-        return response_class(content=serialized, content_type=desired_format, **response_kwargs)
+        return response_class(content=serialized, content_type=desired_format,
+                              **response_kwargs)
 
     def read(self, request=None, **kwargs):
 
@@ -237,7 +254,6 @@ class CdrDailyResource(ModelResource):
 
         logger.debug('CDR Daily Report API authorization called!')
         auth_result = self._meta.authorization.is_authorized(request, object)
-
 
         j = 0
         temp_var = {}
@@ -251,14 +267,15 @@ class CdrDailyResource(ModelResource):
 
         query_var = {}
         if 'start_uepoch' in temp_var:
-            query_var['start_uepoch'] = datetime.strptime(temp_var['start_uepoch'], '%Y-%m-%d')
+            query_var['start_uepoch'] = \
+                datetime.strptime(temp_var['start_uepoch'], '%Y-%m-%d')
         if 'destination_number' in query_var:
-            query_var['destination_number'] = int(temp_var['destination_number'])
+            query_var['destination_number'] = int(temp_var['destination_number'
+                    ])
         if 'accountcode' in query_var:
             query_var['accountcode'] = int(temp_var['accountcode'])
         if 'switch_id' in query_var:
             query_var['switch_id'] = int(temp_var['switch_id'])
-
 
         daily_data = settings.DBCON[settings.MG_CDR_DAILY]
 
@@ -266,7 +283,7 @@ class CdrDailyResource(ModelResource):
             daily_data = daily_data.find(query_var)
         else:
             daily_data = daily_data.find()
-        #calls_in_day = daily_data.map_reduce(map, reduce, out, query=query_var)
+        # calls_in_day = daily_data.map_reduce(map, reduce, out, query=query_var)
 
         result = []
         for record in daily_data:
@@ -280,12 +297,12 @@ class CdrDailyResource(ModelResource):
 
             result.append(modrecord)
 
-
         logger.debug('CDR Daily Report API : result ok 200')
         return self.read_response(request, result)
 
 
 class CdrResource(ModelResource):
+
     """API to bulk create cdr
 
     **Attributes**:
@@ -345,25 +362,27 @@ class CdrResource(ModelResource):
            "write_codec":"G722"
         }
     """
+
     class Meta:
+
         resource_name = 'cdr'
         authorization = Authorization()
         authentication = BasicAuthentication()
         allowed_methods = ['post']
-        throttle = BaseThrottle(throttle_at=1000, timeframe=3600) #default 1000 calls / hour
+        throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
 
     def override_urls(self):
 
-        return [
-            url(r'^(?P<resource_name>%s)/$' % self._meta.resource_name, self.wrap_view('create')),
-        ]
+        return [url(r'^(?P<resource_name>%s)/$' % self._meta.resource_name,
+                self.wrap_view('create'))]
 
-    def create_response(self, request, data, response_class=HttpResponse, **response_kwargs):
+    def create_response(self, request, data, response_class=HttpResponse,
+                        **response_kwargs):
 
         desired_format = self.determine_format(request)
         serialized = self.serialize(request, data, desired_format)
-        return response_class(content=serialized, content_type=desired_format, **response_kwargs)
-
+        return response_class(content=serialized, content_type=desired_format,
+                              **response_kwargs)
 
     def create(self, request=None, **kwargs):
         logger.debug('CDR API get called')
@@ -399,25 +418,25 @@ class CdrResource(ModelResource):
         cdr_type = post_var.get('cdr_type')
 
         cdr_record = {
-              'switch_id': switch_id,
-              'caller_id_number': caller_id_number,
-              'caller_id_name': caller_id_name,
-              'destination_number': destination_number,
-              'duration': int(duration),
-              'billsec': int(billsec),
-              'hangup_cause_id': get_hangupcause_id(hangup_cause_q850),
-              'accountcode': accountcode,
-              'direction': direction,
-              'uuid': uuid,
-              'remote_media_ip': remote_media_ip,
-              'start_uepoch': start_uepoch,
-              'answer_uepoch': answer_uepoch,
-              'end_uepoch': end_uepoch,
-              'mduration': mduration,
-              'billmsec': billmsec,
-              'read_codec': read_codec,
-              'write_codec': write_codec,
-              'cdr_type': cdr_type,
+            'switch_id': switch_id,
+            'caller_id_number': caller_id_number,
+            'caller_id_name': caller_id_name,
+            'destination_number': destination_number,
+            'duration': int(duration),
+            'billsec': int(billsec),
+            'hangup_cause_id': get_hangupcause_id(hangup_cause_q850),
+            'accountcode': accountcode,
+            'direction': direction,
+            'uuid': uuid,
+            'remote_media_ip': remote_media_ip,
+            'start_uepoch': start_uepoch,
+            'answer_uepoch': answer_uepoch,
+            'end_uepoch': end_uepoch,
+            'mduration': mduration,
+            'billmsec': billmsec,
+            'read_codec': read_codec,
+            'write_codec': write_codec,
+            'cdr_type': cdr_type,
             }
 
         # Create CDR record
@@ -425,6 +444,6 @@ class CdrResource(ModelResource):
         # get last inserted cdr record
         new_obj = settings.DBCON[settings.MG_CDR_COMMON].find_one()
 
-        #print new_obj['_id']
+        # print new_obj['_id']
         logger.debug('CDR API : result ok 200')
         return self.create_response(request, new_obj)
