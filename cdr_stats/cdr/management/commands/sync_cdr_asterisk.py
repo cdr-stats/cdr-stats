@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 #
 # CDR-Stats License
 # http://www.cdr-stats.org
@@ -11,15 +13,20 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.core.management.base import BaseCommand, CommandError
-from django.utils.translation import ugettext_lazy as _
+from django.core.management.base import BaseCommand
 from cdr.import_cdr_asterisk_mysql import import_cdr_asterisk_mysql
 
+
 class Command(BaseCommand):
-    # Usage : sync_cdr
-    help = "Sync Asterisk with our CDR Record table\n" \
-           "-----------------------------------------\n\n" \
-           "USAGE : python manage.py sync_cdr_asterisk \n"
+    """
+    Command line to import Asterisk CDR with Mysql
+    """
+    help = \
+        '''
+Sync Asterisk with our CDR Record table
+-----------------------------------------
+USAGE : python manage.py sync_cdr_asterisk
+'''
 
     def handle(self, *args, **options):
 

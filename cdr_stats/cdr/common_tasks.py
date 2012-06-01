@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 #
 # CDR-Stats License
 # http://www.cdr-stats.org
@@ -13,18 +15,26 @@
 #
 
 from django.core.cache import cache
-from django.utils.hashcompat import md5_constructor as md5
+
 
 def single_instance_task(key, timeout):
+    """
+    Decorator function to add a semafor on task
+    it helps to ensure tasks aren't run more than once at the same time
+    """
+
     def task_exc(func):
+
         def wrapper(*args, **kwargs):
-            lock_id = "celery-single-instance-" + key
-            acquire_lock = lambda: cache.add(lock_id, "true", timeout)
+            lock_id = 'celery-single-instance-' + key
+            acquire_lock = lambda: cache.add(lock_id, 'true', timeout)
             release_lock = lambda: cache.delete(lock_id)
             if acquire_lock():
                 try:
                     func(*args, **kwargs)
                 finally:
                     release_lock()
+
         return wrapper
+
     return task_exc
