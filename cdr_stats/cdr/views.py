@@ -2444,7 +2444,6 @@ def cdr_analytic_overview(request):
                                                  int(i['_id']['b_Month']),
                                                  int(i['_id']['c_Day']),
                                                  h, m)
-
                             dt = int(1000 * time.mktime(graph_day.timetuple()))
                             calldate__count = int(i['value'][c_key])
                             duration__sum = int(i['value'][d_key])
@@ -2478,17 +2477,17 @@ def cdr_analytic_overview(request):
         # Collect daily data
         daily_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
 
-        #(map, reduce, finalfc, out) = mapreduce_cdr_daily_overview()
+        (map, reduce, finalfc, out) = mapreduce_daily_analytic_overview()
         calls_in_day = daily_data.map_reduce(map, reduce, out, query=query_var)
-        calls_in_day = calls_in_day.find().sort([('_id.g_Millisec', -1),
-            ('_id.f_Switch', 1)])
+        calls_in_day = calls_in_day.find().sort([('_id.g_Millisec', 1),
+                                                 ('_id.f_Switch', 1)])
         total_day_record = []
         total_day_call_duration = []
         total_day_call_count = []
         if calls_in_day.count() != 0:
             day_call_duration = dict()
             day_call_count = dict()
-            """
+
             for i in calls_in_day.clone():
                 dt = int(i['_id']['g_Millisec'])
                 total_day_record.append(
@@ -2508,7 +2507,7 @@ def cdr_analytic_overview(request):
                     day_call_count[dt] += int(i['value']['calldate__count'])
                 else:
                     day_call_count[dt] = int(i['value']['calldate__count'])
-            """
+
             total_day_call_duration = day_call_duration.items()
             total_day_call_duration = sorted(total_day_call_duration, key=lambda k: k[0])
             total_day_call_count = day_call_count.items()
