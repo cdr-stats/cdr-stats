@@ -182,8 +182,7 @@ class CdrOverviewForm(CdrSearchForm):
     """Form used to get overview of calls in the Customer UI."""
     def __init__(self, *args, **kwargs):
         super(CdrOverviewForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['from_date', 'to_date', 'destination', 'destination_type',
-                                'switch']
+        self.fields.keyOrder = ['from_date', 'to_date', 'switch']
 
 
 class CompareCallSearchForm(SearchForm):

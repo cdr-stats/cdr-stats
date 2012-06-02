@@ -1089,300 +1089,6 @@ def cdr_country_report(request):
 
 
 @login_required
-def cdr_overview(request):
-    """CDR graph by hourly/daily/monthly basis
-
-    **Attributes**:
-
-        * ``template`` - cdr/cdr_overview.html.html
-        * ``form`` - CdrOverviewForm
-        * ``mongodb_data_set`` - MG_CDR_DAILY, MG_CDR_HOURLY
-        * ``map_reduce`` - mapreduce_cdr_hourly_overview()
-                           mapreduce_cdr_monthly_overview()
-                           mapreduce_cdr_daily_overview()
-
-    **Logic Description**:
-
-        get all call records from mongodb collection for
-        all monthly, daily, hourly analytics
-    """
-
-    if not check_cdr_data_exists(request):
-        return render_to_response(
-                    'cdr/error_import.html',
-                    context_instance=RequestContext(request))
-    template_name = 'cdr/cdr_overview.html'
-    logging.debug('CDR overview start')
-    query_var = {}
-    tday = datetime.today()
-    search_tag = 0
-    if request.method == 'POST':
-        logging.debug('CDR overview with search option')
-        search_tag = 1
-        form = CdrOverviewForm(request.POST)
-        if form.is_valid():
-            if "from_date" in request.POST:
-                from_date = datetime(int(request.POST['from_date'][0:4]),
-                    int(request.POST['from_date'][5:7]),
-                    int(request.POST['from_date'][8:10]), 0, 0, 0, 0)
-            else:
-                from_date = tday
-
-            if "to_date" in request.POST:
-                to_date = datetime(int(request.POST['to_date'][0:4]),
-                    int(request.POST['to_date'][5:7]),
-                    int(request.POST['to_date'][8:10]), 23, 59, 59, 999999)
-            else:
-                to_date = tday
-
-            destination = form.cleaned_data.get('destination')
-            destination_type = form.cleaned_data.get('destination_type')
-            dst = source_desti_field_chk_mongodb(destination, destination_type)
-            if dst:
-                query_var['destination_number'] = dst
-
-            switch_id = form.cleaned_data.get('switch')
-            if switch_id and int(switch_id) != 0:
-                query_var['switch_id'] = int(switch_id)
-
-            if from_date != '' and to_date != '':
-                start_date = datetime(from_date.year, from_date.month,
-                                        from_date.day, 0, 0, 0, 0)
-                end_date = datetime(to_date.year, to_date.month,
-                                        to_date.day, 23, 59, 59, 999999)
-                query_var['start_uepoch'] = {
-                                                '$gte': start_date,
-                                                '$lt': end_date
-                                            }
-
-                month_start_date = datetime(start_date.year, start_date.month,
-                                            1, 0, 0, 0, 0)
-                month_end_date = datetime(end_date.year, end_date.month,
-                                            end_date.day, 23, 59, 59, 999999)
-
-        else:
-            # form is not valid
-            logging.debug('Error : CDR overview search form')
-            total_hour_record = []
-            total_hour_call_count = []
-            total_hour_call_duration = []
-            total_day_record = []
-            total_day_call_duration = []
-            total_day_call_count = []
-            total_month_record = []
-            total_month_call_duration = []
-            total_month_call_count = []
-
-            tday = datetime.today()
-            start_date = datetime(tday.year, tday.month,
-                                tday.day, 0, 0, 0, 0)
-            end_date = datetime(tday.year, tday.month,
-                                tday.day, 23, 59, 59, 999999)
-
-            variables = {'module': current_view(request),
-                         'form': form,
-                         'search_tag': search_tag,
-                         'total_hour_record': total_hour_record,
-                         'total_hour_call_count': total_hour_call_count,
-                         'total_hour_call_duration': total_hour_call_duration,
-                         'total_day_record': total_day_record,
-                         'total_day_call_count': total_day_call_count,
-                         'total_day_call_duration': total_day_call_duration,
-                         'total_month_record': total_month_record,
-                         'total_month_call_duration': \
-                                                total_month_call_duration,
-                         'total_month_call_count': total_month_call_count,
-                         'start_date': start_date,
-                         'end_date': end_date,
-                         'TOTAL_GRAPH_COLOR': TOTAL_GRAPH_COLOR,
-                         }
-
-            return render_to_response(
-                                template_name, variables,
-                                context_instance=RequestContext(request)
-                                )
-
-    if len(query_var) == 0:
-        tday = datetime.today()
-        switch_id = 0
-        form = CdrOverviewForm(initial={'from_date': tday.strftime('%Y-%m-%d'),
-                                        'to_date': tday.strftime('%Y-%m-%d'),
-                                        'destination_type': 1,
-                                        'switch': switch_id})
-
-        start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
-        end_date = datetime(tday.year, tday.month,
-                            tday.day, 23, 59, 59, 999999)
-        month_start_date = datetime(start_date.year,
-                            start_date.month, 1, 0, 0, 0, 0)
-        month_end_date = datetime(end_date.year, end_date.month,
-                            end_date.day,  23, 59, 59, 999999)
-
-        query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
-
-    if not request.user.is_superuser:  # not superuser
-        if chk_account_code(request):
-            query_var['accountcode'] = chk_account_code(request)
-        else:
-            return HttpResponseRedirect('/?acc_code_error=true')
-
-    if query_var:
-        logging.debug('Map-reduce cdr overview analytic')
-        # Collect Hourly data
-        hourly_data = settings.DBCON[settings.MG_CDR_HOURLY]
-
-        (map, reduce, finalfc, out) = mapreduce_cdr_hourly_overview()
-        calls_in_day = hourly_data.map_reduce(map, reduce, \
-                                                out, query=query_var)
-        calls_in_day = calls_in_day.find().sort([('_id.g_Millisec', -1),
-                                                 ('_id.f_Switch', 1)])
-
-        total_hour_record = []
-        total_hour_call_count = []
-        total_hour_call_duration = []
-        if calls_in_day.count() != 0:
-            hour_data_call_count = dict()
-            hour_data_call_duration = dict()
-            for i in calls_in_day.clone():
-                dt = int(i['_id']['g_Millisec'])
-                total_hour_record.append(
-                    {
-                        'dt': dt,
-                        'calldate__count': int(i['value']['calldate__count']),
-                        'duration__sum': int(i['value']['duration__sum']),
-                        'switch_id': int(i['_id']['f_Switch'])
-                    })
-
-                if dt in hour_data_call_count:
-                    hour_data_call_count[dt] += int(i['value']['calldate__count'])
-                else:
-                    hour_data_call_count[dt] = int(i['value']['calldate__count'])
-
-                if dt in hour_data_call_duration:
-                    hour_data_call_duration[dt] += int(i['value']['duration__sum'])
-                else:
-                    hour_data_call_duration[dt] = int(i['value']['duration__sum'])
-
-            total_hour_call_count = hour_data_call_count.items()
-            total_hour_call_count = sorted(total_hour_call_count, key=lambda k: k[0])
-
-            total_hour_call_duration = hour_data_call_duration.items()
-            total_hour_call_duration = sorted(total_hour_call_duration, key=lambda k: k[0])
-
-        # remove mapreduce output from database (no longer required)
-        settings.DBCON[out].drop()
-
-        # Collect daily data
-        daily_data = settings.DBCON[settings.MG_CDR_DAILY]
-
-        (map, reduce, finalfc, out) = mapreduce_cdr_daily_overview()
-        calls_in_day = daily_data.map_reduce(map, reduce, out, query=query_var)
-        calls_in_day = calls_in_day.find().sort([('_id.g_Millisec', -1),
-                                                 ('_id.f_Switch', 1)])
-        total_day_record = []
-        total_day_call_duration = []
-        total_day_call_count = []
-        if calls_in_day.count() != 0:
-            day_call_duration = dict()
-            day_call_count = dict()
-            for i in calls_in_day.clone():
-                dt = int(i['_id']['g_Millisec'])
-                total_day_record.append(
-                    {
-                        'dt': dt,
-                        'calldate__count': int(i['value']['calldate__count']),
-                        'duration__sum': int(i['value']['duration__sum']),
-                        'switch_id': int(i['_id']['f_Switch'])
-                    })
-
-                if dt in day_call_duration:
-                    day_call_duration[dt] += int(i['value']['duration__sum'])
-                else:
-                    day_call_duration[dt] = int(i['value']['duration__sum'])
-
-                if dt in day_call_count:
-                    day_call_count[dt] += int(i['value']['calldate__count'])
-                else:
-                    day_call_count[dt] = int(i['value']['calldate__count'])
-
-            total_day_call_duration = day_call_duration.items()
-            total_day_call_duration = sorted(total_day_call_duration, key=lambda k: k[0])
-            total_day_call_count = day_call_count.items()
-            total_day_call_count = sorted(total_day_call_count, key=lambda k: k[0])
-
-        # remove mapreduce output from database (no longer required)
-        settings.DBCON[out].drop()
-
-        # Collect monthly data
-        monthly_data = settings.DBCON[settings.MG_CDR_MONTHLY]
-
-        (map, reduce, finalfc, out) = mapreduce_cdr_monthly_overview()
-        query_var['start_uepoch'] = {'$gte': month_start_date, '$lt': month_end_date}
-
-        #Run Map Reduce
-        calls_in_month = monthly_data.map_reduce(map, reduce, out, query=query_var)
-        calls_in_month = calls_in_month.find().sort([('_id.g_Millisec', -1),
-                                                     ('_id.f_Switch', 1)])
-
-        total_month_record = []
-        total_month_call_duration = []
-        total_month_call_count = []
-        if calls_in_month.count() != 0:
-            month_call_duration = dict()
-            month_call_count = dict()
-            for i in calls_in_month.clone():
-                dt = int(i['_id']['g_Millisec'])
-                total_month_record.append(
-                    {
-                        'dt': dt,
-                        'calldate__count': int(i['value']['calldate__count']),
-                        'duration__sum': int(i['value']['duration__sum']),
-                        'switch_id': int(i['_id']['f_Switch'])
-                    })
-
-                if dt in month_call_duration:
-                    month_call_duration[dt] += int(i['value']['duration__sum'])
-                else:
-                    month_call_duration[dt] = int(i['value']['duration__sum'])
-
-                if dt in month_call_count:
-                    month_call_count[dt] += int(i['value']['calldate__count'])
-                else:
-                    month_call_count[dt] = int(i['value']['calldate__count'])
-
-            total_month_call_duration = month_call_duration.items()
-            total_month_call_duration = sorted(total_month_call_duration, key=lambda k: k[0])
-            total_month_call_count = month_call_count.items()
-            total_month_call_count = sorted(total_month_call_count, key=lambda k: k[0])
-
-        # remove mapreduce output from database (no longer required)
-        settings.DBCON[out].drop()
-
-        logging.debug('CDR daily view end')
-        variables = {'module': current_view(request),
-                     'form': form,
-                     'search_tag': search_tag,
-                     'total_hour_record': total_hour_record,
-                     'total_hour_call_count': total_hour_call_count,
-                     'total_hour_call_duration': total_hour_call_duration,
-                     'total_day_record': total_day_record,
-                     'total_day_call_count': total_day_call_count,
-                     'total_day_call_duration': total_day_call_duration,
-                     'total_month_record': total_month_record,
-                     'total_month_call_duration': total_month_call_duration,
-                     'total_month_call_count': total_month_call_count,
-                     'start_date': start_date,
-                     'end_date': end_date,
-                     'TOTAL_GRAPH_COLOR': TOTAL_GRAPH_COLOR,
-                     }
-
-        return render_to_response(
-                        template_name,
-                        variables,
-                        context_instance=RequestContext(request))
-
-
-@login_required
 def cdr_concurrent_calls(request):
     """CDR view of concurrent calls
 
@@ -1940,146 +1646,6 @@ def cust_password_reset_complete(request):
         return HttpResponseRedirect("/")
 
 
-@login_required
-def cdr_analytic_dashboard(request):
-    """CDR analytic dashboard for a current day
-
-    **Attributes**:
-
-        * ``template`` - cdr/cdr_dashboard.html
-        * ``form`` - SwitchForm
-        * ``mongodb_data_set`` - MG_CDR_COMMON
-        * ``map_reduce`` - mapreduce_cdr_dashboard()
-
-    **Logic Description**:
-
-        get all call records from mongodb collection for current day
-        to create hourly report as well as hangup cause/country analytics
-    """
-    if not check_cdr_data_exists(request):
-        return render_to_response(
-            'cdr/error_import.html',
-            context_instance=RequestContext(request))
-
-    logging.debug('CDR dashboard view start')
-    now = datetime.now()
-    form = SwitchForm()
-    switch_id = 0
-    query_var = {}
-    search_tag = 0
-    if request.method == 'POST':
-        logging.debug('CDR dashboard view with search option')
-        search_tag = 1
-        form = SwitchForm(request.POST)
-        if form.is_valid():
-            switch_id = form.cleaned_data.get('switch')
-            if switch_id and int(switch_id) != 0:
-                query_var['metadata.switch_id'] = int(switch_id)
-
-    #start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
-    #end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
-    end_date = datetime(now.year, now.month, now.day,
-        now.hour, now.minute, now.second, now.microsecond)
-    start_date = end_date + relativedelta(days=-int(1))
-
-    query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
-
-    if not request.user.is_superuser:  # not superuser
-        if chk_account_code(request):
-            query_var['metadata.accountcode'] = chk_account_code(request)
-        else:
-            return HttpResponseRedirect('/?acc_code_error=true')
-
-    cdr_analytic = settings.DBCON[settings.MG_DAILY_ANALYTIC].find(query_var)\
-                    .sort([('call_hourly', 1), ('call_minute', 1)])
-
-    total_calls = 0
-    total_duration = 0
-    total_record_final = []
-    for i in cdr_analytic.clone():
-        #print i['call_minute']
-        for j in range(0, 24):
-            try:
-                #print i['call_minute'][str(j)]
-                for k in range(0, 59):
-                    try:
-                        #print i['call_minute'][str(j)][str(k)]
-                        daily_date = (i['metadata']['date']).\
-                                            strftime('%Y-%m-%d') + " "
-                        graph_day = daily_date + str(j) + ":" + str(k)
-                        graph_day = datetime.strptime(graph_day,
-                                                        "%Y-%m-%d %H:%M")
-                        dt = int(1000 * time.mktime(graph_day.timetuple()))
-
-                        calldate__count = i['call_minute'][str(j)][str(k)]
-                        duration__sum = i['duration_minute'][str(j)][str(k)]
-
-                        total_record_final.append([dt,
-                                                   calldate__count,
-                                                   duration__sum])
-                        total_calls += int(calldate__count)
-                        total_duration += int(duration__sum)
-                    except:
-                        pass
-            except:
-                pass
-
-    logging.debug('Map-reduce cdr dashboard analytic')
-    print "Daily analytic"
-    #Retrieve Map Reduce
-    (map, reduce, finalfc, out) = mapreduce_cdr_daily_analytic()  # analytic
-
-    #Run Map Reduce
-    cdr_analytic = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-    calls = cdr_analytic.map_reduce(map, reduce, out, query=query_var)
-    calls = calls.find().sort([('_id.g_Millisec', 1)])
-    for i in calls:
-        print i
-
-    hangup_analytic = []
-
-    # Country call analytic start
-    (map, reduce, finalfc, out) = mapreduce_cdr_world_report()
-    country_calls = cdr_data.map_reduce(map, reduce, out, query=query_var)
-
-    # Top 5 countries list
-    country_calls = country_calls.find().\
-    sort([('value.calldate__count', -1)]).limit(5)
-
-    country_analytic = []
-    for i in country_calls:
-        country_analytic.append((get_country_name(int(i['_id']['f_Con'])),
-                                 int(i['value']['calldate__count']),
-                                 int(i['value']['duration__sum']),
-                                 int(i['_id']['f_Con'])))
-
-    # remove mapreduce output & country analytic from database
-    settings.DBCON[out].drop()
-
-    #Calculate the Average Time of Call
-    ACT = math.floor(total_calls / 24)
-    if total_calls == 0:
-        ACD = 0
-    else:
-        ACD = int_convert_to_minute(math.floor(total_duration / total_calls))
-
-    logging.debug('CDR dashboard view end')
-    variables = {'module': current_view(request),
-                 'total_calls': total_calls,
-                 'total_duration': int_convert_to_minute(total_duration),
-                 'ACT': ACT,
-                 'ACD': ACD,
-                 'total_record': total_record_final,
-                 'hangup_analytic': hangup_analytic,
-                 'country_analytic': country_analytic,
-                 'form': form,
-                 'search_tag': search_tag,
-                 }
-
-    return render_to_response('cdr/cdr_analytic_dashboard.html', variables,
-        context_instance=RequestContext(request))
-
-
 def get_hourly_analytic_for_date(start_date, end_date, query_var, graph_view):
     hourly_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
     logging.debug('Map-reduce cdr hourly analytic')
@@ -2279,17 +1845,17 @@ def cdr_analytic_by_hour(request):
 
 
 @login_required
-def cdr_analytic_overview(request):
+def cdr_overview(request):
     """CDR graph by hourly/daily/monthly basis
 
     **Attributes**:
 
         * ``template`` - cdr/cdr_overview.html.html
         * ``form`` - CdrOverviewForm
-        * ``mongodb_data_set`` - MG_CDR_DAILY, MG_CDR_HOURLY
-        * ``map_reduce`` - mapreduce_cdr_hourly_overview()
-                           mapreduce_cdr_monthly_overview()
-                           mapreduce_cdr_daily_overview()
+        * ``mongodb_data_set`` - MG_DAILY_ANALYTIC
+        * ``map_reduce`` - mapreduce_hourly_overview()
+                           mapreduce_monthly_overview()
+                           mapreduce_daily_overview()
 
     **Logic Description**:
 
@@ -2300,7 +1866,7 @@ def cdr_analytic_overview(request):
         return render_to_response(
             'cdr/error_import.html',
             context_instance=RequestContext(request))
-    template_name = 'cdr/cdr_analytic_overview.html'
+    template_name = 'cdr/cdr_overview.html'
     logging.debug('CDR overview start')
     query_var = {}
     tday = datetime.today()
@@ -2413,7 +1979,7 @@ def cdr_analytic_overview(request):
         # Collect Hourly data
         hourly_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
 
-        (map, reduce, finalfc, out) = mapreduce_hourly_analytic_overview()
+        (map, reduce, finalfc, out) = mapreduce_hourly_overview()
         calls_in_day = \
             hourly_data.map_reduce(map, reduce, out, query=query_var)
         calls_in_day = calls_in_day.find().sort([('_id.a_Year', 1),
@@ -2477,7 +2043,7 @@ def cdr_analytic_overview(request):
         # Collect daily data
         daily_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
 
-        (map, reduce, finalfc, out) = mapreduce_daily_analytic_overview()
+        (map, reduce, finalfc, out) = mapreduce_daily_overview()
         calls_in_day = daily_data.map_reduce(map, reduce, out, query=query_var)
         calls_in_day = calls_in_day.find().sort([('_id.g_Millisec', 1),
                                                  ('_id.f_Switch', 1)])
@@ -2519,7 +2085,7 @@ def cdr_analytic_overview(request):
         # Collect monthly data
         monthly_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
 
-        (map, reduce, finalfc, out) = mapreduce_monthly_analytic_overview()
+        (map, reduce, finalfc, out) = mapreduce_monthly_overview()
         query_var['metadata.date'] = {'$gte': month_start_date, '$lt': month_end_date}
 
         #Run Map Reduce
