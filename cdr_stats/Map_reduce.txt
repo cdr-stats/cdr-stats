@@ -97,7 +97,9 @@ map = function(){
     var year = this.metadata.date.getFullYear();
     var month = this.metadata.date.getMonth();
     var day = this.metadata.date.getDate();
-    var d = new Date(year, month, day);
+    var hour = this.metadata.date.getHours();
+    var min = this.metadata.date.getMinutes();
+    var d = new Date(year, month, day, hour, min);
     emit( 
         { g_Millisec: d.getTime(), },
         {

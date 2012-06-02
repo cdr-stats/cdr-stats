@@ -574,19 +574,10 @@ def mapreduce_hourly_analytic_overview():
     # Get cdr graph by overview report
     map = mark_safe(u'''
         function(){
-            var year = this.metadata.date.getFullYear();
-            var month = this.metadata.date.getMonth();
-            var day = this.metadata.date.getDate();
-            var hours = this.metadata.date.getHours();
-            var minutes = this.metadata.date.getMinutes();
-
-            var d = new Date(year, month, day, hours, minutes);
             emit( {
                     a_Year: this.metadata.date.getFullYear(),
                     b_Month: this.metadata.date.getMonth() + 1,
                     c_Day: this.metadata.date.getDate(),
-                    d_Hour: this.metadata.date.getHours(),
-                    e_Min: this.metadata.date.getMinutes(),
                     f_Switch: this.metadata.switch_id,
             },
             {
@@ -597,45 +588,51 @@ def mapreduce_hourly_analytic_overview():
 
     reduce = mark_safe(u'''
         function(key,vals) {
-            var ret = {
-                call__count : new Array(2),
-                duration__sum: new Array(2),
-            };
+            var result = new Object();
+
             for(var k=0; k < 24; k++){
-                for(var j=0; j < 60; j++){
-                    ret.call__count[k][j]=0;
-                    ret.duration__sum[k][j]=0;
+                for(var l=0; l < 60; l++){
+                    if (k < 10) {
+                        rkey = '0' + k + ':';
+                    } else {
+                        rkey = k + ':';
+                    }
+                    if (l < 10) {
+                        rkey = rkey + '0' + l;
+                    } else {
+                        rkey = rkey + l;
+                    }
+                    result['c/'+rkey] = 0;
+                    result['d/'+rkey] = 0;
                 }
             }
             for (var i=0; i < vals.length; i++) {
                 for (var k=0; k < 24; k++) {
-                    for(var j=0; j < 60; j++){
-                        if (vals[i].call__count[k][j]) {
-                            ret.call__count[k][j] += vals[i].call__count[k][j];
-                            ret.duration__sum[k][j] += vals[i].duration__sum[k][j];
+                    for(var l=0; l < 60; l++){
+                        if (k < 10) {
+                            rkey = '0' + k + ':';
+                        } else {
+                            rkey = k + ':';
+                        }
+                        if (l < 10) {
+                            rkey = rkey + '0' + l;
+                        } else {
+                            rkey = rkey + l;
+                        }
+
+                        if (vals[i].call__count[k] && vals[i].call__count[k][l]) {
+                            result['c/'+rkey] += parseInt(vals[i].call__count[k][l]);
+                            if (vals[i].duration__sum[k] && vals[i].duration__sum[k][l]) {
+                                result['d/'+rkey] += parseInt(vals[i].duration__sum[k][l]);
+                            }
                         }
                     }
                 }
             }
 
-            return ret;
+            return result;
         }''')
-    """
-    reduce = mark_safe(u'''
-        function(key,vals) {
-            var ret = {
-                            calldate__count : 0,
-                            duration__sum: 0,
-                       };
 
-            for (var i=0; i < vals.length; i++){
-                ret.calldate__count += parseInt(vals[i].calldate__count);
-                ret.duration__sum += parseInt(vals[i].duration__sum);
-            }
-            return ret;
-        }
-    ''')
-    """
     out = 'aggregate_hourly_analytic_overview'
     return (map, reduce, False, out)
 

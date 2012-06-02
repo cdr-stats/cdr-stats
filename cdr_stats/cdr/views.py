@@ -2416,7 +2416,10 @@ def cdr_analytic_overview(request):
         (map, reduce, finalfc, out) = mapreduce_hourly_analytic_overview()
         calls_in_day = \
             hourly_data.map_reduce(map, reduce, out, query=query_var)
-        calls_in_day = calls_in_day.find().sort([('_id.f_Switch', 1)])
+        calls_in_day = calls_in_day.find().sort([('_id.a_Year', 1),
+                                                 ('_id.b_Month', 1),
+                                                 ('_id.c_Day', 1),
+                                                 ('_id.f_Switch', 1)])
 
         total_hour_record = []
         total_hour_call_count = []
@@ -2426,40 +2429,48 @@ def cdr_analytic_overview(request):
             hour_data_call_count = dict()
             hour_data_call_duration = dict()
             for i in calls_in_day.clone():
-                print i
-                for j in range(0, 24):
-                    if int(i['value']['call__count'][j]) != 0:
-                        calldate__count = int(i['value']['call__count'][j])
-                        duration__sum = int(i['value']['duration__sum'][j])
+                for h in range(0, 24):
+                    if h < 10:
+                        hkey = '0' + str(h)
+                    for m in range(0, 60):
+                        if m < 10:
+                            mkey = '0' + str(m)
 
-                        graph_day = datetime(int(i['_id']['a_Year']),
-                            int(i['_id']['b_Month']),
-                            int(i['_id']['c_Day']),
-                            j, 0)
+                        c_key = 'c/' + hkey + ':' + mkey
+                        d_key = 'd/' + hkey + ':' + mkey
+                        if int(i['value'][c_key]) != 0:
+                            graph_day = int(i['_id']['c_Day'])
+                            graph_day = datetime(int(i['_id']['a_Year']),
+                                                 int(i['_id']['b_Month']),
+                                                 int(i['_id']['c_Day']),
+                                                 h, m)
 
-                        dt = int(1000 * time.mktime(graph_day.timetuple()))
-                        total_hour_record.append({
-                                        'dt': dt,
-                                        'calldate__count': calldate__count,
-                                        'duration__sum': duration__sum,
-                                        'switch_id': int(i['_id']['f_Switch'])
-                                    })
+                            dt = int(1000 * time.mktime(graph_day.timetuple()))
+                            calldate__count = int(i['value'][c_key])
+                            duration__sum = int(i['value'][d_key])
+                            total_hour_record.append({
+                                'dt': dt,
+                                'calldate__count': calldate__count,
+                                'duration__sum': duration__sum,
+                                'switch_id': int(i['_id']['f_Switch'])
+                            })
 
-                        if dt in hour_data_call_count:
-                            hour_data_call_count[dt] += calldate__count
-                        else:
-                            hour_data_call_count[dt] = calldate__count
+                            if dt in hour_data_call_count:
+                                hour_data_call_count[dt] += calldate__count
+                            else:
+                                hour_data_call_count[dt] = calldate__count
 
-                        if dt in hour_data_call_duration:
-                            hour_data_call_duration[dt] += duration__sum
-                        else:
-                            hour_data_call_duration[dt] = duration__sum
+                            if dt in hour_data_call_duration:
+                                hour_data_call_duration[dt] += duration__sum
+                            else:
+                                hour_data_call_duration[dt] = duration__sum
 
-            total_hour_call_count = hour_data_call_count.items()
-            total_hour_call_count = sorted(total_hour_call_count, key=lambda k: k[0])
 
-            total_hour_call_duration = hour_data_call_duration.items()
-            total_hour_call_duration = sorted(total_hour_call_duration, key=lambda k: k[0])
+        total_hour_call_count = hour_data_call_count.items()
+        total_hour_call_count = sorted(total_hour_call_count, key=lambda k: k[0])
+
+        total_hour_call_duration = hour_data_call_duration.items()
+        total_hour_call_duration = sorted(total_hour_call_duration, key=lambda k: k[0])
 
         # remove mapreduce output from database (no longer required)
         settings.DBCON[out].drop()
