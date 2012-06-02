@@ -2519,7 +2519,7 @@ def cdr_analytic_overview(request):
         # Collect monthly data
         monthly_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
 
-        #(map, reduce, finalfc, out) = mapreduce_cdr_monthly_overview()
+        (map, reduce, finalfc, out) = mapreduce_monthly_analytic_overview()
         query_var['metadata.date'] = {'$gte': month_start_date, '$lt': month_end_date}
 
         #Run Map Reduce
@@ -2533,7 +2533,7 @@ def cdr_analytic_overview(request):
         if calls_in_month.count() != 0:
             month_call_duration = dict()
             month_call_count = dict()
-            """
+
             for i in calls_in_month.clone():
                 dt = int(i['_id']['g_Millisec'])
                 total_month_record.append(
@@ -2553,7 +2553,7 @@ def cdr_analytic_overview(request):
                     month_call_count[dt] += int(i['value']['calldate__count'])
                 else:
                     month_call_count[dt] = int(i['value']['calldate__count'])
-            """
+
             total_month_call_duration = month_call_duration.items()
             total_month_call_duration = sorted(total_month_call_duration, key=lambda k: k[0])
             total_month_call_count = month_call_count.items()

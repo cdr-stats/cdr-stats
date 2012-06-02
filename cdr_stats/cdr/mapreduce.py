@@ -671,18 +671,6 @@ def mapreduce_daily_analytic_overview():
                   } );
         }''')
 
-    reduce = mark_safe(u'''
-        function(key,vals) {
-            var ret = {
-                calldate__count : 0,
-                duration__sum: 0,
-            };
-            for (var i=0; i < vals.length; i++){
-                ret.calldate__count += vals[i].calldate__count;
-                ret.duration__sum += vals[i].duration__sum;
-            }
-            return ret;
-        }''')
     out = 'aggregate_daily_analytic_overview'
     return (map, reduce, False, out)
 
@@ -715,8 +703,8 @@ def mapreduce_monthly_analytic_overview():
                 g_Millisec: d.getTime(),
             },
             {
-                calldate__count: 1,
-                duration__sum: this.duration
+                calldate__count: this.call_daily,
+                duration__sum: this.duration_daily
             } )
           }''')
 
