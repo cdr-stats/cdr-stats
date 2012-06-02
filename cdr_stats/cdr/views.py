@@ -1646,11 +1646,11 @@ def cust_password_reset_complete(request):
         return HttpResponseRedirect("/")
 
 
-def get_hourly_analytic_for_date(start_date, end_date, query_var, graph_view):
+def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
     hourly_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-    logging.debug('Map-reduce cdr hourly analytic')
+    logging.debug('Map-reduce cdr hourly report')
     #Retrieve Map Reduce
-    (map, reduce, finalfc, out) = mapreduce_cdr_hourly_analytic()
+    (map, reduce, finalfc, out) = mapreduce_cdr_hourly_report()
 
     #Run Map Reduce
     calls_in_day = hourly_data.map_reduce(map, reduce, out, query=query_var)
@@ -1694,12 +1694,12 @@ def get_hourly_analytic_for_date(start_date, end_date, query_var, graph_view):
 
 
 @login_required
-def cdr_analytic_by_hour(request):
+def cdr_report_by_hour(request):
     """CDR graph by hourly basis
 
     **Attributes**:
 
-        * ``template`` - cdr/cdr_analytic_by_hour.html
+        * ``template`` - cdr/cdr_report_by_hour.html
         * ``form`` - CompareCallSearchForm
         * ``mongodb_data_set`` - MG_DAILY_ANALYTIC
         * ``map_reduce`` - mapreduce_cdr_hourly_analytic()
@@ -1715,7 +1715,7 @@ def cdr_analytic_by_hour(request):
                     context_instance=RequestContext(request))
 
     logging.debug('CDR hourly view start')
-    template_name = 'cdr/cdr_analytic_by_hour.html'
+    template_name = 'cdr/cdr_report_by_hour.html'
     query_var = {}
     total_record = []
     #default
@@ -1819,14 +1819,14 @@ def cdr_analytic_by_hour(request):
                 e_date = datetime(i.year, i.month, i.day, 23, 59, 59, 999999)
                 query_var['metadata.date'] = {'$gte': s_date, '$lt': e_date}
                 result_data = \
-                    get_hourly_analytic_for_date(s_date, e_date,
-                                                 query_var, graph_view)
+                    get_hourly_report_for_date(s_date, e_date,
+                                               query_var, graph_view)
                 total_record.append((result_data['total_record']))
 
         if check_days == 1:
             result_data = \
-                get_hourly_analytic_for_date(start_date, end_date,
-                                             query_var, graph_view)
+                get_hourly_report_for_date(start_date, end_date,
+                                           query_var, graph_view)
             total_record.append((result_data['total_record']))
 
         logging.debug('CDR hourly view end')

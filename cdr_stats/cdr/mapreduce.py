@@ -337,9 +337,9 @@ def mapreduce_task_cdr_alert():
     return (map, reduce, finalfc, out)
 
 
-def mapreduce_cdr_hourly_analytic():
+def mapreduce_cdr_hourly_report():
     """
-    To get the hourly analytic of cdr
+    To get the hourly report of cdr
 
        * Total calls per year-month-day-hour-min
        * Total call duration per year-month-day
@@ -350,7 +350,7 @@ def mapreduce_cdr_hourly_analytic():
         * ``reduce`` - Calculate call count, sum of call duration,
                        based on map
 
-    Result Collection: ``aggregate_cdr_hourly_analytic``
+    Result Collection: ``aggregate_cdr_hourly_report``
     """
     (map, reduce, finalfc, out) = mapreduce_default()
 
@@ -390,7 +390,7 @@ def mapreduce_cdr_hourly_analytic():
             }
             return ret;
         }''')
-    out = 'aggregate_cdr_hourly_analytic'
+    out = 'aggregate_cdr_hourly_report'
     return (map, reduce, False, out)
 
 
