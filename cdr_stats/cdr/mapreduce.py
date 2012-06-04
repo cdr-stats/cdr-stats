@@ -637,3 +637,37 @@ def mapreduce_country_analytic():
 
     out = 'aggregate_country_analytic'
     return (map, reduce, False, out)
+
+
+def mapreduce_world_analytic():
+    """
+    To get the daily analytic of cdr
+
+       * Total calls per year-month-day-switch
+       * Total call duration per year-month-day-switch
+
+    Attributes:
+
+        * ``map`` - Grouping perform on year, month, day & switch
+        * ``reduce`` - Calculate call count based on map
+
+    Result Collection: ``aggregate_daily_overview``
+    """
+    (map, reduce, finalfc, out) = mapreduce_default()
+
+    # Get cdr graph by day report
+    map = mark_safe(u'''
+        function(){
+
+            emit( {
+                    f_Con: this.metadata.country_id,
+                  },
+                  {
+                    calldate__count: this.call_daily,
+                    duration__sum: this.duration_daily
+                  } );
+        }''')
+
+    out = 'aggregate_world_analytic'
+    return (map, reduce, False, out)
+

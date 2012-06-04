@@ -18,7 +18,8 @@ from cdr.views import index, cdr_view, cdr_export_to_csv, cdr_detail,\
                       cdr_overview, cdr_concurrent_calls, cdr_realtime, mail_report,\
                       cdr_country_report, world_map_view, login_view, logout_view,\
                       pleaselog, cust_password_reset, cust_password_reset_done,\
-                      cust_password_reset_confirm, cust_password_reset_complete, cdr_country_analytic
+                      cust_password_reset_confirm, cust_password_reset_complete,\
+                      cdr_country_analytic, world_map_analytic
 
 
 urlpatterns = patterns('cdr.views',
@@ -38,6 +39,7 @@ urlpatterns = patterns('cdr.views',
 
     # Test
     (r'^country_analytic/$', 'cdr_country_analytic'),
+    (r'^world_map_analytic/$', 'world_map_analytic'),
 
     (r'^login/$',   'login_view'),
     (r'^logout/$',  'logout_view'),

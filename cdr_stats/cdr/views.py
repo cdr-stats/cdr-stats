@@ -2352,3 +2352,119 @@ def cdr_country_analytic(request):
 
     return render_to_response(template_name, variables,
         context_instance=RequestContext(request))
+
+
+def world_map_analytic(request):
+    """CDR world report
+
+    **Attributes**:
+
+        * ``template`` - cdr/world_map_analytic.html
+        * ``form`` - WorldForm
+        * ``mongodb_data_set`` - MG_CDR_COUNTRY_REPORT /
+                                 MG_CDR_COUNTRY
+        * ``map_reduce`` - mapreduce_cdr_world_report()
+
+    **Logic Description**:
+
+        get all call records from mongodb collection for all countries
+        to create country call
+    """
+    if not check_cdr_data_exists(request):
+        return render_to_response(
+            'cdr/error_import.html',
+            context_instance=RequestContext(request))
+
+    logging.debug('CDR world report view start')
+    template = 'cdr/world_map_analytic.html'
+
+    switch_id = 0
+    query_var = {}
+    search_tag = 0
+    now = datetime.now()
+    start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
+    end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
+    from_date = start_date.strftime("%Y-%m-%d")
+    to_date = end_date.strftime("%Y-%m-%d")
+    form = WorldForm(initial={'from_date': from_date, 'to_date': to_date})
+    action = 'tabs-1'
+
+    if request.method == 'POST':
+        logging.debug('CDR world report view with search option')
+        search_tag = 1
+        form = WorldForm(request.POST)
+        if form.is_valid():
+            if "from_date" in request.POST:
+                # From
+                from_date = form.cleaned_data.get('from_date')
+                start_date = datetime(int(from_date[0:4]),
+                    int(from_date[5:7]),
+                    int(from_date[8:10]), 0, 0, 0, 0)
+
+            if "to_date" in request.POST:
+                # To
+                to_date = form.cleaned_data.get('to_date')
+                end_date = datetime(int(to_date[0:4]),
+                    int(to_date[5:7]),
+                    int(to_date[8:10]), 23, 59, 59, 999999)
+
+            switch_id = form.cleaned_data.get('switch')
+            if switch_id and int(switch_id) != 0:
+                query_var['metadata.switch_id'] = int(switch_id)
+
+        else:
+            world_analytic_array = []
+            logging.debug('Error : CDR world report form')
+            variables = {'module': current_view(request),
+                         'form': form,
+                         'search_tag': search_tag,
+                         'start_date': start_date,
+                         'end_date': end_date,
+                         'world_analytic_array': world_analytic_array,
+                         'action': action,
+                         }
+
+            return render_to_response(template_name, variables,
+                context_instance=RequestContext(request))
+
+    query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+
+    if not request.user.is_superuser:  # not superuser
+        if chk_account_code(request):
+            query_var['metadata.accountcode'] = chk_account_code(request)
+        else:
+            return HttpResponseRedirect('/?acc_code_error=true')
+
+    logging.debug('Map-reduce cdr world analytic')
+    #Retrieve Map Reduce
+    (map, reduce, finalfc, out) = mapreduce_world_analytic()
+
+    #Run Map Reduce
+    country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
+
+    calls = country_data.map_reduce(map, reduce, out, query=query_var)
+    calls = calls.find().sort([('value.calldate__count', -1),
+                               ('value.duration__sum', -1)])
+
+    world_analytic_array = []
+    for i in calls:
+        #country id - country name - country_code - call count - call duration
+        world_analytic_array.append((int(i['_id']['f_Con']),
+                                     get_country_name(int(i['_id']['f_Con']),
+                                         type='iso2'),
+                                     int(i['value']['calldate__count']),
+                                     i['value']['duration__sum'],
+                                     get_country_name(int(i['_id']['f_Con']))))
+
+    logging.debug('CDR world report view end')
+    variables = {'module': current_view(request),
+                 'form': form,
+                 'search_tag': search_tag,
+                 'start_date': start_date,
+                 'end_date': end_date,
+                 'world_analytic_array': world_analytic_array,
+                 'action': action,
+                 }
+
+    return render_to_response(template, variables,
+        context_instance=RequestContext(request))
