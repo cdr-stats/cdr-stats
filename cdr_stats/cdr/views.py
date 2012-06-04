@@ -2276,7 +2276,7 @@ def cdr_country_analytic(request):
                 d_key = 'd/' + hkey + ':' + mkey
                 country_key = 'country_id/' + hkey + ':' + mkey
 
-                if int(i['value'][c_key]) != 0 and int(i['value'][country_key]) != 0:
+                if int(i['value'][c_key]) != 0:
                     country_id = int(i['value'][country_key])
                     graph_day = datetime(int(i['_id']['a_Year']),
                         int(i['_id']['b_Month']),
@@ -2292,28 +2292,27 @@ def cdr_country_analytic(request):
                         'country_id': country_id
                     })
 
-                    total_calls += int(calldate__count)
-                    total_duration += int(duration__sum)
+    logging.debug('Map-reduce cdr country calls analytic')
+    #Retrieve Map Reduce
+    (map, reduce, finalfc, out) = mapreduce_world_analytic()
 
-                    # created cdr_country_analytic
-                    settings.DBCON[settings.MG_CDR_COUNTRY].update(
-                            {
-                            'country_id': country_id,
-                            },
-                            {
-                            '$inc': {'count': int(calldate__count),
-                                     'duration': int(duration__sum)}
-                        }, upsert=True)
+    #Run Map Reduce
+    country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
 
-    country_calls_final = settings.DBCON[settings.MG_CDR_COUNTRY].find().sort([('count', -1)])
+    calls = country_data.map_reduce(map, reduce, out, query=query_var)
+    calls = calls.find().sort([('value.calldate__count', -1),
+                               ('value.duration__sum', -1)])
+
     country_analytic_array = []
     country_analytic_array_final = []
-    for i in country_calls_final:
-        # All countries list
-        country_analytic_array.append((get_country_name(int(i['country_id'])),
-                                       int(i['count']),
-                                       int(i['duration']),
-                                       int(i['country_id'])))
+    for i in calls:
+        #country id - country name - call count - call duration - country_id
+        country_analytic_array.append((get_country_name(int(i['_id']['f_Con'])),
+                                       int(i['value']['calldate__count']),
+                                       int(i['value']['duration__sum']),
+                                       int(i['_id']['f_Con'])))
+        total_calls += int(i['value']['calldate__count'])
+        total_duration += int(i['value']['duration__sum'])
 
     # Top countries list
     for i in country_analytic_array[0: NUM_COUNTRY]:
