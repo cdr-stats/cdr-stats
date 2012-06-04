@@ -101,7 +101,11 @@ def get_element(cdr):
 
 def apply_index():
     #TODO Add index one time, create a build function
-    DAILY_ANALYTIC.ensure_index([("metadata.date", -1)])
+    DAILY_ANALYTIC.ensure_index([
+        ("metadata.date", -1)
+        ('metadata.switch_id', 1),
+        ('metadata.country_id', 1),
+        ('metadata.accountcode', 1)])
     CDR_COMMON.ensure_index([("start_uepoch", -1)])
     #CDR_MONTHLY.ensure_index([("start_uepoch", -1)])
     #CDR_DAILY.ensure_index([("start_uepoch", -1)])
@@ -280,12 +284,6 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
                             }
                 }, upsert=True)
 
-            #TODO : Create index
-            #db.stats.DAILY_ANALYTIC.ensure_index([
-            #...     ('metadata.switch_id', 1),
-            #...     ('metadata.country_id', 1),
-            #...     ('metadata.accountcode', 1),
-            #...     ('metadata.date', 1)])
 
             #TODO : MONTHLY_ANALYTIC
             #same as above but just keep monthly information
