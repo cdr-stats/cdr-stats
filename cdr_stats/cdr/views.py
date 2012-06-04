@@ -2005,7 +2005,6 @@ def cdr_overview(request):
                         c_key = 'c/' + hkey + ':' + mkey
                         d_key = 'd/' + hkey + ':' + mkey
                         if int(i['value'][c_key]) != 0:
-                            graph_day = int(i['_id']['c_Day'])
                             graph_day = datetime(int(i['_id']['a_Year']),
                                                  int(i['_id']['b_Month']),
                                                  int(i['_id']['c_Day']),
@@ -2031,11 +2030,11 @@ def cdr_overview(request):
                                 hour_data_call_duration[dt] = duration__sum
 
 
-        total_hour_call_count = hour_data_call_count.items()
-        total_hour_call_count = sorted(total_hour_call_count, key=lambda k: k[0])
+            total_hour_call_count = hour_data_call_count.items()
+            total_hour_call_count = sorted(total_hour_call_count, key=lambda k: k[0])
 
-        total_hour_call_duration = hour_data_call_duration.items()
-        total_hour_call_duration = sorted(total_hour_call_duration, key=lambda k: k[0])
+            total_hour_call_duration = hour_data_call_duration.items()
+            total_hour_call_duration = sorted(total_hour_call_duration, key=lambda k: k[0])
 
         # remove mapreduce output from database (no longer required)
         settings.DBCON[out].drop()
@@ -2150,3 +2149,206 @@ def cdr_overview(request):
             template_name,
             variables,
             context_instance=RequestContext(request))
+
+@login_required
+def cdr_country_analytic(request):
+    """CDR country report
+
+    **Attributes**:
+
+        * ``template`` - cdr/cdr_country_report.html
+        * ``form`` - CountryReportForm
+        * ``mongodb_data_set`` - MG_CDR_COUNTRY_REPORT /
+                                 MG_CDR_COUNTRY
+        * ``map_reduce`` - mapreduce_cdr_country_report()
+
+    **Logic Description**:
+
+        get all call records from mongodb collection for all countries
+        to create country call
+    """
+    if not check_cdr_data_exists(request):
+        return render_to_response(
+            'cdr/error_import.html',
+            context_instance=RequestContext(request))
+
+    logging.debug('CDR country report view start')
+    template_name = 'cdr/cdr_country_report.html'
+    form = CountryReportForm()
+
+    switch_id = 0
+    query_var = {}
+    search_tag = 0
+    now = datetime.now()
+    start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
+    end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
+    from_date = start_date.strftime("%Y-%m-%d")
+    to_date = end_date.strftime("%Y-%m-%d")
+    form = CountryReportForm(initial={'from_date': from_date, 'to_date': to_date})
+
+    total_calls = 0
+    total_duration = 0
+    total_record_final = []
+
+    if request.method == 'POST':
+        logging.debug('CDR country report view with search option')
+        search_tag = 1
+        form = CountryReportForm(request.POST)
+        if form.is_valid():
+            if "from_date" in request.POST:
+                # From
+                from_date = form.cleaned_data.get('from_date')
+                start_date = datetime(int(from_date[0:4]),
+                    int(from_date[5:7]),
+                    int(from_date[8:10]), 0, 0, 0, 0)
+
+            if "to_date" in request.POST:
+                # To
+                to_date = form.cleaned_data.get('to_date')
+                end_date = datetime(int(to_date[0:4]),
+                    int(to_date[5:7]),
+                    int(to_date[8:10]), 23, 59, 59, 999999)
+
+            country_id = form.cleaned_data.get('country_id')
+            # convert list value in int
+            country_id = [int(row) for row in country_id]
+            if len(country_id) >= 1 and country_id[0] != 0:
+                query_var['metadata.country_id'] = {'$in': country_id}
+
+            switch_id = form.cleaned_data.get('switch')
+            if switch_id and int(switch_id) != 0:
+                query_var['metadata.switch_id'] = int(switch_id)
+
+            # TODO : How to check this in new collection
+            duration = form.cleaned_data.get('duration')
+            duration_type = form.cleaned_data.get('duration_type')
+            if duration:
+                due = duration_field_chk_mongodb(duration, duration_type)
+                #if due:
+                #    query_var['duration'] = due
+        else:
+            country_analytic_array_final = country_analytic_array = []
+            logging.debug('Error : CDR country report form')
+            variables = {'module': current_view(request),
+                         'total_calls': total_calls,
+                         'total_duration': total_duration,
+                         'total_record': total_record_final,
+                         'country_analytic_array_final': country_analytic_array_final,
+                         'top_ten_country_analytic' : country_analytic_array[0:11],
+                         'form': form,
+                         'search_tag': search_tag,
+                         'NUM_COUNTRY': NUM_COUNTRY,
+                         }
+
+            return render_to_response(template_name, variables,
+                context_instance=RequestContext(request))
+
+    query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+
+    if not request.user.is_superuser:  # not superuser
+        if chk_account_code(request):
+            query_var['metadata.accountcode'] = chk_account_code(request)
+        else:
+            return HttpResponseRedirect('/?acc_code_error=true')
+
+    logging.debug('Map-reduce cdr country analytic')
+    # Collect Hourly data
+    country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
+
+    (map, reduce, finalfc, out) = mapreduce_country_analytic()
+    calls =\
+        country_data.map_reduce(map, reduce, out, query=query_var)
+    calls = calls.find().sort([('_id.a_Year', 1),
+                               ('_id.b_Month', 1),
+                               ('_id.c_Day', 1),
+                               ('_id.f_Switch', 1),
+                               ('value.country_id', 1)])
+
+    for i in calls.clone():
+        for h in range(0, 24):
+            if h < 10:
+                hkey = '0' + str(h)
+            for m in range(0, 60):
+                if m < 10:
+                    mkey = '0' + str(m)
+
+                c_key = 'c/' + hkey + ':' + mkey
+                d_key = 'd/' + hkey + ':' + mkey
+                country_key = 'country_id/' + hkey + ':' + mkey
+
+                if int(i['value'][c_key]) != 0 and int(i['value'][country_key]) != 0:
+                    country_id = int(i['value'][country_key])
+                    graph_day = datetime(int(i['_id']['a_Year']),
+                        int(i['_id']['b_Month']),
+                        int(i['_id']['c_Day']),
+                        h, m)
+                    dt = int(1000 * time.mktime(graph_day.timetuple()))
+                    calldate__count = int(i['value'][c_key])
+                    duration__sum = int(i['value'][d_key])
+                    total_record_final.append({
+                        'dt': dt,
+                        'calldate__count': calldate__count,
+                        'duration__sum': duration__sum,
+                        'country_id': country_id
+                    })
+
+                    total_calls += int(calldate__count)
+                    total_duration += int(duration__sum)
+
+                    # created cdr_country_analytic
+                    settings.DBCON[settings.MG_CDR_COUNTRY].update(
+                            {
+                            'country_id': country_id,
+                            },
+                            {
+                            '$inc': {'count': int(calldate__count),
+                                     'duration': int(duration__sum)}
+                        }, upsert=True)
+
+    country_calls_final = settings.DBCON[settings.MG_CDR_COUNTRY].find().sort([('count', -1)])
+    country_analytic_array = []
+    country_analytic_array_final = []
+    for i in country_calls_final:
+        # All countries list
+        country_analytic_array.append((get_country_name(int(i['country_id'])),
+                                       int(i['count']),
+                                       int(i['duration']),
+                                       int(i['country_id'])))
+
+    # Top countries list
+    for i in country_analytic_array[0: NUM_COUNTRY]:
+        # i[0] - country name, i[1] - call count,
+        # i[2] - call duration, i[3] - country id,
+        country_analytic_array_final.append((i[0], int(i[1]), int(i[2]), int(i[3])))
+
+    # Other countries analytic
+    other_country_call_count = 0
+    other_country_call_duration = 0
+    for i in country_analytic_array[NUM_COUNTRY:]:
+        #i[0] - country name, i[1] - call count, i[2] - call duration
+        other_country_call_count += int(i[1])
+        other_country_call_duration += int(i[2])
+
+    country_analytic_array_final.append((_('Other'),
+                                         other_country_call_count,
+                                         other_country_call_duration))
+
+    # remove mapreduce output & country analytic from database
+    settings.DBCON[out].drop()
+    settings.DBCON[settings.MG_CDR_COUNTRY].drop()
+
+    logging.debug('CDR country report view end')
+    variables = {'module': current_view(request),
+                 'total_calls': total_calls,
+                 'total_duration': total_duration,
+                 'total_record': total_record_final,
+                 'country_analytic_array_final': country_analytic_array_final,
+                 'top_ten_country_analytic':\
+                     country_analytic_array[0:NUM_COUNTRY],
+                 'form': form,
+                 'search_tag': search_tag,
+                 'NUM_COUNTRY': NUM_COUNTRY,
+                 }
+
+    return render_to_response(template_name, variables,
+        context_instance=RequestContext(request))

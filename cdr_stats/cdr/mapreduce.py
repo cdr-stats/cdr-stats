@@ -549,3 +549,91 @@ def mapreduce_monthly_overview():
 
     out = 'aggregate_monthly_overview'
     return (map, reduce, False, out)
+
+
+def mapreduce_country_analytic():
+    """
+    To get the countries call analytic
+
+       * Total calls per day-country
+       * Total call duration day-country
+
+    Attributes:
+
+        * ``map`` - Grouping perform on year, month, day & switch_id
+        * ``reduce`` - Calculate call count, sum of call duration based on map
+
+    Result Collection: ``aggregate_country_analytic``
+    """
+    (map, reduce, finalfc, out) = mapreduce_hourly_overview()
+
+    # Get cdr country report
+    map = mark_safe(u'''
+        function(){
+            emit( {
+                    a_Year: this.metadata.date.getFullYear(),
+                    b_Month: this.metadata.date.getMonth() + 1,
+                    c_Day: this.metadata.date.getDate(),
+                    f_Switch: this.metadata.switch_id,
+            },
+            {
+                    calldate__count: this.call_minute,
+                    duration__sum: this.duration_minute,
+                    country_id : this.metadata.country_id,
+            } )
+        }''')
+
+    reduce = mark_safe(u'''
+        function(key,vals) {
+            var result = new Object();
+
+            for(var k=0; k < 24; k++){
+                for(var l=0; l < 60; l++){
+                    if (k < 10) {
+                        rkey = '0' + k + ':';
+                    } else {
+                        rkey = k + ':';
+                    }
+                    if (l < 10) {
+                        rkey = rkey + '0' + l;
+                    } else {
+                        rkey = rkey + l;
+                    }
+                    result['c/'+rkey] = 0;
+                    result['d/'+rkey] = 0;
+                    result['country_id/'+rkey] = 0;
+                }
+            }
+            for (var i=0; i < vals.length; i++) {
+                for (var k=0; k < 24; k++) {
+                    for(var l=0; l < 60; l++){
+                        if (k < 10) {
+                            rkey = '0' + k + ':';
+                        } else {
+                            rkey = k + ':';
+                        }
+                        if (l < 10) {
+                            rkey = rkey + '0' + l;
+                        } else {
+                            rkey = rkey + l;
+                        }
+
+                        if (vals[i].calldate__count[k] && vals[i].calldate__count[k][l] && parseInt(vals[i].calldate__count[k][l]) != 0) {
+                            result['c/'+rkey] += parseInt(vals[i].calldate__count[k][l]);
+                            if (vals[i].duration__sum[k] && vals[i].duration__sum[k][l]) {
+                                result['d/'+rkey] += parseInt(vals[i].duration__sum[k][l]);
+                                result['country_id/'+rkey] = parseInt(vals[i].country_id);
+                            }
+                        }
+                        if (vals[i].country_id && parseInt(vals[i].country_id) != 0) {
+                            result['country_id/'+rkey] = parseInt(vals[i].country_id);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }''')
+
+    out = 'aggregate_country_analytic'
+    return (map, reduce, False, out)
