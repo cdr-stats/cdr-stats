@@ -173,8 +173,8 @@ db.daily_analytic.find({'metadata.accountcode': '1000', 'metadata.date': {$gte: 
 
 
 **************************************** Minutes report for country*************************************************
-
 map = function(){
+
     emit(
         {
             a_Year: this.metadata.date.getFullYear(),
@@ -208,7 +208,6 @@ reduce = function(key, vals) {
             }
             result['c/'+rkey] = 0;
             result['d/'+rkey] = 0;
-            result['country_id/'+rkey] = 0;
         }
     }
     for (var i=0; i < vals.length; i++) {

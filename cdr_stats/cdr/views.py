@@ -2158,28 +2158,27 @@ def cdr_country_analytic(request):
 
                 c_key = 'c/' + hkey + ':' + mkey
                 d_key = 'd/' + hkey + ':' + mkey
-                country_key = 'country_id/' + hkey + ':' + mkey
 
-                if int(i['value'][c_key]) != 0 and int(i['value'][country_key]) != 0:
-
-                    country_id = int(i['value'][country_key])
-                    graph_day = datetime(int(i['_id']['a_Year']),
-                        int(i['_id']['b_Month']),
-                        int(i['_id']['c_Day']),
-                        h, m)
-                    dt = int(1000 * time.mktime(graph_day.timetuple()))
-                    calldate__count = int(i['value'][c_key])
-                    duration__sum = int(i['value'][d_key])
-                    total_record_final.append({
-                        'dt': dt,
-                        'calldate__count': calldate__count,
-                        'duration__sum': duration__sum,
-                        'country_id': country_id
-                    })
+                if int(i['value'][c_key]) != 0:
+                    country_id = int(i['value']['country_id'])
+                    if country_id != 0:
+                        graph_day = datetime(int(i['_id']['a_Year']),
+                            int(i['_id']['b_Month']),
+                            int(i['_id']['c_Day']),
+                            h, m)
+                        dt = int(1000 * time.mktime(graph_day.timetuple()))
+                        calldate__count = int(i['value'][c_key])
+                        duration__sum = int(i['value'][d_key])
+                        total_record_final.append({
+                            'dt': dt,
+                            'calldate__count': calldate__count,
+                            'duration__sum': duration__sum,
+                            'country_id': country_id
+                        })
 
     logging.debug('Map-reduce cdr country calls analytic')
     #Retrieve Map Reduce
-    (map, reduce, finalfc, out) = mapreduce_world_analytic()
+    (map, reduce, finalfc, out) = mapreduce_world_report()
 
     #Run Map Reduce
     country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]

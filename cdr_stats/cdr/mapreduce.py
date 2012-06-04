@@ -601,10 +601,11 @@ def mapreduce_country_analytic():
                     }
                     result['c/'+rkey] = 0;
                     result['d/'+rkey] = 0;
-                    result['country_id/'+rkey] = 0;
+                    result['country_id'] = 0;
                 }
             }
             for (var i=0; i < vals.length; i++) {
+                result['country_id'] = parseInt(vals[i].country_id)
                 for (var k=0; k < 24; k++) {
                     for(var l=0; l < 60; l++){
                         if (k < 10) {
@@ -622,7 +623,6 @@ def mapreduce_country_analytic():
                             result['c/'+rkey] += parseInt(vals[i].calldate__count[k][l]);
                             if (vals[i].duration__sum[k] && vals[i].duration__sum[k][l]) {
                                 result['d/'+rkey] += parseInt(vals[i].duration__sum[k][l]);
-                                result['country_id/'+rkey] = parseInt(vals[i].country_id);
                             }
                         }
                     }
@@ -652,7 +652,7 @@ def mapreduce_world_report():
     """
     (map, reduce, finalfc, out) = mapreduce_default()
 
-    # Get cdr graph by country id report
+    # Get cdr graph by day report
     map = mark_safe(u'''
         function(){
 
