@@ -2276,7 +2276,8 @@ def cdr_country_analytic(request):
                 d_key = 'd/' + hkey + ':' + mkey
                 country_key = 'country_id/' + hkey + ':' + mkey
 
-                if int(i['value'][c_key]) != 0:
+                if int(i['value'][c_key]) != 0 and int(i['value'][country_key]) != 0:
+
                     country_id = int(i['value'][country_key])
                     graph_day = datetime(int(i['_id']['a_Year']),
                         int(i['_id']['b_Month']),

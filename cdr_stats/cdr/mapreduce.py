@@ -625,9 +625,6 @@ def mapreduce_country_analytic():
                                 result['country_id/'+rkey] = parseInt(vals[i].country_id);
                             }
                         }
-                        if (vals[i].country_id && parseInt(vals[i].country_id) != 0) {
-                            result['country_id/'+rkey] = parseInt(vals[i].country_id);
-                        }
                     }
                 }
             }
