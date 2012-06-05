@@ -53,7 +53,6 @@ def generate_cdr_data(day_delta_int):
     """
     TODO:Add function documentation
     """
-
     digit = '1234567890'
 
     delta_days = random.randint(0, day_delta_int)
@@ -107,15 +106,14 @@ class Command(BaseCommand):
     args = ' no_of_record, delta_day '
     help = '''Generate random CDRs
 ---------------------------------
-''' \
-        + 'python manage.py generate_cdr <NUMBER_OF_CDR> <DELTA_DAYS>'
+python manage.py generate_cdr <NUMBER_OF_CDR> <DELTA_DAYS> [DURATION]
+'''
 
     def handle(self, *args, **options):
         """
         Note that subscriber created this way are only for devel purposes
         """
-
-        if not args or len(args) != 2:
+        if not args or len(args) < 2:
             print self.help
             # print >> sys.stderr
             raise SystemExit
@@ -126,6 +124,13 @@ class Command(BaseCommand):
             day_delta_int = int(day_delta)
         except ValueError:
             day_delta_int = 30
+        try:
+            arg_duration = args[2]
+            arg_duration = int(arg_duration)
+        except ValueError:
+            arg_duration = 0
+        except IndexError:
+            arg_duration = False
 
         # Retrieve the field collection in the mongo_import list
         ipaddress = settings.MG_IMPORT.items()[0][0]
@@ -157,6 +162,9 @@ class Command(BaseCommand):
                 end_stamp,
                 uuid,
                 ) = generate_cdr_data(day_delta_int)
+
+            if type(arg_duration) == int:
+                duration = arg_duration
 
             if i % 100 == 0:
                 print '%d CDRs created...' % i
