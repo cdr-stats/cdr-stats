@@ -120,23 +120,15 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
     - create CDR_COMMON
     - build the pre-aggregate
     """
-    not_require_data = {"channel_data": 0, "callflow": 0}
-    total_record = importcdr_handler.find(
-                        {
-                            '$or':
-                            [
-                                {'import_cdr': {'$exists': False}},
-                                {'import_cdr': 0}
-                            ]
-                        },
-                        not_require_data).count()
-
-    PAGE_SIZE = 500.0
-    total_loop_count = int(math.ceil(total_record / PAGE_SIZE))
-
+    PAGE_SIZE = 1000
+    data_to_import = True
     count_import = 0
-    for j in range(0, total_loop_count):
-        #store cdr in list to insert by bulk
+
+    while (data_to_import):
+        data_to_import = False
+        local_count_import = 0
+
+        #Store cdr in list to insert by bulk
         cdr_bulk_record = []
 
         result = importcdr_handler.find(
@@ -165,22 +157,15 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
                 "import_cdr_monthly": 1,
                 "import_cdr_daily": 1,
                 "import_cdr_hourly": 1,
-            }).sort([
-                ('variables.start_uepoch', -1),
-                ('callflow.caller_profile.destination_number', 1),
-                ('variables.accountcode', 1),
-                ('variables.hangup_cause_q850', 1)
-                   ]).limit(int(PAGE_SIZE))
+            }).limit(PAGE_SIZE)
 
         #Retrieve FreeSWITCH CDRs
         for cdr in result:
+            #find result so let's look later for more records
+            data_to_import = True
+
             start_uepoch = datetime.datetime.fromtimestamp(
                             int(cdr['variables']['start_uepoch'][:10]))
-            #answer_uepoch = datetime.datetime.fromtimestamp(
-            #    int(cdr['variables']['answer_uepoch'][:10]))
-            #end_uepoch = datetime.datetime.fromtimestamp(
-            #    int(cdr['variables']['end_uepoch'][:10]))
-
             # Check Destination number
             destination_number = cdr['callflow']['caller_profile'][ \
                                                 'destination_number']
@@ -192,8 +177,8 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             hangup_cause_id = get_hangupcause_id(cdr['variables'][ \
                                                 'hangup_cause_q850'])
 
+            #Retrieve Element from CDR Object
             data_element = get_element(cdr)
-
             accountcode = data_element['accountcode']
             remote_media_ip = data_element['remote_media_ip']
             caller_id_number = data_element['caller_id_number']
@@ -229,24 +214,22 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
                 'authorized': authorized,
             }
 
-            # append cdr to bulk_cdr list
+            # Append cdr to bulk_cdr list
             cdr_bulk_record.append(cdr_record)
 
-            # record global CDR
-            #CDR_COMMON.insert(cdr_record)
+            # Count CDR import
             count_import = count_import + 1
+            local_count_import = local_count_import + 1
 
-            """
-            print_shell(shell, "Sync CDR (cid:%s, dest:%s, dur:%s, " \
-                        " hg:%s,country:%s, auth:%s, row_count:%s)" % (
-                        caller_id_number,
-                        destination_number,
-                        duration,
-                        cdr['variables']['hangup_cause_q850'],
-                        country_id,
-                        authorized,
-                        count_import))
-            """
+            # print_shell(shell, "Sync CDR (cid:%s, dest:%s, dur:%s, " \
+            #             " hg:%s,country:%s, auth:%s, row_count:%s)" % (
+            #             caller_id_number,
+            #             destination_number,
+            #             duration,
+            #             cdr['variables']['hangup_cause_q850'],
+            #             country_id,
+            #             authorized,
+            #             count_import))
 
             daily_date = datetime.datetime.fromtimestamp(
                             int(cdr['variables']['start_uepoch'][:10]))
@@ -284,9 +267,8 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
                             }
                 }, upsert=True)
 
-
-            #TODO : MONTHLY_ANALYTIC
-            #same as above but just keep monthly information
+            # TODO : MONTHLY_ANALYTIC
+            # Same as above but just keep monthly information
 
             # Flag the CDR as imported
             importcdr_handler.update(
@@ -298,97 +280,21 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
                 }
             )
 
-            """
-            # Commented the part below as it's not efficient
-            # trying to replace by the DAILY_ANALYTIC collection
-
-            # Store monthly cdr collection with unique import
-            if not hasattr(cdr, 'import_cdr_monthly') \
-                or cdr['import_cdr_monthly'] == 0:
-                # monthly collection
-                current_y_m = datetime.strptime(str(start_uepoch)[:7], \
-                                            "%Y-%m")
-                CDR_MONTHLY.update(
-                            {
-                                'start_uepoch': current_y_m,
-                                'destination_number': destination_number,
-                                'hangup_cause_id': hangup_cause_id,
-                                'accountcode': accountcode,
-                                'switch_id': switch.id,
-                            },
-                            {
-                                '$inc':
-                                    {'calls': 1,
-                                     'duration': duration}
-                            }, upsert=True)
-
-            # Store daily cdr collection with unique import
-            if not hasattr(cdr, 'import_cdr_daily') \
-                or cdr['import_cdr_daily'] == 0:
-                # daily collection
-                current_y_m_d = datetime.strptime(
-                                        str(start_uepoch)[:10],
-                                        "%Y-%m-%d")
-                CDR_DAILY.update(
-                        {
-                            'start_uepoch': current_y_m_d,
-                            'destination_number': destination_number,
-                            'hangup_cause_id': hangup_cause_id,
-                            'accountcode': accountcode,
-                            'switch_id': switch.id,
-                        },
-                        {
-                            '$inc':
-                                {'calls': 1,
-                                 'duration': duration}
-                        }, upsert=True)
-
-            # Store hourly cdr collection with unique import
-            if not hasattr(cdr, 'import_cdr_hourly') \
-                or cdr['import_cdr_hourly'] == 0:
-                # hourly collection
-                current_y_m_d_h = datetime.strptime(
-                                        str(start_uepoch)[:13],
-                                        "%Y-%m-%d %H")
-                CDR_HOURLY.update(
-                            {
-                                'start_uepoch': current_y_m_d_h,
-                                'destination_number': destination_number,
-                                'hangup_cause_id': hangup_cause_id,
-                                'accountcode': accountcode,
-                                'switch_id': switch.id},
-                            {
-                                '$inc': {'calls': 1,
-                                         'duration': duration}
-                            }, upsert=True)
-
-                # Country report collection
-                current_y_m_d_h_m = datetime.strptime(
-                                        str(start_uepoch)[:16],
-                                        "%Y-%m-%d %H:%M")
-                CDR_COUNTRY_REPORT.update(
-                                    {
-                                        'start_uepoch': current_y_m_d_h_m,
-                                        'country_id': country_id,
-                                        'accountcode': accountcode,
-                                        'switch_id': switch.id},
-                                    {
-                                        '$inc': {'calls': 1,
-                                                 'duration': duration}
-                                    }, upsert=True)
-            """
-
-        if count_import > 0:
+        if local_count_import > 0:
             # Bulk cdr list insert into cdr_common
             CDR_COMMON.insert(cdr_bulk_record)
+            # Reset counter to zero
+            local_count_import = 0
             print_shell(shell, "Switch(%s) - currently imported CDRs:%d" % \
                             (ipaddress, count_import))
 
             # Apply index
-            apply_index()
+            # TODO : Dont apply index all time
+            # apply_index()
 
-        print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" % \
+    print_shell(shell, "Import on Switch(%s) - Total Record(s) imported:%d" % \
                             (ipaddress, count_import))
+
 
 
 def import_cdr_freeswitch_mongodb(shell=False):
