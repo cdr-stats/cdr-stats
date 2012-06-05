@@ -874,7 +874,8 @@ def cdr_dashboard(request):
 
     # Top 5 countries list
     country_calls = country_calls.find().\
-                        sort([('value.calldate__count', -1)]).limit(5)
+                        sort([('value.calldate__count', -1),
+                              ('value.duration__sum', -1)]).limit(5)
 
     country_analytic = []
     for i in country_calls:

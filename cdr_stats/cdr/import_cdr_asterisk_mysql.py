@@ -179,8 +179,8 @@ def import_cdr_asterisk_mysql(shell=False):
 
             uniqueid = row[8]
             start_uepoch = datetime.fromtimestamp(int(row[1]))
-            answer_uepoch = start_uepoch
-            end_uepoch = datetime.fromtimestamp(int(row[1]) + int(duration))
+            #answer_uepoch = start_uepoch
+            #end_uepoch = datetime.fromtimestamp(int(row[1]) + int(duration))
 
             # Check Destination number
             destination_number = row[0]
@@ -203,12 +203,12 @@ def import_cdr_asterisk_mysql(shell=False):
                 'uuid': uniqueid,
                 'remote_media_ip': '',
                 'start_uepoch': start_uepoch,
-                'answer_uepoch': answer_uepoch,
-                'end_uepoch': end_uepoch,
-                'mduration': '',
-                'billmsec': '',
-                'read_codec': '',
-                'write_codec': '',
+                #'answer_uepoch': answer_uepoch,
+                #'end_uepoch': end_uepoch,
+                #'mduration': '',
+                #'billmsec': '',
+                #'read_codec': '',
+                #'write_codec': '',
                 'channel': channel,
                 'cdr_type': CDR_TYPE["asterisk"],
                 'cdr_object_id': acctid,
@@ -219,7 +219,7 @@ def import_cdr_asterisk_mysql(shell=False):
             # record global CDR
             # implement Bulk insert as on Freeswitch
             CDR_COMMON.insert(cdr_record)
-
+            """
             print_shell(shell, "Sync CDR (%s:%d, cid:%s, dest:%s, dur:%s, "\
                                 "hg:%s, country:%s, auth:%s, calldate:%s)" % (
                                     settings.ASTERISK_PRIMARY_KEY,
@@ -231,13 +231,14 @@ def import_cdr_asterisk_mysql(shell=False):
                                     country_id,
                                     authorized,
                                     start_uepoch.strftime('%Y-%m-%d %M:%S'),))
+            """
             count_import = count_import + 1
 
             # start_uepoch = row[1]
             daily_date = \
                 datetime.datetime.fromtimestamp(int(row[1][:10]))
 
-            id_daily = daily_date.strftime('%Y%m%d/') + "%d/%s/%d" %\
+            id_daily = daily_date.strftime('%Y%m%d') + "/%d/%s/%d" %\
                                 (switch.id, accountcode, country_id)
             hour = daily_date.hour
             minute = daily_date.minute
@@ -265,6 +266,30 @@ def import_cdr_asterisk_mysql(shell=False):
                         "duration_minute.%d.%d" % (hour, minute): duration,
                         }
                 }, upsert=True)
+
+            # MONTHLY_ANALYTIC
+            # Get a datetime that only include year-month info
+            #d = datetime.datetime.combine(daily_date.date(), datetime.time.min)
+            d = datetime.datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
+
+            id_monthly = daily_date.strftime('%Y%m') + "/%d/%s/%d" %\
+                                                       (switch.id, accountcode, country_id)
+            MONTHLY_ANALYTIC.update(
+                    {
+                    "_id": id_monthly,
+                    "metadata": {
+                        "date": d,
+                        "switch_id": switch.id,
+                        "country_id": country_id,
+                        "accountcode": accountcode,
+                        },
+                    },
+                    {
+                    "$inc": {
+                        "call_monthly": 1,
+                        "duration_monthly": duration,
+                    }
+            }, upsert=True)
 
             #Flag the CDR
             try:

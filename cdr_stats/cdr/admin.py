@@ -261,6 +261,30 @@ class SwitchAdmin(admin.ModelAdmin):
                                                     }
                                             }, upsert=True)
 
+                                        # MONTHLY_ANALYTIC
+                                        # Get a datetime that only include year-month info
+                                        #d = datetime.datetime.combine(daily_date.date(), datetime.time.min)
+                                        d = datetime.datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
+
+                                        id_monthly = daily_date.strftime('%Y%m') + "/%d/%s/%d" %\
+                                                                                   (switch.id, accountcode, country_id)
+                                        MONTHLY_ANALYTIC.update(
+                                                {
+                                                "_id": id_monthly,
+                                                "metadata": {
+                                                    "date": d,
+                                                    "switch_id": switch.id,
+                                                    "country_id": country_id,
+                                                    "accountcode": accountcode,
+                                                    },
+                                                },
+                                                {
+                                                "$inc": {
+                                                    "call_monthly": 1,
+                                                    "duration_monthly": duration,
+                                                    }
+                                            }, upsert=True)
+
                                         cdr_record_count = cdr_record_count + 1
 
                                         msg =\
