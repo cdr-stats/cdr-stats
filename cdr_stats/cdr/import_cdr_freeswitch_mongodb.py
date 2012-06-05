@@ -96,19 +96,21 @@ def get_element(cdr):
     return data_element
 
 
-def apply_index():
+def apply_index(shell):
     #TODO Add index one time, create a build function
     CDR_COMMON.ensure_index([("start_uepoch", -1)])
     DAILY_ANALYTIC.ensure_index([
-        ("metadata.date", -1)
-        ('metadata.switch_id', 1),
-        ('metadata.country_id', 1),
-        ('metadata.accountcode', 1)])
+        ("metadata.date", -1),
+        ("metadata.switch_id", 1),
+        ("metadata.country_id", 1),
+        ("metadata.accountcode", 1)])
     MONTHLY_ANALYTIC.ensure_index([
-        ("metadata.date", -1)
-        ('metadata.switch_id', 1),
-        ('metadata.country_id', 1),
-        ('metadata.accountcode', 1)])
+        ("metadata.date", -1),
+        ("metadata.switch_id", 1),
+        ("metadata.country_id", 1),
+        ("metadata.accountcode", 1)])
+
+    print_shell(shell, "Index applied on collection")
     return True
 
 
@@ -265,7 +267,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
                             }
                 }, upsert=True)
 
-            # TODO : MONTHLY_ANALYTIC
+            # MONTHLY_ANALYTIC
             # Get a datetime that only include year-month info
             #d = datetime.datetime.combine(daily_date.date(), datetime.time.min)
             d = datetime.datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
@@ -306,10 +308,6 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             local_count_import = 0
             print_shell(shell, "Switch(%s) - currently imported CDRs:%d" % \
                             (ipaddress, count_import))
-
-            # Apply index
-            # TODO : Dont apply index all time
-            # apply_index()
 
     print_shell(shell, "Import on Switch(%s) - Total Record(s) imported:%d" % \
                             (ipaddress, count_import))
