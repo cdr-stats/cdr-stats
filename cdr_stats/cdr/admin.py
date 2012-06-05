@@ -26,10 +26,8 @@ from cdr.functions_def import get_hangupcause_id
 from cdr.import_cdr_freeswitch_mongodb import apply_index,\
                                               CDR_COMMON,\
                                               DAILY_ANALYTIC,\
-                                              CDR_MONTHLY,\
-                                              CDR_DAILY,\
-                                              CDR_HOURLY,\
-                                              CDR_COUNTRY_REPORT
+                                              MONTHLY_ANALYTIC
+
 from cdr_alert.functions_blacklist import chk_destination
 
 import datetime

@@ -37,11 +37,8 @@ STATUS_SYNC = {"new": 0, "in_process": 1, "verified": 2}
 
 # Assign collection names to variables
 CDR_COMMON = settings.DBCON[settings.MG_CDR_COMMON]
-CDR_MONTHLY = settings.DBCON[settings.MG_CDR_MONTHLY]
-CDR_DAILY = settings.DBCON[settings.MG_CDR_DAILY]
-CDR_HOURLY = settings.DBCON[settings.MG_CDR_HOURLY]
-CDR_COUNTRY_REPORT = settings.DBCON[settings.MG_CDR_COUNTRY_REPORT]
 DAILY_ANALYTIC = settings.DBCON[settings.MG_DAILY_ANALYTIC]
+MONTHLY_ANALYTIC = settings.DBCON[settings.MG_MONTHLY_ANALYTIC]
 
 
 def print_shell(shell, message):
@@ -101,16 +98,17 @@ def get_element(cdr):
 
 def apply_index():
     #TODO Add index one time, create a build function
+    CDR_COMMON.ensure_index([("start_uepoch", -1)])
     DAILY_ANALYTIC.ensure_index([
         ("metadata.date", -1)
         ('metadata.switch_id', 1),
         ('metadata.country_id', 1),
         ('metadata.accountcode', 1)])
-    CDR_COMMON.ensure_index([("start_uepoch", -1)])
-    #CDR_MONTHLY.ensure_index([("start_uepoch", -1)])
-    #CDR_DAILY.ensure_index([("start_uepoch", -1)])
-    #CDR_HOURLY.ensure_index([("start_uepoch", -1)])
-    #CDR_COUNTRY_REPORT.ensure_index([("start_uepoch", -1)])
+    MONTHLY_ANALYTIC.ensure_index([
+        ("metadata.date", -1)
+        ('metadata.switch_id', 1),
+        ('metadata.country_id', 1),
+        ('metadata.accountcode', 1)])
     return True
 
 
@@ -234,7 +232,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             daily_date = datetime.datetime.fromtimestamp(
                             int(cdr['variables']['start_uepoch'][:10]))
 
-            id_daily = daily_date.strftime('%Y%m%d/') + "%d/%s/%d" % \
+            id_daily = daily_date.strftime('%Y%m%d') + "/%d/%s/%d" % \
                                     (switch.id, accountcode, country_id)
             hour = daily_date.hour
             minute = daily_date.minute
@@ -269,6 +267,28 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
 
             # TODO : MONTHLY_ANALYTIC
             # Same as above but just keep monthly information
+            id_monthly = daily_date.strftime('%Y%m') + "/%d/%s/%d" %\
+                                                        (switch.id, accountcode, country_id)
+
+            # Get a datetime that only include date info
+            d = datetime.datetime.combine(daily_date.date(), datetime.time.min)
+
+            MONTHLY_ANALYTIC.update(
+                    {
+                    "_id": id_monthly,
+                    "metadata": {
+                        "date": d,
+                        "switch_id": switch.id,
+                        "country_id": country_id,
+                        "accountcode": accountcode,
+                        },
+                    },
+                    {
+                    "$inc": {
+                        "call_monthly": 1,
+                        "duration_monthly": duration,
+                        }
+                }, upsert=True)
 
             # Flag the CDR as imported
             importcdr_handler.update(
