@@ -40,7 +40,7 @@ query = {'metadata.accountcode': '1000' };
 
 db.foo.drop();
 db.runCommand( { mapreduce:"daily_analytic", map:map, reduce:reduce, out: { reduce: "foo" }, query: query});
-		    
+
 db.foo.find();
 
 
@@ -49,13 +49,13 @@ db.foo.find();
 // Get from hourly Report from one day, use query to apply this to one day only
 ================================================================================
 
-   
+
 map = function(){
     var year = this.metadata.date.getFullYear();
     var month = this.metadata.date.getMonth();
     var day = this.metadata.date.getDate();
     var d = new Date(year, month, day);
-    emit( 
+    emit(
         { g_Millisec: d.getTime(), },
         {
             call__count: this.call_hourly,
@@ -88,7 +88,7 @@ query = {'metadata.accountcode': '1000' };
 
 db.foo.drop();
 db.runCommand( { mapreduce:"daily_analytic", map:map, reduce:reduce, out: { reduce: "foo" }, query: query});
-		    
+
 db.foo.find();
 
 **************************************** Minutes report *************************************************
@@ -100,7 +100,7 @@ map = function(){
     var hour = this.metadata.date.getHours();
     var min = this.metadata.date.getMinutes();
     var d = new Date(year, month, day, hour, min);
-    emit( 
+    emit(
         { g_Millisec: d.getTime(), },
         {
             call__count: this.call_minute,
@@ -113,7 +113,7 @@ map = function(){
 // '2012-06-01 00:02' - 10 - 22 |  '2012-06-01 01:23' - 2 - 10
 reduce = function(key, vals) {
     var result = new Object();
-    
+
     for(var k=0; k < 24; k++){
         for(var l=0; l < 60; l++){
             if (k < 10) {
@@ -128,7 +128,7 @@ reduce = function(key, vals) {
             }
             result['c/'+rkey] = 0;
             result['d/'+rkey] = 0;
-            
+
         }
     }
     for (var i=0; i < vals.length; i++) {
@@ -144,7 +144,7 @@ reduce = function(key, vals) {
                 } else {
                     rkey = rkey + l;
                 }
-                
+
                 if (vals[i].call__count[k] && vals[i].call__count[k][l]) {
                     result['c/'+rkey] += parseInt(vals[i].call__count[k][l]);
                     if (vals[i].duration__sum[k] && vals[i].duration__sum[k][l]) {
@@ -162,7 +162,7 @@ query = {'metadata.accountcode': '1000', 'metadata.date': {$gte: ISODate("2012-0
 
 db.foo.drop();
 db.runCommand( { mapreduce:"daily_analytic", map:map, reduce:reduce, out: { reduce: "foo" }, query: query});
-		    
+
 db.foo.find();
 
 
@@ -246,7 +246,7 @@ MapReduce::
 
     map = function() {
         emit( this.accountcode, {count: 1, duration: this.duration} );
-    }      
+    }
 
     reduce = function(key, values) {
         var result = {count: 0, duration: 0};
@@ -258,7 +258,7 @@ MapReduce::
 
         return result;
     }
-    
+
     db.cdr_common.mapReduce(map, reduce, out="foo");
 
 
@@ -298,7 +298,7 @@ MapReduce::
          }
          return ret;
     }
-    
+
     db.cdr_common.mapReduce(map, reduce, out="foo");
 
 
