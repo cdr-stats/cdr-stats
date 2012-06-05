@@ -155,6 +155,7 @@ def import_cdr_asterisk_mysql(shell=False):
                 callerid_number = callerid
 
             channel = row[3]
+            #TODO Clean this code, function if not int set default
             try:
                 duration = int(row[4])
             except:
@@ -218,6 +219,7 @@ def import_cdr_asterisk_mysql(shell=False):
             }
 
             # record global CDR
+            # implement Bulk insert as on Freeswitch
             CDR_COMMON.insert(cdr_record)
 
             print_shell(shell, "Sync CDR (%s:%d, cid:%s, dest:%s, dur:%s, "\
@@ -266,69 +268,6 @@ def import_cdr_asterisk_mysql(shell=False):
                         }
                 }, upsert=True)
 
-            """
-            # Store monthly cdr collection with unique import
-            current_y_m = datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
-            CDR_MONTHLY.update(
-                        {
-                            'start_uepoch': current_y_m,
-                            'destination_number': destination_number,
-                            'hangup_cause_id': hangup_cause_id,
-                            'accountcode': accountcode,
-                            'switch_id': switch.id,
-                        },
-                        {
-                            '$inc':
-                                {'calls': 1,
-                                 'duration': duration}
-                        }, upsert=True)
-
-            # Store daily cdr collection with unique import
-            current_y_m_d = datetime.strptime(str(start_uepoch)[:10],
-                                                            "%Y-%m-%d")
-            CDR_DAILY.update(
-                    {
-                        'start_uepoch': current_y_m_d,
-                        'destination_number': destination_number,
-                        'hangup_cause_id': hangup_cause_id,
-                        'accountcode': accountcode,
-                        'switch_id': switch.id,
-                    },
-                    {
-                        '$inc':
-                            {'calls': 1,
-                             'duration': duration}
-                    }, upsert=True)
-
-            # Store hourly cdr collection with unique import
-            current_y_m_d_h = datetime.strptime(str(start_uepoch)[:13],
-                                                                "%Y-%m-%d %H")
-            CDR_HOURLY.update(
-                        {
-                            'start_uepoch': current_y_m_d_h,
-                            'destination_number': destination_number,
-                            'hangup_cause_id': hangup_cause_id,
-                            'accountcode': accountcode,
-                            'switch_id': switch.id},
-                        {
-                            '$inc': {'calls': 1,
-                                     'duration': duration}
-                        }, upsert=True)
-
-            # Country report collection
-            current_y_m_d_h_m = datetime.strptime(str(start_uepoch)[:16],
-                                                        "%Y-%m-%d %H:%M")
-            CDR_COUNTRY_REPORT.update(
-                                {
-                                    'start_uepoch': current_y_m_d_h_m,
-                                    'country_id': country_id,
-                                    'accountcode': accountcode,
-                                    'switch_id': switch.id},
-                                {
-                                    '$inc': {'calls': 1,
-                                             'duration': duration}
-                                }, upsert=True)
-            """
             #Flag the CDR
             try:
                 cursor_update.execute(
@@ -346,8 +285,8 @@ def import_cdr_asterisk_mysql(shell=False):
         connection.close()
 
         if count_import > 0:
+            #TODO: Apply index only if needed
             apply_index()
-
 
         print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" % \
                             (ipaddress, count_import))
