@@ -266,13 +266,12 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
                 }, upsert=True)
 
             # TODO : MONTHLY_ANALYTIC
-            # Same as above but just keep monthly information
+            # Get a datetime that only include year-month info
+            #d = datetime.datetime.combine(daily_date.date(), datetime.time.min)
+            d = datetime.datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
+
             id_monthly = daily_date.strftime('%Y%m') + "/%d/%s/%d" %\
                                                         (switch.id, accountcode, country_id)
-
-            # Get a datetime that only include date info
-            d = datetime.datetime.combine(daily_date.date(), datetime.time.min)
-
             MONTHLY_ANALYTIC.update(
                     {
                     "_id": id_monthly,

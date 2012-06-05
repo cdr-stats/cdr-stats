@@ -542,8 +542,8 @@ def mapreduce_monthly_overview():
                 g_Millisec: d.getTime(),
             },
             {
-                calldate__count: this.call_daily,
-                duration__sum: this.duration_daily
+                calldate__count: this.call_monthly,
+                duration__sum: this.duration_monthly
             } )
           }''')
 
