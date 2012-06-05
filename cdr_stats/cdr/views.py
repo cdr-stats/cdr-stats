@@ -1143,7 +1143,9 @@ def get_cdr_mail_report():
         ACD = int_convert_to_minute(math.floor(total_duration / total_calls))
 
     # Top 5 called countries
-    country_calls_final = settings.DBCON[settings.MG_CDR_COUNTRY].find().sort([('count', -1)]).limit(5)
+    country_calls_final = \
+        settings.DBCON[settings.MG_CDR_COUNTRY].find().sort([('count', -1),
+                                                             ('duration', -1)]).limit(5)
     country_analytic_array = []
     for i in country_calls_final:
         # All countries list
