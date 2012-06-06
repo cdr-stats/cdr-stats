@@ -472,17 +472,7 @@ def cdr_view(request):
     if len(country_id) >= 1 and country_id[0] != 0:
         query_var['country_id'] = {'$in': country_id}
 
-    final_result = cdr_data.find(query_var, {
-                    "uuid": 0,
-                    "answer_uepoch": 0,
-                    "end_uepoch": 0,
-                    "mduration": 0,
-                    "billmsec": 0,
-                    "read_codec": 0,
-                    "write_codec": 0,
-                    "remote_media_ip": 0
-                })
-    total_result_count = final_result.count()
+
 
     # Define no of records per page
     PAGE_SIZE = int(records_per_page)
@@ -491,6 +481,21 @@ def cdr_view(request):
     except:
         PAGE_NUMBER = 1
         #PAGE_SIZE = settings.PAGE_SIZE
+
+    skip_var = PAGE_SIZE * (PAGE_NUMBER - 1)
+
+    final_result = cdr_data.find(query_var, {
+        "uuid": 0,
+        "answer_uepoch": 0,
+        "end_uepoch": 0,
+        "mduration": 0,
+        "billmsec": 0,
+        "read_codec": 0,
+        "write_codec": 0,
+        "remote_media_ip": 0,
+    })
+
+    total_result_count = final_result.count()
 
     docs_pages = [[] for x in range(1, int(total_result_count))]
 
@@ -533,11 +538,8 @@ def cdr_view(request):
 
     logging.debug('Create cdr result')
     rows = \
-    final_result.skip(PAGE_SIZE * (PAGE_NUMBER - 1)).\
+        final_result.skip(PAGE_SIZE * (PAGE_NUMBER - 1)).\
             limit(PAGE_SIZE).sort([(sort_field, default_order)]).clone()
-
-    # change cursor batch_size
-    rows.batch_size(1000)  # 1000000000
 
     # Get daily report from session while using pagination & sorting
     if request.GET.get('page') or request.GET.get('sort_by'):

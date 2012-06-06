@@ -98,7 +98,13 @@ def get_element(cdr):
 
 def apply_index(shell):
     #TODO Add index one time, create a build function
-    CDR_COMMON.ensure_index([("start_uepoch", -1)])
+    CDR_COMMON.ensure_index([("start_uepoch", -1),
+        ("caller_id_number", 1),
+        ("destination_number", 1),
+        ("duration", 1),
+        ("billsec", 1),
+        ("hangup_cause_id", 1),
+        ("accountcode", 1)])
     DAILY_ANALYTIC.ensure_index([
         ("metadata.date", -1),
         ("metadata.switch_id", 1),
