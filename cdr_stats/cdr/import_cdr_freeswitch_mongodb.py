@@ -103,8 +103,7 @@ def apply_index(shell):
         ("destination_number", 1),
         ("duration", 1),
         ("billsec", 1),
-        ("hangup_cause_id", 1),
-        ("accountcode", 1)])
+        ("hangup_cause_id", 1)])
     DAILY_ANALYTIC.ensure_index([
         ("metadata.date", -1),
         ("metadata.switch_id", 1),
