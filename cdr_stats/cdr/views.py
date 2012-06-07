@@ -171,7 +171,11 @@ def cdr_view_daily_report(query_var):
     #Retrieve Map Reduce
     (map, reduce, finalfc, out) = mapreduce_cdr_view()
 
+    #import time
+    #start_time = time.time()
     total_data = cdr_data.map_reduce(map, reduce, out, query=query_var, finalize=finalfc,)
+    #print time.time() - start_time
+
     total_data = total_data.find().sort([('_id.a_Year', -1), ('_id.b_Month', -1), ('_id.c_Day', -1)])
 
     detail_data = []
@@ -538,45 +542,6 @@ def cdr_view(request):
     rows = \
         final_result.sort([(sort_field, default_order)])\
                     .skip(PAGE_SIZE * (PAGE_NUMBER - 1)).limit(PAGE_SIZE)
-
-    # New pagination only work for start_uepoch field
-    # Ref - http://grokbase.com/t/gg/mongodb-user/124wnfgmhk/not-use-skip%EF%BC%8Cpaging-code
-    # For example, if you want to query by date with created_on:
-    #       db.post.find().limit(20).sort( { created_on : -1 } )
-    #db.post.find( { $lt : xxx } ).limit(20)
-    """
-    rows =\
-        final_result.limit(PAGE_SIZE).sort([(sort_field, default_order)])
-
-    last_record = ''
-    loop_count = 1
-
-    for i in rows.clone():
-        if loop_count == PAGE_SIZE:
-            last_record = i['start_uepoch']
-            #last_record = i[sort_field]
-        else:
-            loop_count = loop_count + 1
-
-    if last_record:
-        if request.GET.get('page') or request.GET.get('sort_by'):
-            query_var['start_uepoch'] = {'$lt': last_record}
-            #query_var[sort_field] = {'$lt': sort_field}
-            final_result = cdr_data.find(query_var, {
-                "uuid": 0,
-                "answer_uepoch": 0,
-                "end_uepoch": 0,
-                "mduration": 0,
-                "billmsec": 0,
-                "read_codec": 0,
-                "write_codec": 0,
-                "remote_media_ip": 0,
-                })
-            rows =\
-                final_result.\
-                    limit(PAGE_SIZE).sort([(sort_field, default_order)]).clone()
-    """
-    # New pagination end
 
     # Get daily report from session while using pagination & sorting
     if request.GET.get('page') or request.GET.get('sort_by'):
