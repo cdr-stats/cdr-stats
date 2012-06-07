@@ -186,10 +186,10 @@ def cdr_view_daily_report(query_var):
             })
 
     if total_data.count() != 0:
-        max_duration = max([int(x['value']['duration__sum']) for x in total_data.clone()])
-        total_duration = sum([int(x['value']['duration__sum']) for x in total_data.clone()])
-        total_calls = sum([int(x['value']['calldate__count']) for x in total_data.clone()])
-        total_avg_duration = (sum([float(x['value']['duration__avg']) for x in total_data.clone()]))/total_data.count()
+        max_duration = max([int(x['duration__sum']) for x in detail_data])
+        total_duration = sum([int(x['duration__sum']) for x in detail_data])
+        total_calls = sum([int(x['calldate__count']) for x in detail_data])
+        total_avg_duration = (sum([float(x['duration__avg']) for x in detail_data]))/total_data.count()
     else:
         max_duration = 0
         total_duration = 0
@@ -473,7 +473,6 @@ def cdr_view(request):
         query_var['country_id'] = {'$in': country_id}
 
 
-
     # Define no of records per page
     PAGE_SIZE = int(records_per_page)
     try:
@@ -481,8 +480,6 @@ def cdr_view(request):
     except:
         PAGE_NUMBER = 1
         #PAGE_SIZE = settings.PAGE_SIZE
-
-    skip_var = PAGE_SIZE * (PAGE_NUMBER - 1)
 
     final_result = cdr_data.find(query_var, {
         "uuid": 0,
@@ -538,16 +535,16 @@ def cdr_view(request):
 
     logging.debug('Create cdr result')
 
-    #rows = \
-    #    final_result.skip(PAGE_SIZE * (PAGE_NUMBER - 1)).\
-    #        limit(PAGE_SIZE).sort([(sort_field, default_order)]).clone()
+    rows = \
+        final_result.sort([(sort_field, default_order)])\
+                    .skip(PAGE_SIZE * (PAGE_NUMBER - 1)).limit(PAGE_SIZE)
 
     # New pagination only work for start_uepoch field
     # Ref - http://grokbase.com/t/gg/mongodb-user/124wnfgmhk/not-use-skip%EF%BC%8Cpaging-code
     # For example, if you want to query by date with created_on:
     #       db.post.find().limit(20).sort( { created_on : -1 } )
-    #       db.post.find( { $lt : xxx } ).limit(20)
-
+    #db.post.find( { $lt : xxx } ).limit(20)
+    """
     rows =\
         final_result.limit(PAGE_SIZE).sort([(sort_field, default_order)])
 
@@ -557,13 +554,14 @@ def cdr_view(request):
     for i in rows.clone():
         if loop_count == PAGE_SIZE:
             last_record = i['start_uepoch']
+            #last_record = i[sort_field]
         else:
             loop_count = loop_count + 1
 
     if last_record:
         if request.GET.get('page') or request.GET.get('sort_by'):
             query_var['start_uepoch'] = {'$lt': last_record}
-
+            #query_var[sort_field] = {'$lt': sort_field}
             final_result = cdr_data.find(query_var, {
                 "uuid": 0,
                 "answer_uepoch": 0,
@@ -577,6 +575,7 @@ def cdr_view(request):
             rows =\
                 final_result.\
                     limit(PAGE_SIZE).sort([(sort_field, default_order)]).clone()
+    """
     # New pagination end
 
     # Get daily report from session while using pagination & sorting
