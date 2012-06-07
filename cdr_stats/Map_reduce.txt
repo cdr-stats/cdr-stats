@@ -380,3 +380,46 @@ MapReduce::
              }
              ''')
 
+################### Map-reduce time for cdr view daily report ################
+map = function(){
+    emit( {
+              a_Year: this.start_uepoch.getFullYear(),
+              b_Month: this.start_uepoch.getMonth() + 1,
+              c_Day: this.start_uepoch.getDate(),
+          },
+          {
+              calldate__count: 1,
+              calldate: this.start_uepoch,
+              duration__sum: this.duration,
+              duration__avg: 0
+          } );
+};
+
+reduce = function(key,vals) {
+    var ret = {
+                 calldate__count : 0,
+                 duration__sum: 0,
+                 duration__avg: 0
+            };
+
+    for (var i=0; i < vals.length; i++){
+     ret.calldate__count += parseInt(vals[i].calldate__count);
+     ret.duration__sum += parseInt(vals[i].duration__sum);
+    }
+    return ret;
+};
+
+query_var = {'start_uepoch': {'$gte': ISODate("2012-06-01T00:00:00Z"), '$lt': ISODate("2012-06-30T20:36:300:00Z"), '$lt': ISODate("2012-06-30T20:36:34Z")}};
+db.foo.drop();
+db.runCommand( { mapreduce:"cdr_common", map:map, reduce:reduce, out: { reduce: "foo" }, query: query_var});
+{
+	"result" : "foo",
+	"timeMillis" : 32249,
+	"counts" : {
+		"input" : 43155,
+		"emit" : 43155,
+		"reduce" : 49,
+		"output" : 6
+	},
+	"ok" : 1
+}
