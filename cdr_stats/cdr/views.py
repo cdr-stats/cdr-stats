@@ -537,9 +537,47 @@ def cdr_view(request):
     col_name_with_order['sort_field'] = sort_field
 
     logging.debug('Create cdr result')
-    rows = \
-        final_result.skip(PAGE_SIZE * (PAGE_NUMBER - 1)).\
-            limit(PAGE_SIZE).sort([(sort_field, default_order)]).clone()
+
+    #rows = \
+    #    final_result.skip(PAGE_SIZE * (PAGE_NUMBER - 1)).\
+    #        limit(PAGE_SIZE).sort([(sort_field, default_order)]).clone()
+
+    # New pagination only work for start_uepoch field
+    # Ref - http://grokbase.com/t/gg/mongodb-user/124wnfgmhk/not-use-skip%EF%BC%8Cpaging-code
+    # For example, if you want to query by date with created_on:
+    #       db.post.find().limit(20).sort( { created_on : -1 } )
+    #       db.post.find( { $lt : xxx } ).limit(20)
+
+    rows =\
+        final_result.limit(PAGE_SIZE).sort([(sort_field, default_order)])
+
+    last_record = ''
+    loop_count = 1
+
+    for i in rows.clone():
+        if loop_count == PAGE_SIZE:
+            last_record = i['start_uepoch']
+        else:
+            loop_count = loop_count + 1
+
+    if last_record:
+        if request.GET.get('page') or request.GET.get('sort_by'):
+            query_var['start_uepoch'] = {'$lt': last_record}
+
+            final_result = cdr_data.find(query_var, {
+                "uuid": 0,
+                "answer_uepoch": 0,
+                "end_uepoch": 0,
+                "mduration": 0,
+                "billmsec": 0,
+                "read_codec": 0,
+                "write_codec": 0,
+                "remote_media_ip": 0,
+                })
+            rows =\
+                final_result.\
+                    limit(PAGE_SIZE).sort([(sort_field, default_order)]).clone()
+    # New pagination end
 
     # Get daily report from session while using pagination & sorting
     if request.GET.get('page') or request.GET.get('sort_by'):
