@@ -1711,29 +1711,32 @@ def cdr_overview(request):
         hour_data_call_duration = dict()
         for i in calls_in_day.clone():
             for h in range(0, 24):
-                calldate__count = int(i['value']['calldate__count'][h])
-                duration__sum = int(i['value']['duration__sum'][h])
-                if calldate__count != 0:
-                    graph_day = datetime(int(i['_id']['a_Year']),
-                                         int(i['_id']['b_Month']),
-                                         int(i['_id']['c_Day']), h)
-                    dt = int(1000 * time.mktime(graph_day.timetuple()))
-                    total_hour_record.append({
-                        'dt': dt,
-                        'calldate__count': calldate__count,
-                        'duration__sum': duration__sum,
-                        'switch_id': int(i['_id']['f_Switch'])
-                    })
+                try:
+                    calldate__count = int(i['value']['calldate__count'][h])
+                    duration__sum = int(i['value']['duration__sum'][h])
+                    if calldate__count != 0:
+                        graph_day = datetime(int(i['_id']['a_Year']),
+                                             int(i['_id']['b_Month']),
+                                             int(i['_id']['c_Day']), h)
+                        dt = int(1000 * time.mktime(graph_day.timetuple()))
+                        total_hour_record.append({
+                            'dt': dt,
+                            'calldate__count': calldate__count,
+                            'duration__sum': duration__sum,
+                            'switch_id': int(i['_id']['f_Switch'])
+                        })
 
-                    if dt in hour_data_call_count:
-                        hour_data_call_count[dt] += calldate__count
-                    else:
-                        hour_data_call_count[dt] = calldate__count
+                        if dt in hour_data_call_count:
+                            hour_data_call_count[dt] += calldate__count
+                        else:
+                            hour_data_call_count[dt] = calldate__count
 
-                    if dt in hour_data_call_duration:
-                        hour_data_call_duration[dt] += duration__sum
-                    else:
-                        hour_data_call_duration[dt] = duration__sum
+                        if dt in hour_data_call_duration:
+                            hour_data_call_duration[dt] += duration__sum
+                        else:
+                            hour_data_call_duration[dt] = duration__sum
+                except:
+                    pass
 
         total_hour_call_count = hour_data_call_count.items()
         total_hour_call_count = sorted(total_hour_call_count, key=lambda k: k[0])

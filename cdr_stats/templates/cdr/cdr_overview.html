@@ -344,12 +344,12 @@ $(function () {
                 var hour_tag = '{% trans "Hour" %}';
                 if(graph_type=='hour' && graph_view=='count')
                 {
-                    date_string = date_tag + ' - ' + Day + ', ' + month_name + ' ' + Year;
+                    date_string = date_tag + ' - ' + Day + ', ' + month_name + ' ' + Year + '<br>{% trans "Hour" %}: ' + Hour ;
                     value_string = call_tag + ' - ' + parseInt(y);
                 }
                 if(graph_type=='hour' && graph_view=='duration')
                 {
-                    date_string = date_tag + ' - ' + Day + ', ' + month_name + ' ' + Year;
+                    date_string = date_tag + ' - ' + Day + ', ' + month_name + ' ' + Year + '<br>{% trans "Hour" %}: ' + Hour;
                     value_string = duration_tag + ' - ' + y;
                 }
 
