@@ -389,7 +389,7 @@ def mapreduce_cdr_hourly_report():
                     c_Day: this.metadata.date.getDate(),
                 },
                 {
-                    call__count: this.call_hourly,
+                    calldate__count: this.call_hourly,
                     duration__sum: this.duration_hourly,
                 }
             )
@@ -398,23 +398,24 @@ def mapreduce_cdr_hourly_report():
     reduce = mark_safe(u'''
         function(key,vals) {
             var ret = {
-                call__count : [],
+                calldate__count : [],
                 duration__sum: [],
             };
             for(var k=0; k < 24; k++){
-                ret.call__count[k]=0;
+                ret.calldate__count[k]=0;
                 ret.duration__sum[k]=0;
             }
             for (var i=0; i < vals.length; i++) {
                 for (var k=0; k < 24; k++) {
-                    if (vals[i].call__count[k]) {
-                        ret.call__count[k] += vals[i].call__count[k];
+                    if (vals[i].calldate__count[k]) {
+                        ret.calldate__count[k] += vals[i].calldate__count[k];
                         ret.duration__sum[k] += vals[i].duration__sum[k];
                     }
                 }
             }
             return ret;
         }''')
+
     out = 'aggregate_cdr_hourly_report'
     return (map, reduce, False, out)
 
@@ -423,79 +424,33 @@ def mapreduce_hourly_overview():
     """
     To get the overview analytic of cdr
 
-       * Total calls per year-month-day-hour-switch
-       * Total call duration per year-month-day-hour-switch
+       * Total calls per year-month-day-switch
+       * Total call duration per year-month-day-switch
 
     Attributes:
 
-        * ``map`` - Grouping perform on year, month, day, hour & switch
+        * ``map`` - Grouping perform on year, month, day & switch
         * ``reduce`` - Calculate call count, sum of call duration based on map
 
     Result Collection: ``aggregate_hourly_overview``
     """
-    (map, reduce, finalfc, out) = mapreduce_default()
+    (map, reduce, finalfc, out) = mapreduce_cdr_hourly_report()
 
-    # Get cdr graph by overview report
     map = mark_safe(u'''
         function(){
-            emit( {
+            emit(
+                {
                     a_Year: this.metadata.date.getFullYear(),
                     b_Month: this.metadata.date.getMonth() + 1,
                     c_Day: this.metadata.date.getDate(),
                     f_Switch: this.metadata.switch_id,
-            },
-            {
-                    call__count: this.call_minute,
-                    duration__sum: this.duration_minute,
-            } )
-        }''')
-
-    reduce = mark_safe(u'''
-        function(key,vals) {
-            var result = new Object();
-
-            for(var k=0; k < 24; k++){
-                for(var l=0; l < 60; l++){
-                    if (k < 10) {
-                        rkey = '0' + k + ':';
-                    } else {
-                        rkey = k + ':';
-                    }
-                    if (l < 10) {
-                        rkey = rkey + '0' + l;
-                    } else {
-                        rkey = rkey + l;
-                    }
-                    result['c/'+rkey] = 0;
-                    result['d/'+rkey] = 0;
+                },
+                {
+                    calldate__count: this.call_hourly,
+                    duration__sum: this.duration_hourly,
                 }
-            }
-            for (var i=0; i < vals.length; i++) {
-                for (var k=0; k < 24; k++) {
-                    for(var l=0; l < 60; l++){
-                        if (k < 10) {
-                            rkey = '0' + k + ':';
-                        } else {
-                            rkey = k + ':';
-                        }
-                        if (l < 10) {
-                            rkey = rkey + '0' + l;
-                        } else {
-                            rkey = rkey + l;
-                        }
-
-                        if (vals[i].call__count[k] && vals[i].call__count[k][l] && parseInt(vals[i].call__count[k][l]) != 0) {
-                            result['c/'+rkey] += parseInt(vals[i].call__count[k][l]);
-                            if (vals[i].duration__sum[k] && vals[i].duration__sum[k][l]) {
-                                result['d/'+rkey] += parseInt(vals[i].duration__sum[k][l]);
-                            }
-                        }
-                    }
-                }
-            }
-
-            return result;
-        }''')
+            )
+          }''')
 
     out = 'aggregate_hourly_overview'
     return (map, reduce, False, out)

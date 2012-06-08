@@ -466,7 +466,7 @@ def cdr_view(request):
 
     due = duration_field_chk_mongodb(duration, duration_type)
     if due:
-        query_var['duration'] = due
+        query_var['duration'] = mr_query_var['duration_minute'] = due
 
     if switch_id and int(switch_id) != 0:
         query_var['switch_id'] = mr_query_var['metadata.switch_id'] = int(switch_id)
@@ -1383,10 +1383,10 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
                             int(i['_id']['c_Day']))
         for j in range(0, 24):
             if graph_view == 1:  # Calls per hour
-                call__count = int(i['value']['call__count'][j])
+                calldate__count = int(i['value']['calldate__count'][j])
                 total_analytic_final.append((str(called_time)[:10],
                                              j,
-                                             call__count,
+                                             calldate__count,
                                              ))
             if graph_view == 2:  # Min per hour
                 duration__sum = int(i['value']['duration__sum'][j])
@@ -1696,67 +1696,50 @@ def cdr_overview(request):
         logging.debug('Map-reduce cdr overview analytic')
         # Collect Hourly data
         hourly_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-
         (map, reduce, finalfc, out) = mapreduce_hourly_overview()
-        calls_in_day = \
+        calls_in_day =\
             hourly_data.map_reduce(map, reduce, out, query=query_var)
         calls_in_day = calls_in_day.find().sort([('_id.a_Year', 1),
                                                  ('_id.b_Month', 1),
                                                  ('_id.c_Day', 1),
                                                  ('_id.f_Switch', 1)])
-
         total_hour_record = []
         total_hour_call_count = []
         total_hour_call_duration = []
         total_calls = 0
-        if calls_in_day.count() != 0:
-            hour_data_call_count = dict()
-            hour_data_call_duration = dict()
-            for i in calls_in_day.clone():
-                for h in range(0, 24):
-                    if h < 10:
-                        hkey = '0' + str(h)
-                    for m in range(0, 60):
-                        if m < 10:
-                            mkey = '0' + str(m)
+        hour_data_call_count = dict()
+        hour_data_call_duration = dict()
+        for i in calls_in_day.clone():
+            for h in range(0, 24):
+                calldate__count = int(i['value']['calldate__count'][h])
+                duration__sum = int(i['value']['duration__sum'][h])
+                if calldate__count != 0:
+                    graph_day = datetime(int(i['_id']['a_Year']),
+                                         int(i['_id']['b_Month']),
+                                         int(i['_id']['c_Day']), h)
+                    dt = int(1000 * time.mktime(graph_day.timetuple()))
+                    total_hour_record.append({
+                        'dt': dt,
+                        'calldate__count': calldate__count,
+                        'duration__sum': duration__sum,
+                        'switch_id': int(i['_id']['f_Switch'])
+                    })
 
-                        c_key = 'c/' + hkey + ':' + mkey
-                        d_key = 'd/' + hkey + ':' + mkey
-                        try:
-                            int(i['value'][c_key])
-                            if int(i['value'][c_key]) != 0:
-                                graph_day = datetime(int(i['_id']['a_Year']),
-                                                     int(i['_id']['b_Month']),
-                                                     int(i['_id']['c_Day']),
-                                                     h, m)
-                                dt = int(1000 * time.mktime(graph_day.timetuple()))
-                                calldate__count = int(i['value'][c_key])
-                                duration__sum = int(i['value'][d_key])
-                                total_hour_record.append({
-                                    'dt': dt,
-                                    'calldate__count': calldate__count,
-                                    'duration__sum': duration__sum,
-                                    'switch_id': int(i['_id']['f_Switch'])
-                                })
+                    if dt in hour_data_call_count:
+                        hour_data_call_count[dt] += calldate__count
+                    else:
+                        hour_data_call_count[dt] = calldate__count
 
-                                if dt in hour_data_call_count:
-                                    hour_data_call_count[dt] += calldate__count
-                                else:
-                                    hour_data_call_count[dt] = calldate__count
+                    if dt in hour_data_call_duration:
+                        hour_data_call_duration[dt] += duration__sum
+                    else:
+                        hour_data_call_duration[dt] = duration__sum
 
-                                if dt in hour_data_call_duration:
-                                    hour_data_call_duration[dt] += duration__sum
-                                else:
-                                    hour_data_call_duration[dt] = duration__sum
-                        except:
-                            pass
+        total_hour_call_count = hour_data_call_count.items()
+        total_hour_call_count = sorted(total_hour_call_count, key=lambda k: k[0])
 
-
-            total_hour_call_count = hour_data_call_count.items()
-            total_hour_call_count = sorted(total_hour_call_count, key=lambda k: k[0])
-
-            total_hour_call_duration = hour_data_call_duration.items()
-            total_hour_call_duration = sorted(total_hour_call_duration, key=lambda k: k[0])
+        total_hour_call_duration = hour_data_call_duration.items()
+        total_hour_call_duration = sorted(total_hour_call_duration, key=lambda k: k[0])
 
         # remove mapreduce output from database (no longer required)
         settings.DBCON[out].drop()
