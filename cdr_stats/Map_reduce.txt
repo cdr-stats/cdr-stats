@@ -383,16 +383,15 @@ MapReduce::
 ################### Map-reduce time for cdr view daily report ################
 map = function(){
     emit( {
-              a_Year: this.start_uepoch.getFullYear(),
-              b_Month: this.start_uepoch.getMonth() + 1,
-              c_Day: this.start_uepoch.getDate(),
-          },
-          {
-              calldate__count: 1,
-              calldate: this.start_uepoch,
-              duration__sum: this.duration,
-              duration__avg: 0
-          } );
+        a_Year: this.metadata.date.getFullYear(),
+        b_Month: this.metadata.date.getMonth() + 1,
+        c_Day: this.metadata.date.getDate(),
+    },
+    {
+        calldate__count: this.call_daily,
+        duration__sum: this.duration_daily,
+        duration__avg: 0
+    } );
 };
 
 reduce = function(key,vals) {

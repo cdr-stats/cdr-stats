@@ -171,12 +171,12 @@ def cdr_view_daily_report(query_var):
     #Retrieve Map Reduce
     (map, reduce, finalfc, out) = mapreduce_cdr_view()
 
-    #import time
-    #start_time = time.time()
-    total_data = cdr_data.map_reduce(map, reduce, out, query=query_var, finalize=finalfc,)
-    #print time.time() - start_time
+    cdr_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
+    total_data = cdr_data.map_reduce(map, reduce, out, query=query_var, finalize=finalfc)
 
-    total_data = total_data.find().sort([('_id.a_Year', -1), ('_id.b_Month', -1), ('_id.c_Day', -1)])
+    total_data = total_data.find().sort([('_id.a_Year', -1),
+                                         ('_id.b_Month', -1),
+                                         ('_id.c_Day', -1)])
 
     detail_data = []
     for doc in total_data:
@@ -226,6 +226,8 @@ def cdr_view(request):
         get the call records as well as daily call analytics
         from mongodb collection according to search parameters
     """
+    import time
+    start_time = time.time()
 
     if not check_cdr_data_exists(request):
         return render_to_response(
@@ -441,6 +443,10 @@ def cdr_view(request):
     end_date = datetime(int(to_date[0:4]), int(to_date[5:7]), int(to_date[8:10]), 23, 59, 59, 999999)
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
+    # Mapreduce query variable
+    mr_query_var = {}
+    mr_query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+
     dst = source_desti_field_chk_mongodb(destination, destination_type)
     if dst:
         query_var['destination_number'] = dst
@@ -449,12 +455,13 @@ def cdr_view(request):
         acc = source_desti_field_chk_mongodb(accountcode, accountcode_type)
         if acc:
             query_var['accountcode'] = acc
+            mr_query_var['metadata.accountcode'] = acc
 
     if not request.user.is_superuser:  # not superuser
         if not chk_account_code(request):
             return HttpResponseRedirect('/?acc_code_error=true')
         else:
-            query_var['accountcode'] = chk_account_code(request)
+            query_var['accountcode'] = mr_query_var['metadata.accountcode'] = chk_account_code(request)
 
     cli = source_desti_field_chk_mongodb(caller, caller_type)
     if cli:
@@ -465,7 +472,7 @@ def cdr_view(request):
         query_var['duration'] = due
 
     if switch_id and int(switch_id) != 0:
-        query_var['switch_id'] = int(switch_id)
+        query_var['switch_id'] = mr_query_var['metadata.switch_id'] = int(switch_id)
 
     if hangup_cause_id and int(hangup_cause_id) != 0:
         query_var['hangup_cause_id'] = int(hangup_cause_id)
@@ -474,7 +481,7 @@ def cdr_view(request):
         query_var['direction'] = str(direction)
 
     if len(country_id) >= 1 and country_id[0] != 0:
-        query_var['country_id'] = {'$in': country_id}
+        query_var['country_id'] = mr_query_var['metadata.country_id'] = {'$in': country_id}
 
 
     # Define no of records per page
@@ -486,15 +493,15 @@ def cdr_view(request):
         #PAGE_SIZE = settings.PAGE_SIZE
 
     final_result = cdr_data.find(query_var, {
-        "uuid": 0,
-        "answer_uepoch": 0,
-        "end_uepoch": 0,
-        "mduration": 0,
-        "billmsec": 0,
-        "read_codec": 0,
-        "write_codec": 0,
-        "remote_media_ip": 0,
-    })
+                                    "uuid": 0,
+                                    "answer_uepoch": 0,
+                                    "end_uepoch": 0,
+                                    "mduration": 0,
+                                    "billmsec": 0,
+                                    "read_codec": 0,
+                                    "write_codec": 0,
+                                    "remote_media_ip": 0,
+                                })
 
     total_result_count = final_result.count()
 
@@ -547,7 +554,7 @@ def cdr_view(request):
     if request.GET.get('page') or request.GET.get('sort_by'):
         cdr_view_daily_data = request.session['session_cdr_view_daily_data']
     else:
-        cdr_view_daily_data = cdr_view_daily_report(query_var)
+        cdr_view_daily_data = cdr_view_daily_report(mr_query_var)
         request.session['session_cdr_view_daily_data'] = cdr_view_daily_data
 
     template_data = {'module': current_view(request),
@@ -570,6 +577,7 @@ def cdr_view(request):
                      'result': int(result),
                      }
     logging.debug('CDR View End')
+    print  time.time() - start_time
     return render_to_response(template_name, template_data,
                               context_instance=RequestContext(request))
 
