@@ -226,8 +226,6 @@ def cdr_view(request):
         get the call records as well as daily call analytics
         from mongodb collection according to search parameters
     """
-    import time
-    start_time = time.time()
 
     if not check_cdr_data_exists(request):
         return render_to_response(
@@ -454,8 +452,7 @@ def cdr_view(request):
     if request.user.is_superuser:  # superuser
         acc = source_desti_field_chk_mongodb(accountcode, accountcode_type)
         if acc:
-            query_var['accountcode'] = acc
-            mr_query_var['metadata.accountcode'] = acc
+            query_var['accountcode'] = mr_query_var['metadata.accountcode'] = acc
 
     if not request.user.is_superuser:  # not superuser
         if not chk_account_code(request):
@@ -554,6 +551,7 @@ def cdr_view(request):
     if request.GET.get('page') or request.GET.get('sort_by'):
         cdr_view_daily_data = request.session['session_cdr_view_daily_data']
     else:
+        # pass mapreduce query to cdr_view_daily_report
         cdr_view_daily_data = cdr_view_daily_report(mr_query_var)
         request.session['session_cdr_view_daily_data'] = cdr_view_daily_data
 
@@ -577,7 +575,6 @@ def cdr_view(request):
                      'result': int(result),
                      }
     logging.debug('CDR View End')
-    print  time.time() - start_time
     return render_to_response(template_name, template_data,
                               context_instance=RequestContext(request))
 
