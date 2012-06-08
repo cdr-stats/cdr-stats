@@ -466,7 +466,7 @@ def cdr_view(request):
 
     due = duration_field_chk_mongodb(duration, duration_type)
     if due:
-        query_var['duration'] = mr_query_var['duration_minute'] = due
+        query_var['duration'] = mr_query_var['duration_daily'] = due
 
     if switch_id and int(switch_id) != 0:
         query_var['switch_id'] = mr_query_var['metadata.switch_id'] = int(switch_id)
