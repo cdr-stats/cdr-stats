@@ -1932,8 +1932,11 @@ def cdr_country_report(request):
             duration_type = form.cleaned_data.get('duration_type')
             if duration:
                 due = duration_field_chk_mongodb(duration, duration_type)
-                #if due:
-                #    query_var['duration_minute'] = due
+                if due:
+                    for i in range(0, 24):
+                        query_var['duration_hourly.%d' % (i)] = due
+                        #for j in range(0, 60):
+                        #    query_var['duration_minute.%d.%d' % (i, j)] = due
         else:
             country_analytic_array_final = country_analytic_array = []
             logging.debug('Error : CDR country report form')
