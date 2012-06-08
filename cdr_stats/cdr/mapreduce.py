@@ -545,7 +545,7 @@ def mapreduce_country_report():
 
     Result Collection: ``aggregate_country_report``
     """
-    (map, reduce, finalfc, out) = mapreduce_hourly_overview()
+    (map, reduce, finalfc, out) = mapreduce_cdr_hourly_report()
 
     # Get cdr country report
     map = mark_safe(u'''
@@ -558,8 +558,8 @@ def mapreduce_country_report():
                     country_id : this.metadata.country_id,
             },
             {
-                    calldate__count: this.call_minute,
-                    duration__sum: this.duration_minute,
+                    calldate__count: this.call_hourly,
+                    duration__sum: this.duration_hourly,
             } )
         }''')
 

@@ -191,8 +191,10 @@ $(function () {
                 hour = hour ? hour : 12; // the hour '0' should be '12'
                 minute = minute < 10 ? '0'+minute : minute;
                 strTime = hour + ':' + minute + ' ' + ampm;
-                //{% trans "Calls" %}: ' + Info(time, 2, item.series.data) + '<br>
-                output += strTime + ' - ' + item.series.label + '</div><div class="graph_tooltip_info">{% trans "Duration" %}: ' + Info(time, 1, item.series.data) + ' {% trans "secs" %}</div>';
+
+                output += strTime + ' - ' + item.series.label + '</div><div class="graph_tooltip_info">{% trans "Duration" %}: '
+                        + Info(time, 1, item.series.data) + '{% trans "secs" %}<br>{% trans "Calls" %}: '
+                        + Info(time, 2, item.series.data) + '</div>';
 
                 showTooltip(item.pageX, item.pageY, output);
             }
