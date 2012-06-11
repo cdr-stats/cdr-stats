@@ -22,8 +22,13 @@ import re
 register = template.Library()
 
 
+#TODO: Add doc to all function
+
 @register.filter()
 def cal_width(value,max):
+    """
+    ...
+    """
     width = (value/float(max))*200
     return width
 
@@ -52,7 +57,8 @@ def notice_count(user):
     notice_count = 0
     # get notification count
     try:
-        notice_count = notification.Notice.objects.filter(recipient=user, unseen=1).count()
+        notice_count = notification.Notice.objects.\
+                        filter(recipient=user, unseen=1).count()
     except:
         pass
     return str(notice_count) + _(" Notification")
