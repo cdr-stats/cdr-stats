@@ -236,7 +236,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         """Test Function to check cdr-stats view"""
         response = self.client.get('/hourly_report/')
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'cdr/cdr_graph_by_hour.html')
+        self.assertTemplateUsed(response, 'cdr/cdr_report_by_hour.html')
         response = self.client.post('/hourly_report/', {'switch_id': 1,
                                                         'from_date': '2012-05-01',
                                                         'comp_days': 2,
