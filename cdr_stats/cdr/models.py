@@ -20,6 +20,7 @@ from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from django_extensions.db.fields import UUIDField
 
+
 CDR_TYPE = {
     "freeswitch": 1,
     "asterisk": 2,
@@ -61,16 +62,16 @@ class Switch(models.Model):
     ipaddress = models.CharField(max_length=100, blank=False, null=False, unique=True)
     #switch_type = models.CharField(choices=SWITCH_TYPE, default='freeswitch', max_length=100, null=False)
     key_uuid = UUIDField(auto=True)
-    
+
     def __unicode__(self):
         return '[%s] %s' %(self.id, self.ipaddress)
-        
+
     class Meta:
         verbose_name = _("Switch")
         verbose_name_plural = _("Switches")
         db_table = "voip_switch"
 
-        
+
 class HangupCause(models.Model):
     """This defines the HangupCause
 
@@ -104,7 +105,7 @@ class HangupCause(models.Model):
 """
 class AsteriskCDR(models.Model):
     #This defines the cdr of Asterisk
-    
+
     calldate = models.DateTimeField(default=(lambda:datetime.now()),
                verbose_name=_('calldate'), db_index=True,
                help_text =_("Date Format: YYYY-mm-DD HH:MM:SS"))

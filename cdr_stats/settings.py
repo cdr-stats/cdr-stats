@@ -45,10 +45,14 @@ DATABASES = {
     }
 }
 
-# Only the Asterisk CDR table is supported at the moment,
-# but Freeswitch and other platform will be soon
-VOIP_PLATFORM = 'asterisk'  # asterisk, freeswitch
-
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        #'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        #'LOCATION': '/var/tmp/django_cache',
+        'TIMEOUT': '300',
+    }
+}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

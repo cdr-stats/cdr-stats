@@ -62,12 +62,6 @@ sends all errors from the production server to the admin's email address. ::
               }
       }
 
-      CDR_TABLE_NAME = 'cdr' # Name of the table containing the Asterisk/FreeSwitch CDR
-
-      # Only the Asterisk CDR table is supported at the moment,
-      # but Freeswitch and other platform will be soon
-      VOIP_PLATFORM = 'asterisk' # asterisk, freeswitch
-
       #MONGODB
       #=======
       MG_DB_NAME = 'cdr-stats'

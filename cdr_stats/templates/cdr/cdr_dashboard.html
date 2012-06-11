@@ -1,5 +1,6 @@
 {% extends "cdr/master.html" %}
 {% load i18n cdr_extras country_dialcode_tags common_tags %}
+{% load cache %}
 
 {% block extra_head %}
   <script type="text/javascript">
@@ -15,7 +16,7 @@
 <form class="well form-inline span12" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
     <div class="control-group">
         <div class="controls">
-            <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }} :</label> 
+            <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }} :</label>
                 {{ form.switch }}
                 <span class="help-block">{{ form.switch.help_text|safe }} </span>
         </div>
@@ -54,7 +55,7 @@ $(function () {
         xaxis: { mode: "time", tickLength: 5 },
         yaxis: { min: 0, tickDecimals: false },
         selection: { mode: "x" },
-        grid: { 
+        grid: {
                 hoverable: true,
                 xaxis: false
               },
@@ -88,7 +89,7 @@ $(function () {
     $("#overview").bind("plotselected", function (event, ranges) {
         plot.setSelection(ranges);
     });
-    
+
     $("#graph_responsive").bind("plothover", function (event, pos, item) {
         if (item) {
             if (previousPoint != item.dataIndex) {
@@ -165,7 +166,9 @@ $(function () {
 
         var data = [
             {% for td in hangup_analytic %}
-                { label: '{{ td.hangup_cause_id|get_hangupcause_name_with_title }}' , data: [[1, {{ td.count }}]]},
+                {% cache 500 hangup_cause_id td.hangup_cause_id %}
+                    { label: '{{ td.hangup_cause_id|get_hangupcause_name_with_title }}' , data: [[1, {{ td.count }}]]},
+                {% endcache %}
             {% endfor %}
         ];
         /*
@@ -312,7 +315,9 @@ $(function () {
                 <tr>
                     <td class="td-dashboard">
                         {% if country_data.3 %}
-                            <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
+                            {% cache 500 country_data country_data.3 %}
+                                <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
+                            {% endcache %}
                         {% else %}
                             <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip">
                         {% endif %}
