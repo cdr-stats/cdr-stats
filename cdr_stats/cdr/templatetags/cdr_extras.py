@@ -35,7 +35,7 @@ def seen_unseen(value):
     else:
         return "icon-ok"
 
-    
+
 @register.filter()
 def seen_unseen_word(value):
     if value:

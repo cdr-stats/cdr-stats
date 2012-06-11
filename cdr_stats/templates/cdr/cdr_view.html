@@ -1,6 +1,7 @@
 {% extends "cdr/master.html" %}
 {% load i18n pagination_tags cdr_extras common_tags %}
 {% load country_dialcode_tags %}
+{% load cache %}
 
 {% block title %}{% trans "CDR View" %}{% endblock %}
 
@@ -260,12 +261,18 @@
                         {{ row.billsec }}
                     {% endif %}
                 </td>
-                <td>{{ row.hangup_cause_id|get_hangupcause_name }}</td>
+                <td>
+                  {% cache 500 hangupcause_name row.hangup_cause_id %}
+                    {{ row.hangup_cause_id|get_hangupcause_name }}
+                  {% endcache %}
+                </td>
                 <td>{{ row.accountcode }}</td>
                 <td>
                     <div class="flag_icon">
                         {% if row.country_id %}
-                            <img src="{{STATIC_URL}}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name }}">
+                            {% cache 500 hcountry_flag row.country_id %}
+                                <img src="{{STATIC_URL}}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name }}">
+                            {% endcache %}
                         {% else %}
                             <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip">
                         {% endif %}
