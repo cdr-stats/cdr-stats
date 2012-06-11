@@ -833,12 +833,11 @@ def cdr_dashboard(request):
     #end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
     end_date = datetime(now.year, now.month, now.day,
                         now.hour, now.minute, now.second, now.microsecond)
-    start_date = end_date+relativedelta(days=-int(1))
+    start_date = end_date + relativedelta(days=-int(1))
 
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
-    if not request.user.is_superuser: # not superuser
-        acc_code_error = ''
+    if not request.user.is_superuser:  # not superuser
         if chk_account_code(request):
             query_var['accountcode'] = chk_account_code(request)
         else:
@@ -872,8 +871,9 @@ def cdr_dashboard(request):
             int_hangup_cause_id = False
 
         if int_hangup_cause_id:
-            settings.DBCON[settings.MG_CDR_HANGUP].update({'hangup_cause_id': int(d['value']['hangup_cause_id'])},
-                                                                         {'$inc': {'count': 1}}, upsert=True)
+            settings.DBCON[settings.MG_CDR_HANGUP].update(
+                    {'hangup_cause_id': int(d['value']['hangup_cause_id'])},
+                    {'$inc': {'count': 1}}, upsert=True)
 
     hangup_analytic = settings.DBCON[settings.MG_CDR_HANGUP].find()
 
@@ -940,7 +940,8 @@ def cdr_concurrent_calls(request):
     """
 
     if not check_cdr_data_exists(request):
-        return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
+        return render_to_response('cdr/error_import.html',
+                            context_instance=RequestContext(request))
 
     logging.debug('CDR concurrent view start')
     query_var = {}
@@ -963,15 +964,14 @@ def cdr_concurrent_calls(request):
                 query_var['_id.f_Switch'] = int(switch_id)
     else:
         now = datetime.today()
-        from_date = to_date = now.strftime('%Y-%m-%d')
+        from_date = now.strftime('%Y-%m-%d')
         start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
         end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 0)
         form = ConcurrentCallForm(initial={'from_date': from_date})
 
     query_var['value.call_date'] = {'$gte': start_date, '$lt': end_date}
 
-    if not request.user.is_superuser: # not superuser
-        acc_code_error = ''
+    if not request.user.is_superuser:  # not superuser
         if chk_account_code(request):
             query_var['value.accountcode'] = chk_account_code(request)
         else:
@@ -980,12 +980,13 @@ def cdr_concurrent_calls(request):
     final_data = []
     if query_var:
         calls_in_day = settings.DBCON[settings.MG_CONC_CALL_AGG]
-        calls_in_day = calls_in_day.find(query_var).sort([ ('_id.g_Millisec', 1)])
+        calls_in_day = calls_in_day.find(query_var).\
+                                sort([('_id.g_Millisec', 1)])
 
         for d in calls_in_day.clone():
             final_data.append({'millisec': int(d['_id']['g_Millisec']),
-                               'call__count': int(d['value']['numbercall__max']),
-                               'switch_id': int(d['_id']['f_Switch'])})
+                           'call__count': int(d['value']['numbercall__max']),
+                           'switch_id': int(d['_id']['f_Switch'])})
 
         logging.debug('CDR concurrent view end')
         variables = {'module': current_view(request),
@@ -995,7 +996,7 @@ def cdr_concurrent_calls(request):
                     }
 
     return render_to_response('cdr/cdr_graph_concurrent_calls.html', variables,
-           context_instance = RequestContext(request))
+           context_instance=RequestContext(request))
 
 
 
@@ -1017,10 +1018,8 @@ def cdr_realtime(request):
     logging.debug('CDR realtime view start')
     query_var = {}
     switch_id = 0
-    search_tag = 0
     if request.method == 'POST':
         logging.debug('CDR realtime view with search option')
-        search_tag = 1
         form = SwitchForm(request.POST)
         if form.is_valid():
             switch_id = form.cleaned_data.get('switch')
@@ -1034,8 +1033,7 @@ def cdr_realtime(request):
 
     query_var['value.call_date'] = {'$gte': start_date, '$lt': end_date}
 
-    if not request.user.is_superuser: # not superuser
-        acc_code_error = ''
+    if not request.user.is_superuser:  # not superuser
         if chk_account_code(request):
             query_var['value.accountcode'] = chk_account_code(request)
         else:
@@ -1043,7 +1041,8 @@ def cdr_realtime(request):
 
     if query_var:
         calls_in_day = settings.DBCON[settings.MG_CONC_CALL_AGG]
-        calls_in_day = calls_in_day.find(query_var).sort([('_id.g_Millisec', -1)])
+        calls_in_day = calls_in_day.find(query_var).\
+                                sort([('_id.g_Millisec', -1)])
 
         final_data = []
         for d in calls_in_day.clone():
@@ -1052,7 +1051,6 @@ def cdr_realtime(request):
 
         logging.debug('Realtime view end')
         list_switch = Switch.objects.all()
-        user_obj = User.objects.get(username=request.user)
         variables = {'module': current_view(request),
                      'form': form,
                      'final_data': final_data,
@@ -1067,26 +1065,25 @@ def cdr_realtime(request):
                     }
 
     return render_to_response('cdr/cdr_graph_realtime.html', variables,
-           context_instance = RequestContext(request))
+           context_instance=RequestContext(request))
 
 
 def get_cdr_mail_report():
     """General function to get previous day CDR report"""
     # Get yesterday's CDR-Stats Mail Report
-    switch_id = 0
-
     query_var = {}
     yesterday = date.today() - timedelta(1)
-    start_date = datetime(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0, 0)
-    end_date = datetime(yesterday.year, yesterday.month, yesterday.day, 23, 59, 59, 999999)
+    start_date = datetime(yesterday.year, yesterday.month,
+                                yesterday.day, 0, 0, 0, 0)
+    end_date = datetime(yesterday.year, yesterday.month,
+                                yesterday.day, 23, 59, 59, 999999)
 
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
     # result set
     final_result = cdr_data.find(query_var)
-
-    total_records = [[] for x in range(1, int(final_result.count()))]
-
+    total_records = [ [] for x in range(1, int(final_result.count())) ]
     last_ten_calls = final_result.limit(10).sort([('start_uepoch', -1)]).clone()
+
     final_last_ten_calls = []
     for i in last_ten_calls:
         # duration convert into min
@@ -1094,26 +1091,27 @@ def get_cdr_mail_report():
         billsec = int_convert_to_minute(int(i['billsec']))
 
         final_last_ten_calls.append({
-                             'id': i['cdr_object_id'],
-                             'start_uepoch': i['start_uepoch'],
-                             'caller_id_number': i['caller_id_number'],
-                             'caller_id_name': i['caller_id_name'],
-                             'destination_number': i['destination_number'],
-                             'duration': duration,
-                             'billsec': billsec,
-                             'hangup_cause': get_hangupcause_name(i['hangup_cause_id']),
-                             'accountcode': i['accountcode'],
-                             'country': i['country_id'],
-                             'direction': i['direction'],
-                            })
+                    'id': i['cdr_object_id'],
+                    'start_uepoch': i['start_uepoch'],
+                    'caller_id_number': i['caller_id_number'],
+                    'caller_id_name': i['caller_id_name'],
+                    'destination_number': i['destination_number'],
+                    'duration': duration,
+                    'billsec': billsec,
+                    'hangup_cause': get_hangupcause_name(i['hangup_cause_id']),
+                    'accountcode': i['accountcode'],
+                    'country': i['country_id'],
+                    'direction': i['direction'],
+                })
 
     #Retrieve Map Reduce
     (map, reduce, finalfc, out) = mapreduce_cdr_mail_report()
 
-    total_data = cdr_data.map_reduce(map, reduce, out, query=query_var, finalize=finalfc,)
+    total_data = cdr_data.map_reduce(map, reduce, out,
+                            query=query_var, finalize=finalfc)
 
-    total_data = total_data.find().sort([('_id.c_Day', -1), ('_id.d_Hour', -1)])
-    total_hour_count = total_data.count()
+    total_data = total_data.find().sort([('_id.c_Day', -1),
+                                        ('_id.d_Hour', -1)])
     detail_data = []
     for doc in total_data:
         detail_data.append(
@@ -1157,8 +1155,9 @@ def get_cdr_mail_report():
 
     # Top 5 called countries
     country_calls_final = \
-        settings.DBCON[settings.MG_CDR_COUNTRY].find().sort([('count', -1),
-                                                             ('duration', -1)]).limit(5)
+        settings.DBCON[settings.MG_CDR_COUNTRY].find().\
+                        sort([('count', -1),
+                              ('duration', -1)]).limit(5)
     country_analytic_array = []
     for i in country_calls_final:
         # All countries list
