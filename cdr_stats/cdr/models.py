@@ -12,12 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.db import models
-from django.db.models import permalink
-from django.db import IntegrityError
 from django.utils.translation import gettext_lazy as _
-from django.conf import settings
-from django.contrib.auth.models import User
-from datetime import datetime, timedelta
 from django_extensions.db.fields import UUIDField
 
 
@@ -58,13 +53,17 @@ class Switch(models.Model):
 
     **Name of DB table**: voip_switch
     """
-    name = models.CharField(max_length=100, blank=False, null=True, unique=True)
-    ipaddress = models.CharField(max_length=100, blank=False, null=False, unique=True)
-    #switch_type = models.CharField(choices=SWITCH_TYPE, default='freeswitch', max_length=100, null=False)
+    name = models.CharField(max_length=100, blank=False,
+                            null=True, unique=True)
+    ipaddress = models.CharField(max_length=100, blank=False,
+                            null=False, unique=True)
+    #switch_type = models.CharField(choices=SWITCH_TYPE,
+    #                        default='freeswitch',
+    #                        max_length=100, null=False)
     key_uuid = UUIDField(auto=True)
 
     def __unicode__(self):
-        return '[%s] %s' %(self.id, self.ipaddress)
+        return '[%s] %s' % (self.id, self.ipaddress)
 
     class Meta:
         verbose_name = _("Switch")
@@ -86,15 +85,15 @@ class HangupCause(models.Model):
     """
     code = models.PositiveIntegerField(unique=True, verbose_name=_('Code'),
                                        help_text=_("ITU-T Q.850 Code"))
-    enumeration  = models.CharField(max_length=100, null=True, blank=True,
+    enumeration = models.CharField(max_length=100, null=True, blank=True,
                                     verbose_name=_('Enumeration'))
-    cause  = models.CharField(max_length=100, null=True, blank=True,
+    cause = models.CharField(max_length=100, null=True, blank=True,
                               verbose_name=_('Cause'))
-    description  = models.TextField(null=True, blank=True,
+    description = models.TextField(null=True, blank=True,
                                     verbose_name=_('Description'))
 
     def __unicode__(self):
-        return '[%s] %s' %(self.code, self.enumeration)
+        return '[%s] %s' % (self.code, self.enumeration)
 
     class Meta:
         verbose_name = _("Hangupcause")
@@ -109,26 +108,32 @@ class AsteriskCDR(models.Model):
     calldate = models.DateTimeField(default=(lambda:datetime.now()),
                verbose_name=_('calldate'), db_index=True,
                help_text =_("Date Format: YYYY-mm-DD HH:MM:SS"))
-    src = models.CharField(max_length=80, blank=True, null=True, verbose_name=_('Source'))
+    src = models.CharField(max_length=80, blank=True, null=True,
+                            verbose_name=_('Source'))
     dst = models.CharField(max_length=80, blank=True, null=True,
                            verbose_name=_('Destination'), db_index=True,)
-    clid = models.CharField(max_length=80, blank=True, null=True, verbose_name=_('Caller Id'))
+    clid = models.CharField(max_length=80, blank=True, null=True,
+                            verbose_name=_('Caller Id'))
     dcontext = models.CharField(max_length=80, blank=True, null=True,
                                 verbose_name=_('Destination context'))
     channel = models.CharField(max_length=80, blank=True, null=True,
                                verbose_name=_('channel'))
     dstchannel = models.CharField(max_length=80, blank=True, null=True,
                                   verbose_name=_('destination channel'))
-    lastapp = models.CharField(max_length=80, blank=True, null=True, verbose_name=_('Last app'))
+    lastapp = models.CharField(max_length=80, blank=True, null=True,
+                            verbose_name=_('Last app'))
     lastdata = models.CharField(max_length=80, blank=True, null=True)
-    duration = models.IntegerField(default=0, null=True, verbose_name=_('Duration'))
-    billsec = models.IntegerField(default=0, null=True, verbose_name=_('Bill sec'))
+    duration = models.IntegerField(default=0, null=True,
+                            verbose_name=_('Duration'))
+    billsec = models.IntegerField(default=0, null=True,
+                            verbose_name=_('Bill sec'))
     disposition = models.PositiveIntegerField(choices=DISPOSITION, default=1,
                                               verbose_name=_('Disposition'))
     amaflags = models.IntegerField(default=0, null=True)
     accountcode = models.IntegerField(default=0, null=True, db_index=True,
-                                      verbose_name=_('Accountcode'))
-    uniqueid = models.CharField(max_length=32, blank=True, null=True, unique=True,)
+                                verbose_name=_('Accountcode'))
+    uniqueid = models.CharField(max_length=32, blank=True,
+                                null=True, unique=True,)
     userfield = models.CharField(max_length=255, blank=True, null=True)
     cost = models.CharField(max_length=20, blank=True, null=True)
     vendor = models.CharField(max_length=20, blank=True, null=True)
