@@ -18,6 +18,8 @@ from cdr.import_cdr_asterisk_mysql import import_cdr_asterisk_mysql
 from cdr.import_cdr_freeswitch_mongodb import apply_index
 
 
+#TODO : refactor using make_option see example sync_cdr_freeswitch
+
 class Command(BaseCommand):
     """
     Command line to import Asterisk CDR with Mysql

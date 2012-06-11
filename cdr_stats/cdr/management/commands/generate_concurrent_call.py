@@ -20,6 +20,15 @@ from random import choice
 from datetime import datetime
 import random
 
+
+#TODO : refactor using make_option see example sync_cdr_freeswitch
+# https://docs.djangoproject.com/en/dev/howto/custom-management-commands/
+#
+# python manage.py generate_concurrent_call <DELTA_DAYS>
+# we want something line :
+# python manage.py generate_cdr --delta-day=0
+
+
 random.seed()
 
 HANGUP_CAUSE = ['NORMAL_CLEARING', 'NORMAL_CLEARING', 'NORMAL_CLEARING',
