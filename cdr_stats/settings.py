@@ -135,6 +135,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    #'geordi.VisorMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     #'pagination.middleware.PaginationMiddleware',
     'linaro_django_pagination.middleware.PaginationMiddleware',
@@ -198,6 +199,7 @@ INSTALLED_APPS = (
     #'raven.contrib.django',
     'notification',
     'country_dialcode',
+    #'geordi',
 )
 
 # Debug Toolbar
@@ -240,6 +242,19 @@ else:
         'debug_toolbar.panels.logger.LoggingPanel',
     )
 """
+
+DEBUG_TOOLBAR_PANELS = (
+    'debug_toolbar.panels.version.VersionDebugPanel',
+    'debug_toolbar.panels.timer.TimerDebugPanel',
+    'debug_toolbar.panels.profiling.ProfilingDebugPanel',
+    'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
+    'debug_toolbar.panels.headers.HeaderDebugPanel',
+    'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
+    'debug_toolbar.panels.template.TemplateDebugPanel',
+    'debug_toolbar.panels.sql.SQLDebugPanel',
+    'debug_toolbar.panels.signals.SignalDebugPanel',
+    'debug_toolbar.panels.logger.LoggingPanel',
+)
 
 # Django extensions
 try:

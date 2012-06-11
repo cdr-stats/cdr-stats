@@ -35,8 +35,8 @@ tastypie_api.register(CdrResource())
 
 
 urlpatterns = patterns('',
-	
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
+
+    # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
     # to INSTALLED_APPS to enable admin documentation:
     #(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
@@ -44,10 +44,11 @@ urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
 
     (r'^i18n/', include('django.conf.urls.i18n')),
-    
+
     (r'^admin_tools/', include('admin_tools.urls')),
 
     (r'^api/', include(tastypie_api.urls)),
+
     # Serve static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
      {'document_root': settings.STATIC_ROOT}),

@@ -806,6 +806,8 @@ def cdr_dashboard(request):
         get all call records from mongodb collection for current day
         to create hourly report as well as hangup cause/country analytics
     """
+    logging.debug('Debug Message')
+
     if not check_cdr_data_exists(request):
         return render_to_response(
                     'cdr/error_import.html',
