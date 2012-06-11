@@ -485,7 +485,6 @@ def cdr_view(request):
         PAGE_NUMBER = int(request.GET['page'])
     except:
         PAGE_NUMBER = 1
-        #PAGE_SIZE = settings.PAGE_SIZE
 
     final_result = cdr_data.find(query_var, {
                                     "uuid": 0,
@@ -498,7 +497,6 @@ def cdr_view(request):
                                     "remote_media_ip": 0,
                                 })
 
-    total_result_count = final_result.count()
     form = CdrSearchForm(initial={
                             'from_date': from_date,
                             'to_date': to_date,
