@@ -14,7 +14,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import UUIDField
-
+import caching.base
 
 CDR_TYPE = {
     "freeswitch": 1,
@@ -43,7 +43,7 @@ SWITCH_TYPE = (
 )
 
 
-class Switch(models.Model):
+class Switch(caching.base.CachingMixin, models.Model):
     """This defines the Switch
 
     **Attributes**:
@@ -62,6 +62,8 @@ class Switch(models.Model):
     #                        max_length=100, null=False)
     key_uuid = UUIDField(auto=True)
 
+    objects = caching.base.CachingManager()
+
     def __unicode__(self):
         return '[%s] %s' % (self.id, self.ipaddress)
 
@@ -71,7 +73,7 @@ class Switch(models.Model):
         db_table = "voip_switch"
 
 
-class HangupCause(models.Model):
+class HangupCause(caching.base.CachingMixin, models.Model):
     """This defines the HangupCause
 
     **Attributes**:

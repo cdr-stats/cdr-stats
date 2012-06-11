@@ -21,3 +21,4 @@ git+git://github.com/toastdriven/django-tastypie.git
 django_socketio
 django_extensions
 django-cache-utils
+django-cache-machine
