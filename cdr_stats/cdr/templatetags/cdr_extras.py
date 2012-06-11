@@ -14,9 +14,6 @@
 from django import template
 from django.utils.translation import gettext as _
 from cdr.models import Switch, HangupCause
-from datetime import datetime
-import operator
-import copy
 import re
 
 register = template.Library()
@@ -29,7 +26,7 @@ def cal_width(value,max):
     """
     ...
     """
-    width = (value/float(max))*200
+    width = (value / float(max)) * 200
     return width
 
 
@@ -87,8 +84,10 @@ def get_hangupcause_name_with_title(id):
     try:
         obj = HangupCause.objects.get(pk=id)
         val = obj.enumeration
-        t = re.sub("([a-z])'([A-Z])", lambda m: m.group(0).lower(), val.title())
-        return re.sub("\d([A-Z])", lambda m: m.group(0).lower(), t)
+        t = re.sub("([a-z])'([A-Z])",
+                        lambda m: m.group(0).lower(), val.title())
+        return re.sub("\d([A-Z])",
+                        lambda m: m.group(0).lower(), t)
     except:
         return ''
 
@@ -96,8 +95,8 @@ def get_hangupcause_name_with_title(id):
 @register.filter()
 def mongo_id(value, sub_val):
     if type(value) == type({}):
-        if value.has_key('_id'):
-            if value['_id'].has_key(sub_val):
+        if '_id' in value:
+            if sub_val in value['_id']:
                 value = int(value['_id'][sub_val])
             else:
                 value = value['_id']
@@ -111,5 +110,6 @@ register.filter('seen_unseen_word', seen_unseen_word)
 register.filter('notice_count', notice_count)
 register.filter('get_switch_ip', get_switch_ip)
 register.filter('get_hangupcause_name', get_hangupcause_name)
-register.filter('get_hangupcause_name_with_title', get_hangupcause_name_with_title)
+register.filter('get_hangupcause_name_with_title',
+                            get_hangupcause_name_with_title)
 register.filter('mongo_id', mongo_id)
