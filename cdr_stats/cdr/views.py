@@ -355,8 +355,10 @@ def cdr_view(request):
             detail_data = []
             tday = datetime.today()
             start_date = tday.strftime('%Y-%m-01')
-            last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) + relativedelta(months=1)) - relativedelta(days=1)).strftime('%d')
-            end_date = tday.strftime('%Y-%m-'+last_day)
+            last_day = ((datetime(tday.year, tday.month, 1, \
+                            23, 59, 59, 999999) + relativedelta(months=1)) \
+                            - relativedelta(days=1)).strftime('%d')
+            end_date = tday.strftime('%Y-%m-' + last_day)
             template_data = {'module': current_view(request),
                              'rows': rows,
                              'form': form,
@@ -404,7 +406,8 @@ def cdr_view(request):
             search_tag = request.session.get('session_search_tag')
             records_per_page = request.session.get('session_records_per_page')
             country_id = request.session['session_country_id']
-            cdr_view_daily_data = request.session.get('session_cdr_view_daily_data')
+            cdr_view_daily_data = request.session.get(
+                                            'session_cdr_view_daily_data')
         else:
             from_date
     except NameError:
@@ -437,8 +440,10 @@ def cdr_view(request):
         request.session['session_country_id'] = ''
         request.session['session_cdr_view_daily_data'] = {}
 
-    start_date = datetime(int(from_date[0:4]), int(from_date[5:7]), int(from_date[8:10]), 0, 0, 0, 0)
-    end_date = datetime(int(to_date[0:4]), int(to_date[5:7]), int(to_date[8:10]), 23, 59, 59, 999999)
+    start_date = datetime(int(from_date[0:4]), int(from_date[5:7]), \
+                            int(from_date[8:10]), 0, 0, 0, 0)
+    end_date = datetime(int(to_date[0:4]), int(to_date[5:7]), \
+                            int(to_date[8:10]), 23, 59, 59, 999999)
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
     # Mapreduce query variable
@@ -452,13 +457,15 @@ def cdr_view(request):
     if request.user.is_superuser:  # superuser
         acc = source_desti_field_chk_mongodb(accountcode, accountcode_type)
         if acc:
-            query_var['accountcode'] = mr_query_var['metadata.accountcode'] = acc
+            mr_query_var['metadata.accountcode'] = acc
+            query_var['accountcode'] = acc
 
     if not request.user.is_superuser:  # not superuser
         if not chk_account_code(request):
             return HttpResponseRedirect('/?acc_code_error=true')
         else:
-            query_var['accountcode'] = mr_query_var['metadata.accountcode'] = chk_account_code(request)
+            mr_query_var['metadata.accountcode'] = chk_account_code(request)
+            query_var['accountcode'] = chk_account_code(request)
 
     cli = source_desti_field_chk_mongodb(caller, caller_type)
     if cli:
@@ -469,7 +476,8 @@ def cdr_view(request):
         query_var['duration'] = mr_query_var['duration_daily'] = due
 
     if switch_id and int(switch_id) != 0:
-        query_var['switch_id'] = mr_query_var['metadata.switch_id'] = int(switch_id)
+        mr_query_var['metadata.switch_id'] = int(switch_id)
+        query_var['switch_id'] = int(switch_id)
 
     if hangup_cause_id and int(hangup_cause_id) != 0:
         query_var['hangup_cause_id'] = int(hangup_cause_id)
@@ -478,8 +486,8 @@ def cdr_view(request):
         query_var['direction'] = str(direction)
 
     if len(country_id) >= 1 and country_id[0] != 0:
-        query_var['country_id'] = mr_query_var['metadata.country_id'] = {'$in': country_id}
-
+        mr_query_var['metadata.country_id'] = {'$in': country_id}
+        query_var['country_id'] = {'$in': country_id}
 
     # Define no of records per page
     PAGE_SIZE = int(records_per_page)
