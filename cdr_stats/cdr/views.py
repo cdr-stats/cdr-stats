@@ -848,8 +848,11 @@ def cdr_dashboard(request):
     (map, reduce, finalfc, out) = mapreduce_cdr_dashboard()
 
     #Run Map Reduce
+    logging.debug('Before MapReduce')
     calls = cdr_data.map_reduce(map, reduce, out, query=query_var)
+    logging.debug('After MapReduce')
     calls = calls.find().sort([('_id.g_Millisec', 1)])
+    logging.debug('After calls.find')
 
     # if exists, drop previous collection
     settings.DBCON[settings.MG_CDR_HANGUP].drop()
