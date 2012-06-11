@@ -12,33 +12,28 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.core.management.base import BaseCommand
-from cdr.import_cdr_freeswitch_mongodb import import_cdr_freeswitch_mongodb, apply_index
+from cdr.import_cdr_freeswitch_mongodb import import_cdr_freeswitch_mongodb, \
+                                            apply_index
+from optparse import make_option
 
 
 class Command(BaseCommand):
     # Usage : sync_cdr
-    args = ' apply_index '
     help = "Sync Freeswitch with our CDR Record table\n" \
-           "-----------------------------------------\n\n" \
-           "USAGE : python manage.py sync_cdr_freeswitch 1\n\n"\
-           "        python manage.py sync_cdr_freeswitch 0\n"
+           "Usage: python manage.py sync_cdr_freeswitch --apply-index\n"
+    option_list = BaseCommand.option_list + (
+        make_option('--apply-index',
+            action='store_true',
+            dest='apply-index',
+            default=False,
+            help=help),
+        )
 
     def handle(self, *args, **options):
-
-        if not args or len(args) != 1:
-            print self.help
-            # print >> sys.stderr
-            raise SystemExit
-
-        apply_index_var = args[0]
-        try:
-            apply_index_var = int(apply_index_var)
-        except ValueError:
-            apply_index_var = 0
-
 
         import_cdr_freeswitch_mongodb(shell=True)
 
         # Apply index on collection
-        if apply_index_var == 1:
+        if options['apply-index']:
+            print "\nWe are going to apply index..."
             apply_index(shell=True)
