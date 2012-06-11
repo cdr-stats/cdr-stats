@@ -879,7 +879,7 @@ def cdr_dashboard(request):
     settings.DBCON[out].drop()
 
     # Country call analytic start
-    (map, reduce, finalfc, out) = mapreduce_cdr_world_report()
+    (map, reduce, finalfc, out) = mapreduce_dashboard_world_report()
     country_calls = cdr_data.map_reduce(map, reduce, out, query=query_var)
 
     # Top 5 countries list

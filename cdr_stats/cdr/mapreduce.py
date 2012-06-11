@@ -286,7 +286,7 @@ def mapreduce_cdr_country_report():
     return (map, reduce, False, out)
 
 
-def mapreduce_cdr_world_report():
+def mapreduce_dashboard_world_report():
     """
     To get the all countries call analytic
 
@@ -298,7 +298,7 @@ def mapreduce_cdr_world_report():
         * ``map`` - Grouping perform on country
         * ``reduce`` - Calculate call count, sum of call duration based on map
 
-    Result Collection: ``aggregate_result_cdr_world_report``
+    Result Collection: ``aggregate_dashboard_world_report``
     """
     (map, reduce, finalfc, out) = mapreduce_default()
 
@@ -314,23 +314,7 @@ def mapreduce_cdr_world_report():
                     duration__sum: this.duration,
                 })
         }''')
-
-    reduce = mark_safe(u'''
-        function(key,vals) {
-            var ret = {
-                        calldate__count : 0,
-                        duration__sum: 0,
-                    };
-
-            for (var i=0; i < vals.length; i++){
-                    ret.calldate__count += parseInt(vals[i].calldate__count);
-                    ret.duration__sum += parseInt(vals[i].duration__sum);
-            }
-            return ret;
-        }
-        ''')
-
-    out = 'aggregate_result_cdr_world_report'
+    out = 'aggregate_dashboard_world_report'
     return (map, reduce, False, out)
 
 
