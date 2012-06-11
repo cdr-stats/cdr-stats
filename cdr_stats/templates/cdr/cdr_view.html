@@ -242,7 +242,7 @@
             </tr>
             </thead>
             {% if rows %}
-            {% autopaginate pages PAGE_SIZE %}
+            {% autopaginate rows PAGE_SIZE %}
             {% for row in rows %}
             <tr>
                 <td>{{ row.start_uepoch }}</td>

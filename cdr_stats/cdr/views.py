@@ -345,7 +345,6 @@ def cdr_view(request):
             # form is not valid
             logging.debug('Error : CDR search form')
             rows = []
-            docs_pages = 0
             PAGE_SIZE = settings.PAGE_SIZE
             total_duration = 0
             total_calls = 0
@@ -360,7 +359,6 @@ def cdr_view(request):
             template_data = {'module': current_view(request),
                              'rows': rows,
                              'form': form,
-                             'pages': docs_pages,
                              'PAGE_SIZE': PAGE_SIZE,
                              'total_data': detail_data,
                              'total_duration': total_duration,
@@ -501,9 +499,6 @@ def cdr_view(request):
                                 })
 
     total_result_count = final_result.count()
-
-    docs_pages = [[] for x in range(1, int(total_result_count))]
-
     form = CdrSearchForm(initial={
                             'from_date': from_date,
                             'to_date': to_date,
@@ -558,7 +553,6 @@ def cdr_view(request):
     template_data = {'module': current_view(request),
                      'rows': rows,
                      'form': form,
-                     'pages': docs_pages,
                      'PAGE_SIZE': PAGE_SIZE,
                      'total_data': cdr_view_daily_data['total_data'],
                      'total_duration': cdr_view_daily_data['total_duration'],
