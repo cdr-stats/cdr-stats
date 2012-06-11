@@ -736,6 +736,7 @@ def cdr_global_report(request):
     (map, reduce, finalfc, out) = mapreduce_cdr_view()
 
     #Run Map Reduce
+    cdr_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
     calls = cdr_data.map_reduce(map, reduce, out, query=query_var, finalize=finalfc,)
     calls = calls.find().sort([('_id.a_Year', -1), ('_id.b_Month', -1), ('_id.c_Day', -1)])
 
@@ -750,15 +751,15 @@ def cdr_global_report(request):
 
         for d in calls:
             dtime = datetime(int(d['_id']['a_Year']),
-                            int(d['_id']['b_Month']),
-                            int(d['_id']['c_Day']), 0, 0, 0, 0)
+                             int(d['_id']['b_Month']),
+                             int(d['_id']['c_Day']), 0, 0, 0, 0)
             if dtime > maxtime:
                 maxtime = dtime
             elif dtime < mintime:
                 mintime = dtime
             calls_dict[int(dtime.strftime("%Y%m%d"))] = {'calldate__count': d['value']['calldate__count'],
-                                                        'duration__sum': d['value']['duration__sum'],
-                                                        'duration__avg': d['value']['duration__avg']}
+                                                         'duration__sum': d['value']['duration__sum'],
+                                                         'duration__avg': d['value']['duration__avg']}
         dateList = date_range(mintime, maxtime)
 
         i = 0
