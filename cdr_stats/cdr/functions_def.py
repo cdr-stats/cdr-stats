@@ -20,7 +20,7 @@ from cache_utils.decorators import cached
 import re
 
 
-#@cached(3600)
+@cached(3600)
 def get_switch_list():
     """Switch list used in form"""
     list = Switch.objects.all()
