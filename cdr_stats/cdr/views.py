@@ -51,7 +51,6 @@ from cdr.mapreduce import *
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
-import operator
 import math
 import csv
 import time
@@ -1702,7 +1701,6 @@ def cdr_overview(request):
         total_hour_record = []
         total_hour_call_count = []
         total_hour_call_duration = []
-        total_calls = 0
         hour_data_call_count = dict()
         hour_data_call_duration = dict()
         for i in calls_in_day.clone():
@@ -1735,11 +1733,11 @@ def cdr_overview(request):
                     pass
 
         total_hour_call_count = hour_data_call_count.items()
-        total_hour_call_count = sorted(total_hour_call_count, key=lambda k: k[0])
-
+        total_hour_call_count = sorted(total_hour_call_count,
+                                        key=lambda k: k[0])
         total_hour_call_duration = hour_data_call_duration.items()
-        total_hour_call_duration = sorted(total_hour_call_duration, key=lambda k: k[0])
-
+        total_hour_call_duration = sorted(total_hour_call_duration,
+                                        key=lambda k: k[0])
         # remove mapreduce output from database (no longer required)
         settings.DBCON[out].drop()
 
@@ -1778,9 +1776,11 @@ def cdr_overview(request):
                     day_call_count[dt] = int(i['value']['calldate__count'])
 
             total_day_call_duration = day_call_duration.items()
-            total_day_call_duration = sorted(total_day_call_duration, key=lambda k: k[0])
+            total_day_call_duration = sorted(total_day_call_duration,
+                                                key=lambda k: k[0])
             total_day_call_count = day_call_count.items()
-            total_day_call_count = sorted(total_day_call_count, key=lambda k: k[0])
+            total_day_call_count = sorted(total_day_call_count,
+                                                key=lambda k: k[0])
 
         # remove mapreduce output from database (no longer required)
         settings.DBCON[out].drop()
