@@ -15,6 +15,7 @@
 #
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from optparse import make_option
 from random import choice
 from uuid import uuid1
 from pymongo.connection import Connection
@@ -23,14 +24,6 @@ import sys
 import random
 import datetime
 import time
-
-#TODO : refactor using make_option see example sync_cdr_freeswitch
-# https://docs.djangoproject.com/en/dev/howto/custom-management-commands/
-#
-# python manage.py generate_cdr <NUMBER_OF_CDR> <DELTA_DAYS> [DURATION]
-# we want something line :
-# python manage.py generate_cdr --number-cdr=100 --delta-day=0 [--duration=10]
-
 
 random.seed()
 
@@ -109,36 +102,53 @@ def generate_cdr_data(day_delta_int):
 
 
 class Command(BaseCommand):
-
-    # Usage : generate_cdr 500
     args = ' no_of_record, delta_day '
-    help = '''Generate random CDRs
----------------------------------
-python manage.py generate_cdr <NUMBER_OF_CDR> <DELTA_DAYS> [DURATION]
-'''
+    help = "Generate random CDRs\n"\
+           "---------------------------------\n"\
+           "python manage.py generate_cdr --number-cdr=100 --delta-day=0 [--duration=10]"
+
+    option_list = BaseCommand.option_list + (
+        make_option('--number-cdr',
+                    default=None,
+                    dest='number-cdr',
+                    help=help),
+        make_option('--delta-day',
+                    default=None,
+                    dest='delta-day',
+                    help=help),
+        make_option('--duration',
+                    default=None,
+                    dest='duration',
+                    help=help),
+        )
+
 
     def handle(self, *args, **options):
         """
         Note that subscriber created this way are only for devel purposes
         """
-        if not args or len(args) < 2:
-            print self.help
-            # print >> sys.stderr
-            raise SystemExit
+        no_of_record = 1  # default
+        if options.get('number-cdr'):
+            try:
+                no_of_record = int(options.get('number-cdr'))
+            except ValueError:
+                no_of_record = 1
 
-        no_of_record = args[0]
-        day_delta = args[1]
-        try:
-            day_delta_int = int(day_delta)
-        except ValueError:
-            day_delta_int = 30
-        try:
-            arg_duration = args[2]
-            arg_duration = int(arg_duration)
-        except ValueError:
-            arg_duration = 0
-        except IndexError:
-            arg_duration = False
+
+        day_delta_int = 30  # default
+        if options.get('delta-day'):
+            try:
+                day_delta_int = int(options.get('delta-day'))
+            except ValueError:
+                day_delta_int = 30
+
+        arg_duration = False  # default
+        if options.get('duration'):
+            try:
+                arg_duration = options.get('duration')
+                arg_duration = int(arg_duration)
+            except ValueError:
+                arg_duration = 0
 
         # Retrieve the field collection in the mongo_import list
         ipaddress = settings.MG_IMPORT.items()[0][0]
