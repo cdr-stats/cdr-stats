@@ -108,7 +108,7 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                {% cache 500 switch_list rc.grouper %}
+                {% cache 500 switch_id rc.grouper %}
                     label: '{{ rc.grouper|get_switch_ip }}',
                     data: [
                         {% for item in rc.list %}
@@ -136,7 +136,7 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                {% cache 500 switch_list rc.grouper %}
+                {% cache 500 switch_id rc.grouper %}
                     label: '{{ rc.grouper|get_switch_ip }}',
                     data: [
                         {% for item in rc.list %}
@@ -164,7 +164,7 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                {% cache 500 switch_list rc.grouper %}
+                {% cache 500 switch_id rc.grouper %}
                     label: '{{ rc.grouper|get_switch_ip }}',
                     data: [
                         {% for item in rc.list %}
@@ -192,7 +192,7 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                {% cache 500 switch_list rc.grouper %}
+                {% cache 500 switch_id rc.grouper %}
                     label: '{{ rc.grouper|get_switch_ip }}',
                     data: [
                         {% for item in rc.list %}
@@ -220,7 +220,7 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                {% cache 500 switch_list rc.grouper %}
+                {% cache 500 switch_id rc.grouper %}
                     label: '{{ rc.grouper|get_switch_ip }}',
                     data: [
                         {% for item in rc.list %}
@@ -248,7 +248,7 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                {% cache 500 switch_list rc.grouper %}
+                {% cache 500 switch_id rc.grouper %}
                     label: '{{ rc.grouper|get_switch_ip }}',
                     data: [
                         {% for item in rc.list %}

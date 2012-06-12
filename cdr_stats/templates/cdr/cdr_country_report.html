@@ -95,7 +95,7 @@ $(function () {
     {% regroup total_record|dictsort:"country_id" by country_id as country_list %}
     {% for rc in country_list %}
         {
-            {% cache 500 country_list rc.grouper %}
+            {% cache 500 country_id rc.grouper %}
                 label: '{{ rc.grouper|country_name }}',
                 data: [
                     {% for item in rc.list %}
@@ -351,7 +351,7 @@ $(function () {
                         <tr>
                             <td class="td-dashboard">
                                 {% if country_data.3 %}
-                                    {% cache 500 country_data country_data.3 %}
+                                    {% cache 500 hcountry_flag country_data.3 %}
                                         <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
                                     {% endcache %}
                                 {% else %}
@@ -396,7 +396,9 @@ $(function () {
                         <tr>
                             <td class="td-dashboard">
                                 {% if country_data.3 %}
-                                    <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
+                                    {% cache 500 hcountry_flag country_data.3 %}
+                                        <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
+                                    {% endcache %}
                                 {% else %}
                                     <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip">
                                 {% endif %}
