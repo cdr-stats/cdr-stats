@@ -1077,35 +1077,13 @@ def get_cdr_mail_report():
     query_var = {}
     yesterday = date.today() - timedelta(1)
     start_date = datetime(yesterday.year, yesterday.month,
-                                yesterday.day, 0, 0, 0, 0)
+                          yesterday.day, 0, 0, 0, 0)
     end_date = datetime(yesterday.year, yesterday.month,
-                                yesterday.day, 23, 59, 59, 999999)
+                        yesterday.day, 23, 59, 59, 999999)
 
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
     # result set
-    final_result = cdr_data.find(query_var)
-    total_records = [ [] for x in range(1, int(final_result.count())) ]
-    last_ten_calls = final_result.limit(10).sort([('start_uepoch', -1)]).clone()
-
-    final_last_ten_calls = []
-    for i in last_ten_calls:
-        # duration convert into min
-        duration = int_convert_to_minute(int(i['duration']))
-        billsec = int_convert_to_minute(int(i['billsec']))
-
-        final_last_ten_calls.append({
-                    'id': i['cdr_object_id'],
-                    'start_uepoch': i['start_uepoch'],
-                    'caller_id_number': i['caller_id_number'],
-                    'caller_id_name': i['caller_id_name'],
-                    'destination_number': i['destination_number'],
-                    'duration': duration,
-                    'billsec': billsec,
-                    'hangup_cause': get_hangupcause_name(i['hangup_cause_id']),
-                    'accountcode': i['accountcode'],
-                    'country': i['country_id'],
-                    'direction': i['direction'],
-                })
+    final_result = cdr_data.find(query_var).sort([('start_uepoch', -1)]).limit(10)
 
     #Retrieve Map Reduce
     (map, reduce, finalfc, out) = mapreduce_cdr_mail_report()
@@ -1143,8 +1121,8 @@ def get_cdr_mail_report():
             }, upsert=True)
 
     if total_data.count() != 0:
-        total_duration = sum([int(x['value']['duration__sum']) for x in total_data.clone()])
-        total_calls = sum([int(x['value']['calldate__count']) for x in total_data.clone()])
+        total_duration = sum([int(x['duration__sum']) for x in detail_data])
+        total_calls = sum([int(x['calldate__count']) for x in detail_data])
     else:
         total_duration = 0
         total_calls = 0
@@ -1187,7 +1165,7 @@ def get_cdr_mail_report():
 
     mail_data = {
                 'yesterday_date': start_date,
-                'rows': final_last_ten_calls,
+                'rows': final_result,
                 'total_duration': total_duration,
                 'total_calls': total_calls,
                 'ACT': ACT,

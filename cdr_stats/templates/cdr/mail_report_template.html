@@ -25,13 +25,13 @@
       <td>{{ row.start_uepoch }}</td>
       <td>{{ row.caller_id_number }} - {{ row.caller_id_name }}</td>
       <td>{{ row.destination_number }}</td>
-      <td>{{ row.duration }}</td>
-      <td>{{ row.billsec }}</td>
-      <td>{{ row.hangup_cause }}</td>
+      <td>{{ row.duration|conv_min }}</td>
+      <td>{{ row.billsec|conv_min }}</td>
+      <td>{{ row.hangup_cause_id|get_hangupcause_name }}</td>
       <td>{{ row.accountcode }}</td>
       <td>
           <div class="flag_icon">
-            <img src="{{STATIC_URL}}cdr-stats/{{ row.country|iso_flag }}" class="elemtooltip" title="{{ row.country|country_name }}">
+            <img src="{{STATIC_URL}}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name }}">
             <img src="{{STATIC_URL}}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans "Authorized call" %}"/>
             {% ifequal row.direction 'inbound' %}
               <img src="{{STATIC_URL}}cdr-stats/icons/door_in.png" title="{{ row.direction|capfirst }} {% trans "call" %}" class="elemtooltip"/>
