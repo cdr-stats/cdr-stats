@@ -1,5 +1,5 @@
 {% extends "cdr/master.html" %}
-{% load i18n cdr_extras %}
+{% load i18n cdr_extras cache %}
 
 {% block extra_header %}
 <script type="text/javascript">
@@ -108,12 +108,14 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                label: '{{ rc.grouper|get_switch_ip }}',
-                data: [
-                    {% for item in rc.list %}
-                        [parseInt({{ item.dt }}), {{ item.calldate__count }}],
-                    {% endfor %}
-                ]
+                {% cache 500 switch_list rc.grouper %}
+                    label: '{{ rc.grouper|get_switch_ip }}',
+                    data: [
+                        {% for item in rc.list %}
+                            [parseInt({{ item.dt }}), {{ item.calldate__count }}],
+                        {% endfor %}
+                    ]
+                {% endcache %}
             },
             {% endifnotequal %}
         {% endfor %}
@@ -134,12 +136,14 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                label: '{{ rc.grouper|get_switch_ip }}',
-                data: [
-                    {% for item in rc.list %}
-                        [parseInt({{ item.dt }}), {{ item.duration__sum }}],
-                    {% endfor %}
-                ]
+                {% cache 500 switch_list rc.grouper %}
+                    label: '{{ rc.grouper|get_switch_ip }}',
+                    data: [
+                        {% for item in rc.list %}
+                            [parseInt({{ item.dt }}), {{ item.duration__sum }}],
+                        {% endfor %}
+                    ]
+                {% endcache %}
             },
             {% endifnotequal %}
         {% endfor %}
@@ -160,12 +164,14 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                label: '{{ rc.grouper|get_switch_ip }}',
-                data: [
-                    {% for item in rc.list %}
-                        [parseInt({{ item.dt }}), {{ item.calldate__count }}],
-                    {% endfor %}
-                ]
+                {% cache 500 switch_list rc.grouper %}
+                    label: '{{ rc.grouper|get_switch_ip }}',
+                    data: [
+                        {% for item in rc.list %}
+                            [parseInt({{ item.dt }}), {{ item.calldate__count }}],
+                        {% endfor %}
+                    ]
+                {% endcache %}
             },
             {% endifnotequal %}
         {% endfor %}
@@ -186,12 +192,14 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                label: '{{ rc.grouper|get_switch_ip }}',
-                data: [
-                    {% for item in rc.list %}
-                        [parseInt({{ item.dt }}), {{ item.duration__sum }}],
-                    {% endfor %}
-                ]
+                {% cache 500 switch_list rc.grouper %}
+                    label: '{{ rc.grouper|get_switch_ip }}',
+                    data: [
+                        {% for item in rc.list %}
+                            [parseInt({{ item.dt }}), {{ item.duration__sum }}],
+                        {% endfor %}
+                    ]
+                {% endcache %}
             },
             {% endifnotequal %}
         {% endfor %}
@@ -212,12 +220,14 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                label: '{{ rc.grouper|get_switch_ip }}',
-                data: [
-                    {% for item in rc.list %}
-                        [parseInt({{ item.dt }}), {{ item.calldate__count }}],
-                    {% endfor %}
-                ]
+                {% cache 500 switch_list rc.grouper %}
+                    label: '{{ rc.grouper|get_switch_ip }}',
+                    data: [
+                        {% for item in rc.list %}
+                            [parseInt({{ item.dt }}), {{ item.calldate__count }}],
+                        {% endfor %}
+                    ]
+                {% endcache %}
             },
             {% endifnotequal %}
         {% endfor %}
@@ -238,12 +248,14 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                label: '{{ rc.grouper|get_switch_ip }}',
-                data: [
-                    {% for item in rc.list %}
-                        [parseInt({{ item.dt }}), {{ item.duration__sum }}],
-                    {% endfor %}
-                ]
+                {% cache 500 switch_list rc.grouper %}
+                    label: '{{ rc.grouper|get_switch_ip }}',
+                    data: [
+                        {% for item in rc.list %}
+                            [parseInt({{ item.dt }}), {{ item.duration__sum }}],
+                        {% endfor %}
+                    ]
+                {% endcache %}
             },
             {% endifnotequal %}
         {% endfor %}

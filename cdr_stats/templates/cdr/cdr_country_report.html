@@ -1,5 +1,6 @@
 {% extends "cdr/master.html" %}
 {% load i18n cdr_extras country_dialcode_tags common_tags %}
+{% load cache %}
 
 {% block extra_head %}
   <script type="text/javascript">
@@ -94,12 +95,15 @@ $(function () {
     {% regroup total_record|dictsort:"country_id" by country_id as country_list %}
     {% for rc in country_list %}
         {
-            label: '{{ rc.grouper|country_name }}',
-            data: [
+            {% cache 500 country_list rc.grouper %}
+                label: '{{ rc.grouper|country_name }}',
+                data: [
                     {% for item in rc.list %}
                         [{{ item.dt }}, {{ item.duration__sum }}, {{ item.calldate__count }}],
                     {% endfor %}
-                  ]
+                ]
+            {% endcache %}
+
         },
     {% endfor %}
     ];
@@ -347,7 +351,9 @@ $(function () {
                         <tr>
                             <td class="td-dashboard">
                                 {% if country_data.3 %}
-                                    <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
+                                    {% cache 500 country_data country_data.3 %}
+                                        <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
+                                    {% endcache %}
                                 {% else %}
                                     <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip">
                                 {% endif %}

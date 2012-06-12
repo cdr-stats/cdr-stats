@@ -23,6 +23,7 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.utils.translation import gettext as _
 from django.conf import settings
+from django.views.decorators.cache import cache_page
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 from common.common_functions import current_view, get_news, \
@@ -1968,10 +1969,12 @@ def cdr_country_report(request):
     logging.debug('Map-reduce cdr country analytic')
     # Collect Hourly data
     country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-
+    #Run Map Reduce
+    logging.debug('Before MapReduce')
     (map, reduce, finalfc, out) = mapreduce_country_report()
     calls =\
         country_data.map_reduce(map, reduce, out, query=query_var)
+    logging.debug('After MapReduce')
     calls = calls.find().sort([('_id.a_Year', -1),
                                ('_id.b_Month', -1),
                                ('_id.c_Day', -1),
