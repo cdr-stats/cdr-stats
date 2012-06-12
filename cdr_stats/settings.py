@@ -312,8 +312,10 @@ NEWS_URL = 'http://www.cdr-stats.org/news.php'
 #=================
 ADMIN_TOOLS_MENU = 'cdr_stats.custom_admin_tools.menu.CustomMenu'
 
-ADMIN_TOOLS_INDEX_DASHBOARD = 'cdr_stats.custom_admin_tools.dashboard.CustomIndexDashboard'
-ADMIN_TOOLS_APP_INDEX_DASHBOARD = 'cdr_stats.custom_admin_tools.dashboard.CustomAppIndexDashboard'
+ADMIN_TOOLS_INDEX_DASHBOARD = \
+    'cdr_stats.custom_admin_tools.dashboard.CustomIndexDashboard'
+ADMIN_TOOLS_APP_INDEX_DASHBOARD = \
+    'cdr_stats.custom_admin_tools.dashboard.CustomAppIndexDashboard'
 
 #CELERY
 #======
@@ -447,17 +449,17 @@ LOGGING = {
             'include_html': True,
         },
         'default': {
-            'class':'logging.handlers.WatchedFileHandler',
+            'class': 'logging.handlers.WatchedFileHandler',
             'filename': '/var/log/cdr-stats/cdr-stats.log',
-            'formatter':'verbose',
+            'formatter': 'verbose',
         },
         'default-db': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
             'filename': '/var/log/cdr-stats/cdr-stats-db.log',
             'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 20,
-            'formatter':'verbose',
+            'formatter': 'verbose',
         },
         'console': {
             'level': 'DEBUG',
@@ -468,9 +470,9 @@ LOGGING = {
     'loggers': {
         # Again, default Django configuration to email unhandled exceptions
         'django': {
-            'handlers':['default'],
+            'handlers': ['default'],
             'propagate': False,
-            'level':'DEBUG',
+            'level': 'DEBUG',
         },
         'django.request': {
             'handlers': ['mail_admins'],
@@ -478,7 +480,7 @@ LOGGING = {
             'propagate': True,
         },
         'cdr-stats.filelog': {
-            'handlers': ['default',],
+            'handlers': ['default'],
             'level': 'DEBUG',
             'propagate': False,
         },
