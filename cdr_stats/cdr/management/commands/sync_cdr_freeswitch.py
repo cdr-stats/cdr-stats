@@ -20,7 +20,9 @@ from optparse import make_option
 class Command(BaseCommand):
     # Usage : sync_cdr
     help = "Sync Freeswitch with our CDR Record table\n" \
+           "-------------------------------------------\n"\
            "Usage: python manage.py sync_cdr_freeswitch --apply-index\n"
+
     option_list = BaseCommand.option_list + (
         make_option('--apply-index',
             action='store_true',

@@ -17,16 +17,9 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.safestring import mark_safe
 from random import choice
-from datetime import datetime
+from optparse import make_option
 import random
-
-
-#TODO : refactor using make_option see example sync_cdr_freeswitch
-# https://docs.djangoproject.com/en/dev/howto/custom-management-commands/
-#
-# python manage.py generate_concurrent_call <DELTA_DAYS>
-# we want something line :
-# python manage.py generate_cdr --delta-day=0
+import datetime
 
 
 random.seed()
@@ -41,28 +34,31 @@ def NumberLong(var):
 
 
 class Command(BaseCommand):
+    help = "Generate random Concurrent calls\n"\
+           "---------------------------------\n"\
+           "python manage.py generate_concurrent_call --delta-day=0\n"\
+           "python manage.py generate_concurrent_call -d 0"
 
-    # Usage : generate_concurrent_call 1
-    args = ' delta_day '
-    help = \
-        '''
-Generate random Concurrent calls
----------------------------------
-python manage.py generate_concurrent_call <DELTA_DAYS>'''
+    option_list = BaseCommand.option_list + (
+        make_option('--delta-day', '-d',
+            default=None,
+            dest='delta-day',
+            help=help),
+        )
 
     def handle(self, *args, **options):
         """Note that subscriber created this way are only for devel purposes"""
 
-        if not args:
-            print self.help
-            raise SystemExit
-
         no_of_record = 86400  # second in one day
-        day_delta = args[0]
-        try:
-            day_delta_int = int(day_delta)
-        except ValueError:
+
+        if options.get('delta-day'):
+            try:
+                day_delta_int = int(options.get('delta-day'))
+            except ValueError:
+                day_delta_int = 1
+        else:
             day_delta_int = 1
+
 
         digit = '1234567890'
 
@@ -145,3 +141,4 @@ python manage.py generate_concurrent_call <DELTA_DAYS>'''
         cdr_conn_call = settings.DBCON[settings.MG_CONC_CALL]
 
         cdr_conn_call.map_reduce(map, reduce, out=settings.MG_CONC_CALL_AGG)
+

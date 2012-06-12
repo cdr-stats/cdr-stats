@@ -23,12 +23,10 @@ class Command(BaseCommand):
     """
     Command line to import Asterisk CDR with Mysql
     """
-    help = \
-        '''
-        Sync Asterisk with our CDR Record table
-        -----------------------------------------
-        USAGE : python manage.py sync_cdr_asterisk --apply-index\n
-        '''
+    help = "Sync Asterisk with our CDR Record table\n"\
+           "-----------------------------------------\n"\
+           "USAGE : python manage.py sync_cdr_asterisk --apply-index\n"
+
     option_list = BaseCommand.option_list + (
         make_option('--apply-index',
             action='store_true',
