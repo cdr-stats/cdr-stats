@@ -16,16 +16,14 @@
 from django.conf import settings
 from cdr.models import Switch, HangupCause
 from country_dialcode.models import Country, Prefix
-import re
 from cache_utils.decorators import cached
+import re
 
 
-@cached(3600)
+#@cached(3600)
 def get_switch_list():
     """Switch list used in form"""
     list = Switch.objects.all()
-    print list
-    print "------------------------"
     return ((l.id, l.name) for l in list)
 
 
