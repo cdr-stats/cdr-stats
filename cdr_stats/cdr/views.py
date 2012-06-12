@@ -737,8 +737,10 @@ def cdr_global_report(request):
 
     #Run Map Reduce
     cdr_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-    calls = cdr_data.map_reduce(map, reduce, out, query=query_var, finalize=finalfc,)
-    calls = calls.find().sort([('_id.a_Year', -1), ('_id.b_Month', -1), ('_id.c_Day', -1)])
+    calls = cdr_data.map_reduce(map, reduce, out,
+                            query=query_var, finalize=finalfc,)
+    calls = calls.find().sort([('_id.a_Year', -1),
+                        ('_id.b_Month', -1), ('_id.c_Day', -1)])
 
     if calls.count() != 0:
         maxtime = datetime(int(calls[0]['_id']['a_Year']),
@@ -757,26 +759,37 @@ def cdr_global_report(request):
                 maxtime = dtime
             elif dtime < mintime:
                 mintime = dtime
-            calls_dict[int(dtime.strftime("%Y%m%d"))] = {'calldate__count': d['value']['calldate__count'],
-                                                         'duration__sum': d['value']['duration__sum'],
-                                                         'duration__avg': d['value']['duration__avg']}
+            calls_dict[int(dtime.strftime("%Y%m%d"))] = \
+                    {'calldate__count': d['value']['calldate__count'],
+                     'duration__sum': d['value']['duration__sum'],
+                     'duration__avg': d['value']['duration__avg']}
         dateList = date_range(mintime, maxtime)
 
         i = 0
-        for date in dateList:
-            inttime = int(date.strftime("%Y%m%d"))
-            name_date = _(date.strftime("%B")) + " " + str(date.day) + ", " + str(date.year)
-
+        for cdate in dateList:
+            inttime = int(cdate.strftime("%Y%m%d"))
+            name_date = _(cdate.strftime("%B")) + " " + \
+                        str(cdate.day) + ", " + str(cdate.year)
             if inttime in calls_dict.keys():
-                total_data.append({'count': i, 'day': date.day, 'month': date.month,
-                                   'year': date.year, 'date': name_date ,
-                                   'calldate__count': calls_dict[inttime]['calldate__count'],
-                                   'duration__sum': calls_dict[inttime]['duration__sum'],
-                                   'duration__avg': calls_dict[inttime]['duration__avg']})
+                total_data.append({
+                    'count': i,
+                    'day': cdate.day,
+                    'month': cdate.month,
+                    'year': cdate.year,
+                    'date': name_date,
+                    'calldate__count': calls_dict[inttime]['calldate__count'],
+                    'duration__sum': calls_dict[inttime]['duration__sum'],
+                    'duration__avg': calls_dict[inttime]['duration__avg']})
             else:
-                total_data.append({'count': i, 'day': date.day, 'month': date.month,
-                                   'year': date.year, 'date': name_date ,
-                                   'calldate__count': 0, 'duration__sum': 0, 'duration__avg': 0})
+                total_data.append({
+                    'count': i,
+                    'day': cdate.day,
+                    'month': cdate.month,
+                    'year': cdate.year,
+                    'date': name_date,
+                    'calldate__count': 0,
+                    'duration__sum': 0,
+                    'duration__avg': 0})
             i += 1
 
     # remove mapreduce output from database (no longer required)
