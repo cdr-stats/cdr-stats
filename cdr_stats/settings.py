@@ -207,6 +207,7 @@ INSTALLED_APPS = (
     'notification',
     'country_dialcode',
     #'geordi',
+    'gunicorn',
 )
 
 # Debug Toolbar

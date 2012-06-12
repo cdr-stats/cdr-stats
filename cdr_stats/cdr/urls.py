@@ -12,7 +12,6 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.conf.urls.defaults import patterns, url
-from django.conf import settings
 from cdr.views import index, cdr_view, cdr_export_to_csv, cdr_detail,\
                       cdr_global_report, cdr_dashboard, cdr_report_by_hour,\
                       cdr_overview, cdr_concurrent_calls, cdr_realtime, mail_report,\
@@ -38,8 +37,8 @@ urlpatterns = patterns('cdr.views',
 
     (r'^login/$',   'login_view'),
     (r'^logout/$',  'logout_view'),
-	(r'^index/$',   'index'),
-	(r'^pleaselog/$', 'pleaselog'),
+    (r'^index/$',   'index'),
+    (r'^pleaselog/$', 'pleaselog'),
 
     # Password reset for Customer UI
     (r'^password_reset/$', 'cust_password_reset'),
