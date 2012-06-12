@@ -245,7 +245,7 @@ $(function () {
     $(function () {
 
         var data = [
-            {% for td in country_analytic_array_final %}
+            {% for td in country_final %}
                 { label: '{{ td.0 }}' , data: [[1, {{ td.1 }}]]},
             {% endfor %}
         ];
@@ -296,7 +296,7 @@ $(function () {
     $(function () {
 
         var data = [
-            {% for td in country_analytic_array_final %}
+            {% for td in country_final %}
                 { label: '{{ td.0 }}' , data: [[1, {{ td.2 }}]]},
             {% endfor %}
         ];
@@ -343,7 +343,7 @@ $(function () {
                 <h3 align="left">{% trans "top"|title %} {{ NUM_COUNTRY }} {% trans "calls by country"|title %}</h3>
                 <table>
                     <tbody>
-                    {% for country_data in top_ten_country_analytic %}
+                    {% for country_data in top10_country %}
                         <tr>
                             <td class="td-dashboard">
                                 {% if country_data.3 %}
@@ -386,7 +386,7 @@ $(function () {
                 <h3 align="left">{% trans "top"|title %} {{ NUM_COUNTRY }} {% trans "duration by country"|title %}</h3>
                 <table>
                     <tbody>
-                    {% for country_data in top_ten_country_analytic %}
+                    {% for country_data in top10_country %}
                         <tr>
                             <td class="td-dashboard">
                                 {% if country_data.3 %}

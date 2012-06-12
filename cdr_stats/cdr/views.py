@@ -1789,10 +1789,13 @@ def cdr_overview(request):
         monthly_data = settings.DBCON[settings.MG_MONTHLY_ANALYTIC]
 
         (map, reduce, finalfc, out) = mapreduce_monthly_overview()
-        query_var['metadata.date'] = {'$gte': month_start_date, '$lt': month_end_date}
+        query_var['metadata.date'] = {
+                                '$gte': month_start_date,
+                                '$lt': month_end_date}
 
         #Run Map Reduce
-        calls_in_month = monthly_data.map_reduce(map, reduce, out, query=query_var)
+        calls_in_month = monthly_data.map_reduce(map, reduce,
+                                                out, query=query_var)
         calls_in_month = calls_in_month.find().sort([('_id.g_Millisec', -1),
                                                      ('_id.f_Switch', 1)])
         total_month_record = []
@@ -1823,9 +1826,11 @@ def cdr_overview(request):
                     month_call_count[dt] = int(i['value']['calldate__count'])
 
             total_month_call_duration = month_call_duration.items()
-            total_month_call_duration = sorted(total_month_call_duration, key=lambda k: k[0])
+            total_month_call_duration = sorted(total_month_call_duration,
+                                                        key=lambda k: k[0])
             total_month_call_count = month_call_count.items()
-            total_month_call_count = sorted(total_month_call_count, key=lambda k: k[0])
+            total_month_call_count = sorted(total_month_call_count,
+                                                        key=lambda k: k[0])
 
         # remove mapreduce output from database (no longer required)
         settings.DBCON[out].drop()
@@ -1888,7 +1893,9 @@ def cdr_country_report(request):
     end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
     from_date = start_date.strftime("%Y-%m-%d")
     to_date = end_date.strftime("%Y-%m-%d")
-    form = CountryReportForm(initial={'from_date': from_date, 'to_date': to_date})
+    form = CountryReportForm(initial={
+                                'from_date': from_date,
+                                'to_date': to_date})
 
     total_calls = 0
     total_duration = 0
@@ -1934,14 +1941,14 @@ def cdr_country_report(request):
                         #for j in range(0, 60):
                         #    query_var['duration_minute.%d.%d' % (i, j)] = due
         else:
-            country_analytic_array_final = country_analytic_array = []
+            country_final = country_analytic_array = []
             logging.debug('Error : CDR country report form')
             variables = {'module': current_view(request),
                          'total_calls': total_calls,
                          'total_duration': total_duration,
                          'total_record': total_record_final,
-                         'country_analytic_array_final': country_analytic_array_final,
-                         'top_ten_country_analytic' : country_analytic_array[0:11],
+                         'country_final': country_final,
+                         'top10_country': country_analytic_array[0:11],
                          'form': form,
                          'search_tag': search_tag,
                          'NUM_COUNTRY': NUM_COUNTRY,
@@ -1975,7 +1982,7 @@ def cdr_country_report(request):
         calldate_dict = i['value']['calldate__count']
         duration_dict = i['value']['duration__sum']
         country_id = int(i['_id']['country_id'])
-        if country_id != 0 :
+        if country_id != 0:
             if len(calldate_dict) > 0:
                 for call_hour, val in calldate_dict.iteritems():
                     call_count = val
@@ -2008,13 +2015,14 @@ def cdr_country_report(request):
                                ('value.duration__sum', -1)])
 
     country_analytic_array = []
-    country_analytic_array_final = []
+    country_final = []
     for i in calls:
         #country id - country name - call count - call duration - country_id
-        country_analytic_array.append((get_country_name(int(i['_id']['f_Con'])),
-                                       int(i['value']['calldate__count']),
-                                       int(i['value']['duration__sum']),
-                                       int(i['_id']['f_Con'])))
+        country_analytic_array.append(
+                        (get_country_name(int(i['_id']['f_Con'])),
+                           int(i['value']['calldate__count']),
+                           int(i['value']['duration__sum']),
+                           int(i['_id']['f_Con'])))
         total_calls += int(i['value']['calldate__count'])
         total_duration += int(i['value']['duration__sum'])
 
@@ -2022,7 +2030,7 @@ def cdr_country_report(request):
     for i in country_analytic_array[0: NUM_COUNTRY]:
         # i[0] - country name, i[1] - call count,
         # i[2] - call duration, i[3] - country id,
-        country_analytic_array_final.append((i[0], int(i[1]), int(i[2]), int(i[3])))
+        country_final.append((i[0], int(i[1]), int(i[2]), int(i[3])))
 
     # Other countries analytic
     other_country_call_count = 0
@@ -2032,9 +2040,9 @@ def cdr_country_report(request):
         other_country_call_count += int(i[1])
         other_country_call_duration += int(i[2])
 
-    country_analytic_array_final.append((_('Other'),
-                                         other_country_call_count,
-                                         other_country_call_duration))
+    country_final.append((_('Other'),
+                         other_country_call_count,
+                         other_country_call_duration))
 
     # remove mapreduce output & country analytic from database
     settings.DBCON[out].drop()
@@ -2045,8 +2053,8 @@ def cdr_country_report(request):
                  'total_calls': total_calls,
                  'total_duration': total_duration,
                  'total_record': total_record_final,
-                 'country_analytic_array_final': country_analytic_array_final,
-                 'top_ten_country_analytic':\
+                 'country_final': country_final,
+                 'top10_country':\
                      country_analytic_array[0:NUM_COUNTRY],
                  'form': form,
                  'search_tag': search_tag,
