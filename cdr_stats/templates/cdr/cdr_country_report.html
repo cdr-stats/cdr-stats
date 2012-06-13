@@ -95,14 +95,16 @@ $(function () {
     {% regroup total_record|dictsort:"country_id" by country_id as country_list %}
     {% for rc in country_list %}
         {
-            {% cache 500 country_id rc.grouper %}
-                label: '{{ rc.grouper|country_name }}',
+
+                label: {% cache 500 c_id rc.grouper %}
+                       '{{ rc.grouper|country_name }}'
+                       {% endcache %},
                 data: [
                     {% for item in rc.list %}
                         [{{ item.dt }}, {{ item.duration__sum }}, {{ item.calldate__count }}],
                     {% endfor %}
                 ]
-            {% endcache %}
+
 
         },
     {% endfor %}

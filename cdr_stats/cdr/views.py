@@ -1709,7 +1709,7 @@ def cdr_overview(request):
         total_hour_call_duration = []
         hour_data_call_count = dict()
         hour_data_call_duration = dict()
-        for i in calls_in_day.clone():
+        for i in calls_in_day:
             for h in range(0, 24):
                 try:
                     calldate__count = int(i['value']['calldate__count'][h])
@@ -1762,8 +1762,7 @@ def cdr_overview(request):
         if calls_in_day.count() != 0:
             day_call_duration = dict()
             day_call_count = dict()
-
-            for i in calls_in_day.clone():
+            for i in calls_in_day:
                 dt = int(i['_id']['g_Millisec'])
                 total_day_record.append(
                         {
@@ -1814,8 +1813,7 @@ def cdr_overview(request):
         if calls_in_month.count() != 0:
             month_call_duration = dict()
             month_call_count = dict()
-
-            for i in calls_in_month.clone():
+            for i in calls_in_month:
                 dt = int(i['_id']['g_Millisec'])
                 total_month_record.append(
                         {

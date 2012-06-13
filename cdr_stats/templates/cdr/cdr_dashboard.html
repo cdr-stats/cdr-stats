@@ -167,7 +167,10 @@ $(function () {
         var data = [
             {% for td in hangup_analytic %}
                 {% cache 500 hangup_cause_id td.hangup_cause_id %}
-                    { label: '{{ td.hangup_cause_id|get_hangupcause_name_with_title }}' , data: [[1, {{ td.count }}]]},
+                    {
+                        label: '{{ td.hangup_cause_id|get_hangupcause_name_with_title }}',
+                        data: [[1, {{ td.count }}]]
+                    },
                 {% endcache %}
             {% endfor %}
         ];
