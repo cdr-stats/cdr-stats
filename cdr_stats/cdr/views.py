@@ -172,7 +172,9 @@ def cdr_view_daily_report(query_var):
     (map, reduce, finalfc, out) = mapreduce_cdr_view()
 
     cdr_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
+    logging.debug('Before MapReduce')
     total_data = cdr_data.map_reduce(map, reduce, out, query=query_var, finalize=finalfc)
+    logging.debug('After MapReduce')
 
     total_data = total_data.find().sort([('_id.a_Year', -1),
                                          ('_id.b_Month', -1),
@@ -193,7 +195,8 @@ def cdr_view_daily_report(query_var):
         max_duration = max([int(x['duration__sum']) for x in detail_data])
         total_duration = sum([int(x['duration__sum']) for x in detail_data])
         total_calls = sum([int(x['calldate__count']) for x in detail_data])
-        total_avg_duration = (sum([float(x['duration__avg']) for x in detail_data]))/total_data.count()
+        total_avg_duration = \
+            (sum([float(x['duration__avg']) for x in detail_data]))/total_data.count()
     else:
         max_duration = 0
         total_duration = 0
@@ -1693,8 +1696,10 @@ def cdr_overview(request):
         # Collect Hourly data
         hourly_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
         (map, reduce, finalfc, out) = mapreduce_hourly_overview()
+        logging.debug('Before MapReduce')
         calls_in_day =\
             hourly_data.map_reduce(map, reduce, out, query=query_var)
+        logging.debug('After MapReduce')
         calls_in_day = calls_in_day.find().sort([('_id.a_Year', 1),
                                                  ('_id.b_Month', 1),
                                                  ('_id.c_Day', 1),
@@ -1746,7 +1751,9 @@ def cdr_overview(request):
         daily_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
 
         (map, reduce, finalfc, out) = mapreduce_daily_overview()
+        logging.debug('Before MapReduce')
         calls_in_day = daily_data.map_reduce(map, reduce, out, query=query_var)
+        logging.debug('After MapReduce')
         calls_in_day = calls_in_day.find().sort([('_id.g_Millisec', 1),
                                                  ('_id.f_Switch', 1)])
         total_day_record = []
@@ -1795,8 +1802,10 @@ def cdr_overview(request):
                                 '$lt': month_end_date}
 
         #Run Map Reduce
+        logging.debug('Before MapReduce')
         calls_in_month = monthly_data.map_reduce(map, reduce,
                                                 out, query=query_var)
+        logging.debug('After MapReduce')
         calls_in_month = calls_in_month.find().sort([('_id.g_Millisec', -1),
                                                      ('_id.f_Switch', 1)])
         total_month_record = []
