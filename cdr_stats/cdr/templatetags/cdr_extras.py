@@ -18,20 +18,17 @@ import re
 
 register = template.Library()
 
-
-#TODO: Add doc to all function
-
 @register.filter()
-def cal_width(value,max):
-    """
-    ...
-    """
+def cal_width(value, max):
+    """Calculate width of image from max value"""
     width = (value / float(max)) * 200
     return width
 
 
 @register.filter()
 def seen_unseen(value):
+    """Tag is for icon which is
+    used on user notification list"""
     if value:
         return "icon-star"
     else:
@@ -40,6 +37,8 @@ def seen_unseen(value):
 
 @register.filter()
 def seen_unseen_word(value):
+    """Tag is for notification status which is
+    used on user notification list"""
     if value:
         return _("New")
     else:
@@ -63,6 +62,7 @@ def notice_count(user):
 
 @register.filter()
 def get_switch_ip(id):
+    """Tag is used to get switch name"""
     try:
         obj = Switch.objects.get(pk=id)
         return obj.name
@@ -72,6 +72,7 @@ def get_switch_ip(id):
 
 @register.filter()
 def get_hangupcause_name(id):
+    """Tag is used to get hangupcause name"""
     try:
         obj = HangupCause.objects.get(pk=id)
         return obj.enumeration
@@ -81,6 +82,7 @@ def get_hangupcause_name(id):
 
 @register.filter()
 def get_hangupcause_name_with_title(id):
+    """Tag is used to get hangupcause name with lowercase"""
     try:
         obj = HangupCause.objects.get(pk=id)
         val = obj.enumeration
@@ -94,6 +96,7 @@ def get_hangupcause_name_with_title(id):
 
 @register.filter()
 def mongo_id(value, sub_val):
+    """Tag is used to get mongo mapreduce _id.value"""
     if type(value) == type({}):
         if '_id' in value:
             if sub_val in value['_id']:
