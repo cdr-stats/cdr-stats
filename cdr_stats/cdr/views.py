@@ -1110,6 +1110,8 @@ def get_cdr_mail_report():
     total_data = total_data.find().sort([('_id.c_Day', -1),
                                         ('_id.d_Hour', -1)])
     detail_data = []
+    total_duration = 0
+    total_calls = 0
     for doc in total_data:
         detail_data.append(
             {
@@ -1117,6 +1119,10 @@ def get_cdr_mail_report():
                 'calldate__count': int(doc['value']['calldate__count']),
                 'duration__avg': doc['value']['duration__avg'],
             })
+
+        total_duration += int(doc['value']['duration__sum'])
+        total_calls += int(doc['value']['calldate__count'])
+
         # created cdr_hangup_analytic
         settings.DBCON[settings.MG_CDR_HANGUP].update(
             {
@@ -1135,13 +1141,6 @@ def get_cdr_mail_report():
                 '$inc': {'count': int(doc['value']['calldate__count']),
                 'duration': int(doc['value']['duration__sum'])}
             }, upsert=True)
-
-    if total_data.count() != 0:
-        total_duration = sum([int(x['duration__sum']) for x in detail_data])
-        total_calls = sum([int(x['calldate__count']) for x in detail_data])
-    else:
-        total_duration = 0
-        total_calls = 0
 
     #Calculate the Average Time of Call
     ACT = math.floor(total_calls / 24)
