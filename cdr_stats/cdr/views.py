@@ -181,6 +181,9 @@ def cdr_view_daily_report(query_var):
                                          ('_id.c_Day', -1)])
 
     detail_data = []
+    total_duration = 0
+    total_calls = 0
+    duration__avg = 0.0
     for doc in total_data:
         detail_data.append(
             {
@@ -191,16 +194,16 @@ def cdr_view_daily_report(query_var):
                 'duration__avg': doc['value']['duration__avg'],
             })
 
+        total_duration += int(doc['value']['duration__sum'])
+        total_calls += int(doc['value']['calldate__count'])
+        duration__avg += float(doc['value']['duration__avg'])
+
     if total_data.count() != 0:
         max_duration = max([int(x['duration__sum']) for x in detail_data])
-        total_duration = sum([int(x['duration__sum']) for x in detail_data])
-        total_calls = sum([int(x['calldate__count']) for x in detail_data])
         total_avg_duration = \
-            (sum([float(x['duration__avg']) for x in detail_data]))/total_data.count()
+            (float(duration__avg))/total_data.count()
     else:
         max_duration = 0
-        total_duration = 0
-        total_calls = 0
         total_avg_duration = 0
 
     cdr_view_daily_data = {
