@@ -34,7 +34,7 @@ def get_country_list():
     return ((l.id, l.countryname) for l in list)
 
 
-@cached(300)
+@cached(3600)
 def get_hc_list():
     """hangupcause list used in form"""
     list = HangupCause.objects.all()
@@ -47,7 +47,7 @@ def get_hc_list():
     return result
 
 
-@cached(300)
+@cached(3600)
 def get_hangupcause_name(id):
     """Get hangupcause name from its id"""
     try:
@@ -57,7 +57,7 @@ def get_hangupcause_name(id):
         return ''
 
 
-@cached(300)
+@cached(3600)
 def get_hangupcause_id(hangupcause_code):
     """Get hangupcause id from its code"""
     try:
@@ -110,7 +110,7 @@ def prefix_list_string(phone_number):
     return str(destination_prefix_list)
 
 
-@cached(300)
+@cached(3600)
 def get_country_id(prefix_list):
     """Get country id from prefix_list else return 0"""
     try:
@@ -121,7 +121,7 @@ def get_country_id(prefix_list):
     return country_id
 
 
-@cached(300)
+@cached(3600)
 def get_country_name(id, type=''):
     """Get country name from its id & return iso2 type name (e.g 'fr')
      or country name"""
@@ -135,7 +135,7 @@ def get_country_name(id, type=''):
         return ''
 
 
-@cached(300)
+@cached(3600)
 def chk_account_code(request):
     """Get account code from  request"""
     acc_code = ''
