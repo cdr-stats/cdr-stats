@@ -505,6 +505,7 @@ reduce = function(key,vals) {
         };
 
 query_var = {'start_uepoch': {'$gte': ISODate("2012-06-14T00:00:00Z"), '$lt': ISODate("2012-06-30T20:36:300:00Z"), '$lt': ISODate("2012-06-30T20:36:34Z")}};
+query_var = {};
 
 db.foo.drop();
 db.runCommand( { mapreduce:"daily_analytic", map:map, reduce:reduce, out: { reduce: "foo" }, query: query_var});
