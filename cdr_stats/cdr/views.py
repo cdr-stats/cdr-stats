@@ -753,9 +753,7 @@ def cdr_global_report(request):
         maxtime = datetime(int(calls[0]['_id']['a_Year']),
                            int(calls[0]['_id']['b_Month']),
                            int(calls[0]['_id']['c_Day']), 0, 0, 0, 0)
-        mintime = datetime(int(calls[0]['_id']['a_Year']),
-                           int(calls[0]['_id']['b_Month']),
-                           int(calls[0]['_id']['c_Day']), 0, 0, 0, 0)
+        mintime = maxtime
         calls_dict = {}
 
         for d in calls:
@@ -868,9 +866,9 @@ def cdr_dashboard(request):
     (map, reduce, finalfc, out) = mapreduce_cdr_dashboard()
 
     #Run Map Reduce
-    logging.debug('Before MapReduce')
+    logging.debug('Before MapReduce mapreduce_cdr_dashboard')
     calls = cdr_data.map_reduce(map, reduce, out, query=query_var)
-    logging.debug('After MapReduce')
+    logging.debug('After MapReduce mapreduce_cdr_dashboard')
     calls = calls.find().sort([('_id.g_Millisec', 1)])
     logging.debug('After calls.find')
 
@@ -898,19 +896,24 @@ def cdr_dashboard(request):
                     {'hangup_cause_id': int(d['value']['hangup_cause_id'])},
                     {'$inc': {'count': 1}}, upsert=True)
 
+    logging.debug('After Creating collection MG_CDR_HANGUP')
     hangup_analytic = settings.DBCON[settings.MG_CDR_HANGUP].find()
+    logging.debug('After find collection MG_CDR_HANGUP')
 
     # remove mapreduce output from database (no longer required)
     settings.DBCON[out].drop()
 
     # Country call analytic start
+    logging.debug('Before MapReduce mapreduce_dashboard_world_report')
     (map, reduce, finalfc, out) = mapreduce_dashboard_world_report()
     country_calls = cdr_data.map_reduce(map, reduce, out, query=query_var)
+    logging.debug('After MapReduce mapreduce_dashboard_world_report')
 
     # Top 5 countries list
     country_calls = country_calls.find().\
                         sort([('value.calldate__count', -1),
                               ('value.duration__sum', -1)]).limit(5)
+    logging.debug('After country_calls.find')
 
     country_analytic = []
     for i in country_calls:
