@@ -878,6 +878,17 @@ def cdr_dashboard(request):
     #Run Map Reduce
     daily_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
 
+    #TODO
+    #no need to use map reduce mapreduce_cdr_dashboard here, we will read daily analytic directly
+    #we will directly read from daily_analytic collection and build up in memory the array
+    #1st array will be
+    # year-month-day :: hour-minute :: totalcall :: totalduration
+    #2nd array will be
+    # year-month-day :: hour-minute :: country :: totalcall :: totalduration
+    #3nd array will be
+    # year-month-day :: hour-minute :: hangup cause :: totalcall :: totalduration
+
+
     logging.debug('Before MapReduce mapreduce_cdr_dashboard')
     calls = daily_data.map_reduce(map, reduce, out, query=mr_query_var)
 
