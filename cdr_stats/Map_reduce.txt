@@ -3,8 +3,8 @@
 List Map Reduce used in CDR-Stats
 =================================
 
-01. MAP REDUCE : ANALYTIC
--------------------------
+1. MAP REDUCE : ANALYTIC
+------------------------
 
 
 // Get from daily Report from date A to date B
@@ -422,3 +422,44 @@ db.runCommand( { mapreduce:"cdr_common", map:map, reduce:reduce, out: { reduce: 
 	},
 	"ok" : 1
 }
+
+
+4. MAP REDUCE : DASHBOARD
+-------------------------
+
+map = function(){
+            var year = this.start_uepoch.getFullYear();
+            var month = this.start_uepoch.getMonth();
+            var day = this.start_uepoch.getDate();
+            var hours = this.start_uepoch.getHours();
+            var minutes = this.start_uepoch.getMinutes();
+            var d = new Date(year, month, day, hours, minutes);
+            emit( {
+                g_Millisec: d.getTime(),
+            },
+            {
+                calldate__count: 1,
+                duration__sum: this.duration,
+                hangup_cause_id: this.hangup_cause_id,
+            } )
+          };
+
+reduce = function(key,vals) {
+            var ret = {
+                calldate__count : 0,
+                duration__sum: 0,
+                hangup_cause_id: 0,
+            };
+            for (var i=0; i < vals.length; i++){
+                ret.calldate__count += parseInt(vals[i].calldate__count);
+                ret.duration__sum += parseInt(vals[i].duration__sum);
+                ret.hangup_cause_id = vals[i].hangup_cause_id;
+            }
+            return ret;
+        };
+
+//query_var = {'start_uepoch': {'$gte': ISODate("2012-06-01T00:00:00Z"), '$lt': ISODate("2012-06-30T20:36:300:00Z"), '$lt': ISODate("2012-06-30T20:36:34Z")}};
+
+query_var = {};
+db.foo.drop();
+db.runCommand( { mapreduce:"cdr_common", map:map, reduce:reduce, out: { reduce: "foo" }, query: query_var});

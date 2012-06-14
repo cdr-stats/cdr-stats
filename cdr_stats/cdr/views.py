@@ -906,6 +906,9 @@ def cdr_dashboard(request):
     settings.DBCON[out].drop()
 
     # Country call analytic start
+    # ??? Why dont we use DAILY_ANALYTIC
+    # This is already preaggregated therefore will be faster
+
     logging.debug('Before MapReduce mapreduce_dashboard_world_report')
     (map, reduce, finalfc, out) = mapreduce_dashboard_world_report()
     country_calls = cdr_data.map_reduce(map, reduce, out, query=query_var)
