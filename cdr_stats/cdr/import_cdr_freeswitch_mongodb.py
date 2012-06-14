@@ -109,7 +109,6 @@ def apply_index(shell):
         ("metadata.date", -1),
         ("metadata.switch_id", 1),
         ("metadata.country_id", 1),
-        ("metadata.hangup_cause_id", 1),
         ("metadata.accountcode", 1)])
     MONTHLY_ANALYTIC.ensure_index([
         ("metadata.date", -1),
