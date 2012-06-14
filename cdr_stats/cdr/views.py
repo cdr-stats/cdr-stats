@@ -885,9 +885,6 @@ def cdr_dashboard(request):
                                ('value.hangup_cause_id', 1)])
     logging.debug('After calls.find')
 
-    # if exists, drop previous collection
-    settings.DBCON[settings.MG_CDR_HANGUP].drop()
-
     total_calls = 0
     total_duration = 0
     total_record_final = []
