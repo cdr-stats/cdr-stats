@@ -458,8 +458,53 @@ reduce = function(key,vals) {
             return ret;
         };
 
-//query_var = {'start_uepoch': {'$gte': ISODate("2012-06-01T00:00:00Z"), '$lt': ISODate("2012-06-30T20:36:300:00Z"), '$lt': ISODate("2012-06-30T20:36:34Z")}};
+query_var = {'start_uepoch': {'$gte': ISODate("2012-06-14T00:00:00Z"), '$lt': ISODate("2012-06-30T20:36:300:00Z"), '$lt': ISODate("2012-06-30T20:36:34Z")}};
 
-query_var = {};
 db.foo.drop();
 db.runCommand( { mapreduce:"cdr_common", map:map, reduce:reduce, out: { reduce: "foo" }, query: query_var});
+
+
+
+
+
+----> now trying to use daily_analytic
+
+
+map = function(){
+            emit(
+                {
+                    a_Year: this.metadata.date.getFullYear(),
+                    b_Month: this.metadata.date.getMonth() + 1,
+                    c_Day: this.metadata.date.getDate(),
+                },
+                {
+                    calldate__count: this.call_hourly,
+                    duration__sum: this.duration_hourly,
+                }
+            )
+          };
+
+reduce = function(key,vals) {
+            var ret = {
+                calldate__count : [],
+                duration__sum: [],
+            };
+            for(var k=0; k < 24; k++){
+                ret.calldate__count[k]=0;
+                ret.duration__sum[k]=0;
+            }
+            for (var i=0; i < vals.length; i++) {
+                for (var k=0; k < 24; k++) {
+                    if (vals[i].calldate__count[k]) {
+                        ret.calldate__count[k] += vals[i].calldate__count[k];
+                        ret.duration__sum[k] += vals[i].duration__sum[k];
+                    }
+                }
+            }
+            return ret;
+        };
+
+query_var = {'start_uepoch': {'$gte': ISODate("2012-06-14T00:00:00Z"), '$lt': ISODate("2012-06-30T20:36:300:00Z"), '$lt': ISODate("2012-06-30T20:36:34Z")}};
+
+db.foo.drop();
+db.runCommand( { mapreduce:"daily_analytic", map:map, reduce:reduce, out: { reduce: "foo" }, query: query_var});
