@@ -231,6 +231,89 @@ def mapreduce_cdr_dashboard():
     return (map, reduce, False, out)
 
 
+def mapreduce_cdr_dashboard_daily():
+    """
+    To get the minutly analytic of cdr
+
+       * Total calls per year-month-day-hour-min
+       * Total call duration per year-month-day-hour-min
+       * Total hangup-cause  per year-month-day-hour-min
+
+    Attributes:
+
+        * ``map`` - Grouping perform on year, month, day, hour & min
+        * ``reduce`` - Calculate call count, sum of call duration,
+                       hangupcause based on map
+
+    Result Collection: ``aggregate_result_cdr_dashboard_report``
+    """
+    (map, reduce, finalfc, out) = mapreduce_default()
+
+    # Get cdr graph by hour report
+    map = mark_safe(u'''
+        function(){
+             emit(
+                {
+                    f_Country: this.metadata.country_id,
+                    f_Hangupcause: this.metadata.hangup_cause_id,
+                },
+                {
+                    call__count: this.call_minute,
+                    duration__sum: this.duration_minute,
+                }
+            )
+        }''')
+    reduce = mark_safe(u'''
+        function(key, vals) {
+            var result = new Object();
+
+            for(var k=0; k < 24; k++){
+                for(var l=0; l < 60; l++){
+                    if (k < 10) {
+                        rkey = '0' + k + ':';
+                    } else {
+                        rkey = k + ':';
+                    }
+                    if (l < 10) {
+                        rkey = rkey + '0' + l;
+                    } else {
+                        rkey = rkey + l;
+                    }
+                    result['c/'+rkey] = 0;
+                    result['d/'+rkey] = 0;
+
+                }
+            }
+            for (var i=0; i < vals.length; i++) {
+                for (var k=0; k < 24; k++) {
+                    for(var l=0; l < 60; l++){
+                        if (k < 10) {
+                            rkey = '0' + k + ':';
+                        } else {
+                            rkey = k + ':';
+                        }
+                        if (l < 10) {
+                            rkey = rkey + '0' + l;
+                        } else {
+                            rkey = rkey + l;
+                        }
+
+                        if (vals[i].call__count[k] && vals[i].call__count[k][l]) {
+                            result['c/'+rkey] += parseInt(vals[i].call__count[k][l]);
+                            if (vals[i].duration__sum[k] && vals[i].duration__sum[k][l]) {
+                                result['d/'+rkey] += parseInt(vals[i].duration__sum[k][l]);
+                            }
+                        }
+                    }
+                }
+            }
+            return result;
+        }''')
+
+    out = 'aggregate_result_cdr_dashboard_report'
+    return (map, reduce, False, out)
+
+
 def mapreduce_cdr_country_report():
     """
     To get the countries call analytic

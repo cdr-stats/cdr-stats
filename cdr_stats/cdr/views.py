@@ -861,18 +861,25 @@ def cdr_dashboard(request):
 
     if not request.user.is_superuser:  # not superuser
         if chk_account_code(request):
-            query_var['accountcode'] = \
-                mr_query_var['metadata.accountcode'] = chk_account_code(request)
+            query_var['accountcode'] = chk_account_code(request)
+            mr_query_var['metadata.accountcode'] = query_var['accountcode']
         else:
             return HttpResponseRedirect('/?acc_code_error=true')
 
     logging.debug('Map-reduce cdr dashboard analytic')
     #Retrieve Map Reduce
-    (map, reduce, finalfc, out) = mapreduce_cdr_dashboard()
+    #(map, reduce, finalfc, out) = mapreduce_cdr_dashboard()
+    (map, reduce, finalfc, out) = mapreduce_cdr_dashboard_daily()
 
     #Run Map Reduce
+    daily_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
+
     logging.debug('Before MapReduce mapreduce_cdr_dashboard')
-    calls = cdr_data.map_reduce(map, reduce, out, query=query_var)
+    calls = daily_data.map_reduce(map, reduce, out, query=query_var)
+    print "======================"
+    print daily_data
+    print out
+    print calls
     logging.debug('After MapReduce mapreduce_cdr_dashboard')
     calls = calls.find().sort([('_id.g_Millisec', 1),
                                ('value.hangup_cause_id', 1)])
