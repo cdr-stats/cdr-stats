@@ -144,7 +144,6 @@ $(function () {
     </div>
 </div>
 
-
 {% if hangup_analytic %}
 
     <script type="text/javascript">
@@ -166,10 +165,10 @@ $(function () {
 
         var data = [
             {% for td in hangup_analytic %}
-                {% cache 500 hangup_cause_id td.hangup_cause_id %}
+                {% cache 500 hangup_cause_id td.0 %}
                     {
-                        label: '{{ td.hangup_cause_id|get_hangupcause_name_with_title }}',
-                        data: [[1, {{ td.count }}]]
+                        label: '{{ td.0|get_hangupcause_name_with_title }}',
+                        data: [[1, {{ td.1 }}]]
                     },
                 {% endcache %}
             {% endfor %}

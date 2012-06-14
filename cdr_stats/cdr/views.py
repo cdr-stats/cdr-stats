@@ -870,7 +870,8 @@ def cdr_dashboard(request):
     logging.debug('Before MapReduce mapreduce_cdr_dashboard')
     calls = cdr_data.map_reduce(map, reduce, out, query=query_var)
     logging.debug('After MapReduce mapreduce_cdr_dashboard')
-    calls = calls.find().sort([('_id.g_Millisec', 1)])
+    calls = calls.find().sort([('_id.g_Millisec', 1),
+                               ('value.hangup_cause_id', 1)])
     logging.debug('After calls.find')
 
     # if exists, drop previous collection
@@ -879,6 +880,7 @@ def cdr_dashboard(request):
     total_calls = 0
     total_duration = 0
     total_record_final = []
+    hangup_analytic = dict()
     for d in calls:
         total_record_final.append([d['_id']['g_Millisec'],
                                    d['value']['calldate__count'],
@@ -887,20 +889,13 @@ def cdr_dashboard(request):
         total_duration += int(d['value']['duration__sum'])
 
         # created cdr_hangup_analytic
-        try:
-            int_hangup_cause_id = int(d['value']['hangup_cause_id'])
-        except:
-            int_hangup_cause_id = False
+        dt = int(d['value']['hangup_cause_id'])
+        if dt in hangup_analytic:
+            hangup_analytic[dt] += 1
+        else:
+            hangup_analytic[dt] = 1
 
-        #Why not keeping the following in memory ?
-        if int_hangup_cause_id:
-            settings.DBCON[settings.MG_CDR_HANGUP].update(
-                    {'hangup_cause_id': int(d['value']['hangup_cause_id'])},
-                    {'$inc': {'count': 1}}, upsert=True)
-
-    logging.debug('After Creating collection MG_CDR_HANGUP')
-    hangup_analytic = settings.DBCON[settings.MG_CDR_HANGUP].find()
-    logging.debug('After find collection MG_CDR_HANGUP')
+    hangup_analytic = hangup_analytic.items()
 
     # remove mapreduce output from database (no longer required)
     settings.DBCON[out].drop()
