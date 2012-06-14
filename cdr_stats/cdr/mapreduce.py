@@ -138,7 +138,7 @@ def mapreduce_cdr_mail_report():
                         c_Day: this.start_uepoch.getDate(),
                         d_Hour: this.start_uepoch.getHours(),
                         e_Min: this.start_uepoch.getMinutes(),
-                        f_Con: this.country_id,
+                        f_Conuntry: this.country_id,
                     },
                     {
                         calldate__count: 1,
@@ -258,7 +258,7 @@ def mapreduce_cdr_country_report():
             var d = new Date(year, month, day, hours, minutes);
             emit(
                 {
-                    f_Con: this.country_id,
+                    f_Conuntry: this.country_id,
                     g_Millisec: d.getTime(),
                 },
                 {
@@ -307,7 +307,7 @@ def mapreduce_dashboard_world_report():
         function(){
             emit(
                 {
-                    f_Con: this.country_id,
+                    f_Conuntry: this.country_id,
                 },
                 {
                     calldate__count: 1,
@@ -572,7 +572,7 @@ def mapreduce_world_report():
         function(){
 
             emit( {
-                    f_Con: this.metadata.country_id,
+                    f_Conuntry: this.metadata.country_id,
                   },
                   {
                     calldate__count: this.call_daily,
@@ -582,4 +582,3 @@ def mapreduce_world_report():
 
     out = 'aggregate_world_report'
     return (map, reduce, False, out)
-

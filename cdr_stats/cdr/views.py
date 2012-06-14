@@ -838,6 +838,7 @@ def cdr_dashboard(request):
     form = SwitchForm()
     switch_id = 0
     query_var = {}
+    mr_query_var = {}
     search_tag = 0
     if request.method == 'POST':
         logging.debug('CDR dashboard view with search option')
@@ -856,9 +857,12 @@ def cdr_dashboard(request):
 
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
+    mr_query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+
     if not request.user.is_superuser:  # not superuser
         if chk_account_code(request):
-            query_var['accountcode'] = chk_account_code(request)
+            query_var['accountcode'] = \
+                mr_query_var['metadata.accountcode'] = chk_account_code(request)
         else:
             return HttpResponseRedirect('/?acc_code_error=true')
 
@@ -904,23 +908,31 @@ def cdr_dashboard(request):
     # ??? Why dont we use DAILY_ANALYTIC
     # This is already preaggregated therefore will be faster
 
-    logging.debug('Before MapReduce mapreduce_dashboard_world_report')
+    """
+    (map, reduce, finalfc, out) = mapreduce_world_report()
+    #Run Map Reduce
+    country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
+    country_calls = country_data.map_reduce(map, reduce, out, query=mr_query_var)
+    country_calls = country_calls.find().sort([('value.calldate__count', -1),
+                                               ('value.duration__sum', -1)]).limit(5)
+    """
+    #logging.debug('Before MapReduce mapreduce_dashboard_world_report')
     (map, reduce, finalfc, out) = mapreduce_dashboard_world_report()
     country_calls = cdr_data.map_reduce(map, reduce, out, query=query_var)
-    logging.debug('After MapReduce mapreduce_dashboard_world_report')
+    #logging.debug('After MapReduce mapreduce_dashboard_world_report')
 
     # Top 5 countries list
     country_calls = country_calls.find().\
                         sort([('value.calldate__count', -1),
                               ('value.duration__sum', -1)]).limit(5)
-    logging.debug('After country_calls.find')
+    #logging.debug('After country_calls.find')
 
     country_analytic = []
     for i in country_calls:
-        country_analytic.append((get_country_name(int(i['_id']['f_Con'])),
+        country_analytic.append((get_country_name(int(i['_id']['f_Conuntry'])),
                                  int(i['value']['calldate__count']),
                                  int(i['value']['duration__sum']),
-                                 int(i['_id']['f_Con'])))
+                                 int(i['_id']['f_Conuntry'])))
 
     # remove mapreduce output & country analytic from database
     settings.DBCON[out].drop()
@@ -1143,7 +1155,7 @@ def get_cdr_mail_report():
         # created cdr_country_analytic
         settings.DBCON[settings.MG_CDR_COUNTRY].update(
             {
-                'country_id': int(doc['_id']['f_Con']),
+                'country_id': int(doc['_id']['f_Conuntry']),
             },
             {
                 '$inc': {'count': int(doc['value']['calldate__count']),
@@ -2037,10 +2049,10 @@ def cdr_country_report(request):
     for i in calls:
         #country id - country name - call count - call duration - country_id
         country_analytic_array.append(
-                        (get_country_name(int(i['_id']['f_Con'])),
+                        (get_country_name(int(i['_id']['f_Conuntry'])),
                          int(i['value']['calldate__count']),
                          int(i['value']['duration__sum']),
-                         int(i['_id']['f_Con'])))
+                         int(i['_id']['f_Conuntry'])))
         total_calls += int(i['value']['calldate__count'])
         total_duration += int(i['value']['duration__sum'])
 
@@ -2177,12 +2189,12 @@ def world_map_view(request):
     world_analytic_array = []
     for i in calls:
         #country id - country name - country_code - call count - call duration
-        world_analytic_array.append((int(i['_id']['f_Con']),
-                                     get_country_name(int(i['_id']['f_Con']),
+        world_analytic_array.append((int(i['_id']['f_Conuntry']),
+                                     get_country_name(int(i['_id']['f_Conuntry']),
                                          type='iso2'),
                                      int(i['value']['calldate__count']),
                                      i['value']['duration__sum'],
-                                     get_country_name(int(i['_id']['f_Con']))))
+                                     get_country_name(int(i['_id']['f_Conuntry']))))
 
     logging.debug('CDR world report view end')
     variables = {'module': current_view(request),
