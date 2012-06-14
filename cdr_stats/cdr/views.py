@@ -552,8 +552,9 @@ def cdr_view(request):
     logging.debug('Create cdr result')
 
     rows = \
-        final_result.sort([(sort_field, default_order)])\
-                    .skip(PAGE_SIZE * (PAGE_NUMBER - 1)).limit(PAGE_SIZE)
+        final_result.skip(PAGE_SIZE * (PAGE_NUMBER - 1)).limit(PAGE_SIZE)\
+            .sort([(sort_field, default_order)])
+
 
     # Get daily report from session while using pagination & sorting
     if request.GET.get('page') or request.GET.get('sort_by'):
