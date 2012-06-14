@@ -254,6 +254,7 @@ def mapreduce_cdr_dashboard_daily():
         function(){
              emit(
                 {
+                    f_Date: this.metadata.date,
                     f_Country: this.metadata.country_id,
                     f_Hangupcause: this.metadata.hangup_cause_id,
                 },

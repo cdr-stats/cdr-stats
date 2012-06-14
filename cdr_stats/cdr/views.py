@@ -853,7 +853,8 @@ def cdr_dashboard(request):
     #end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
     end_date = datetime(now.year, now.month, now.day,
                         now.hour, now.minute, now.second, now.microsecond)
-    start_date = end_date + relativedelta(days=-int(1))
+    # -2 cause the collection metadata.date only contains year-month-day
+    start_date = end_date + relativedelta(days=-2)
 
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
@@ -871,15 +872,15 @@ def cdr_dashboard(request):
     #(map, reduce, finalfc, out) = mapreduce_cdr_dashboard()
     (map, reduce, finalfc, out) = mapreduce_cdr_dashboard_daily()
 
+    #TODO : Remove this later
+    settings.DBCON[out].drop()
+
     #Run Map Reduce
     daily_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
 
     logging.debug('Before MapReduce mapreduce_cdr_dashboard')
-    calls = daily_data.map_reduce(map, reduce, out, query=query_var)
-    print "======================"
-    print daily_data
-    print out
-    print calls
+    calls = daily_data.map_reduce(map, reduce, out, query=mr_query_var)
+
     logging.debug('After MapReduce mapreduce_cdr_dashboard')
     calls = calls.find().sort([('_id.g_Millisec', 1),
                                ('value.hangup_cause_id', 1)])
@@ -906,7 +907,7 @@ def cdr_dashboard(request):
     hangup_analytic = hangup_analytic.items()
 
     # remove mapreduce output from database (no longer required)
-    settings.DBCON[out].drop()
+    ##settings.DBCON[out].drop()
 
     # Country call analytic start
     # ??? Why dont we use DAILY_ANALYTIC
