@@ -109,6 +109,7 @@ def apply_index(shell):
         ("metadata.date", -1),
         ("metadata.switch_id", 1),
         ("metadata.country_id", 1),
+        ("metadata.hangup_cause_id", 1),
         ("metadata.accountcode", 1)])
     MONTHLY_ANALYTIC.ensure_index([
         ("metadata.date", -1),
@@ -240,8 +241,8 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             daily_date = datetime.datetime.fromtimestamp(
                             int(cdr['variables']['start_uepoch'][:10]))
 
-            id_daily = daily_date.strftime('%Y%m%d') + "/%d/%s/%d" % \
-                                    (switch.id, accountcode, country_id)
+            id_daily = daily_date.strftime('%Y%m%d') + "/%d/%s/%d/%d" % \
+                        (switch.id, accountcode, country_id, hangup_cause_id)
             hour = daily_date.hour
             minute = daily_date.minute
             # Get a datetime that only include date info
@@ -256,6 +257,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
                         "switch_id": switch.id,
                         "country_id": country_id,
                         "accountcode": accountcode,
+                        "hangup_cause_id": hangup_cause_id,
                     },
                 },
                 {
@@ -266,10 +268,6 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
                         "duration_daily": duration,
                         "duration_hourly.%d" % (hour,): duration,
                         "duration_minute.%d.%d" % (hour, minute,): duration,
-                        "hangupid_daily.%d" % (hangup_cause_id,): 1,
-                        "hangupid_hourly.%d.%d" % (hour, hangup_cause_id,): 1,
-                        "hangupid_minute.%d.%d.%d" % \
-                                        (hour, minute, hangup_cause_id,): 1,
                             }
                 }, upsert=True)
 
