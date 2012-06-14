@@ -892,6 +892,7 @@ def cdr_dashboard(request):
         except:
             int_hangup_cause_id = False
 
+        #Why not keeping the following in memory ?
         if int_hangup_cause_id:
             settings.DBCON[settings.MG_CDR_HANGUP].update(
                     {'hangup_cause_id': int(d['value']['hangup_cause_id'])},
