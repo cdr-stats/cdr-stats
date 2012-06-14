@@ -468,8 +468,9 @@ def cdr_view(request):
         if not chk_account_code(request):
             return HttpResponseRedirect('/?acc_code_error=true')
         else:
-            mr_query_var['metadata.accountcode'] = chk_account_code(request)
-            query_var['accountcode'] = chk_account_code(request)
+            query_var['accountcode'] = \
+                mr_query_var['metadata.accountcode'] = \
+                    chk_account_code(request)
 
     cli = source_desti_field_chk_mongodb(caller, caller_type)
     if cli:
@@ -1067,7 +1068,7 @@ def cdr_realtime(request):
                                 sort([('_id.g_Millisec', -1)])
 
         final_data = []
-        for d in calls_in_day.clone():
+        for d in calls_in_day:
             dt = int(d['_id']['g_Millisec'])
             final_data.append((dt, int(d['value']['numbercall__max'])))
 
@@ -1102,7 +1103,8 @@ def get_cdr_mail_report():
 
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
     # result set
-    final_result = cdr_data.find(query_var).sort([('start_uepoch', -1)]).limit(10)
+    final_result = \
+        cdr_data.find(query_var).sort([('start_uepoch', -1)]).limit(10)
 
     #Retrieve Map Reduce
     (map, reduce, finalfc, out) = mapreduce_cdr_mail_report()
@@ -1111,7 +1113,7 @@ def get_cdr_mail_report():
                             query=query_var, finalize=finalfc)
 
     total_data = total_data.find().sort([('_id.c_Day', -1),
-                                        ('_id.d_Hour', -1)])
+                                         ('_id.d_Hour', -1)])
     detail_data = []
     total_duration = 0
     total_calls = 0
@@ -1169,9 +1171,9 @@ def get_cdr_mail_report():
     # Country call analytic end
 
     hangup_analytic_array = []
-    hangup_analytic = settings.DBCON[settings.MG_CDR_HANGUP].find({})
+    hangup_analytic = settings.DBCON[settings.MG_CDR_HANGUP].find()
     if hangup_analytic.count() != 0:
-        total_hangup = sum([int(x['count']) for x in hangup_analytic.clone()])
+        total_hangup = sum([int(x['count']) for x in hangup_analytic])
         for i in hangup_analytic.clone():
             hangup_analytic_array.append(
                 (get_hangupcause_name(int(i['hangup_cause_id'])),
@@ -1799,13 +1801,14 @@ def cdr_overview(request):
 
         (map, reduce, finalfc, out) = mapreduce_monthly_overview()
         query_var['metadata.date'] = {
-                                '$gte': month_start_date,
-                                '$lt': month_end_date}
+                                        '$gte': month_start_date,
+                                        '$lt': month_end_date
+                                     }
 
         #Run Map Reduce
         logging.debug('Before MapReduce')
         calls_in_month = monthly_data.map_reduce(map, reduce,
-                                                out, query=query_var)
+                                                 out, query=query_var)
         logging.debug('After MapReduce')
         calls_in_month = calls_in_month.find().sort([('_id.g_Millisec', -1),
                                                      ('_id.f_Switch', 1)])
@@ -2032,9 +2035,9 @@ def cdr_country_report(request):
         #country id - country name - call count - call duration - country_id
         country_analytic_array.append(
                         (get_country_name(int(i['_id']['f_Con'])),
-                           int(i['value']['calldate__count']),
-                           int(i['value']['duration__sum']),
-                           int(i['_id']['f_Con'])))
+                         int(i['value']['calldate__count']),
+                         int(i['value']['duration__sum']),
+                         int(i['_id']['f_Con'])))
         total_calls += int(i['value']['calldate__count'])
         total_duration += int(i['value']['duration__sum'])
 
