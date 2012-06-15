@@ -1932,8 +1932,7 @@ def cdr_country_report(request):
         * ``template`` - cdr/cdr_country_report.html
         * ``form`` - CountryReportForm
         * ``mongodb_data_set`` - MG_DAILY_ANALYTIC
-        * ``map_reduce`` - mapreduce_country_report()
-                           mapreduce_world_report()
+        * ``map_reduce`` -  mapreduce_world_report()
 
     **Logic Description**:
 
@@ -2032,8 +2031,9 @@ def cdr_country_report(request):
     logging.debug('Map-reduce cdr country analytic')
     # Collect Hourly data
     country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-    country_data_new = country_data.find(query_var).sort([('metadata.date', -1),
-                                                 ('call_hourly', 1)])
+    country_data_new = country_data.find(query_var)\
+                            .sort([('metadata.date', -1),
+                                   ('call_hourly', 1)])
     for i in country_data_new:
         calldate_dict = i['call_hourly']
         duration_dict = i['duration_hourly']
@@ -2041,34 +2041,13 @@ def cdr_country_report(request):
         if country_id != 0:
             if len(calldate_dict) > 0:
                 for call_hour, val in calldate_dict.iteritems():
-                    print call_hour
-
-
-    #Run Map Reduce
-    logging.debug('Before MapReduce')
-    (map, reduce, finalfc, out) = mapreduce_country_report()
-    calls =\
-        country_data.map_reduce(map, reduce, out, query=query_var)
-    logging.debug('After MapReduce')
-    calls = calls.find().sort([('_id.a_Year', -1),
-                               ('_id.b_Month', -1),
-                               ('_id.c_Day', -1),
-                               ('_id.f_Switch', 1),
-                               ('_id.country_id', 1)])
-
-    for i in calls.clone():
-        calldate_dict = i['value']['calldate__count']
-        duration_dict = i['value']['duration__sum']
-        country_id = int(i['_id']['country_id'])
-        if country_id != 0:
-            if len(calldate_dict) > 0:
-                for call_hour, val in calldate_dict.iteritems():
                     call_count = val
                     if int(call_count) > 0:
-                        graph_day = datetime(int(i['_id']['a_Year']),
-                                             int(i['_id']['b_Month']),
-                                             int(i['_id']['c_Day']),
-                                             int(call_hour))
+                        a_Year = int(i['metadata']['date'].strftime('%Y'))
+                        b_Month = int(i['metadata']['date'].strftime('%m'))
+                        c_Day = int(i['metadata']['date'].strftime('%d'))
+                        graph_day = datetime(int(a_Year), int(b_Month),
+                                             int(c_Day), int(call_hour))
                         dt = int(1000 * time.mktime(graph_day.timetuple()))
                         calldate__count = int(call_count)
                         duration__sum = int(duration_dict[call_hour])
