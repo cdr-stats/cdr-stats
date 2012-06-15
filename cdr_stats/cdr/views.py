@@ -878,9 +878,13 @@ def cdr_dashboard(request):
 
     total_record_final = []
     daily_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-    daily_data = daily_data.find(mr_query_var).sort([('metadata.date', -1)])
+    daily_data = daily_data.find(mr_query_var)\
+                        .sort([('metadata.date', -1),
+                               ('metadata.country_id', 1),
+                               ('metadata.hangup_cause_id', 1)])
     total_calls = 0
     total_duration = 0
+    hangup_analytic = dict()
     for i in daily_data:
         calldate_dict = i['call_minute']
         duration_dict = i['duration_minute']
@@ -903,8 +907,16 @@ def cdr_dashboard(request):
                     total_calls += calldate__count
                     total_duration += duration__sum
 
+                    # created hangup_analytic
+                    hc = int(i['metadata']['hangup_cause_id'])
+                    if hc in hangup_analytic:
+                        hangup_analytic[hc] += calldate__count
+                    else:
+                        hangup_analytic[hc] = calldate__count
+
     # sorting on date col
     total_record_final = sorted(total_record_final, key=lambda k: k[0])
+    hangup_analytic = hangup_analytic.items()
 
     #TODO
     #no need to use map reduce mapreduce_cdr_dashboard here, we will read daily analytic directly
@@ -916,24 +928,6 @@ def cdr_dashboard(request):
     #3nd array will be
     # year-month-day :: hour-minute :: hangup cause :: totalcall :: totalduration
 
-    hangup_analytic = dict()
-    """
-    for d in calls:
-        #total_record_final.append([d['_id']['g_Millisec'],
-        #                           d['value']['calldate__count'],
-        #                           d['value']['duration__sum']])
-        total_calls += int(d['value']['calldate__count'])
-        total_duration += int(d['value']['duration__sum'])
-
-        # created cdr_hangup_analytic
-        dt = int(d['value']['hangup_cause_id'])
-        if dt in hangup_analytic:
-            hangup_analytic[dt] += 1
-        else:
-            hangup_analytic[dt] = 1
-
-    hangup_analytic = hangup_analytic.items()
-    """
 
     # Country call analytic start
     # ??? Why dont we use DAILY_ANALYTIC
