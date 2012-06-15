@@ -826,8 +826,7 @@ def cdr_dashboard(request):
 
         * ``template`` - cdr/cdr_dashboard.html
         * ``form`` - SwitchForm
-        * ``mongodb_data_set`` - MG_CDR_COMMON
-        * ``map_reduce`` - mapreduce_cdr_dashboard()
+        * ``mongodb_data_set`` - MG_DAILY_ANALYTIC
 
     **Logic Description**:
 
