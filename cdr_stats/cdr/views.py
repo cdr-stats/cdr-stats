@@ -930,6 +930,11 @@ def cdr_dashboard(request):
                             country_duration[country_id] += duration__sum
                         else:
                             country_duration[country_id] = duration__sum
+
+    logging.debug("Lenght of result total_record_final %d" % len(total_record_final))
+    logging.debug("Lenght of result hangup_analytic %d" % len(hangup_analytic))
+    logging.debug("Lenght of result country_call_count %d" % len(country_call_count))
+
     logging.debug('After loop to handle data')
     # sorting on date col
     total_record_final = sorted(total_record_final, key=lambda k: k[0])
