@@ -810,6 +810,14 @@ def cdr_global_report(request):
                               context_instance=RequestContext(request))
 
 
+def chk_date_for_hrs(graph_date):
+    """Check given graph_date is in last 24 hours range"""
+    diff_run = (datetime.now() - graph_date).seconds
+    if int(diff_run/3600) < 24:
+        return True
+    return False
+
+
 @login_required
 def cdr_dashboard(request):
     """CDR dashboard for a current day
@@ -863,16 +871,6 @@ def cdr_dashboard(request):
 
     logging.debug('cdr dashboard analytic')
 
-    #TODO
-    #no need to use map reduce mapreduce_cdr_dashboard here, we will read daily analytic directly
-    #we will directly read from daily_analytic collection and build up in memory the array
-    #1st array will be
-    # year-month-day :: hour-minute :: totalcall :: totalduration
-    #2nd array will be
-    # year-month-day :: hour-minute :: country :: totalcall :: totalduration
-    #3nd array will be
-    # year-month-day :: hour-minute :: hangup cause :: totalcall :: totalduration
-
     daily_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
     not_require_field = {'call_daily': 0,
                          'call_hourly': 0,
@@ -906,39 +904,40 @@ def cdr_dashboard(request):
                         graph_day = datetime(int(a_Year), int(b_Month),
                                              int(c_Day), int(call_hour),
                                              int(min))
-                        duration__sum = int(duration_dict[call_hour][min])
+                        # check graph date
+                        if chk_date_for_hrs(graph_day):
+                            duration__sum = int(duration_dict[call_hour][min])
+                            dt = int(1000 * time.mktime(graph_day.timetuple()))
 
-                        dt = int(1000 * time.mktime(graph_day.timetuple()))
+                            if int(dt) in final_record:
+                                final_record[dt]['duration_sum'] += duration__sum
+                                final_record[dt]['count_call'] += calldate__count
+                            else:
+                                final_record[dt] = {
+                                                'duration_sum': duration__sum,
+                                                'count_call': calldate__count
+                                                }
 
-                        if int(dt) in final_record:
-                            final_record[dt]['duration_sum'] += duration__sum
-                            final_record[dt]['count_call'] += calldate__count
-                        else:
-                            final_record[dt] = {
-                                            'duration_sum': duration__sum,
-                                            'count_call': calldate__count
-                                            }
+                            total_calls += calldate__count
+                            total_duration += duration__sum
 
-                        total_calls += calldate__count
-                        total_duration += duration__sum
+                            # created hangup_analytic
+                            hc = int(i['metadata']['hangup_cause_id'])
+                            if hc in hangup_analytic:
+                                hangup_analytic[hc] += calldate__count
+                            else:
+                                hangup_analytic[hc] = calldate__count
 
-                        # created hangup_analytic
-                        hc = int(i['metadata']['hangup_cause_id'])
-                        if hc in hangup_analytic:
-                            hangup_analytic[hc] += calldate__count
-                        else:
-                            hangup_analytic[hc] = calldate__count
+                            country_id = int(i['metadata']['country_id'])
+                            if country_id in country_call_count:
+                                country_call_count[country_id] += calldate__count
+                            else:
+                                country_call_count[country_id] = calldate__count
 
-                        country_id = int(i['metadata']['country_id'])
-                        if country_id in country_call_count:
-                            country_call_count[country_id] += calldate__count
-                        else:
-                            country_call_count[country_id] = calldate__count
-
-                        if country_id in country_duration:
-                            country_duration[country_id] += duration__sum
-                        else:
-                            country_duration[country_id] = duration__sum
+                            if country_id in country_duration:
+                                country_duration[country_id] += duration__sum
+                            else:
+                                country_duration[country_id] = duration__sum
 
     logging.debug('After loop to handle data')
 
