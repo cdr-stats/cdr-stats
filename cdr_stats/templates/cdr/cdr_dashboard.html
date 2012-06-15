@@ -28,7 +28,7 @@
 $(function () {
     var data = [
             {% for data in total_record %}
-                [{{ data.0 }}, {{ data.1 }}, {{ data.2 }}],
+                [{{ data.0 }}, {{ data.1.count_call }}, {{ data.1.duration_sum }}],
             {% endfor %}
         ];
     function Info(time,info){

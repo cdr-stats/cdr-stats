@@ -907,9 +907,9 @@ def cdr_dashboard(request):
                         duration__sum = int(duration_dict[call_hour][min])
 
                         dt = int(1000 * time.mktime(graph_day.timetuple()))
-                        total_record_final.append([dt,
-                                                   calldate__count,
-                                                   duration__sum])
+                        total_record_final.append({'dt': dt,
+                                                   'call_count': calldate__count,
+                                                   'duration_sum': duration__sum})
                         total_calls += calldate__count
                         total_duration += duration__sum
 
@@ -931,13 +931,29 @@ def cdr_dashboard(request):
                         else:
                             country_duration[country_id] = duration__sum
 
-    logging.debug("Lenght of result total_record_final %d" % len(total_record_final))
-    logging.debug("Lenght of result hangup_analytic %d" % len(hangup_analytic))
-    logging.debug("Lenght of result country_call_count %d" % len(country_call_count))
-
     logging.debug('After loop to handle data')
     # sorting on date col
-    total_record_final = sorted(total_record_final, key=lambda k: k[0])
+    total_record_final = sorted(total_record_final, key=lambda k: k['dt'])
+
+    # perform grouping on date
+    final_record = dict()
+    duration_sum = 0
+    count_call = 0
+    for i in total_record_final:
+        if int(i['dt']) in final_record:
+            duration_sum += int(i['duration_sum'])
+            count_call += int(i['call_count'])
+        else:
+            duration_sum = int(i['duration_sum'])
+            count_call = int(i['call_count'])
+
+        final_record[int(i['dt'])] = {'duration_sum': duration_sum,
+                                      'count_call': count_call}
+
+
+    final_record = final_record.items()
+    final_record = sorted(final_record, key=lambda k: k[0])
+
     hangup_analytic = hangup_analytic.items()
 
     total_country_call_count = country_call_count.items()
@@ -946,6 +962,10 @@ def cdr_dashboard(request):
     #total_country_call_duration = country_duration.items()
     #total_country_call_duration = sorted(total_country_call_duration,
     #    key=lambda k: k[1], reverse=True)
+
+    logging.debug("Lenght of result total_record_final %d" % len(final_record))
+    logging.debug("Lenght of result hangup_analytic %d" % len(hangup_analytic))
+    logging.debug("Lenght of result country_call_count %d" % len(country_call_count))
 
     country_analytic = []
     logging.debug('Before Loop create country_analytic')
@@ -976,7 +996,7 @@ def cdr_dashboard(request):
                  'total_duration': int_convert_to_minute(total_duration),
                  'ACT': ACT,
                  'ACD': ACD,
-                 'total_record': total_record_final,
+                 'total_record': final_record,
                  'hangup_analytic': hangup_analytic,
                  'country_analytic': country_analytic,
                  'form': form,
