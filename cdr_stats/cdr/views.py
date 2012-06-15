@@ -826,8 +826,6 @@ def cdr_dashboard(request):
         get all call records from mongodb collection for current day
         to create hourly report as well as hangup cause/country analytics
     """
-    logging.debug('Debug Message')
-
     if not check_cdr_data_exists(request):
         return render_to_response(
                     'cdr/error_import.html',
@@ -880,10 +878,12 @@ def cdr_dashboard(request):
                          'call_hourly': 0,
                          'duration_daily': 0,
                          'duration_hourly': 0}
+    logging.debug('Before daily_data.find')
     daily_data = daily_data.find(query_var, not_require_field)\
                         .sort([('metadata.date', -1),
                                ('metadata.country_id', 1),
                                ('metadata.hangup_cause_id', 1)])
+    logging.debug('After daily_data.find')
     total_calls = 0
     total_duration = 0
     total_record_final = []
@@ -930,7 +930,7 @@ def cdr_dashboard(request):
                             country_duration[country_id] += duration__sum
                         else:
                             country_duration[country_id] = duration__sum
-
+    logging.debug('After loop to handle data')
     # sorting on date col
     total_record_final = sorted(total_record_final, key=lambda k: k[0])
     hangup_analytic = hangup_analytic.items()
@@ -943,6 +943,7 @@ def cdr_dashboard(request):
     #    key=lambda k: k[1], reverse=True)
 
     country_analytic = []
+    logging.debug('Before Loop create country_analytic')
     for i in total_country_call_count:
         c_id = int(i[0]) #  i[0] - country id
         c_call_count = int(i[1]) #  i[1] - call count
@@ -953,6 +954,7 @@ def cdr_dashboard(request):
                                  c_duration_sum,
                                  c_id))
 
+    logging.debug('After Loop create country_analytic')
     # Top 5 countries list
     country_analytic = country_analytic[0:5]
 
