@@ -838,7 +838,6 @@ def cdr_dashboard(request):
     form = SwitchForm()
     switch_id = 0
     query_var = {}
-    mr_query_var = {}
     search_tag = 0
     if request.method == 'POST':
         logging.debug('CDR dashboard view with search option')
@@ -847,7 +846,7 @@ def cdr_dashboard(request):
         if form.is_valid():
             switch_id = form.cleaned_data.get('switch')
             if switch_id and int(switch_id) != 0:
-                query_var['switch_id'] = int(switch_id)
+                query_var['metadata.switch_id'] = int(switch_id)
 
     #start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
     #end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
@@ -856,14 +855,11 @@ def cdr_dashboard(request):
     # -2 cause the collection metadata.date only contains year-month-day
     start_date = end_date + relativedelta(days=-2)
 
-    query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
-
-    mr_query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+    query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
         if chk_account_code(request):
-            query_var['accountcode'] = chk_account_code(request)
-            mr_query_var['metadata.accountcode'] = query_var['accountcode']
+            query_var['metadata.accountcode'] = chk_account_code(request)
         else:
             return HttpResponseRedirect('/?acc_code_error=true')
 
@@ -879,10 +875,8 @@ def cdr_dashboard(request):
     #3nd array will be
     # year-month-day :: hour-minute :: hangup cause :: totalcall :: totalduration
 
-
-
     daily_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-    daily_data = daily_data.find(mr_query_var)\
+    daily_data = daily_data.find(query_var)\
                         .sort([('metadata.date', -1),
                                ('metadata.country_id', 1),
                                ('metadata.hangup_cause_id', 1)])
@@ -904,6 +898,7 @@ def cdr_dashboard(request):
                     graph_day = datetime(int(a_Year), int(b_Month),
                                          int(c_Day), int(call_hour),
                                          int(min))
+
                     calldate__count = int(calldate_dict[call_hour][min])
                     duration__sum = int(duration_dict[call_hour][min])
 
