@@ -1,5 +1,6 @@
 {% load i18n cdr_extras %}
 {% load country_dialcode_tags common_tags %}
+{% load cache %}
 
 <center><h3>{% trans "CDR-Stats report of " %} {{ yesterday_date|date:"jS F Y" }}</h3></center>
 
@@ -31,7 +32,9 @@
         <td>{{ row.accountcode }}</td>
         <td>
             <div class="flag_icon">
-                <img src="{{STATIC_URL}}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name }}">
+                {% cache 500 country_data row.country_id %}
+                    <img src="{{STATIC_URL}}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name }}">
+                {% endcache %}
                 <img src="{{STATIC_URL}}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans "Authorized call" %}"/>
                 {% ifequal row.direction 'inbound' %}
                     <img src="{{STATIC_URL}}cdr-stats/icons/door_in.png" title="{{ row.direction|capfirst }} {% trans "call" %}" class="elemtooltip"/>
@@ -97,7 +100,12 @@
                             <tbody>
                             {% for country_data in country_analytic_array %}
                             <tr>
-                                <td class="td-dashboard"><img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}"></td>
+                                <td class="td-dashboard">
+
+                                    {% cache 500 country_data country_data.3 %}
+                                        <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
+                                    {% endcache %}
+                                </td>
                                 <td class="td-dashboard" width="100">{{ country_data.0 }}</td>
                                 <td width="100">{{ country_data.1 }} {% trans "Calls"%}</td>
                                 <td>{{ country_data.2|conv_min }} {% trans "minutes"%}</td>
