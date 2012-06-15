@@ -165,7 +165,7 @@ $(function () {
 
         var data = [
             {% for td in hangup_analytic %}
-                {% cache 500 hangup_cause_id td.0 %}
+                {% cache 1800 hangup_cause_id td.0 %}
                     {
                         label: '{{ td.0|get_hangupcause_name_with_title }}',
                         data: [[1, {{ td.1 }}]]
@@ -317,7 +317,7 @@ $(function () {
                 <tr>
                     <td class="td-dashboard">
                         {% if country_data.3 %}
-                            {% cache 500 country_data country_data.3 %}
+                            {% cache 1800 country_data country_data.3 %}
                                 <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
                             {% endcache %}
                         {% else %}

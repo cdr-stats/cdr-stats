@@ -108,7 +108,7 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                    label: {% cache 500 sw_id_1 rc.grouper %}
+                    label: {% cache 1800 sw_id_1 rc.grouper %}
                            '{{ rc.grouper|get_switch_ip }}'
                            {% endcache %},
                     data: [
@@ -136,7 +136,7 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                    label: {% cache 500 sw_id_2 rc.grouper %}
+                    label: {% cache 1800 sw_id_2 rc.grouper %}
                            '{{ rc.grouper|get_switch_ip }}'
                            {% endcache %},
                     data: [
@@ -164,7 +164,7 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                    label: {% cache 500 sw_id_3 rc.grouper %}
+                    label: {% cache 1800 sw_id_3 rc.grouper %}
                            '{{ rc.grouper|get_switch_ip }}'
                            {% endcache %},
                     data: [
@@ -192,7 +192,7 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                    label: {% cache 500 sw_id_4 rc.grouper %}
+                    label: {% cache 1800 sw_id_4 rc.grouper %}
                            '{{ rc.grouper|get_switch_ip }}'
                            {% endcache %},
                     data: [
@@ -220,7 +220,7 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                    label: {% cache 500 sw_id_5 rc.grouper %}
+                    label: {% cache 1800 sw_id_5 rc.grouper %}
                            '{{ rc.grouper|get_switch_ip }}'
                            {% endcache %},
                     data: [
@@ -248,7 +248,7 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                    label: {% cache 500 sw_id_6 rc.grouper %}
+                    label: {% cache 1800 sw_id_6 rc.grouper %}
                            '{{ rc.grouper|get_switch_ip }}'
                            {% endcache %},
                     data: [

@@ -32,7 +32,7 @@
         <td>{{ row.accountcode }}</td>
         <td>
             <div class="flag_icon">
-                {% cache 500 country_data row.country_id %}
+                {% cache 1800 country_data row.country_id %}
                     <img src="{{STATIC_URL}}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name }}">
                 {% endcache %}
                 <img src="{{STATIC_URL}}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans "Authorized call" %}"/>
@@ -102,7 +102,7 @@
                             <tr>
                                 <td class="td-dashboard">
 
-                                    {% cache 500 country_data country_data.3 %}
+                                    {% cache 1800 country_data country_data.3 %}
                                         <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
                                     {% endcache %}
                                 </td>

@@ -95,7 +95,7 @@ $(function () {
     {% regroup total_record|dictsort:"country_id" by country_id as country_list %}
     {% for rc in country_list %}
         {
-                label: {% cache 500 c_id rc.grouper %}
+                label: {% cache 1800 c_id rc.grouper %}
                        '{{ rc.grouper|country_name }}'
                        {% endcache %},
                 data: [
@@ -350,7 +350,7 @@ $(function () {
                         <tr>
                             <td class="td-dashboard">
                                 {% if country_data.3 %}
-                                    {% cache 500 hcountry_flag country_data.3 %}
+                                    {% cache 1800 hcountry_flag country_data.3 %}
                                         <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
                                     {% endcache %}
                                 {% else %}
@@ -395,7 +395,7 @@ $(function () {
                         <tr>
                             <td class="td-dashboard">
                                 {% if country_data.3 %}
-                                    {% cache 500 hcountry_flag country_data.3 %}
+                                    {% cache 1800 hcountry_flag country_data.3 %}
                                         <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
                                     {% endcache %}
                                 {% else %}
