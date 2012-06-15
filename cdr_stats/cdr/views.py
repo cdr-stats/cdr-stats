@@ -912,14 +912,13 @@ def cdr_dashboard(request):
                         dt = int(1000 * time.mktime(graph_day.timetuple()))
 
                         if int(dt) in final_record:
-                            dur_sum += duration__sum
-                            call_count += calldate__count
+                            final_record[dt]['duration_sum'] += duration__sum
+                            final_record[dt]['count_call'] += calldate__count
                         else:
-                            dur_sum = duration__sum
-                            call_count = calldate__count
-
-                        final_record[dt] = {'duration_sum': dur_sum,
-                                            'count_call': call_count}
+                            final_record[dt] = {
+                                            'duration_sum': dur_sum,
+                                            'count_call': call_count
+                                                }
 
                         total_calls += calldate__count
                         total_duration += duration__sum
