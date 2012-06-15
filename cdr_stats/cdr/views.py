@@ -812,8 +812,8 @@ def cdr_global_report(request):
 
 def chk_date_for_hrs(graph_date):
     """Check given graph_date is in last 24 hours range"""
-    diff_run = (datetime.now() - graph_date).seconds
-    if int(diff_run/3600) < 24:
+    previous_date = datetime.now() + relativedelta(days=-1)
+    if graph_date < previous_date:
         return True
     return False
 
@@ -2032,6 +2032,18 @@ def cdr_country_report(request):
     logging.debug('Map-reduce cdr country analytic')
     # Collect Hourly data
     country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
+    country_data_new = country_data.find(query_var).sort([('metadata.date', -1),
+                                                 ('call_hourly', 1)])
+    for i in country_data_new:
+        calldate_dict = i['call_hourly']
+        duration_dict = i['duration_hourly']
+        country_id = int(i['metadata']['country_id'])
+        if country_id != 0:
+            if len(calldate_dict) > 0:
+                for call_hour, val in calldate_dict.iteritems():
+                    print call_hour
+
+
     #Run Map Reduce
     logging.debug('Before MapReduce')
     (map, reduce, finalfc, out) = mapreduce_country_report()
