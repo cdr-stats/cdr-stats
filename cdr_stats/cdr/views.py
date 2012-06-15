@@ -891,8 +891,7 @@ def cdr_dashboard(request):
     country_call_count = dict()
     country_duration = dict()
     final_record = dict()
-    dur_sum = 0
-    call_count = 0
+
     for i in daily_data:
         calldate_dict = i['call_minute']
         duration_dict = i['duration_minute']
@@ -916,9 +915,9 @@ def cdr_dashboard(request):
                             final_record[dt]['count_call'] += calldate__count
                         else:
                             final_record[dt] = {
-                                            'duration_sum': dur_sum,
-                                            'count_call': call_count
-                                                }
+                                            'duration_sum': duration__sum,
+                                            'count_call': calldate__count
+                                            }
 
                         total_calls += calldate__count
                         total_duration += duration__sum
