@@ -875,8 +875,36 @@ def cdr_dashboard(request):
     #TODO : Remove this later
     settings.DBCON[out].drop()
 
-    #Run Map Reduce
+
+    total_record_final = []
     daily_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
+    daily_data = daily_data.find(mr_query_var).sort([('metadata.date', -1)])
+    total_calls = 0
+    total_duration = 0
+    for i in daily_data:
+        calldate_dict = i['call_minute']
+        duration_dict = i['duration_minute']
+        if len(calldate_dict) > 0:
+            for call_hour, min_dict in calldate_dict.iteritems():
+                for min, count_val in min_dict.iteritems():
+                    a_Year = int(i['metadata']['date'].strftime('%Y'))
+                    b_Month = int(i['metadata']['date'].strftime('%m'))
+                    c_Day = int(i['metadata']['date'].strftime('%d'))
+                    graph_day = datetime(int(a_Year), int(b_Month),
+                                         int(c_Day), int(call_hour),
+                                         int(min))
+                    calldate__count = int(calldate_dict[call_hour][min])
+                    duration__sum = int(duration_dict[call_hour][min])
+
+                    dt = int(1000 * time.mktime(graph_day.timetuple()))
+                    total_record_final.append([dt,
+                                               calldate__count,
+                                               duration__sum])
+                    total_calls += calldate__count
+                    total_duration += duration__sum
+
+    # sorting on date col
+    total_record_final = sorted(total_record_final, key=lambda k: k[0])
 
     #TODO
     #no need to use map reduce mapreduce_cdr_dashboard here, we will read daily analytic directly
@@ -888,23 +916,12 @@ def cdr_dashboard(request):
     #3nd array will be
     # year-month-day :: hour-minute :: hangup cause :: totalcall :: totalduration
 
-
-    logging.debug('Before MapReduce mapreduce_cdr_dashboard')
-    calls = daily_data.map_reduce(map, reduce, out, query=mr_query_var)
-
-    logging.debug('After MapReduce mapreduce_cdr_dashboard')
-    calls = calls.find().sort([('_id.g_Millisec', 1),
-                               ('value.hangup_cause_id', 1)])
-    logging.debug('After calls.find')
-
-    total_calls = 0
-    total_duration = 0
-    total_record_final = []
     hangup_analytic = dict()
+    """
     for d in calls:
-        total_record_final.append([d['_id']['g_Millisec'],
-                                   d['value']['calldate__count'],
-                                   d['value']['duration__sum']])
+        #total_record_final.append([d['_id']['g_Millisec'],
+        #                           d['value']['calldate__count'],
+        #                           d['value']['duration__sum']])
         total_calls += int(d['value']['calldate__count'])
         total_duration += int(d['value']['duration__sum'])
 
@@ -916,22 +933,12 @@ def cdr_dashboard(request):
             hangup_analytic[dt] = 1
 
     hangup_analytic = hangup_analytic.items()
-
-    # remove mapreduce output from database (no longer required)
-    ##settings.DBCON[out].drop()
+    """
 
     # Country call analytic start
     # ??? Why dont we use DAILY_ANALYTIC
     # This is already preaggregated therefore will be faster
 
-    """
-    (map, reduce, finalfc, out) = mapreduce_world_report()
-    #Run Map Reduce
-    country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-    country_calls = country_data.map_reduce(map, reduce, out, query=mr_query_var)
-    country_calls = country_calls.find().sort([('value.calldate__count', -1),
-                                               ('value.duration__sum', -1)]).limit(5)
-    """
     #logging.debug('Before MapReduce mapreduce_dashboard_world_report')
     (map, reduce, finalfc, out) = mapreduce_dashboard_world_report()
     country_calls = cdr_data.map_reduce(map, reduce, out, query=query_var)
