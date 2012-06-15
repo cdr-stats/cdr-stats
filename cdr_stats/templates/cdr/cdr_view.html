@@ -262,7 +262,7 @@
                     {% endif %}
                 </td>
                 <td>
-                  {% cache 500 hangupcause_name row.hangup_cause_id %}
+                  {% cache 1800 hangupcause_name row.hangup_cause_id %}
                     {{ row.hangup_cause_id|get_hangupcause_name }}
                   {% endcache %}
                 </td>
@@ -270,7 +270,7 @@
                 <td>
                     <div class="flag_icon">
                         {% if row.country_id %}
-                            {% cache 500 hcountry_flag row.country_id %}
+                            {% cache 1800 hcountry_flag row.country_id %}
                                 <img src="{{STATIC_URL}}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name }}">
                             {% endcache %}
                         {% else %}
