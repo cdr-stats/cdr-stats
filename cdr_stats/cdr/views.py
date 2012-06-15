@@ -868,15 +868,19 @@ def cdr_dashboard(request):
             return HttpResponseRedirect('/?acc_code_error=true')
 
     logging.debug('Map-reduce cdr dashboard analytic')
-    #Retrieve Map Reduce
-    #(map, reduce, finalfc, out) = mapreduce_cdr_dashboard()
-    (map, reduce, finalfc, out) = mapreduce_cdr_dashboard_daily()
 
-    #TODO : Remove this later
-    settings.DBCON[out].drop()
+    #TODO
+    #no need to use map reduce mapreduce_cdr_dashboard here, we will read daily analytic directly
+    #we will directly read from daily_analytic collection and build up in memory the array
+    #1st array will be
+    # year-month-day :: hour-minute :: totalcall :: totalduration
+    #2nd array will be
+    # year-month-day :: hour-minute :: country :: totalcall :: totalduration
+    #3nd array will be
+    # year-month-day :: hour-minute :: hangup cause :: totalcall :: totalduration
 
 
-    total_record_final = []
+
     daily_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
     daily_data = daily_data.find(mr_query_var)\
                         .sort([('metadata.date', -1),
@@ -884,7 +888,10 @@ def cdr_dashboard(request):
                                ('metadata.hangup_cause_id', 1)])
     total_calls = 0
     total_duration = 0
+    total_record_final = []
     hangup_analytic = dict()
+    country_call_count = dict()
+    country_duration = dict()
     for i in daily_data:
         calldate_dict = i['call_minute']
         duration_dict = i['duration_minute']
@@ -914,45 +921,41 @@ def cdr_dashboard(request):
                     else:
                         hangup_analytic[hc] = calldate__count
 
+                    country_id = int(i['metadata']['country_id'])
+                    if country_id in country_call_count:
+                        country_call_count[country_id] += calldate__count
+                    else:
+                        country_call_count[country_id] = calldate__count
+
+                    if country_id in country_duration:
+                        country_duration[country_id] += duration__sum
+                    else:
+                        country_duration[country_id] = duration__sum
+
     # sorting on date col
     total_record_final = sorted(total_record_final, key=lambda k: k[0])
     hangup_analytic = hangup_analytic.items()
 
-    #TODO
-    #no need to use map reduce mapreduce_cdr_dashboard here, we will read daily analytic directly
-    #we will directly read from daily_analytic collection and build up in memory the array
-    #1st array will be
-    # year-month-day :: hour-minute :: totalcall :: totalduration
-    #2nd array will be
-    # year-month-day :: hour-minute :: country :: totalcall :: totalduration
-    #3nd array will be
-    # year-month-day :: hour-minute :: hangup cause :: totalcall :: totalduration
-
-
-    # Country call analytic start
-    # ??? Why dont we use DAILY_ANALYTIC
-    # This is already preaggregated therefore will be faster
-
-    #logging.debug('Before MapReduce mapreduce_dashboard_world_report')
-    (map, reduce, finalfc, out) = mapreduce_dashboard_world_report()
-    country_calls = cdr_data.map_reduce(map, reduce, out, query=query_var)
-    #logging.debug('After MapReduce mapreduce_dashboard_world_report')
-
-    # Top 5 countries list
-    country_calls = country_calls.find().\
-                        sort([('value.calldate__count', -1),
-                              ('value.duration__sum', -1)]).limit(5)
-    #logging.debug('After country_calls.find')
+    total_country_call_count = country_call_count.items()
+    total_country_call_count = sorted(total_country_call_count,
+        key=lambda k: k[1], reverse=True)
+    #total_country_call_duration = country_duration.items()
+    #total_country_call_duration = sorted(total_country_call_duration,
+    #    key=lambda k: k[1], reverse=True)
 
     country_analytic = []
-    for i in country_calls:
-        country_analytic.append((get_country_name(int(i['_id']['f_Country'])),
-                                 int(i['value']['calldate__count']),
-                                 int(i['value']['duration__sum']),
-                                 int(i['_id']['f_Country'])))
+    for i in total_country_call_count:
+        c_id = int(i[0]) #  i[0] - country id
+        c_call_count = int(i[1]) #  i[1] - call count
+        c_duration_sum = int(country_duration[c_id]) # call duration
 
-    # remove mapreduce output & country analytic from database
-    settings.DBCON[out].drop()
+        country_analytic.append((get_country_name(c_id),
+                                 c_call_count,
+                                 c_duration_sum,
+                                 c_id))
+
+    # Top 5 countries list
+    country_analytic = country_analytic[0:5]
 
     #Calculate the Average Time of Call
     ACT = math.floor(total_calls / 24)
