@@ -529,12 +529,12 @@ msgstr "Увеличение более чем на"
 
 #: cdr_alert/models.py:44
 #, python-format
-msgid "% decrease by more than"
-msgstr "% Увеличится более чем на"
+msgid "Percentage decrease by more than"
+msgstr "Percentage yвеличится более чем на"
 
 #: cdr_alert/models.py:45
-msgid "% Increase by more than"
-msgstr "% Увеличится более чем на"
+msgid "Percentage increase by more than"
+msgstr "Percentage yвеличится более чем на"
 
 #: cdr_alert/models.py:50
 msgid "Same day"

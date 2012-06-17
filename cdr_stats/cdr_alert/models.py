@@ -41,8 +41,8 @@ ALERT_CONDITION  = (
     (2, _('Is greater than')),
     (3, _('Decrease by more than')),
     (4, _('Increase by more than')),
-    (5, _('% decrease by more than')),
-    (6, _('% Increase by more than')),
+    (5, _('Percentage decrease by more than')),
+    (6, _('Percentage increase by more than')),
 )
 
 #this condition only apply if PERIOD is "Day", otherwise we will compare to previous week or previous month
