@@ -2028,46 +2028,47 @@ def cdr_country_report(request):
         else:
             return HttpResponseRedirect('/?acc_code_error=true')
 
-    logging.debug('Map-reduce cdr country analytic')
-    # Collect Hourly data
+    # Country Hourly data
+    (map, reduce, finalfc, out) = mapreduce_hourly_country_report()
     country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-    country_data_new = country_data.find(query_var)\
-                            .sort([('metadata.date', -1),
-                                   ('call_hourly', 1)])
-    for i in country_data_new:
-        calldate_dict = i['call_hourly']
-        duration_dict = i['duration_hourly']
-        country_id = int(i['metadata']['country_id'])
-        if country_id != 0:
-            if len(calldate_dict) > 0:
-                for call_hour, val in calldate_dict.iteritems():
-                    call_count = val
-                    if int(call_count) > 0:
-                        a_Year = int(i['metadata']['date'].strftime('%Y'))
-                        b_Month = int(i['metadata']['date'].strftime('%m'))
-                        c_Day = int(i['metadata']['date'].strftime('%d'))
-                        graph_day = datetime(int(a_Year), int(b_Month),
-                                             int(c_Day), int(call_hour))
-                        dt = int(1000 * time.mktime(graph_day.timetuple()))
-                        calldate__count = int(call_count)
-                        duration__sum = int(duration_dict[call_hour])
-                        total_record_final.append({
-                            'dt': dt,
-                            'calldate__count': calldate__count,
-                            'duration__sum': duration__sum,
-                            'country_id': country_id
-                        })
+
+    logging.debug('Map-reduce cdr country hourly analytic start')
+    country_calls = country_data.map_reduce(map, reduce, out, query=query_var)
+    logging.debug('Map-reduce cdr country hourly analytic end')
+    country_calls = country_calls.find()\
+                                .sort([('a_Year', -1),
+                                       ('b_Month', -1),
+                                       ('c_Day', -1),
+                                       ('f_Country', -1)])
+    total_record_final = []
+    for i in country_calls:
+        country_id = int(i['_id']['f_Country'])
+        for hr in range(0, 24):
+            call_count = int(i['value']['calldate__count'][hr])
+            duration_sum = int(i['value']['duration__sum'][hr])
+            if call_count > 0:
+                a_Year = int(i['_id']['a_Year'])
+                b_Month = int(i['_id']['b_Month'])
+                c_Day = int(i['_id']['c_Day'])
+                graph_day = datetime(a_Year, b_Month, c_Day, int(hr))
+                dt = int(1000 * time.mktime(graph_day.timetuple()))
+                total_record_final.append({
+                    'dt': dt,
+                    'calldate__count': call_count,
+                    'duration__sum': duration_sum,
+                    'country_id': country_id
+                })
 
     total_record_final = sorted(total_record_final, key=lambda k: k['dt'])
-
     logging.debug('Map-reduce cdr country calls report')
     #Retrieve Map Reduce
     (map, reduce, finalfc, out) = mapreduce_world_report()
 
     #Run Map Reduce
     country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-
+    logging.debug('Map-reduce cdr country calls report start')
     calls = country_data.map_reduce(map, reduce, out, query=query_var)
+    logging.debug('Map-reduce cdr country calls report end')
     calls = calls.find().sort([('value.calldate__count', -1),
                                ('value.duration__sum', -1)])
 

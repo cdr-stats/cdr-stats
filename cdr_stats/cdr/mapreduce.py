@@ -386,6 +386,42 @@ def mapreduce_hourly_overview():
     return (map, reduce, False, out)
 
 
+def mapreduce_hourly_country_report():
+    """
+    To get the overview analytic of cdr
+
+       * Total calls per year-month-day-country
+       * Total call duration per year-month-day-country
+
+    Attributes:
+
+        * ``map`` - Grouping perform on year, month, day & country
+        * ``reduce`` - Calculate call count, sum of call duration based on map
+
+    Result Collection: ``aggregate_hourly_country_report``
+    """
+    (map, reduce, finalfc, out) = mapreduce_cdr_hourly_report()
+
+    map = mark_safe(u'''
+        function(){
+            emit(
+                {
+                    a_Year: this.metadata.date.getFullYear(),
+                    b_Month: this.metadata.date.getMonth() + 1,
+                    c_Day: this.metadata.date.getDate(),
+                    f_Country: this.metadata.country_id,
+                },
+                {
+                    calldate__count: this.call_hourly,
+                    duration__sum: this.duration_hourly,
+                }
+            )
+          }''')
+
+    out = 'aggregate_hourly_country_report'
+    return (map, reduce, False, out)
+
+
 def mapreduce_daily_overview():
     """
     To get the daily analytic of cdr
