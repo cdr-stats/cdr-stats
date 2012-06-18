@@ -1052,10 +1052,14 @@ def get_cdr_mail_report():
                             query=query_var, finalize=finalfc)
 
     total_data = total_data.find().sort([('_id.c_Day', -1),
-                                         ('_id.d_Hour', -1)])
+                                         ('_id.d_Hour', -1),
+                                         ('_id.f_Country', 1),
+                                         ('value.hangup_cause_id', 1)])
     detail_data = []
     total_duration = 0
     total_calls = 0
+    country_analytic = dict()
+    hangup_analytic = dict()
     for doc in total_data:
         detail_data.append(
             {
@@ -1068,23 +1072,22 @@ def get_cdr_mail_report():
         total_calls += int(doc['value']['calldate__count'])
 
         # created cdr_hangup_analytic
-        settings.DBCON[settings.MG_CDR_HANGUP].update(
-            {
-                'hangup_cause_id': int(doc['value']['hangup_cause_id'])
-            },
-            {
-                '$inc': {'count': 1}
-            }, upsert=True)
+        hangup_cause_id = int(doc['value']['hangup_cause_id'])
+        if hangup_cause_id in hangup_analytic:
+            hangup_analytic[hangup_cause_id] += 1
+        else:
+            hangup_analytic[hangup_cause_id] = 1
 
-        # created cdr_country_analytic
-        settings.DBCON[settings.MG_CDR_COUNTRY].update(
-            {
-                'country_id': int(doc['_id']['f_Country']),
-            },
-            {
-                '$inc': {'count': int(doc['value']['calldate__count']),
-                'duration': int(doc['value']['duration__sum'])}
-            }, upsert=True)
+
+        country_id = int(doc['_id']['f_Country'])
+        if country_id in country_analytic:
+            country_analytic[country_id]['count_call'] += int(doc['value']['calldate__count'])
+            country_analytic[country_id]['duration_sum'] += int(doc['value']['duration__sum'])
+        else:
+            country_analytic[country_id] = {
+                'count_call': int(doc['value']['calldate__count']),
+                'duration_sum': int(doc['value']['duration__sum'])
+            }
 
     #Calculate the Average Time of Call
     ACT = math.floor(total_calls / 24)
@@ -1093,32 +1096,30 @@ def get_cdr_mail_report():
     else:
         ACD = int_convert_to_minute(math.floor(total_duration / total_calls))
 
+    country_analytic = country_analytic.items()
+    country_analytic = sorted(country_analytic,
+                              key=lambda k: k[1]['count_call'], reverse=True)
     # Top 5 called countries
-    country_calls_final = \
-        settings.DBCON[settings.MG_CDR_COUNTRY].find().\
-                        sort([('count', -1),
-                              ('duration', -1)]).limit(5)
     country_analytic_array = []
-    for i in country_calls_final:
+    for i in country_analytic[0:5]:
         # All countries list
-        country_analytic_array.append((get_country_name(int(i['country_id'])),
-                                       int(i['count']),
-                                       int(i['duration']),
-                                       int(i['country_id'])))
+        country_analytic_array.append((get_country_name(int(i[0])),
+                                       int(i[1]['count_call']),
+                                       int(i[1]['duration_sum']),
+                                       int(i[0])))
 
-    settings.DBCON[settings.MG_CDR_COUNTRY].drop()
     # Country call analytic end
 
     hangup_analytic_array = []
-    hangup_analytic = settings.DBCON[settings.MG_CDR_HANGUP].find()
-    if hangup_analytic.count() != 0:
-        total_hangup = sum([int(x['count']) for x in hangup_analytic])
-        for i in hangup_analytic.clone():
+    hangup_analytic = hangup_analytic.items()
+    hangup_analytic = sorted(hangup_analytic, key=lambda k: k[0])
+    if len(hangup_analytic) != 0:
+        total_hangup = sum([int(x[1]) for x in hangup_analytic])
+        for i in hangup_analytic:
             hangup_analytic_array.append(
-                (get_hangupcause_name(int(i['hangup_cause_id'])),
-                "{0:.0f}%".format((float(i['count']) / float(total_hangup)) * 100)))
+                (get_hangupcause_name(int(i[0])),
+                "{0:.0f}%".format((float(i[1]) / float(total_hangup)) * 100)))
 
-    settings.DBCON[settings.MG_CDR_HANGUP].drop()
     # remove mapreduce output from database (no longer required)
     settings.DBCON[out].drop()
 
