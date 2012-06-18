@@ -31,6 +31,10 @@ $(function () {
                 [{{ data.0 }}, {{ data.1.count_call }}, {{ data.1.duration_sum }}],
             {% endfor %}
         ];
+
+    //for (var i = 0; i < data.length; ++i)
+    //    data[i][0] += 60 * 60 * 1000;
+
     function Info(time,info){
         for(var i in data){
             if(data[i][0] == parseInt(time)){
@@ -52,13 +56,17 @@ $(function () {
     }
 
     var options = {
-        xaxis: { mode: "time", tickLength: 5 },
+        xaxis: { mode: "time",
+                 tickLength: 5,
+                 //min: parseInt('{{ min_date }}'),
+                 //max: parseInt('{{ max_date }}')
+        },
         yaxis: { min: 0, tickDecimals: false },
         selection: { mode: "x" },
         grid: {
                 hoverable: true,
                 xaxis: false
-              },
+              }
     };
 
     var plot = $.plot($("#graph_responsive"), [data], options);

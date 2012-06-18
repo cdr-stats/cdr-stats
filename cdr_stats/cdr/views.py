@@ -765,7 +765,7 @@ def cdr_dashboard(request):
                          'duration_hourly': 0}
     logging.debug('Before daily_data.find')
     daily_data = daily_data.find(query_var, not_require_field)\
-                        .sort([('metadata.date', -1),
+                        .sort([('metadata.date', 1),
                                ('metadata.country_id', 1),
                                ('metadata.hangup_cause_id', 1)])
     logging.debug('After daily_data.find')
@@ -789,12 +789,12 @@ def cdr_dashboard(request):
                         b_Month = int(i['metadata']['date'].strftime('%m'))
                         c_Day = int(i['metadata']['date'].strftime('%d'))
                         graph_day = datetime(int(a_Year), int(b_Month),
-                                             int(c_Day), int(call_hour),
-                                             int(min))
+                            int(c_Day), int(call_hour),
+                            int(min))
+                        dt = int(1000 * time.mktime(graph_day.timetuple()))
                         # check graph date
                         if chk_date_for_hrs(graph_day):
                             duration__sum = int(duration_dict[call_hour][min])
-                            dt = int(1000 * time.mktime(graph_day.timetuple()))
 
                             if int(dt) in final_record:
                                 final_record[dt]['duration_sum'] += duration__sum
@@ -868,6 +868,14 @@ def cdr_dashboard(request):
     else:
         ACD = int_convert_to_minute(math.floor(total_duration / total_calls))
 
+    """
+    start_date = datetime.now() + relativedelta(days=-1)
+    min_date = int(1000 * time.mktime(start_date.timetuple()))
+    print min_date
+    end_date = datetime.now()
+    max_date = int(1000 * time.mktime(end_date.timetuple()))
+    print max_date
+    """
     logging.debug('CDR dashboard view end')
     variables = {'module': current_view(request),
                  'total_calls': total_calls,
@@ -879,6 +887,8 @@ def cdr_dashboard(request):
                  'country_analytic': country_analytic,
                  'form': form,
                  'search_tag': search_tag,
+                 #'max_date': max_date,
+                 #'min_date': min_date,
                 }
 
     return render_to_response('cdr/cdr_dashboard.html', variables,
