@@ -13,7 +13,7 @@
 #
 from django.conf.urls.defaults import patterns, url
 from cdr.views import index, cdr_view, cdr_export_to_csv, cdr_detail,\
-                      cdr_global_report, cdr_dashboard, cdr_report_by_hour,\
+                      cdr_dashboard, cdr_report_by_hour,\
                       cdr_overview, cdr_concurrent_calls, cdr_realtime, mail_report,\
                       cdr_country_report, world_map_view, login_view, logout_view,\
                       pleaselog, cust_password_reset, cust_password_reset_done,\
@@ -25,7 +25,6 @@ urlpatterns = patterns('cdr.views',
     (r'^cdr_view/$', 'cdr_view'),
     (r'^cdr_export_csv/$', 'cdr_export_to_csv'),
     (r'^cdr_detail/(?P<id>\w+)/(?P<switch_id>\w+)/$', 'cdr_detail'),
-    (r'^global_report/$', 'cdr_global_report'),
     (r'^dashboard/$', 'cdr_dashboard'),
     (r'^hourly_report/$', 'cdr_report_by_hour'),
     (r'^cdr_overview/$', 'cdr_overview'),
