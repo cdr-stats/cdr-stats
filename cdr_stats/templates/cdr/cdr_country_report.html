@@ -132,13 +132,19 @@ $(function () {
     function formTicks(val) {
 
         var dt = new Date(parseInt(val));
+        var Year = dt.getFullYear();
+        var Month = dt.getMonth() + 1;
+        var Day = dt.getDate();
+        Month = Month < 10 ? '0' + Month : Month;
+        Day = Day < 10 ? '0' + Day : Day;
         var hour = dt.getHours();
         var minute = dt.getMinutes();
         var ampm = hour >= 12 ? 'pm' : 'am';
         var hour = hour % 12;
-        hour = hour ? hour : 12; // the hour '0' should be '12'
+        hour = hour ? hour : 12;
         minute = minute < 10 ? '0' + minute : minute;
-        strTime = hour + ':' + minute + ' ' + ampm;
+
+        strTime = Day + '-' + Month + '-' + Year + '<br/>' + hour + ':' + minute + ' ' + ampm;
         return strTime
     }
 
