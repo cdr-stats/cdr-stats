@@ -271,6 +271,42 @@ $(function () {
         }
     ];
 
+    function formTicks(val) {
+
+        var dt = new Date(parseInt(val));
+
+        var Year = dt.getFullYear();
+        var Month = dt.getMonth() + 1;
+        var Day = dt.getDate();
+        Month = Month < 10 ? '0' + Month : Month;
+        Day = Day < 10 ? '0' + Day : Day;
+        month_name = MonthName(Month, 0);
+
+        var hour = dt.getHours();
+        var minute = dt.getMinutes();
+        var ampm = hour >= 12 ? 'pm' : 'am';
+        var hour = hour % 12;
+        hour = hour ? hour : 12; // the hour '0' should be '12'
+        minute = minute < 10 ? '0' + minute : minute;
+
+        var graph_type = $('#id_graph_type').val();
+        if(graph_type=='hour')
+        {
+            strTime = Day + ', ' + month_name + ' ' + Year + '<br/>' + hour + ':' + minute + ' ' + ampm;
+            return strTime
+        }
+        if(graph_type=='day')
+        {
+            strTime = Day + ', '+ month_name + ' ' + Year
+            return strTime
+        }
+        if(graph_type=='month')
+        {
+            strTime = month_name + '  ' +  Year
+            return strTime
+        }
+    }
+
     var options = {
         legend: {
             position: "ne",
@@ -287,7 +323,8 @@ $(function () {
         },
         xaxis: {
             mode: "time",
-            tickLength: 5
+            tickLength: 5,
+            tickFormatter: function(val) { return formTicks(val) },
         },
         grid: {
             hoverable: true,
