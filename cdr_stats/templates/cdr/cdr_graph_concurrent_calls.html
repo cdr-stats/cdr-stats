@@ -52,6 +52,20 @@ $(function () {
         {% endfor %}
     ];
 
+    function formTicks(val) {
+
+        var dt = new Date(parseInt(val));
+        var hour = dt.getHours();
+        var minute = dt.getMinutes();
+        var ampm = hour >= 12 ? 'pm' : 'am';
+        var hour = hour % 12;
+        hour = hour ? hour : 12;
+        minute = minute < 10 ? '0' + minute : minute;
+
+        strTime = hour + ':' + minute + ' ' + ampm;
+        return strTime
+    }
+
     var options = {
         legend: {
                 position: "ne",
@@ -61,6 +75,7 @@ $(function () {
         xaxis: {
             mode: "time",
             //tickLength: 5
+            tickFormatter: function(val) { return formTicks(val) }
         },
         series: {
                 lines: { show: true, steps: true, fill: true }
