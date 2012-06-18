@@ -55,11 +55,23 @@ $(function () {
         }
     }
 
+    function formTicks(val) {
+
+        var dt = new Date(parseInt(val));
+        var hour = dt.getHours();
+        var minute = dt.getMinutes();
+        var ampm = hour >= 12 ? 'pm' : 'am';
+        var hour = hour % 12;
+        hour = hour ? hour : 12; // the hour '0' should be '12'
+        minute = minute < 10 ? '0' + minute : minute;
+        strTime = hour + ':' + minute + ' ' + ampm;
+        return strTime
+    }
+
     var options = {
         xaxis: { mode: "time",
                  tickLength: 5,
-                 //min: parseInt('{{ min_date }}'),
-                 //max: parseInt('{{ max_date }}')
+                 tickFormatter: function(val) { return formTicks(val) }
         },
         yaxis: { min: 0, tickDecimals: false },
         selection: { mode: "x" },

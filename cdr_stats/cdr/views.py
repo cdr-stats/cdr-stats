@@ -868,14 +868,6 @@ def cdr_dashboard(request):
     else:
         ACD = int_convert_to_minute(math.floor(total_duration / total_calls))
 
-    """
-    start_date = datetime.now() + relativedelta(days=-1)
-    min_date = int(1000 * time.mktime(start_date.timetuple()))
-    print min_date
-    end_date = datetime.now()
-    max_date = int(1000 * time.mktime(end_date.timetuple()))
-    print max_date
-    """
     logging.debug('CDR dashboard view end')
     variables = {'module': current_view(request),
                  'total_calls': total_calls,
@@ -887,8 +879,6 @@ def cdr_dashboard(request):
                  'country_analytic': country_analytic,
                  'form': form,
                  'search_tag': search_tag,
-                 #'max_date': max_date,
-                 #'min_date': min_date,
                 }
 
     return render_to_response('cdr/cdr_dashboard.html', variables,
