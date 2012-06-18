@@ -258,12 +258,6 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         response = self.client.post('/cdr_realtime/', {'switch_id': 1})
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get('/global_report/')
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'cdr/cdr_global_report.html')
-        response = self.client.post('/global_report/', {'switch_id': 1})
-        self.assertEqual(response.status_code, 200)
-
         response = self.client.get('/country_report/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'cdr/cdr_country_report.html')
