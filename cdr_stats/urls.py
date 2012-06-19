@@ -19,7 +19,8 @@ from tastypie.api import Api
 from api.user_api import UserResource
 from api.switch_api import SwitchResource
 from api.hangup_cause_api import HangupCauseResource
-from api.resources import CdrDailyResource, CdrResource
+from api.cdr_daily_api import CdrDailyResource
+from api.resources import CdrResource
 from cdr.urls import urlpatterns as urlpatterns_cdr
 from user_profile.urls import urlpatterns as urlpatterns_user_profile
 
