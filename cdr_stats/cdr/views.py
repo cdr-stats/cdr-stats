@@ -1963,7 +1963,6 @@ def cdr_country_report(request):
 
     # remove mapreduce output & country analytic from database
     settings.DBCON[out].drop()
-    settings.DBCON[settings.MG_CDR_COUNTRY].drop()
 
     logging.debug('CDR country report view end')
     variables = {'module': current_view(request),

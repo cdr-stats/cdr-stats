@@ -388,8 +388,6 @@ MG_PORT = 27017
 MG_CDR_COMMON = 'cdr_common'
 MG_DAILY_ANALYTIC = 'daily_analytic'
 MG_MONTHLY_ANALYTIC = 'monthly_analytic'
-MG_CDR_HANGUP = 'cdr_hangup_cause_analytic'
-MG_CDR_COUNTRY = 'cdr_country_analytic'
 MG_CONC_CALL = 'concurrent_call'
 MG_CONC_CALL_AGG = 'concurrent_call_map_reduce'
 

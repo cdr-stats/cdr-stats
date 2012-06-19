@@ -94,28 +94,17 @@ decrement by using a negative “value”.
     billmsec, read_codec, write_codec, cdr_type, cdr_object_id, country_id, authorized.
     This cdr_common collection used to view cdr records on customer panel 
 
-
-**2) cdr_monthly_analytic:**
+**2) monthly_analytic:**
     To collect monthly analytics from CDR's which include following fields 
-    start_uepoch, destination_number, hangup_cause_id, accountcode, switch_id, calls, duration.
-    This cdr_monthly_analytic collection is used to view monthly graph on customer panel
+    date, country_id, accountcode, switch_id, calls, duration.
+    This monthly_analytic collection is used to view monthly graph on customer panel
  
-**3) cdr_daily_analytic:**
-    To collect daily analytics from CDR's which include following fields start_uepoch,
-    destination_number, hangup_cause_id, accountcode, switch_id, calls, duration.
-    This cdr_daily_analytic collection used to view daily graph on customer panel.
+**3) daily_analytic:**
+    To collect daily analytics from CDR's which include following fields date,
+    hangup_cause_id, country_id, accountcode, switch_id, calls, duration.
+    This daily_analytic collection used to view daily graph/hourly graph on customer panel.
 
-**4) cdr_hourly_analytic:**
-    To collect hourly analytics from CDR's which include following fields 
-    start_uepoch, destination_number, hangup_cause_id, accountcode, switch_id, calls, duration.
-    This cdr_hourly_analytic collection used to view the hourly graph on customer panel 
-
-**5) cdr_country_report:**
-    To collect country based analytics from the CDR which include following fields 
-    start_uepoch, country_id, accountcode, switch_id, calls, duration.
-    This cdr_country_report collection is used to view country graph on customer panel 
-
-**6) concurrent_call:**
+**4) concurrent_call:**
     To collect concurrent calls which include following fields 
     switch_id, call_date, numbercall, accountcode.
     This concurrent_call collection is used to view concurrent call real-time graph on customer panel 
