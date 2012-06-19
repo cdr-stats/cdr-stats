@@ -49,6 +49,7 @@ from cdr.forms import CdrSearchForm, \
                         EmailReportForm
 from user_profile.models import UserProfile
 from cdr.mapreduce import *
+from operator import itemgetter, attrgetter
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -834,7 +835,9 @@ def cdr_dashboard(request):
 
     total_country_data = country_all_data.items()
     total_country_data = sorted(total_country_data,
-                                key=lambda k: k[1]['call_count'], reverse=True)
+                                key=lambda k: (k[1]['call_count'],
+                                               k[1]['duration_sum']),
+                                reverse=True)
 
     logging.debug("Lenght of result total_record_final %d" % len(final_record))
     logging.debug("Lenght of result hangup_analytic %d" % len(hangup_analytic))
@@ -1093,7 +1096,9 @@ def get_cdr_mail_report():
 
     country_analytic = country_analytic.items()
     country_analytic = sorted(country_analytic,
-                              key=lambda k: k[1]['count_call'], reverse=True)
+                              key=lambda k: (k[1]['count_call'],
+                                             k[1]['duration_sum']),
+                              reverse=True)
     # Top 5 called countries
     country_analytic_array = []
     for i in country_analytic[0:5]:
