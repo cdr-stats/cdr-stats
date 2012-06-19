@@ -1580,8 +1580,7 @@ def cdr_overview(request):
             total_day_call_duration = []
             total_day_call_count = []
             total_month_record = []
-            total_month_call_duration = []
-            total_month_call_count = []
+            total_month_data = []
 
             tday = datetime.today()
             start_date = datetime(tday.year, tday.month,
@@ -1593,15 +1592,11 @@ def cdr_overview(request):
                          'form': form,
                          'search_tag': search_tag,
                          'total_hour_record': total_hour_record,
-                         'total_hour_call_count': total_hour_call_count,
-                         'total_hour_call_duration': total_hour_call_duration,
+                         'total_hour_data': total_hour_data,
                          'total_day_record': total_day_record,
-                         'total_day_call_count': total_day_call_count,
-                         'total_day_call_duration': total_day_call_duration,
+                         'total_day_data': total_day_data,
                          'total_month_record': total_month_record,
-                         'total_month_call_duration':\
-                             total_month_call_duration,
-                         'total_month_call_count': total_month_call_count,
+                         'total_month_data': total_month_data,
                          'start_date': start_date,
                          'end_date': end_date,
                          'TOTAL_GRAPH_COLOR': TOTAL_GRAPH_COLOR,
@@ -1649,10 +1644,8 @@ def cdr_overview(request):
                                                  ('_id.c_Day', 1),
                                                  ('_id.f_Switch', 1)])
         total_hour_record = []
-        total_hour_call_count = []
-        total_hour_call_duration = []
-        hour_data_call_count = dict()
-        hour_data_call_duration = dict()
+        total_hour_data = []
+        hour_data = dict()
         for i in calls_in_day:
             for h in range(0, 24):
                 try:
@@ -1670,24 +1663,20 @@ def cdr_overview(request):
                             'switch_id': int(i['_id']['f_Switch'])
                         })
 
-                        if dt in hour_data_call_count:
-                            hour_data_call_count[dt] += calldate__count
+                        if dt in hour_data:
+                            hour_data[dt]['call_count'] += calldate__count
+                            hour_data[dt]['duration_sum'] += duration__sum
                         else:
-                            hour_data_call_count[dt] = calldate__count
-
-                        if dt in hour_data_call_duration:
-                            hour_data_call_duration[dt] += duration__sum
-                        else:
-                            hour_data_call_duration[dt] = duration__sum
+                            hour_data[dt] = {
+                                'call_count': calldate__count,
+                                'duration_sum': duration__sum,
+                            }
                 except:
                     pass
 
-        total_hour_call_count = hour_data_call_count.items()
-        total_hour_call_count = sorted(total_hour_call_count,
-                                        key=lambda k: k[0])
-        total_hour_call_duration = hour_data_call_duration.items()
-        total_hour_call_duration = sorted(total_hour_call_duration,
-                                        key=lambda k: k[0])
+        total_hour_data = hour_data.items()
+        total_hour_data = sorted(total_hour_data, key=lambda k: k[0])
+
         # remove mapreduce output from database (no longer required)
         settings.DBCON[out].drop()
 
@@ -1701,11 +1690,9 @@ def cdr_overview(request):
         calls_in_day = calls_in_day.find().sort([('_id.g_Millisec', 1),
                                                  ('_id.f_Switch', 1)])
         total_day_record = []
-        total_day_call_duration = []
-        total_day_call_count = []
+        total_day_data = []
         if calls_in_day.count() != 0:
-            day_call_duration = dict()
-            day_call_count = dict()
+            day_data = dict()
             for i in calls_in_day:
                 dt = int(i['_id']['g_Millisec'])
                 total_day_record.append(
@@ -1716,22 +1703,17 @@ def cdr_overview(request):
                         'switch_id': int(i['_id']['f_Switch'])
                     })
 
-                if dt in day_call_duration:
-                    day_call_duration[dt] += int(i['value']['duration__sum'])
+                if dt in day_data:
+                    day_data[dt]['call_count'] += int(i['value']['calldate__count'])
+                    day_data[dt]['duration_sum'] += int(i['value']['duration__sum'])
                 else:
-                    day_call_duration[dt] = int(i['value']['duration__sum'])
+                    day_data[dt] = {
+                        'call_count': int(i['value']['calldate__count']),
+                        'duration_sum': int(i['value']['duration__sum']),
+                    }
 
-                if dt in day_call_count:
-                    day_call_count[dt] += int(i['value']['calldate__count'])
-                else:
-                    day_call_count[dt] = int(i['value']['calldate__count'])
-
-            total_day_call_duration = day_call_duration.items()
-            total_day_call_duration = sorted(total_day_call_duration,
-                                                key=lambda k: k[0])
-            total_day_call_count = day_call_count.items()
-            total_day_call_count = sorted(total_day_call_count,
-                                                key=lambda k: k[0])
+            total_day_data = day_data.items()
+            total_day_data = sorted(total_day_data, key=lambda k: k[0])
 
         # remove mapreduce output from database (no longer required)
         settings.DBCON[out].drop()
@@ -1753,11 +1735,9 @@ def cdr_overview(request):
         calls_in_month = calls_in_month.find().sort([('_id.g_Millisec', -1),
                                                      ('_id.f_Switch', 1)])
         total_month_record = []
-        total_month_call_duration = []
-        total_month_call_count = []
+        total_month_data = []
         if calls_in_month.count() != 0:
-            month_call_duration = dict()
-            month_call_count = dict()
+            month_data = dict()
             for i in calls_in_month:
                 dt = int(i['_id']['g_Millisec'])
                 total_month_record.append(
@@ -1768,22 +1748,17 @@ def cdr_overview(request):
                         'switch_id': int(i['_id']['f_Switch'])
                     })
 
-                if dt in month_call_duration:
-                    month_call_duration[dt] += int(i['value']['duration__sum'])
+                if dt in month_data:
+                    month_data[dt]['call_count'] += int(i['value']['calldate__count'])
+                    month_data[dt]['duration_sum'] += int(i['value']['duration__sum'])
                 else:
-                    month_call_duration[dt] = int(i['value']['duration__sum'])
+                    month_data[dt] = {
+                        'call_count': int(i['value']['calldate__count']),
+                        'duration_sum': int(i['value']['duration__sum'])
+                    }
 
-                if dt in month_call_count:
-                    month_call_count[dt] += int(i['value']['calldate__count'])
-                else:
-                    month_call_count[dt] = int(i['value']['calldate__count'])
-
-            total_month_call_duration = month_call_duration.items()
-            total_month_call_duration = sorted(total_month_call_duration,
-                                                        key=lambda k: k[0])
-            total_month_call_count = month_call_count.items()
-            total_month_call_count = sorted(total_month_call_count,
-                                                        key=lambda k: k[0])
+            total_month_data = month_data.items()
+            total_month_data = sorted(total_month_data, key=lambda k: k[0])
 
         # remove mapreduce output from database (no longer required)
         settings.DBCON[out].drop()
@@ -1793,14 +1768,11 @@ def cdr_overview(request):
                      'form': form,
                      'search_tag': search_tag,
                      'total_hour_record': total_hour_record,
-                     'total_hour_call_count': total_hour_call_count,
-                     'total_hour_call_duration': total_hour_call_duration,
+                     'total_hour_data': total_hour_data,
                      'total_day_record': total_day_record,
-                     'total_day_call_count': total_day_call_count,
-                     'total_day_call_duration': total_day_call_duration,
+                     'total_day_data': total_day_data,
                      'total_month_record': total_month_record,
-                     'total_month_call_duration': total_month_call_duration,
-                     'total_month_call_count': total_month_call_count,
+                     'total_month_data': total_month_data,
                      'start_date': start_date,
                      'end_date': end_date,
                      'TOTAL_GRAPH_COLOR': TOTAL_GRAPH_COLOR,
