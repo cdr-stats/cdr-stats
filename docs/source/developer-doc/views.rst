@@ -29,14 +29,6 @@ CDR-Stats Views
   .. autofunction:: cdr_detail
 
 
-.. _cdr-global-report:
-
-:class:`cdr_global_report`
---------------------------
-
-  .. autofunction:: cdr_global_report
-
-
 .. _cdr-dashboard:
 
 :class:`cdr_dashboard`
@@ -61,12 +53,12 @@ CDR-Stats Views
   .. autofunction:: cdr_realtime
 
 
-.. _cdr-graph-by-hour:
+.. _cdr-report-by-hour:
 
-:class:`cdr_graph_by_hour`
---------------------------
+:class:`cdr_report_by_hour`
+---------------------------
 
-  .. autofunction:: cdr_graph_by_hour
+  .. autofunction:: cdr_report_by_hour
 
 
 .. _cdr-concurrent-calls:
