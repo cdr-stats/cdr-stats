@@ -123,8 +123,8 @@ $(function () {
         {
             label: '{% trans "Total Calls" %}',
             data: [
-                {% for item in total_hour_call_count %}
-                    [parseInt({{ item.0 }}), {{ item.1 }}],
+                {% for item in total_hour_data %}
+                    [parseInt({{ item.0 }}), {{ item.1.call_count }}],
                 {% endfor %}
             ],
             color: '{{ TOTAL_GRAPH_COLOR }}'
@@ -151,8 +151,8 @@ $(function () {
         {
             label: '{% trans "Total Duration" %}',
             data: [
-                {% for item in total_hour_call_duration %}
-                    [parseInt({{ item.0 }}), {{ item.1 }}],
+                {% for item in total_hour_data %}
+                    [parseInt({{ item.0 }}), {{ item.1.duration_sum }}],
                 {% endfor %}
             ],
             color: '{{ TOTAL_GRAPH_COLOR }}'
@@ -179,8 +179,8 @@ $(function () {
         {
             label: '{% trans "Total Calls" %}',
             data: [
-                {% for item in total_day_call_count %}
-                    [parseInt({{ item.0 }}), {{ item.1 }}],
+                {% for item in total_day_data %}
+                    [parseInt({{ item.0 }}), {{ item.1.call_count }}],
                 {% endfor %}
             ],
             color: '{{ TOTAL_GRAPH_COLOR }}'
@@ -207,8 +207,8 @@ $(function () {
         {
             label: '{% trans "Total Duration" %}',
             data: [
-                {% for item in total_day_call_duration %}
-                    [parseInt({{ item.0 }}), {{ item.1 }}],
+                {% for item in total_day_data %}
+                    [parseInt({{ item.0 }}), {{ item.1.duration_sum }}],
                 {% endfor %}
             ],
             color: '{{ TOTAL_GRAPH_COLOR }}'
@@ -235,8 +235,8 @@ $(function () {
         {
             label: '{% trans "Total Calls" %}',
             data: [
-                {% for item in total_month_call_count %}
-                    [parseInt({{ item.0 }}), {{ item.1 }}],
+                {% for item in total_month_data %}
+                    [parseInt({{ item.0 }}), {{ item.1.call_count }}],
                 {% endfor %}
             ],
             color: '{{ TOTAL_GRAPH_COLOR }}'
@@ -263,8 +263,8 @@ $(function () {
         {
             label: '{% trans "Total Duration" %}',
             data: [
-                {% for item in total_month_call_duration %}
-                    [parseInt({{ item.0 }}), {{ item.1 }}],
+                {% for item in total_month_data %}
+                    [parseInt({{ item.0 }}), {{ item.1.sum_duration }}],
                 {% endfor %}
             ],
             color: '{{ TOTAL_GRAPH_COLOR }}'

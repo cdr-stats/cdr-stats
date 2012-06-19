@@ -49,6 +49,7 @@ from cdr.forms import CdrSearchForm, \
                         EmailReportForm
 from user_profile.models import UserProfile
 from cdr.mapreduce import *
+from operator import itemgetter, attrgetter
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -773,8 +774,7 @@ def cdr_dashboard(request):
     total_duration = 0
 
     hangup_analytic = dict()
-    country_call_count = dict()
-    country_duration = dict()
+    country_all_data = dict()
     final_record = dict()
 
     for i in daily_data:
@@ -816,15 +816,14 @@ def cdr_dashboard(request):
                                 hangup_analytic[hc] = calldate__count
 
                             country_id = int(i['metadata']['country_id'])
-                            if country_id in country_call_count:
-                                country_call_count[country_id] += calldate__count
+                            if country_id in country_all_data:
+                                country_all_data[country_id]['call_count'] += calldate__count
+                                country_all_data[country_id]['duration_sum'] += duration__sum
                             else:
-                                country_call_count[country_id] = calldate__count
-
-                            if country_id in country_duration:
-                                country_duration[country_id] += duration__sum
-                            else:
-                                country_duration[country_id] = duration__sum
+                                country_all_data[country_id] = {
+                                    'call_count': calldate__count,
+                                    'duration_sum': duration__sum
+                                }
 
     logging.debug('After loop to handle data')
 
@@ -834,23 +833,22 @@ def cdr_dashboard(request):
 
     hangup_analytic = hangup_analytic.items()
 
-    total_country_call_count = country_call_count.items()
-    total_country_call_count = sorted(total_country_call_count,
-        key=lambda k: k[1], reverse=True)
-    #total_country_call_duration = country_duration.items()
-    #total_country_call_duration = sorted(total_country_call_duration,
-    #    key=lambda k: k[1], reverse=True)
+    total_country_data = country_all_data.items()
+    total_country_data = sorted(total_country_data,
+                                key=lambda k: (k[1]['call_count'],
+                                               k[1]['duration_sum']),
+                                reverse=True)
 
     logging.debug("Lenght of result total_record_final %d" % len(final_record))
     logging.debug("Lenght of result hangup_analytic %d" % len(hangup_analytic))
-    logging.debug("Lenght of result country_call_count %d" % len(country_call_count))
+    logging.debug("Lenght of result country_call_count %d" % len(total_country_data))
 
     country_analytic = []
     logging.debug('Before Loop create country_analytic')
-    for i in total_country_call_count[0:5]:
+    for i in total_country_data[0:5]:
         c_id = int(i[0]) #  i[0] - country id
-        c_call_count = int(i[1]) #  i[1] - call count
-        c_duration_sum = int(country_duration[c_id]) # call duration
+        c_call_count = int(i[1]['call_count']) #  i[1] - call count
+        c_duration_sum = int(i[1]['duration_sum']) # call duration
 
         country_analytic.append((get_country_name(c_id),
                                  c_call_count,
@@ -1052,10 +1050,14 @@ def get_cdr_mail_report():
                             query=query_var, finalize=finalfc)
 
     total_data = total_data.find().sort([('_id.c_Day', -1),
-                                         ('_id.d_Hour', -1)])
+                                         ('_id.d_Hour', -1),
+                                         ('_id.f_Country', 1),
+                                         ('value.hangup_cause_id', 1)])
     detail_data = []
     total_duration = 0
     total_calls = 0
+    country_analytic = dict()
+    hangup_analytic = dict()
     for doc in total_data:
         detail_data.append(
             {
@@ -1068,23 +1070,22 @@ def get_cdr_mail_report():
         total_calls += int(doc['value']['calldate__count'])
 
         # created cdr_hangup_analytic
-        settings.DBCON[settings.MG_CDR_HANGUP].update(
-            {
-                'hangup_cause_id': int(doc['value']['hangup_cause_id'])
-            },
-            {
-                '$inc': {'count': 1}
-            }, upsert=True)
+        hangup_cause_id = int(doc['value']['hangup_cause_id'])
+        if hangup_cause_id in hangup_analytic:
+            hangup_analytic[hangup_cause_id] += 1
+        else:
+            hangup_analytic[hangup_cause_id] = 1
 
-        # created cdr_country_analytic
-        settings.DBCON[settings.MG_CDR_COUNTRY].update(
-            {
-                'country_id': int(doc['_id']['f_Country']),
-            },
-            {
-                '$inc': {'count': int(doc['value']['calldate__count']),
-                'duration': int(doc['value']['duration__sum'])}
-            }, upsert=True)
+
+        country_id = int(doc['_id']['f_Country'])
+        if country_id in country_analytic:
+            country_analytic[country_id]['count_call'] += int(doc['value']['calldate__count'])
+            country_analytic[country_id]['duration_sum'] += int(doc['value']['duration__sum'])
+        else:
+            country_analytic[country_id] = {
+                'count_call': int(doc['value']['calldate__count']),
+                'duration_sum': int(doc['value']['duration__sum'])
+            }
 
     #Calculate the Average Time of Call
     ACT = math.floor(total_calls / 24)
@@ -1093,32 +1094,32 @@ def get_cdr_mail_report():
     else:
         ACD = int_convert_to_minute(math.floor(total_duration / total_calls))
 
+    country_analytic = country_analytic.items()
+    country_analytic = sorted(country_analytic,
+                              key=lambda k: (k[1]['count_call'],
+                                             k[1]['duration_sum']),
+                              reverse=True)
     # Top 5 called countries
-    country_calls_final = \
-        settings.DBCON[settings.MG_CDR_COUNTRY].find().\
-                        sort([('count', -1),
-                              ('duration', -1)]).limit(5)
     country_analytic_array = []
-    for i in country_calls_final:
+    for i in country_analytic[0:5]:
         # All countries list
-        country_analytic_array.append((get_country_name(int(i['country_id'])),
-                                       int(i['count']),
-                                       int(i['duration']),
-                                       int(i['country_id'])))
+        country_analytic_array.append((get_country_name(int(i[0])),
+                                       int(i[1]['count_call']),
+                                       int(i[1]['duration_sum']),
+                                       int(i[0])))
 
-    settings.DBCON[settings.MG_CDR_COUNTRY].drop()
     # Country call analytic end
 
     hangup_analytic_array = []
-    hangup_analytic = settings.DBCON[settings.MG_CDR_HANGUP].find()
-    if hangup_analytic.count() != 0:
-        total_hangup = sum([int(x['count']) for x in hangup_analytic])
-        for i in hangup_analytic.clone():
+    hangup_analytic = hangup_analytic.items()
+    hangup_analytic = sorted(hangup_analytic, key=lambda k: k[0])
+    if len(hangup_analytic) != 0:
+        total_hangup = sum([int(x[1]) for x in hangup_analytic])
+        for i in hangup_analytic:
             hangup_analytic_array.append(
-                (get_hangupcause_name(int(i['hangup_cause_id'])),
-                "{0:.0f}%".format((float(i['count']) / float(total_hangup)) * 100)))
+                (get_hangupcause_name(int(i[0])),
+                "{0:.0f}%".format((float(i[1]) / float(total_hangup)) * 100)))
 
-    settings.DBCON[settings.MG_CDR_HANGUP].drop()
     # remove mapreduce output from database (no longer required)
     settings.DBCON[out].drop()
 
@@ -1573,14 +1574,11 @@ def cdr_overview(request):
             # form is not valid
             logging.debug('Error : CDR overview search form')
             total_hour_record = []
-            total_hour_call_count = []
-            total_hour_call_duration = []
+            total_hour_data = []
             total_day_record = []
-            total_day_call_duration = []
-            total_day_call_count = []
+            total_day_data = []
             total_month_record = []
-            total_month_call_duration = []
-            total_month_call_count = []
+            total_month_data = []
 
             tday = datetime.today()
             start_date = datetime(tday.year, tday.month,
@@ -1592,15 +1590,11 @@ def cdr_overview(request):
                          'form': form,
                          'search_tag': search_tag,
                          'total_hour_record': total_hour_record,
-                         'total_hour_call_count': total_hour_call_count,
-                         'total_hour_call_duration': total_hour_call_duration,
+                         'total_hour_data': total_hour_data,
                          'total_day_record': total_day_record,
-                         'total_day_call_count': total_day_call_count,
-                         'total_day_call_duration': total_day_call_duration,
+                         'total_day_data': total_day_data,
                          'total_month_record': total_month_record,
-                         'total_month_call_duration':\
-                             total_month_call_duration,
-                         'total_month_call_count': total_month_call_count,
+                         'total_month_data': total_month_data,
                          'start_date': start_date,
                          'end_date': end_date,
                          'TOTAL_GRAPH_COLOR': TOTAL_GRAPH_COLOR,
@@ -1648,10 +1642,8 @@ def cdr_overview(request):
                                                  ('_id.c_Day', 1),
                                                  ('_id.f_Switch', 1)])
         total_hour_record = []
-        total_hour_call_count = []
-        total_hour_call_duration = []
-        hour_data_call_count = dict()
-        hour_data_call_duration = dict()
+        total_hour_data = []
+        hour_data = dict()
         for i in calls_in_day:
             for h in range(0, 24):
                 try:
@@ -1669,24 +1661,20 @@ def cdr_overview(request):
                             'switch_id': int(i['_id']['f_Switch'])
                         })
 
-                        if dt in hour_data_call_count:
-                            hour_data_call_count[dt] += calldate__count
+                        if dt in hour_data:
+                            hour_data[dt]['call_count'] += calldate__count
+                            hour_data[dt]['duration_sum'] += duration__sum
                         else:
-                            hour_data_call_count[dt] = calldate__count
-
-                        if dt in hour_data_call_duration:
-                            hour_data_call_duration[dt] += duration__sum
-                        else:
-                            hour_data_call_duration[dt] = duration__sum
+                            hour_data[dt] = {
+                                'call_count': calldate__count,
+                                'duration_sum': duration__sum,
+                            }
                 except:
                     pass
 
-        total_hour_call_count = hour_data_call_count.items()
-        total_hour_call_count = sorted(total_hour_call_count,
-                                        key=lambda k: k[0])
-        total_hour_call_duration = hour_data_call_duration.items()
-        total_hour_call_duration = sorted(total_hour_call_duration,
-                                        key=lambda k: k[0])
+        total_hour_data = hour_data.items()
+        total_hour_data = sorted(total_hour_data, key=lambda k: k[0])
+
         # remove mapreduce output from database (no longer required)
         settings.DBCON[out].drop()
 
@@ -1700,11 +1688,9 @@ def cdr_overview(request):
         calls_in_day = calls_in_day.find().sort([('_id.g_Millisec', 1),
                                                  ('_id.f_Switch', 1)])
         total_day_record = []
-        total_day_call_duration = []
-        total_day_call_count = []
+        total_day_data = []
         if calls_in_day.count() != 0:
-            day_call_duration = dict()
-            day_call_count = dict()
+            day_data = dict()
             for i in calls_in_day:
                 dt = int(i['_id']['g_Millisec'])
                 total_day_record.append(
@@ -1715,22 +1701,17 @@ def cdr_overview(request):
                         'switch_id': int(i['_id']['f_Switch'])
                     })
 
-                if dt in day_call_duration:
-                    day_call_duration[dt] += int(i['value']['duration__sum'])
+                if dt in day_data:
+                    day_data[dt]['call_count'] += int(i['value']['calldate__count'])
+                    day_data[dt]['duration_sum'] += int(i['value']['duration__sum'])
                 else:
-                    day_call_duration[dt] = int(i['value']['duration__sum'])
+                    day_data[dt] = {
+                        'call_count': int(i['value']['calldate__count']),
+                        'duration_sum': int(i['value']['duration__sum']),
+                    }
 
-                if dt in day_call_count:
-                    day_call_count[dt] += int(i['value']['calldate__count'])
-                else:
-                    day_call_count[dt] = int(i['value']['calldate__count'])
-
-            total_day_call_duration = day_call_duration.items()
-            total_day_call_duration = sorted(total_day_call_duration,
-                                                key=lambda k: k[0])
-            total_day_call_count = day_call_count.items()
-            total_day_call_count = sorted(total_day_call_count,
-                                                key=lambda k: k[0])
+            total_day_data = day_data.items()
+            total_day_data = sorted(total_day_data, key=lambda k: k[0])
 
         # remove mapreduce output from database (no longer required)
         settings.DBCON[out].drop()
@@ -1752,11 +1733,9 @@ def cdr_overview(request):
         calls_in_month = calls_in_month.find().sort([('_id.g_Millisec', -1),
                                                      ('_id.f_Switch', 1)])
         total_month_record = []
-        total_month_call_duration = []
-        total_month_call_count = []
+        total_month_data = []
         if calls_in_month.count() != 0:
-            month_call_duration = dict()
-            month_call_count = dict()
+            month_data = dict()
             for i in calls_in_month:
                 dt = int(i['_id']['g_Millisec'])
                 total_month_record.append(
@@ -1767,22 +1746,17 @@ def cdr_overview(request):
                         'switch_id': int(i['_id']['f_Switch'])
                     })
 
-                if dt in month_call_duration:
-                    month_call_duration[dt] += int(i['value']['duration__sum'])
+                if dt in month_data:
+                    month_data[dt]['call_count'] += int(i['value']['calldate__count'])
+                    month_data[dt]['duration_sum'] += int(i['value']['duration__sum'])
                 else:
-                    month_call_duration[dt] = int(i['value']['duration__sum'])
+                    month_data[dt] = {
+                        'call_count': int(i['value']['calldate__count']),
+                        'duration_sum': int(i['value']['duration__sum'])
+                    }
 
-                if dt in month_call_count:
-                    month_call_count[dt] += int(i['value']['calldate__count'])
-                else:
-                    month_call_count[dt] = int(i['value']['calldate__count'])
-
-            total_month_call_duration = month_call_duration.items()
-            total_month_call_duration = sorted(total_month_call_duration,
-                                                        key=lambda k: k[0])
-            total_month_call_count = month_call_count.items()
-            total_month_call_count = sorted(total_month_call_count,
-                                                        key=lambda k: k[0])
+            total_month_data = month_data.items()
+            total_month_data = sorted(total_month_data, key=lambda k: k[0])
 
         # remove mapreduce output from database (no longer required)
         settings.DBCON[out].drop()
@@ -1792,14 +1766,11 @@ def cdr_overview(request):
                      'form': form,
                      'search_tag': search_tag,
                      'total_hour_record': total_hour_record,
-                     'total_hour_call_count': total_hour_call_count,
-                     'total_hour_call_duration': total_hour_call_duration,
+                     'total_hour_data': total_hour_data,
                      'total_day_record': total_day_record,
-                     'total_day_call_count': total_day_call_count,
-                     'total_day_call_duration': total_day_call_duration,
+                     'total_day_data': total_day_data,
                      'total_month_record': total_month_record,
-                     'total_month_call_duration': total_month_call_duration,
-                     'total_month_call_count': total_month_call_count,
+                     'total_month_data': total_month_data,
                      'start_date': start_date,
                      'end_date': end_date,
                      'TOTAL_GRAPH_COLOR': TOTAL_GRAPH_COLOR,
@@ -2097,7 +2068,6 @@ def world_map_view(request):
 
     #Run Map Reduce
     country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-
     calls = country_data.map_reduce(map, reduce, out, query=query_var)
     calls = calls.find().sort([('value.calldate__count', -1),
                                ('value.duration__sum', -1)])
