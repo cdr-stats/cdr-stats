@@ -38,7 +38,6 @@ from tastypie.exceptions import BadRequest, NotFound, ImmediateHttpResponse
 from tastypie import http
 from tastypie import fields
 
-from cdr.models import Switch, HangupCause
 from cdr.functions_def import get_hangupcause_id
 
 from settings import API_ALLOWED_IP
@@ -104,35 +103,6 @@ class IpAddressAuthentication(Authentication):
         else:
             raise ImmediateHttpResponse(response=http.HttpUnauthorized())
             return False
-
-
-class HangupCauseResource(ModelResource):
-
-    """
-    **Attributes Details**:
-
-        * ``code`` - ITU-T Q.850 Code.
-        * ``enumeration`` - Enumeration
-        * ``cause`` - cause
-        * ``description`` - cause description
-
-    **Read**:
-
-        CURL Usage::
-
-            curl -u username:password -H 'Accept: application/json' -X GET http://localhost:8000/api/v1/hangup_cause/?format=json
-
-    """
-
-    class Meta:
-
-        queryset = HangupCause.objects.all()
-        resource_name = 'hangup_cause'
-        authorization = Authorization()
-        authentication = BasicAuthentication()
-        list_allowed_methods = ['get', 'post', 'put', 'delete']
-        detail_allowed_methods = ['get', 'post', 'put', 'delete']
-        throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
 
 
 def get_contact(id):

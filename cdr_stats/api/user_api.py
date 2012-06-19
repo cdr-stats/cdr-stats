@@ -12,7 +12,6 @@ class UserResource(ModelResource):
 
             curl -u username:password -H 'Accept: application/json' http://localhost:8000/api/v1/user/?format=json
     """
-
     class Meta:
         allowed_methods = ['get']
         queryset = User.objects.all()
