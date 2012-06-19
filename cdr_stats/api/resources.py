@@ -52,6 +52,7 @@ seed()
 
 logger = logging.getLogger('cdr-stats.filelog')
 
+#TODO : Split ressources in different files
 
 class CustomJSONSerializer(Serializer):
 
