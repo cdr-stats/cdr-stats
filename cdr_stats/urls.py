@@ -16,7 +16,9 @@ from django.conf.urls.defaults import url, patterns, include
 from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
 from tastypie.api import Api
-from api.resources import UserResource, SwitchResource, HangupCauseResource,\
+from api.user_resource import UserResource
+from api.switch_resource import SwitchResource
+from api.resources import HangupCauseResource,\
                           CdrDailyResource, CdrResource
 from cdr.urls import urlpatterns as urlpatterns_cdr
 from user_profile.urls import urlpatterns as urlpatterns_user_profile

@@ -13,7 +13,7 @@
 #
 from django import template
 from django.utils.translation import gettext as _
-from cdr.models import Switch, HangupCause
+from cdr.models import Switch
 from cdr.functions_def import get_hangupcause_name
 import re
 

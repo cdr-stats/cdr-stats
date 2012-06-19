@@ -106,47 +106,6 @@ class IpAddressAuthentication(Authentication):
             return False
 
 
-class UserResource(ModelResource):
-
-    """User Model"""
-
-    class Meta:
-
-        allowed_methods = ['get']
-        queryset = User.objects.all()
-        resource_name = 'user'
-        fields = ['username', 'first_name', 'last_name', 'last_login', 'id']
-        filtering = {'username': 'exact'}
-        throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
-
-
-class SwitchResource(ModelResource):
-
-    """
-    **Attributes Details**:
-
-        * ``name`` - Name of switch.
-        * ``ipaddress`` - ipaddress
-
-    **Read**:
-
-        CURL Usage::
-
-            curl -u username:password -H 'Accept: application/json' -X GET http://localhost:8000/api/v1/switch/?format=json
-
-    """
-
-    class Meta:
-
-        queryset = Switch.objects.all()
-        resource_name = 'switch'
-        authorization = Authorization()
-        authentication = BasicAuthentication()
-        list_allowed_methods = ['get', 'post', 'put', 'delete']
-        detail_allowed_methods = ['get', 'post', 'put', 'delete']
-        throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
-
-
 class HangupCauseResource(ModelResource):
 
     """
