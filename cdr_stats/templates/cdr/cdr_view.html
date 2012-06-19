@@ -263,7 +263,7 @@
                 </td>
                 <td>
                   {% cache 1800 hangupcause_name row.hangup_cause_id %}
-                    {{ row.hangup_cause_id|get_hangupcause_name }}
+                    {{ row.hangup_cause_id|hangupcause_name }}
                   {% endcache %}
                 </td>
                 <td>{{ row.accountcode }}</td>

@@ -187,7 +187,7 @@ $(function () {
             {% for td in hangup_analytic %}
                 {% cache 1800 hangup_cause_id td.0 %}
                     {
-                        label: '{{ td.0|get_hangupcause_name_with_title }}',
+                        label: '{{ td.0|hangupcause_name_with_title }}',
                         data: [[1, {{ td.1 }}]]
                     },
                 {% endcache %}

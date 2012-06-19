@@ -14,6 +14,7 @@
 from django import template
 from django.utils.translation import gettext as _
 from cdr.models import Switch, HangupCause
+from cdr.functions_def import get_hangupcause_name
 import re
 
 register = template.Library()
@@ -71,21 +72,16 @@ def get_switch_ip(id):
 
 
 @register.filter()
-def get_hangupcause_name(id):
+def hangupcause_name(id):
     """Tag is used to get hangupcause name"""
-    try:
-        obj = HangupCause.objects.get(pk=id)
-        return obj.enumeration
-    except:
-        return ''
+    return get_hangupcause_name(id)
 
 
 @register.filter()
-def get_hangupcause_name_with_title(id):
+def hangupcause_name_with_title(id):
     """Tag is used to get hangupcause name with lowercase"""
     try:
-        obj = HangupCause.objects.get(pk=id)
-        val = obj.enumeration
+        val = get_hangupcause_name(id)
         t = re.sub("([a-z])'([A-Z])",
                         lambda m: m.group(0).lower(), val.title())
         return re.sub("\d([A-Z])",
@@ -112,7 +108,7 @@ register.filter('seen_unseen', seen_unseen)
 register.filter('seen_unseen_word', seen_unseen_word)
 register.filter('notice_count', notice_count)
 register.filter('get_switch_ip', get_switch_ip)
-register.filter('get_hangupcause_name', get_hangupcause_name)
-register.filter('get_hangupcause_name_with_title',
-                            get_hangupcause_name_with_title)
+register.filter('hangupcause_name', hangupcause_name)
+register.filter('hangupcause_name_with_title',
+                            hangupcause_name_with_title)
 register.filter('mongo_id', mongo_id)
