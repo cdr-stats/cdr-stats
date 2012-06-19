@@ -1574,11 +1574,9 @@ def cdr_overview(request):
             # form is not valid
             logging.debug('Error : CDR overview search form')
             total_hour_record = []
-            total_hour_call_count = []
-            total_hour_call_duration = []
+            total_hour_data = []
             total_day_record = []
-            total_day_call_duration = []
-            total_day_call_count = []
+            total_day_data = []
             total_month_record = []
             total_month_data = []
 
