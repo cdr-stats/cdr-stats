@@ -1,3 +1,18 @@
+# -*- coding: utf-8 -*-
+
+#
+# CDR-Stats License
+# http://www.cdr-stats.org
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this file,
+# You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (C) 2011-2012 Star2Billing S.L.
+#
+# The Initial Developer of the Original Code is
+# Arezqui Belaid <info@star2billing.com>
+#
 import logging
 from datetime import datetime
 
@@ -11,9 +26,6 @@ from tastypie.authorization import Authorization
 from tastypie.throttle import BaseThrottle
 from tastypie.exceptions import ImmediateHttpResponse
 from tastypie import http
-
-from pymongo.connection import Connection
-from pymongo.errors import ConnectionFailure
 
 logger = logging.getLogger('cdr-stats.filelog')
 
