@@ -773,8 +773,7 @@ def cdr_dashboard(request):
     total_duration = 0
 
     hangup_analytic = dict()
-    country_call_count = dict()
-    country_duration = dict()
+    country_all_data = dict()
     final_record = dict()
 
     for i in daily_data:
@@ -816,15 +815,14 @@ def cdr_dashboard(request):
                                 hangup_analytic[hc] = calldate__count
 
                             country_id = int(i['metadata']['country_id'])
-                            if country_id in country_call_count:
-                                country_call_count[country_id] += calldate__count
+                            if country_id in country_all_data:
+                                country_all_data[country_id]['call_count'] += calldate__count
+                                country_all_data[country_id]['duration_sum'] += duration__sum
                             else:
-                                country_call_count[country_id] = calldate__count
-
-                            if country_id in country_duration:
-                                country_duration[country_id] += duration__sum
-                            else:
-                                country_duration[country_id] = duration__sum
+                                country_all_data[country_id] = {
+                                    'call_count': calldate__count,
+                                    'duration_sum': duration__sum
+                                }
 
     logging.debug('After loop to handle data')
 
@@ -834,23 +832,20 @@ def cdr_dashboard(request):
 
     hangup_analytic = hangup_analytic.items()
 
-    total_country_call_count = country_call_count.items()
-    total_country_call_count = sorted(total_country_call_count,
-        key=lambda k: k[1], reverse=True)
-    #total_country_call_duration = country_duration.items()
-    #total_country_call_duration = sorted(total_country_call_duration,
-    #    key=lambda k: k[1], reverse=True)
+    total_country_data = country_all_data.items()
+    total_country_data = sorted(total_country_data,
+                                key=lambda k: k[1]['call_count'], reverse=True)
 
     logging.debug("Lenght of result total_record_final %d" % len(final_record))
     logging.debug("Lenght of result hangup_analytic %d" % len(hangup_analytic))
-    logging.debug("Lenght of result country_call_count %d" % len(country_call_count))
+    logging.debug("Lenght of result country_call_count %d" % len(total_country_data))
 
     country_analytic = []
     logging.debug('Before Loop create country_analytic')
-    for i in total_country_call_count[0:5]:
+    for i in total_country_data[0:5]:
         c_id = int(i[0]) #  i[0] - country id
-        c_call_count = int(i[1]) #  i[1] - call count
-        c_duration_sum = int(country_duration[c_id]) # call duration
+        c_call_count = int(i[1]['call_count']) #  i[1] - call count
+        c_duration_sum = int(i[1]['duration_sum']) # call duration
 
         country_analytic.append((get_country_name(c_id),
                                  c_call_count,
@@ -2098,7 +2093,6 @@ def world_map_view(request):
 
     #Run Map Reduce
     country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-
     calls = country_data.map_reduce(map, reduce, out, query=query_var)
     calls = calls.find().sort([('value.calldate__count', -1),
                                ('value.duration__sum', -1)])
