@@ -120,6 +120,54 @@ def apply_index(shell):
     return True
 
 
+def create_daily_analytic(id_daily, d, switch_id, country_id, accountcode, hangup_cause_id,
+                          hour, minute, duration):
+    """Create DAILY_ANALYTIC"""
+    DAILY_ANALYTIC.update(
+            {
+            "_id": id_daily,
+            "metadata": {
+                "date": d,
+                "switch_id": switch_id,
+                "country_id": country_id,
+                "accountcode": accountcode,
+                "hangup_cause_id": hangup_cause_id,
+                },
+            },
+            {
+            "$inc": {
+                "call_daily": 1,
+                "call_hourly.%d" % (hour,): 1,
+                "call_minute.%d.%d" % (hour, minute,): 1,
+                "duration_daily": duration,
+                "duration_hourly.%d" % (hour,): duration,
+                "duration_minute.%d.%d" % (hour, minute,): duration,
+                }
+        }, upsert=True)
+    return True
+
+
+def create_monthly_analytic(id_monthly, d, switch_id, country_id, accountcode, duration):
+    """Create DAILY_ANALYTIC"""
+    MONTHLY_ANALYTIC.update(
+            {
+            "_id": id_monthly,
+            "metadata": {
+                "date": d,
+                "switch_id": switch_id,
+                "country_id": country_id,
+                "accountcode": accountcode,
+                },
+            },
+            {
+            "$inc": {
+                "call_monthly": 1,
+                "duration_monthly": duration,
+                }
+        }, upsert=True)
+    return True
+
+
 def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
     """
     function go through the current mongodb, then will
@@ -237,6 +285,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             #             authorized,
             #             count_import))
 
+            # DAILY_ANALYTIC
             daily_date = datetime.datetime.fromtimestamp(
                             int(cdr['variables']['start_uepoch'][:10]))
 
@@ -247,28 +296,10 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             # Get a datetime that only include date info
             d = datetime.datetime.combine(daily_date.date(), datetime.time.min)
 
-            # preaggregate update
-            DAILY_ANALYTIC.update(
-                {
-                    "_id": id_daily,
-                    "metadata": {
-                        "date": d,
-                        "switch_id": switch.id,
-                        "country_id": country_id,
-                        "accountcode": accountcode,
-                        "hangup_cause_id": hangup_cause_id,
-                    },
-                },
-                {
-                    "$inc": {
-                        "call_daily": 1,
-                        "call_hourly.%d" % (hour,): 1,
-                        "call_minute.%d.%d" % (hour, minute,): 1,
-                        "duration_daily": duration,
-                        "duration_hourly.%d" % (hour,): duration,
-                        "duration_minute.%d.%d" % (hour, minute,): duration,
-                            }
-                }, upsert=True)
+            # insert daily analytic record
+            create_daily_analytic(id_daily, d, switch.id, country_id, accountcode,
+                                  hangup_cause_id, hour, minute, duration)
+
 
             # MONTHLY_ANALYTIC
             # Get a datetime that only include year-month info
@@ -277,22 +308,10 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
 
             id_monthly = daily_date.strftime('%Y%m') + "/%d/%s/%d" %\
                                                         (switch.id, accountcode, country_id)
-            MONTHLY_ANALYTIC.update(
-                    {
-                    "_id": id_monthly,
-                    "metadata": {
-                        "date": d,
-                        "switch_id": switch.id,
-                        "country_id": country_id,
-                        "accountcode": accountcode,
-                        },
-                    },
-                    {
-                    "$inc": {
-                        "call_monthly": 1,
-                        "duration_monthly": duration,
-                        }
-                }, upsert=True)
+
+            # insert monthly analytic record
+            create_monthly_analytic(id_monthly, d, switch.id, country_id,accountcode, duration)
+
 
             # Flag the CDR as imported
             importcdr_handler.update(

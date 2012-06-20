@@ -17,7 +17,9 @@ from cdr.models import Switch, CDR_TYPE
 from cdr.import_cdr_freeswitch_mongodb import apply_index,\
                                               CDR_COMMON,\
                                               DAILY_ANALYTIC,\
-                                              MONTHLY_ANALYTIC
+                                              MONTHLY_ANALYTIC,\
+                                              create_daily_analytic,\
+                                              create_monthly_analytic
 
 from cdr.functions_def import get_hangupcause_id
 from cdr_alert.functions_blacklist import chk_destination
@@ -245,27 +247,10 @@ def import_cdr_asterisk_mysql(shell=False):
             # Get a datetime that only include date info
             d = datetime.datetime.combine(daily_date.date(), datetime.time.min)
 
-            # preaggregate update
-            DAILY_ANALYTIC.update(
-                    {
-                    "_id": id_daily,
-                    "metadata": {
-                        "date": d,
-                        "switch_id": switch.id,
-                        "country_id": country_id,
-                        "accountcode": accountcode,
-                        },
-                    },
-                    {
-                    "$inc": {
-                        "call_daily": 1,
-                        "call_hourly.%d" % (hour,): 1,
-                        "call_minute.%d.%d" % (hour, minute): 1,
-                        "duration_daily": duration,
-                        "duration_hourly.%d" % (hour,): duration,
-                        "duration_minute.%d.%d" % (hour, minute): duration,
-                        }
-                }, upsert=True)
+            # insert daily analytic record
+            create_daily_analytic(id_daily, d, switch.id, country_id, accountcode,
+                                  hangup_cause_id, hour, minute, duration)
+
 
             # MONTHLY_ANALYTIC
             # Get a datetime that only include year-month info
@@ -274,22 +259,9 @@ def import_cdr_asterisk_mysql(shell=False):
 
             id_monthly = daily_date.strftime('%Y%m') + "/%d/%s/%d" %\
                                                        (switch.id, accountcode, country_id)
-            MONTHLY_ANALYTIC.update(
-                    {
-                    "_id": id_monthly,
-                    "metadata": {
-                        "date": d,
-                        "switch_id": switch.id,
-                        "country_id": country_id,
-                        "accountcode": accountcode,
-                        },
-                    },
-                    {
-                    "$inc": {
-                        "call_monthly": 1,
-                        "duration_monthly": duration,
-                    }
-            }, upsert=True)
+            # insert monthly analytic record
+            create_monthly_analytic(id_monthly, d, switch.id, country_id,accountcode, duration)
+
 
             #Flag the CDR
             try:
