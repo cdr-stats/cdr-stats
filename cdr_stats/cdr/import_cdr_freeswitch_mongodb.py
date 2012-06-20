@@ -337,9 +337,9 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
 
 
 def chk_ipaddress(ipaddress):
-    #Select the Switch ID
-    print_shell(shell, "Switch : %s" % ipaddress)
-
+    """
+    Check if IP address exists in our database
+    """
     DEV_ADD_IP = False
     # uncomment this to import from a fake different IP / used for dev
     # DEV_ADD_IP = '127.0.0.2'
@@ -364,7 +364,6 @@ def chk_ipaddress(ipaddress):
         'ipaddress': ipaddress,
         'switch': switch
     }
-
     return data
 
 
