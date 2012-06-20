@@ -13,22 +13,18 @@
 #
 from django.conf import settings
 import MySQLdb as Database
-from cdr.models import Switch, CDR_TYPE
+from cdr.models import CDR_TYPE
 from cdr.import_cdr_freeswitch_mongodb import apply_index,\
                                               chk_ipaddress,\
                                               CDR_COMMON,\
-                                              DAILY_ANALYTIC,\
-                                              MONTHLY_ANALYTIC,\
                                               create_daily_analytic,\
                                               create_monthly_analytic
-
 from cdr.functions_def import get_hangupcause_id
 from cdr_alert.functions_blacklist import chk_destination
-
-import sys
 from datetime import datetime
-import random
 import re
+import sys
+import random
 
 random.seed()
 
@@ -41,16 +37,17 @@ HANGUP_CAUSE = ['NORMAL_CLEARING', 'NORMAL_CLEARING', 'NORMAL_CLEARING',
 STATUS_SYNC = {"new": 0, "in_process": 1, "verified": 2}
 
 dic_disposition = {
-            'ANSWER': 1, 'ANSWERED': 1,
-            'BUSY': 2,
-            'NOANSWER': 3, 'NO ANSWER': 3,
-            'CANCEL': 4,
-            'CONGESTION': 5,
-            'CHANUNAVAIL': 6,
-            'DONTCALL': 7,
-            'TORTURE': 8,
-            'INVALIDARGS': 9,
-            'FAIL': 10, 'FAILED': 10}
+    'ANSWER': 1, 'ANSWERED': 1,
+    'BUSY': 2,
+    'NOANSWER': 3, 'NO ANSWER': 3,
+    'CANCEL': 4,
+    'CONGESTION': 5,
+    'CHANUNAVAIL': 6,
+    'DONTCALL': 7,
+    'TORTURE': 8,
+    'INVALIDARGS': 9,
+    'FAIL': 10, 'FAILED': 10
+}
 
 #TODO: We should review the Asterisk Q.850 against this list
 DISPOSITION_TRANSLATION = {
@@ -87,7 +84,7 @@ def import_cdr_asterisk_mysql(shell=False):
 
     #loop within the Mongo CDR Import List
     for ipaddress in settings.ASTERISK_MYSQL:
-        
+
         data = chk_ipaddress(ipaddress)
         ipaddress = data['ipaddress']
         switch = data['switch']
@@ -165,13 +162,11 @@ def import_cdr_asterisk_mysql(shell=False):
 
             uniqueid = row[8]
             start_uepoch = datetime.fromtimestamp(int(row[1]))
-            #answer_uepoch = start_uepoch
-            #end_uepoch = datetime.fromtimestamp(int(row[1]) + int(duration))
 
             # Check Destination number
             destination_number = row[0]
-
             destination_data = chk_destination(destination_number)
+
             authorized = destination_data['authorized']
             country_id = destination_data['country_id']
 
@@ -220,21 +215,19 @@ def import_cdr_asterisk_mysql(shell=False):
             """
             count_import = count_import + 1
 
-            # start_uepoch = row[1]
-            daily_date = \
-                datetime.datetime.fromtimestamp(int(row[1][:10]))
+            daily_date = datetime.fromtimestamp(int(row[1]))
 
             # insert daily analytic record
-            create_daily_analytic(daily_date, switch.id, country_id, accountcode,
-                                  hangup_cause_id, duration)
+            create_daily_analytic(daily_date, switch.id, country_id,
+                    accountcode, hangup_cause_id, duration)
 
             # insert monthly analytic record
             create_monthly_analytic(daily_date, start_uepoch, switch.id,
                                     country_id, accountcode, duration)
 
-
             #Flag the CDR
             try:
+                #TODO: Build Update by batch of max 100
                 cursor_update.execute(
                         "UPDATE %s SET import_cdr=1 WHERE %s=%d" % \
                         (table_name, settings.ASTERISK_PRIMARY_KEY, acctid))
@@ -251,7 +244,7 @@ def import_cdr_asterisk_mysql(shell=False):
 
         if count_import > 0:
             #TODO: Apply index only if needed
-            apply_index()
+            apply_index(shell)
 
         print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" % \
                             (ipaddress, count_import))
