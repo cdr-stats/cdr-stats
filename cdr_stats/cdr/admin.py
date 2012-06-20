@@ -69,9 +69,7 @@ class SwitchAdmin(admin.ModelAdmin):
               The CSV file
         """
         opts = Switch._meta
-        #TODO : Do we need app_label / file_exts
         app_label = opts.app_label
-        file_exts = ('.csv', )
         rdr = ''  # will contain CSV data
         msg = ''
         success_import_list = []
@@ -139,8 +137,8 @@ class SwitchAdmin(admin.ModelAdmin):
                                     #get_cdr_from_row[j[0]] = row[row_counter]
                                     if j[0] == 'caller_id_name':
                                         caller_id_name = row[j[1] - 1]
-                                    if j[0] == 'caller_id_name':
-                                        caller_id_name = row[j[1] - 1]
+                                    if j[0] == 'caller_id_number':
+                                        caller_id_number = row[j[1] - 1]
                                     if j[0] == 'direction':
                                         direction = row[j[1] - 1]
                                     if j[0] == 'remote_media_ip':
@@ -174,8 +172,10 @@ class SwitchAdmin(admin.ModelAdmin):
                                 caller_id_number = get_cdr_from_row['caller_id_number']
                                 duration = int(get_cdr_from_row['duration'])
                                 billsec = int(get_cdr_from_row['billsec'])
-                                hangup_cause_id = get_hangupcause_id(int(get_cdr_from_row['hangup_cause_id']))
-                                start_uepoch = datetime.datetime.fromtimestamp(int(get_cdr_from_row['start_uepoch']))
+                                hangup_cause_id = \
+                                    get_hangupcause_id(int(get_cdr_from_row['hangup_cause_id']))
+                                start_uepoch = \
+                                    datetime.datetime.fromtimestamp(int(get_cdr_from_row['start_uepoch']))
                                 destination_number = get_cdr_from_row['destination_number']
                                 uuid = get_cdr_from_row['uuid']
 
@@ -185,9 +185,11 @@ class SwitchAdmin(admin.ModelAdmin):
 
                                 # Extra fields to import
                                 if answer_uepoch:
-                                    answer_uepoch = datetime.datetime.fromtimestamp(int(answer_uepoch[:10]))
+                                    answer_uepoch = \
+                                        datetime.datetime.fromtimestamp(int(answer_uepoch[:10]))
                                 if end_uepoch:
-                                    end_uepoch = datetime.datetime.fromtimestamp(int(end_uepoch[:10]))
+                                    end_uepoch = \
+                                        datetime.datetime.fromtimestamp(int(end_uepoch[:10]))
 
                                 # Prepare global CDR
                                 cdr_record = {
@@ -273,7 +275,7 @@ class SwitchAdmin(admin.ModelAdmin):
             'form': form,
             'opts': opts,
             'model_name': opts.object_name.lower(),
-            'app_label': _('Switch'),
+            'app_label': app_label,
             'rdr': rdr,
             'msg': msg,
             'success_import_list': success_import_list,

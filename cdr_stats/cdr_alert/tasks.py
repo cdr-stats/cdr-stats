@@ -189,10 +189,10 @@ def run_alarm(alarm_obj, logger):
         pre_day_data = {}
         for doc in pre_total_data:
             pre_date = dt_list['p_start_date']
-            pre_day_data[pre_date.strftime('%Y-%m-%d')] = doc['value'
-                    ]['duration__avg']
-            if alarm_obj.alert_condition == 1 or alarm_obj.alert_condition \
-                == 2:
+            pre_day_data[pre_date.strftime('%Y-%m-%d')] = \
+                                              doc['value']['duration__avg']
+            if alarm_obj.alert_condition == 1 or \
+                alarm_obj.alert_condition == 2:
                 chk_alert_value(alarm_obj, doc['value']['duration__avg'])
             else:
                 previous_date_duration = doc['value']['duration__avg']
@@ -211,8 +211,8 @@ def run_alarm(alarm_obj, logger):
         cur_day_data = {}
         for doc in cur_total_data:
             cur_date = dt_list['c_start_date']
-            cur_day_data[cur_date.strftime('%Y-%m-%d')] = doc['value'
-                    ]['duration__avg']
+            cur_day_data[cur_date.strftime('%Y-%m-%d')] = \
+                                             doc['value']['duration__avg']
             if alarm_obj.alert_condition == 1 or alarm_obj.alert_condition \
                 == 2:
                 chk_alert_value(alarm_obj, doc['value']['duration__avg'])
@@ -288,7 +288,7 @@ class chk_alarm(PeriodicTask):
         for alarm_obj in alarm_objs:
             try:
                 alarm_report = AlarmReport.objects.filter(alarm=alarm_obj).\
-                                latest('daterun')
+                               latest('daterun')
                 diff_run = (datetime.now() - alarm_report.daterun).days
 
                 if alarm_obj.period == 1:  # Day

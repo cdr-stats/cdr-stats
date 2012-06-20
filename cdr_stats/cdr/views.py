@@ -26,6 +26,7 @@ from django.conf import settings
 from django.views.decorators.cache import cache_page
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
+from notification import models as notification
 from common.common_functions import current_view, get_news, \
                                     variable_value, \
                                     source_desti_field_chk_mongodb, \
@@ -65,6 +66,17 @@ news_url = settings.NEWS_URL
 cdr_data = settings.DBCON[settings.MG_CDR_COMMON]
 #db.cdr.ensureIndex({"variables.answer_stamp":1}, {background:true});
 (map, reduce, finalfc, out) = mapreduce_cdr_view()
+
+
+def notice_count(request):
+    """Get count of logged in user's notifications"""
+    try:
+        notice_count =\
+        notification.Notice.objects.filter(recipient=request.user,
+            unseen=1).count()
+    except:
+        notice_count = ''
+    return notice_count
 
 
 def common_send_notification(request, status, recipient=None):
@@ -382,6 +394,7 @@ def cdr_view(request):
                              'end_date': end_date,
                              'action': action,
                              'result': result,
+                             'notice_count': notice_count(request),
                              }
             logging.debug('CDR View End')
             return render_to_response(template_name, template_data,
@@ -582,6 +595,7 @@ def cdr_view(request):
             'end_date': end_date,
             'action': action,
             'result': int(result),
+            'notice_count': notice_count(request),
         }
     logging.debug('CDR View End')
     return render_to_response(template_name, template_data,
@@ -878,6 +892,7 @@ def cdr_dashboard(request):
                  'country_analytic': country_analytic,
                  'form': form,
                  'search_tag': search_tag,
+                 'notice_count': notice_count(request),
                 }
 
     return render_to_response('cdr/cdr_dashboard.html', variables,
@@ -954,6 +969,7 @@ def cdr_concurrent_calls(request):
                      'form': form,
                      'final_data': final_data,
                      'start_date': start_date,
+                     'notice_count': notice_count(request),
                     }
 
     return render_to_response('cdr/cdr_graph_concurrent_calls.html', variables,
@@ -1023,6 +1039,7 @@ def cdr_realtime(request):
                      'realtime_graph_maxcall': settings.REALTIME_Y_AXIS_LIMIT,
                      'socketio_host': settings.SOCKETIO_HOST,
                      'socketio_port': settings.SOCKETIO_PORT,
+                     'notice_count': notice_count(request),
                     }
 
     return render_to_response('cdr/cdr_graph_realtime.html', variables,
@@ -1191,6 +1208,7 @@ def mail_report(request):
             'country_analytic_array': mail_data['country_analytic_array'],
             'hangup_analytic_array': mail_data['hangup_analytic_array'],
             'msg': msg,
+            'notice_count': notice_count(request),
     }
     return render_to_response(template, data,
            context_instance=RequestContext(request))
@@ -1448,6 +1466,7 @@ def cdr_report_by_hour(request):
                          'from_date': from_date,
                          'comp_days': comp_days,
                          'total_record': total_record,
+                         'notice_count': notice_count(request),
                          }
 
             return render_to_response(template_name, variables,
@@ -1500,6 +1519,7 @@ def cdr_report_by_hour(request):
                      'from_date': from_date,
                      'comp_days': comp_days,
                      'total_record': total_record,
+                     'notice_count': notice_count(request),
                      }
 
         return render_to_response(template_name, variables,
@@ -1570,7 +1590,6 @@ def cdr_overview(request):
                     1, 0, 0, 0, 0)
                 month_end_date = datetime(end_date.year, end_date.month,
                     end_date.day, 23, 59, 59, 999999)
-
         else:
             # form is not valid
             logging.debug('Error : CDR overview search form')
@@ -1599,6 +1618,7 @@ def cdr_overview(request):
                          'start_date': start_date,
                          'end_date': end_date,
                          'TOTAL_GRAPH_COLOR': TOTAL_GRAPH_COLOR,
+                         'notice_count': notice_count(request),
                          }
 
             return render_to_response(
@@ -1775,6 +1795,7 @@ def cdr_overview(request):
                      'start_date': start_date,
                      'end_date': end_date,
                      'TOTAL_GRAPH_COLOR': TOTAL_GRAPH_COLOR,
+                     'notice_count': notice_count(request),
                      }
 
         return render_to_response(
@@ -1976,6 +1997,7 @@ def cdr_country_report(request):
                  'form': form,
                  'search_tag': search_tag,
                  'NUM_COUNTRY': NUM_COUNTRY,
+                 'notice_count': notice_count(request),
                  }
 
     return render_to_response(template_name, variables,
@@ -2049,6 +2071,7 @@ def world_map_view(request):
                          'end_date': end_date,
                          'world_analytic_array': world_analytic_array,
                          'action': action,
+                         'notice_count': notice_count(request),
                          }
 
             return render_to_response(template_name, variables,
@@ -2089,6 +2112,7 @@ def world_map_view(request):
                  'end_date': end_date,
                  'world_analytic_array': world_analytic_array,
                  'action': action,
+                 'notice_count': notice_count(request),
                  }
 
     return render_to_response(template, variables,
