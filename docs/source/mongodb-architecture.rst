@@ -29,7 +29,7 @@ Why MongoDB
 -----------
 
 Why did we choose MongoDB and what are the benefits?
-To answer this questions I think we should enumerate some of the major features of MongoDB.
+To answer these questions, we should enumerate some of the major features of MongoDB.
 
 **Document-oriented**:
     * Documents (objects) map well to programming language data types
@@ -257,8 +257,8 @@ CDR-Stats MongoDB Collections
     This monthly_analytic collection is used to view monthly graph on customer panel
 
 **3) daily_analytic:**
-    To collect daily analytics from CDR's which include following fields date,
-    hangup_cause_id, country_id, accountcode, switch_id, calls, duration.
+    To collect daily analytics from CDR's which include following fields, 
+    date, hangup_cause_id, country_id, accountcode, switch_id, calls, duration.
     This daily_analytic collection used to view daily graph/hourly graph on customer panel.
 
 **4) concurrent_call:**
