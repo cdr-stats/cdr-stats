@@ -233,30 +233,15 @@ class SwitchAdmin(admin.ModelAdmin):
                                         daily_date = datetime.datetime.\
                                             fromtimestamp(int(get_cdr_from_row['start_uepoch'][:10]))
 
-                                        id_daily = daily_date.strftime('%Y%m%d/') + "%d/%s/%d" %\
-                                                            (switch.id, accountcode, country_id)
-                                        hour = daily_date.hour
-                                        minute = daily_date.minute
-                                        # Get a datetime that only include date info
-                                        d = datetime.datetime.combine(daily_date.date(),
-                                                                      datetime.time.min)
-
                                         # insert daily analytic record
-                                        create_daily_analytic(id_daily, d, switch.id,
-                                                              country_id, accountcode,
-                                                              hangup_cause_id, hour,
-                                                              minute, duration)
+                                        create_daily_analytic(daily_date, switch.id, country_id,
+                                                              accountcode, hangup_cause_id,
+                                                              duration)
 
                                         # MONTHLY_ANALYTIC
-                                        # Get a datetime that only include year-month info
-                                        #d = datetime.datetime.combine(daily_date.date(), datetime.time.min)
-                                        d = datetime.datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
-
-                                        id_monthly = daily_date.strftime('%Y%m') + "/%d/%s/%d" %\
-                                                                                   (switch.id, accountcode, country_id)
                                         # insert monthly analytic record
-                                        create_monthly_analytic(id_monthly, d, switch.id,
-                                                                country_id,accountcode, duration)
+                                        create_monthly_analytic(daily_date, start_uepoch, switch.id,
+                                                                country_id, accountcode, duration)
 
                                         cdr_record_count = cdr_record_count + 1
 

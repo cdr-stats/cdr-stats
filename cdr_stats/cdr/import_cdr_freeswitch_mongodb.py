@@ -117,9 +117,16 @@ def apply_index(shell):
     return True
 
 
-def create_daily_analytic(id_daily, d, switch_id, country_id,
-    accountcode, hangup_cause_id, hour, minute, duration):
+def create_daily_analytic(daily_date, switch_id, country_id,
+    accountcode, hangup_cause_id, duration):
     """Create DAILY_ANALYTIC"""
+    id_daily = daily_date.strftime('%Y%m%d') + "/%d/%s/%d/%d" %\
+                (switch_id, accountcode, country_id, hangup_cause_id)
+    hour = daily_date.hour
+    minute = daily_date.minute
+    # Get a datetime that only include date info
+    d = datetime.datetime.combine(daily_date.date(), datetime.time.min)
+
     DAILY_ANALYTIC.update(
             {
             "_id": id_daily,
@@ -141,12 +148,19 @@ def create_daily_analytic(id_daily, d, switch_id, country_id,
                 "duration_minute.%d.%d" % (hour, minute,): duration,
                 }
         }, upsert=True)
+
     return True
 
 
-def create_monthly_analytic(id_monthly, d, switch_id, country_id,
-    accountcode, duration):
+def create_monthly_analytic(daily_date, start_uepoch, switch_id,
+    country_id, accountcode, duration):
     """Create DAILY_ANALYTIC"""
+    # Get a datetime that only include year-month info
+    d = datetime.datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
+
+    id_monthly = daily_date.strftime('%Y%m') + "/%d/%s/%d" %\
+                    (switch_id, accountcode, country_id)
+
     MONTHLY_ANALYTIC.update(
             {
             "_id": id_monthly,
@@ -163,6 +177,7 @@ def create_monthly_analytic(id_monthly, d, switch_id, country_id,
                 "duration_monthly": duration,
                 }
         }, upsert=True)
+
     return True
 
 
@@ -287,27 +302,17 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             daily_date = datetime.datetime.fromtimestamp(
                             int(cdr['variables']['start_uepoch'][:10]))
 
-            id_daily = daily_date.strftime('%Y%m%d') + "/%d/%s/%d/%d" % \
-                        (switch.id, accountcode, country_id, hangup_cause_id)
-            hour = daily_date.hour
-            minute = daily_date.minute
-            # Get a datetime that only include date info
-            d = datetime.datetime.combine(daily_date.date(), datetime.time.min)
-
+            # DAILY_ANALYTIC
+            daily_date = datetime.datetime.fromtimestamp(
+                int(cdr['variables']['start_uepoch'][:10]))
             # insert daily analytic record
-            create_daily_analytic(id_daily, d, switch.id, country_id,
-                        accountcode, hangup_cause_id, hour, minute, duration)
+            create_daily_analytic(daily_date, switch.id, country_id, accountcode,
+                                  hangup_cause_id, duration)
 
             # MONTHLY_ANALYTIC
-            # Get a datetime that only include year-month info
-            d = datetime.datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
-
-            id_monthly = daily_date.strftime('%Y%m') + "/%d/%s/%d" %\
-                                        (switch.id, accountcode, country_id)
-
             # insert monthly analytic record
-            create_monthly_analytic(id_monthly, d, switch.id, country_id,
-                                        accountcode, duration)
+            create_monthly_analytic(daily_date, start_uepoch, switch.id,
+                                    country_id, accountcode, duration)
 
             # Flag the CDR as imported
             importcdr_handler.update(
