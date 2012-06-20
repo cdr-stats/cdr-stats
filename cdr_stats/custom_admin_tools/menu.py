@@ -23,7 +23,8 @@ class CustomMenu(Menu):
     def __init__(self, **kwargs):
         Menu.__init__(self, **kwargs)
         self.children += [
-            items.MenuItem(_('CDR-Stats' + ' V' + cdr_stats.__version__), reverse('admin:index')),
+            items.MenuItem(_('CDR-Stats' + ' V' + cdr_stats.__version__),
+                                reverse('admin:index')),
             items.Bookmarks(),
             items.AppList(
                 _('Applications'),

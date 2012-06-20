@@ -256,5 +256,3 @@ class LanguageField(models.CharField):
 
 if _using_south:
     add_introspection_rules([], ['^djangomissing\.fields\.LanguageField'])
-
-# End of file

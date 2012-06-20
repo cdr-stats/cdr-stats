@@ -29,7 +29,7 @@ class UserProfile(models.Model):
         * ``address`` -
         * ``city`` -
         * ``state`` -
-        * ``address`` - 
+        * ``address`` -
         * ``country`` -
         * ``zip_code`` -
         * ``phone_no`` -
@@ -51,31 +51,30 @@ class UserProfile(models.Model):
     """
     user = models.OneToOneField(User)
     address = models.CharField(blank=True, null=True,
-                               max_length=200, verbose_name=_('Address'))
+            max_length=200, verbose_name=_('Address'))
     city = models.CharField(max_length=120, blank=True, null=True,
-                            verbose_name=_('City'))
+            verbose_name=_('City'))
     state = models.CharField(max_length=120, blank=True, null=True,
-                             verbose_name=_('State'))
+            verbose_name=_('State'))
     country = CountryField(blank=True, null=True, verbose_name=_('Country'))
     zip_code = models.CharField(max_length=120, blank=True, null=True,
-                                verbose_name=_('Zip code'))
+            verbose_name=_('Zip code'))
     phone_no = models.CharField(max_length=90, blank=True, null=True,
-                                verbose_name=_('Phone number'))
+            verbose_name=_('Phone number'))
     fax = models.CharField(max_length=90, blank=True, null=True,
-                           verbose_name=_('Fax Number'))
+            verbose_name=_('Fax Number'))
     company_name = models.CharField(max_length=90, blank=True, null=True,
-                                    verbose_name=_('Company name'))
+            verbose_name=_('Company name'))
     company_website = models.URLField(verify_exists=False,
-                                      max_length=90, blank=True, null=True,
-                                      verbose_name=_('Company website'))
+            max_length=90, blank=True, null=True,
+            verbose_name=_('Company website'))
     language = LanguageField(blank=True, null=True, verbose_name=_('Language'))
     note = models.CharField(max_length=250, blank=True, null=True,
-                            verbose_name=_('Note'))
+            verbose_name=_('Note'))
     accountcode = models.PositiveIntegerField(null=True, blank=True)
-
     multiple_email = models.TextField(blank=True, null=True,
-                                      verbose_name=_('Report mail list'),
-                     help_text=_('Enter a valid e-mail address separated by commas.'))
+            verbose_name=_('Report mail list'),
+            help_text=_('Enter a valid e-mail address separated by commas.'))
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

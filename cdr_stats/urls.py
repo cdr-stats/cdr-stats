@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # CDR-Stats License
 # http://www.cdr-stats.org
@@ -14,7 +15,6 @@
 
 from django.conf.urls.defaults import url, patterns, include
 from django.conf import settings
-from django.conf.urls.i18n import i18n_patterns
 from tastypie.api import Api
 from api.user_api import UserResource
 from api.switch_api import SwitchResource

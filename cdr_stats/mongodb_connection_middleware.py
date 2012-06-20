@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 #
 # CDR-Stats License
 # http://www.cdr-stats.org

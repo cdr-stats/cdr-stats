@@ -20,7 +20,7 @@ site_package_dirs = '/usr/share/virtualenvs/cdr-stats/lib/python2.7/site-package
 
 if site_package_dirs not in sys.path and os.path.isdir(site_package_dirs):
     sys.path.append(site_package_dirs)
-    
+
 site_package_dirs = '/usr/share/virtualenvs/cdr-stats/lib/python2.6/site-packages'
 
 if site_package_dirs not in sys.path and os.path.isdir(site_package_dirs):
