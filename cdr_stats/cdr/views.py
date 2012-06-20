@@ -31,8 +31,7 @@ from common.common_functions import current_view, get_news, \
                                     source_desti_field_chk_mongodb, \
                                     duration_field_chk_mongodb, \
                                     int_convert_to_minute, \
-                                    validate_days, \
-                                    date_range
+                                    validate_days
 
 from cdr.models import Switch
 from cdr.functions_def import get_country_name, \
@@ -174,7 +173,8 @@ def cdr_view_daily_report(query_var):
 
     cdr_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
     logging.debug('Before MapReduce')
-    total_data = cdr_data.map_reduce(map, reduce, out, query=query_var, finalize=finalfc)
+    total_data = cdr_data.map_reduce(map, reduce, out,
+                        query=query_var, finalize=finalfc)
     logging.debug('After MapReduce')
 
     total_data = total_data.find().sort([('_id.a_Year', -1),
@@ -202,7 +202,7 @@ def cdr_view_daily_report(query_var):
     if total_data.count() != 0:
         max_duration = max([int(x['duration__sum']) for x in detail_data])
         total_avg_duration = \
-            (float(duration__avg))/total_data.count()
+            (float(duration__avg)) / total_data.count()
     else:
         max_duration = 0
         total_avg_duration = 0
@@ -556,7 +556,6 @@ def cdr_view(request):
         final_result.skip(PAGE_SIZE * (PAGE_NUMBER - 1)).limit(PAGE_SIZE)\
             .sort([(sort_field, default_order)])
 
-
     # Get daily report from session while using pagination & sorting
     if request.GET.get('page') or request.GET.get('sort_by'):
         cdr_view_daily_data = request.session['session_cdr_view_daily_data']
@@ -565,24 +564,25 @@ def cdr_view(request):
         cdr_view_daily_data = cdr_view_daily_report(mr_query_var)
         request.session['session_cdr_view_daily_data'] = cdr_view_daily_data
 
-    template_data = {'module': current_view(request),
-                     'rows': rows,
-                     'form': form,
-                     'PAGE_SIZE': PAGE_SIZE,
-                     'total_data': cdr_view_daily_data['total_data'],
-                     'total_duration': cdr_view_daily_data['total_duration'],
-                     'total_calls': cdr_view_daily_data['total_calls'],
-                     'total_avg_duration': cdr_view_daily_data['total_avg_duration'],
-                     'max_duration': cdr_view_daily_data['max_duration'],
-                     'user': request.user,
-                     'search_tag': search_tag,
-                     'col_name_with_order': col_name_with_order,
-                     'menu': menu,
-                     'start_date': start_date,
-                     'end_date': end_date,
-                     'action': action,
-                     'result': int(result),
-                     }
+    template_data = {
+            'module': current_view(request),
+            'rows': rows,
+            'form': form,
+            'PAGE_SIZE': PAGE_SIZE,
+            'total_data': cdr_view_daily_data['total_data'],
+            'total_duration': cdr_view_daily_data['total_duration'],
+            'total_calls': cdr_view_daily_data['total_calls'],
+            'total_avg_duration': cdr_view_daily_data['total_avg_duration'],
+            'max_duration': cdr_view_daily_data['max_duration'],
+            'user': request.user,
+            'search_tag': search_tag,
+            'col_name_with_order': col_name_with_order,
+            'menu': menu,
+            'start_date': start_date,
+            'end_date': end_date,
+            'action': action,
+            'result': int(result),
+        }
     logging.debug('CDR View End')
     return render_to_response(template_name, template_data,
                               context_instance=RequestContext(request))
