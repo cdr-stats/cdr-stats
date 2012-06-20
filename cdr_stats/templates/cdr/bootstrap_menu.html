@@ -57,6 +57,15 @@
                 </ul>
               </li>
             </ul>
+            {% if notice_count %}
+            <ul class="nav pull-right">
+                <li id="fat-menu" class="dropdown">
+                    <a href="/user_detail_change/?action=tabs-3">
+                        <span class="label label-warning">{{ notice_count }} {% trans "notifications" %}</span>
+                    </a>
+                </li>
+            </ul>
+            {% endif %}
           {% endif %}
 
       </div><!--/.nav-collapse -->

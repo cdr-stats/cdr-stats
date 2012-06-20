@@ -26,6 +26,7 @@ from django.conf import settings
 from django.views.decorators.cache import cache_page
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
+from notification import models as notification
 from common.common_functions import current_view, get_news, \
                                     variable_value, \
                                     source_desti_field_chk_mongodb, \
@@ -65,6 +66,17 @@ news_url = settings.NEWS_URL
 cdr_data = settings.DBCON[settings.MG_CDR_COMMON]
 #db.cdr.ensureIndex({"variables.answer_stamp":1}, {background:true});
 (map, reduce, finalfc, out) = mapreduce_cdr_view()
+
+
+def notice_count(request):
+    """Get count of logged in user's notifications"""
+    try:
+        notice_count =\
+        notification.Notice.objects.filter(recipient=request.user,
+            unseen=1).count()
+    except:
+        notice_count = ''
+    return notice_count
 
 
 def common_send_notification(request, status, recipient=None):
@@ -582,6 +594,7 @@ def cdr_view(request):
             'end_date': end_date,
             'action': action,
             'result': int(result),
+            'notice_count': notice_count(request),
         }
     logging.debug('CDR View End')
     return render_to_response(template_name, template_data,
