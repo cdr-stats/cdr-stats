@@ -107,7 +107,6 @@ def mapreduce_cdr_view():
                     } )
         }''')
 
-
     out = 'aggregate_result_cdr_view'
     return (map, reduce, finalfc, out)
 

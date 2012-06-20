@@ -841,14 +841,15 @@ def cdr_dashboard(request):
 
     logging.debug("Lenght of result total_record_final %d" % len(final_record))
     logging.debug("Lenght of result hangup_analytic %d" % len(hangup_analytic))
-    logging.debug("Lenght of result country_call_count %d" % len(total_country_data))
+    logging.debug("Lenght of result country_call_count %d" % \
+                                len(total_country_data))
 
     country_analytic = []
     logging.debug('Before Loop create country_analytic')
     for i in total_country_data[0:5]:
-        c_id = int(i[0]) #  i[0] - country id
-        c_call_count = int(i[1]['call_count']) #  i[1] - call count
-        c_duration_sum = int(i[1]['duration_sum']) # call duration
+        c_id = int(i[0])  # i[0] - country id
+        c_call_count = int(i[1]['call_count'])  # i[1] - call count
+        c_duration_sum = int(i[1]['duration_sum'])  # call duration
 
         country_analytic.append((get_country_name(c_id),
                                  c_call_count,
@@ -1076,7 +1077,6 @@ def get_cdr_mail_report():
         else:
             hangup_analytic[hangup_cause_id] = 1
 
-
         country_id = int(doc['_id']['f_Country'])
         if country_id in country_analytic:
             country_analytic[country_id]['count_call'] += int(doc['value']['calldate__count'])
@@ -1194,6 +1194,7 @@ def mail_report(request):
     }
     return render_to_response(template, data,
            context_instance=RequestContext(request))
+
 
 def index(request):
     """Index Page of CDR-Stats
@@ -2075,11 +2076,10 @@ def world_map_view(request):
     for i in calls:
         #country id - country name - country_code - call count - call duration
         world_analytic_array.append((int(i['_id']['f_Country']),
-                                     get_country_name(int(i['_id']['f_Country']),
-                                         type='iso2'),
-                                     int(i['value']['calldate__count']),
-                                     i['value']['duration__sum'],
-                                     get_country_name(int(i['_id']['f_Country']))))
+                    get_country_name(int(i['_id']['f_Country']), type='iso2'),
+                    int(i['value']['calldate__count']),
+                    i['value']['duration__sum'],
+                    get_country_name(int(i['_id']['f_Country']))))
 
     logging.debug('CDR world report view end')
     variables = {'module': current_view(request),

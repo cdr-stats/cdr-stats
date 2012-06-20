@@ -13,14 +13,11 @@
 #
 
 from django.db import models
-from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-from django.core.exceptions import ValidationError
-from country_dialcode.models import Country, Prefix
-import re
+from country_dialcode.models import Country
 
 
-PERIOD  = (
+PERIOD = (
     (1, _('Day')),
     (2, _('Week')),
     (3, _('Month')),
@@ -36,7 +33,7 @@ ALARM_TYPE = (
     (2, _('ASR (Answer Seize Ratio)')),
 )
 
-ALERT_CONDITION  = (
+ALERT_CONDITION = (
     (1, _('Is less than')),
     (2, _('Is greater than')),
     (3, _('Decrease by more than')),
@@ -45,13 +42,14 @@ ALERT_CONDITION  = (
     (6, _('Percentage increase by more than')),
 )
 
-#this condition only apply if PERIOD is "Day", otherwise we will compare to previous week or previous month
-ALERT_CONDITION_ADD_ON  = (
+#This condition only apply if PERIOD is "Day",
+#otherwise we will compare to previous week or previous month
+ALERT_CONDITION_ADD_ON = (
     (1, _('Same day')),
     (2, _('Same day in the previous week')),
 )
 
-ALARM_REPROT_STATUS  = (
+ALARM_REPROT_STATUS = (
     (1, _('No alarm sent')),
     (2, _('Alarm Sent')),
 )
@@ -59,9 +57,9 @@ ALARM_REPROT_STATUS  = (
 
 class AlertRemovePrefix(models.Model):
     """This defines the Alert Remove Prefix
-    Here you can define the list of prefixes that need to be removed from the dialed digits,
-    imagine all your phone numbers are in the format 5555004432111321
-    You will need to remove the prefix 5555 in order to analyze the phone numbers
+    Here you can define the list of prefixes that need to be removed from the
+    dialed digits, imagine all your phone numbers are in the format 5559004432
+    You will need to remove the prefix 555 to analyze the phone numbers
 
     **Attributes**:
 
@@ -70,16 +68,15 @@ class AlertRemovePrefix(models.Model):
 
     **Name of DB table**: alarm
     """
-    label  = models.CharField(max_length=100, verbose_name=_('Label'))
-    prefix  = models.CharField(max_length=100, unique=True,
+    label = models.CharField(max_length=100, verbose_name=_('Label'))
+    prefix = models.CharField(max_length=100, unique=True,
                                     verbose_name=_('Prefix'))
     created_date = models.DateTimeField(auto_now_add=True,
                                     verbose_name=_('Date'))
     updated_date = models.DateTimeField(auto_now=True)
 
-
     def __unicode__(self):
-        return '%s' %(self.label)
+        return '%s' % (self.label)
 
     class Meta:
         verbose_name = _("Alert Remove Prefix")
@@ -103,39 +100,39 @@ class Alarm(models.Model):
 
     **Name of DB table**: alert
     """
-    name  = models.CharField(max_length=100, verbose_name=_('Name'))
+    name = models.CharField(max_length=100, verbose_name=_('Name'))
     period = models.PositiveIntegerField(choices=PERIOD, default=1,
-                                         verbose_name=_('Period'),
-                                         help_text=_('Interval to apply alarm'))
+                                verbose_name=_('Period'),
+                                help_text=_('Interval to apply alarm'))
     type = models.PositiveIntegerField(choices=ALARM_TYPE, default=1,
-                                       verbose_name=_('Type'),
-                                       help_text=_('ALOC (average length of call) ; ASR (answer seize ratio) ; CIC (Consecutive Incomplete Calls) '))
-    alert_condition = models.PositiveIntegerField(choices=ALERT_CONDITION, default=1,
-                                                  verbose_name=_('Condition'))
+                                verbose_name=_('Type'),
+                                help_text=_('ALOC (average length of call) ; ASR (answer seize ratio) ; CIC (Consecutive Incomplete Calls) '))
+    alert_condition = models.PositiveIntegerField(
+                                choices=ALERT_CONDITION, default=1,
+                                verbose_name=_('Condition'))
     alert_value = models.DecimalField(verbose_name=_('Value'), max_digits=5,
-                                  decimal_places=2, blank=True, null=True,
-                                  help_text=_('Input the value for the alert'))
-    alert_condition_add_on = models.PositiveIntegerField(choices=ALERT_CONDITION_ADD_ON,
-                                                         default=1)
+                                decimal_places=2, blank=True, null=True,
+                                help_text=_('Input the value for the alert'))
+    alert_condition_add_on = models.PositiveIntegerField(
+                                    choices=ALERT_CONDITION_ADD_ON,
+                                    default=1)
 
     status = models.PositiveIntegerField(choices=STATUS, default=1,
                                          verbose_name=_('Status'))
 
     email_to_send_alarm = models.EmailField(max_length=100,
-                                            verbose_name=_('Email to send alarm'))
+                                    verbose_name=_('Email to send alarm'))
     created_date = models.DateTimeField(auto_now_add=True,
                                         verbose_name=_('Date'))
     updated_date = models.DateTimeField(auto_now=True)
 
-
     def __unicode__(self):
-        return '%s' %(self.name)
+        return '%s' % (self.name)
 
     class Meta:
         verbose_name = _("Alarm")
         verbose_name_plural = _("Alarms")
         db_table = "alert"
-
 
 
 class AlarmReport(models.Model):
@@ -149,18 +146,18 @@ class AlarmReport(models.Model):
 
     **Name of DB table**: alert_report
     """
-    alarm  = models.ForeignKey(Alarm, verbose_name=_('Alarm'),
+    alarm = models.ForeignKey(Alarm, verbose_name=_('Alarm'),
                                help_text=_("Select Alarm"))
     calculatedvalue = models.DecimalField(verbose_name=_('Calculated value'),
                                           max_digits=10, decimal_places=3,
                                           blank=True, null=True)
-    status = models.PositiveIntegerField(choices=ALARM_REPROT_STATUS, default=1,
-                                                  verbose_name=_('Status'))
+    status = models.PositiveIntegerField(choices=ALARM_REPROT_STATUS,
+                        default=1, verbose_name=_('Status'))
 
     daterun = models.DateTimeField(auto_now=True, verbose_name=_('Date'))
 
     def __unicode__(self):
-        return '%s' %(self.alarm)
+        return '%s' % (self.alarm)
 
     class Meta:
         verbose_name = _("Alarm Report")
@@ -184,7 +181,7 @@ class Blacklist(models.Model):
                                 help_text=_("Select Country"))
 
     def __unicode__(self):
-        return '[%s] %s' %(self.id, self.phonenumber_prefix)
+        return '[%s] %s' % (self.id, self.phonenumber_prefix)
 
     class Meta:
         verbose_name = _("Blacklist")
@@ -206,8 +203,9 @@ class Whitelist(models.Model):
     country = models.ForeignKey(Country, null=True, blank=True,
                                 verbose_name=_("Country"),
                                 help_text=_("Select Country"))
+
     def __unicode__(self):
-        return '[%s] %s' %(self.id, self.phonenumber_prefix)
+        return '[%s] %s' % (self.id, self.phonenumber_prefix)
 
     class Meta:
         verbose_name = _("Whitelist")
