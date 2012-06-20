@@ -15,6 +15,7 @@ from django.conf import settings
 import MySQLdb as Database
 from cdr.models import Switch, CDR_TYPE
 from cdr.import_cdr_freeswitch_mongodb import apply_index,\
+                                              chk_ipaddress,\
                                               CDR_COMMON,\
                                               DAILY_ANALYTIC,\
                                               MONTHLY_ANALYTIC,\
@@ -86,27 +87,10 @@ def import_cdr_asterisk_mysql(shell=False):
 
     #loop within the Mongo CDR Import List
     for ipaddress in settings.ASTERISK_MYSQL:
-        #Select the Switch ID
-        print_shell(shell, "Switch : %s" % ipaddress)
-
-        DEV_ADD_IP = False
-        # uncomment this to import from a fake different IP / used for dev
-        # DEV_ADD_IP = '127.0.0.2'
-        if DEV_ADD_IP:
-            previous_ip = ipaddress
-            ipaddress = DEV_ADD_IP
-        try:
-            switch = Switch.objects.get(ipaddress=ipaddress)
-        except Switch.DoesNotExist:
-            switch = Switch(name=ipaddress, ipaddress=ipaddress)
-            switch.save()
-
-        if not switch.id:
-            print_shell(shell, "Error when adding new Switch!")
-            raise SystemExit
-
-        if DEV_ADD_IP:
-            ipaddress = previous_ip
+        
+        data = chk_ipaddress(ipaddress)
+        ipaddress = data['ipaddress']
+        switch = data['switch']
 
         #Connect on Mysql Database
         db_name = settings.ASTERISK_MYSQL[ipaddress]['db_name']
