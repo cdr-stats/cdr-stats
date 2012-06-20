@@ -33,4 +33,5 @@ class UserResource(ModelResource):
         resource_name = 'user'
         fields = ['username', 'first_name', 'last_name', 'last_login', 'id']
         filtering = {'username': 'exact'}
-        throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
+        # default 1000 calls / hour
+        throttle = BaseThrottle(throttle_at=1000, timeframe=3600)

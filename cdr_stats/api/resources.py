@@ -13,27 +13,23 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-import logging
 
 from django.contrib.auth.models import User
 from django.conf import settings
-
 from tastypie.authentication import Authentication
 from tastypie.authorization import Authorization
 from tastypie.serializers import Serializer
-
 from tastypie.exceptions import ImmediateHttpResponse
 from tastypie import http
-
-from settings import API_ALLOWED_IP
 from random import seed
-
 import urllib
 import simplejson
+import logging
+
+logger = logging.getLogger('cdr-stats.filelog')
 
 seed()
 
-logger = logging.getLogger('cdr-stats.filelog')
 
 class CustomJSONSerializer(Serializer):
 
@@ -70,7 +66,7 @@ def save_if_set(record, fproperty, value):
 class IpAddressAuthorization(Authorization):
 
     def is_authorized(self, request, object=None):
-        if request.META['REMOTE_ADDR'] in API_ALLOWED_IP:
+        if request.META['REMOTE_ADDR'] in settings.API_ALLOWED_IP:
             return True
         else:
             raise ImmediateHttpResponse(response=http.HttpUnauthorized())
@@ -80,7 +76,7 @@ class IpAddressAuthorization(Authorization):
 class IpAddressAuthentication(Authentication):
 
     def is_authorized(self, request, object=None):
-        if request.META['REMOTE_ADDR'] in API_ALLOWED_IP:
+        if request.META['REMOTE_ADDR'] in settings.API_ALLOWED_IP:
             return True
         else:
             raise ImmediateHttpResponse(response=http.HttpUnauthorized())

@@ -44,4 +44,5 @@ class HangupCauseResource(ModelResource):
         authentication = BasicAuthentication()
         list_allowed_methods = ['get', 'post', 'put', 'delete']
         detail_allowed_methods = ['get', 'post', 'put', 'delete']
-        throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
+        # default 1000 calls / hour
+        throttle = BaseThrottle(throttle_at=1000, timeframe=3600)

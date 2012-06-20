@@ -13,22 +13,16 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-import logging
-from datetime import datetime
-
 from django.conf.urls.defaults import url
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse
 from django.conf import settings
-
 from tastypie.resources import ModelResource
 from tastypie.authentication import BasicAuthentication
 from tastypie.authorization import Authorization
 from tastypie.throttle import BaseThrottle
-from tastypie.exceptions import ImmediateHttpResponse
-from tastypie import http
-
 from cdr.functions_def import get_hangupcause_id
 
+import logging
 logger = logging.getLogger('cdr-stats.filelog')
 
 

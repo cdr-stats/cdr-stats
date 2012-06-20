@@ -13,11 +13,11 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
+
 from tastypie.resources import ModelResource
 from tastypie.throttle import BaseThrottle
 from tastypie.authentication import BasicAuthentication
 from tastypie.authorization import Authorization
-
 from cdr.models import Switch
 
 
@@ -58,4 +58,5 @@ class SwitchResource(ModelResource):
         authentication = BasicAuthentication()
         list_allowed_methods = ['get', 'post', 'put', 'delete']
         detail_allowed_methods = ['get', 'post', 'put', 'delete']
-        throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
+        # default 1000 calls / hour
+        throttle = BaseThrottle(throttle_at=1000, timeframe=3600)

@@ -13,19 +13,17 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-import logging
-from datetime import datetime
-
 from django.conf.urls.defaults import url
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse
 from django.conf import settings
-
 from tastypie.resources import ModelResource
 from tastypie.authentication import BasicAuthentication
 from tastypie.authorization import Authorization
 from tastypie.throttle import BaseThrottle
 from tastypie.exceptions import ImmediateHttpResponse
 from tastypie import http
+from datetime import datetime
+import logging
 
 logger = logging.getLogger('cdr-stats.filelog')
 
@@ -74,7 +72,8 @@ class CdrDailyResource(ModelResource):
         authentication = BasicAuthentication()
         #list_allowed_methods = ['get']
         #detail_allowed_methods = ['get']
-        throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
+        # default 1000 calls / hour
+        throttle = BaseThrottle(throttle_at=1000, timeframe=3600)
 
     def override_urls(self):
 
@@ -113,10 +112,12 @@ class CdrDailyResource(ModelResource):
         if 'start_uepoch' in temp_var:
             start_date = datetime(int(temp_var['start_uepoch'][0:4]),
                                   int(temp_var['start_uepoch'][5:7]),
-                                  int(temp_var['start_uepoch'][8:10]), 0, 0, 0, 0)
+                                  int(temp_var['start_uepoch'][8:10]),
+                                  0, 0, 0, 0)
             end_date = datetime(int(temp_var['start_uepoch'][0:4]),
                                 int(temp_var['start_uepoch'][5:7]),
-                                int(temp_var['start_uepoch'][8:10]), 23, 59, 59, 999999)
+                                int(temp_var['start_uepoch'][8:10]),
+                                23, 59, 59, 999999)
             query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
         if 'destination_number' in query_var:
@@ -134,7 +135,6 @@ class CdrDailyResource(ModelResource):
                 print record
         else:
             daily_data = daily_data.find()
-            # calls_in_day = daily_data.map_reduce(map, reduce, out, query=query_var)
 
         result = []
         for record in daily_data:
