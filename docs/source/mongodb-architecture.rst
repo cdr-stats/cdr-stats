@@ -1,4 +1,3 @@
-
 .. _mongodb:
 
 MongoDB
@@ -48,9 +47,9 @@ To answer this questions I think we should enumerate some of the major features 
 A more detailed list of everything provided by mongoDB can be found at
 http://www.mongodb.org/display/DOCS/Introduction
 
-As MongoDB is a Document-oriented datastore, it had a huge potentiel to store
-CDR's, Call Detail Record formats vary between Telecom Switch types, For these
-reasons a NoSQL database is a very good candidate for a CDR warehouse.
+As MongoDB is a Document-oriented datastore, it had a potential to store a huge
+number of CDR's, Call Detail Record formats vary between Telecom Switch types.
+For these reasons a NoSQL database is a very good candidate for a CDR warehouse.
 
 
 .. _datastore_architecture:
@@ -91,10 +90,10 @@ Pre-Aggregated Reports
 ----------------------
 If you collect a large amount of data and you want to have access to aggregated information
 and reports, then you need a method to aggregate these data into a usable form.
-Pre-aggregate your data will allow to gain highly on performance when you will try to retrieve
-those aggregrate information in realtime.
+Pre-aggregating your data will provide  performance gains when you try to retrieve
+that aggregrate information in realtime.
 
-MongoDB as an engine is used for collecting and processing events in real time for use
+MongoDB is an engine is used for collecting and processing events in real time for use
 in generating up to the minute or second reports.
 
 The first step in the aggregation process is to aggregate event data into the finest required
@@ -206,10 +205,10 @@ To read more about Pre-Aggregated data with MongoDB, please refer to mongoDB doc
 Preaggregate Design Pattern with Call Data
 ------------------------------------------
 
-We explained previously why preaggregating is a huge gain of performance for analytic reporting and how it reduces disk seeks on your
-aggregate queries, we will now show how we apply this pattern to our calls data.
+We explained previously why preaggregating is a huge performance gain for analytic reporting and how it reduces disk seeks on your
+aggregate queries, we will now show how we apply this pattern to our call data.
 
-Our data are the CDR (Call Details Records) which are pre-processed for typing validation, after this satinatization of the call data, we proceed to the pre=aggragation step. For this we create a new daily_cdr collection which is aggregated on the daily date.
+Our data are the CDR (Call Detail Records) which are pre-processed for type validation, after this sanitisation of the call data, we proceed to the pre=aggragation step. For this we create a new daily_cdr collection which is aggregated daily.
 
 Our code with PyMongo::
 
@@ -235,10 +234,10 @@ Our code with PyMongo::
                 }
         }, upsert=True)
 
-The '_id' is create with concatenation of date of the day, switch, country, accountcode and hangup cause ID.
+The '_id' is created with concatenation of the day, switch, country, accountcode and hangup cause ID.
 
-The above collection is very fast to query, indeed it will be immediate to retrieve the amount of calls for a day for a specific accountcode.
-The field call_hourly can be used to plot the load of calls per hours for a single user or for a specific country.
+The above collection is very fast to query, to retrieve the amount of calls for a day for a specific accountcode will be immediate.
+The field call_hourly can be used to plot the calls per hour for a single user or for a specific country.
 
 
 .. _cdr_stats_mongodb_collection:
