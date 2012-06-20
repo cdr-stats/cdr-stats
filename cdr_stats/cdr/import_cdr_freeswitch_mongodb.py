@@ -94,7 +94,7 @@ def get_element(cdr):
 
 
 def apply_index(shell):
-    #TODO Add index one time, create a build function
+    """Apply index on cdr-stats mongodb collections"""
     CDR_COMMON.ensure_index([
         ("start_uepoch", -1),
         ("caller_id_number", 1),
@@ -336,6 +336,38 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
                             (ipaddress, count_import))
 
 
+def chk_ipaddress(ipaddress):
+    #Select the Switch ID
+    print_shell(shell, "Switch : %s" % ipaddress)
+
+    DEV_ADD_IP = False
+    # uncomment this to import from a fake different IP / used for dev
+    # DEV_ADD_IP = '127.0.0.2'
+
+    if DEV_ADD_IP:
+        previous_ip = ipaddress
+        ipaddress = DEV_ADD_IP
+    try:
+        switch = Switch.objects.get(ipaddress=ipaddress)
+    except Switch.DoesNotExist:
+        switch = Switch(name=ipaddress, ipaddress=ipaddress)
+        switch.save()
+
+    if not switch.id:
+        print "Error when adding new Switch!"
+        raise SystemExit
+
+    if DEV_ADD_IP:
+        ipaddress = previous_ip
+
+    data = {
+        'ipaddress': ipaddress,
+        'switch': switch
+    }
+
+    return data
+
+
 def import_cdr_freeswitch_mongodb(shell=False):
     #TODO : dont use the args here
     # Browse settings.MG_IMPORT and for each IP check if the IP exist
@@ -346,28 +378,10 @@ def import_cdr_freeswitch_mongodb(shell=False):
 
     #loop within the Mongo CDR Import List
     for ipaddress in settings.MG_IMPORT:
-        #Select the Switch ID
-        print_shell(shell, "Switch : %s" % ipaddress)
 
-        DEV_ADD_IP = False
-        # uncomment this to import from a fake different IP / used for dev
-        # DEV_ADD_IP = '127.0.0.2'
-
-        if DEV_ADD_IP:
-            previous_ip = ipaddress
-            ipaddress = DEV_ADD_IP
-        try:
-            switch = Switch.objects.get(ipaddress=ipaddress)
-        except Switch.DoesNotExist:
-            switch = Switch(name=ipaddress, ipaddress=ipaddress)
-            switch.save()
-
-        if not switch.id:
-            print "Error when adding new Switch!"
-            raise SystemExit
-
-        if DEV_ADD_IP:
-            ipaddress = previous_ip
+        data = chk_ipaddress(ipaddress)
+        ipaddress = data['ipaddress']
+        switch = data['switch']
 
         #Connect on MongoDB Database
         host = settings.MG_IMPORT[ipaddress]['host']
