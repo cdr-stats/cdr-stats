@@ -87,6 +87,119 @@ Increments “field” by the number “value” if “field” is present in th
 otherwise sets “field” to the number “value”. This can also be used to 
 decrement by using a negative “value”.
 
+.. _pre_aggregated_reports:
+
+Pre-Aggregated Reports
+----------------------
+If you collect a large amount of data, but do not pre-aggregate, and you want to have
+access to aggregated information and reports, then you need a method to aggregate these
+data into a usable form
+
+MongoDB as an engine is used for collecting and processing events in real time for use
+in generating up to the minute or second reports.
+
+
+The first step in the aggregation process is to aggregate event data into the finest required
+granularity. Then use this aggregation to generate the next least specific level granularity
+and this repeat process until you have generated all required views.
+
+.. _one_doc__per_day:
+
+One Document Per Day
+--------------------
+
+Consider the following example schema for a solution that stores all statistics for a single
+day and page in a single document::
+
+    {
+        _id: "20101010/site-1/apache_pb.gif",
+        metadata: {
+            date: ISODate("2000-10-10T00:00:00Z"),
+            site: "site-1",
+            page: "/apache_pb.gif" },
+        daily: 5468426,
+        hourly: {
+            "0": 227850,
+            "1": 210231,
+            ...
+            "23": 20457 },
+        minute: {
+            "0": 3612,
+            "1": 3241,
+            ...
+            "1439": 2819 }
+    }
+
+This approach has a couple of advantages:
+
+    * For every request on the website, you only need to update one document.
+    * Reports for time periods within the day, for a single page require fetching a single document.
+
+There are, however, significant issues with this approach. The most significant issue is that,
+as you ``upsert`` data into the hourly and monthly fields, the document grows. Although MongoDB will
+pad the space allocated to documents, it must still will need to reallocate these documents
+multiple times throughout the day, which impacts performance.
+
+.. _separate_doc_by_granularity_level:
+
+Separate Documents by Granularity Level
+---------------------------------------
+
+Pre-allocating documents is a reasonable design for storing intra-day data, but the model breaks
+down when displaying data over longer multi-day periods like months or quarters. In these cases,
+consider storing daily statistics in a single document as above, and then aggregate monthly data
+into a separate document.
+
+This introduce a second set of upsert operations to the data collection and aggregation portion of
+your application but the gains reduction in disk seeks on the queries, should be worth the costs.
+Consider the following example schema:
+
+**Daily Statistics**::
+
+    {
+        _id: "20101010/site-1/apache_pb.gif",
+        metadata: {
+            date: ISODate("2000-10-10T00:00:00Z"),
+            site: "site-1",
+            page: "/apache_pb.gif" },
+        hourly: {
+            "0": 227850,
+            "1": 210231,
+            ...
+            "23": 20457 },
+        minute: {
+            "0": {
+                "0": 3612,
+                "1": 3241,
+                ...
+                "59": 2130 },
+            "1": {
+                "0": ...,
+            },
+            ...
+            "23": {
+                "59": 2819 }
+        }
+    }
+
+**Monthly Statistics**::
+
+    {
+        _id: "201010/site-1/apache_pb.gif",
+        metadata: {
+            date: ISODate("2000-10-00T00:00:00Z"),
+            site: "site-1",
+            page: "/apache_pb.gif" },
+        daily: {
+            "1": 5445326,
+            "2": 5214121,
+            ... }
+    }
+
+.. _cdr_stats_mongodb_collection:
+
+CDR-Stats Mongodb Collections
+-----------------------------
 
 **1) cdr_common:** 
     To collect all CDR's from different switches & store into one common format which include the following fields 
