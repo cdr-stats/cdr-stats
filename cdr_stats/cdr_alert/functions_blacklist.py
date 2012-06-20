@@ -11,14 +11,12 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.utils.translation import gettext as _
+from django.conf import settings
+from cdr.functions_def import remove_prefix, \
+                              prefix_list_string, \
+                              get_country_id
 from cdr_alert.models import Blacklist, Whitelist
 from cdr_alert.tasks import blacklist_whitelist_notification
-from random import *
-import calendar
-import string
-import urllib
-import time
 
 
 def chk_prefix_in_whitelist(prefix_list):
@@ -35,11 +33,10 @@ def chk_prefix_in_whitelist(prefix_list):
                     flag = True
                     break
 
-            # if flag is true
-            # allowed
+            # if flag is true - allowed
             if flag:
-                # TODO: Send alert
-                blacklist_whitelist_notification.delay(4) # notice_type = 4 whitelist
+                # notice_type = 4 whitelist
+                blacklist_whitelist_notification.delay(4)
                 return True
 
     # no whitelist define
@@ -60,12 +57,49 @@ def chk_prefix_in_blacklist(prefix_list):
                     flag = True
                     break
 
-            # if flag is true
-            # not allowed
+            # if flag is true - not allowed
             if flag:
-                # TODO: Send alert
-                blacklist_whitelist_notification.delay(3) # notice_type = 3 blacklist
+                # notice_type = 3 blacklist
+                blacklist_whitelist_notification.delay(3)
                 return False
 
     # no blacklist is defined
     return True
+
+
+def chk_destination(destination_number):
+    #remove prefix
+    sanitized_destination = remove_prefix(destination_number,
+        settings.PREFIX_TO_IGNORE)
+
+    prefix_list = prefix_list_string(sanitized_destination)
+
+    authorized = 1  # default
+    # check destion against whitelist
+    authorized = chk_prefix_in_whitelist(prefix_list)
+    if authorized:
+        authorized = 1
+    else:
+        # check against blacklist
+        authorized = chk_prefix_in_blacklist(prefix_list)
+        if not authorized:
+            # not allowed destination
+            authorized = 0
+
+    if len(sanitized_destination) < settings.PN_MIN_DIGITS:
+        # It might be an extension
+        country_id = 0
+    elif len(sanitized_destination) >= settings.PN_MIN_DIGITS\
+    and len(sanitized_destination) <= settings.PN_MAX_DIGITS:
+        # It might be an local call
+        # Need to add coma for get_country_id to eval correctly
+        country_id = get_country_id(str(settings.LOCAL_DIALCODE) + ',')
+    else:
+        # International call
+        country_id = get_country_id(prefix_list)
+
+    destination_data = {
+        'authorized': authorized,
+        'country_id': country_id,
+        }
+    return destination_data

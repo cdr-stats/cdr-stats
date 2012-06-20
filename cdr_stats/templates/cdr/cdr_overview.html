@@ -1,5 +1,5 @@
 {% extends "cdr/master.html" %}
-{% load i18n cdr_extras %}
+{% load i18n cdr_extras cache %}
 
 {% block extra_header %}
 <script type="text/javascript">
@@ -46,18 +46,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="span6">
-            <label class="control-label" for="id_{{ form.destination.name }}">{{ form.destination.label }}</label>
-            <div class="input">
-                {{ form.destination }}&nbsp;&nbsp;{{ form.destination_type }}
-            </div>
-            {% if form.destination.errors %}
-                <span class="help-inline error">{{ form.destination.errors }}</span>
-            {% endif %}
         </div>
     </div>
 
@@ -120,12 +108,14 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                label: '{{ rc.grouper|get_switch_ip }}',
-                data: [
-                    {% for item in rc.list %}
-                        [parseInt({{ item.dt }}), {{ item.calldate__count }}],
-                    {% endfor %}
-                ]
+                    label: {% cache 1800 sw_id_1 rc.grouper %}
+                           '{{ rc.grouper|get_switch_ip }}'
+                           {% endcache %},
+                    data: [
+                        {% for item in rc.list %}
+                            [parseInt({{ item.dt }}), {{ item.calldate__count }}],
+                        {% endfor %}
+                    ]
             },
             {% endifnotequal %}
         {% endfor %}
@@ -133,8 +123,8 @@ $(function () {
         {
             label: '{% trans "Total Calls" %}',
             data: [
-                {% for item in total_hour_call_count %}
-                    [parseInt({{ item.0 }}), {{ item.1 }}],
+                {% for item in total_hour_data %}
+                    [parseInt({{ item.0 }}), {{ item.1.call_count }}],
                 {% endfor %}
             ],
             color: '{{ TOTAL_GRAPH_COLOR }}'
@@ -146,12 +136,14 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                label: '{{ rc.grouper|get_switch_ip }}',
-                data: [
-                    {% for item in rc.list %}
-                        [parseInt({{ item.dt }}), {{ item.duration__sum }}],
-                    {% endfor %}
-                ]
+                    label: {% cache 1800 sw_id_2 rc.grouper %}
+                           '{{ rc.grouper|get_switch_ip }}'
+                           {% endcache %},
+                    data: [
+                        {% for item in rc.list %}
+                            [parseInt({{ item.dt }}), {{ item.duration__sum }}],
+                        {% endfor %}
+                    ]
             },
             {% endifnotequal %}
         {% endfor %}
@@ -159,8 +151,8 @@ $(function () {
         {
             label: '{% trans "Total Duration" %}',
             data: [
-                {% for item in total_hour_call_duration %}
-                    [parseInt({{ item.0 }}), {{ item.1 }}],
+                {% for item in total_hour_data %}
+                    [parseInt({{ item.0 }}), {{ item.1.duration_sum }}],
                 {% endfor %}
             ],
             color: '{{ TOTAL_GRAPH_COLOR }}'
@@ -172,12 +164,14 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                label: '{{ rc.grouper|get_switch_ip }}',
-                data: [
-                    {% for item in rc.list %}
-                        [parseInt({{ item.dt }}), {{ item.calldate__count }}],
-                    {% endfor %}
-                ]
+                    label: {% cache 1800 sw_id_3 rc.grouper %}
+                           '{{ rc.grouper|get_switch_ip }}'
+                           {% endcache %},
+                    data: [
+                        {% for item in rc.list %}
+                            [parseInt({{ item.dt }}), {{ item.calldate__count }}],
+                        {% endfor %}
+                    ]
             },
             {% endifnotequal %}
         {% endfor %}
@@ -185,8 +179,8 @@ $(function () {
         {
             label: '{% trans "Total Calls" %}',
             data: [
-                {% for item in total_day_call_count %}
-                    [parseInt({{ item.0 }}), {{ item.1 }}],
+                {% for item in total_day_data %}
+                    [parseInt({{ item.0 }}), {{ item.1.call_count }}],
                 {% endfor %}
             ],
             color: '{{ TOTAL_GRAPH_COLOR }}'
@@ -198,12 +192,14 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                label: '{{ rc.grouper|get_switch_ip }}',
-                data: [
-                    {% for item in rc.list %}
-                        [parseInt({{ item.dt }}), {{ item.duration__sum }}],
-                    {% endfor %}
-                ]
+                    label: {% cache 1800 sw_id_4 rc.grouper %}
+                           '{{ rc.grouper|get_switch_ip }}'
+                           {% endcache %},
+                    data: [
+                        {% for item in rc.list %}
+                            [parseInt({{ item.dt }}), {{ item.duration__sum }}],
+                        {% endfor %}
+                    ]
             },
             {% endifnotequal %}
         {% endfor %}
@@ -211,8 +207,8 @@ $(function () {
         {
             label: '{% trans "Total Duration" %}',
             data: [
-                {% for item in total_day_call_duration %}
-                    [parseInt({{ item.0 }}), {{ item.1 }}],
+                {% for item in total_day_data %}
+                    [parseInt({{ item.0 }}), {{ item.1.duration_sum }}],
                 {% endfor %}
             ],
             color: '{{ TOTAL_GRAPH_COLOR }}'
@@ -224,12 +220,14 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                label: '{{ rc.grouper|get_switch_ip }}',
-                data: [
-                    {% for item in rc.list %}
-                        [parseInt({{ item.dt }}), {{ item.calldate__count }}],
-                    {% endfor %}
-                ]
+                    label: {% cache 1800 sw_id_5 rc.grouper %}
+                           '{{ rc.grouper|get_switch_ip }}'
+                           {% endcache %},
+                    data: [
+                        {% for item in rc.list %}
+                            [parseInt({{ item.dt }}), {{ item.calldate__count }}],
+                        {% endfor %}
+                    ]
             },
             {% endifnotequal %}
         {% endfor %}
@@ -237,8 +235,8 @@ $(function () {
         {
             label: '{% trans "Total Calls" %}',
             data: [
-                {% for item in total_month_call_count %}
-                    [parseInt({{ item.0 }}), {{ item.1 }}],
+                {% for item in total_month_data %}
+                    [parseInt({{ item.0 }}), {{ item.1.call_count }}],
                 {% endfor %}
             ],
             color: '{{ TOTAL_GRAPH_COLOR }}'
@@ -250,12 +248,14 @@ $(function () {
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
             {
-                label: '{{ rc.grouper|get_switch_ip }}',
-                data: [
-                    {% for item in rc.list %}
-                        [parseInt({{ item.dt }}), {{ item.duration__sum }}],
-                    {% endfor %}
-                ]
+                    label: {% cache 1800 sw_id_6 rc.grouper %}
+                           '{{ rc.grouper|get_switch_ip }}'
+                           {% endcache %},
+                    data: [
+                        {% for item in rc.list %}
+                            [parseInt({{ item.dt }}), {{ item.duration__sum }}],
+                        {% endfor %}
+                    ]
             },
             {% endifnotequal %}
         {% endfor %}
@@ -263,13 +263,49 @@ $(function () {
         {
             label: '{% trans "Total Duration" %}',
             data: [
-                {% for item in total_month_call_duration %}
-                    [parseInt({{ item.0 }}), {{ item.1 }}],
+                {% for item in total_month_data %}
+                    [parseInt({{ item.0 }}), {{ item.1.sum_duration }}],
                 {% endfor %}
             ],
             color: '{{ TOTAL_GRAPH_COLOR }}'
         }
     ];
+
+    function formTicks(val) {
+
+        var dt = new Date(parseInt(val));
+
+        var Year = dt.getFullYear();
+        var Month = dt.getMonth() + 1;
+        var Day = dt.getDate();
+        Month = Month < 10 ? '0' + Month : Month;
+        Day = Day < 10 ? '0' + Day : Day;
+        month_name = MonthName(Month, 0);
+
+        var hour = dt.getHours();
+        var minute = dt.getMinutes();
+        var ampm = hour >= 12 ? 'pm' : 'am';
+        var hour = hour % 12;
+        hour = hour ? hour : 12; // the hour '0' should be '12'
+        minute = minute < 10 ? '0' + minute : minute;
+
+        var graph_type = $('#id_graph_type').val();
+        if(graph_type=='hour')
+        {
+            strTime = Day + ', ' + month_name + ' ' + Year + '<br/>' + hour + ':' + minute + ' ' + ampm;
+            return strTime
+        }
+        if(graph_type=='day')
+        {
+            strTime = Day + ', '+ month_name + ' ' + Year
+            return strTime
+        }
+        if(graph_type=='month')
+        {
+            strTime = month_name + '  ' +  Year
+            return strTime
+        }
+    }
 
     var options = {
         legend: {
@@ -287,7 +323,8 @@ $(function () {
         },
         xaxis: {
             mode: "time",
-            tickLength: 5
+            tickLength: 5,
+            tickFormatter: function(val) { return formTicks(val) },
         },
         grid: {
             hoverable: true,
@@ -356,12 +393,12 @@ $(function () {
                 var hour_tag = '{% trans "Hour" %}';
                 if(graph_type=='hour' && graph_view=='count')
                 {
-                    date_string = date_tag + ' - ' + Day + ', ' + month_name + ' ' + Year;
+                    date_string = date_tag + ' - ' + Day + ', ' + month_name + ' ' + Year + '<br>{% trans "Hour" %}: ' + Hour ;
                     value_string = call_tag + ' - ' + parseInt(y);
                 }
                 if(graph_type=='hour' && graph_view=='duration')
                 {
-                    date_string = date_tag + ' - ' + Day + ', ' + month_name + ' ' + Year;
+                    date_string = date_tag + ' - ' + Day + ', ' + month_name + ' ' + Year + '<br>{% trans "Hour" %}: ' + Hour;
                     value_string = duration_tag + ' - ' + y;
                 }
 

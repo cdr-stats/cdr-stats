@@ -13,3 +13,4 @@ redis
 kombu
 pymongo==2.2
 ordereddict
+gunicorn

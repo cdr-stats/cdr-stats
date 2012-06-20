@@ -20,3 +20,5 @@ git+git://github.com/toastdriven/django-tastypie.git
 #sentry==3.1.4
 django_socketio
 django_extensions
+django-cache-utils
+django-cache-machine

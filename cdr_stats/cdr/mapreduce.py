@@ -26,7 +26,8 @@ def mapreduce_default():
 
         * ``map`` - Grouping perform on year, month & day
         * ``reduce`` - Calculate call count, sum of call duration based on map
-        * ``finalize_fun`` - To get avg of call duration (sum_call_duration / sum_call_count)
+        * ``finalfc`` - To get avg of call duration
+                        (sum_call_duration / sum_call_count)
 
     Result Collection: ``aggregate_result_dashboard``
     """
@@ -61,7 +62,7 @@ def mapreduce_default():
         }
         ''')
 
-    finalize_fun = mark_safe(u'''
+    finalfc = mark_safe(u'''
         function(key, value) {
                     if (parseInt(value.calldate__count) > 0)
                         value.duration__avg = parseFloat( parseFloat(value.duration__sum) / parseInt(value.calldate__count) );
@@ -70,7 +71,44 @@ def mapreduce_default():
 
     out = 'aggregate_result_dashboard'
 
-    return (map, reduce, finalize_fun, out)
+    return (map, reduce, finalfc, out)
+
+
+def mapreduce_cdr_view():
+    """
+    To get the default analytic of cdr
+
+        * Total calls per year-month-day
+        * Total duration per year-month-day
+        * Avereage duration per year-month-day
+
+    Attributes:
+
+        * ``map`` - Grouping perform on year, month & day
+        * ``reduce`` - Calculate call count, sum of call duration based on map
+        * ``finalfc`` - To get avg of call duration
+                        (sum_call_duration / sum_call_count)
+
+    Result Collection: ``aggregate_result_cdr_view``
+    """
+    (map, reduce, finalfc, out) = mapreduce_default()
+
+    map = mark_safe(u'''
+        function(){
+            emit( {
+                        a_Year: this.metadata.date.getFullYear(),
+                        b_Month: this.metadata.date.getMonth() + 1,
+                        c_Day: this.metadata.date.getDate(),
+                    },
+                    {
+                        calldate__count: this.call_daily,
+                        duration__sum: this.duration_daily,
+                        duration__avg: 0
+                    } )
+        }''')
+
+    out = 'aggregate_result_cdr_view'
+    return (map, reduce, finalfc, out)
 
 
 def mapreduce_cdr_mail_report():
@@ -85,19 +123,21 @@ def mapreduce_cdr_mail_report():
     Attributes:
 
         * ``map`` - Grouping perform on day, hour, min & country_id
-        * ``reduce`` - Calculate call count, sum of call duration, hangup-causes based on map
-        * ``finalize_fun`` - To get avg of call duration (sum_call_duration / sum_call_count)
+        * ``reduce`` - Calculate call count, sum of call duration,
+                       hangup-causes based on map
+        * ``finalfc`` - To get avg of call duration
+                        (sum_call_duration / sum_call_count)
 
     Result Collection: ``aggregate_result_cdr_mail_report``
     """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
+    (map, reduce, finalfc, out) = mapreduce_default()
     map = mark_safe(u'''
         function(){
             emit( {
                         c_Day: this.start_uepoch.getDate(),
                         d_Hour: this.start_uepoch.getHours(),
                         e_Min: this.start_uepoch.getMinutes(),
-                        f_Con: this.country_id,
+                        f_Country: this.country_id,
                     },
                     {
                         calldate__count: 1,
@@ -125,7 +165,7 @@ def mapreduce_cdr_mail_report():
         }
         ''')
 
-    finalize_fun = mark_safe(u'''
+    finalfc = mark_safe(u'''
         function(key, value) {
                     if (parseInt(value.calldate__count) > 0)
                         value.duration__avg = parseFloat( parseFloat(value.duration__sum) / parseInt(value.calldate__count) );
@@ -133,233 +173,7 @@ def mapreduce_cdr_mail_report():
         }''')
 
     out = 'aggregate_result_cdr_mail_report'
-    return (map, reduce, finalize_fun, out)
-
-
-def mapreduce_cdr_view():
-    """
-    Used default map-reduce function
-
-    Result Collection: ``aggregate_result_cdr_view``
-    """
-
-    (map, reduce, finalize_fun, out) = mapreduce_default()
-
-    out = 'aggregate_result_cdr_view'
-    return (map, reduce, finalize_fun, out)
-
-
-def mapreduce_cdr_hour_report():
-    """
-    To get the hourly analytic of cdr
-
-       * Total calls per year-month-day-hour-min
-       * Total call duration per year-month-day-hour-min
-
-    Attributes:
-
-        * ``map`` - Grouping perform on year, month, day, hour & min
-        * ``reduce`` - Calculate call count, sum of call duration based on map
-
-    Result Collection: ``aggregate_result_cdr_hour_report``
-    """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
-
-    # Get cdr graph by hour report
-    map = mark_safe(u'''
-        function(){
-            emit( {
-                a_Year: this.start_uepoch.getFullYear(),
-                b_Month: this.start_uepoch.getMonth() + 1,
-                c_Day: this.start_uepoch.getDate(),
-                d_Hour: this.start_uepoch.getHours(),
-                e_Min: this.start_uepoch.getMinutes(),
-            },
-            {
-                calldate__count: 1, calldate:this.start_uepoch,
-                duration__sum: this.duration
-            } )
-          }''')
-    reduce = mark_safe(u'''
-        function(key,vals) {
-            var ret = {
-                calldate__count : 0,
-                duration__sum: 0,
-                calldate: '',
-            };
-            for (var i=0; i < vals.length; i++){
-                ret.calldate__count += parseInt(vals[i].calldate__count);
-                ret.duration__sum += parseInt(vals[i].duration__sum);
-                ret.calldate = vals[i].calldate;
-            }
-            return ret;
-        }''')
-    out = 'aggregate_result_cdr_hour_report'
-    return (map, reduce, False, out)
-
-
-def mapreduce_cdr_hourly_overview():
-    """
-    To get the overview analytic of cdr
-
-       * Total calls per year-month-day-hour-switch
-       * Total call duration per year-month-day-hour-switch
-
-    Attributes:
-
-        * ``map`` - Grouping perform on year, month, day, hour & switch
-        * ``reduce`` - Calculate call count, sum of call duration based on map
-
-    Result Collection: ``aggregate_result_cdr_hourly_overview``
-    """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
-
-    # Get cdr graph by overview report
-    map = mark_safe(u'''
-        function(){
-            var year = this.start_uepoch.getFullYear();
-            var month = this.start_uepoch.getMonth();
-            var day = this.start_uepoch.getDate();
-            var hours = this.start_uepoch.getHours();
-
-            var d = new Date(year, month, day, hours);
-            emit( {
-                f_Switch: this.switch_id,
-                g_Millisec: d.getTime(),
-            },
-            {
-                calldate__count: 1,
-                duration__sum: this.duration
-            } )
-          }''')
-
-    out = 'aggregate_result_cdr_hourly_overview'
-    return (map, reduce, False, out)
-
-
-def mapreduce_cdr_monthly_overview():
-    """
-    To get the overview analytic of cdr
-
-       * Total calls per year-month-switch
-       * Total call duration per year-month-switch
-
-    Attributes:
-
-        * ``map`` - Grouping perform on year, month & switch
-        * ``reduce`` - Calculate call count, sum of call duration based on map
-
-    Result Collection: ``aggregate_result_cdr_monthly_overview``
-    """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
-
-    # Get cdr graph by overview report
-    map = mark_safe(u'''
-        function(){
-            var year = this.start_uepoch.getFullYear();
-            var month = this.start_uepoch.getMonth();
-
-            var d = new Date(year, month);
-            emit( {
-                f_Switch: this.switch_id,
-                g_Millisec: d.getTime(),
-            },
-            {
-                calldate__count: 1,
-                duration__sum: this.duration
-            } )
-          }''')
-
-    out = 'aggregate_result_cdr_monthly_overview'
-    return (map, reduce, False, out)
-
-
-def mapreduce_cdr_daily_overview():
-    """
-    To get the daily analytic of cdr
-
-       * Total calls per year-month-day-switch
-       * Total call duration per year-month-day-switch
-
-    Attributes:
-
-        * ``map`` - Grouping perform on year, month, day & switch
-        * ``reduce`` - Calculate call count based on map
-
-    Result Collection: ``aggregate_result_cdr_daily_overview``
-    """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
-
-    # Get cdr graph by day report
-    map = mark_safe(u'''
-        function(){
-            var year = this.start_uepoch.getFullYear();
-            var month = this.start_uepoch.getMonth();
-            var day = this.start_uepoch.getDate();
-
-            var d = new Date(year, month, day);
-            emit( {
-                    f_Switch: this.switch_id,
-                    g_Millisec: d.getTime(),
-                  },
-                  {calldate__count: 1, duration__sum: this.duration} )
-        }''')
-
-    out = 'aggregate_result_cdr_daily_overview'
-    return (map, reduce, False, out)
-
-
-def mapreduce_cdr_dashboard():
-    """
-    To get the minutly analytic of cdr
-
-       * Total calls per year-month-day-hour-min
-       * Total call duration per year-month-day-hour-min
-       * Total hangup-cause  per year-month-day-hour-min
-
-    Attributes:
-
-        * ``map`` - Grouping perform on year, month, day, hour & min
-        * ``reduce`` - Calculate call count, sum of call duration, hangupcause based on map
-
-    Result Collection: ``aggregate_result_cdr_dashboard_report``
-    """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
-
-    # Get cdr graph by hour report
-    map = mark_safe(u'''
-        function(){
-            var year = this.start_uepoch.getFullYear();
-            var month = this.start_uepoch.getMonth();
-            var day = this.start_uepoch.getDate();
-            var hours = this.start_uepoch.getHours();
-            var minutes = this.start_uepoch.getMinutes();
-            var d = new Date(year, month, day, hours, minutes);
-            emit( {
-                g_Millisec: d.getTime(),
-            },
-            {
-                calldate__count: 1,
-                duration__sum: this.duration,
-                hangup_cause_id: this.hangup_cause_id,
-            } )
-          }''')
-    reduce = mark_safe(u'''
-        function(key,vals) {
-            var ret = {
-                calldate__count : 0,
-                duration__sum: 0,
-                hangup_cause_id: 0,
-            };
-            for (var i=0; i < vals.length; i++){
-                ret.calldate__count += parseInt(vals[i].calldate__count);
-                ret.duration__sum += parseInt(vals[i].duration__sum);
-                ret.hangup_cause_id = vals[i].hangup_cause_id;
-            }
-            return ret;
-        }''')
-    out = 'aggregate_result_cdr_dashboard_report'
-    return (map, reduce, False, out)
+    return (map, reduce, finalfc, out)
 
 
 def mapreduce_cdr_country_report():
@@ -376,7 +190,7 @@ def mapreduce_cdr_country_report():
 
     Result Collection: ``aggregate_result_cdr_country_report``
     """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
+    (map, reduce, finalfc, out) = mapreduce_default()
 
     # Get cdr dashboard report
     map = mark_safe(u'''
@@ -389,7 +203,7 @@ def mapreduce_cdr_country_report():
             var d = new Date(year, month, day, hours, minutes);
             emit(
                 {
-                    f_Con: this.country_id,
+                    f_Country: this.country_id,
                     g_Millisec: d.getTime(),
                 },
                 {
@@ -417,7 +231,7 @@ def mapreduce_cdr_country_report():
     return (map, reduce, False, out)
 
 
-def mapreduce_cdr_world_report():
+def mapreduce_dashboard_world_report():
     """
     To get the all countries call analytic
 
@@ -429,39 +243,23 @@ def mapreduce_cdr_world_report():
         * ``map`` - Grouping perform on country
         * ``reduce`` - Calculate call count, sum of call duration based on map
 
-    Result Collection: ``aggregate_result_cdr_world_report``
+    Result Collection: ``aggregate_dashboard_world_report``
     """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
+    (map, reduce, finalfc, out) = mapreduce_default()
 
     # Get cdr world report
     map = mark_safe(u'''
         function(){
             emit(
                 {
-                    f_Con: this.country_id,
+                    f_Country: this.country_id,
                 },
                 {
                     calldate__count: 1,
                     duration__sum: this.duration,
                 })
         }''')
-
-    reduce = mark_safe(u'''
-        function(key,vals) {
-            var ret = {
-                        calldate__count : 0,
-                        duration__sum: 0,
-                    };
-
-            for (var i=0; i < vals.length; i++){
-                    ret.calldate__count += parseInt(vals[i].calldate__count);
-                    ret.duration__sum += parseInt(vals[i].duration__sum);
-            }
-            return ret;
-        }
-        ''')
-
-    out = 'aggregate_result_cdr_world_report'
+    out = 'aggregate_dashboard_world_report'
     return (map, reduce, False, out)
 
 
@@ -473,7 +271,7 @@ def mapreduce_task_cdr_alert():
 
     Result Collection: ``aggregate_result_alert``
     """
-    (map, reduce, finalize_fun, out) = mapreduce_default()
+    (map, reduce, finalfc, out) = mapreduce_default()
 
     map = mark_safe(u'''
         function(){
@@ -488,7 +286,244 @@ def mapreduce_task_cdr_alert():
                         duration__avg: 0
                     } )
             }''')
-    
-    out = 'aggregate_result_alert'
-    return (map, reduce, finalize_fun, out)
 
+    out = 'aggregate_result_alert'
+    return (map, reduce, finalfc, out)
+
+
+def mapreduce_cdr_hourly_report():
+    """
+    To get the hourly report of cdr
+
+       * Total calls per year-month-day-hour-min
+       * Total call duration per year-month-day
+
+    Attributes:
+
+        * ``map`` - Grouping perform on year, month & day
+        * ``reduce`` - Calculate call count, sum of call duration,
+                       based on map
+
+    Result Collection: ``aggregate_cdr_hourly_report``
+    """
+    (map, reduce, finalfc, out) = mapreduce_default()
+
+    # Get cdr graph by hour report
+    map = mark_safe(u'''
+        function(){
+            emit(
+                {
+                    a_Year: this.metadata.date.getFullYear(),
+                    b_Month: this.metadata.date.getMonth() + 1,
+                    c_Day: this.metadata.date.getDate(),
+                },
+                {
+                    calldate__count: this.call_hourly,
+                    duration__sum: this.duration_hourly,
+                }
+            )
+          }''')
+
+    reduce = mark_safe(u'''
+        function(key,vals) {
+            var ret = {
+                calldate__count : [],
+                duration__sum: [],
+            };
+            for(var k=0; k < 24; k++){
+                ret.calldate__count[k]=0;
+                ret.duration__sum[k]=0;
+            }
+            for (var i=0; i < vals.length; i++) {
+                for (var k=0; k < 24; k++) {
+                    if (vals[i].calldate__count[k]) {
+                        ret.calldate__count[k] += vals[i].calldate__count[k];
+                        ret.duration__sum[k] += vals[i].duration__sum[k];
+                    }
+                }
+            }
+            return ret;
+        }''')
+
+    out = 'aggregate_cdr_hourly_report'
+    return (map, reduce, False, out)
+
+
+def mapreduce_hourly_overview():
+    """
+    To get the overview analytic of cdr
+
+       * Total calls per year-month-day-switch
+       * Total call duration per year-month-day-switch
+
+    Attributes:
+
+        * ``map`` - Grouping perform on year, month, day & switch
+        * ``reduce`` - Calculate call count, sum of call duration based on map
+
+    Result Collection: ``aggregate_hourly_overview``
+    """
+    (map, reduce, finalfc, out) = mapreduce_cdr_hourly_report()
+
+    map = mark_safe(u'''
+        function(){
+            emit(
+                {
+                    a_Year: this.metadata.date.getFullYear(),
+                    b_Month: this.metadata.date.getMonth() + 1,
+                    c_Day: this.metadata.date.getDate(),
+                    f_Switch: this.metadata.switch_id,
+                },
+                {
+                    calldate__count: this.call_hourly,
+                    duration__sum: this.duration_hourly,
+                }
+            )
+          }''')
+
+    out = 'aggregate_hourly_overview'
+    return (map, reduce, False, out)
+
+
+def mapreduce_hourly_country_report():
+    """
+    To get the overview analytic of cdr
+
+       * Total calls per year-month-day-country
+       * Total call duration per year-month-day-country
+
+    Attributes:
+
+        * ``map`` - Grouping perform on year, month, day & country
+        * ``reduce`` - Calculate call count, sum of call duration based on map
+
+    Result Collection: ``aggregate_hourly_country_report``
+    """
+    (map, reduce, finalfc, out) = mapreduce_cdr_hourly_report()
+
+    map = mark_safe(u'''
+        function(){
+            emit(
+                {
+                    a_Year: this.metadata.date.getFullYear(),
+                    b_Month: this.metadata.date.getMonth() + 1,
+                    c_Day: this.metadata.date.getDate(),
+                    f_Country: this.metadata.country_id,
+                },
+                {
+                    calldate__count: this.call_hourly,
+                    duration__sum: this.duration_hourly,
+                }
+            )
+          }''')
+
+    out = 'aggregate_hourly_country_report'
+    return (map, reduce, False, out)
+
+
+def mapreduce_daily_overview():
+    """
+    To get the daily analytic of cdr
+
+       * Total calls per year-month-day-switch
+       * Total call duration per year-month-day-switch
+
+    Attributes:
+
+        * ``map`` - Grouping perform on year, month, day & switch
+        * ``reduce`` - Calculate call count based on map
+
+    Result Collection: ``aggregate_daily_overview``
+    """
+    (map, reduce, finalfc, out) = mapreduce_default()
+
+    # Get cdr graph by day report
+    map = mark_safe(u'''
+        function(){
+            var year = this.metadata.date.getFullYear();
+            var month = this.metadata.date.getMonth();
+            var day = this.metadata.date.getDate();
+
+            var d = new Date(year, month, day);
+            emit( {
+                    f_Switch: this.metadata.switch_id,
+                    g_Millisec: d.getTime(),
+                  },
+                  {
+                    calldate__count: this.call_daily,
+                    duration__sum: this.duration_daily
+                  } );
+        }''')
+
+    out = 'aggregate_daily_overview'
+    return (map, reduce, False, out)
+
+
+def mapreduce_monthly_overview():
+    """
+    To get the overview analytic of cdr
+
+       * Total calls per year-month-switch
+       * Total call duration per year-month-switch
+
+    Attributes:
+
+        * ``map`` - Grouping perform on year, month & switch
+        * ``reduce`` - Calculate call count, sum of call duration based on map
+
+    Result Collection: ``aggregate_monthly_overview``
+    """
+    (map, reduce, finalfc, out) = mapreduce_default()
+
+    # Get cdr graph by overview report
+    map = mark_safe(u'''
+        function(){
+            var year = this.metadata.date.getFullYear();
+            var month = this.metadata.date.getMonth();
+
+            var d = new Date(year, month);
+            emit( {
+                f_Switch: this.metadata.switch_id,
+                g_Millisec: d.getTime(),
+            },
+            {
+                calldate__count: this.call_monthly,
+                duration__sum: this.duration_monthly
+            } )
+          }''')
+
+    out = 'aggregate_monthly_overview'
+    return (map, reduce, False, out)
+
+
+def mapreduce_world_report():
+    """
+    To get the world map report of cdr
+
+       * Total calls per country_id
+       * Total call duration country_id
+
+    Attributes:
+
+        * ``map`` - Grouping perform on country_id
+        * ``reduce`` - Calculate call count based on map
+
+    Result Collection: ``aggregate_world_report``
+    """
+    (map, reduce, finalfc, out) = mapreduce_default()
+
+    # Get cdr graph by day report
+    map = mark_safe(u'''
+        function(){
+
+            emit( {
+                    f_Country: this.metadata.country_id,
+                  },
+                  {
+                    calldate__count: this.call_daily,
+                    duration__sum: this.duration_daily
+                  } );
+        }''')
+
+    out = 'aggregate_world_report'
+    return (map, reduce, False, out)

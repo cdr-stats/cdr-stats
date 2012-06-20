@@ -11,16 +11,31 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.core.management.base import BaseCommand, CommandError
-from django.utils.translation import ugettext_lazy as _
-from cdr.import_cdr import import_cdr
+from django.core.management.base import BaseCommand
+from cdr.import_cdr_freeswitch_mongodb import import_cdr_freeswitch_mongodb, \
+                                            apply_index
+from optparse import make_option
+
 
 class Command(BaseCommand):
     # Usage : sync_cdr
     help = "Sync Freeswitch with our CDR Record table\n" \
-           "-----------------------------------------\n\n" \
-           "USAGE : python manage.py sync_cdr_freeswitch \n"
+           "-------------------------------------------\n"\
+           "Usage: python manage.py sync_cdr_freeswitch --apply-index\n"
+
+    option_list = BaseCommand.option_list + (
+        make_option('--apply-index',
+            action='store_true',
+            dest='apply-index',
+            default=False,
+            help=help),
+        )
 
     def handle(self, *args, **options):
 
-        import_cdr(shell=True)
+        import_cdr_freeswitch_mongodb(shell=True)
+
+        # Apply index on collection
+        if options['apply-index']:
+            print "\nWe are going to apply index..."
+            apply_index(shell=True)

@@ -2,16 +2,15 @@
 # CDR-Stats License
 # http://www.cdr-stats.org
 #
-# This Source Code Form is subject to the terms of the Mozilla Public 
+# This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 # Copyright (C) 2011-2012 Star2Billing S.L.
-# 
+#
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-
 import os
 
 DEBUG = True
@@ -76,19 +75,19 @@ SOCKETIO_CALLNUM_DEFAULT = 0
 
 #GENERAL
 #=======
-# PHONENUMBER_PREFIX_LIMIT_MIN & PHONENUMBER_PREFIX_LIMIT_MAX are used to know 
+# PHONENUMBER_PREFIX_LIMIT_MIN & PHONENUMBER_PREFIX_LIMIT_MAX are used to know
 # how many digits are used to match against the dialcode prefix database
 PHONENUMBER_PREFIX_LIMIT_MIN = 2
 PHONENUMBER_PREFIX_LIMIT_MAX = 5
 
-#If PhoneNumber is lower than PHONENUMBER_MIN_DIGITS it will be considered as an extension
-#If PhoneNumber is longer than PHONENUMBER_MIN_DIGITS but lower than PHONENUMBER_MAX_DIGITS then 
-#the PhoneNumber will be considered as local call and the LOCAL_DIALCODE will be added
-LOCAL_DIALCODE = 1 # Set the Dialcode of your country (44 for UK, 1 for US)
-PHONENUMBER_MIN_DIGITS = 6
-PHONENUMBER_MAX_DIGITS = 9
+# If PN is lower than PN_MIN_DIGITS it will be considered as an extension
+# If PN is longer than PN_MIN_DIGITS but lower than PN_MAX_DIGITS then
+# The PN will be considered as local call and the LOCAL_DIALCODE will be added
+LOCAL_DIALCODE = 1  # Set the Dialcode of your country (44 for UK, 1 for US)
+PN_MIN_DIGITS = 6
+PN_MAX_DIGITS = 9
 
-#List of prefix to ignore, this will be remove from the phonenumber prior analysis
+# List of phonenumber prefix to ignore, this will be remove prior analysis
 PREFIX_TO_IGNORE = "+,0,00,000,0000,00000,011,55555,99999"
 
 #Realtime Graph : set the Y axis limit
@@ -100,11 +99,11 @@ LOCAL_SWITCH_ID = 1
 
 #ASTERISK IMPORT
 #===============
-ASTERISK_IMPORT_TYPE = 'mysql' # Only mysql supported
-ASTERISK_PRIMARY_KEY = 'acctid' # acctid, _id
+ASTERISK_IMPORT_TYPE = 'mysql'  # Only mysql supported
+ASTERISK_PRIMARY_KEY = 'acctid'  # acctid, _id
 
 #Mysql Settings to use for import
-ASTERISK_CDR_MYSQL_IMPORT = {
+ASTERISK_MYSQL = {
     '127.0.0.1': {
         'db_name': 'MYSQL_IMPORT_CDR_DBNAME',
         'table_name': 'MYSQL_IMPORT_CDR_TABLENAME',
@@ -116,21 +115,21 @@ ASTERISK_CDR_MYSQL_IMPORT = {
 
 #MONGODB
 #=======
-CDR_MONGO_DB_NAME = 'cdr-stats'
-CDR_MONGO_HOST = 'localhost'
-CDR_MONGO_PORT = 27017
-CDR_MONGO_CDR_COMMON = 'cdr_common'
-CDR_MONGO_CONC_CALL = 'concurrent_call'
-CDR_MONGO_CDR_COUNTRY_REPORT = 'cdr_country_report'
-CDR_MONGO_CONC_CALL_AGG = 'concurrent_call_map_reduce'
-CDR_MONGO_CDR_MONTHLY = 'cdr_monthly_analytic'
-CDR_MONGO_CDR_DAILY = 'cdr_daily_analytic'
-CDR_MONGO_CDR_HOURLY = 'cdr_hourly_analytic'
-CDR_MONGO_CDR_HANGUP = 'cdr_hangup_cause_analytic'
-CDR_MONGO_CDR_COUNTRY = 'cdr_country_analytic'
+MG_DB_NAME = 'cdr-stats'
+MG_HOST = 'localhost'
+MG_PORT = 27017
+MG_CDR_COMMON = 'cdr_common'
+MG_CONC_CALL = 'concurrent_call'
+MG_CDR_COUNTRY_REPORT = 'cdr_country_report'
+MG_CONC_CALL_AGG = 'concurrent_call_map_reduce'
+MG_CDR_MONTHLY = 'cdr_monthly_analytic'
+MG_CDR_DAILY = 'cdr_daily_analytic'
+MG_CDR_HOURLY = 'cdr_hourly_analytic'
+MG_CDR_HANGUP = 'cdr_hangup_cause_analytic'
+MG_CDR_COUNTRY = 'cdr_country_analytic'
 
 #MongoDB Setting(s) to use for import
-CDR_MONGO_IMPORT = {
+MG_IMPORT = {
     '127.0.0.1': {
         'db_name': 'freeswitch_cdr',
         'host': 'localhost',

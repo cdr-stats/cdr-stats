@@ -1,5 +1,6 @@
 {% extends "cdr/master.html" %}
 {% load i18n cdr_extras country_dialcode_tags common_tags %}
+{% load cache %}
 
 {% block extra_head %}
   <script type="text/javascript">
@@ -15,7 +16,7 @@
 <form class="well form-inline span12" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
     <div class="control-group">
         <div class="controls">
-            <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }} :</label> 
+            <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }} :</label>
                 {{ form.switch }}
                 <span class="help-block">{{ form.switch.help_text|safe }} </span>
         </div>
@@ -27,9 +28,13 @@
 $(function () {
     var data = [
             {% for data in total_record %}
-                [{{ data.0 }}, {{ data.1 }}, {{ data.2 }}],
+                [{{ data.0 }}, {{ data.1.count_call }}, {{ data.1.duration_sum }}],
             {% endfor %}
         ];
+
+    //for (var i = 0; i < data.length; ++i)
+    //    data[i][0] += 60 * 60 * 1000;
+
     function Info(time,info){
         for(var i in data){
             if(data[i][0] == parseInt(time)){
@@ -50,14 +55,30 @@ $(function () {
         }
     }
 
+    function formTicks(val) {
+
+        var dt = new Date(parseInt(val));
+        var hour = dt.getHours();
+        var minute = dt.getMinutes();
+        var ampm = hour >= 12 ? 'pm' : 'am';
+        var hour = hour % 12;
+        hour = hour ? hour : 12; // the hour '0' should be '12'
+        minute = minute < 10 ? '0' + minute : minute;
+        strTime = hour + ':' + minute + ' ' + ampm;
+        return strTime
+    }
+
     var options = {
-        xaxis: { mode: "time", tickLength: 5 },
+        xaxis: { mode: "time",
+                 tickLength: 5,
+                 tickFormatter: function(val) { return formTicks(val) }
+        },
         yaxis: { min: 0, tickDecimals: false },
         selection: { mode: "x" },
-        grid: { 
+        grid: {
                 hoverable: true,
                 xaxis: false
-              },
+              }
     };
 
     var plot = $.plot($("#graph_responsive"), [data], options);
@@ -88,7 +109,7 @@ $(function () {
     $("#overview").bind("plotselected", function (event, ranges) {
         plot.setSelection(ranges);
     });
-    
+
     $("#graph_responsive").bind("plothover", function (event, pos, item) {
         if (item) {
             if (previousPoint != item.dataIndex) {
@@ -143,7 +164,6 @@ $(function () {
     </div>
 </div>
 
-
 {% if hangup_analytic %}
 
     <script type="text/javascript">
@@ -165,7 +185,12 @@ $(function () {
 
         var data = [
             {% for td in hangup_analytic %}
-                { label: '{{ td.hangup_cause_id|get_hangupcause_name_with_title }}' , data: [[1, {{ td.count }}]]},
+                {% cache 1800 hangup_cause_id td.0 %}
+                    {
+                        label: '{{ td.0|hangupcause_name_with_title }}',
+                        data: [[1, {{ td.1 }}]]
+                    },
+                {% endcache %}
             {% endfor %}
         ];
         /*
@@ -312,7 +337,9 @@ $(function () {
                 <tr>
                     <td class="td-dashboard">
                         {% if country_data.3 %}
-                            <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
+                            {% cache 1800 country_data country_data.3 %}
+                                <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
+                            {% endcache %}
                         {% else %}
                             <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip">
                         {% endif %}

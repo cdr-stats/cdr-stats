@@ -1,4 +1,4 @@
-.. automodule:: api.resources
+.. automodule:: api.switch_api
 
 .. _switch-model-resource:
 

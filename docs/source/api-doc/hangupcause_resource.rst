@@ -1,4 +1,4 @@
-.. automodule:: api.resources
+.. automodule:: api.hangup_cause_api
 
 .. _hangupcause-model-resource:
 

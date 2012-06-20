@@ -12,51 +12,34 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.contrib import admin
-from django.contrib import messages
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import patterns
 from django.utils.translation import ugettext as _
-from django.db.models import *
+
 from django.template import RequestContext
-from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils.safestring import mark_safe
 from django.conf import settings
-
-from pymongo.connection import Connection
-from pymongo.errors import ConnectionFailure
-
-from cdr.models import *
-from cdr.forms import *
-from cdr.functions_def import *
-from cdr_alert.models import Blacklist, Whitelist
-from cdr_alert.functions_blacklist import *
-
-from country_dialcode.models import Prefix
 from common.common_functions import striplist
 
-from random import choice
-from uuid import uuid1
-from datetime import *
-import calendar
-import time
-import sys
-import random
-import json, ast
-import re
+from cdr.models import Switch, HangupCause
+from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
+from cdr.functions_def import get_hangupcause_id
+from cdr.import_cdr_freeswitch_mongodb import apply_index,\
+                                              CDR_COMMON,\
+                                              DAILY_ANALYTIC,\
+                                              MONTHLY_ANALYTIC,\
+                                              create_daily_analytic,\
+                                              create_monthly_analytic
+
+from cdr_alert.functions_blacklist import chk_destination
+
+import datetime
 import csv
 
-# Assign collection names to variables
-CDR_COMMON = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COMMON]
-CDR_MONTHLY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_MONTHLY]
-CDR_DAILY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_DAILY]
-CDR_HOURLY = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_HOURLY]
-CDR_COUNTRY_REPORT = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COUNTRY_REPORT]
 
 # Switch
 class SwitchAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'ipaddress', 'key_uuid')
-    list_filter = ['name', 'ipaddress',]
+    list_filter = ['name', 'ipaddress']
     search_fields = ('name', 'ipaddress',)
 
     def get_urls(self):
@@ -86,6 +69,7 @@ class SwitchAdmin(admin.ModelAdmin):
               The CSV file
         """
         opts = Switch._meta
+        #TODO : Do we need app_label / file_exts
         app_label = opts.app_label
         file_exts = ('.csv', )
         rdr = ''  # will contain CSV data
@@ -93,28 +77,35 @@ class SwitchAdmin(admin.ModelAdmin):
         success_import_list = []
         error_import_list = []
         type_error_import_list = []
+
+        #TODO : Too many indentation in the code, refact, less if, for
+
+        #TODO : respect DRY principale, some of the code is duplicate
+        #from import tasks
+
         if request.method == 'POST':
             form = CDR_FileImport(request.user, request.POST, request.FILES)
 
             if form.is_valid():
 
-                cdr_field_list = {}
-                cdr_field_not_in_list = []
+                field_list = {}
+                field_notin_list = []
                 for i in CDR_FIELD_LIST:
                     if int(request.POST[i]) != 0:
-                        cdr_field_list[i] = int(request.POST[i])
+                        field_list[i] = int(request.POST[i])
                     else:
-                        cdr_field_not_in_list.append((i))
+                        field_notin_list.append((i))
 
                 # perform sorting & get unique order list
                 countMap = {}
-                for v in cdr_field_list.itervalues():
+                for v in field_list.itervalues():
                     countMap[v] = countMap.get(v, 0) + 1
-                uni = [ (k, v) for k, v in cdr_field_list.iteritems() if countMap[v] == 1]
+                uni = [(k, v) for k, v in field_list.iteritems() \
+                            if countMap[v] == 1]
                 uni = sorted(uni, key=lambda uni: uni[1])
 
                 # if order list matched with CDR_FIELD_LIST count
-                if len(uni) == len(CDR_FIELD_LIST) - len(cdr_field_not_in_list):
+                if len(uni) == len(CDR_FIELD_LIST) - len(field_notin_list):
 
                     # To count total rows of CSV file
                     records = csv.reader(request.FILES['csv_file'],
@@ -144,36 +135,35 @@ class SwitchAdmin(admin.ModelAdmin):
                                 get_cdr_from_row = {}
                                 row_counter = 0
                                 for j in uni:
-                                    get_cdr_from_row[j[0]] = row[j[1]-1]
+                                    get_cdr_from_row[j[0]] = row[j[1] - 1]
                                     #get_cdr_from_row[j[0]] = row[row_counter]
                                     if j[0] == 'caller_id_name':
-                                        caller_id_name = row[j[1]-1]
+                                        caller_id_name = row[j[1] - 1]
                                     if j[0] == 'caller_id_name':
-                                        caller_id_name = row[j[1]-1]
+                                        caller_id_name = row[j[1] - 1]
                                     if j[0] == 'direction':
-                                        direction = row[j[1]-1]
+                                        direction = row[j[1] - 1]
                                     if j[0] == 'remote_media_ip':
-                                        remote_media_ip = row[j[1]-1]
+                                        remote_media_ip = row[j[1] - 1]
                                     if j[0] == 'answer_uepoch':
-                                        answer_uepoch = row[j[1]-1]
+                                        answer_uepoch = row[j[1] - 1]
                                     if j[0] == 'end_uepoch':
-                                        end_uepoch = row[j[1]-1]
+                                        end_uepoch = row[j[1] - 1]
                                     if j[0] == 'mduration':
-                                        mduration = row[j[1]-1]
+                                        mduration = row[j[1] - 1]
                                     if j[0] == 'billmsec':
-                                        billmsec = row[j[1]-1]
+                                        billmsec = row[j[1] - 1]
                                     if j[0] == 'read_codec':
-                                        read_codec = row[j[1]-1]
+                                        read_codec = row[j[1] - 1]
                                     if j[0] == 'write_codec':
-                                        write_codec = row[j[1]-1]
+                                        write_codec = row[j[1] - 1]
 
                                     row_counter = row_counter + 1
 
-                                get_cdr_not_from_row = {}
-                                if len(cdr_field_not_in_list) != 0:
-                                    for i in cdr_field_not_in_list:
+                                if len(field_notin_list) != 0:
+                                    for i in field_notin_list:
                                         if i == 'accountcode':
-                                            accountcode = int(request.POST[i+"_csv"])
+                                            accountcode = int(request.POST[i + "_csv"])
 
                                 if not accountcode:
                                     accountcode = int(get_cdr_from_row['accountcode'])
@@ -185,38 +175,19 @@ class SwitchAdmin(admin.ModelAdmin):
                                 duration = int(get_cdr_from_row['duration'])
                                 billsec = int(get_cdr_from_row['billsec'])
                                 hangup_cause_id = get_hangupcause_id(int(get_cdr_from_row['hangup_cause_id']))
-                                start_uepoch = datetime.fromtimestamp(int(get_cdr_from_row['start_uepoch']))
+                                start_uepoch = datetime.datetime.fromtimestamp(int(get_cdr_from_row['start_uepoch']))
                                 destination_number = get_cdr_from_row['destination_number']
                                 uuid = get_cdr_from_row['uuid']
 
-                                # number startswith 0 or `+` sign
-                                #remove leading +
-                                sanitized_destination = re.sub("^\++", "", destination_number)
-                                #remove leading 011
-                                sanitized_destination = re.sub("^011+", "", sanitized_destination)
-                                #remove leading 00
-                                sanitized_destination = re.sub("^0+", "", sanitized_destination)
-
-                                prefix_list = prefix_list_string(sanitized_destination)
-
-                                authorized = 1 # default
-                                #check desti against whiltelist
-                                authorized = chk_prefix_in_whitelist(prefix_list)
-                                if authorized:
-                                    authorized = 1 # allowed destination
-                                else:
-                                    #check desti against blacklist
-                                    authorized = chk_prefix_in_blacklist(prefix_list)
-                                    if not authorized:
-                                        authorized = 0 # not allowed destination
-
-                                country_id = get_country_id(prefix_list)
+                                destination_data = chk_destination(destination_number)
+                                authorized = destination_data['authorized']
+                                country_id = destination_data['country_id']
 
                                 # Extra fields to import
                                 if answer_uepoch:
-                                    answer_uepoch = datetime.fromtimestamp(int(answer_uepoch[:10]))
+                                    answer_uepoch = datetime.datetime.fromtimestamp(int(answer_uepoch[:10]))
                                 if end_uepoch:
-                                    end_uepoch = datetime.fromtimestamp(int(end_uepoch[:10]))
+                                    end_uepoch = datetime.datetime.fromtimestamp(int(end_uepoch[:10]))
 
                                 # Prepare global CDR
                                 cdr_record = {
@@ -246,7 +217,7 @@ class SwitchAdmin(admin.ModelAdmin):
 
                                 try:
                                     # check if cdr is already existing in cdr_common
-                                    cdr_data = settings.DB_CONNECTION[settings.CDR_MONGO_CDR_COMMON]
+                                    cdr_data = settings.DBCON[settings.MG_CDR_COMMON]
                                     query_var = {}
                                     query_var['uuid'] = uuid
                                     record_count = cdr_data.find(query_var).count()
@@ -258,80 +229,42 @@ class SwitchAdmin(admin.ModelAdmin):
                                         # record global CDR
                                         CDR_COMMON.insert(cdr_record)
 
-                                        # monthly collection
-                                        current_y_m = datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
-                                        CDR_MONTHLY.update(
-                                                {
-                                                'start_uepoch': current_y_m,
-                                                'destination_number': destination_number,
-                                                'hangup_cause_id': hangup_cause_id,
-                                                'accountcode': accountcode,
-                                                'switch_id': switch_id,
-                                                },
-                                                {
-                                                '$inc':
-                                                        {'calls': 1,
-                                                         'duration': duration }
-                                            }, upsert=True)
+                                        # start_uepoch = get_cdr_from_row['start_uepoch']
+                                        daily_date = datetime.datetime.\
+                                            fromtimestamp(int(get_cdr_from_row['start_uepoch'][:10]))
 
-                                        # daily collection
-                                        current_y_m_d = datetime.strptime(str(start_uepoch)[:10], "%Y-%m-%d")
-                                        CDR_DAILY.update(
-                                                {
-                                                'start_uepoch': current_y_m_d,
-                                                'destination_number': destination_number,
-                                                'hangup_cause_id': hangup_cause_id,
-                                                'accountcode': accountcode,
-                                                'switch_id': switch_id,
-                                                },
-                                                {
-                                                '$inc':
-                                                        {'calls': 1,
-                                                         'duration': duration }
-                                            },upsert=True)
+                                        # insert daily analytic record
+                                        create_daily_analytic(daily_date, switch.id, country_id,
+                                                              accountcode, hangup_cause_id,
+                                                              duration)
 
-                                        # hourly collection
-                                        current_y_m_d_h = datetime.strptime(str(start_uepoch)[:13], "%Y-%m-%d %H")
-                                        CDR_HOURLY.update(
-                                                {
-                                                'start_uepoch': current_y_m_d_h,
-                                                'destination_number': destination_number,
-                                                'hangup_cause_id': hangup_cause_id,
-                                                'accountcode': accountcode,
-                                                'switch_id': switch_id,},
-                                                {
-                                                '$inc': {'calls': 1,
-                                                         'duration': duration }
-                                            },upsert=True)
-
-                                        # Country report collection
-                                        current_y_m_d_h_m = datetime.strptime(str(start_uepoch)[:16], "%Y-%m-%d %H:%M")
-                                        CDR_COUNTRY_REPORT.update(
-                                                {
-                                                'start_uepoch': current_y_m_d_h_m,
-                                                'country_id': country_id,
-                                                'accountcode': accountcode,
-                                                'switch_id': switch_id,},
-                                                {
-                                                '$inc': {'calls': 1,
-                                                         'duration': duration }
-                                            },upsert=True)
+                                        # MONTHLY_ANALYTIC
+                                        # insert monthly analytic record
+                                        create_monthly_analytic(daily_date, start_uepoch, switch.id,
+                                                                country_id, accountcode, duration)
 
                                         cdr_record_count = cdr_record_count + 1
+
                                         msg =\
                                         _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
                                         % {'cdr_record_count': cdr_record_count,
                                            'total_rows': total_rows}
                                         success_import_list.append(row)
                                 except:
-                                    msg = _("Error : invalid value for import! Check import samples.")
+                                    msg = _("Error : invalid value for import")
                                     type_error_import_list.append(row)
 
                             except:
-                                msg = _("Error : invalid value for import! Check import samples.")
+                                msg = _("Error : invalid value for import")
                                 type_error_import_list.append(row)
+
+                    if cdr_record_count > 0:
+                        apply_index()
+                        # Apply index
+                        DAILY_ANALYTIC.ensure_index([("metadata.date", -1)])
+                        CDR_COMMON.ensure_index([("start_uepoch", -1)])
                 else:
-                    msg = _("Error : You selected to import several times the same column")
+                    msg = _("Error : importing several times the same column")
         else:
             form = CDR_FileImport(request.user)
 

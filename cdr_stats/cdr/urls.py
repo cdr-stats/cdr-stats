@@ -11,9 +11,13 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.conf.urls.defaults import *
-from django.conf import settings
-from cdr.views import *
+from django.conf.urls.defaults import patterns, url
+from cdr.views import index, cdr_view, cdr_export_to_csv, cdr_detail,\
+                      cdr_dashboard, cdr_report_by_hour,\
+                      cdr_overview, cdr_concurrent_calls, cdr_realtime, mail_report,\
+                      cdr_country_report, world_map_view, login_view, logout_view,\
+                      pleaselog, cust_password_reset, cust_password_reset_done,\
+                      cust_password_reset_confirm, cust_password_reset_complete
 
 
 urlpatterns = patterns('cdr.views',
@@ -21,9 +25,8 @@ urlpatterns = patterns('cdr.views',
     (r'^cdr_view/$', 'cdr_view'),
     (r'^cdr_export_csv/$', 'cdr_export_to_csv'),
     (r'^cdr_detail/(?P<id>\w+)/(?P<switch_id>\w+)/$', 'cdr_detail'),
-    (r'^global_report/$', 'cdr_global_report'),
     (r'^dashboard/$', 'cdr_dashboard'),
-    (r'^hourly_report/$', 'cdr_graph_by_hour'),
+    (r'^hourly_report/$', 'cdr_report_by_hour'),
     (r'^cdr_overview/$', 'cdr_overview'),
     (r'^cdr_concurrent_calls/$', 'cdr_concurrent_calls'),
     (r'^cdr_realtime/$', 'cdr_realtime'),
@@ -33,8 +36,8 @@ urlpatterns = patterns('cdr.views',
 
     (r'^login/$',   'login_view'),
     (r'^logout/$',  'logout_view'),
-	(r'^index/$',   'index'),
-	(r'^pleaselog/$', 'pleaselog'),
+    (r'^index/$',   'index'),
+    (r'^pleaselog/$', 'pleaselog'),
 
     # Password reset for Customer UI
     (r'^password_reset/$', 'cust_password_reset'),

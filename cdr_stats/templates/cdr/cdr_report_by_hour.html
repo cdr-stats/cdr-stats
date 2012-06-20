@@ -34,17 +34,6 @@
             </div>
             <div class="row">
                 <div class="span6">
-                    <label class="control-label" for="id_{{ form.destination.name }}">{{ form.destination.label }}</label>
-                    <div class="input">
-                        {{ form.destination }}&nbsp;&nbsp;{{ form.destination_type }}
-                    </div>
-                    {% if form.destination.errors %}
-                        <span class="help-inline error">{{ form.destination.errors }}</span>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="row">
-                <div class="span6">
                     <label class="control-label" for="id_{{ form.graph_view.name }}">{{ form.graph_view.label }}</label>
                     <div class="input">
                         {{ form.graph_view }}
@@ -69,7 +58,6 @@
     <a class="btn btn-small" id="toggle_btn" href="#" data-toggle="collapse" data-target="#form_collapse">
         <i class="icon-search"></i> <span>{% trans "advanced search"|title %}</span>
     </a>
-
 
     <script id="source" language="javascript" type="text/javascript">
         $(function () {
@@ -110,7 +98,7 @@
                             case 1:
                                 if(time < 10)
                                     time = '0' + time;
-                                return time + ':00';
+                                return String(parseInt(time) + ':00');
                                 break;
                             case 2:
                                 if(data[i][1] == time)
@@ -162,10 +150,10 @@
                         var time = x;
                         var date = item.series.label;
                         output = '<div class="graph_tooltip_header">' + date + '</div><div class="graph_tooltip_info">{% trans "Hour" %}: ' + Info(date,time,1) + '<br>';
-                        output += {% if graph_view == 1 %}
-                            '{% trans "Calls" %}: ' + Info(date,time,2) + '</div>';
+                        {% if graph_view == 1 %}
+                            output +=  '{% trans "Calls" %}: ' + Info(date, time, 2) + '</div>';
                         {% else %}
-                            '{% trans "Minutes" %}: ' + Info(date,time,2) + ' min</div>';
+                            output += '{% trans "Minutes" %}: ' + Info(date, time, 2) + ' min</div>';
                         {% endif %}
 
                         showTooltip(item.pageX, item.pageY, output);

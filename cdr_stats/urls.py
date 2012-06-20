@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # CDR-Stats License
 # http://www.cdr-stats.org
@@ -12,12 +13,14 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import url, patterns, include
 from django.conf import settings
-from django.conf.urls.i18n import *
-
 from tastypie.api import Api
-from api.resources import *
+from api.user_api import UserResource
+from api.switch_api import SwitchResource
+from api.hangup_cause_api import HangupCauseResource
+from api.cdr_daily_api import CdrDailyResource
+from api.cdr_api import CdrResource
 from cdr.urls import urlpatterns as urlpatterns_cdr
 from user_profile.urls import urlpatterns as urlpatterns_user_profile
 
@@ -35,8 +38,8 @@ tastypie_api.register(CdrResource())
 
 
 urlpatterns = patterns('',
-	
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
+
+    # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
     # to INSTALLED_APPS to enable admin documentation:
     #(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
@@ -44,10 +47,11 @@ urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
 
     (r'^i18n/', include('django.conf.urls.i18n')),
-    
+
     (r'^admin_tools/', include('admin_tools.urls')),
 
     (r'^api/', include(tastypie_api.urls)),
+
     # Serve static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
      {'document_root': settings.STATIC_ROOT}),

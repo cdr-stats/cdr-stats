@@ -18,7 +18,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
-from user_profile.models import *
+from user_profile.models import UserProfile, Customer, Staff
 
 from notification.models import Notice
 from notification.admin import NoticeAdmin
@@ -79,16 +79,18 @@ admin.site.register(Customer, CustomerAdmin)
 def make_read(self, request, queryset):
     try:
         queryset.update(unseen=0)
-        self.message_user(request, _("Notifications are successfully marked as read."))
+        self.message_user(request,
+                    _("Notifications are successfully marked as read."))
     except:
         messages.error(request, _("Notifications are not marked as read."))
 make_read.short_description = _("Mark notification as seen")
 
 
 class NoticeAdmin(NoticeAdmin):
-    list_display = ('message', 'recipient', 'sender', 'notice_type', 'added', 'unseen')
+    list_display = ('message', 'recipient', 'sender', 'notice_type',
+                    'added', 'unseen')
     actions = [make_read]
 
-    
+
 admin.site.unregister(Notice)
 admin.site.register(Notice, NoticeAdmin)

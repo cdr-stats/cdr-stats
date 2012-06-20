@@ -1,5 +1,6 @@
 {% extends "cdr/master.html" %}
 {% load i18n cdr_extras country_dialcode_tags common_tags %}
+{% load cache %}
 
 {% block extra_head %}
   <script type="text/javascript">
@@ -94,12 +95,14 @@ $(function () {
     {% regroup total_record|dictsort:"country_id" by country_id as country_list %}
     {% for rc in country_list %}
         {
-            label: '{{ rc.grouper|country_name }}',
-            data: [
+                label: {% cache 1800 c_id rc.grouper %}
+                       '{{ rc.grouper|country_name }}'
+                       {% endcache %},
+                data: [
                     {% for item in rc.list %}
                         [{{ item.dt }}, {{ item.duration__sum }}, {{ item.calldate__count }}],
                     {% endfor %}
-                  ]
+                ]
         },
     {% endfor %}
     ];
@@ -125,12 +128,34 @@ $(function () {
         }
 
     }
- 
+
+    function formTicks(val) {
+
+        var dt = new Date(parseInt(val));
+        var Year = dt.getFullYear();
+        var Month = dt.getMonth() + 1;
+        var Day = dt.getDate();
+        Month = Month < 10 ? '0' + Month : Month;
+        Day = Day < 10 ? '0' + Day : Day;
+        var hour = dt.getHours();
+        var minute = dt.getMinutes();
+        var ampm = hour >= 12 ? 'pm' : 'am';
+        var hour = hour % 12;
+        hour = hour ? hour : 12;
+        minute = minute < 10 ? '0' + minute : minute;
+
+        strTime = Day + '-' + Month + '-' + Year + '<br/>' + hour + ':' + minute + ' ' + ampm;
+        return strTime
+    }
+
     var options = {
-        xaxis: { mode: "time", tickLength: 5 },
+        xaxis: { mode: "time",
+                 tickLength: 5,
+                 tickFormatter: function(val) { return formTicks(val) }
+        },
         yaxis: { min: 0, tickDecimals: false },
         selection: { mode: "x" },
-        grid: { 
+        grid: {
                 hoverable: true,
                 xaxis: false
               },
@@ -169,7 +194,7 @@ $(function () {
     $("#overview").bind("plotselected", function (event, ranges) {
         plot.setSelection(ranges);
     });
-    
+
     $("#graph_responsive").bind("plothover", function (event, pos, item) {
         if (item) {
             if (previousPoint != item.dataIndex) {
@@ -191,8 +216,10 @@ $(function () {
                 hour = hour ? hour : 12; // the hour '0' should be '12'
                 minute = minute < 10 ? '0'+minute : minute;
                 strTime = hour + ':' + minute + ' ' + ampm;
-                //{% trans "Calls" %}: ' + Info(time, 2, item.series.data) + '<br>
-                output += strTime + ' - ' + item.series.label + '</div><div class="graph_tooltip_info">{% trans "Duration" %}: ' + Info(time, 1, item.series.data) + ' {% trans "secs" %}</div>';
+
+                output += strTime + ' - ' + item.series.label + '</div><div class="graph_tooltip_info">{% trans "Duration" %}: '
+                        + Info(time, 1, item.series.data) + '{% trans "secs" %}<br>{% trans "Calls" %}: '
+                        + Info(time, 2, item.series.data) + '</div>';
 
                 showTooltip(item.pageX, item.pageY, output);
             }
@@ -243,7 +270,7 @@ $(function () {
     $(function () {
 
         var data = [
-            {% for td in country_analytic_array_final %}
+            {% for td in country_final %}
                 { label: '{{ td.0 }}' , data: [[1, {{ td.1 }}]]},
             {% endfor %}
         ];
@@ -294,7 +321,7 @@ $(function () {
     $(function () {
 
         var data = [
-            {% for td in country_analytic_array_final %}
+            {% for td in country_final %}
                 { label: '{{ td.0 }}' , data: [[1, {{ td.2 }}]]},
             {% endfor %}
         ];
@@ -338,14 +365,16 @@ $(function () {
 
             <br/>
             <div class="span6">
-                <h3 align="left">{% trans "top"|title %} {{ DISPLAY_NO_OF_COUNTRY }} {% trans "calls by country"|title %}</h3>
+                <h3 align="left">{% trans "top"|title %} {{ NUM_COUNTRY }} {% trans "calls by country"|title %}</h3>
                 <table>
                     <tbody>
-                    {% for country_data in top_ten_country_analytic %}
+                    {% for country_data in top10_country %}
                         <tr>
                             <td class="td-dashboard">
                                 {% if country_data.3 %}
-                                    <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
+                                    {% cache 1800 hcountry_flag country_data.3 %}
+                                        <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
+                                    {% endcache %}
                                 {% else %}
                                     <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip">
                                 {% endif %}
@@ -355,7 +384,7 @@ $(function () {
                                     {{ country_data.0 }}
                                 {% else %}
                                     {% trans "world"|title  %}
-                                {% endif %}                                
+                                {% endif %}
                             </td>
                             <td width="100">{{ country_data.1 }} {% trans "Calls"%}</td>
                         </tr>
@@ -381,14 +410,16 @@ $(function () {
             <div id="country_hover_duration"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
             <br/>
             <div class="span6">
-                <h3 align="left">{% trans "top"|title %} {{ DISPLAY_NO_OF_COUNTRY }} {% trans "duration by country"|title %}</h3>
+                <h3 align="left">{% trans "top"|title %} {{ NUM_COUNTRY }} {% trans "duration by country"|title %}</h3>
                 <table>
                     <tbody>
-                    {% for country_data in top_ten_country_analytic %}
+                    {% for country_data in top10_country %}
                         <tr>
                             <td class="td-dashboard">
                                 {% if country_data.3 %}
-                                    <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
+                                    {% cache 1800 hcountry_flag country_data.3 %}
+                                        <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
+                                    {% endcache %}
                                 {% else %}
                                     <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip">
                                 {% endif %}
@@ -398,7 +429,7 @@ $(function () {
                                     {{ country_data.0 }}
                                 {% else %}
                                     {% trans "world"|title  %}
-                                {% endif %}                  
+                                {% endif %}
                             </td>
                             <td>{{ country_data.2|conv_min }} {% trans "minutes"%}</td>
                         </tr>

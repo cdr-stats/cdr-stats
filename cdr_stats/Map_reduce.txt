@@ -3,8 +3,8 @@
 List Map Reduce used in CDR-Stats
 =================================
 
-01. MAP REDUCE : ANALYTIC
--------------------------
+1. MAP REDUCE : ANALYTIC
+------------------------
 
 
 // Get from daily Report from date A to date B
@@ -83,27 +83,7 @@ reduce = function(key, vals) {
     }
     return ret;
 };
-reduce = function(key, vals) {
-    var ret = {
-        call__count : [],
-        duration__sum: [],
-    };
-    for(var k=0; k < 24; k++){
 
-        ret.call__count[k] = 0;
-        ret.duration__sum[k] =0;
-
-    }
-    for (var i=0; i < vals.length; i++) {
-        for (var k=0; k < 24; k++) {
-            if (vals[i].call__count[k]) {
-                ret.call__count[k]  += vals[i].call__count[k];
-                ret.duration__sum[k]  += vals[i].duration__sum[k];
-            }
-        }
-    }
-    return ret;
-};
 query = {'metadata.accountcode': '1000' };
 
 db.foo.drop();
@@ -114,15 +94,6 @@ db.foo.find();
 **************************************** Minutes report *************************************************
 
 map = function(){
-<<<<<<< HEAD
-    emit( 
-        {
-            a_Year: this.metadata.date.getFullYear(),
-            b_Month: this.metadata.date.getMonth() + 1,
-            c_Day: this.metadata.date.getDate(),
-            f_Switch: this.metadata.switch_id,
-        },
-=======
     var year = this.metadata.date.getFullYear();
     var month = this.metadata.date.getMonth();
     var day = this.metadata.date.getDate();
@@ -131,7 +102,6 @@ map = function(){
     var d = new Date(year, month, day, hour, min);
     emit(
         { g_Millisec: d.getTime(), },
->>>>>>> 6c34fd8eb94a915faa2f1d241e50930e7df70408
         {
             call__count: this.call_minute,
             duration__sum: this.duration_minute,
@@ -410,3 +380,132 @@ MapReduce::
              }
              ''')
 
+################### Map-reduce time for cdr view daily report ################
+map = function(){
+    emit( {
+        a_Year: this.metadata.date.getFullYear(),
+        b_Month: this.metadata.date.getMonth() + 1,
+        c_Day: this.metadata.date.getDate(),
+    },
+    {
+        calldate__count: this.call_daily,
+        duration__sum: this.duration_daily,
+        duration__avg: 0
+    } );
+};
+
+reduce = function(key,vals) {
+    var ret = {
+                 calldate__count : 0,
+                 duration__sum: 0,
+                 duration__avg: 0
+            };
+
+    for (var i=0; i < vals.length; i++){
+     ret.calldate__count += parseInt(vals[i].calldate__count);
+     ret.duration__sum += parseInt(vals[i].duration__sum);
+    }
+    return ret;
+};
+
+query_var = {'start_uepoch': {'$gte': ISODate("2012-06-01T00:00:00Z"), '$lt': ISODate("2012-06-30T20:36:300:00Z"), '$lt': ISODate("2012-06-30T20:36:34Z")}};
+db.foo.drop();
+db.runCommand( { mapreduce:"cdr_common", map:map, reduce:reduce, out: { reduce: "foo" }, query: query_var});
+{
+	"result" : "foo",
+	"timeMillis" : 32249,
+	"counts" : {
+		"input" : 43155,
+		"emit" : 43155,
+		"reduce" : 49,
+		"output" : 6
+	},
+	"ok" : 1
+}
+
+
+4. MAP REDUCE : DASHBOARD
+-------------------------
+
+map = function(){
+            var year = this.start_uepoch.getFullYear();
+            var month = this.start_uepoch.getMonth();
+            var day = this.start_uepoch.getDate();
+            var hours = this.start_uepoch.getHours();
+            var minutes = this.start_uepoch.getMinutes();
+            var d = new Date(year, month, day, hours, minutes);
+            emit( {
+                g_Millisec: d.getTime(),
+            },
+            {
+                calldate__count: 1,
+                duration__sum: this.duration,
+                hangup_cause_id: this.hangup_cause_id,
+            } )
+          };
+
+reduce = function(key,vals) {
+            var ret = {
+                calldate__count : 0,
+                duration__sum: 0,
+                hangup_cause_id: 0,
+            };
+            for (var i=0; i < vals.length; i++){
+                ret.calldate__count += parseInt(vals[i].calldate__count);
+                ret.duration__sum += parseInt(vals[i].duration__sum);
+                ret.hangup_cause_id = vals[i].hangup_cause_id;
+            }
+            return ret;
+        };
+
+query_var = {'start_uepoch': {'$gte': ISODate("2012-06-14T00:00:00Z"), '$lt': ISODate("2012-06-30T20:36:300:00Z"), '$lt': ISODate("2012-06-30T20:36:34Z")}};
+
+db.foo.drop();
+db.runCommand( { mapreduce:"cdr_common", map:map, reduce:reduce, out: { reduce: "foo" }, query: query_var});
+
+
+
+
+
+----> now trying to use daily_analytic
+
+
+map = function(){
+            emit(
+                {
+                    a_Year: this.metadata.date.getFullYear(),
+                    b_Month: this.metadata.date.getMonth() + 1,
+                    c_Day: this.metadata.date.getDate(),
+                },
+                {
+                    calldate__count: this.call_hourly,
+                    duration__sum: this.duration_hourly,
+                }
+            )
+          };
+
+reduce = function(key,vals) {
+            var ret = {
+                calldate__count : [],
+                duration__sum: [],
+            };
+            for(var k=0; k < 24; k++){
+                ret.calldate__count[k]=0;
+                ret.duration__sum[k]=0;
+            }
+            for (var i=0; i < vals.length; i++) {
+                for (var k=0; k < 24; k++) {
+                    if (vals[i].calldate__count[k]) {
+                        ret.calldate__count[k] += vals[i].calldate__count[k];
+                        ret.duration__sum[k] += vals[i].duration__sum[k];
+                    }
+                }
+            }
+            return ret;
+        };
+
+query_var = {'start_uepoch': {'$gte': ISODate("2012-06-14T00:00:00Z"), '$lt': ISODate("2012-06-14T23:36:300:00Z")}};
+//query_var = {};
+
+db.foo.drop();
+db.runCommand( { mapreduce:"daily_analytic", map:map, reduce:reduce, out: { reduce: "foo" }, query: query_var});
