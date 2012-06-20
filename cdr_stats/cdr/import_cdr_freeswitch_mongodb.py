@@ -14,15 +14,12 @@
 from django.conf import settings
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
-
 from cdr.models import Switch, CDR_TYPE
 from cdr.functions_def import get_hangupcause_id
 from cdr_alert.functions_blacklist import chk_destination
-
 import datetime
 import sys
 import random
-import math
 
 random.seed()
 
@@ -120,8 +117,8 @@ def apply_index(shell):
     return True
 
 
-def create_daily_analytic(id_daily, d, switch_id, country_id, accountcode, hangup_cause_id,
-                          hour, minute, duration):
+def create_daily_analytic(id_daily, d, switch_id, country_id,
+    accountcode, hangup_cause_id, hour, minute, duration):
     """Create DAILY_ANALYTIC"""
     DAILY_ANALYTIC.update(
             {
@@ -147,7 +144,8 @@ def create_daily_analytic(id_daily, d, switch_id, country_id, accountcode, hangu
     return True
 
 
-def create_monthly_analytic(id_monthly, d, switch_id, country_id, accountcode, duration):
+def create_monthly_analytic(id_monthly, d, switch_id, country_id,
+    accountcode, duration):
     """Create DAILY_ANALYTIC"""
     MONTHLY_ANALYTIC.update(
             {
@@ -297,21 +295,19 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             d = datetime.datetime.combine(daily_date.date(), datetime.time.min)
 
             # insert daily analytic record
-            create_daily_analytic(id_daily, d, switch.id, country_id, accountcode,
-                                  hangup_cause_id, hour, minute, duration)
-
+            create_daily_analytic(id_daily, d, switch.id, country_id,
+                        accountcode, hangup_cause_id, hour, minute, duration)
 
             # MONTHLY_ANALYTIC
             # Get a datetime that only include year-month info
-            #d = datetime.datetime.combine(daily_date.date(), datetime.time.min)
             d = datetime.datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
 
             id_monthly = daily_date.strftime('%Y%m') + "/%d/%s/%d" %\
-                                                        (switch.id, accountcode, country_id)
+                                        (switch.id, accountcode, country_id)
 
             # insert monthly analytic record
-            create_monthly_analytic(id_monthly, d, switch.id, country_id,accountcode, duration)
-
+            create_monthly_analytic(id_monthly, d, switch.id, country_id,
+                                        accountcode, duration)
 
             # Flag the CDR as imported
             importcdr_handler.update(
@@ -333,7 +329,6 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
 
     print_shell(shell, "Import on Switch(%s) - Total Record(s) imported:%d" % \
                             (ipaddress, count_import))
-
 
 
 def import_cdr_freeswitch_mongodb(shell=False):
