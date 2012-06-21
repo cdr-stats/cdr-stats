@@ -18,24 +18,24 @@ from django.conf import settings
 from celery.task import PeriodicTask
 from cdr.import_cdr_freeswitch_mongodb import import_cdr_freeswitch_mongodb
 from cdr.import_cdr_asterisk_mysql import import_cdr_asterisk_mysql
-from cdr.common_tasks import single_instance_task
+from cdr.common_tasks import only_one
 from datetime import datetime, timedelta
 import sqlite3
 
 
 #Note: if you import a lot of CDRs the first time you can have an issue here
 #we need to make sure the user import their CDR before starting Celery
-#for now we will increase the lock limit to 12 hours
-LOCK_EXPIRE = 60 * 60 * 12  # Lock expires in 12 hours
+#for now we will increase the lock limit to 1 hours
+LOCK_EXPIRE = 60 * 60 * 1  # Lock expires in 1 hours
 
 
 class sync_cdr_pending(PeriodicTask):
     """
     A periodic task that checks for pending calls to import
     """
-    run_every = timedelta(seconds=60)  # every minute
+    run_every = timedelta(seconds=10)  # every 10 secs
 
-    @single_instance_task(key='sync_cdr_pending', timeout=LOCK_EXPIRE)
+    @only_one(key="sync_cdr_pending", timeout=LOCK_EXPIRE)
     def run(self, **kwargs):
         logger = self.get_logger()
         logger.info('TASK :: sync_cdr_pending')
@@ -59,7 +59,7 @@ class get_channels_info(PeriodicTask):
     """
     run_every = timedelta(seconds=1)  # every minute - 60 seconds
 
-    @single_instance_task(key='get_channels_info', timeout=60)
+    @only_one(key="get_channels_info", timeout=LOCK_EXPIRE)
     def run(self, **kwargs):
 
         if settings.LOCAL_SWITCH_TYPE == 'freeswitch':
@@ -67,8 +67,8 @@ class get_channels_info(PeriodicTask):
             logger.info('TASK :: get_channels_info')
 
             # Get calldate
-            now = datetime.datetime.today()
-            date_now = datetime.datetime(
+            now = datetime.today()
+            date_now = datetime(
                 now.year,
                 now.month,
                 now.day,
