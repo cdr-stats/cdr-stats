@@ -84,7 +84,7 @@ reduce = function(key, vals) {
     return ret;
 };
 
-query = {'metadata.accountcode': '1000' };
+query = {};
 
 db.foo.drop();
 db.runCommand( { mapreduce:"daily_analytic", map:map, reduce:reduce, out: { reduce: "foo" }, query: query});
