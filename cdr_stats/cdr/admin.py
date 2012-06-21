@@ -36,6 +36,13 @@ import datetime
 import csv
 
 
+def get_value_from_uni(j, row, field_name):
+    """Get value from unique dict list"""
+    if j[0] == field_name:
+        return row[j[1] - 1]
+    else:
+        return ''
+
 # Switch
 class SwitchAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'ipaddress', 'key_uuid')
@@ -135,26 +142,26 @@ class SwitchAdmin(admin.ModelAdmin):
                                 for j in uni:
                                     get_cdr_from_row[j[0]] = row[j[1] - 1]
                                     #get_cdr_from_row[j[0]] = row[row_counter]
-                                    if j[0] == 'caller_id_name':
-                                        caller_id_name = row[j[1] - 1]
-                                    if j[0] == 'caller_id_number':
-                                        caller_id_number = row[j[1] - 1]
-                                    if j[0] == 'direction':
-                                        direction = row[j[1] - 1]
-                                    if j[0] == 'remote_media_ip':
-                                        remote_media_ip = row[j[1] - 1]
-                                    if j[0] == 'answer_uepoch':
-                                        answer_uepoch = row[j[1] - 1]
-                                    if j[0] == 'end_uepoch':
-                                        end_uepoch = row[j[1] - 1]
-                                    if j[0] == 'mduration':
-                                        mduration = row[j[1] - 1]
-                                    if j[0] == 'billmsec':
-                                        billmsec = row[j[1] - 1]
-                                    if j[0] == 'read_codec':
-                                        read_codec = row[j[1] - 1]
-                                    if j[0] == 'write_codec':
-                                        write_codec = row[j[1] - 1]
+                                    caller_id_name = \
+                                        get_value_from_uni(j, row, 'caller_id_name')
+                                    caller_id_number = \
+                                        get_value_from_uni(j, row, 'caller_id_number')
+                                    direction = \
+                                        get_value_from_uni(j, row, 'direction')
+                                    remote_media_ip = \
+                                        get_value_from_uni(j, row, 'remote_media_ip')
+                                    answer_uepoch = \
+                                        get_value_from_uni(j, row, 'answer_uepoch')
+                                    end_uepoch = \
+                                        get_value_from_uni(j, row, 'end_uepoch')
+                                    mduration = \
+                                        get_value_from_uni(j, row, 'mduration')
+                                    billmsec = \
+                                        get_value_from_uni(j, row, 'billmsec')
+                                    read_codec = \
+                                        get_value_from_uni(j, row, 'read_codec')
+                                    write_codec = \
+                                        get_value_from_uni(j, row, 'write_codec')
 
                                     row_counter = row_counter + 1
 
