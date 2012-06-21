@@ -99,8 +99,8 @@ def import_cdr_asterisk_mysql(shell=False):
         try:
             connection = Database.connect(user=user, passwd=password, \
                                             db=db_name, host=host)
+            connection.autocommit(True)
             cursor = connection.cursor()
-            cursor_update = connection.cursor()
         except Exception, e:
             sys.stderr.write("Could not connect to Mysql: %s - %s" % \
                                                             (e, ipaddress))
@@ -220,7 +220,7 @@ def import_cdr_asterisk_mysql(shell=False):
             #Flag the CDR
             try:
                 #TODO: Build Update by batch of max 100
-                cursor_update.execute(
+                cursor.execute(
                         "UPDATE %s SET import_cdr=1 WHERE %s=%d" % \
                         (table_name, settings.ASTERISK_PRIMARY_KEY, acctid))
             except:
@@ -231,7 +231,6 @@ def import_cdr_asterisk_mysql(shell=False):
             row = cursor.fetchone()
 
         cursor.close()
-        cursor_update.close()
         connection.close()
 
         if count_import > 0:
