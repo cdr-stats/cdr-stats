@@ -18,7 +18,8 @@ from cdr.import_cdr_freeswitch_mongodb import apply_index,\
                                               chk_ipaddress,\
                                               CDR_COMMON,\
                                               create_daily_analytic,\
-                                              create_monthly_analytic
+                                              create_monthly_analytic,\
+                                              set_int_default
 from cdr.functions_def import get_hangupcause_id
 from cdr_alert.functions_blacklist import chk_destination
 from datetime import datetime
@@ -136,15 +137,10 @@ def import_cdr_asterisk_mysql(shell=False):
                 callerid_number = callerid
 
             channel = row[3]
-            #TODO Clean this code, function if not int set default
-            try:
-                duration = int(row[4])
-            except:
-                duration = 0
-            try:
-                billsec = int(row[5])
-            except:
-                billsec = 0
+
+            duration = set_int_default(row[4], 0)
+            billsec = set_int_default(row[5], 0)
+
             ast_disposition = row[6]
             try:
                 id_disposition = dic_disposition.get(
@@ -154,11 +150,7 @@ def import_cdr_asterisk_mysql(shell=False):
                 transdisposition = 0
 
             hangup_cause_id = get_hangupcause_id(transdisposition)
-
-            try:
-                accountcode = int(row[7])
-            except:
-                accountcode = ''
+            accountcode = set_int_default(row[7], '')
 
             uniqueid = row[8]
             start_uepoch = datetime.fromtimestamp(int(row[1]))

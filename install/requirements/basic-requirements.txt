@@ -8,9 +8,9 @@ docutils==0.7
 python-dateutil==1.5
 yolk==0.4.1
 feedparser
-celery==2.5.3
+celery==2.5.5
 redis
-kombu
+kombu==2.1.8
 pymongo==2.2
 ordereddict
 gunicorn

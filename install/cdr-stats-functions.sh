@@ -687,9 +687,9 @@ func_install_redis_server() {
             else
                 #Ubuntu 10.04 TLS
                 cd /usr/src
-                wget http://redis.googlecode.com/files/redis-2.4.13.tar.gz
-                tar -zxf redis-2.4.13.tar.gz
-                cd redis-2.4.13
+                wget http://redis.googlecode.com/files/redis-2.4.14.tar.gz
+                tar -zxf redis-2.4.14.tar.gz
+                cd redis-2.4.14
                 make
                 make install
                 

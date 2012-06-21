@@ -22,7 +22,11 @@ from cdr.common_tasks import single_instance_task
 from datetime import datetime, timedelta
 import sqlite3
 
-LOCK_EXPIRE = 60 * 30  # Lock expires in 30 minutes
+
+#Note: if you import a lot of CDRs the first time you can have an issue here
+#we need to make sure the user import their CDR before starting Celery
+#for now we will increase the lock limit to 12 hours
+LOCK_EXPIRE = 60 * 60 * 12  # Lock expires in 12 hours
 
 
 class sync_cdr_pending(PeriodicTask):
@@ -37,15 +41,13 @@ class sync_cdr_pending(PeriodicTask):
         logger.info('TASK :: sync_cdr_pending')
 
         if settings.LOCAL_SWITCH_TYPE == 'asterisk':
+
             if settings.ASTERISK_IMPORT_TYPE == 'mysql':
-
-                # Import from Freeswitch Mongo
-
+                # Import from Asterisk Mysql
                 import_cdr_asterisk_mysql()
+
         elif settings.LOCAL_SWITCH_TYPE == 'freeswitch':
-
             # Import from Freeswitch Mongo
-
             import_cdr_freeswitch_mongodb()
 
         return True
