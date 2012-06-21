@@ -43,41 +43,37 @@ def print_shell(shell, message):
         print message
 
 
+def set_int_default(val, default):
+    """val if not int set default"""
+    try:
+        return int(val)
+    except:
+        return default
+
+
+def set_default(val, default):
+    """val if not set default"""
+    try:
+        return val
+    except:
+        return default
+
+
 def get_element(cdr):
-    try:
-        accountcode = cdr['variables']['accountcode']
-    except:
-        accountcode = ''
-    try:
-        remote_media_ip = cdr['variables']['remote_media_ip']
-    except:
-        remote_media_ip = ''
-    try:
-        caller_id_number = cdr['callflow']['caller_profile'][\
-                           'caller_id_number']
-    except:
-        caller_id_number = ''
-    try:
-        caller_id_name = cdr['callflow']['caller_profile'][\
-                         'caller_id_name']
-    except:
-        caller_id_name = ''
-    try:
-        duration = int(cdr['variables']['duration'])
-    except:
-        duration = 0
-    try:
-        billsec = int(cdr['variables']['billsec'])
-    except:
-        billsec = 0
-    try:
-        direction = cdr['variables']['direction']
-    except:
-        direction = 'inbound'
-    try:
-        uuid = cdr['variables']['uuid']
-    except:
-        uuid = ''
+    accountcode = \
+        set_default(cdr['variables']['accountcode'], '')
+    remote_media_ip = \
+        set_default(cdr['variables']['remote_media_ip'], '')
+    caller_id_number = \
+        set_default(cdr['callflow']['caller_profile']['caller_id_number'], '')
+    caller_id_name =\
+        set_default(cdr['callflow']['caller_profile']['caller_id_name'], '')
+
+    duration = set_default(cdr['variables']['duration'], 0)
+    billsec = set_default(cdr['variables']['billsec'], 0)
+
+    direction = set_default(cdr['variables']['direction'], 'inbound')
+    uuid = set_default(cdr['variables']['uuid'], '')
 
     data_element = {
         'accountcode': accountcode,

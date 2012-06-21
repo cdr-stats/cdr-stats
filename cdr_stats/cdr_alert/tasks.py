@@ -206,7 +206,7 @@ def run_alarm(alarm_obj, logger):
                 query=query_var, finalize=finalfc)
 
         cur_total_data = cur_total_data.find().sort([('_id.a_Year', -1),
-                ('_id.b_Month', -1)])
+                                                     ('_id.b_Month', -1)])
 
         cur_day_data = {}
         for doc in cur_total_data:
