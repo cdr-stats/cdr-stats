@@ -192,7 +192,7 @@ def run_alarm(alarm_obj, logger):
             pre_day_data[pre_date.strftime('%Y-%m-%d')] = \
                                               doc['value']['duration__avg']
             if alarm_obj.alert_condition == 1 or \
-                alarm_obj.alert_condition == 2:
+                    alarm_obj.alert_condition == 2:
                 chk_alert_value(alarm_obj, doc['value']['duration__avg'])
             else:
                 previous_date_duration = doc['value']['duration__avg']
@@ -213,8 +213,8 @@ def run_alarm(alarm_obj, logger):
             cur_date = dt_list['c_start_date']
             cur_day_data[cur_date.strftime('%Y-%m-%d')] = \
                                              doc['value']['duration__avg']
-            if alarm_obj.alert_condition == 1 or alarm_obj.alert_condition \
-                == 2:
+            if alarm_obj.alert_condition == 1 or \
+                    alarm_obj.alert_condition == 2:
                 chk_alert_value(alarm_obj, doc['value']['duration__avg'])
             else:
                 current_date_duration = doc['value']['duration__avg']
@@ -239,7 +239,8 @@ def run_alarm(alarm_obj, logger):
         pre_total_answered_record = cdr_data.find(query_var).count()
         previous_asr = pre_total_answered_record / pre_total_record
 
-        if alarm_obj.alert_condition == 1 or alarm_obj.alert_condition == 2:
+        if alarm_obj.alert_condition == 1 or \
+                alarm_obj.alert_condition == 2:
             chk_alert_value(alarm_obj, previous_asr)
         else:
             previous_asr = previous_asr
@@ -255,7 +256,8 @@ def run_alarm(alarm_obj, logger):
         cur_total_answered_record = cdr_data.find(query_var).count()
         current_asr = cur_total_answered_record / cur_total_record
 
-        if alarm_obj.alert_condition == 1 or alarm_obj.alert_condition == 2:
+        if alarm_obj.alert_condition == 1 or \
+                alarm_obj.alert_condition == 2:
             chk_alert_value(alarm_obj, current_asr)
         else:
             chk_alert_value(alarm_obj, current_asr, previous_asr)
@@ -290,7 +292,7 @@ class chk_alarm(PeriodicTask):
                 alarm_report = AlarmReport.objects.filter(alarm=alarm_obj).\
                                latest('daterun')
                 diff_run = (datetime.now() - alarm_report.daterun).days
-
+                diff_run = 1
                 if alarm_obj.period == 1:  # Day
                     if diff_run == 1:  # every day
                         # Run alert task
