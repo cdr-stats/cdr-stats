@@ -21,11 +21,11 @@ from django.core.mail import send_mail, mail_admins
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.template import Context
-from celery.task import Task, PeriodicTask
+from celery.task import PeriodicTask
 from celery.schedules import crontab
-from celery.decorators import task, periodic_task
+from celery.decorators import task
 from notification import models as notification
-from cdr.common_tasks import single_instance_task
+from cdr.common_tasks import only_one
 from cdr_alert.models import Alarm, AlarmReport
 from cdr.mapreduce import mapreduce_task_cdr_alert
 from cdr.functions_def import get_hangupcause_id
@@ -279,7 +279,6 @@ class chk_alarm(PeriodicTask):
     """
 
     run_every = timedelta(seconds=86400)  # every day
-
     # run_every = crontab(hours=12, minute=30) #"Execute every day at 12:30AM."
 
     def run(self, **kwargs):
@@ -385,7 +384,7 @@ class send_cdr_report(PeriodicTask):
 
     run_every = timedelta(seconds=86400)  # every day
 
-    @single_instance_task(key='send_cdr_report', timeout=LOCK_EXPIRE)
+    @only_one(key="send_cdr_report", timeout=LOCK_EXPIRE)
     def run(self, **kwargs):
         logger = self.get_logger()
         logger.info('TASK :: send_cdr_report')

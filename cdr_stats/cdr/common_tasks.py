@@ -13,28 +13,34 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
+import redis
 
-from django.core.cache import cache
+REDIS_CLIENT = redis.Redis()
+
+#code from http://loose-bits.com/2010/10/distributed-task-locking-in-celery.html
 
 
-def single_instance_task(key, timeout):
-    """
-    Decorator function to add a semafor on task
-    it helps to ensure tasks aren't run more than once at the same time
-    """
+def only_one(function=None, key="", timeout=None):
+    """Enforce only one celery task at a time."""
 
-    def task_exc(func):
+    def _dec(run_func):
+        """Decorator."""
 
-        def wrapper(*args, **kwargs):
-            lock_id = 'celery-single-instance-' + key
-            acquire_lock = lambda: cache.add(lock_id, 'true', timeout)
-            release_lock = lambda: cache.delete(lock_id)
-            if acquire_lock():
-                try:
-                    func(*args, **kwargs)
-                finally:
-                    release_lock()
+        def _caller(*args, **kwargs):
+            """Caller."""
+            ret_value = None
+            have_lock = False
+            lock = REDIS_CLIENT.lock(key, timeout=timeout)
+            try:
+                have_lock = lock.acquire(blocking=False)
+                if have_lock:
+                    ret_value = run_func(*args, **kwargs)
+            finally:
+                if have_lock:
+                    lock.release()
 
-        return wrapper
+            return ret_value
 
-    return task_exc
+        return _caller
+
+    return _dec(function) if function is not None else _dec
