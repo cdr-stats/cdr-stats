@@ -41,15 +41,13 @@ class sync_cdr_pending(PeriodicTask):
         logger.info('TASK :: sync_cdr_pending')
 
         if settings.LOCAL_SWITCH_TYPE == 'asterisk':
+
             if settings.ASTERISK_IMPORT_TYPE == 'mysql':
-
-                # Import from Freeswitch Mongo
-
+                # Import from Asterisk Mysql
                 import_cdr_asterisk_mysql()
+
         elif settings.LOCAL_SWITCH_TYPE == 'freeswitch':
-
             # Import from Freeswitch Mongo
-
             import_cdr_freeswitch_mongodb()
 
         return True
