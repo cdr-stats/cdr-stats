@@ -1925,8 +1925,13 @@ def cdr_country_report(request):
     for i in country_calls:
         country_id = int(i['_id']['f_Country'])
         for hr in range(0, 24):
-            call_count = int(i['value']['calldate__count'][hr])
-            duration_sum = int(i['value']['duration__sum'][hr])
+            try:
+                call_count = int(i['value']['calldate__count'][hr])
+                duration_sum = int(i['value']['duration__sum'][hr])
+            except KeyError:
+                call_count = 0
+                duration_sum = 0
+
             if call_count > 0:
                 a_Year = int(i['_id']['a_Year'])
                 b_Month = int(i['_id']['b_Month'])
