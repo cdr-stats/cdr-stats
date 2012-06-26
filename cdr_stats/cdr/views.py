@@ -715,8 +715,8 @@ def cdr_detail(request, id, switch_id):
 
 def chk_date_for_hrs(graph_date):
     """Check given graph_date is in last 24 hours range"""
-    previous_date = datetime.now() + relativedelta(days=-1)
-    if graph_date < previous_date:
+    previous_date = datetime.now() - relativedelta(days=1)
+    if graph_date > previous_date:
         return True
     return False
 
