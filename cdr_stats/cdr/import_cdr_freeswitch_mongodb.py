@@ -51,29 +51,54 @@ def set_int_default(val, default):
         return default
 
 
-def set_default(val, default):
-    """val if not set default"""
-    try:
-        return val
-    except:
-        return default
-
-
 def get_element(cdr):
-    accountcode = \
-        set_default(cdr['variables']['accountcode'], '')
-    remote_media_ip = \
-        set_default(cdr['variables']['remote_media_ip'], '')
-    caller_id_number = \
-        set_default(cdr['callflow']['caller_profile']['caller_id_number'], '')
-    caller_id_name =\
-        set_default(cdr['callflow']['caller_profile']['caller_id_name'], '')
-
-    duration = set_default(cdr['variables']['duration'], 0)
-    billsec = set_default(cdr['variables']['billsec'], 0)
-
-    direction = set_default(cdr['variables']['direction'], 'inbound')
-    uuid = set_default(cdr['variables']['uuid'], '')
+    """
+    return some element from the cdr object
+    """
+    #Get accountcode
+    if 'variables' in cdr and 'accountcode' in cdr['variables']:
+        accountcode = cdr['variables']['accountcode']
+    else:
+        accountcode = ''
+    #Get remote_media_ip
+    if 'variables' in cdr and 'remote_media_ip' in cdr['variables']:
+        remote_media_ip = cdr['variables']['remote_media_ip']
+    else:
+        remote_media_ip = ''
+    #Get duration
+    if 'variables' in cdr and 'duration' in cdr['variables'] \
+        and cdr['variables']['duration']:
+        duration = cdr['variables']['duration']
+    else:
+        duration = 0
+    #Get billsec
+    if 'variables' in cdr and 'billsec' in cdr['variables'] \
+        and cdr['variables']['billsec']:
+        billsec = cdr['variables']['billsec']
+    else:
+        billsec = 0
+    #Get direction
+    if 'variables' in cdr and 'direction' in cdr['variables']:
+        direction = cdr['variables']['direction']
+    else:
+        direction = 'inbound'
+    #Get uuid
+    if 'variables' in cdr and 'uuid' in cdr['variables']:
+        uuid = cdr['variables']['uuid']
+    else:
+        uuid = ''
+    #Get caller_id_number
+    if 'callflow' in cdr and 'caller_profile' in cdr['callflow'] \
+        and 'caller_id_number' in cdr['callflow']['caller_profile']:
+        caller_id_number = cdr['callflow']['caller_profile']['caller_id_number']
+    else:
+        caller_id_number = ''
+    #Get caller_id_name
+    if 'callflow' in cdr and 'caller_profile' in cdr['callflow'] \
+        and 'caller_id_name' in cdr['callflow']['caller_profile']:
+        caller_id_name = cdr['callflow']['caller_profile']['caller_id_name']
+    else:
+        caller_id_name = ''
 
     data_element = {
         'accountcode': accountcode,
