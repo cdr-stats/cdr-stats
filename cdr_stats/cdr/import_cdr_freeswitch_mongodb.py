@@ -139,9 +139,9 @@ def create_daily_analytic(daily_date, switch_id, country_id,
                 "call_daily": 1,
                 "call_hourly.%d" % (hour,): 1,
                 "call_minute.%d.%d" % (hour, minute,): 1,
-                "duration_daily": duration,
-                "duration_hourly.%d" % (hour,): duration,
-                "duration_minute.%d.%d" % (hour, minute,): duration,
+                "duration_daily": int(duration),
+                "duration_hourly.%d" % (hour,): int(duration),
+                "duration_minute.%d.%d" % (hour, minute,): int(duration),
                 }
         }, upsert=True)
 
@@ -189,10 +189,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
     #we dont have several time the same tasks running
 
     PAGE_SIZE = 1000
-    data_to_import = True
     count_import = 0
-
-    data_to_import = False
     local_count_import = 0
 
     #Store cdr in list to insert by bulk
@@ -229,8 +226,6 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
     #Retrieve FreeSWITCH CDRs
     for cdr in result:
         #find result so let's look later for more records
-        data_to_import = True
-
         start_uepoch = datetime.datetime.fromtimestamp(
                         int(cdr['variables']['start_uepoch'][:10]))
         # Check Destination number
