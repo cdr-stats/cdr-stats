@@ -195,7 +195,7 @@ def create_monthly_analytic(daily_date, start_uepoch, switch_id,
             {
             "$inc": {
                 "call_monthly": 1,
-                "duration_monthly": duration,
+                "duration_monthly": int(duration),
                 }
         }, upsert=True)
 
