@@ -32,9 +32,13 @@
         <td>{{ row.accountcode }}</td>
         <td>
             <div class="flag_icon">
-                {% cache 1800 country_data row.country_id %}
-                    <img src="{{STATIC_URL}}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name }}">
-                {% endcache %}
+                {% if row.country_id %}
+                    {% cache 1800 country_data row.country_id %}
+                        <img src="{{STATIC_URL}}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name }}">
+                    {% endcache %}
+                {% else %}
+                    <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip">
+                {% endif %}
                 <img src="{{STATIC_URL}}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans "Authorized call" %}"/>
                 {% ifequal row.direction 'inbound' %}
                     <img src="{{STATIC_URL}}cdr-stats/icons/door_in.png" title="{{ row.direction|capfirst }} {% trans "call" %}" class="elemtooltip"/>
@@ -101,10 +105,13 @@
                             {% for country_data in country_analytic_array %}
                             <tr>
                                 <td class="td-dashboard">
-
-                                    {% cache 1800 country_data country_data.3 %}
-                                        <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
-                                    {% endcache %}
+                                    {% if country_data.3 %}
+                                        {% cache 1800 country_data country_data.3 %}
+                                            <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
+                                        {% endcache %}
+                                    {% else %}
+                                        <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip">
+                                    {% endif %}
                                 </td>
                                 <td class="td-dashboard" width="100">{{ country_data.0 }}</td>
                                 <td width="100">{{ country_data.1 }} {% trans "Calls"%}</td>
