@@ -20,14 +20,12 @@ from cache_utils.decorators import cached
 import re
 
 
-@cached(3600)
 def get_switch_list():
     """Switch list used in form"""
     list = Switch.objects.all()
     return ((l.id, l.name) for l in list)
 
 
-@cached(3600)
 def get_country_list():
     """Country list used in form"""
     list = Country.objects.all()

@@ -54,8 +54,11 @@ CACHES = {
     }
 }
 
-#include for cache machine : http://jbalogh.me/projects/cache-machine/
+#Include for cache machine : http://jbalogh.me/projects/cache-machine/
 CACHE_BACKEND = 'caching.backends.locmem://'
+
+#Calls to QuerySet.count() can be cached,
+CACHE_COUNT_TIMEOUT = 60  # seconds, not too long.
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
