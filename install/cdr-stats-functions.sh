@@ -319,12 +319,12 @@ func_install_frontend(){
     #Install CDR-Stats depencencies
     easy_install -U distribute
     echo "Install basic requirements..."
-    for line in $(cat /usr/src/cdr-stats/install/requirements/basic-requirements.txt)
+    for line in $(cat /usr/src/cdr-stats/install/requirements/basic-requirements.txt | grep -v \#)
     do
         pip install $line
     done
     echo "Install Django requirements..."
-    for line in $(cat /usr/src/cdr-stats/install/requirements/django-requirements.txt)
+    for line in $(cat /usr/src/cdr-stats/install/requirements/django-requirements.txt | grep -v \#)
     do
         pip install $line
     done
