@@ -15,7 +15,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from datetime import datetime, timedelta
 
-from common.test_utils import build_test_suite_from
+from common.utils import build_test_suite_from
 
 from cdr.models import Switch, HangupCause
 from cdr.tasks import sync_cdr_pending, get_channels_info
