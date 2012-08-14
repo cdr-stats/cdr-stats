@@ -12,75 +12,42 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.contrib.auth.models import User
-from django.test import TestCase, Client
+from django.test import TestCase
 from datetime import datetime, timedelta
 from common.utils import BaseAuthenticatedClient
 
 from cdr.models import Switch, HangupCause
 from cdr.tasks import sync_cdr_pending, get_channels_info
-from cdr_alert.models import AlertRemovePrefix, Alarm, AlarmReport, Blacklist, Whitelist
+
 from cdr_alert.tasks import send_cdr_report, blacklist_whitelist_notification, chk_alarm
-from user_profile.models import UserProfile
 
 
 class CdrStatsAdminInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Admin Interface."""
 
-    def test_admin_cdrstats(self):
-        """Test Function to check Cdr-Stats Admin pages"""
-        response = self.client.get('/admin/auth/')
-        self.failUnlessEqual(response.status_code, 200)
-
+    def test_admin_switch_list(self):
+        """Test Function to check admin switch list"""
         response = self.client.get('/admin/cdr/switch/')
         self.failUnlessEqual(response.status_code, 200)
+
+    def test_admin_switch_add(self):
+        """Test Function to check admin switch add"""
         response = self.client.get('/admin/cdr/switch/add/')
         self.failUnlessEqual(response.status_code, 200)
+
+    def test_admin_switch_import_cdr(self):
+        """Test Function to check admin cdr import"""
         response = self.client.post('/admin/cdr/switch/import_cdr/', {'switch_id': 1,})
         self.failUnlessEqual(response.status_code, 200)
 
-
+    def test_admin_hangupcause_list(self):
+        """Test Function to check admin hangupcause list"""
         response = self.client.get('/admin/cdr/hangupcause/')
         self.failUnlessEqual(response.status_code, 200)
+
+    def test_admin_hangupcause_add(self):
+        """Test Function to check admin hangupcause add"""
         response = self.client.get('/admin/cdr/hangupcause/add/')
-        self.failUnlessEqual(response.status_code, 200)
-
-        response = self.client.get('/admin/cdr_alert/alarm/')
-        self.failUnlessEqual(response.status_code, 200)
-        response = self.client.get('/admin/cdr_alert/alarm/add/')
-        self.failUnlessEqual(response.status_code, 200)
-
-        response = self.client.get('/admin/cdr_alert/alarmreport/')
-        self.failUnlessEqual(response.status_code, 200)
-
-        response = self.client.get('/admin/cdr_alert/alertremoveprefix/')
-        self.failUnlessEqual(response.status_code, 200)
-        response = self.client.get('/admin/cdr_alert/alertremoveprefix/add/')
-        self.failUnlessEqual(response.status_code, 200)
-
-        response = self.client.get('/admin/cdr_alert/whitelist/')
-        self.failUnlessEqual(response.status_code, 200)
-        response = self.client.get('/admin/cdr_alert/whitelist/whitelist_by_country/')
-        self.failUnlessEqual(response.status_code, 200)
-        response = self.client.post('/admin/cdr_alert/whitelist/whitelist_by_country/',
-                                    {'country': 198,})
-        self.failUnlessEqual(response.status_code, 200)
-
-        response = self.client.get('/admin/cdr_alert/blacklist/')
-        self.failUnlessEqual(response.status_code, 200)
-        response = self.client.get('/admin/cdr_alert/blacklist/blacklist_by_country/')
-        self.failUnlessEqual(response.status_code, 200)
-        response = self.client.post('/admin/cdr_alert/blacklist/blacklist_by_country/',
-                                    {'country': 198,})
-        self.failUnlessEqual(response.status_code, 200)
-
-        response = self.client.get('/admin/country_dialcode/country/')
-        self.failUnlessEqual(response.status_code, 200)
-        response = self.client.get('/admin/country_dialcode/country/add/')
-        self.failUnlessEqual(response.status_code, 200)
-
-        response = self.client.get('/admin/country_dialcode/prefix/')
-        self.failUnlessEqual(response.status_code, 200)
-        response = self.client.get('/admin/country_dialcode/prefix/add/')
         self.failUnlessEqual(response.status_code, 200)
 
 
@@ -178,84 +145,63 @@ class CdrStatsTaskTestCase(TestCase):
 
     fixtures = ['auth_user.json']
 
-    def testTask(self):
+    def test_blacklist_whitelist_notification(self):
+        """Test task : blacklist_whitelist_notification"""
         # notice_type = 3 blacklist
         result = blacklist_whitelist_notification.delay(3)
         self.assertEquals(result.get(), True)
-        # notice_type = 4 whitelist
+
         result = blacklist_whitelist_notification.delay(4)
         self.assertEquals(result.get(), True)
 
+    def test_chk_alarm(self):
+        """Test task : chk_alarm"""
         # PeriodicTask
         result = chk_alarm().run()
         self.assertEquals(result, True)
 
+    def test_get_channels_info(self):
+        """Test task : get_channels_info"""
         delta = timedelta(seconds=1)
         self.assertEqual(get_channels_info().timedelta_seconds(delta), 1)
 
+    def test_sync_cdr_pending(self):
+        """Test task : sync_cdr_pending"""
         delta = timedelta(seconds=1)
         self.assertEqual(sync_cdr_pending().timedelta_seconds(delta), 1)
 
+    def test_send_cdr_report(self):
+        """Test task : send_cdr_report"""
         delta = timedelta(seconds=1)
         self.assertEqual(send_cdr_report().timedelta_seconds(delta), 1)
 
 
-class CdrStatsModelTestCase(BaseAuthenticatedClient):
+class CdrModelTestCase(TestCase):
+    """Test Switch, Alarm, HangupCause models"""
 
-    def testSwitch(self):
-        obj = Switch(name='localhost', ipaddress='127.0.0.1')
-        obj.save()
-        self.assertEquals('localhost', obj.name)
-        self.assertNotEquals(obj.id, None)
-        obj.delete()
+    fixtures = ['hangup_cause.json']
 
-    def testHangupCause(self):
-        obj = HangupCause(code=1, enumeration='UNALLOCATED_NUMBER')
-        obj.save()
-        self.assertEquals(1, obj.code)
-        self.assertNotEquals(obj.id, None)
-        obj.delete()
+    def setUp(self):
+        """Create model object"""
+        # Switch model
+        self.switch = Switch(
+            name='localhost',
+            ipaddress='127.0.0.1'
+            )
+        self.switch.save()
 
-    def testAlertRemovePrefix(self):
-        obj = AlertRemovePrefix(label='test', prefix=32)
-        obj.save()
-        self.assertEquals('test', obj.label)
-        self.assertNotEquals(obj.id, None)
-        obj.delete()
+        self.hangupcause = HangupCause(
+            code=700,
+            enumeration='UNALLOCATED_NUMBER'
+            )
+        self.hangupcause.save()
 
-    def testAlarm(self):
-        obj = Alarm(name='Alarm name', period=1, type=1, alert_condition=1,
-            alert_value=10, alert_condition_add_on=1, status=1,
-            email_to_send_alarm='localhost@cdr-stats.org')
-        obj.save()
-        self.assertEquals('Alarm name', obj.name)
-        self.assertNotEquals(obj.id, None)
-        obj.delete()
+    def test_model_value(self):
+        """Create model object value"""
+        self.assertEquals(self.switch.name, 'localhost')
+        self.assertEquals(self.hangupcause.enumeration, 'UNALLOCATED_NUMBER')
 
-    def testAlarmReport(self):
-        obj = AlarmReport(alarm_id=1, calculatedvalue=10, status=1)
-        obj.save()
-        self.assertEquals(1, obj.alarm_id)
-        self.assertNotEquals(obj.id, None)
-        obj.delete()
-
-    def testBlacklist(self):
-        obj = Blacklist(phonenumber_prefix=32, country_id=198)
-        obj.save()
-        self.assertEquals(32, obj.phonenumber_prefix)
-        self.assertNotEquals(obj.id, None)
-        obj.delete()
-
-    def testWhitelist(self):
-        obj = Whitelist(phonenumber_prefix=32, country_id=198)
-        obj.save()
-        self.assertEquals(32, obj.phonenumber_prefix)
-        self.assertNotEquals(obj.id, None)
-        obj.delete()
-
-    def testUserProfile(self):
-        obj = UserProfile(user_id=1, address='xyz', city='abc')
-        obj.save()
-        self.assertEquals(1, obj.user_id)
-        self.assertNotEquals(obj.id, None)
-        obj.delete()
+    def tearDown(self):
+        """Delete created object"""
+        self.switch.delete()
+        self.hangupcause.delete()
