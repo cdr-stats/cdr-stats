@@ -20,16 +20,16 @@ import re
 register = template.Library()
 
 @register.filter()
-def cal_width(value, max):
-    """Calculate width of image from max value"""
-    width = (value / float(max)) * 200
-    return width
-
-
-@register.filter()
 def seen_unseen(value):
     """Tag is for icon which is
-    used on user notification list"""
+    used on user notification list
+
+    >>> seen_unseen('1')
+    'icon-star'
+
+    >>> seen_unseen('')
+    'icon-ok'
+    """
     if value:
         return "icon-star"
     else:
@@ -39,7 +39,14 @@ def seen_unseen(value):
 @register.filter()
 def seen_unseen_word(value):
     """Tag is for notification status which is
-    used on user notification list"""
+    used on user notification list
+
+    >>> seen_unseen_word('1')
+    'New'
+
+    >>> seen_unseen_word('')
+    'Read'
+    """
     if value:
         return _("New")
     else:
