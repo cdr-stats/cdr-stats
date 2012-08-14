@@ -216,6 +216,15 @@ else:
         'INTERCEPT_REDIRECTS': False,
     }
 
+# Nose
+try:
+    import nose
+except ImportError:
+    pass
+else:
+    INSTALLED_APPS = INSTALLED_APPS + ('django_nose',)
+    TEST_RUNNER = 'utils.test_runner.MyRunner'
+
 # Debug Toolbar mongo
 """
 # commented cause this module doesn't work at the moment

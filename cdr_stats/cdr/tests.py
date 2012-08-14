@@ -14,8 +14,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from datetime import datetime, timedelta
-
-from common.utils import build_test_suite_from
+from common.utils import BaseAuthenticatedClient
 
 from cdr.models import Switch, HangupCause
 from cdr.tasks import sync_cdr_pending, get_channels_info
@@ -23,115 +22,9 @@ from cdr_alert.models import AlertRemovePrefix, Alarm, AlarmReport, Blacklist, W
 from cdr_alert.tasks import send_cdr_report, blacklist_whitelist_notification, chk_alarm
 from user_profile.models import UserProfile
 
-import base64
-import simplejson
 
-
-class BaseAuthenticatedClient(TestCase):
-    """Common Authentication"""
-
-    def setUp(self):
-        """To create admin user"""
-        self.client = Client()
-        self.user = \
-        User.objects.create_user('admin', 'admin@world.com', 'admin')
-        self.user.is_staff = True
-        self.user.is_superuser = True
-        self.user.is_active = True
-        self.user.save()
-        auth = '%s:%s' % ('admin', 'admin')
-        auth = 'Basic %s' % base64.encodestring(auth)
-        auth = auth.strip()
-        self.extra = {
-            'HTTP_AUTHORIZATION': auth,
-        }
-        login = self.client.login(username='admin', password='admin')
-        self.assertTrue(login)
-
-
-class CdrStatsTastypieApiTestCase(BaseAuthenticatedClient):
-    """Test cases for Cdr-Stats API."""
-
-    #def test_create_cdr(self):
-    #    """Test Function to create a cdr"""
-    #    data = simplejson.dumps({})
-    #    response = self.client.post('/api/v1/cdr/',
-    #    data, content_type='application/json', **self.extra)
-    #    self.assertEqual(response.status_code, 201)
-
-    #def test_create_cdr(self):
-    #    """Test Function to create a CDR"""
-    #    data = ('cdr=<?xml version="1.0"?><cdr><other></other><variables><plivo_request_uuid>e8fee8f6-40dd-11e1-964f-000c296bd875</plivo_request_uuid><duration>3</duration></variables><notvariables><plivo_request_uuid>TESTc</plivo_request_uuid><duration>5</duration></notvariables></cdr>')
-    #    response = self.client.post('/api/v1/store_cdr/', data, content_type='application/json', **self.extra)
-    #    self.assertEqual(response.status_code, 200)
-
-    def test_hangupcause(self):
-        """Test Function to create a hangup_cause"""
-        # Create
-        data = simplejson.dumps({"code": "16", "enumeration": "NORMAL_CLEARING"})
-        response = self.client.post('/api/v1/hangup_cause/', data,
-                                    content_type='application/json', **self.extra)
-        self.assertEqual(response.status_code, 201)
-        # Read
-        response = self.client.get('/api/v1/hangup_cause/?format=json', **self.extra)
-        self.assertEqual(response.status_code, 200)
-        # Update
-        data = simplejson.dumps({"code": "16", "enumeration": "NORMAL_CLEARING"})
-        response = self.client.put('/api/v1/hangup_cause/1/',
-                   data, content_type='application/json', **self.extra)
-        self.assertEqual(response.status_code, 204)
-        # Delete
-        response = \
-        self.client.delete('/api/v1/hangup_cause/1/', **self.extra)
-        self.assertEqual(response.status_code, 204)
-
-    def test_switch(self):
-        """Test Function to create a switch"""
-        # Create
-        data = simplejson.dumps({"name": "localhost", "ipaddress": "127.0.0.1"})
-        response = self.client.post('/api/v1/switch/', data,
-                                    content_type='application/json', **self.extra)
-        self.assertEqual(response.status_code, 201)
-        # Read
-        response = self.client.get('/api/v1/switch/?format=json', **self.extra)
-        self.assertEqual(response.status_code, 200)
-        # Update
-        data = simplejson.dumps({"name": "localhost", "ipaddress": "127.0.0.1"})
-        response = self.client.put('/api/v1/switch/1/', data,
-                                   content_type='application/json', **self.extra)
-        self.assertEqual(response.status_code, 204)
-        # Delete
-        response = self.client.delete('/api/v1/switch/1/', **self.extra)
-        self.assertEqual(response.status_code, 204)
-
-
-class CdrStatsAdminInterfaceTestCase(TestCase):
+class CdrStatsAdminInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Admin Interface."""
-
-    def setUp(self):
-        """To create admin user"""
-        self.client = Client()
-        self.user = \
-        User.objects.create_user('admin', 'admin@world.com', 'admin')
-        self.user.is_staff = True
-        self.user.is_superuser = True
-        self.user.is_active = True
-        self.user.save()
-        auth = '%s:%s' % ('admin', 'admin')
-        auth = 'Basic %s' % base64.encodestring(auth)
-        auth = auth.strip()
-        self.extra = {
-            'HTTP_AUTHORIZATION': auth,
-        }
-
-    def test_admin_index(self):
-        """Test Function to check Admin index page"""
-        response = self.client.get('/admin/')
-        self.failUnlessEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'admin/base_site.html')
-        response = self.client.login(username=self.user.username,
-                                     password='admin')
-        self.assertEqual(response, True)
 
     def test_admin_cdrstats(self):
         """Test Function to check Cdr-Stats Admin pages"""
@@ -193,6 +86,8 @@ class CdrStatsAdminInterfaceTestCase(TestCase):
 
 class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Customer Interface."""
+
+    fixtures = ['auth_user.json']
 
     def test_index(self):
         """Test Function to check customer index page"""
@@ -281,6 +176,8 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
 class CdrStatsTaskTestCase(TestCase):
 
+    fixtures = ['auth_user.json']
+
     def testTask(self):
         # notice_type = 3 blacklist
         result = blacklist_whitelist_notification.delay(3)
@@ -303,7 +200,7 @@ class CdrStatsTaskTestCase(TestCase):
         self.assertEqual(send_cdr_report().timedelta_seconds(delta), 1)
 
 
-class CdrStatsModelTestCase(TestCase):
+class CdrStatsModelTestCase(BaseAuthenticatedClient):
 
     def testSwitch(self):
         obj = Switch(name='localhost', ipaddress='127.0.0.1')
@@ -362,16 +259,3 @@ class CdrStatsModelTestCase(TestCase):
         self.assertEquals(1, obj.user_id)
         self.assertNotEquals(obj.id, None)
         obj.delete()
-
-
-test_cases = [
-    CdrStatsTastypieApiTestCase,
-    CdrStatsAdminInterfaceTestCase,
-    CdrStatsCustomerInterfaceTestCase,
-    CdrStatsTaskTestCase,
-    CdrStatsModelTestCase,
-]
-
-
-def suite():
-    return build_test_suite_from(test_cases)
