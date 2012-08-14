@@ -19,10 +19,12 @@ from common.utils import BaseAuthenticatedClient
 from cdr.models import Switch, HangupCause
 from cdr.tasks import sync_cdr_pending, get_channels_info
 
-from cdr_alert.tasks import send_cdr_report, blacklist_whitelist_notification, chk_alarm
+from cdr_alert.tasks import send_cdr_report, \
+                            blacklist_whitelist_notification, \
+                            chk_alarm
 
 
-class CdrStatsAdminInterfaceTestCase(BaseAuthenticatedClient):
+class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Admin Interface."""
 
     def test_admin_switch_list(self):
@@ -35,9 +37,18 @@ class CdrStatsAdminInterfaceTestCase(BaseAuthenticatedClient):
         response = self.client.get('/admin/cdr/switch/add/')
         self.failUnlessEqual(response.status_code, 200)
 
+        response = self.client.post(
+            '/admin/cdr/switch/add/',
+            data={
+                "name": "localhost",
+                "ipaddress": "127.0.0.1",
+                }, follow=True)
+        self.assertEqual(response.status_code, 200)
+
     def test_admin_switch_import_cdr(self):
         """Test Function to check admin cdr import"""
-        response = self.client.post('/admin/cdr/switch/import_cdr/', {'switch_id': 1,})
+        response = self.client.post('/admin/cdr/switch/import_cdr/',
+                {'switch_id': 1,})
         self.failUnlessEqual(response.status_code, 200)
 
     def test_admin_hangupcause_list(self):
@@ -49,6 +60,14 @@ class CdrStatsAdminInterfaceTestCase(BaseAuthenticatedClient):
         """Test Function to check admin hangupcause add"""
         response = self.client.get('/admin/cdr/hangupcause/add/')
         self.failUnlessEqual(response.status_code, 200)
+
+        response = self.client.post(
+            '/admin/cdr/hangupcause/add/',
+            data={
+                "code": "1",
+                "enumeration": "UNALLOCATED_NUMBER",
+                })
+        self.assertEqual(response.status_code, 200)
 
 
 class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
@@ -145,21 +164,6 @@ class CdrStatsTaskTestCase(TestCase):
 
     fixtures = ['auth_user.json']
 
-    def test_blacklist_whitelist_notification(self):
-        """Test task : blacklist_whitelist_notification"""
-        # notice_type = 3 blacklist
-        result = blacklist_whitelist_notification.delay(3)
-        self.assertEquals(result.get(), True)
-
-        result = blacklist_whitelist_notification.delay(4)
-        self.assertEquals(result.get(), True)
-
-    def test_chk_alarm(self):
-        """Test task : chk_alarm"""
-        # PeriodicTask
-        result = chk_alarm().run()
-        self.assertEquals(result, True)
-
     def test_get_channels_info(self):
         """Test task : get_channels_info"""
         delta = timedelta(seconds=1)
@@ -169,11 +173,6 @@ class CdrStatsTaskTestCase(TestCase):
         """Test task : sync_cdr_pending"""
         delta = timedelta(seconds=1)
         self.assertEqual(sync_cdr_pending().timedelta_seconds(delta), 1)
-
-    def test_send_cdr_report(self):
-        """Test task : send_cdr_report"""
-        delta = timedelta(seconds=1)
-        self.assertEqual(send_cdr_report().timedelta_seconds(delta), 1)
 
 
 class CdrModelTestCase(TestCase):

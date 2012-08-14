@@ -23,6 +23,7 @@ from cdr_alert.tasks import send_cdr_report, \
                             blacklist_whitelist_notification, \
                             chk_alarm
 from country_dialcode.models import Country
+from datetime import timedelta
 
 
 class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
@@ -80,6 +81,32 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
         response = self.client.post('/admin/cdr_alert/blacklist/blacklist_by_country/',
                 {'country': 198,})
         self.failUnlessEqual(response.status_code, 200)
+
+
+class CdrAlertTaskTestCase(TestCase):
+
+    fixtures = ['auth_user.json']
+
+    def test_blacklist_whitelist_notification(self):
+        """Test task : blacklist_whitelist_notification"""
+        # notice_type = 3 blacklist
+        result = blacklist_whitelist_notification.delay(3)
+        self.assertEquals(result.get(), True)
+
+        result = blacklist_whitelist_notification.delay(4)
+        self.assertEquals(result.get(), True)
+
+    def test_chk_alarm(self):
+        """Test task : chk_alarm"""
+        # PeriodicTask
+        result = chk_alarm().run()
+        self.assertEquals(result, True)
+
+    def test_send_cdr_report(self):
+        """Test task : send_cdr_report"""
+        delta = timedelta(seconds=1)
+        self.assertEqual(send_cdr_report().timedelta_seconds(delta), 1)
+
 
 
 class CdrAlertModelTestCase(TestCase):
