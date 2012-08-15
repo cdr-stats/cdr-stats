@@ -87,26 +87,31 @@ class BlacklistAdmin(admin.ModelAdmin):
 
             if form.is_valid():
                 country = int(request.POST['country'])
-                prefix_list = Prefix.objects.values('prefix').filter(country_id=country)
+                prefix_list = \
+                    Prefix.objects.values('prefix').filter(country_id=country)
                 msg = _("Successfully added prefix into blacklist")
                 if request.POST.getlist('blacklist_country'):
                     # blacklist whole country
-                    Blacklist.objects.create(phonenumber_prefix=int(prefix_list[0]['prefix']),
-                                             country=Country.objects.get(pk=country))
+                    Blacklist.objects.create(
+                        phonenumber_prefix=int(prefix_list[0]['prefix']),
+                        country=Country.objects.get(pk=country))
 
                     messages.info(request, msg)
-                    return HttpResponseRedirect(reverse("admin:cdr_alert_blacklist_changelist"))
+                    return HttpResponseRedirect(
+                        reverse("admin:cdr_alert_blacklist_changelist"))
 
                 else:
                     values = request.POST.getlist('select')
                     if values:
                         #blacklist_prefix = ", ".join(["%s" % el for el in values])
                         for i in values:
-                            Blacklist.objects.create(phonenumber_prefix=int(i),
-                                                     country=Country.objects.get(pk=country))
+                            Blacklist.objects.create(
+                                phonenumber_prefix=int(i),
+                                country=Country.objects.get(pk=country))
 
                         messages.info(request, msg)
-                        return HttpResponseRedirect(reverse("admin:cdr_alert_blacklist_changelist"))
+                        return HttpResponseRedirect(
+                            reverse("admin:cdr_alert_blacklist_changelist"))
 
 
         ctx = RequestContext(request, {
@@ -161,26 +166,31 @@ class WhitelistAdmin(admin.ModelAdmin):
 
             if form.is_valid():
                 country = int(request.POST['country'])
-                prefix_list = Prefix.objects.values('prefix').filter(country_id=country)
+                prefix_list = \
+                    Prefix.objects.values('prefix').filter(country_id=country)
                 msg = _("Successfully added prefix into whitelist")
                 if request.POST.getlist('whitelist_country'):
                     # whitelist whole country
-                    Whitelist.objects.create(phonenumber_prefix=int(prefix_list[0]['prefix']),
+                    Whitelist.objects.create(
+                        phonenumber_prefix=int(prefix_list[0]['prefix']),
                         country=Country.objects.get(pk=country))
 
                     messages.info(request, msg)
-                    return HttpResponseRedirect(reverse("admin:cdr_alert_whitelist_changelist"))
+                    return HttpResponseRedirect(
+                        reverse("admin:cdr_alert_whitelist_changelist"))
 
                 else:
                     values = request.POST.getlist('select')
                     if values:
                         #blacklist_prefix = ", ".join(["%s" % el for el in values])
                         for i in values:
-                            Whitelist.objects.create(phonenumber_prefix=int(i),
+                            Whitelist.objects.create(
+                                phonenumber_prefix=int(i),
                                 country=Country.objects.get(pk=country))
 
                         messages.info(request, msg)
-                        return HttpResponseRedirect(reverse("admin:cdr_alert_whitelist_changelist"))
+                        return HttpResponseRedirect(
+                            reverse("admin:cdr_alert_whitelist_changelist"))
 
 
         ctx = RequestContext(request, {

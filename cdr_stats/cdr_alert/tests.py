@@ -22,6 +22,7 @@ from cdr_alert.models import AlertRemovePrefix, \
 from cdr_alert.tasks import send_cdr_report, \
                             blacklist_whitelist_notification, \
                             chk_alarm
+from cdr_alert.forms import BWCountryForm
 from country_dialcode.models import Country
 from datetime import timedelta
 
@@ -63,10 +64,17 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
         """Test Function to check alert whitelist by country"""
         response = self.client.get(
             '/admin/cdr_alert/whitelist/whitelist_by_country/')
+        self.assertTrue(response.context['form'], BWCountryForm())
+        self.assertTemplateUsed(
+            response,
+            'admin/cdr_alert/whitelist/whitelist_by_country.html')
         self.failUnlessEqual(response.status_code, 200)
+
         response = self.client.post(
             '/admin/cdr_alert/whitelist/whitelist_by_country/',
-            {'country': 198,})
+            {'country': 198})
+        self.assertTrue(response.context['form'],
+            BWCountryForm({'country': 198}))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_admin_alert_blacklist_list(self):
@@ -76,10 +84,19 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
 
     def test_admin_alert_blacklist_by_country(self):
         """Test Function to check alert blacklist by country"""
-        response = self.client.get('/admin/cdr_alert/blacklist/blacklist_by_country/')
+        response = self.client.get(
+            '/admin/cdr_alert/blacklist/blacklist_by_country/')
+        self.assertTemplateUsed(
+            response,
+            'admin/cdr_alert/blacklist/blacklist_by_country.html')
+        self.assertTrue(response.context['form'], BWCountryForm())
         self.failUnlessEqual(response.status_code, 200)
-        response = self.client.post('/admin/cdr_alert/blacklist/blacklist_by_country/',
-                {'country': 198,})
+
+        response = self.client.post(
+            '/admin/cdr_alert/blacklist/blacklist_by_country/',
+            {'country': 198})
+        self.assertTrue(response.context['form'],
+            BWCountryForm({'country': 198}))
         self.failUnlessEqual(response.status_code, 200)
 
 
