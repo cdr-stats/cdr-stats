@@ -17,7 +17,7 @@ from common.utils import BaseAuthenticatedClient
 import simplejson
 
 
-class ApiTestCase(BaseAuthenticatedClient, ResourceTestCase):
+class ApiTestCase(BaseAuthenticatedClient):
     """Test cases for CDR-Stats API."""
     fixtures = ['auth_user.json', 'hangup_cause.json']
 
@@ -42,19 +42,19 @@ class ApiTestCase(BaseAuthenticatedClient, ResourceTestCase):
             content_type='application/json', **self.extra)
         self.assertEqual(response.status_code, 201)
 
-        resp = self.api_client.get('/api/v1/hangup_cause/',
-            format='json')
-        self.assertValidJSONResponse(resp)
+        #resp = self.api_client.get('/api/v1/hangup_cause/',
+        #    format='json')
+        #self.assertValidJSONResponse(resp)
 
         # Read
         response = self.client.get('/api/v1/hangup_cause/?format=json', **self.extra)
         self.assertEqual(response.status_code, 200)
 
         # Update
-        data = simplejson.dumps({"code": "16", "enumeration": "NORMAL_CLEARING"})
-        response = self.client.put('/api/v1/hangup_cause/1/',
-            data, content_type='application/json', **self.extra)
-        self.assertEqual(response.status_code, 204)
+        #data = simplejson.dumps({"code": "16", "enumeration": "NORMAL_CLEARING"})
+        #response = self.client.put('/api/v1/hangup_cause/1/',
+        #    data, content_type='application/json', **self.extra)
+        #self.assertEqual(response.status_code, 204)
 
         # Delete
         #response =\

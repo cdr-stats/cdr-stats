@@ -270,19 +270,6 @@ class WorldForm(CdrSearchForm):
         self.fields.keyOrder = ['from_date', 'to_date', 'switch']
 
 
-class loginForm(forms.Form):
-    """
-    Form used to login of a user in the Customer UI.
-    """
-    user = forms.CharField(max_length=40, label=_('Login'), required=True)
-    user.widget.attrs['class'] = 'input-small'
-    user.widget.attrs['placeholder'] = 'Username'
-    password = forms.CharField(max_length=40, label=_('Password'),
-                               required=True, widget=forms.PasswordInput())
-    password.widget.attrs['class'] = 'input-small'
-    password.widget.attrs['placeholder'] = 'Password'
-
-
 class EmailReportForm(forms.ModelForm):
     """
     Form used to change the detail of a user in the Customer UI.
