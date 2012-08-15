@@ -17,11 +17,20 @@ from datetime import datetime, timedelta
 from common.utils import BaseAuthenticatedClient
 
 from cdr.models import Switch, HangupCause
+from cdr.forms import CdrSearchForm,\
+                      CountryReportForm,\
+                      CdrOverviewForm,\
+                      CompareCallSearchForm,\
+                      ConcurrentCallForm,\
+                      SwitchForm,\
+                      WorldForm,\
+                      EmailReportForm
 from cdr.tasks import sync_cdr_pending, get_channels_info
-
-from cdr_alert.tasks import send_cdr_report, \
-                            blacklist_whitelist_notification, \
-                            chk_alarm
+from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
+                      cdr_report_by_hour, cdr_concurrent_calls,\
+                      cdr_realtime, cdr_country_report, mail_report,\
+                      world_map_view
+from cdr.views import index
 
 
 class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
@@ -84,79 +93,235 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.failUnlessEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'cdr/registration/user_detail_change.html')
 
+        request = self.factory.get('/')
+        request.user = self.user
+        request.session = {}
+        response = index(request)
+        self.assertEqual(response.status_code, 200)
+
+
     def test_dashboard(self):
         """Test Function to check customer dashboard"""
         response = self.client.get('/dashboard/')
-        self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'cdr/cdr_dashboard.html')
+        self.assertTrue(response.context['form'], SwitchForm())
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.get('/dashboard/')
+        request.user = self.user
+        request.session = {}
+        response = cdr_dashboard(request)
+        self.assertEqual(response.status_code, 200)
+
+        data = {'switch_id': 1}
+        response = self.client.post('/dashboard/', data)
+        self.assertTrue(response.context['form'],
+                        SwitchForm(data))
         self.assertTrue('total_calls' in response.context)
-        response = self.client.post('/dashboard/', {'switch_id': 1})
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.post('/dashboard/', data)
+        request.user = self.user
+        request.session = {}
+        response = cdr_dashboard(request)
         self.assertEqual(response.status_code, 200)
 
     def test_cdr_view(self):
         """Test Function to check cdr_view"""
         response = self.client.get('/cdr_view/')
-        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['form'], CdrSearchForm())
         self.assertTemplateUsed(response, 'cdr/cdr_view.html')
-        response = self.client.post('/cdr_view/', {'switch_id': 1,
-                                                   'from_date': '2012-05-01',
-                                                   'to_date': '2012-05-20',
-                                                   'result': 1,
-                                                   'records_per_page': 10})
         self.assertEqual(response.status_code, 200)
 
+        request = self.factory.get('/cdr_view/')
+        request.user = self.user
+        request.session = {}
+        response = cdr_view(request)
+        self.assertEqual(response.status_code, 200)
+
+        data = {'switch_id': 1,
+                'from_date': '2012-05-01',
+                'to_date': '2012-05-20',
+                'result': 1,
+                'records_per_page': 10}
+        response = self.client.post('/cdr_view/', data)
+        self.assertTrue(response.context['form'], CdrSearchForm(data))
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.post('/cdr_view/', data)
+        request.user = self.user
+        request.session = {}
+        response = cdr_view(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_cdr_overview(self):
+        """Test Function to check cdr_overview"""
         response = self.client.get('/cdr_overview/')
-        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['form'], CdrOverviewForm())
         self.assertTemplateUsed(response, 'cdr/cdr_overview.html')
-        response = self.client.post('/cdr_overview/', {'switch_id': 1,
-                                                       'from_date': '2012-05-01',
-                                                       'to_date': '2012-05-20',})
         self.assertEqual(response.status_code, 200)
 
-    def test_cdr_report_view(self):
-        """Test Function to check cdr-stats view"""
+        request = self.factory.get('/cdr_overview/')
+        request.user = self.user
+        request.session = {}
+        response = cdr_overview(request)
+        self.assertEqual(response.status_code, 200)
+
+        data = {'switch_id': 1,
+                'from_date': '2012-05-01',
+                'to_date': '2012-05-20',}
+        response = self.client.post('/cdr_overview/', data)
+        self.assertTrue(response.context['form'], CdrOverviewForm(data))
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.post('/cdr_overview/', data)
+        request.user = self.user
+        request.session = {}
+        response = cdr_overview(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_cdr_hourly_report(self):
+        """Test Function to check cdr hourly report"""
         response = self.client.get('/hourly_report/')
-        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['form'], CompareCallSearchForm())
         self.assertTemplateUsed(response, 'cdr/cdr_report_by_hour.html')
-        response = self.client.post('/hourly_report/', {'switch_id': 1,
-                                                        'from_date': '2012-05-01',
-                                                        'comp_days': 2,
-                                                        'graph_view': 1,
-                                                        'check_days': 2,
-                                                        'result': 'min'})
         self.assertEqual(response.status_code, 200)
 
+        request = self.factory.get('/hourly_report/')
+        request.user = self.user
+        request.session = {}
+        response = cdr_report_by_hour(request)
+        self.assertEqual(response.status_code, 200)
+
+        data = {'switch_id': 1,
+                'from_date': '2012-05-01',
+                'comp_days': 2,
+                'graph_view': 1,
+                'check_days': 2,
+                'result': 'min'}
+        response = self.client.post('/hourly_report/', data)
+        self.assertTrue(response.context['form'], CompareCallSearchForm(data))
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.post('/hourly_report/', data)
+        request.user = self.user
+        request.session = {}
+        response = cdr_report_by_hour(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_cdr_concurrent_calls(self):
+        """Test Function to check concurrent calls"""
         response = self.client.get('/cdr_concurrent_calls/')
-        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['form'], ConcurrentCallForm())
         self.assertTemplateUsed(response, 'cdr/cdr_graph_concurrent_calls.html')
-        response = self.client.post('/cdr_concurrent_calls/', {'switch_id': 1,
-                                                               'from_date': '2012-05-01'})
         self.assertEqual(response.status_code, 200)
 
+        request = self.factory.get('/cdr_concurrent_calls/')
+        request.user = self.user
+        request.session = {}
+        response = cdr_concurrent_calls(request)
+        self.assertEqual(response.status_code, 200)
+
+        data = {'switch_id': 1,
+                'from_date': '2012-05-01'}
+        response = self.client.post('/cdr_concurrent_calls/', data)
+        self.assertTrue(response.context['form'], ConcurrentCallForm(data))
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.post('/cdr_concurrent_calls/', data)
+        request.user = self.user
+        request.session = {}
+        response = cdr_concurrent_calls(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_cdr_realtime(self):
+        """Test Function to check realtime calls"""
         response = self.client.get('/cdr_realtime/')
-        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['form'], SwitchForm())
         self.assertTemplateUsed(response, 'cdr/cdr_graph_realtime.html')
-        response = self.client.post('/cdr_realtime/', {'switch_id': 1})
         self.assertEqual(response.status_code, 200)
 
+        request = self.factory.get('/cdr_realtime/')
+        request.user = self.user
+        request.session = {}
+        response = cdr_realtime(request)
+        self.assertEqual(response.status_code, 200)
+
+        data = {'switch_id': 1}
+        response = self.client.post('/cdr_realtime/', data)
+        self.assertTrue(response.context['form'], SwitchForm(data))
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.post('/cdr_realtime/', data)
+        request.user = self.user
+        request.session = {}
+        response = cdr_realtime(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_cdr_country_report(self):
+        """Test Function to check country report"""
         response = self.client.get('/country_report/')
-        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['form'], CountryReportForm())
         self.assertTemplateUsed(response, 'cdr/cdr_country_report.html')
-        response = self.client.post('/country_report/', {'switch_id': 1,
-                                                         'from_date': '2012-05-01',
-                                                         'to_date': '2012-05-20',})
         self.assertEqual(response.status_code, 200)
 
+        request = self.factory.get('/country_report/')
+        request.user = self.user
+        request.session = {}
+        response = cdr_country_report(request)
+        self.assertEqual(response.status_code, 200)
+
+        data = {'switch_id': 1,
+                'from_date': '2012-05-01',
+                'to_date': '2012-05-20',}
+        response = self.client.post('/country_report/', data)
+        self.assertTrue(response.context['form'], CountryReportForm(data))
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.post('/country_report/', data)
+        request.user = self.user
+        request.session = {}
+        response = cdr_country_report(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_cdr_mail_report(self):
+        """Test Function to check mail report"""
         response = self.client.get('/mail_report/')
-        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['form'], EmailReportForm(self.user))
         self.assertTemplateUsed(response, 'cdr/cdr_mail_report.html')
-
-        response = self.client.get('/world_map/')
         self.assertEqual(response.status_code, 200)
+
+        request = self.factory.get('/mail_report/')
+        request.user = self.user
+        request.session = {}
+        response = mail_report(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_cdr_world_map(self):
+        """Test Function to check world map"""
+        response = self.client.get('/world_map/')
         self.assertTemplateUsed(response, 'cdr/world_map.html')
-        response = self.client.post('/world_map/', {'switch_id': 1,
-                                                    'from_date': '2012-05-01',
-                                                    'to_date': '2012-05-20',})
+        self.assertTrue(response.context['form'], WorldForm())
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.get('/world_map/')
+        request.user = self.user
+        request.session = {}
+        response = world_map_view(request)
+        self.assertEqual(response.status_code, 200)
+
+
+        data = {'switch_id': 1,
+                'from_date': '2012-05-01',
+                'to_date': '2012-05-20',}
+        response = self.client.post('/world_map/', data)
+        self.assertTrue(response.context['form'], WorldForm(data))
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.post('/world_map/', data)
+        request.user = self.user
+        request.session = {}
+        response = world_map_view(request)
         self.assertEqual(response.status_code, 200)
 
 

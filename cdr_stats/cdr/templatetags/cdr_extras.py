@@ -90,9 +90,11 @@ def hangupcause_name_with_title(id):
     try:
         val = get_hangupcause_name(id)
         t = re.sub("([a-z])'([A-Z])",
-                        lambda m: m.group(0).lower(), val.title())
+                   lambda m: m.group(0).lower(),
+                   val.title())
         return re.sub("\d([A-Z])",
-                        lambda m: m.group(0).lower(), t)
+                      lambda m: m.group(0).lower(),
+                      t)
     except:
         return ''
 

@@ -58,7 +58,7 @@ def login_view(request):
         * If submitted user credentials are valid then system will redirect to
           the dashboard.
     """
-    template = 'frontend/index.html'
+    template = 'cdr/index.html'
     errorlogin = ''
 
     if request.method == 'POST':

@@ -14,8 +14,8 @@
 
 from django.test import TestCase
 from common.utils import BaseAuthenticatedClient
-from frontend.forms import LoginForm, DashboardForm
-from frontend.views import index, login_view
+from frontend.forms import LoginForm
+from frontend.views import login_view
 
 
 class FrontendView(BaseAuthenticatedClient):
@@ -39,21 +39,15 @@ class FrontendCustomerView(BaseAuthenticatedClient):
         response = self.client.get('/')
         self.assertTrue(response.context['loginform'], LoginForm())
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'frontend/index.html')
+        self.assertTemplateUsed(response, 'cdr/index.html')
         response = self.client.post('/login/',
                                     {'username': 'admin',
                                      'password': 'admin'})
         self.assertEqual(response.status_code, 200)
 
-        request = self.factory.get('/')
-        request.user = self.user
-        request.session = {}
-        response = index(request)
-        self.assertEqual(response.status_code, 200)
-
         request = self.factory.post('/login/',
-                                    {'username': 'admin',
-                                     'password': 'admin'})
+                {'username': 'admin',
+                 'password': 'admin'})
         request.user = self.user
         request.session = {}
         response = login_view(request)
