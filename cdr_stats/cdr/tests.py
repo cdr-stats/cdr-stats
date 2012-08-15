@@ -13,9 +13,8 @@
 #
 from django.contrib.auth.models import User
 from django.test import TestCase
-from datetime import datetime, timedelta
+from django.core.management import call_command
 from common.utils import BaseAuthenticatedClient
-
 from cdr.models import Switch, HangupCause
 from cdr.forms import CdrSearchForm,\
                       CountryReportForm,\
@@ -31,6 +30,7 @@ from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
                       cdr_realtime, cdr_country_report, mail_report,\
                       world_map_view
 from cdr.views import index
+from datetime import timedelta
 
 
 class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
@@ -360,6 +360,7 @@ class CdrModelTestCase(TestCase):
             )
         self.hangupcause.save()
 
+
     def test_model_value(self):
         """Create model object value"""
         self.assertEquals(self.switch.name, 'localhost')
@@ -369,3 +370,15 @@ class CdrModelTestCase(TestCase):
         """Delete created object"""
         self.switch.delete()
         self.hangupcause.delete()
+
+    def test_mgt_command(self):
+        # Test mgt command
+        call_command("generate_cdr",
+            "--number-cdr=100 --delta-day=0 --duration=10")
+
+        call_command("sync_cdr_freeswitch", "--apply-index")
+
+        call_command("sync_cdr_asterisk", "--apply-index")
+
+        call_command("generate_concurrent_call", "--delta-day=0")
+
