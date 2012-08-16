@@ -35,6 +35,24 @@ then CDR-Stats is a useful tool to analyse the data and look for patterns in the
 may indicate problems or potential fraud. Furthermore, CDR-Stats can be configured to send email 
 alerts on detection of unusual activity, as well as send daily reports on traffic.
 
+
+How to start over, delete CDRs and relaunch the import ?
+--------------------------------------------------------
+
+**Answer:** .
+
+First drop your current mongoDB, you can do this with this command::
+
+    $ mongo cdr-stats --eval 'db.dropDatabase();'
+
+The next step will be to update all your CDRs to be reimported as we flag them after import.
+This step will depend of your original CDR backend, if you are using Mysql with Asterisk for instance, 
+you can run this command on your Database::
+
+    $ UPDATE  cdr SET  import_cdr =  '0';
+
+
+
 What should I do if I have problems?
 ------------------------------------
 
