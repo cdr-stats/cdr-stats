@@ -6,7 +6,6 @@
 {% block title %}{% trans "CDR View" %}{% endblock %}
 
 {% block extra_header %}
-
     <script type="text/javascript">
     $(function() {
         var dates = $('#id_from_date, #id_to_date').datepicker({
@@ -247,7 +246,13 @@
             {% for row in rows %}
             <tr>
                 <td>{{ row.start_uepoch }}</td>
-                <td>{{ row.caller_id_number }} - {{ row.caller_id_name }}</td>
+                <td>
+                    {{ row.caller_id_number }}
+                    {% if row.caller_id_number and row.caller_id_name %}
+                        -
+                    {% endif %}
+                    {{ row.caller_id_name }}
+                </td>
                 <td>{{ row.destination_number }}</td>
                 <td>{% if result == 1 %}
                         {{ row.duration|conv_min }}

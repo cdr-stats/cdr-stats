@@ -528,7 +528,7 @@ def cdr_view(request):
         sort_field = 'start_uepoch'  # default sort field
         default_order = -1  # desc
     else:
-        if "-" in sort_field:
+        if '-' in sort_field:
             default_order = -1
             sort_field = sort_field[1:]
             col_name_with_order[sort_field] = sort_field
