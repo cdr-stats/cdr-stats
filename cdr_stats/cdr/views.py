@@ -351,25 +351,26 @@ def cdr_view(request):
                             23, 59, 59, 999999) + relativedelta(months=1)) \
                             - relativedelta(days=1)).strftime('%d')
             end_date = tday.strftime('%Y-%m-' + last_day)
-            template_data = {'module': current_view(request),
-                             'rows': rows,
-                             'form': form,
-                             'PAGE_SIZE': PAGE_SIZE,
-                             'total_data': detail_data,
-                             'total_duration': total_duration,
-                             'total_calls': total_calls,
-                             'total_avg_duration': total_avg_duration,
-                             'max_duration': max_duration,
-                             'user': request.user,
-                             'search_tag': search_tag,
-                             'col_name_with_order': col_name_with_order,
-                             'menu': menu,
-                             'start_date': start_date,
-                             'end_date': end_date,
-                             'action': action,
-                             'result': result,
-                             'notice_count': notice_count(request),
-                             }
+            template_data = {
+                            'module': current_view(request),
+                            'rows': rows,
+                            'form': form,
+                            'PAGE_SIZE': PAGE_SIZE,
+                            'total_data': detail_data,
+                            'total_duration': total_duration,
+                            'total_calls': total_calls,
+                            'total_avg_duration': total_avg_duration,
+                            'max_duration': max_duration,
+                            'user': request.user,
+                            'search_tag': search_tag,
+                            'col_name_with_order': col_name_with_order,
+                            'menu': menu,
+                            'start_date': start_date,
+                            'end_date': end_date,
+                            'action': action,
+                            'result': result,
+                            'notice_count': notice_count(request),
+                            }
             logging.debug('CDR View End')
             return render_to_response(template_name, template_data,
                 context_instance=RequestContext(request))
