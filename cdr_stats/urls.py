@@ -13,7 +13,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-from django.conf.urls.defaults import url, patterns, include
+from django.conf.urls import url, patterns, include
 from django.conf import settings
 from tastypie.api import Api
 from api.user_api import UserResource

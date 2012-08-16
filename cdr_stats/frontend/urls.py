@@ -11,7 +11,7 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.conf.urls.defaults import patterns
+from django.conf.urls import patterns
 
 
 urlpatterns = patterns('frontend.views',

@@ -12,7 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-from django.conf.urls.defaults import patterns, include
+from django.conf.urls import patterns, include
 
 
 urlpatterns = patterns('',
