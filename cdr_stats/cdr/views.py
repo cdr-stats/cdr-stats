@@ -1345,7 +1345,10 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
                             int(i['_id']['c_Day']))
         for j in range(0, 24):
             if graph_view == 1:  # Calls per hour
-                calldate__count = int(i['value']['calldate__count'][j])
+                try:
+                    calldate__count = int(i['value']['calldate__count'][j])
+                except KeyError:
+                    calldate__count = 0
                 total_analytic_final.append((str(called_time)[:10],
                                              j,
                                              calldate__count,
