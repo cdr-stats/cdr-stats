@@ -45,8 +45,8 @@ from cdr.forms import CdrSearchForm, \
                         ConcurrentCallForm, \
                         SwitchForm, \
                         WorldForm, \
-                        loginForm, \
                         EmailReportForm
+from frontend.forms import LoginForm
 from user_profile.models import UserProfile
 from cdr.mapreduce import *
 from operator import itemgetter, attrgetter
@@ -66,6 +66,38 @@ news_url = settings.NEWS_URL
 cdr_data = settings.DBCON[settings.MG_CDR_COMMON]
 #db.cdr.ensureIndex({"variables.answer_stamp":1}, {background:true});
 (map, reduce, finalfc, out) = mapreduce_cdr_view()
+
+
+def index(request):
+    """Index Page of CDR-Stats
+
+    **Attributes**:
+
+        * ``template`` - cdr/index.html
+        * ``form`` - loginForm
+    """
+    template = 'cdr/index.html'
+    errorlogin = ''
+    loginform = LoginForm()
+
+    if request.GET.get('db_error'):
+        if request.GET['db_error'] == 'closed':
+            errorlogin = _('Mongodb Database connection is closed!')
+        if request.GET['db_error'] == 'locked':
+            errorlogin = _('Mongodb Database is locked!')
+
+    code_error = _('Account code is not assigned!')
+    if request.GET.get('acc_code_error'):
+        if request.GET['acc_code_error'] == 'true':
+            errorlogin = code_error
+
+    data = {'module': current_view(request),
+            'loginform': loginform,
+            'errorlogin': errorlogin,
+            'news': get_news(news_url),
+            }
+    return render_to_response(template, data,
+        context_instance=RequestContext(request))
 
 
 def notice_count(request):
@@ -118,64 +150,6 @@ def check_cdr_data_exists(request):
         return False
     else:
         return True
-
-
-def login_view(request):
-    """Login view
-
-    **Attributes**:
-
-        * ``template`` - cdr/index.html
-        * ``form`` - loginForm
-    """
-
-    template = 'cdr/index.html'
-    errorlogin = ''
-    if request.method == 'POST':
-        try:
-            action = request.POST['action']
-        except (KeyError):
-            action = "login"
-
-        if action == "logout":
-            logout(request)
-        else:
-            loginform = loginForm(request.POST)
-            if loginform.is_valid():
-                cd = loginform.cleaned_data
-                user = authenticate(
-                            username=cd['user'],
-                            password=cd['password'])
-                if user is not None:
-                    if user.is_active:
-                        login(request, user)
-                        # Redirect to a success page.
-                    else:
-                        # Return a 'disabled account' error message
-                        errorlogin = _('Disabled Account')  # True
-                else:
-                    # Return an 'invalid login' error message.
-                    errorlogin = _('Invalid Login.')  # True
-            else:
-                return HttpResponseRedirect('/')
-    else:
-        loginform = None
-
-    data = {
-        'loginform': loginform,
-        'errorlogin': errorlogin,
-        'news': get_news(news_url),
-        'is_authenticated': request.user.is_authenticated()
-    }
-    return render_to_response(
-                template,
-                data,
-                context_instance=RequestContext(request))
-
-
-def logout_view(request):
-    logout(request)
-    return HttpResponseRedirect('/')
 
 
 def cdr_view_daily_report(query_var):
@@ -1214,118 +1188,6 @@ def mail_report(request):
            context_instance=RequestContext(request))
 
 
-def index(request):
-    """Index Page of CDR-Stats
-
-    **Attributes**:
-
-        * ``template`` - cdr/index.html
-        * ``form`` - loginForm
-    """
-    template = 'cdr/index.html'
-    errorlogin = ''
-    loginform = loginForm()
-
-    if request.GET.get('db_error'):
-        if request.GET['db_error'] == 'closed':
-            errorlogin = _('Mongodb Database connection is closed!')
-        if request.GET['db_error'] == 'locked':
-            errorlogin = _('Mongodb Database is locked!')
-
-    code_error = _('Account code is not assigned!')
-    if request.GET.get('acc_code_error'):
-        if request.GET['acc_code_error'] == 'true':
-            errorlogin = code_error
-
-    data = {'module': current_view(request),
-            'loginform': loginform,
-            'errorlogin': errorlogin,
-            'news': get_news(news_url),
-    }
-    return render_to_response(template, data,
-           context_instance=RequestContext(request))
-
-
-def pleaselog(request):
-    template = 'cdr/index.html'
-    loginform = loginForm()
-
-    data = {
-        'loginform': loginform,
-        'notlogged': True,
-        'news': get_news(news_url),
-    }
-    return render_to_response(template, data,
-            context_instance=RequestContext(request))
-
-
-def cust_password_reset(request):
-    """Use ``django.contrib.auth.views.password_reset`` view method for
-    forgotten password on the Customer UI
-
-    This method sends an e-mail to the user's email-id which is entered in
-    ``password_reset_form``
-    """
-    if not request.user.is_authenticated():
-        data = {'loginform': loginForm()}
-        return password_reset(request,
-        template_name='cdr/registration/password_reset_form.html',
-        email_template_name='cdr/registration/password_reset_email.html',
-        post_reset_redirect='/password_reset/done/',
-        from_email='cdr_admin@localhost.com',
-        extra_context=data)
-    else:
-        return HttpResponseRedirect("/")
-
-
-def cust_password_reset_done(request):
-    """Use ``django.contrib.auth.views.password_reset_done`` view method for
-    forgotten password on the Customer UI
-
-    This will show a message to the user who is seeking to reset their
-    password.
-    """
-    if not request.user.is_authenticated():
-        data = {'loginform': loginForm()}
-        return password_reset_done(request,
-        template_name='cdr/registration/password_reset_done.html',
-        extra_context=data)
-    else:
-        return HttpResponseRedirect("/")
-
-
-def cust_password_reset_confirm(request, uidb36=None, token=None):
-    """Use ``django.contrib.auth.views.password_reset_confirm`` view method for
-    forgotten password on the Customer UI
-
-    This will allow a user to reset their password.
-    """
-    if not request.user.is_authenticated():
-        data = {'loginform': loginForm()}
-        return password_reset_confirm(request, uidb36=uidb36, token=token,
-        template_name='cdr/registration/password_reset_confirm.html',
-        post_reset_redirect='/reset/done/',
-        extra_context=data)
-    else:
-        return HttpResponseRedirect("/")
-
-
-def cust_password_reset_complete(request):
-    """Use ``django.contrib.auth.views.password_reset_complete`` view method
-    for forgotten password on theCustomer UI
-
-    This shows an acknowledgement to the user after successfully resetting
-    their password for the system.
-    """
-    if not request.user.is_authenticated():
-        data = {'loginform': loginForm()}
-        return password_reset_complete(request,
-        template_name='cdr/registration/password_reset_complete.html',
-        extra_context=data)
-    else:
-        return HttpResponseRedirect("/")
-
-
 def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
     hourly_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
     logging.debug('Map-reduce cdr hourly report')
@@ -2125,3 +1987,4 @@ def world_map_view(request):
 
     return render_to_response(template, variables,
         context_instance=RequestContext(request))
+

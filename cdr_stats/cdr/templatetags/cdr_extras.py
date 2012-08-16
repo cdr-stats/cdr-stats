@@ -20,16 +20,16 @@ import re
 register = template.Library()
 
 @register.filter()
-def cal_width(value, max):
-    """Calculate width of image from max value"""
-    width = (value / float(max)) * 200
-    return width
-
-
-@register.filter()
 def seen_unseen(value):
     """Tag is for icon which is
-    used on user notification list"""
+    used on user notification list
+
+    >>> seen_unseen('1')
+    'icon-star'
+
+    >>> seen_unseen('')
+    'icon-ok'
+    """
     if value:
         return "icon-star"
     else:
@@ -39,7 +39,14 @@ def seen_unseen(value):
 @register.filter()
 def seen_unseen_word(value):
     """Tag is for notification status which is
-    used on user notification list"""
+    used on user notification list
+
+    >>> seen_unseen_word('1')
+    'New'
+
+    >>> seen_unseen_word('')
+    'Read'
+    """
     if value:
         return _("New")
     else:
@@ -83,9 +90,11 @@ def hangupcause_name_with_title(id):
     try:
         val = get_hangupcause_name(id)
         t = re.sub("([a-z])'([A-Z])",
-                        lambda m: m.group(0).lower(), val.title())
+                   lambda m: m.group(0).lower(),
+                   val.title())
         return re.sub("\d([A-Z])",
-                        lambda m: m.group(0).lower(), t)
+                      lambda m: m.group(0).lower(),
+                      t)
     except:
         return ''
 
@@ -102,13 +111,11 @@ def mongo_id(value, sub_val):
     # Return value
     return value
 
-
-register.filter('cal_width', cal_width)
 register.filter('seen_unseen', seen_unseen)
 register.filter('seen_unseen_word', seen_unseen_word)
 register.filter('notice_count', notice_count)
 register.filter('get_switch_ip', get_switch_ip)
 register.filter('hangupcause_name', hangupcause_name)
 register.filter('hangupcause_name_with_title',
-                            hangupcause_name_with_title)
+                hangupcause_name_with_title)
 register.filter('mongo_id', mongo_id)

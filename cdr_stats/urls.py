@@ -13,7 +13,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-from django.conf.urls.defaults import url, patterns, include
+from django.conf.urls import url, patterns, include
 from django.conf import settings
 from tastypie.api import Api
 from api.user_api import UserResource
@@ -23,6 +23,7 @@ from api.cdr_daily_api import CdrDailyResource
 from api.cdr_api import CdrResource
 from cdr.urls import urlpatterns as urlpatterns_cdr
 from user_profile.urls import urlpatterns as urlpatterns_user_profile
+from frontend.urls import urlpatterns as urlpatterns_frontend
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -60,6 +61,7 @@ urlpatterns = patterns('',
 
 urlpatterns += urlpatterns_cdr
 urlpatterns += urlpatterns_user_profile
+urlpatterns += urlpatterns_frontend
 
 urlpatterns += patterns('',
     url("", include('django_socketio.urls')),
