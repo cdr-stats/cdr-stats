@@ -19,7 +19,11 @@ from user_profile.models import UserProfile
 from user_profile.forms import UserChangeDetailForm, \
                                UserChangeDetailExtendForm, \
                                UserProfileForm
-from user_profile.views import customer_detail_change
+from user_profile.views import customer_detail_change, \
+                               notification_del_read, \
+                               update_notice_status_cust,\
+                               notice_count,\
+                               common_notification_status
 from common.utils import BaseAuthenticatedClient
 
 #from django.contrib import admin
@@ -53,6 +57,8 @@ class UserProfileAdminView(BaseAuthenticatedClient):
 class UserProfileCustomerView(BaseAuthenticatedClient):
     """Test Function to check UserProfile Customer pages"""
 
+    fixtures = ['auth_user.json', 'notification.json']
+
     def test_user_settings(self):
         """Test Function to check User settings"""
         response = self.client.get('/user_detail_change/')
@@ -71,6 +77,74 @@ class UserProfileCustomerView(BaseAuthenticatedClient):
         request.session = {}
         response = customer_detail_change(request)
         self.assertEqual(response.status_code, 200)
+
+        response = self.client.post('/user_detail_change/?action=tabs-1',
+                {'form-type': 'change-detail',
+                 'first_name': 'admin',
+                 'phone_no': '9324552563'})
+        self.assertTrue(response.context['user_detail_form'],
+            UserChangeDetailForm(self.user))
+        self.assertTrue(response.context['user_detail_extened_form'],
+            UserChangeDetailExtendForm(self.user))
+
+        response = self.client.post('/user_detail_change/?action=tabs-2',
+                {'form-type': ''})
+        self.assertTrue(response.context['user_password_form'],
+            PasswordChangeForm(self.user))
+
+        response = self.client.post(
+            '/user_detail_change/?action=tabs-3&notification=mark_read_all',
+            {'form-type': ''})
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.get('/user_detail_change/')
+        request.user = self.user
+        request.session = {}
+        response = notice_count(request)
+        self.assertEqual(response, 0)
+
+
+    def test_notification_del_read(self):
+        """Test Function to check delete notification"""
+        request = self.factory.post('/user_detail_change/del/1/',
+                {'mark_read': 'false'})
+        request.user = self.user
+        request.session = {}
+        response = notification_del_read(request, 1)
+        self.assertEqual(response.status_code, 302)
+
+        request = self.factory.post('/user_detail_change/del/',
+                {'select': '1',
+                 'mark_read': 'true'})
+        request.user = self.user
+        request.session = {}
+        response = notification_del_read(request, 0)
+        self.assertEqual(response.status_code, 302)
+
+        request = self.factory.post('/user_detail_change/del/',
+                {'mark_read': 'false',
+                 'select': '1'})
+        request.user = self.user
+        request.session = {}
+        response = notification_del_read(request, 0)
+        self.assertEqual(response.status_code, 302)
+
+    def test_update_notice_status_cust(self):
+        """Test Function to check update notice status"""
+        request = self.factory.post('/update_notice_status_cust/1/',
+                {'select': '1'})
+        request.user = self.user
+        request.session = {}
+        response = update_notice_status_cust(request, 1)
+        self.assertEqual(response.status_code, 302)
+
+        request = self.factory.post('/update_notice_status_cust/1/',
+                {'select': '1'})
+        request.user = self.user
+        request.session = {}
+        response = common_notification_status(request, 1)
+        self.assertEqual(response, True)
+
 
 
 class UserProfileModel(TestCase):

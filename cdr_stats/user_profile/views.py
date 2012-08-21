@@ -36,8 +36,8 @@ def notice_count(request):
     """Get count of logged in user's notifications"""
     try:
         notice_count = \
-        notification.Notice.objects.filter(recipient=request.user,
-                                           unseen=1).count()
+            notification.Notice.objects.filter(recipient=request.user,
+                                               unseen=1).count()
     except:
         notice_count = ''
     return notice_count
@@ -133,7 +133,9 @@ def customer_detail_change(request):
 
     # Mark all notification as read
     if request.GET.get('notification') == 'mark_read_all':
-        notification_list = notification.Notice.objects.filter(unseen=1, recipient=request.user)
+        notification_list = \
+            notification.Notice.objects.filter(unseen=1,
+                                               recipient=request.user)
         notification_list.update(unseen=0)
         msg_note = _('All notifications are marked as read.')
 
@@ -202,11 +204,11 @@ def notification_del_read(request, object_id):
         if object_id:
             if request.POST.get('mark_read') == 'false':
                 request.session["msg_note"] = _('"%(name)s" is deleted.') \
-                % {'name': notification_obj.notice_type}
+                    % {'name': notification_obj.notice_type}
                 notification_obj.delete()
             else:
                 request.session["msg_note"] = _('"%(name)s" is marked as read.') \
-                % {'name': notification_obj.notice_type}
+                    % {'name': notification_obj.notice_type}
                 notification_obj.update(unseen=0)
 
             return HttpResponseRedirect('/user_detail_change/?action=tabs-3&msg_note=true')
@@ -214,14 +216,16 @@ def notification_del_read(request, object_id):
         # When object_id is 0 (Multiple records delete/mark as read)
         values = request.POST.getlist('select')
         values = ", ".join(["%s" % el for el in values])
-        notification_list = notification.Notice.objects.extra(where=['id IN (%s)' % values])
+        notification_list = \
+            notification.Notice.objects.extra(where=['id IN (%s)' % values])
         if request.POST.get('mark_read') == 'false':
             request.session["msg_note"] = _('%(count)s notification(s) are deleted.')\
-            % {'count': notification_list.count()}
+                % {'count': notification_list.count()}
             notification_list.delete()
         else:
-            request.session["msg_note"] = _('%(count)s notification(s) are marked as read.')\
-            % {'count': notification_list.count()}
+            request.session["msg_note"] = \
+                _('%(count)s notification(s) are marked as read.')\
+                    % {'count': notification_list.count()}
             notification_list.update(unseen=0)
         return HttpResponseRedirect('/user_detail_change/?action=tabs-3&msg_note=true')
 

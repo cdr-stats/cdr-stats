@@ -21,9 +21,9 @@ from django.core.mail import send_mail, mail_admins
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.template import Context
-from celery.task import PeriodicTask
+from celery.task import PeriodicTask, task
 from celery.schedules import crontab
-from celery.decorators import task
+#from celery.decorators import task
 from notification import models as notification
 from cdr.common_tasks import only_one
 from cdr_alert.models import Alarm, AlarmReport

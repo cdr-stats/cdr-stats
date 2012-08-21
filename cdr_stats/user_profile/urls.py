@@ -15,15 +15,15 @@
 from django.conf.urls import patterns, include
 
 
-urlpatterns = patterns('',
+urlpatterns = patterns('user_profile.views',
     # User detail change for Customer UI
-    (r'^user_detail_change/$', 'user_profile.views.customer_detail_change'),
+    (r'^user_detail_change/$', 'customer_detail_change'),
 
     (r'^user_detail_change/', include('notification.urls')),
     (r'^user_detail_change/del/(.+)/$',
-                                'user_profile.views.notification_del_read'),
+                                'notification_del_read'),
 
     # Notification Status (seen/unseen) for customer UI
     (r'^update_notice_status_cust/(\d*)/$',
-                    'user_profile.views.update_notice_status_cust'),
+                    'update_notice_status_cust'),
 )

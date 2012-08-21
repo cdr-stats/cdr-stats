@@ -28,8 +28,7 @@ from cdr.tasks import sync_cdr_pending, get_channels_info
 from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
                       cdr_report_by_hour, cdr_concurrent_calls,\
                       cdr_realtime, cdr_country_report, mail_report,\
-                      world_map_view
-from cdr.views import index
+                      world_map_view, index
 from datetime import timedelta
 
 
