@@ -28,8 +28,9 @@ from cdr.tasks import sync_cdr_pending, get_channels_info
 from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
                       cdr_report_by_hour, cdr_concurrent_calls,\
                       cdr_realtime, cdr_country_report, mail_report,\
-                      world_map_view, index
-from datetime import timedelta
+                      world_map_view, index, cdr_detail
+from bson.objectid import ObjectId
+from datetime import datetime, timedelta
 
 
 class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
@@ -81,16 +82,13 @@ class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
 class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Customer Interface."""
 
-    fixtures = ['auth_user.json']
+    fixtures = ['auth_user.json', 'switch.json']
 
     def test_index(self):
         """Test Function to check customer index page"""
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'cdr/index.html')
-        response = self.client.get('/user_detail_change/')
-        self.failUnlessEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'cdr/registration/user_detail_change.html')
 
         request = self.factory.get('/')
         request.user = self.user
@@ -139,8 +137,16 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
         data = {'switch_id': 1,
-                'from_date': '2012-05-01',
-                'to_date': '2012-05-20',
+                'from_date': datetime.now().strftime("%Y-%m-%d"),
+                'to_date': datetime.now().strftime("%Y-%m-%d"),
+                'destination': '91',
+                'destination_type': 1,
+                'accountcode': '123',
+                'caller': 'abc',
+                'duration': '30',
+                'duration_type': '>',
+                'direction': 'INBOUND',
+                'hangup_cause': 1,
                 'result': 1,
                 'records_per_page': 10}
         response = self.client.post('/cdr_view/', data)
@@ -151,6 +157,14 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         request.user = self.user
         request.session = {}
         response = cdr_view(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_cdr_detail(self):
+        """Test Function to check cdr_detail"""
+        request = self.factory.post('/cdr_detail/')
+        request.user = self.user
+        request.session = {}
+        response = cdr_detail(request, ObjectId('503368721d41c818ee000000'), 1)
         self.assertEqual(response.status_code, 200)
 
     def test_cdr_overview(self):
@@ -167,8 +181,8 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
         data = {'switch_id': 1,
-                'from_date': '2012-05-01',
-                'to_date': '2012-05-20',}
+                'from_date': datetime.now().strftime("%Y-%m-%d"),
+                'to_date': datetime.now().strftime("%Y-%m-%d"),}
         response = self.client.post('/cdr_overview/', data)
         self.assertTrue(response.context['form'], CdrOverviewForm(data))
         self.assertEqual(response.status_code, 200)
@@ -193,7 +207,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
         data = {'switch_id': 1,
-                'from_date': '2012-05-01',
+                'from_date': datetime.now().strftime("%Y-%m-%d"),
                 'comp_days': 2,
                 'graph_view': 1,
                 'check_days': 2,
@@ -222,7 +236,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
         data = {'switch_id': 1,
-                'from_date': '2012-05-01'}
+                'from_date': datetime.now().strftime("%Y-%m-%d")}
         response = self.client.post('/cdr_concurrent_calls/', data)
         self.assertTrue(response.context['form'], ConcurrentCallForm(data))
         self.assertEqual(response.status_code, 200)
@@ -271,8 +285,8 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
         data = {'switch_id': 1,
-                'from_date': '2012-05-01',
-                'to_date': '2012-05-20',}
+                'from_date': datetime.now().strftime("%Y-%m-%d"),
+                'to_date': datetime.now().strftime("%Y-%m-%d"),}
         response = self.client.post('/country_report/', data)
         self.assertTrue(response.context['form'], CountryReportForm(data))
         self.assertEqual(response.status_code, 200)
@@ -311,8 +325,8 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
 
         data = {'switch_id': 1,
-                'from_date': '2012-05-01',
-                'to_date': '2012-05-20',}
+                'from_date': datetime.now().strftime("%Y-%m-%d"),
+                'to_date': datetime.now().strftime("%Y-%m-%d"),}
         response = self.client.post('/world_map/', data)
         self.assertTrue(response.context['form'], WorldForm(data))
         self.assertEqual(response.status_code, 200)
