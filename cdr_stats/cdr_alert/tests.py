@@ -30,6 +30,8 @@ from datetime import timedelta
 class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Admin Interface."""
 
+    fixtures = ['auth_user.json', 'initial_data.json']
+
     def test_admin_alarm_list(self):
         """Test Function to check alarm list"""
         response = self.client.get('/admin/cdr_alert/alarm/')
@@ -72,10 +74,10 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
 
         response = self.client.post(
             '/admin/cdr_alert/whitelist/whitelist_by_country/',
-            {'country': 198})
-        self.assertTrue(response.context['form'],
-            BWCountryForm({'country': 198}))
-        self.failUnlessEqual(response.status_code, 200)
+            {'country': 198,
+             'whitelist_country': [],
+             'select': [34]})
+        self.failUnlessEqual(response.status_code, 302)
 
     def test_admin_alert_blacklist_list(self):
         """Test Function to check alert blacklist list"""
@@ -94,10 +96,10 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
 
         response = self.client.post(
             '/admin/cdr_alert/blacklist/blacklist_by_country/',
-            {'country': 198})
-        self.assertTrue(response.context['form'],
-            BWCountryForm({'country': 198}))
-        self.failUnlessEqual(response.status_code, 200)
+            {'country': 198,
+             'blacklist_country': [],
+             'select': [34]})
+        self.failUnlessEqual(response.status_code, 302)
 
 
 class CdrAlertTaskTestCase(TestCase):
