@@ -336,6 +336,16 @@ REDIS_PORT = 6379
 REDIS_DB = 0
 #REDIS_CONNECT_RETRY = True
 
+CELERY_DEFAULT_QUEUE = 'cdrstats'
+CELERY_DEFAULT_EXCHANGE = "cdrstats_tasks"
+CELERY_DEFAULT_EXCHANGE_TYPE = "topic"
+CELERY_DEFAULT_ROUTING_KEY = "task.cdrstats"
+CELERY_QUEUES = {
+    'cdrstats': {
+        'binding_key': '#',
+    },
+}
+
 #SOCKETIO
 #========
 SOCKETIO_HOST = 'localhost'
