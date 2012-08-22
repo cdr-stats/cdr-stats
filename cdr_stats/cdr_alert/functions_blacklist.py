@@ -20,7 +20,14 @@ from cdr_alert.tasks import blacklist_whitelist_notification
 
 
 def chk_prefix_in_whitelist(prefix_list):
-    """Check destination no with allowed prefix"""
+    """Check destination no with allowed prefix
+
+    >>> chk_prefix_in_whitelist([34, 345, 3456])
+    False
+
+    >>> chk_prefix_in_whitelist([])
+    False
+    """
     if not prefix_list:
         return False
     white_prefix_list = Whitelist.objects.all()
@@ -44,7 +51,14 @@ def chk_prefix_in_whitelist(prefix_list):
 
 
 def chk_prefix_in_blacklist(prefix_list):
-    """Check destination no with ban prefix"""
+    """Check destination no with ban prefix
+
+    >>> chk_prefix_in_blacklist([34, 345, 3456])
+    True
+
+    >>> chk_prefix_in_blacklist([])
+    True
+    """
     if not prefix_list:
         return True
     banned_prefix_list = Blacklist.objects.all()
@@ -68,6 +82,13 @@ def chk_prefix_in_blacklist(prefix_list):
 
 
 def chk_destination(destination_number):
+    """
+    >>> chk_destination('1234567890')
+    {
+        'authorized': 0,
+        'country_id': 0,
+    }
+    """
     #remove prefix
     sanitized_destination = remove_prefix(destination_number,
         settings.PREFIX_TO_IGNORE)
