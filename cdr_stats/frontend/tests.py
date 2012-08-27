@@ -15,7 +15,7 @@
 from django.test import TestCase
 from common.utils import BaseAuthenticatedClient
 from frontend.forms import LoginForm
-from frontend.views import login_view
+from frontend.views import login_view, pleaselog, logout_view
 
 
 class FrontendView(BaseAuthenticatedClient):
@@ -33,6 +33,45 @@ class FrontendView(BaseAuthenticatedClient):
 
 class FrontendCustomerView(BaseAuthenticatedClient):
     """Test cases for Newfies-Dialer Customer Interface."""
+
+    fixtures = ['auth_user.json']
+
+
+    def test_login_view(self):
+        """Test Function to check login view"""
+        response = self.client.post('/login/',
+                {'user': 'admin',
+                 'password': 'admin'}, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.post('/login/',
+                {'user': 'admin',
+                 'password': 'admin'}, follow=True)
+        request.user = self.user
+        request.session = self.client.session
+        response = login_view(request)
+        self.assertEqual(response.status_code, 302)
+
+        request = self.factory.post('/login/',
+                {'user': '', 'password': ''}, follow=True)
+        request.user = self.user
+        request.session = self.client.session
+        response = login_view(request)
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.post('/login/',
+                {'user': 'admin', 'password': 'admin123'}, follow=True)
+        request.user = self.user
+        request.session = self.client.session
+        response = login_view(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_pleaselog(self):
+        """Test Function to check pleaselog view"""
+        response = self.client.get('/pleaselog/')
+        self.assertTemplateUsed(response, 'cdr/index.html')
+        self.assertEqual(response.status_code, 200)
+
 
     def test_index(self):
         """Test Function to check customer index page"""
@@ -52,6 +91,18 @@ class FrontendCustomerView(BaseAuthenticatedClient):
         request.session = {}
         response = login_view(request)
         self.assertEqual(response.status_code, 200)
+
+    def test_logout_view(self):
+        """Test Function to check logout view"""
+        response = self.client.post('/logout/', follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.post('/logout/', follow=True)
+        request.user = self.user
+        request.session = self.client.session
+        request.LANGUAGE_CODE = 'en'
+        response = logout_view(request)
+        self.assertEqual(response.status_code, 302)
 
 
 class FrontendForgotPassword(TestCase):
