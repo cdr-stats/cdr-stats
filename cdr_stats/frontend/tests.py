@@ -19,7 +19,7 @@ from frontend.views import login_view, pleaselog, logout_view
 
 
 class FrontendView(BaseAuthenticatedClient):
-    """Test cases for Newfies-Dialer Admin Interface."""
+    """Test cases for Cdr-stats Admin Interface."""
 
     def test_admin(self):
         """Test Function to check Admin index page"""
@@ -32,7 +32,7 @@ class FrontendView(BaseAuthenticatedClient):
 
 
 class FrontendCustomerView(BaseAuthenticatedClient):
-    """Test cases for Newfies-Dialer Customer Interface."""
+    """Test cases for Cdr-stats Customer Interface."""
 
     fixtures = ['auth_user.json']
 
@@ -106,7 +106,7 @@ class FrontendCustomerView(BaseAuthenticatedClient):
 
 
 class FrontendForgotPassword(TestCase):
-    """Test cases for Newfies-Dialer Customer Interface. for forgot password"""
+    """Test cases for Cdr-stats Customer Interface. for forgot password"""
 
     def test_check_password_reset(self):
         """Test Function to check password reset"""
