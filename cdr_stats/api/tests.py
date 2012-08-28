@@ -21,18 +21,35 @@ class ApiTestCase(BaseAuthenticatedClient):
     """Test cases for CDR-Stats API."""
     fixtures = ['auth_user.json', 'hangup_cause.json']
 
-    #def test_create_cdr(self):
-    #    """Test Function to create a cdr"""
-    #    data = simplejson.dumps({})
-    #    response = self.client.post('/api/v1/cdr/',
-    #    data, content_type='application/json', **self.extra)
-    #    self.assertEqual(response.status_code, 201)
+    def test_cdr_api(self):
+        """Test Function cdr api"""
+        data = {"switch_id": 1,
+                "caller_id_number": 12345,
+                "caller_id_name": "xyz",
+                "destination_number": 9972374874,
+                "duration": 12,
+                "billsec": 15,
+                "hangup_cause_q850": 16,
+                "accountcode": 32523,
+                "direction": "IN",
+                "uuid": "e8fee8f6-40dd-11e1-964f-000c296bd875",
+                "remote_media_ip": "127.0.0.1",
+                "start_uepoch": "2012-02-20 12:23:34",
+                "answer_uepoch": "2012-02-20 12:23:34",
+                "end_uepoch": "2012-02-20 12:23:34",
+                "mduration": 32,
+                "billmsec": 43,
+                "read_codec": "xyz",
+                "write_codec": "abc",
+                "cdr_type": 1}
+        response = self.client.post('/api/v1/cdr/',
+            data, content_type='application/json', **self.extra)
+        self.assertEqual(response.status_code, 201)
 
-    #def test_create_cdr(self):
-    #    """Test Function to create a CDR"""
-    #    data = ('cdr=<?xml version="1.0"?><cdr><other></other><variables><plivo_request_uuid>e8fee8f6-40dd-11e1-964f-000c296bd875</plivo_request_uuid><duration>3</duration></variables><notvariables><plivo_request_uuid>TESTc</plivo_request_uuid><duration>5</duration></notvariables></cdr>')
-    #    response = self.client.post('/api/v1/store_cdr/', data, content_type='application/json', **self.extra)
-    #    self.assertEqual(response.status_code, 200)
+    def test_cdr_daily_api(self):
+        """Test Function cdr daily api"""
+        response = self.client.get('/api/v1/cdr_daily_report/?format=json')
+        self.assertEqual(response.status_code, 200)
 
     def test_hangupcause(self):
         """Test Function to create a hangup_cause"""
@@ -41,10 +58,6 @@ class ApiTestCase(BaseAuthenticatedClient):
         response = self.client.post('/api/v1/hangup_cause/', data,
             content_type='application/json', **self.extra)
         self.assertEqual(response.status_code, 201)
-
-        #resp = self.api_client.get('/api/v1/hangup_cause/',
-        #    format='json')
-        #self.assertValidJSONResponse(resp)
 
         # Read
         response = self.client.get('/api/v1/hangup_cause/?format=json', **self.extra)

@@ -70,8 +70,8 @@ class CdrDailyResource(ModelResource):
         resource_name = 'cdr_daily_report'
         authorization = Authorization()
         authentication = BasicAuthentication()
-        #list_allowed_methods = ['get']
-        #detail_allowed_methods = ['get']
+        list_allowed_methods = ['get']
+        detail_allowed_methods = ['get']
         # default 1000 calls / hour
         throttle = BaseThrottle(throttle_at=1000, timeframe=3600)
 
