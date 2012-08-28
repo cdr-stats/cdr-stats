@@ -64,7 +64,7 @@ class SwitchAdmin(admin.ModelAdmin):
         **Attributes**:
 
             * ``form`` - CDR_FileImport
-            * ``template`` - admin/cdr/switch/import_contact.html
+            * ``template`` - admin/cdr/switch/import_cdr.html
 
         **Logic Description**:
 
@@ -255,9 +255,9 @@ class SwitchAdmin(admin.ModelAdmin):
                                         cdr_record_count = cdr_record_count + 1
 
                                         msg =\
-                                        _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
-                                        % {'cdr_record_count': cdr_record_count,
-                                           'total_rows': total_rows}
+                                            _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
+                                                % {'cdr_record_count': cdr_record_count,
+                                                   'total_rows': total_rows}
                                         success_import_list.append(row)
                                 except:
                                     msg = _("Error : invalid value for import")

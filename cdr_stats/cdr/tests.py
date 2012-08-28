@@ -14,6 +14,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.core.management import call_command
+from django.conf import settings
 from common.utils import BaseAuthenticatedClient
 from cdr.models import Switch, HangupCause
 from cdr.forms import CdrSearchForm,\
@@ -32,6 +33,10 @@ from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
 from bson.objectid import ObjectId
 from datetime import datetime, timedelta
 
+csv_file = open(
+    settings.APPLICATION_DIR +\
+    '/cdr/fixtures/import_cdr.txt', 'r'
+)
 
 class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Admin Interface."""
@@ -57,8 +62,18 @@ class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
     def test_admin_switch_import_cdr(self):
         """Test Function to check admin cdr import"""
         response = self.client.post('/admin/cdr/switch/import_cdr/',
-                {'switch_id': 1,})
+                {'switch_id': 1,
+                 'csv_file': csv_file,
+                 'accountcode_csv': '12345',
+                 'caller_id_number': 1,
+                 'destination_number': 3,
+                 'duration': 4,
+                 'billsec': 5,
+                 'hangup_cause_id': 6,
+                 'uuid': 8,
+                 'start_uepoch': 10})
         self.failUnlessEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'admin/cdr/switch/import_cdr.html')
 
     def test_admin_hangupcause_list(self):
         """Test Function to check admin hangupcause list"""
