@@ -11,3 +11,4 @@ cdr_stats/settings_local.py
 *sublime*
 *.log
 build
+output.html
