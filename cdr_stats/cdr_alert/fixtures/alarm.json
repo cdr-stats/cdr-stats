@@ -1,0 +1,18 @@
+[
+    {
+        "pk":1,
+        "model":"cdr_alert.alarm",
+        "fields":{
+            "status":1,
+            "updated_date":"2012-06-21T01:26:51.337",
+            "alert_condition":1,
+            "name":"Every_day_alarm",
+            "alert_condition_add_on":1,
+            "alert_value":"0.13",
+            "period":1,
+            "email_to_send_alarm":"admin@cdr-stats.com",
+            "created_date":"2012-06-20T08:24:39.839",
+            "type":2
+        }
+    }
+]

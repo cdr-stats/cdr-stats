@@ -30,7 +30,8 @@ from datetime import timedelta
 class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Admin Interface."""
 
-    fixtures = ['auth_user.json', 'initial_data.json']
+    fixtures = ['auth_user.json', 'initial_data.json', 'blacklist_prefix.json',
+                'whitelist_prefix.json']
 
     def test_admin_alarm_list(self):
         """Test Function to check alarm list"""
@@ -75,7 +76,7 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
         response = self.client.post(
             '/admin/cdr_alert/whitelist/whitelist_by_country/',
             {'country': 198,
-             'whitelist_country': [],
+             'whitelist_country': [198],
              'select': [34]})
         self.failUnlessEqual(response.status_code, 302)
 
@@ -97,7 +98,7 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
         response = self.client.post(
             '/admin/cdr_alert/blacklist/blacklist_by_country/',
             {'country': 198,
-             'blacklist_country': [],
+             'blacklist_country': [1],
              'select': [34]})
         self.failUnlessEqual(response.status_code, 302)
 

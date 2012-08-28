@@ -1,0 +1,12 @@
+[
+    {
+        "pk":1,
+        "model":"cdr_alert.alertremoveprefix",
+        "fields":{
+            "updated_date":"2012-08-28T00:51:05.268",
+            "prefix":"34",
+            "created_date":"2012-08-28T00:51:05.268",
+            "label":"sample_remove_prefix"
+        }
+    }
+]
