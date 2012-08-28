@@ -51,6 +51,9 @@ def get_hangupcause_name(id):
 
     >>> get_hangupcause_name(1)
     'UNSPECIFIED'
+
+    >>> get_hangupcause_name(900)
+    ''
     """
     try:
         obj = HangupCause.objects.get(pk=id)
@@ -65,6 +68,9 @@ def get_hangupcause_id(hangupcause_code):
 
     >>> get_hangupcause_id(0)
     1
+
+    >>> get_hangupcause_id(900)
+    0
     """
     try:
         obj = HangupCause.objects.get(code=hangupcause_code)
@@ -101,6 +107,11 @@ def prefix_list_string(phone_number):
 
     >>> prefix_list_string(phone_no)
     '34650, 3465, 346, 34'
+
+    >>> phone_no = -34650123456
+
+    >>> prefix_list_string(phone_no)
+    False
     """
     try:
         int(phone_number)

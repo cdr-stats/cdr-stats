@@ -381,12 +381,14 @@ class CdrModelTestCase(TestCase):
             ipaddress='127.0.0.1'
             )
         self.switch.save()
+        self.assertTrue(self.switch.__unicode__())
 
         self.hangupcause = HangupCause(
             code=700,
             enumeration='UNALLOCATED_NUMBER'
             )
         self.hangupcause.save()
+        self.assertTrue(self.hangupcause.__unicode__())
 
 
     def test_model_value(self):
@@ -402,11 +404,11 @@ class CdrModelTestCase(TestCase):
     def test_mgt_command(self):
         # Test mgt command
         call_command("generate_cdr",
-            "--number-cdr=100 --delta-day=0 --duration=10")
+            "--number-cdr=100 --delta-day=1 --duration=10")
 
         call_command("sync_cdr_freeswitch", "--apply-index")
 
         call_command("sync_cdr_asterisk", "--apply-index")
 
-        call_command("generate_concurrent_call", "--delta-day=0")
+        call_command("generate_concurrent_call", "--delta-day=1")
 

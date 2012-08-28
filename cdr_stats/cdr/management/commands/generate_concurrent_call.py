@@ -29,10 +29,6 @@ HANGUP_CAUSE = ['NORMAL_CLEARING', 'NORMAL_CLEARING', 'NORMAL_CLEARING',
                 'INVALID_NUMBER_FORMAT']
 
 
-def NumberLong(var):
-    return var
-
-
 class Command(BaseCommand):
     help = "Generate random Concurrent calls\n"\
            "---------------------------------\n"\

@@ -46,10 +46,6 @@ COUNTRY_PREFIX = ['0034', '011346', '+3465',  # Spain
                   ]
 
 
-def NumberLong(var):
-    return var
-
-
 def generate_cdr_data(day_delta_int):
     """
     TODO:Add function documentation
