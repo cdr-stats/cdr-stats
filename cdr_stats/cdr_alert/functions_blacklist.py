@@ -25,7 +25,7 @@ def chk_prefix_in_whitelist(prefix_list):
     >>> chk_prefix_in_whitelist([34, 345, 3456])
     False
 
-    >>> chk_prefix_in_whitelist([])
+    >>> chk_prefix_in_whitelist('')
     False
     """
     if not prefix_list:

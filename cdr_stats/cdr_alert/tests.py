@@ -159,6 +159,7 @@ class CdrAlertModelTestCase(TestCase):
             prefix=32
             )
         self.alert_remove_prefix.save()
+        self.assertEquals(self.alert_remove_prefix.__unicode__(), 'test')
 
         # Alarm model
         self.alarm = Alarm(
@@ -172,6 +173,7 @@ class CdrAlertModelTestCase(TestCase):
             email_to_send_alarm='localhost@cdr-stats.org'
             )
         self.alarm.save()
+        self.assertEquals(self.alarm.__unicode__(), 'Alarm name')
 
         # AlarmReport model
         self.alarm_report = AlarmReport(
@@ -180,6 +182,7 @@ class CdrAlertModelTestCase(TestCase):
             status=1
             )
         self.alarm_report.save()
+        self.assertEquals(self.alarm_report.__unicode__(), 'Alarm name')
 
 
         self.country = Country.objects.get(pk=198)
@@ -189,6 +192,7 @@ class CdrAlertModelTestCase(TestCase):
             country=self.country
             )
         self.blacklist.save()
+        self.assertTrue(self.blacklist.__unicode__())
 
         # Whitelist model
         self.whitelist = Whitelist(
@@ -196,6 +200,7 @@ class CdrAlertModelTestCase(TestCase):
             country=self.country
         )
         self.whitelist.save()
+        self.assertTrue(self.whitelist.__unicode__())
 
     def test_model_value(self):
         """Create model object value"""
