@@ -1,0 +1,8 @@
+django-nose
+#Nose plugins https://nose-plugins.jottit.com/
+nose-cov
+nose-progressive==1.3
+xtraceback
+rudolf2
+pylint
+clonedigger
