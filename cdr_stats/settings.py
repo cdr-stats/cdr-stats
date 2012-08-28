@@ -188,6 +188,7 @@ INSTALLED_APPS = (
     'cdr',
     'cdr_alert',
     'user_profile',
+    'frontend',
     'dateutil',
     'south',
     #'dilla',

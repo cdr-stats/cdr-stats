@@ -15,7 +15,7 @@
 from django.test import TestCase
 from common.utils import BaseAuthenticatedClient
 from frontend.forms import LoginForm
-from frontend.views import login_view, pleaselog, logout_view
+from frontend.views import login_view, pleaselog, logout_view, cust_password_reset
 
 
 class FrontendView(BaseAuthenticatedClient):
@@ -39,6 +39,9 @@ class FrontendCustomerView(BaseAuthenticatedClient):
 
     def test_login_view(self):
         """Test Function to check login view"""
+        response = self.client.get('/login/')
+        self.assertEqual(response.status_code, 200)
+
         response = self.client.post('/login/',
                 {'user': 'admin',
                  'password': 'admin'}, follow=True)
@@ -51,6 +54,17 @@ class FrontendCustomerView(BaseAuthenticatedClient):
         request.session = self.client.session
         response = login_view(request)
         self.assertEqual(response.status_code, 302)
+
+        request = self.factory.post('/login/',
+                {'user': 'admin1',
+                 'password': 'admin1'}, follow=True)
+
+        self.user.is_active = False
+        self.user.save()
+        request.user = self.user
+        request.session = self.client.session
+        response = login_view(request)
+        self.assertEqual(response.status_code, 200)
 
         request = self.factory.post('/login/',
                 {'user': '', 'password': ''}, follow=True)
@@ -110,11 +124,12 @@ class FrontendForgotPassword(TestCase):
 
     def test_check_password_reset(self):
         """Test Function to check password reset"""
-        response = self.client.get('/password_reset/')
+        response = self.client.get('/password_reset/', follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(
             response,
             'cdr/registration/password_reset_form.html')
+
         response = self.client.post('/password_reset/',
                                     {'email': 'admin@localhost.com'})
         self.assertEqual(response.status_code, 200)
