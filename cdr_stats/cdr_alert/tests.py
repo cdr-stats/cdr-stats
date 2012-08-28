@@ -75,6 +75,13 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
 
         response = self.client.post(
             '/admin/cdr_alert/whitelist/whitelist_by_country/',
+                {'country': 198,
+                 'whitelist_country': [],
+                 'select': [34]})
+        self.failUnlessEqual(response.status_code, 302)
+
+        response = self.client.post(
+            '/admin/cdr_alert/whitelist/whitelist_by_country/',
             {'country': 198,
              'whitelist_country': [198],
              'select': [34]})
@@ -94,6 +101,13 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
             'admin/cdr_alert/blacklist/blacklist_by_country.html')
         self.assertTrue(response.context['form'], BWCountryForm())
         self.failUnlessEqual(response.status_code, 200)
+
+        response = self.client.post(
+            '/admin/cdr_alert/blacklist/blacklist_by_country/',
+                {'country': 198,
+                 'blacklist_country': [],
+                 'select': [34]})
+        self.failUnlessEqual(response.status_code, 302)
 
         response = self.client.post(
             '/admin/cdr_alert/blacklist/blacklist_by_country/',
