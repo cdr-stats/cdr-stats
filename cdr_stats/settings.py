@@ -184,6 +184,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.markup',
     #'django.contrib.admindocs',
+    'api',
     'cdr',
     'cdr_alert',
     'user_profile',
