@@ -316,11 +316,11 @@ NEWS_URL = 'http://www.cdr-stats.org/news.php'
 #DJANGO-ADMIN-TOOL
 #=================
 ADMIN_TOOLS_MENU = 'cdr_stats.custom_admin_tools.menu.CustomMenu'
-
 ADMIN_TOOLS_INDEX_DASHBOARD = \
     'cdr_stats.custom_admin_tools.dashboard.CustomIndexDashboard'
 ADMIN_TOOLS_APP_INDEX_DASHBOARD = \
     'cdr_stats.custom_admin_tools.dashboard.CustomAppIndexDashboard'
+ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 #CELERY
 #======
