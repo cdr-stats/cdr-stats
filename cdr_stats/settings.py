@@ -98,6 +98,8 @@ STATIC_URL = '/static/'
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = os.path.join(APPLICATION_DIR, 'static')
 
+ADMIN_MEDIA_PREFIX = '/static/admin/'
+
 COUNTRIES_FLAG_PATH = 'flags/%s.png'
 
 # Additional locations of static files
