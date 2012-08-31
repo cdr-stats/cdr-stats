@@ -315,10 +315,10 @@ class FileImport(forms.Form):
                                error_messages={'required': 'Please upload File'
                                }, help_text=_('Browse CSV file'))
 
-    def clean_file(self):
+    def clean_csv_file(self):
         """Form Validation :  File extension Check"""
         filename = self.cleaned_data['csv_file']
-        file_exts = ('.csv', )
+        file_exts = ('csv', 'txt')
         if not str(filename).split('.')[1].lower() in file_exts:
             raise forms.ValidationError(_(u'Document types accepted: %s'
                     % """ """.join(file_exts)))
