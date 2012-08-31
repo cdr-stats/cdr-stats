@@ -31,6 +31,8 @@ from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
                       cdr_report_by_hour, cdr_concurrent_calls,\
                       cdr_realtime, cdr_country_report, mail_report,\
                       world_map_view, index, cdr_detail
+from cdr.functions_def import get_switch_list, get_hangupcause_name,\
+                              get_hangupcause_id
 from bson.objectid import ObjectId
 from datetime import datetime, timedelta
 
@@ -392,6 +394,13 @@ class CdrModelTestCase(BaseAuthenticatedClient):
             )
         self.hangupcause.save()
         self.assertTrue(self.hangupcause.__unicode__())
+
+    def test_functions(self):
+        get_switch_list()
+        get_hangupcause_name(self.hangupcause.pk)
+        get_hangupcause_name(2)
+
+        get_hangupcause_id(self.hangupcause.code)
 
     def test_cdr_search_form(self):
         data = {'switch_id': 1,
