@@ -461,11 +461,18 @@ class CdrModelTestCase(BaseAuthenticatedClient):
     def test_mgt_command(self):
         # Test mgt command
         call_command('generate_cdr',
-            '--number-cdr=500', '--delta-day=1', '--duration=10')
+            '--number-cdr=100', '--delta-day=1', '--duration=10')
+        call_command('generate_cdr',
+            '--number-cdr=100', '--delta-day=0', '--duration=0')
+        call_command('generate_cdr', '--number-cdr=100', '--delta-day=0')
+        call_command('generate_cdr', '--number-cdr=100')
 
         call_command('sync_cdr_freeswitch', '--apply-index')
+        call_command('sync_cdr_freeswitch')
 
         call_command('sync_cdr_asterisk', '--apply-index')
+        call_command('sync_cdr_asterisk')
 
         call_command('generate_concurrent_call', '--delta-day=1')
+        call_command('generate_concurrent_call')
 
