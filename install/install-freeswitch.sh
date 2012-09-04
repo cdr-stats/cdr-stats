@@ -215,7 +215,13 @@ fi
 #Extra configuration for FreeSwitch
 
 #Update crontab to add Core.db Freeswitch Update
-echo "* * * * * echo 'ALTER TABLE channels ADD accountcode VARCHAR(50);' | sqlite3 /usr/local/freeswitch/db/core.db" > /var/spool/cron/crontabs/root
+grep -c "^freeswitch" /var/spool/cron/crontabs/root &> /dev/null
+if [ $? = 1 ]; then
+    echo "* * * * * echo 'ALTER TABLE channels ADD accountcode VARCHAR(50);' | sqlite3 /usr/local/freeswitch/db/core.db" >> /var/spool/cron/crontabs/root
+    /etc/init.d/cron restart
+else
+    echo "cront already present"
+fi
 
 #ADD XML Config files for FreeSwitch
 cp /etc/freeswitch/dialplan/default.xml /etc/freeswitch/dialplan/default.xml.backup.cdrstats
