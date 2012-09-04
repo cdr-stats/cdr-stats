@@ -185,6 +185,7 @@ func_install_frontend(){
     case $DIST in
         'DEBIAN')
             apt-get -y install python-setuptools python-dev build-essential libevent-dev libapache2-mod-python libapache2-mod-wsgi git-core mercurial gawk
+            apt-get -y install postgresql-client-9.1
             easy_install pip
 
             #|FIXME: Strangely South need to be installed outside the Virtualenv

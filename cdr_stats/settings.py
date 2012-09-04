@@ -378,23 +378,28 @@ REALTIME_Y_AXIS_LIMIT = 100
 
 # freeswitch, asterisk : see support Switches
 LOCAL_SWITCH_TYPE = 'freeswitch'
+#TODO: See if we can replace LOCAL_SWITCH_ID by local ip from CDR_BACKEND,
+#this will make LOCAL_SWITCH_TYPE redudant too and keep settings more DRY
 LOCAL_SWITCH_ID = 1
 
 #ASTERISK IMPORT
 #===============
-ASTERISK_IMPORT_TYPE = 'mysql'  # Only mysql supported
 ASTERISK_PRIMARY_KEY = 'acctid'  # acctid, _id
 
-#Mysql Settings to use for import
-ASTERISK_MYSQL = {
+#list of CDR Backends to import
+CDR_BACKEND = {
     '127.0.0.1': {
+        'db_engine': 'mysql',  # mysql, pgsql, mongo
+        'cdr_type': 'asterisk',  # asterisk or freeswitch
         'db_name': 'asteriskcdr',
         'table_name': 'cdr',
         'host': 'localhost',
+        'port': '',
         'user': 'root',
         'password': 'password',
     },
 }
+
 
 #MONGODB
 #=======

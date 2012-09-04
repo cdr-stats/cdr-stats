@@ -12,7 +12,6 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.conf import settings
-import MySQLdb as Database
 from cdr.models import CDR_TYPE
 from cdr.import_cdr_freeswitch_mongodb import apply_index,\
                                               chk_ipaddress,\
@@ -71,9 +70,9 @@ def print_shell(shell, message):
         print message
 
 
-def import_cdr_asterisk_mysql(shell=False):
+def import_cdr_asterisk(shell=False):
     #TODO : dont use the args here
-    # Browse settings.ASTERISK_MYSQL and for each IP
+    # Browse settings.CDR_BACKEND and for each IP
     # check if the IP exist in our Switch objects if it does we will
     # connect to that Database and import the data as we do below
 
@@ -84,28 +83,45 @@ def import_cdr_asterisk_mysql(shell=False):
         return False
 
     #loop within the Mongo CDR Import List
-    for ipaddress in settings.ASTERISK_MYSQL:
+    for ipaddress in settings.CDR_BACKEND:
+
+        db_engine = settings.CDR_BACKEND[ipaddress]['db_engine']
+        if db_engine == 'mysql':
+            try:
+                import MySQLdb as Database
+            except:
+                pass
+        elif db_engine == 'pgsql':
+            import psycopg2 as Database
+        else:
+            sys.stderr.write("Wrong setting for db_engine: %s" % \
+                                                            (str(db_engine)))
+            sys.exit(1)
 
         data = chk_ipaddress(ipaddress)
         ipaddress = data['ipaddress']
         switch = data['switch']
 
-        #Connect on Mysql Database
-        db_name = settings.ASTERISK_MYSQL[ipaddress]['db_name']
-        table_name = settings.ASTERISK_MYSQL[ipaddress]['table_name']
-        user = settings.ASTERISK_MYSQL[ipaddress]['user']
-        password = settings.ASTERISK_MYSQL[ipaddress]['password']
-        host = settings.ASTERISK_MYSQL[ipaddress]['host']
+        #Connect to Database
+        db_name = settings.CDR_BACKEND[ipaddress]['db_name']
+        table_name = settings.CDR_BACKEND[ipaddress]['table_name']
+        user = settings.CDR_BACKEND[ipaddress]['user']
+        password = settings.CDR_BACKEND[ipaddress]['password']
+        host = settings.CDR_BACKEND[ipaddress]['host']
+        port = settings.CDR_BACKEND[ipaddress]['port']
         try:
             connection = Database.connect(user=user, passwd=password, \
-                                            db=db_name, host=host)
-            connection.autocommit(True)
+                                            db=db_name, host=host, port=port)
+            if db_engine == 'mysql':
+                connection.autocommit(True)
+            elif db_engine == 'pgsql':
+                connection.autocommit = True
             cursor = connection.cursor()
             #update cursor used as we update at the end and we need
             #to fetch on 1st cursor
             cursor_updated = connection.cursor()
         except Exception, e:
-            sys.stderr.write("Could not connect to Mysql: %s - %s" % \
+            sys.stderr.write("Could not connect to Database: %s - %s" % \
                                                             (e, ipaddress))
             sys.exit(1)
 
@@ -122,7 +138,14 @@ def import_cdr_asterisk_mysql(shell=False):
 
         count_import = 0
 
-        cursor.execute("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel," \
+        #TODO Check UNIX_TIMESTAMP for postgresql
+        if db_engine == 'mysql':
+            cursor.execute("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel," \
+                    "duration, billsec, disposition, accountcode, uniqueid," \
+                    " %s FROM %s WHERE import_cdr=0  LIMIT 0, 1000" % \
+                    (settings.ASTERISK_PRIMARY_KEY, table_name))
+        elif db_engine == 'pgsql':
+            cursor.execute("SELECT dst, extract(epoch FROM calldate), clid, channel," \
                     "duration, billsec, disposition, accountcode, uniqueid," \
                     " %s FROM %s WHERE import_cdr=0  LIMIT 0, 1000" % \
                     (settings.ASTERISK_PRIMARY_KEY, table_name))

@@ -659,13 +659,14 @@ def cdr_detail(request, id, switch_id):
 
     elif settings.LOCAL_SWITCH_TYPE == 'asterisk':
         #Connect on Mysql Database
-        #TODO support other DBMS
+        #TODO: support other DBMS
+        #TODO: Support postgresql
         import MySQLdb as Database
-        db_name = settings.ASTERISK_MYSQL[ipaddress]['db_name']
-        table_name = settings.ASTERISK_MYSQL[ipaddress]['table_name']
-        user = settings.ASTERISK_MYSQL[ipaddress]['user']
-        password = settings.ASTERISK_MYSQL[ipaddress]['password']
-        host = settings.ASTERISK_MYSQL[ipaddress]['host']
+        db_name = settings.CDR_BACKEND[ipaddress]['db_name']
+        table_name = settings.CDR_BACKEND[ipaddress]['table_name']
+        user = settings.CDR_BACKEND[ipaddress]['user']
+        password = settings.CDR_BACKEND[ipaddress]['password']
+        host = settings.CDR_BACKEND[ipaddress]['host']
         try:
             connection = Database.connect(user=user, passwd=password,
                                             db=db_name, host=host)

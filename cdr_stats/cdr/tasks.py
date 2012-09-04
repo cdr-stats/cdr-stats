@@ -16,7 +16,7 @@
 from django.conf import settings
 from celery.task import PeriodicTask
 from cdr.import_cdr_freeswitch_mongodb import import_cdr_freeswitch_mongodb
-from cdr.import_cdr_asterisk_mysql import import_cdr_asterisk_mysql
+from cdr.import_cdr_asterisk import import_cdr_asterisk
 from cdr.common_tasks import only_one
 from datetime import datetime, timedelta
 import sqlite3
@@ -40,10 +40,8 @@ class sync_cdr_pending(PeriodicTask):
         logger.info('TASK :: sync_cdr_pending')
 
         if settings.LOCAL_SWITCH_TYPE == 'asterisk':
-
-            if settings.ASTERISK_IMPORT_TYPE == 'mysql':
-                # Import from Asterisk Mysql
-                import_cdr_asterisk_mysql()
+            # Import from Asterisk
+            import_cdr_asterisk()
 
         elif settings.LOCAL_SWITCH_TYPE == 'freeswitch':
             # Import from Freeswitch Mongo

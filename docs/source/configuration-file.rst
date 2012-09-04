@@ -161,20 +161,27 @@ Import configuration for Asterisk
 
 The asterisk settings may be as follows::
 
-    ASTERISK_MYSQL = {
+#list of CDR Backends to import
+    CDR_BACKEND = {
         '127.0.0.1': {
-           'db_name': 'asteriskcdrdb',
-           'table_name': 'cdr',
-           'host': 'localhost',
-           'user': 'root',
-           'password': 'passw0rd',
+            'db_engine': 'mysql',
+            'cdr_type': 'asterisk',
+            'db_name': 'asteriskcdrdb',
+            'table_name': 'cdr',
+            'host': 'localhost',
+            'port': '',
+            'user': 'root',
+            'password': 'password',
         },
         #'192.168.1.200': {
+            #'db_engine': 'mysql',
+            #'cdr_type': 'asterisk',
             #'db_name': 'asteriskcdrdb',
             #'table_name': 'cdr',
             #'host': 'localhost',
+            #'port': '',
             #'user': 'root',
-            #'password': 'passw0rd',
+            #'password': 'password',
         #},
     }
 
