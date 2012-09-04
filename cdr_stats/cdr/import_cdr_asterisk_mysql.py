@@ -168,9 +168,9 @@ def import_cdr_asterisk_mysql(shell=False):
             # Prepare global CDR
             cdr_record = {
                 'switch_id': switch.id,
-                'caller_id_number': callerid_number,
-                'caller_id_name': callerid_name,
-                'destination_number': destination_number,
+                'caller_id_number': callerid_number.decode('utf-8', 'ignore'),
+                'caller_id_name': callerid_name.decode('utf-8', 'ignore'),
+                'destination_number': destination_number.decode('utf-8', 'ignore'),
                 'duration': duration,
                 'billsec': billsec,
                 'hangup_cause_id': hangup_cause_id,
@@ -185,7 +185,7 @@ def import_cdr_asterisk_mysql(shell=False):
                 #'billmsec': '',
                 #'read_codec': '',
                 #'write_codec': '',
-                'channel': channel,
+                'channel': channel.decode('utf-8', 'ignore'),
                 'cdr_type': CDR_TYPE["asterisk"],
                 'cdr_object_id': acctid,
                 'country_id': country_id,
@@ -193,7 +193,7 @@ def import_cdr_asterisk_mysql(shell=False):
             }
 
             # record global CDR
-            # implement Bulk insert as on Freeswitch
+            # TODO: implement Bulk insert
             CDR_COMMON.insert(cdr_record)
             """
             print_shell(shell, "Sync CDR (%s:%d, cid:%s, dest:%s, dur:%s, "\
