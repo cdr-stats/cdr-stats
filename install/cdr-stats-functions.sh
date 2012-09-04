@@ -407,6 +407,9 @@ func_install_frontend(){
 
     #Collect static files from apps and other locations in a single location.
     python manage.py collectstatic -l --noinput
+
+    #Load Countries Dialcode
+    python manage.py load_country_dialcode
     
     #Permission on database folder if we use SQLite    
     chown -R $APACHE_USER:$APACHE_USER $INSTALL_DIR/database/
