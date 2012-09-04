@@ -30,8 +30,10 @@ from datetime import timedelta
 class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Admin Interface."""
 
-    fixtures = ['auth_user.json', 'initial_data.json', 'blacklist_prefix.json',
-                'whitelist_prefix.json']
+    fixtures = ['auth_user.json', 'country_dialcode.json',
+                'blacklist_prefix.json',
+                'whitelist_prefix.json'
+               ]
 
     def test_admin_alarm_list(self):
         """Test Function to check alarm list"""
@@ -149,7 +151,7 @@ class CdrAlertModelTestCase(TestCase):
     """
 
     # initial_data.json is taken from country_dialcode
-    fixtures = ['initial_data.json']
+    fixtures = ['auth_user.json', 'country_dialcode.json']
 
     def setUp(self):
         """Create model object"""

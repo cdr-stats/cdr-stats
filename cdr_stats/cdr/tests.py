@@ -15,6 +15,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.core.management import call_command
 from django.conf import settings
+from django.utils.encoding import force_unicode
 from common.utils import BaseAuthenticatedClient
 from cdr.models import Switch, HangupCause
 from cdr.forms import CdrSearchForm,\
@@ -30,6 +31,11 @@ from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
                       cdr_report_by_hour, cdr_concurrent_calls,\
                       cdr_realtime, cdr_country_report, mail_report,\
                       world_map_view, index, cdr_detail
+from cdr.functions_def import get_switch_list, get_hangupcause_name,\
+                              get_hangupcause_id
+from cdr.templatetags.cdr_extras import hangupcause_name_with_title,\
+                                        mongo_id, seen_unseen, \
+                                        seen_unseen_word
 from bson.objectid import ObjectId
 from datetime import datetime, timedelta
 
@@ -368,13 +374,15 @@ class CdrStatsTaskTestCase(TestCase):
         self.assertEqual(sync_cdr_pending().timedelta_seconds(delta), 1)
 
 
-class CdrModelTestCase(TestCase):
+class CdrModelTestCase(BaseAuthenticatedClient):
     """Test Switch, Alarm, HangupCause models"""
 
-    fixtures = ['hangup_cause.json']
+    fixtures = ['auth_user.json', 'hangup_cause.json']
 
     def setUp(self):
         """Create model object"""
+        self.user = User.objects.get(pk=1)
+
         # Switch model
         self.switch = Switch(
             name='localhost',
@@ -390,6 +398,55 @@ class CdrModelTestCase(TestCase):
         self.hangupcause.save()
         self.assertTrue(self.hangupcause.__unicode__())
 
+    def test_functions(self):
+        get_switch_list()
+        get_hangupcause_name(self.hangupcause.pk)
+        get_hangupcause_name(2)
+
+        get_hangupcause_id(self.hangupcause.code)
+
+        # Template tags
+        hangupcause_name_with_title(self.hangupcause.pk)
+        value = {'_id': {'val': 1}}
+        mongo_id(value, 'val')
+
+        seen_unseen(value)
+        seen_unseen('')
+        seen_unseen_word(value)
+
+        seen_unseen_word('')
+
+    def test_cdr_search_form(self):
+        data = {'switch_id': 1,
+                'from_date': datetime.now().strftime("%Y-%m-%d"),
+                'to_date': datetime.now().strftime("%Y-%m-%d"),
+                'destination': 'abc',
+                'destination_type': 1,
+                'accountcode': 'abc',
+                'caller': 'abc',
+                'duration': 'abc',
+                'duration_type': '>',
+                'direction': 'INBOUND',
+                'hangup_cause': 1,
+                'result': 1,
+                'records_per_page': 10}
+        form = CdrSearchForm(data)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form["caller"].errors, ['abc is not a valid caller.'])
+        self.assertEqual(form["duration"].errors, ['abc is not a valid duration.'])
+        self.assertEqual(form["accountcode"].errors, ['abc is not a valid accountcode.'])
+        self.assertEqual(form["destination"].errors, ['abc is not a valid destination.'])
+
+    def test_email_report_form(self):
+        data = {'multiple_email': 'abc@localhost.com,xyzlocalhost.com'}
+        form = EmailReportForm(self.user, data)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form["multiple_email"].errors,
+            ['xyzlocalhost.com is not a valid e-mail address.'])
+
+        data = {'multiple_email': 'abc@localhost.com,xyz@localhost.com'}
+        form = EmailReportForm(self.user, data)
+        self.assertTrue(form.is_valid())
 
     def test_model_value(self):
         """Create model object value"""
@@ -404,11 +461,18 @@ class CdrModelTestCase(TestCase):
     def test_mgt_command(self):
         # Test mgt command
         call_command('generate_cdr',
-            '--number-cdr=500', '--delta-day=1', '--duration=10')
+            '--number-cdr=100', '--delta-day=1', '--duration=10')
+        call_command('generate_cdr',
+            '--number-cdr=100', '--delta-day=0', '--duration=0')
+        call_command('generate_cdr', '--number-cdr=100', '--delta-day=0')
+        call_command('generate_cdr', '--number-cdr=100')
 
         call_command('sync_cdr_freeswitch', '--apply-index')
+        call_command('sync_cdr_freeswitch')
 
         call_command('sync_cdr_asterisk', '--apply-index')
+        call_command('sync_cdr_asterisk')
 
         call_command('generate_concurrent_call', '--delta-day=1')
+        call_command('generate_concurrent_call')
 
