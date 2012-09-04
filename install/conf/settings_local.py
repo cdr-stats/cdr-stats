@@ -109,7 +109,7 @@ CDR_BACKEND = {
         'db_name': 'asteriskcdr',
         'table_name': 'cdrprivate',
         'host': 'localhost',
-        'port': '',
+        'port': 3366,  # 3366 mysql, 5432 pgsql
         'user': 'root',
         'password': 'password',
     },
