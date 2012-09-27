@@ -176,8 +176,7 @@ def import_cdr_asterisk(shell=False):
                 transdisposition = 0
 
             hangup_cause_id = get_hangupcause_id(transdisposition)
-            accountcode = set_int_default(row[7], '')
-
+            accountcode = row[7]
             uniqueid = row[8]
             start_uepoch = datetime.fromtimestamp(int(row[1]))
 
