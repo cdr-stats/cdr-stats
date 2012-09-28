@@ -132,7 +132,7 @@ class AsteriskCDR(models.Model):
     disposition = models.PositiveIntegerField(choices=DISPOSITION, default=1,
                                               verbose_name=_('Disposition'))
     amaflags = models.IntegerField(default=0, null=True)
-    accountcode = models.harField(max_length=80, null=True, db_index=True,
+    accountcode = models.charField(max_length=80, null=True, db_index=True,
                                 verbose_name=_('Accountcode'))
     uniqueid = models.CharField(max_length=32, blank=True,
                                 null=True, unique=True,)

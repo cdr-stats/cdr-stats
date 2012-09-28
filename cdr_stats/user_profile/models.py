@@ -71,7 +71,7 @@ class UserProfile(models.Model):
     language = LanguageField(blank=True, null=True, verbose_name=_('Language'))
     note = models.CharField(max_length=250, blank=True, null=True,
             verbose_name=_('Note'))
-    accountcode = models.PositiveIntegerField(null=True, blank=True)
+    accountcode = models.CharField(max_length=50, null=True, blank=True)
     multiple_email = models.TextField(blank=True, null=True,
             verbose_name=_('Report mail list'),
             help_text=_('Enter a valid e-mail address separated by commas.'))
