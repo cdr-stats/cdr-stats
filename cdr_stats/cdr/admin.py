@@ -43,6 +43,7 @@ def get_value_from_uni(j, row, field_name):
     else:
         return ''
 
+
 # Switch
 class SwitchAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'ipaddress', 'key_uuid')
@@ -168,11 +169,10 @@ class SwitchAdmin(admin.ModelAdmin):
                                 if len(field_notin_list) != 0:
                                     for i in field_notin_list:
                                         if i == 'accountcode':
-                                            accountcode = int(request.POST[i + "_csv"])
+                                            accountcode = request.POST[i + "_csv"]
 
                                 if not accountcode:
-                                    accountcode = int(get_cdr_from_row['accountcode'])
-
+                                    accountcode = get_cdr_from_row['accountcode']
 
                                 # Mandatory fields to import
                                 switch_id = int(request.POST['switch'])

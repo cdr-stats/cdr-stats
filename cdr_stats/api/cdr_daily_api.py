@@ -123,7 +123,7 @@ class CdrDailyResource(ModelResource):
         if 'destination_number' in query_var:
             query_var['destination_number'] = int(temp_var['destination_number'])
         if 'accountcode' in query_var:
-            query_var['accountcode'] = int(temp_var['accountcode'])
+            query_var['accountcode'] = temp_var['accountcode']
         if 'switch_id' in query_var:
             query_var['switch_id'] = int(temp_var['switch_id'])
 

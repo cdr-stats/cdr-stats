@@ -146,12 +146,6 @@ class SearchForm(forms.Form):
     def clean_accountcode(self):
         """ """
         accountcode = self.cleaned_data['accountcode']
-        if accountcode:
-            try:
-                int(accountcode)
-            except:
-                raise forms.ValidationError('%s is not a valid accountcode.'
-                        % accountcode)
         return accountcode
 
     def clean_destination(self):
@@ -409,16 +403,10 @@ class CDR_FileImport(FileImport):
 
     def clean_accountcode_csv(self):
         accountcode_csv = self.cleaned_data['accountcode_csv']
-        if accountcode_csv:
-            try:
-                int(accountcode_csv)
-            except:
-                raise forms.ValidationError('%s is not a valid accountcode.'
-                        % accountcode_csv)
         return accountcode_csv
 
     def clean_accountcode(self):
-        accountcode = int(self.cleaned_data['accountcode'])
+        accountcode = self.cleaned_data['accountcode']
         accountcode_csv = self.cleaned_data['accountcode_csv']
         if not accountcode_csv and accountcode == 0:
             raise forms.ValidationError(
