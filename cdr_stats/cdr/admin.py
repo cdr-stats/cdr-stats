@@ -91,9 +91,7 @@ class SwitchAdmin(admin.ModelAdmin):
 
         if request.method == 'POST':
             form = CDR_FileImport(request.user, request.POST, request.FILES)
-
             if form.is_valid():
-
                 field_list = {}
                 field_notin_list = []
                 for i in CDR_FIELD_LIST:
@@ -106,20 +104,17 @@ class SwitchAdmin(admin.ModelAdmin):
                 countMap = {}
                 for v in field_list.itervalues():
                     countMap[v] = countMap.get(v, 0) + 1
-                uni = [(k, v) for k, v in field_list.iteritems() \
-                            if countMap[v] == 1]
+                uni = [(k, v) for k, v in field_list.iteritems() if countMap[v] == 1]
                 uni = sorted(uni, key=lambda uni: uni[1])
 
                 # if order list matched with CDR_FIELD_LIST count
                 if len(uni) == len(CDR_FIELD_LIST) - len(field_notin_list):
 
                     # To count total rows of CSV file
-                    records = csv.reader(request.FILES['csv_file'],
-                                         delimiter=',', quotechar='"')
+                    records = csv.reader(request.FILES['csv_file'], delimiter=',', quotechar='"')
                     total_rows = len(list(records))
 
-                    rdr = csv.reader(request.FILES['csv_file'],
-                                     delimiter=',', quotechar='"')
+                    rdr = csv.reader(request.FILES['csv_file'], delimiter=',', quotechar='"')
                     cdr_record_count = 0
 
                     # Read each Row
@@ -143,27 +138,16 @@ class SwitchAdmin(admin.ModelAdmin):
                                 for j in uni:
                                     get_cdr_from_row[j[0]] = row[j[1] - 1]
                                     #get_cdr_from_row[j[0]] = row[row_counter]
-                                    caller_id_name = \
-                                        get_value_from_uni(j, row, 'caller_id_name')
-                                    caller_id_number = \
-                                        get_value_from_uni(j, row, 'caller_id_number')
-                                    direction = \
-                                        get_value_from_uni(j, row, 'direction')
-                                    remote_media_ip = \
-                                        get_value_from_uni(j, row, 'remote_media_ip')
-                                    answer_uepoch = \
-                                        get_value_from_uni(j, row, 'answer_uepoch')
-                                    end_uepoch = \
-                                        get_value_from_uni(j, row, 'end_uepoch')
-                                    mduration = \
-                                        get_value_from_uni(j, row, 'mduration')
-                                    billmsec = \
-                                        get_value_from_uni(j, row, 'billmsec')
-                                    read_codec = \
-                                        get_value_from_uni(j, row, 'read_codec')
-                                    write_codec = \
-                                        get_value_from_uni(j, row, 'write_codec')
-
+                                    caller_id_name = get_value_from_uni(j, row, 'caller_id_name')
+                                    caller_id_number = get_value_from_uni(j, row, 'caller_id_number')
+                                    direction = get_value_from_uni(j, row, 'direction')
+                                    remote_media_ip = get_value_from_uni(j, row, 'remote_media_ip')
+                                    answer_uepoch = get_value_from_uni(j, row, 'answer_uepoch')
+                                    end_uepoch = get_value_from_uni(j, row, 'end_uepoch')
+                                    mduration = get_value_from_uni(j, row, 'mduration')
+                                    billmsec = get_value_from_uni(j, row, 'billmsec')
+                                    read_codec = get_value_from_uni(j, row, 'read_codec')
+                                    write_codec = get_value_from_uni(j, row, 'write_codec')
                                     row_counter = row_counter + 1
 
                                 if len(field_notin_list) != 0:
