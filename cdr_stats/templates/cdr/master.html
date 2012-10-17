@@ -115,7 +115,6 @@
             {% endif %}
         });
 
-
         $(function() {
             $('.elemtooltip').tooltip('hide')
         });
@@ -124,9 +123,11 @@
 </head>
 
 <body>
-{% ifnotequal menu 'off' %}
-    {% include "cdr/bootstrap_menu.html" %}
-{% endifnotequal %}
+{% block menu %}
+    {% ifnotequal menu 'off' %}
+        {% include "cdr/bootstrap_menu.html" %}
+    {% endifnotequal %}
+{% endblock %}
 
 <div class="container">
 
