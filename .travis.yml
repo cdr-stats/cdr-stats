@@ -1,0 +1,25 @@
+language: python
+python:
+  - "2.7"
+env:
+  - DJANGO=1.4.1
+install:
+  # - pip install -q Django==$DJANGO --use-mirrors
+  - bash install/requirements/install-requirements.sh
+  # - pip install pep8 --use-mirrors
+  # - pip install https://github.com/dcramer/pyflakes/tarball/master
+before_script:
+  - cp install/conf/settings_local.py newfies/settings_local.py
+  - cp install/conf/settings_travis.py newfies/settings_travis.py
+  - "mysql -e 'create database cdrstats;'"
+  - "mysql -e 'create database cdrstats_test;'"
+  # - "pep8 --exclude=migrations --ignore=E501,E225 newfies"
+  # - pyflakes -x W newfies
+script:
+  - python cdr_stats/manage.py test --settings=settings_travis -s -x --with-xtraceback --with-color --ignore-files=api_tests.py
+  #- python cdr_stats/manage.py test --settings=settings_travis -s --with-progressive
+# whitelist
+branches:
+  only:
+    - develop
+
