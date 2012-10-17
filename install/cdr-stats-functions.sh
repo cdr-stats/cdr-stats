@@ -201,14 +201,13 @@ func_install_frontend(){
             fi
             yum -y install autoconf automake bzip2 cpio curl curl-devel curl-devel expat-devel fileutils gcc-c++ gettext-devel gnutls-devel libjpeg-devel libogg-devel libtiff-devel libtool libvorbis-devel make ncurses-devel nmap openssl openssl-devel openssl-devel perl patch unzip wget zip zlib zlib-devel policycoreutils-python
 
-            if [ ! -f /etc/yum.repos.d/rpmforge.repo ];
-            	then
-                	# Install RPMFORGE Repo
-        			if [ $KERNELARCH = "x86_64" ]; then
-						rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm
-					else
-						rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
-					fi
+            if [ ! -f /etc/yum.repos.d/rpmforge.repo ]; then
+            	# Install RPMFORGE Repo
+    			if [ $KERNELARCH = "x86_64" ]; then
+					rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm
+				else
+					rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
+				fi
         	fi
 
         	yum -y --enablerepo=rpmforge install git-core
@@ -248,7 +247,6 @@ func_install_frontend(){
 
     if [ -d "$INSTALL_DIR" ]; then
         # CDR-Stats is already installed
-        echo ""
         echo ""
         echo "We detect an existing CDR-Stats Installation"
         echo "if you continue the existing installation will be removed!"
@@ -515,8 +513,10 @@ func_install_frontend(){
 			. /etc/sysconfig/clock
         ;;
     esac
+
     #Set Timezone in settings_local.py
     sed -i "s@Europe/Madrid@$ZONE@g" $INSTALL_DIR/settings_local.py
+    sed -i "s@Europe/Madrid@$ZONE@g" $INSTALL_DIR/celeryconfig.py
 
     if [ "$INSTALLMODE" = "FULL" ]; then
         #Setup Firewall / SELINUX
@@ -673,9 +673,9 @@ func_install_redis_server() {
             else
                 #Ubuntu 10.04 TLS
                 cd /usr/src
-                wget http://redis.googlecode.com/files/redis-2.4.14.tar.gz
-                tar -zxf redis-2.4.14.tar.gz
-                cd redis-2.4.14
+                wget http://redis.googlecode.com/files/redis-2.4.17.tar.gz
+                tar -zxf redis-2.4.17.tar.gz
+                cd redis-2.4.17
                 make
                 make install
 
@@ -703,9 +703,6 @@ func_install_redis_server() {
             chkconfig --level 2345 redis on
 
             /etc/init.d/redis start
-            #Fixme : /etc/init.d/redis
-            # pid seems to point at wrong place
-            # not critical but /etc/init.d/redis status won't work
         ;;
     esac
 }
@@ -714,15 +711,13 @@ func_install_redis_server() {
 func_logrotate() {
     touch /etc/logrotate.d/cdr_stats
     echo '
-/var/log/cdr-stats/celery*log {
-    missingok
-    rotate 10
-    compress
-    size 10M
-    postrotate
-        /etc/init.d/cdr-stats-celeryd restart > /dev/null
-    endscript
-}
+/var/log/cdr-stats/*.log {
+        daily
+        rotate 10
+        size = 50M
+        missingok
+        compress
+    }
 '  > /etc/logrotate.d/cdr_stats
 
     logrotate /etc/logrotate.d/cdr_stats
