@@ -4,8 +4,6 @@ Werkzeug==0.8.3
 django-debug-toolbar==0.9.4
 ipython==0.13
 pip-tools==0.2
-
-#Pull request waiting to be in, fix setup and template for this plugins
+pygraphviz==1.1
 #django-debug-toolbar-mongo
-#for now we use :
-#git+git://github.com/d0ugal/django-debug-toolbar-mongo.git
+git+git://github.com/hmarr/django-debug-toolbar-mongo.git
