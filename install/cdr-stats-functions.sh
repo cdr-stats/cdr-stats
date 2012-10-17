@@ -96,15 +96,6 @@ func_check_dependencies() {
         exit 1
     fi
 
-    #Check MySQL-python
-    grep_pip=`pip freeze| grep MySQL-python`
-    if echo $grep_pip | grep -i "MySQL-python" > /dev/null ; then
-        echo "OK : MySQL-python installed..."
-    else
-        echo "Error : MySQL-python not installed..."
-        exit 1
-    fi
-
     #Check celery
     grep_pip=`pip freeze| grep celery`
     if echo $grep_pip | grep -i "celery" > /dev/null ; then
@@ -122,15 +113,6 @@ func_check_dependencies() {
         echo "Error : django-tastypie not installed..."
         exit 1
     fi
-
-    #Check raven
-    #grep_pip=`pip freeze| grep raven`
-    #if echo $grep_pip | grep -i "raven" > /dev/null ; then
-    #    echo "OK : raven installed..."
-    #else
-    #    echo "Error : raven not installed..."
-    #    exit 1
-    #fi
 
     echo ""
     echo "Python dependencies successfully installed!"
