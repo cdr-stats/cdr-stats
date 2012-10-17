@@ -29,16 +29,14 @@ APPLICATION_DIR = os.path.dirname(globals()['__file__'])
 #=================
 DATABASES = {
     'default': {
-        # Add 'postgresql_psycopg2','postgresql','mysql','sqlite3','oracle'
+        # 'postgresql_psycopg2','postgresql','sqlite3','oracle', 'django.db.backends.mysql'
         'ENGINE': 'django.db.backends.sqlite3',
-        # Or path to database file if using sqlite3.
+        # Database name or path to database file if using sqlite3.
         'NAME': APPLICATION_DIR + '/database/cdr-stats.db',
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost.
-                                         # Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default.
-                                         # Not used with sqlite3.
+        'HOST': '',                      # Not used with sqlite3.
+        'PORT': '',                      # Not used with sqlite3.
         'OPTIONS': {
            'init_command': 'SET storage_engine=INNODB',
         }
