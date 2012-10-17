@@ -601,16 +601,12 @@ func_install_backend() {
             # Add init-scripts
             cp /usr/src/cdr-stats/install/celery-init/debian/etc/default/cdr-stats-celeryd /etc/default/
             cp /usr/src/cdr-stats/install/celery-init/debian/etc/init.d/cdr-stats-celeryd /etc/init.d/
-
             # Configure init-scripts
             sed -i "s/CELERYD_USER='celery'/CELERYD_USER='$CELERYD_USER'/g"  /etc/default/cdr-stats-celeryd
             sed -i "s/CELERYD_GROUP='celery'/CELERYD_GROUP='$CELERYD_GROUP'/g"  /etc/default/cdr-stats-celeryd
-
             chmod +x /etc/default/cdr-stats-celeryd
             chmod +x /etc/init.d/cdr-stats-celeryd
-
             /etc/init.d/cdr-stats-celeryd restart
-
             cd /etc/init.d; update-rc.d cdr-stats-celeryd defaults 99
 
             #Check permissions on /dev/shm to ensure that celery can start and run for openVZ.
@@ -633,13 +629,11 @@ func_install_backend() {
             # Add init-scripts
             cp /usr/src/cdr-stats/install/celery-init/centos/etc/default/cdr-stats-celeryd /etc/default/
             cp /usr/src/cdr-stats/install/celery-init/centos/etc/init.d/cdr-stats-celeryd /etc/init.d/
-
             # Configure init-scripts
             sed -i "s/CELERYD_USER='celery'/CELERYD_USER='$CELERYD_USER'/g"  /etc/default/cdr-stats-celeryd
             sed -i "s/CELERYD_GROUP='celery'/CELERYD_GROUP='$CELERYD_GROUP'/g"  /etc/default/cdr-stats-celeryd
             chmod +x /etc/init.d/cdr-stats-celeryd
             /etc/init.d/cdr-stats-celeryd restart
-
             chkconfig --add cdr-stats-celeryd
             chkconfig --level 2345 cdr-stats-celeryd on
         ;;
