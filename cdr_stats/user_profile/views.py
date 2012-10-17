@@ -15,7 +15,7 @@
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.db.models import *
 from django.template.context import RequestContext
@@ -60,7 +60,7 @@ def customer_detail_change(request):
         if not chk_account_code(request):
             return HttpResponseRedirect('/?acc_code_error=true')
 
-    user_detail = User.objects.get(username=request.user)
+    user_detail = get_object_or_404(User, username=request.user)
     try:
         user_detail_extened = UserProfile.objects.get(user=user_detail)
     except UserProfile.DoesNotExist:
@@ -108,7 +108,7 @@ def customer_detail_change(request):
             col_name_with_order[sort_field] = '-' + sort_field
     
     user_notification = \
-    notification.Notice.objects.filter(recipient=request.user)
+        notification.Notice.objects.filter(recipient=request.user)
     # Search on sender name
     q = (Q(sender=request.user))
     if q:
@@ -141,11 +141,10 @@ def customer_detail_change(request):
 
     if request.method == 'POST':
         if request.POST['form-type'] == "change-detail":
-            user_detail_form = UserChangeDetailForm(request.user, request.POST,
-                                                    instance=user_detail)
-            user_detail_extened_form = UserChangeDetailExtendForm(request.user,
-                                                                  request.POST,
-                                                                  instance=user_detail_extened)
+            user_detail_form = UserChangeDetailForm(
+                request.user, request.POST, instance=user_detail)
+            user_detail_extened_form = UserChangeDetailExtendForm(
+                request.user, request.POST, instance=user_detail_extened)
             action = 'tabs-1'
             if user_detail_form.is_valid() and user_detail_extened_form.is_valid():
                 user_detail_form.save()

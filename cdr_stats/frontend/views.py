@@ -17,7 +17,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import password_reset, password_reset_done,\
                         password_reset_confirm, password_reset_complete
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
@@ -125,7 +125,7 @@ def cust_password_reset(request):
             post_reset_redirect='/password_reset/done/',
             from_email='cdr_stats_admin@localhost.com',
             extra_context=data
-            )
+        )
     else:
         return HttpResponseRedirect("/")
 
@@ -143,7 +143,7 @@ def cust_password_reset_done(request):
             request,
             template_name='cdr/registration/password_reset_done.html',
             extra_context=data
-            )
+        )
     else:
         return HttpResponseRedirect("/")
 

@@ -19,7 +19,7 @@ from django.contrib.auth.views import password_reset, \
                                     password_reset_confirm, \
                                     password_reset_complete
 from django.http import HttpResponseRedirect, HttpResponse, Http404
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.utils.translation import gettext as _
 from django.conf import settings
@@ -104,8 +104,8 @@ def notice_count(request):
     """Get count of logged in user's notifications"""
     try:
         notice_count =\
-        notification.Notice.objects.filter(recipient=request.user,
-            unseen=1).count()
+            notification.Notice.objects.filter(recipient=request.user,
+                unseen=1).count()
     except:
         notice_count = ''
     return notice_count
@@ -632,7 +632,7 @@ def cdr_detail(request, id, switch_id):
 
         get the single call record in detail from mongodb collection
     """
-    c_switch = Switch.objects.get(id=switch_id)
+    c_switch = get_object_or_404(Switch, id=switch_id)
     ipaddress = c_switch.ipaddress
     try:
         menu = request.GET.get('menu')
@@ -669,7 +669,7 @@ def cdr_detail(request, id, switch_id):
         host = settings.CDR_BACKEND[ipaddress]['host']
         try:
             connection = Database.connect(user=user, passwd=password,
-                                            db=db_name, host=host)
+                                          db=db_name, host=host)
             cursor = connection.cursor()
         except:
             raise Http404
@@ -1059,8 +1059,7 @@ def get_cdr_mail_report():
     country_analytic = dict()
     hangup_analytic = dict()
     for doc in total_data:
-        detail_data.append(
-            {
+        detail_data.append({
                 'duration__sum': int(doc['value']['duration__sum']),
                 'calldate__count': int(doc['value']['calldate__count']),
                 'duration__avg': doc['value']['duration__avg'],
@@ -1078,8 +1077,10 @@ def get_cdr_mail_report():
 
         country_id = int(doc['_id']['f_Country'])
         if country_id in country_analytic:
-            country_analytic[country_id]['count_call'] += int(doc['value']['calldate__count'])
-            country_analytic[country_id]['duration_sum'] += int(doc['value']['duration__sum'])
+            country_analytic[country_id]['count_call'] +=\
+                int(doc['value']['calldate__count'])
+            country_analytic[country_id]['duration_sum'] +=\
+                int(doc['value']['duration__sum'])
         else:
             country_analytic[country_id] = {
                 'count_call': int(doc['value']['calldate__count']),
@@ -1152,8 +1153,7 @@ def mail_report(request):
     """
 
     if not check_cdr_data_exists(request):
-        return render_to_response(
-                    'cdr/error_import.html',
+        return render_to_response('cdr/error_import.html',
                     context_instance=RequestContext(request))
 
     logging.debug('CDR mail report view start')
@@ -1587,8 +1587,7 @@ def cdr_overview(request):
             day_data = dict()
             for i in calls_in_day:
                 dt = int(i['_id']['g_Millisec'])
-                total_day_record.append(
-                        {
+                total_day_record.append({
                         'dt': dt,
                         'calldate__count': int(i['value']['calldate__count']),
                         'duration__sum': int(i['value']['duration__sum']),
@@ -1632,8 +1631,7 @@ def cdr_overview(request):
             month_data = dict()
             for i in calls_in_month:
                 dt = int(i['_id']['g_Millisec'])
-                total_month_record.append(
-                        {
+                total_month_record.append({
                         'dt': dt,
                         'calldate__count': int(i['value']['calldate__count']),
                         'duration__sum': int(i['value']['duration__sum']),
@@ -1641,8 +1639,10 @@ def cdr_overview(request):
                     })
 
                 if dt in month_data:
-                    month_data[dt]['call_count'] += int(i['value']['calldate__count'])
-                    month_data[dt]['duration_sum'] += int(i['value']['duration__sum'])
+                    month_data[dt]['call_count'] +=\
+                        int(i['value']['calldate__count'])
+                    month_data[dt]['duration_sum'] +=\
+                        int(i['value']['duration__sum'])
                 else:
                     month_data[dt] = {
                         'call_count': int(i['value']['calldate__count']),
@@ -1694,8 +1694,7 @@ def cdr_country_report(request):
         to create country call
     """
     if not check_cdr_data_exists(request):
-        return render_to_response(
-            'cdr/error_import.html',
+        return render_to_response('cdr/error_import.html',
             context_instance=RequestContext(request))
 
     logging.debug('CDR country report view start')
@@ -1710,9 +1709,8 @@ def cdr_country_report(request):
     end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
     from_date = start_date.strftime("%Y-%m-%d")
     to_date = end_date.strftime("%Y-%m-%d")
-    form = CountryReportForm(initial={
-                                'from_date': from_date,
-                                'to_date': to_date})
+    form = CountryReportForm(initial={'from_date': from_date,
+                                      'to_date': to_date})
 
     total_calls = 0
     total_duration = 0
@@ -1727,15 +1725,15 @@ def cdr_country_report(request):
                 # From
                 from_date = form.cleaned_data.get('from_date')
                 start_date = datetime(int(from_date[0:4]),
-                    int(from_date[5:7]),
-                    int(from_date[8:10]), 0, 0, 0, 0)
+                                      int(from_date[5:7]),
+                                      int(from_date[8:10]), 0, 0, 0, 0)
 
             if "to_date" in request.POST:
                 # To
                 to_date = form.cleaned_data.get('to_date')
                 end_date = datetime(int(to_date[0:4]),
-                    int(to_date[5:7]),
-                    int(to_date[8:10]), 23, 59, 59, 999999)
+                                    int(to_date[5:7]),
+                                    int(to_date[8:10]), 23, 59, 59, 999999)
 
             country_id = form.cleaned_data.get('country_id')
             # convert list value in int
@@ -1903,7 +1901,7 @@ def world_map_view(request):
             context_instance=RequestContext(request))
 
     logging.debug('CDR world report view start')
-    template = 'cdr/world_map.html'
+    template_name = 'cdr/world_map.html'
 
     switch_id = 0
     query_var = {}
@@ -1925,15 +1923,15 @@ def world_map_view(request):
                 # From
                 from_date = form.cleaned_data.get('from_date')
                 start_date = datetime(int(from_date[0:4]),
-                    int(from_date[5:7]),
-                    int(from_date[8:10]), 0, 0, 0, 0)
+                                      int(from_date[5:7]),
+                                      int(from_date[8:10]), 0, 0, 0, 0)
 
             if "to_date" in request.POST:
                 # To
                 to_date = form.cleaned_data.get('to_date')
                 end_date = datetime(int(to_date[0:4]),
-                    int(to_date[5:7]),
-                    int(to_date[8:10]), 23, 59, 59, 999999)
+                                    int(to_date[5:7]),
+                                    int(to_date[8:10]), 23, 59, 59, 999999)
 
             switch_id = form.cleaned_data.get('switch')
             if switch_id and int(switch_id) != 0:
@@ -1993,6 +1991,6 @@ def world_map_view(request):
                  'notice_count': notice_count(request),
                  }
 
-    return render_to_response(template, variables,
+    return render_to_response(template_name, variables,
         context_instance=RequestContext(request))
 
