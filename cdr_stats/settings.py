@@ -205,6 +205,7 @@ INSTALLED_APPS = (
     'country_dialcode',
     #'geordi',
     'gunicorn',
+    'apiplayground',
 )
 
 # Debug Toolbar

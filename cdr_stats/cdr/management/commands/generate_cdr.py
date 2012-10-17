@@ -160,7 +160,6 @@ class Command(BaseCommand):
             sys.exit(1)
 
         for i in range(1, int(no_of_record) + 1):
-
             (
                 answer_stamp,
                 start_uepoch,
@@ -173,7 +172,7 @@ class Command(BaseCommand):
                 billsec,
                 end_stamp,
                 uuid,
-                ) = generate_cdr_data(day_delta_int)
+            ) = generate_cdr_data(day_delta_int)
 
             if type(arg_duration) == int:
                 duration = arg_duration

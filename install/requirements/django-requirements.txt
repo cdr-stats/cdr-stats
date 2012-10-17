@@ -22,3 +22,4 @@ django_socketio
 django_extensions
 django-cache-utils
 django-cache-machine
+git+git://github.com/areski/Django-API-Playground.git
