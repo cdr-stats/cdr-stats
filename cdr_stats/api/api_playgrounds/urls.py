@@ -14,12 +14,14 @@
 from django.conf.urls import include, patterns
 from api.api_playgrounds.cdr_playground import CdrAPIPlayground
 from api.api_playgrounds.hangupcause_playground import HangupcauseAPIPlayground
+from api.api_playgrounds.switch_playground import SwitchAPIPlayground
 
 
 urlpatterns = patterns('',
 
     (r'explorer/cdr/', include(CdrAPIPlayground().urls)),
     (r'explorer/hangupcause/', include(HangupcauseAPIPlayground().urls)),
+    (r'explorer/switch/', include(SwitchAPIPlayground().urls)),
 
     # API list view
     (r'explorer/$', 'api.api_playgrounds.views.api_list_view'),
