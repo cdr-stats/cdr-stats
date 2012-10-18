@@ -17,7 +17,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import password_reset, password_reset_done,\
                         password_reset_confirm, password_reset_complete
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
@@ -130,6 +130,7 @@ def cust_password_reset(request):
         return HttpResponseRedirect("/")
 
 
+#TODO: Check if login_required is needed, same function above and bellow
 def cust_password_reset_done(request):
     """Use ``django.contrib.auth.views.password_reset_done`` view method for
     forgotten password on the Customer UI

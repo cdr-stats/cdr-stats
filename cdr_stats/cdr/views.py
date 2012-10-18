@@ -14,16 +14,11 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import password_reset, \
-                                    password_reset_done,\
-                                    password_reset_confirm, \
-                                    password_reset_complete
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.utils.translation import gettext as _
 from django.conf import settings
-from django.views.decorators.cache import cache_page
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 from notification import models as notification
@@ -48,8 +43,8 @@ from cdr.forms import CdrSearchForm, \
                         EmailReportForm
 from frontend.forms import LoginForm
 from user_profile.models import UserProfile
+#TODO: Remove wildcard *
 from cdr.mapreduce import *
-from operator import itemgetter, attrgetter
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -457,9 +452,8 @@ def cdr_view(request):
         if not chk_account_code(request):
             return HttpResponseRedirect('/?acc_code_error=true')
         else:
-            query_var['accountcode'] = \
-                mr_query_var['metadata.accountcode'] = \
-                    chk_account_code(request)
+            mr_query_var['metadata.accountcode'] = chk_account_code(request)
+            query_var['accountcode'] = mr_query_var['metadata.accountcode']
 
     cli = source_desti_field_chk_mongodb(caller, caller_type)
     if cli:
@@ -490,16 +484,17 @@ def cdr_view(request):
     except:
         PAGE_NUMBER = 1
 
-    final_result = cdr_data.find(query_var, {
-                                    "uuid": 0,
-                                    "answer_uepoch": 0,
-                                    "end_uepoch": 0,
-                                    "mduration": 0,
-                                    "billmsec": 0,
-                                    "read_codec": 0,
-                                    "write_codec": 0,
-                                    "remote_media_ip": 0,
-                                })
+    final_result = cdr_data.find(query_var,
+                        {
+                            "uuid": 0,
+                            "answer_uepoch": 0,
+                            "end_uepoch": 0,
+                            "mduration": 0,
+                            "billmsec": 0,
+                            "read_codec": 0,
+                            "write_codec": 0,
+                            "remote_media_ip": 0,
+                        })
 
     form = CdrSearchForm(initial={
                             'from_date': from_date,
@@ -720,8 +715,8 @@ def cdr_dashboard(request):
     """
     if not check_cdr_data_exists(request):
         return render_to_response(
-                    'cdr/error_import.html',
-                    context_instance=RequestContext(request))
+                'cdr/error_import.html',
+                context_instance=RequestContext(request))
 
     logging.debug('CDR dashboard view start')
     now = datetime.now()
@@ -958,7 +953,6 @@ def cdr_concurrent_calls(request):
            context_instance=RequestContext(request))
 
 
-
 @login_required
 def cdr_realtime(request):
     """Call realtime view
@@ -1109,7 +1103,6 @@ def get_cdr_mail_report():
                                        int(i[0])))
 
     # Country call analytic end
-
     hangup_analytic_array = []
     hangup_analytic = hangup_analytic.items()
     hangup_analytic = sorted(hangup_analytic, key=lambda k: k[0])
@@ -1508,11 +1501,11 @@ def cdr_overview(request):
 
         start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
         end_date = datetime(tday.year, tday.month,
-            tday.day, 23, 59, 59, 999999)
+                            tday.day, 23, 59, 59, 999999)
         month_start_date = datetime(start_date.year,
-            start_date.month, 1, 0, 0, 0, 0)
+                                    start_date.month, 1, 0, 0, 0, 0)
         month_end_date = datetime(end_date.year, end_date.month,
-            end_date.day,  23, 59, 59, 999999)
+                                  end_date.day, 23, 59, 59, 999999)
 
         query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
@@ -1993,4 +1986,3 @@ def world_map_view(request):
 
     return render_to_response(template_name, variables,
         context_instance=RequestContext(request))
-

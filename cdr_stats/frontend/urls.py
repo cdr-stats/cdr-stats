@@ -19,7 +19,7 @@ urlpatterns = patterns('frontend.views',
     (r'^logout/$', 'logout_view'),
     (r'^pleaselog/$', 'pleaselog'),
 
-    # Password reset for Customer UI
+    # Password reset
     (r'^password_reset/$', 'cust_password_reset'),
     (r'^password_reset/done/$', 'cust_password_reset_done'),
     (r'^reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$',

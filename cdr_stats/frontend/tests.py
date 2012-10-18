@@ -15,7 +15,7 @@
 from django.test import TestCase
 from common.utils import BaseAuthenticatedClient
 from frontend.forms import LoginForm
-from frontend.views import login_view, pleaselog, logout_view, cust_password_reset
+from frontend.views import login_view, logout_view
 
 
 class FrontendView(BaseAuthenticatedClient):
@@ -35,7 +35,6 @@ class FrontendCustomerView(BaseAuthenticatedClient):
     """Test cases for Cdr-stats Customer Interface."""
 
     fixtures = ['auth_user.json']
-
 
     def test_login_view(self):
         """Test Function to check login view"""
@@ -85,7 +84,6 @@ class FrontendCustomerView(BaseAuthenticatedClient):
         response = self.client.get('/pleaselog/')
         self.assertTemplateUsed(response, 'cdr/index.html')
         self.assertEqual(response.status_code, 200)
-
 
     def test_index(self):
         """Test Function to check customer index page"""
@@ -147,7 +145,7 @@ class FrontendForgotPassword(TestCase):
             'cdr/registration/password_reset_confirm.html')
         response = self.client.post('/reset/1-2xc-5791af4cc6b67e88ce8e/',
                                     {'new_password1': 'admin',
-                                     'new_password2': 'admin' })
+                                     'new_password2': 'admin'})
         self.assertEqual(response.status_code, 200)
 
         response = self.client.get('/reset/done/')
