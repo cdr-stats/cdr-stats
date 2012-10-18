@@ -164,8 +164,11 @@ def cdr_view_daily_report(query_var):
 
     cdr_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
     logging.debug('Before MapReduce')
-    total_data = cdr_data.map_reduce(map, reduce, out,
-                        query=query_var, finalize=finalfc)
+    total_data = cdr_data.map_reduce(map,
+                                     reduce,
+                                     out,
+                                     query=query_var,
+                                     finalize=finalfc)
     logging.debug('After MapReduce')
 
     total_data = total_data.find().sort([('_id.a_Year', -1),
@@ -1038,8 +1041,11 @@ def get_cdr_mail_report():
     #Retrieve Map Reduce
     (map, reduce, finalfc, out) = mapreduce_cdr_mail_report()
 
-    total_data = cdr_data.map_reduce(map, reduce, out,
-                            query=query_var, finalize=finalfc)
+    total_data = cdr_data.map_reduce(map,
+                                     reduce,
+                                     out,
+                                     query=query_var,
+                                     finalize=finalfc)
 
     total_data = total_data.find().sort([('_id.c_Day', -1),
                                          ('_id.d_Hour', -1),
@@ -1190,7 +1196,10 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
     (map, reduce, finalfc, out) = mapreduce_cdr_hourly_report()
 
     #Run Map Reduce
-    calls_in_day = hourly_data.map_reduce(map, reduce, out, query=query_var)
+    calls_in_day = hourly_data.map_reduce(map,
+                                          reduce,
+                                          out,
+                                          query=query_var)
     calls_in_day = calls_in_day.find().sort([('_id.a_Year', 1),
                                              ('_id.b_Month', 1),
                                              ('_id.c_Day', 1)])
@@ -1508,8 +1517,10 @@ def cdr_overview(request):
         hourly_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
         (map, reduce, finalfc, out) = mapreduce_hourly_overview()
         logging.debug('Before MapReduce')
-        calls_in_day =\
-            hourly_data.map_reduce(map, reduce, out, query=query_var)
+        calls_in_day = hourly_data.map_reduce(map,
+                                              reduce,
+                                              out,
+                                              query=query_var)
         logging.debug('After MapReduce')
         calls_in_day = calls_in_day.find().sort([('_id.a_Year', 1),
                                                  ('_id.b_Month', 1),
@@ -1557,7 +1568,10 @@ def cdr_overview(request):
 
         (map, reduce, finalfc, out) = mapreduce_daily_overview()
         logging.debug('Before MapReduce')
-        calls_in_day = daily_data.map_reduce(map, reduce, out, query=query_var)
+        calls_in_day = daily_data.map_reduce(map,
+                                             reduce,
+                                             out,
+                                             query=query_var)
         logging.debug('After MapReduce')
         calls_in_day = calls_in_day.find().sort([('_id.g_Millisec', 1),
                                                  ('_id.f_Switch', 1)])
@@ -1600,8 +1614,10 @@ def cdr_overview(request):
 
         #Run Map Reduce
         logging.debug('Before MapReduce')
-        calls_in_month = monthly_data.map_reduce(map, reduce,
-                                                 out, query=query_var)
+        calls_in_month = monthly_data.map_reduce(map,
+                                                 reduce,
+                                                 out,
+                                                 query=query_var)
         logging.debug('After MapReduce')
         calls_in_month = calls_in_month.find().sort([('_id.g_Millisec', -1),
                                                      ('_id.f_Switch', 1)])
@@ -1762,7 +1778,10 @@ def cdr_country_report(request):
     country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
 
     logging.debug('Map-reduce cdr country hourly analytic start')
-    country_calls = country_data.map_reduce(map, reduce, out, query=query_var)
+    country_calls = country_data.map_reduce(map,
+                                            reduce,
+                                            out,
+                                            query=query_var)
     logging.debug('Map-reduce cdr country hourly analytic end')
     country_calls = country_calls.find()\
                                 .sort([('a_Year', -1),
@@ -1801,7 +1820,10 @@ def cdr_country_report(request):
     #Run Map Reduce
     country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
     logging.debug('Map-reduce cdr country calls report start')
-    calls = country_data.map_reduce(map, reduce, out, query=query_var)
+    calls = country_data.map_reduce(map,
+                                    reduce,
+                                    out,
+                                    query=query_var)
     logging.debug('Map-reduce cdr country calls report end')
     calls = calls.find().sort([('value.calldate__count', -1),
                                ('value.duration__sum', -1)])
@@ -1940,7 +1962,10 @@ def world_map_view(request):
 
     #Run Map Reduce
     country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-    calls = country_data.map_reduce(map, reduce, out, query=query_var)
+    calls = country_data.map_reduce(map,
+                                    reduce,
+                                    out,
+                                    query=query_var)
     calls = calls.find().sort([('value.calldate__count', -1),
                                ('value.duration__sum', -1)])
 
