@@ -406,7 +406,6 @@ CDR_BACKEND = {
     },
 }
 
-
 #MONGODB
 #=======
 #TODO: Rename this to a better structure :
@@ -419,22 +418,6 @@ MG_DAILY_ANALYTIC = 'daily_analytic'
 MG_MONTHLY_ANALYTIC = 'monthly_analytic'
 MG_CONC_CALL = 'concurrent_call'
 MG_CONC_CALL_AGG = 'concurrent_call_map_reduce'
-
-#MongoDB setting(s) to use for import
-MG_IMPORT = {
-    '127.0.0.1': {
-        'db_name': 'freeswitch_cdr',  # cdr-stats
-        'host': 'localhost',
-        'port': 27017,
-        'collection': 'cdr',
-    },
-    #'192.168.1.15': {
-    #    'db_name': 'freeswitch_cdr',
-    #    'host': '192.168.1.15',
-    #    'port': 27017,
-    #    'collection': 'cdr',
-    #},
-}
 
 #No of records per page
 #=======================
