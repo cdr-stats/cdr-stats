@@ -370,11 +370,7 @@ PREFIX_TO_IGNORE = "+,0,00,000,0000,00000,011,55555,99999"
 #Realtime Graph : set the Y axis limit
 REALTIME_Y_AXIS_LIMIT = 100
 
-# freeswitch, asterisk : see support Switches
-LOCAL_SWITCH_TYPE = 'freeswitch'
-#TODO: See if we can replace LOCAL_SWITCH_ID by local ip from CDR_BACKEND,
-#this will make LOCAL_SWITCH_TYPE redudant too and keep settings more DRY
-LOCAL_SWITCH_ID = 1
+
 
 #ASTERISK IMPORT
 #===============
@@ -400,11 +396,20 @@ CDR_BACKEND = {
         'db_name': 'freeswitch_cdr',
         'table_name': 'cdr',  # collection if mongodb
         'host': 'localhost',
-        'port': 3366,  # 3366 mysql, 5432 pgsql, 27017 mongodb
+        'port': 27017,  # 3366 mysql, 5432 pgsql, 27017 mongodb
         'user': '',
         'password': '',
     },
 }
+
+# freeswitch, asterisk : see support Switches
+LOCAL_SWITCH_TYPE = 'freeswitch'
+#this will make LOCAL_SWITCH_TYPE redudant too and keep settings more DRY
+
+#TODO: See if we can replace LOCAL_SWITCH_ID by local ip from CDR_BACKEND,
+LOCAL_SWITCH_ID = 1
+#LOCAL_SWITCH_ID = CDR_BACKEND.items()[0][0]
+
 
 #MONGODB
 #=======

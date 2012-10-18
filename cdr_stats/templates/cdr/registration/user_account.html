@@ -13,58 +13,41 @@
 {% endif %}
 
 <form class="well" action="" method="post">{% csrf_token %}
-
-    <div class="span11">
-        <div class="row">
-            <div class="span6">
-                {% get_fieldset last_name,first_name,email as user_fields from user_detail_form %}
-                {% for field in user_detail_form %}
-                    <div class="clearfix{% if field.errors %} control-group error{% endif %}">
-                        <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
-                        <div class="input">
-                            {{ field }}
-                            {% if field.errors %}
-                                <span class="help-inline">{{ field.errors|removetags:"ul li"|safe }}</span>
-                            {% endif %}
-                            <span class="help-block">{{ field.help_text }} </span>
-                        </div>
-                    </div>
-                {% endfor %}
-
-                {% get_fieldset address,city,state,country,zip_code as user_fields from user_detail_extened_form %}
-                {% for field in user_fields %}
-                    <div class="clearfix{% if field.errors %} control-group error{% endif %}">
-                        <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
-                        <div class="input">
-                            {{ field }}
-                            {% if field.errors %}
-                                <span class="help-inline">{{ field.errors|removetags:"ul li"|safe }}</span>
-                            {% endif %}
-                            <span class="help-block">{{ field.help_text }} </span>
-                        </div>
-                    </div>
-                {% endfor %}
+    {% for field in user_detail_form %}
+        <div class="row{% if field.errors %} control-group error{% endif %}">
+            <div class="span2">
+                <label class="control-label" for="id_{{ field.name }}">
+                    {{ field.label }}
+                </label>
             </div>
-            <div class="span5">
-                {% get_fieldset phone_no,fax,company_name,company_website,language,note as user_fields from user_detail_extened_form %}
-                {% for field in user_fields %}
-                    <div class="clearfix{% if field.errors %} control-group error{% endif %}">
-                        <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
-                        <div class="input">
-                            {{ field }}
-                            {% if field.errors %}
-                                <span class="help-inline">{{ field.errors|removetags:"ul li"|safe }}</span>
-                            {% endif %}
-                            <span class="help-block">{{ field.help_text }} </span>
-                        </div>
-                    </div>
-                {% endfor %}
+            <div class="span4">{{ field }}
+                {% if field.errors %}
+                    <span class="help-inline">{{ field.errors|removetags:"ul li"|safe }}</span>
+                {% endif %}
+                <span class="help-block">{{ field.help_text }} </span>
             </div>
         </div>
-    </div><!--user_detail_extened_form-->
+    {% endfor %}
+
+    {% for field in user_detail_extened_form %}
+        <div class="row{% if field.errors %} control-group error{% endif %}">
+            <div class="span2">
+                <label class="control-label" for="id_{{ field.name }}">
+                    {{ field.label }}
+                </label>
+            </div>
+            <div class="span4">{{ field }}
+                {% if field.errors %}
+                    <span class="help-inline">{{ field.errors|removetags:"ul li"|safe }}</span>
+                {% endif %}
+                <span class="help-block">{{ field.help_text }} </span>
+            </div>
+        </div>
+    {% endfor %}
+
     <div class="actions">
         <input type="hidden" name="action" value="tabs-1" />
         <input type="hidden" name="form-type" value="change-detail" />
-        <input type="submit" class="btn-primary" value="{% trans 'Save' %}" />
+        <input type="submit" class="btn btn-primary" value="{% trans 'Change detail' %}" />
     </div>
 </form>
