@@ -23,6 +23,7 @@ from cdr_alert.tasks import send_cdr_report, \
                             blacklist_whitelist_notification, \
                             chk_alarm
 from cdr_alert.forms import BWCountryForm
+from cdr_alert.functions_blacklist import chk_destination
 from country_dialcode.models import Country
 from datetime import timedelta
 
@@ -80,14 +81,14 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
                 {'country': 198,
                  'whitelist_country': [],
                  'select': [34]})
-        self.failUnlessEqual(response.status_code, 302)
+        self.failUnlessEqual(response.status_code, 200)
 
         response = self.client.post(
             '/admin/cdr_alert/whitelist/whitelist_by_country/',
             {'country': 198,
              'whitelist_country': [198],
              'select': [34]})
-        self.failUnlessEqual(response.status_code, 302)
+        self.failUnlessEqual(response.status_code, 200)
 
     def test_admin_alert_blacklist_list(self):
         """Test Function to check alert blacklist list"""
@@ -109,14 +110,14 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
                 {'country': 198,
                  'blacklist_country': [],
                  'select': [34]})
-        self.failUnlessEqual(response.status_code, 302)
+        self.failUnlessEqual(response.status_code, 200)
 
         response = self.client.post(
             '/admin/cdr_alert/blacklist/blacklist_by_country/',
             {'country': 198,
              'blacklist_country': [1],
              'select': [34]})
-        self.failUnlessEqual(response.status_code, 302)
+        self.failUnlessEqual(response.status_code, 200)
 
 
 class CdrAlertTaskTestCase(TestCase):
@@ -159,7 +160,7 @@ class CdrAlertModelTestCase(TestCase):
         self.alert_remove_prefix = AlertRemovePrefix(
             label='test',
             prefix=32
-            )
+        )
         self.alert_remove_prefix.save()
         self.assertEquals(self.alert_remove_prefix.__unicode__(), 'test')
 
@@ -203,6 +204,7 @@ class CdrAlertModelTestCase(TestCase):
         )
         self.whitelist.save()
         self.assertTrue(self.whitelist.__unicode__())
+        chk_destination('9999787424')
 
     def test_model_value(self):
         """Create model object value"""

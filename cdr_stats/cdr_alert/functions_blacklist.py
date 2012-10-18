@@ -122,5 +122,5 @@ def chk_destination(destination_number):
     destination_data = {
         'authorized': authorized,
         'country_id': country_id,
-        }
+    }
     return destination_data
