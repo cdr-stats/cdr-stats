@@ -6,4 +6,4 @@ ipython==0.13
 pip-tools==0.2
 pygraphviz==1.1
 #django-debug-toolbar-mongo
-git+git://github.com/hmarr/django-debug-toolbar-mongo.git
+django-debug-toolbar-mongo==0.1.5

@@ -224,7 +224,7 @@ else:
     TEST_RUNNER = 'utils.test_runner.MyRunner'
 
 # Debug Toolbar mongo
-"""
+
 # commented cause this module doesn't work at the moment
 # https://groups.google.com/forum/?fromgroups#!topic/mongoengine-users/cwIdHSNPCwY
 
@@ -234,36 +234,24 @@ except ImportError:
     pass
 else:
     INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar_mongo',)
-    #DEBUG_TOOLBAR_PANELS = DEBUG_TOOLBAR_PANELS + \
-    #    ('debug_toolbar_mongo.panel.MongoDebugPanel',)
-    DEBUG_TOOLBAR_MONGO_STACKTRACES = False
+
+    DEBUG_TOOLBAR_MONGO_STACKTRACES = True
     DEBUG_TOOLBAR_PANELS = (
         'debug_toolbar.panels.version.VersionDebugPanel',
         'debug_toolbar.panels.timer.TimerDebugPanel',
+        #Warning: If you run profiling this will duplicate the view execution
+        'debug_toolbar.panels.profiling.ProfilingDebugPanel',
         'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
         'debug_toolbar.panels.headers.HeaderDebugPanel',
         'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
         'debug_toolbar.panels.template.TemplateDebugPanel',
-        'debug_toolbar_mongo.panel.MongoDebugPanel',
         'debug_toolbar.panels.sql.SQLDebugPanel',
         'debug_toolbar.panels.signals.SignalDebugPanel',
         'debug_toolbar.panels.logger.LoggingPanel',
     )
-"""
+    DEBUG_TOOLBAR_PANELS = DEBUG_TOOLBAR_PANELS + \
+        ('debug_toolbar_mongo.panel.MongoDebugPanel',)
 
-DEBUG_TOOLBAR_PANELS = (
-    'debug_toolbar.panels.version.VersionDebugPanel',
-    'debug_toolbar.panels.timer.TimerDebugPanel',
-    #Warning: If you run profiling this will duplicate the view execution
-    #'debug_toolbar.panels.profiling.ProfilingDebugPanel',
-    'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
-    'debug_toolbar.panels.headers.HeaderDebugPanel',
-    'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-    'debug_toolbar.panels.template.TemplateDebugPanel',
-    'debug_toolbar.panels.sql.SQLDebugPanel',
-    'debug_toolbar.panels.signals.SignalDebugPanel',
-    'debug_toolbar.panels.logger.LoggingPanel',
-)
 
 # Django extensions
 try:
