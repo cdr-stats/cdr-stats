@@ -34,7 +34,7 @@ HANGUP_CAUSE_Q850 = ['16', '17', '18', '19', '20', '21']
 
 #list of exit code : http://www.howtocallabroad.com/codes.html
 COUNTRY_PREFIX = ['0034', '011346', '+3465',  # Spain
-                  '3912', '39',  '+3928',  # Italy
+                  '3912', '39', '+3928',  # Italy
                   '15', '17',  # US
                   '16', '1640',  # Canada
                   '44', '441', '00442',  # UK
@@ -48,7 +48,7 @@ COUNTRY_PREFIX = ['0034', '011346', '+3465',  # Spain
 
 def generate_cdr_data(day_delta_int):
     """
-    TODO:Add function documentation
+    TODO: Add function documentation
     """
     digit = '1234567890'
 
@@ -145,12 +145,22 @@ class Command(BaseCommand):
                 arg_duration = 0
 
         # Retrieve the field collection in the mongo_import list
-        ipaddress = settings.MG_IMPORT.items()[0][0]
+        ipaddress = settings.CDR_BACKEND.items()[0][0]
 
-        # Connect on MongoDB Database
-        host = settings.MG_IMPORT[ipaddress]['host']
-        port = settings.MG_IMPORT[ipaddress]['port']
-        db_name = settings.MG_IMPORT[ipaddress]['db_name']
+        #Connect to Database
+        db_name = settings.CDR_BACKEND[ipaddress]['db_name']
+        table_name = settings.CDR_BACKEND[ipaddress]['table_name']
+        db_engine = settings.CDR_BACKEND[ipaddress]['db_engine']
+        cdr_type = settings.CDR_BACKEND[ipaddress]['cdr_type']
+        # user = settings.CDR_BACKEND[ipaddress]['user']
+        # password = settings.CDR_BACKEND[ipaddress]['password']
+        host = settings.CDR_BACKEND[ipaddress]['host']
+        port = settings.CDR_BACKEND[ipaddress]['port']
+
+        if db_engine != 'mongodb' or cdr_type != 'freeswitch':
+            sys.stderr.write('Generate CDRs is only working for mongoDB and freeswitch, please review your CDR_BACKEND settings')
+            sys.exit(1)
+
         try:
             connection = Connection(host, port)
             DBCON = connection[db_name]
@@ -254,4 +264,4 @@ class Command(BaseCommand):
                 }
             }
 
-            DBCON[settings.MG_IMPORT[ipaddress]['collection']].insert(cdr_json)
+            DBCON[table_name].insert(cdr_json)

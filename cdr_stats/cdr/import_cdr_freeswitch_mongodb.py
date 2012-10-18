@@ -388,24 +388,32 @@ def chk_ipaddress(ipaddress):
 
 
 def import_cdr_freeswitch_mongodb(shell=False):
-    #TODO : dont use the args here
-    # Browse settings.MG_IMPORT and for each IP check if the IP exist
+    # Browse settings.CDR_BACKEND and for each IP check if the IP exist
     # in our Switch objects. If it does we will connect to that Database
     # and import the data as we do below
 
     print_shell(shell, "Starting the synchronization...")
 
     #loop within the Mongo CDR Import List
-    for ipaddress in settings.MG_IMPORT:
+    for ipaddress in settings.CDR_BACKEND:
+
+        #Connect to Database
+        db_name = settings.CDR_BACKEND[ipaddress]['db_name']
+        table_name = settings.CDR_BACKEND[ipaddress]['table_name']
+        db_engine = settings.CDR_BACKEND[ipaddress]['db_engine']
+        cdr_type = settings.CDR_BACKEND[ipaddress]['cdr_type']
+        host = settings.CDR_BACKEND[ipaddress]['host']
+        port = settings.CDR_BACKEND[ipaddress]['port']
+
+        if db_engine != 'mongodb' or cdr_type != 'freeswitch':
+            sys.stderr.write('This function is intended for mongodb and freeswitch')
+            sys.exit(1)
 
         data = chk_ipaddress(ipaddress)
         ipaddress = data['ipaddress']
         switch = data['switch']
 
         #Connect on MongoDB Database
-        host = settings.MG_IMPORT[ipaddress]['host']
-        port = settings.MG_IMPORT[ipaddress]['port']
-        db_name = settings.MG_IMPORT[ipaddress]['db_name']
         try:
             connection = Connection(host, port)
             DBCON = connection[db_name]
@@ -415,7 +423,7 @@ def import_cdr_freeswitch_mongodb(shell=False):
             sys.exit(1)
 
         #Connect to Mongo
-        importcdr_handler = DBCON[settings.MG_IMPORT[ipaddress]['collection']]
+        importcdr_handler = DBCON[table_name]
 
         #Start import for this mongoDB
         func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress)
