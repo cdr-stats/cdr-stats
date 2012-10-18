@@ -138,12 +138,23 @@ def common_send_notification(request, status, recipient=None):
     return True
 
 
-def check_cdr_data_exists(request):
-    doc = cdr_data.find_one()
-    if not doc:
-        return False
-    else:
-        return True
+def check_cdr_exists(function=None,):
+    """
+    decorator check if cdr exists if not go to error page
+    """
+    def _dec(run_func):
+        """Decorator"""
+        def _caller(request, *args, **kwargs):
+            """Caller."""
+            doc = cdr_data.find_one()
+            if not doc:
+                return render_to_response(
+                    'cdr/error_import.html',
+                    context_instance=RequestContext(request))
+            else:
+                return run_func(request, *args, **kwargs)
+        return _caller
+    return _dec(function) if function is not None else _dec
 
 
 def cdr_view_daily_report(query_var):
@@ -197,6 +208,7 @@ def cdr_view_daily_report(query_var):
     return cdr_view_daily_data
 
 
+@check_cdr_exists
 @login_required
 def cdr_view(request):
     """List of CDRs
@@ -213,11 +225,6 @@ def cdr_view(request):
         get the call records as well as daily call analytics
         from mongodb collection according to search parameters
     """
-
-    if not check_cdr_data_exists(request):
-        return render_to_response(
-                    'cdr/error_import.html',
-                    context_instance=RequestContext(request))
     template_name = 'cdr/cdr_view.html'
     logging.debug('CDR View Start')
     query_var = {}
@@ -697,6 +704,7 @@ def chk_date_for_hrs(graph_date):
     return False
 
 
+@check_cdr_exists
 @login_required
 def cdr_dashboard(request):
     """CDR dashboard for a current day
@@ -712,11 +720,6 @@ def cdr_dashboard(request):
         get all call records from mongodb collection for current day
         to create hourly report as well as hangup cause/country analytics
     """
-    if not check_cdr_data_exists(request):
-        return render_to_response(
-                'cdr/error_import.html',
-                context_instance=RequestContext(request))
-
     logging.debug('CDR dashboard view start')
     now = datetime.now()
     form = SwitchForm()
@@ -875,6 +878,7 @@ def cdr_dashboard(request):
            context_instance=RequestContext(request))
 
 
+@check_cdr_exists
 @login_required
 def cdr_concurrent_calls(request):
     """CDR view of concurrent calls
@@ -890,11 +894,6 @@ def cdr_concurrent_calls(request):
         get all concurrent call records from mongodb map-reduce collection for
         current date
     """
-
-    if not check_cdr_data_exists(request):
-        return render_to_response('cdr/error_import.html',
-                            context_instance=RequestContext(request))
-
     logging.debug('CDR concurrent view start')
     query_var = {}
     switch_id = 0
@@ -1128,6 +1127,7 @@ def get_cdr_mail_report():
     return mail_data
 
 
+@check_cdr_exists
 @login_required
 def mail_report(request):
     """Mail Report Template
@@ -1143,11 +1143,6 @@ def mail_report(request):
         get top 10 calls from mongodb collection & hnagupcause/country analytic
         to generate mail report
     """
-
-    if not check_cdr_data_exists(request):
-        return render_to_response('cdr/error_import.html',
-                    context_instance=RequestContext(request))
-
     logging.debug('CDR mail report view start')
     template = 'cdr/cdr_mail_report.html'
     user_obj = User.objects.get(username=request.user)
@@ -1238,6 +1233,7 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
     return variables
 
 
+@check_cdr_exists
 @login_required
 def cdr_report_by_hour(request):
     """CDR graph by hourly basis
@@ -1254,11 +1250,6 @@ def cdr_report_by_hour(request):
         get all call records from mongodb collection for
         hourly analytics for given date
     """
-    if not check_cdr_data_exists(request):
-        return render_to_response(
-                    'cdr/error_import.html',
-                    context_instance=RequestContext(request))
-
     logging.debug('CDR hourly view start')
     template_name = 'cdr/cdr_report_by_hour.html'
     query_var = {}
@@ -1391,6 +1382,7 @@ def cdr_report_by_hour(request):
                                 context_instance=RequestContext(request))
 
 
+@check_cdr_exists
 @login_required
 def cdr_overview(request):
     """CDR graph by hourly/daily/monthly basis
@@ -1409,10 +1401,6 @@ def cdr_overview(request):
         get all call records from mongodb collection for
         all monthly, daily, hourly analytics
     """
-    if not check_cdr_data_exists(request):
-        return render_to_response(
-            'cdr/error_import.html',
-            context_instance=RequestContext(request))
     template_name = 'cdr/cdr_overview.html'
     logging.debug('CDR overview start')
     query_var = {}
@@ -1669,6 +1657,7 @@ def cdr_overview(request):
             context_instance=RequestContext(request))
 
 
+@check_cdr_exists
 @login_required
 def cdr_country_report(request):
     """CDR country report
@@ -1685,10 +1674,6 @@ def cdr_country_report(request):
         get all call records from mongodb collection for all countries
         to create country call
     """
-    if not check_cdr_data_exists(request):
-        return render_to_response('cdr/error_import.html',
-            context_instance=RequestContext(request))
-
     logging.debug('CDR country report view start')
     template_name = 'cdr/cdr_country_report.html'
     form = CountryReportForm()
@@ -1872,6 +1857,7 @@ def cdr_country_report(request):
         context_instance=RequestContext(request))
 
 
+@check_cdr_exists
 def world_map_view(request):
     """CDR world report
 
@@ -1887,11 +1873,6 @@ def world_map_view(request):
         get all call records from mongodb collection for all countries
         to create country call
     """
-    if not check_cdr_data_exists(request):
-        return render_to_response(
-            'cdr/error_import.html',
-            context_instance=RequestContext(request))
-
     logging.debug('CDR world report view start')
     template_name = 'cdr/world_map.html'
 
