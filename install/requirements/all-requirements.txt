@@ -12,7 +12,7 @@ celery==3.0.11
 redis==2.7.1
 kombu==2.4.7
 pymongo==2.2
-Django==1.4.1
+Django==1.4.2
 gunicorn==0.14.6
 South==0.7.6
 
@@ -45,7 +45,6 @@ django-debug-toolbar==0.9.4
 ipython==0.13
 pip-tools==0.2
 pygraphviz==1.1
-#django-debug-toolbar-mongo
 git+git://github.com/hmarr/django-debug-toolbar-mongo.git
 
 #Test

@@ -231,12 +231,10 @@ def import_cdr_asterisk(shell=False):
                                     start_uepoch.strftime('%Y-%m-%d %M:%S'),))
             """
             count_import = count_import + 1
-
             daily_date = datetime.fromtimestamp(int(row[1]))
-
             # insert daily analytic record
             create_daily_analytic(daily_date, switch.id, country_id,
-                    accountcode, hangup_cause_id, duration)
+                                  accountcode, hangup_cause_id, duration)
 
             # insert monthly analytic record
             create_monthly_analytic(daily_date, start_uepoch, switch.id,

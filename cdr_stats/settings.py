@@ -358,8 +358,6 @@ PREFIX_TO_IGNORE = "+,0,00,000,0000,00000,011,55555,99999"
 #Realtime Graph : set the Y axis limit
 REALTIME_Y_AXIS_LIMIT = 100
 
-
-
 #ASTERISK IMPORT
 #===============
 ASTERISK_PRIMARY_KEY = 'acctid'  # acctid, _id
@@ -396,7 +394,6 @@ LOCAL_SWITCH_TYPE = 'freeswitch'
 
 #TODO: See if we can replace LOCAL_SWITCH_ID by local ip from CDR_BACKEND,
 LOCAL_SWITCH_ID = 1
-#LOCAL_SWITCH_ID = CDR_BACKEND.items()[0][0]
 
 
 #MONGODB
