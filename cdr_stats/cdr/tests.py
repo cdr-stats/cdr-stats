@@ -32,7 +32,7 @@ from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
 from cdr.functions_def import get_switch_list, get_hangupcause_name,\
                               get_hangupcause_id
 from cdr.templatetags.cdr_extras import hangupcause_name_with_title,\
-                                        mongo_id, seen_unseen, \
+                                        mongo_id, seen_unseen,\
                                         seen_unseen_word
 from bson.objectid import ObjectId
 from datetime import datetime
