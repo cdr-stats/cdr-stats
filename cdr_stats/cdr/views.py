@@ -195,8 +195,7 @@ def cdr_view_daily_report(query_var):
 
     if total_data.count() != 0:
         max_duration = max([int(x['duration__sum']) for x in detail_data])
-        total_avg_duration = \
-            (float(duration__avg)) / total_data.count()
+        total_avg_duration = (float(duration__avg)) / total_data.count()
     else:
         max_duration = 0
         total_avg_duration = 0
@@ -351,9 +350,9 @@ def cdr_view(request):
             detail_data = []
             tday = datetime.today()
             start_date = tday.strftime('%Y-%m-01')
-            last_day = ((datetime(tday.year, tday.month, 1, \
-                            23, 59, 59, 999999) + relativedelta(months=1)) \
-                            - relativedelta(days=1)).strftime('%d')
+            last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) \
+                        + relativedelta(months=1)) \
+                        - relativedelta(days=1)).strftime('%d')
             end_date = tday.strftime('%Y-%m-' + last_day)
             template_data = {
                             'module': current_view(request),
@@ -544,9 +543,9 @@ def cdr_view(request):
 
     logging.debug('Create cdr result')
 
-    rows = \
-        final_result.skip(PAGE_SIZE * (PAGE_NUMBER - 1)).limit(PAGE_SIZE)\
-            .sort([(sort_field, default_order)])
+    rows = final_result.skip(PAGE_SIZE * (PAGE_NUMBER - 1))\
+                .limit(PAGE_SIZE)\
+                .sort([(sort_field, default_order)])
 
     # Get daily report from session while using pagination & sorting
     if request.GET.get('page') or request.GET.get('sort_by'):
@@ -678,6 +677,7 @@ def cdr_detail(request, id, switch_id):
         except:
             raise Http404
 
+        #TODO: SQL for different DBMS
         cursor.execute("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel, "\
                         "duration, billsec, disposition, accountcode, " \
                         "uniqueid, %s FROM %s WHERE %s=%s" % \
@@ -835,10 +835,9 @@ def cdr_dashboard(request):
                                                k[1]['duration_sum']),
                                 reverse=True)
 
-    logging.debug("Lenght of result total_record_final %d" % len(final_record))
-    logging.debug("Lenght of result hangup_analytic %d" % len(hangup_analytic))
-    logging.debug("Lenght of result country_call_count %d" % \
-                                len(total_country_data))
+    logging.debug("Result total_record_final %d" % len(final_record))
+    logging.debug("Result hangup_analytic %d" % len(hangup_analytic))
+    logging.debug("Result country_call_count %d" % len(total_country_data))
 
     country_analytic = []
     logging.debug('Before Loop create country_analytic')
