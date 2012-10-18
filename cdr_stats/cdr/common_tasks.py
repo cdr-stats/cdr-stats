@@ -24,7 +24,7 @@ def only_one(function=None, key="", timeout=None):
     """Enforce only one celery task at a time."""
 
     def _dec(run_func):
-        """Decorator."""
+        """Decorator"""
 
         def _caller(*args, **kwargs):
             """Caller."""

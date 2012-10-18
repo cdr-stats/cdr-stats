@@ -17,7 +17,6 @@ from django import forms
 from django.conf import settings
 from django.core.validators import validate_email
 from django.utils.translation import ugettext_lazy as _
-
 from common.common_functions import comp_day_range
 from cdr.functions_def import get_switch_list, get_country_list, get_hc_list
 from user_profile.models import UserProfile
@@ -90,39 +89,40 @@ class SearchForm(forms.Form):
     caller_type.widget.attrs['class'] = 'input-small'
 
     destination = forms.CharField(label=_('Destination'),
-                            required=False)
+                                  required=False)
     destination_type = forms.ChoiceField(label='',
-                            required=False,
-                            choices=STRING_SEARCH_TYPE_LIST)
+                                         required=False,
+                                         choices=STRING_SEARCH_TYPE_LIST)
     destination_type.widget.attrs['class'] = 'input-small'
     accountcode = forms.CharField(label=_('Account Code'),
-                            required=False)
+                                  required=False)
     accountcode_type = forms.ChoiceField(label='',
-                            required=False,
-                            choices=STRING_SEARCH_TYPE_LIST)
+                                         required=False,
+                                         choices=STRING_SEARCH_TYPE_LIST)
     accountcode_type.widget.attrs['class'] = 'input-small'
     duration = forms.CharField(label=_('Duration'),
-                            required=False)
+                               required=False)
     duration_type = forms.ChoiceField(label='',
-                            required=False,
-                            choices=COMPARE_LIST)
+                                      required=False,
+                                      choices=COMPARE_LIST)
     duration_type.widget.attrs['class'] = 'input-small'
     hangup_cause = forms.ChoiceField(label=_('Hangup cause'),
-                            required=False,
-                            choices=hc_list_with_all())
+                                     required=False,
+                                     choices=hc_list_with_all())
     switch = forms.ChoiceField(label=_('Switch'),
-                            required=False,
-                            choices=get_switch_list())
-
+                               required=False,
+                               choices=get_switch_list())
     country_id = forms.MultipleChoiceField(label=_('Country'), required=False,
-            choices=country_list_with_all(), help_text=COUNTRY_HELP_TEXT)
+                                           choices=country_list_with_all(),
+                                           help_text=COUNTRY_HELP_TEXT)
 
     def __init__(self, *args, **kwargs):
         super(SearchForm, self).__init__(*args, **kwargs)
         self.fields['switch'].choices = sw_list_with_all()
 
+    #TODO: Add doc
     def clean_caller(self):
-        """ """
+        """Retrieve valid caller"""
         caller = self.cleaned_data['caller']
         if caller:
             try:
@@ -132,8 +132,9 @@ class SearchForm(forms.Form):
                         % caller)
         return caller
 
+    #TODO: Add doc
     def clean_duration(self):
-        """ """
+        """Retrieve valid duration"""
         duration = self.cleaned_data['duration']
         if duration:
             try:
@@ -144,12 +145,12 @@ class SearchForm(forms.Form):
         return duration
 
     def clean_accountcode(self):
-        """ """
+        """Retrieve valid accountcode"""
         accountcode = self.cleaned_data['accountcode']
         return accountcode
 
     def clean_destination(self):
-        """ """
+        """Retrieve valid destination"""
         destination = self.cleaned_data['destination']
         if destination:
             try:
@@ -269,8 +270,7 @@ class EmailReportForm(forms.ModelForm):
     Form used to change the detail of a user in the Customer UI.
     """
     multiple_email = forms.CharField(max_length=300, required=False,
-        label=_('Enter emails to receive the report separated by a comma'
-        ))
+        label=_('Enter emails to receive the report separated by a comma'))
     multiple_email.widget.attrs['class'] = 'span6'
 
     class Meta:
@@ -357,46 +357,46 @@ class CDR_FileImport(FileImport):
     switch = forms.ChoiceField(label=_('Switch'), choices=get_switch_list(),
                                required=True, help_text=_('Select switch'))
     accountcode_csv = forms.CharField(label=_('Account code'),
-                                required=False)
+                                      required=False)
     caller_id_number = forms.ChoiceField(label=_('caller_id_number'),
-                                required=True,
-                                choices=CDR_FIELD_LIST_NUM)
+                                         required=True,
+                                         choices=CDR_FIELD_LIST_NUM)
     caller_id_name = forms.ChoiceField(label=_('caller_id_name'),
-                               required=True,
-                               choices=ACCOUNTCODE_FIELD_LIST_NUM)
+                                       required=True,
+                                       choices=ACCOUNTCODE_FIELD_LIST_NUM)
     destination_number = forms.ChoiceField(label=_('destination_number'),
-                                required=True,
-                                choices=CDR_FIELD_LIST_NUM)
+                                           required=True,
+                                           choices=CDR_FIELD_LIST_NUM)
     duration = forms.ChoiceField(label=_('duration'), required=True,
                                  choices=CDR_FIELD_LIST_NUM)
     billsec = forms.ChoiceField(label=_('billsec'), required=True,
                                 choices=CDR_FIELD_LIST_NUM)
     hangup_cause_id = forms.ChoiceField(label=_('hangup_cause_id'),
-                                required=True,
-                                choices=CDR_FIELD_LIST_NUM)
+                                        required=True,
+                                        choices=CDR_FIELD_LIST_NUM)
     direction = forms.ChoiceField(label=_('direction'), required=True,
-                                choices=ACCOUNTCODE_FIELD_LIST_NUM)
+                                  choices=ACCOUNTCODE_FIELD_LIST_NUM)
     uuid = forms.ChoiceField(label=_('uuid'), required=True,
-                                choices=ACCOUNTCODE_FIELD_LIST_NUM)
+                             choices=ACCOUNTCODE_FIELD_LIST_NUM)
     remote_media_ip = forms.ChoiceField(label=_('remote_media_ip'),
-                                required=True,
-                                choices=ACCOUNTCODE_FIELD_LIST_NUM)
+                                        required=True,
+                                        choices=ACCOUNTCODE_FIELD_LIST_NUM)
     start_uepoch = forms.ChoiceField(label=_('start_uepoch'), required=True,
-                                choices=CDR_FIELD_LIST_NUM)
+                                     choices=CDR_FIELD_LIST_NUM)
     answer_uepoch = forms.ChoiceField(label=_('answer_uepoch'), required=True,
-                                choices=ACCOUNTCODE_FIELD_LIST_NUM)
+                                      choices=ACCOUNTCODE_FIELD_LIST_NUM)
     end_uepoch = forms.ChoiceField(label=_('end_uepoch'), required=True,
-                                choices=ACCOUNTCODE_FIELD_LIST_NUM)
+                                   choices=ACCOUNTCODE_FIELD_LIST_NUM)
     mduration = forms.ChoiceField(label=_('mduration'), required=True,
-                                choices=ACCOUNTCODE_FIELD_LIST_NUM)
+                                  choices=ACCOUNTCODE_FIELD_LIST_NUM)
     billmsec = forms.ChoiceField(label=_('billmsec'), required=True,
-                                choices=ACCOUNTCODE_FIELD_LIST_NUM)
+                                 choices=ACCOUNTCODE_FIELD_LIST_NUM)
     read_codec = forms.ChoiceField(label=_('read_codec'), required=True,
-                                choices=ACCOUNTCODE_FIELD_LIST_NUM)
+                                   choices=ACCOUNTCODE_FIELD_LIST_NUM)
     write_codec = forms.ChoiceField(label=_('write_codec'), required=True,
-                                choices=ACCOUNTCODE_FIELD_LIST_NUM)
+                                    choices=ACCOUNTCODE_FIELD_LIST_NUM)
     accountcode = forms.ChoiceField(label=_('accountcode'), required=True,
-                                choices=ACCOUNTCODE_FIELD_LIST_NUM)
+                                    choices=ACCOUNTCODE_FIELD_LIST_NUM)
 
     def __init__(self, user, *args, **kwargs):
         super(CDR_FileImport, self).__init__(*args, **kwargs)
@@ -411,5 +411,4 @@ class CDR_FileImport(FileImport):
         if not accountcode_csv and accountcode == 0:
             raise forms.ValidationError(
                 'select accountcode column no else enter accountcode')
-
         return accountcode

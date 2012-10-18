@@ -52,8 +52,6 @@ def get_switch_id(key_uuid):
     return switch.id
 
 
-
-
 @cached(300)  # 5 minutes
 def get_user(user_id):
     try:

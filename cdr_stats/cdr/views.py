@@ -12,7 +12,6 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
