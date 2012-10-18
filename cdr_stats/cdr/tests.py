@@ -12,10 +12,8 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.contrib.auth.models import User
-from django.test import TestCase
 from django.core.management import call_command
 from django.conf import settings
-from django.utils.encoding import force_unicode
 from common.utils import BaseAuthenticatedClient
 from cdr.models import Switch, HangupCause
 from cdr.forms import CdrSearchForm,\
@@ -26,7 +24,7 @@ from cdr.forms import CdrSearchForm,\
                       SwitchForm,\
                       WorldForm,\
                       EmailReportForm
-from cdr.tasks import sync_cdr_pending, get_channels_info
+#from cdr.tasks import sync_cdr_pending, get_channels_info
 from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
                       cdr_report_by_hour, cdr_concurrent_calls,\
                       cdr_realtime, cdr_country_report, mail_report,\
@@ -37,11 +35,12 @@ from cdr.templatetags.cdr_extras import hangupcause_name_with_title,\
                                         mongo_id, seen_unseen, \
                                         seen_unseen_word
 from bson.objectid import ObjectId
-from datetime import datetime, timedelta
+from datetime import datetime
 
 csv_file = open(
     settings.APPLICATION_DIR + '/cdr/fixtures/import_cdr.txt', 'r'
 )
+
 
 class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Admin Interface."""
@@ -118,7 +117,6 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         request.session = {}
         response = index(request)
         self.assertEqual(response.status_code, 200)
-
 
     def test_dashboard(self):
         """Test Function to check customer dashboard"""
@@ -205,7 +203,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
         data = {'switch_id': 1,
                 'from_date': datetime.now().strftime("%Y-%m-%d"),
-                'to_date': datetime.now().strftime("%Y-%m-%d"),}
+                'to_date': datetime.now().strftime("%Y-%m-%d")}
         response = self.client.post('/cdr_overview/', data)
         self.assertTrue(response.context['form'], CdrOverviewForm(data))
         self.assertEqual(response.status_code, 200)
@@ -309,7 +307,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
         data = {'switch_id': 1,
                 'from_date': datetime.now().strftime("%Y-%m-%d"),
-                'to_date': datetime.now().strftime("%Y-%m-%d"),}
+                'to_date': datetime.now().strftime("%Y-%m-%d")}
         response = self.client.post('/country_report/', data)
         self.assertTrue(response.context['form'], CountryReportForm(data))
         self.assertEqual(response.status_code, 200)
@@ -346,10 +344,9 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         response = world_map_view(request)
         self.assertEqual(response.status_code, 200)
 
-
         data = {'switch_id': 1,
                 'from_date': datetime.now().strftime("%Y-%m-%d"),
-                'to_date': datetime.now().strftime("%Y-%m-%d"),}
+                'to_date': datetime.now().strftime("%Y-%m-%d")}
         response = self.client.post('/world_map/', data)
         self.assertTrue(response.context['form'], WorldForm(data))
         self.assertEqual(response.status_code, 200)
@@ -463,11 +460,11 @@ class CdrModelTestCase(BaseAuthenticatedClient):
     def test_mgt_command(self):
         # Test mgt command
         call_command('generate_cdr',
-            '--number-cdr=100', '--delta-day=1', '--duration=10')
+            '--number-cdr=10', '--delta-day=1', '--duration=10')
         call_command('generate_cdr',
-            '--number-cdr=100', '--delta-day=0', '--duration=0')
-        call_command('generate_cdr', '--number-cdr=100', '--delta-day=0')
-        call_command('generate_cdr', '--number-cdr=100')
+            '--number-cdr=10', '--delta-day=0', '--duration=0')
+        call_command('generate_cdr', '--number-cdr=10', '--delta-day=0')
+        call_command('generate_cdr', '--number-cdr=10')
 
         call_command('sync_cdr_freeswitch', '--apply-index')
         call_command('sync_cdr_freeswitch')
@@ -475,6 +472,6 @@ class CdrModelTestCase(BaseAuthenticatedClient):
         #call_command('sync_cdr_asterisk', '--apply-index')
         #call_command('sync_cdr_asterisk')
 
-        call_command('generate_concurrent_call', '--delta-day=1')
-        call_command('generate_concurrent_call')
-
+        #Don't test generate_concurrent_call - No need
+        #call_command('generate_concurrent_call', '--delta-day=1')
+        #call_command('generate_concurrent_call')
