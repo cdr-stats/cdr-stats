@@ -31,7 +31,7 @@ def api_list_view(request):
         if files.endswith(".py") and files.endswith(".py"):
             if str(files) not in exclude_file:
                 api_arr = str(files).split('_playground.py')
-                api_link = '/explorer/' + api_arr[0].replace("_", "-")
+                api_link = '/api-explorer/' + api_arr[0].replace("_", "-")
                 list_of_api.append({'api_name': api_arr[0],
                                     'api_link': api_link})
 

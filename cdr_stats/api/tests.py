@@ -104,5 +104,5 @@ class ApiTestCase(BaseAuthenticatedClient):
 
     def test_playground_view(self):
         """Test Function to create a api list view"""
-        response = self.client.get("/explorer/")
+        response = self.client.get("/api-explorer/")
         self.assertEqual(response.status_code, 200)

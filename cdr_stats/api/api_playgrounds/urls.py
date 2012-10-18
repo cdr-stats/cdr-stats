@@ -19,10 +19,10 @@ from api.api_playgrounds.switch_playground import SwitchAPIPlayground
 
 urlpatterns = patterns('',
 
-    (r'explorer/cdr/', include(CdrAPIPlayground().urls)),
-    (r'explorer/hangupcause/', include(HangupcauseAPIPlayground().urls)),
-    (r'explorer/switch/', include(SwitchAPIPlayground().urls)),
+    (r'api-explorer/cdr/', include(CdrAPIPlayground().urls)),
+    (r'api-explorer/hangupcause/', include(HangupcauseAPIPlayground().urls)),
+    (r'api-explorer/switch/', include(SwitchAPIPlayground().urls)),
 
     # API list view
-    (r'explorer/$', 'api.api_playgrounds.views.api_list_view'),
+    (r'api-explorer/$', 'api.api_playgrounds.views.api_list_view'),
 )

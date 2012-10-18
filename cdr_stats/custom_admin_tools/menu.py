@@ -34,8 +34,8 @@ class CustomMenu(Menu):
                 _('Administration'),
                 models=('django.contrib.*', )
             ),
-            items.MenuItem(_('Customer Panel'), reverse('admin:index')\
-            + '../'),
+            items.MenuItem(_('API Explorer'), reverse('admin:index') + '../api-explorer/'),
+            items.MenuItem(_('Customer Panel'), reverse('admin:index') + '../'),
         ]
 
     def init_with_context(self, context):
