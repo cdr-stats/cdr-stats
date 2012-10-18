@@ -43,7 +43,84 @@ db.runCommand( { mapreduce:"daily_analytic", map:map, reduce:reduce, out: { redu
 
 db.foo.find();
 
+**********************************
+Test Aggregate
 
+db.daily_analytic.group(
+           {key: { 'metadata.accountcode': true },
+            cond: { 'metadata.accountcode': '1000'},
+            reduce: function(obj,prev){ prev.count++;},
+            initial: { count: 0 }
+            });
+
+db.cdr_common.group(
+           {key: { 'hangup_cause_id': true },
+            cond: { },
+            reduce: function(obj,prev){ prev.count++;},
+            initial: { count: 0 }
+            });
+
+******************
+Try move map reduce
+
+
+
+
+
+map = function(){
+            emit( {
+                        a_Year: this.metadata.date.getFullYear(),
+                        b_Month: this.metadata.date.getMonth() + 1,
+                        c_Day: this.metadata.date.getDate(),
+                    },
+                    {
+                        calldate__count: this.call_daily,
+                        duration__sum: this.duration_daily,
+                        duration__avg: 0
+                    } )
+        };
+
+reduce = function(key,vals) {
+            var ret = {
+                            calldate__count : 0,
+                            duration__sum: 0,
+                            duration__avg: 0
+                       };
+
+            for (var i=0; i < vals.length; i++){
+                ret.calldate__count += parseInt(vals[i].calldate__count);
+                ret.duration__sum += parseInt(vals[i].duration__sum);
+            }
+            return ret;
+        };
+
+finalizef = function(key, value) {
+                    if (parseInt(value.calldate__count) > 0)
+                        value.duration__avg = parseFloat( parseFloat(value.duration__sum) / parseInt(value.calldate__count) );
+                    return value;
+        };
+
+query = {'metadata.accountcode': '1000' };
+
+db.aggregate_result_cdr_view.drop();
+db.runCommand( { mapreduce:"daily_analytic", map:map, reduce:reduce, out: { reduce: 'aggregate_result_cdr_view' }, query: query, finalize:finalizef});
+
+db.aggregate_result_cdr_view.find();
+
+*******************
+db.daily_analytic.group(
+           {key: { '_id': true },
+            cond: { },
+            reduce: function(obj,prev){ prev.count += obj.call_daily;},
+            initial: { count: 0 }
+            });
+
+# Aggregate Call per Day
+db.daily_analytic.aggregate(
+        { $group : {
+          _id: {$substr :["$_id",0,8]},
+          callperday: { $sum : "$call_daily" }
+        }});
 
 
 // Get from hourly Report from one day, use query to apply this to one day only
