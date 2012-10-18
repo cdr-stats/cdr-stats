@@ -40,12 +40,13 @@ from bson.objectid import ObjectId
 from datetime import datetime, timedelta
 
 csv_file = open(
-    settings.APPLICATION_DIR +\
-    '/cdr/fixtures/import_cdr.txt', 'r'
+    settings.APPLICATION_DIR + '/cdr/fixtures/import_cdr.txt', 'r'
 )
 
 class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Admin Interface."""
+
+    fixtures = ['auth_user.json', 'switch.json']
 
     def test_admin_switch_list(self):
         """Test Function to check admin switch list"""
@@ -79,6 +80,7 @@ class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
                  'uuid': 8,
                  'start_uepoch': 10})
         self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'admin/cdr/switch/import_cdr.html')
 
     def test_admin_hangupcause_list(self):

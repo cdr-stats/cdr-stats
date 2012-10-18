@@ -70,7 +70,11 @@ def notice_count(user):
 
 @register.filter()
 def get_switch_ip(id):
-    """Tag is used to get switch name"""
+    """Tag is used to get switch name
+
+    >>> get_switch_ip(0)
+    u''
+    """
     try:
         obj = Switch.objects.get(pk=id)
         return obj.name
@@ -86,7 +90,11 @@ def hangupcause_name(id):
 
 @register.filter()
 def hangupcause_name_with_title(id):
-    """Tag is used to get hangupcause name with lowercase"""
+    """Tag is used to get hangupcause name with lowercase
+
+    >>> hangupcause_name_with_title(10000)
+    ''
+    """
     try:
         val = get_hangupcause_name(id)
         t = re.sub("([a-z])'([A-Z])",

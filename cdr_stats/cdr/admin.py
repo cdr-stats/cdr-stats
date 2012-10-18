@@ -37,7 +37,17 @@ import csv
 
 
 def get_value_from_uni(j, row, field_name):
-    """Get value from unique dict list"""
+    """Get value from unique dict list
+
+    >>> j = ['abc', 2, 3]
+
+    >>> field_name = 'abc'
+
+    >>> row = [1, 2, 3]
+
+    >>> get_value_from_uni(j, row, field_name)
+    '2'
+    """
     if j[0] == field_name:
         return row[j[1] - 1]
     else:
@@ -227,13 +237,13 @@ class SwitchAdmin(admin.ModelAdmin):
                                             fromtimestamp(int(get_cdr_from_row['start_uepoch'][:10]))
 
                                         # insert daily analytic record
-                                        create_daily_analytic(daily_date, switch.id, country_id,
+                                        create_daily_analytic(daily_date, switch_id, country_id,
                                                               accountcode, hangup_cause_id,
                                                               duration)
 
                                         # MONTHLY_ANALYTIC
                                         # insert monthly analytic record
-                                        create_monthly_analytic(daily_date, start_uepoch, switch.id,
+                                        create_monthly_analytic(daily_date, start_uepoch, switch_id,
                                                                 country_id, accountcode, duration)
 
                                         cdr_record_count = cdr_record_count + 1
