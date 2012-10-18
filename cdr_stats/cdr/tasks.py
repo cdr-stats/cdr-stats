@@ -17,7 +17,7 @@ from django.conf import settings
 from celery.task import PeriodicTask
 from cdr.import_cdr_freeswitch_mongodb import import_cdr_freeswitch_mongodb
 from cdr.import_cdr_asterisk import import_cdr_asterisk
-from cdr.common_tasks import only_one
+from common.only_one_task import only_one
 from datetime import datetime, timedelta
 import sqlite3
 

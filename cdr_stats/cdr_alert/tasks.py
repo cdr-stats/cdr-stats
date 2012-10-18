@@ -25,7 +25,7 @@ from celery.task import PeriodicTask, task
 from celery.schedules import crontab
 #from celery.decorators import task
 from notification import models as notification
-from cdr.common_tasks import only_one
+from common.only_one_task import only_one
 from cdr_alert.models import Alarm, AlarmReport
 from cdr.mapreduce import mapreduce_task_cdr_alert
 from cdr.functions_def import get_hangupcause_id
