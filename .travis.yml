@@ -5,6 +5,7 @@ env:
   - DJANGO=1.4.1
 install:
   # - pip install -q Django==$DJANGO --use-mirrors
+  - sudo apt-get install mongodb-10gen
   - bash install/requirements/install-requirements.sh
   # - pip install pep8 --use-mirrors
   # - pip install https://github.com/dcramer/pyflakes/tarball/master
@@ -16,7 +17,7 @@ before_script:
   # - "pep8 --exclude=migrations --ignore=E501,E225 cdr_stats"
   # - pyflakes -x W cdr_stats
 script:
-  - python cdr_stats/manage.py test --settings=settings_travis -s -x --with-xtraceback --with-color 
+  - python cdr_stats/manage.py test --settings=settings_travis -s -x --with-xtraceback --with-color
   #- python cdr_stats/manage.py test --settings=settings_travis -s --with-progressive
 # whitelist
 branches:
