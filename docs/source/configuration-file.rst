@@ -193,20 +193,28 @@ To add a new remote Asterisk MySQL CDR store, you would ensure connection to the
 Import configuration for FreeSWITCH
 ------------------------------------
 
-Freeswitch settings are under the MG_IMPORT section, and should look as follows::
+Freeswitch settings are under the CDR_BACKEND section, and should look as follows::
 
-    MG_IMPORT = {
+    CDR_BACKEND = {
         '127.0.0.1': {
+            'db_engine': 'mongodb',  # mysql, pgsql, mongodb
+            'cdr_type': 'freeswitch',  # asterisk or freeswitch
             'db_name': 'freeswitch_cdr',
+            'table_name': 'cdr',  # collection if mongodb
             'host': 'localhost',
-            'port': 27017,
-            'collection': 'cdr',
+            'port': 3366,  # 3366 mysql, 5432 pgsql, 27017 mongodb
+            'user': '',
+            'password': '',
         },
         #'192.168.1.15': {
-            # 'db_name': 'freeswitch_cdr',
-            # 'host': '192.168.1.15',
-            # 'port': 27017,
-            # 'collection': 'cdr',
+        #    'db_engine': 'mongodb',  # mysql, pgsql, mongodb
+        #    'cdr_type': 'freeswitch',  # asterisk or freeswitch
+        #    'db_name': 'freeswitch_cdr',
+        #    'table_name': 'cdr',  # collection if mongodb
+        #    'host': 'localhost',
+        #    'port': 3366,  # 3366 mysql, 5432 pgsql, 27017 mongodb
+        #    'user': '',
+        #    'password': '',
         #},
     }
 

@@ -592,7 +592,7 @@ def cdr_export_to_csv(request):
     # the csv writer
 
     query_var = request.session['query_var']
-    final_result = cdr_data.find(query_var,  {"uuid": 0,
+    final_result = cdr_data.find(query_var, {"uuid": 0,
                                               "answer_uepoch": 0,
                                               "end_uepoch": 0,
                                               "mduration": 0,
@@ -641,17 +641,17 @@ def cdr_detail(request, id, switch_id):
 
     if settings.LOCAL_SWITCH_TYPE == 'freeswitch':
         #Connect on MongoDB Database
-        host = settings.MG_IMPORT[ipaddress]['host']
-        port = settings.MG_IMPORT[ipaddress]['port']
-        db_name = settings.MG_IMPORT[ipaddress]['db_name']
+        host = settings.CDR_BACKEND[ipaddress]['host']
+        port = settings.CDR_BACKEND[ipaddress]['port']
+        db_name = settings.CDR_BACKEND[ipaddress]['db_name']
+        table_name = settings.CDR_BACKEND[ipaddress]['table_name']
         try:
             connection = Connection(host, port)
             DBCON = connection[db_name]
         except ConnectionFailure:
             raise Http404
 
-        doc = DBCON[settings.MG_IMPORT[ipaddress]['collection']].\
-                    find({'_id': ObjectId(id)})
+        doc = DBCON[table_name].find({'_id': ObjectId(id)})
         return render_to_response(
                         'cdr/cdr_detail_freeswitch.html',
                         {'row': list(doc), 'menu': menu},

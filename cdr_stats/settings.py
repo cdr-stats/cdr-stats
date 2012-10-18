@@ -380,23 +380,37 @@ LOCAL_SWITCH_ID = 1
 #===============
 ASTERISK_PRIMARY_KEY = 'acctid'  # acctid, _id
 
+#CDR_BACKEND
+#===========
 #list of CDR Backends to import
 CDR_BACKEND = {
+    # '127.0.0.1': {
+    #     'db_engine': 'mysql',  # mysql, pgsql, mongodb
+    #     'cdr_type': 'asterisk',  # asterisk or freeswitch
+    #     'db_name': 'asteriskcdr',
+    #     'table_name': 'cdr',  # collection if mongodb
+    #     'host': 'localhost',
+    #     'port': 3366,  # 3366 mysql, 5432 pgsql, 27017 mongodb
+    #     'user': 'root',
+    #     'password': 'password',
+    # },
     '127.0.0.1': {
-        'db_engine': 'mysql',  # mysql, pgsql, mongo
-        'cdr_type': 'asterisk',  # asterisk or freeswitch
-        'db_name': 'asteriskcdr',
-        'table_name': 'cdr',
+        'db_engine': 'mongodb',  # mysql, pgsql, mongodb
+        'cdr_type': 'freeswitch',  # asterisk or freeswitch
+        'db_name': 'freeswitch_cdr',
+        'table_name': 'cdr',  # collection if mongodb
         'host': 'localhost',
-        'port': 3366,  # 3366 mysql, 5432 pgsql
-        'user': 'root',
-        'password': 'password',
+        'port': 3366,  # 3366 mysql, 5432 pgsql, 27017 mongodb
+        'user': '',
+        'password': '',
     },
 }
 
 
 #MONGODB
 #=======
+#TODO: Rename this to a better structure :
+#CDRSTATS_DB = { 'db_name': 'cdr-stats', 'host': 'localhost', 'port': 3366, 'cdr_common': 'cdr_common', etc...}
 MG_DB_NAME = 'cdr-stats'
 MG_HOST = 'localhost'
 MG_PORT = 27017
