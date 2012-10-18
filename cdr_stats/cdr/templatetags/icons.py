@@ -19,14 +19,22 @@ register = template.Library()
 
 
 def icon(icon_name):
-    """Tag is used to create icon link"""
-    return 'class="icon" style="text-decoration:none;background-image:url(' \
-           + settings.STATIC_URL + 'cdr-stats/icons/' + icon_name + '.png);"'
+    """Tag is used to create icon link
+
+    >>> icon('test')
+    'class="icon" style="text-decoration:none;background-image:url(/static/cdr-stats/icons/test.png);"'
+    """
+    return 'class="icon" style="text-decoration:none;background-image:url(%scdr-stats/icons/%s.png);"'\
+       % (settings.STATIC_URL, icon_name)
 register.simple_tag(icon)
 
 
 def listicon(icon_name):
-    """Tag is used to pass icon style in link"""
-    return 'style="text-decoration:none;list-style-image:url(' \
-           + settings.STATIC_URL + 'cdr-stats/icons/' + icon_name + '.png);"'
+    """Tag is used to pass icon style in link
+
+    >>> listicon('eye')
+    'style="text-decoration:none;list-style-image:url(/static/cdr-stats/icons/test.png);"'
+    """
+    return 'style="text-decoration:none;list-style-image:url(%scdr-stats/icons/%s.png);"'\
+           % (settings.STATIC_URL, icon_name)
 register.simple_tag(listicon)
