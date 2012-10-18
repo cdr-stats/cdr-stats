@@ -99,6 +99,8 @@ LOCAL_SWITCH_ID = 1
 #===============
 ASTERISK_PRIMARY_KEY = 'acctid'  # acctid, _id
 
+#CDR_BACKEND
+#===========
 #list of CDR Backends to import
 CDR_BACKEND = {
     '127.0.0.1': {
@@ -111,6 +113,26 @@ CDR_BACKEND = {
         'user': 'root',
         'password': 'password',
     },
+    # '127.0.0.1': {
+    #     'db_engine': 'mysql',  # mysql, pgsql, mongodb
+    #     'cdr_type': 'asterisk',  # asterisk or freeswitch
+    #     'db_name': 'asteriskcdr',
+    #     'table_name': 'cdr',  # collection if mongodb
+    #     'host': 'localhost',
+    #     'port': 3366,  # 3366 mysql, 5432 pgsql, 27017 mongodb
+    #     'user': 'root',
+    #     'password': 'password',
+    # },
+    '127.0.0.1': {
+        'db_engine': 'mongodb',  # mysql, pgsql, mongodb
+        'cdr_type': 'freeswitch',  # asterisk or freeswitch
+        'db_name': 'freeswitch_cdr',
+        'table_name': 'cdr',  # collection if mongodb
+        'host': 'localhost',
+        'port': 27017,  # 3366 mysql, 5432 pgsql, 27017 mongodb
+        'user': '',
+        'password': '',
+    },
 }
 
 #MONGODB
@@ -119,27 +141,7 @@ MG_DB_NAME = 'cdr-stats'
 MG_HOST = 'localhost'
 MG_PORT = 27017
 MG_CDR_COMMON = 'cdr_common'
+MG_DAILY_ANALYTIC = 'daily_analytic'
+MG_MONTHLY_ANALYTIC = 'monthly_analytic'
 MG_CONC_CALL = 'concurrent_call'
-MG_CDR_COUNTRY_REPORT = 'cdr_country_report'
 MG_CONC_CALL_AGG = 'concurrent_call_map_reduce'
-MG_CDR_MONTHLY = 'cdr_monthly_analytic'
-MG_CDR_DAILY = 'cdr_daily_analytic'
-MG_CDR_HOURLY = 'cdr_hourly_analytic'
-MG_CDR_HANGUP = 'cdr_hangup_cause_analytic'
-MG_CDR_COUNTRY = 'cdr_country_analytic'
-
-#MongoDB Setting(s) to use for import
-MG_IMPORT = {
-    '127.0.0.1': {
-        'db_name': 'freeswitch_cdr',
-        'host': 'localhost',
-        'port': 27017,
-        'collection': 'cdr',
-    },
-    #'192.168.1.15': {
-    #    'db_name': 'freeswitch_cdr',
-    #    'host': '192.168.1.15',
-    #    'port': 27017,
-    #    'collection': 'cdr',
-    #},
-}
