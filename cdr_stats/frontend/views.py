@@ -130,7 +130,6 @@ def cust_password_reset(request):
         return HttpResponseRedirect("/")
 
 
-#TODO: Check if login_required is needed, same function above and bellow
 def cust_password_reset_done(request):
     """Use ``django.contrib.auth.views.password_reset_done`` view method for
     forgotten password on the Customer UI
