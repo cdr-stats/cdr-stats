@@ -116,11 +116,21 @@ db.daily_analytic.group(
             });
 
 # Aggregate Call per Day
+
 db.daily_analytic.aggregate(
         { $group : {
           _id: {$substr :["$_id",0,8]},
-          callperday: { $sum : "$call_daily" }
-        }});
+          callperday: { $sum : "$call_daily" },
+          durationperday: { $sum : "$duration_daily" }
+            }
+        },
+        { $project : {
+        callperday : 1,
+        durationperday : 1,
+        avgdurationperday : { $divide:["$durationperday", "$callperday"] }
+    }}
+);
+
 
 
 // Get from hourly Report from one day, use query to apply this to one day only

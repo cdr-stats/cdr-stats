@@ -33,7 +33,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        import_cdr_freeswitch_mongodb(shell=True)
+        for x in xrange(1, 10):
+            import_cdr_freeswitch_mongodb(shell=True)
 
         # Apply index on collection
         if options['apply-index']:

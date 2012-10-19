@@ -48,7 +48,6 @@ from cdr.mapreduce import mapreduce_cdr_view,\
                           mapreduce_world_report,\
                           mapreduce_monthly_overview,\
                           mapreduce_daily_overview,\
-                          mapreduce_hourly_country_report,\
                           mapreduce_hourly_overview,\
                           mapreduce_cdr_hourly_report
 from bson.objectid import ObjectId
@@ -60,9 +59,10 @@ import time
 import logging
 
 
+#TODO: Move this to settings
 TOTAL_GRAPH_COLOR = '#A61700'
 NUM_COUNTRY = 10
-news_url = settings.NEWS_URL
+
 
 cdr_data = settings.DBCON[settings.MG_CDR_COMMON]
 #db.cdr.ensureIndex({"variables.answer_stamp":1}, {background:true});
@@ -95,7 +95,7 @@ def index(request):
     data = {'module': current_view(request),
             'loginform': loginform,
             'errorlogin': errorlogin,
-            'news': get_news(news_url),
+            'news': get_news(settings.NEWS_URL),
             }
     return render_to_response(template, data,
         context_instance=RequestContext(request))
@@ -104,9 +104,10 @@ def index(request):
 def notice_count(request):
     """Get count of logged in user's notifications"""
     try:
-        notice_count =\
-            notification.Notice.objects.filter(recipient=request.user,
-                unseen=1).count()
+        notice_count = notification.Notice.objects\
+            .filter(recipient=request.user,
+                    unseen=1)\
+            .count()
     except:
         notice_count = ''
     return notice_count
@@ -173,44 +174,56 @@ def show_menu(request):
 
 
 def cdr_view_daily_report(query_var):
-    logging.debug('Map-reduce cdr analytic')
-    #Retrieve Map Reduce
-    (map, reduce, finalfc, out) = mapreduce_cdr_view()
+    logging.debug('Aggregate cdr analytic')
+    pipeline = [
+            {'$match':
+                query_var
+            },
+            {'$group': {
+                '_id': {'$substr': ["$_id", 0, 8]},
+                'callperday': {'$sum': '$call_daily'},
+                'durationperday': {'$sum': '$duration_daily'}
+                }
+            },
+            {'$project': {
+                'callperday': 1,
+                'durationperday': 1,
+                'avgdurationperday': {'$divide': ["$durationperday", "$callperday"]}
+                }
+            },
+            {'$sort': {
+                '_id': 1
+                }
+            }
+        ]
 
-    cdr_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-    logging.debug('Before MapReduce')
-    list_data = cdr_data.map_reduce(map,
-                                     reduce,
-                                     out,
-                                     query=query_var,
-                                     finalize=finalfc)
-    logging.debug('After MapReduce')
-
-    list_data = list_data.find().sort([('_id.a_Year', -1),
-                                         ('_id.b_Month', -1),
-                                         ('_id.c_Day', -1)])
+    logging.debug('Before Aggregate')
+    list_data = settings.DBCON.command('aggregate', settings.MG_DAILY_ANALYTIC, pipeline=pipeline)
+    logging.debug('After Aggregate')
 
     total_data = []
     total_duration = 0
     total_calls = 0
     duration__avg = 0.0
-    for doc in list_data:
+    count_days = 0
+    for doc in list_data['result']:
+        count_days = count_days + 1
+
         total_data.append(
             {
-                'calldate': datetime(int(doc['_id']['a_Year']),
-                int(doc['_id']['b_Month']), int(doc['_id']['c_Day'])),
-                'duration__sum': int(doc['value']['duration__sum']),
-                'calldate__count': int(doc['value']['calldate__count']),
-                'duration__avg': doc['value']['duration__avg'],
+                'calldate': datetime(int(doc['_id'][0:4]), int(doc['_id'][4:6]), int(doc['_id'][6:8])),
+                'duration__sum': int(doc['durationperday']),
+                'calldate__count': int(doc['callperday']),
+                'duration__avg': doc['avgdurationperday'],
             })
 
-        total_duration += int(doc['value']['duration__sum'])
-        total_calls += int(doc['value']['calldate__count'])
-        duration__avg += float(doc['value']['duration__avg'])
+        total_duration += int(doc['durationperday'])
+        total_calls += int(doc['callperday'])
+        duration__avg += float(doc['avgdurationperday'])
 
-    if list_data.count() != 0:
+    if count_days != 0:
         max_duration = max([int(x['duration__sum']) for x in total_data])
-        total_avg_duration = (float(duration__avg)) / list_data.count()
+        total_avg_duration = (float(duration__avg)) / count_days
     else:
         max_duration = 0
         total_avg_duration = 0
@@ -449,9 +462,9 @@ def cdr_view(request):
         request.session['session_cdr_view_daily_data'] = {}
 
     start_date = datetime(int(from_date[0:4]), int(from_date[5:7]), \
-                            int(from_date[8:10]), 0, 0, 0, 0)
+                          int(from_date[8:10]), 0, 0, 0, 0)
     end_date = datetime(int(to_date[0:4]), int(to_date[5:7]), \
-                            int(to_date[8:10]), 23, 59, 59, 999999)
+                        int(to_date[8:10]), 23, 59, 59, 999999)
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
     # Mapreduce query variable
@@ -462,13 +475,15 @@ def cdr_view(request):
     if dst:
         query_var['destination_number'] = dst
 
-    if request.user.is_superuser:  # superuser
+    if request.user.is_superuser:
+        # superuser can see everything
         acc = mongodb_str_filter(accountcode, accountcode_type)
         if acc:
             mr_query_var['metadata.accountcode'] = acc
             query_var['accountcode'] = acc
 
-    if not request.user.is_superuser:  # not superuser
+    if not request.user.is_superuser:
+        # not superuser can only see his own data
         if not chk_account_code(request):
             return HttpResponseRedirect('/?acc_code_error=true')
         else:
