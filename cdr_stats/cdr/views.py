@@ -23,8 +23,8 @@ from pymongo.errors import ConnectionFailure
 from notification import models as notification
 from common.common_functions import current_view, get_news, \
                                     variable_value,\
-                                    mongodb_collection_filter,\
-                                    mongodb_collection_duration_filter, \
+                                    mongodb_str_filter,\
+                                    mongodb_int_filter, \
                                     int_convert_to_minute, \
                                     validate_days
 
@@ -458,12 +458,12 @@ def cdr_view(request):
     mr_query_var = {}
     mr_query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
-    dst = mongodb_collection_filter(destination, destination_type)
+    dst = mongodb_str_filter(destination, destination_type)
     if dst:
         query_var['destination_number'] = dst
 
     if request.user.is_superuser:  # superuser
-        acc = mongodb_collection_filter(accountcode, accountcode_type)
+        acc = mongodb_str_filter(accountcode, accountcode_type)
         if acc:
             mr_query_var['metadata.accountcode'] = acc
             query_var['accountcode'] = acc
@@ -475,11 +475,11 @@ def cdr_view(request):
             mr_query_var['metadata.accountcode'] = chk_account_code(request)
             query_var['accountcode'] = mr_query_var['metadata.accountcode']
 
-    cli = mongodb_collection_filter(caller, caller_type)
+    cli = mongodb_str_filter(caller, caller_type)
     if cli:
         query_var['caller_id_number'] = cli
 
-    due = mongodb_collection_duration_filter(duration, duration_type)
+    due = mongodb_int_filter(duration, duration_type)
     if due:
         query_var['duration'] = mr_query_var['duration_daily'] = due
 
@@ -1750,7 +1750,7 @@ def cdr_country_report(request):
             duration = form.cleaned_data.get('duration')
             duration_type = form.cleaned_data.get('duration_type')
             if duration:
-                due = mongodb_collection_duration_filter(duration, duration_type)
+                due = mongodb_int_filter(duration, duration_type)
                 if due:
                     for i in range(0, 24):
                         query_var['duration_hourly.%d' % (i)] = due
