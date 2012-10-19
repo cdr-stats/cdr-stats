@@ -32,8 +32,7 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Admin Interface."""
 
     fixtures = ['auth_user.json', 'country_dialcode.json',
-                'blacklist_prefix.json',
-                'whitelist_prefix.json'
+                'blacklist_prefix.json', 'whitelist_prefix.json'
                ]
 
     def test_admin_alarm_list(self):
@@ -80,14 +79,14 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
             '/admin/cdr_alert/whitelist/whitelist_by_country/',
                 {'country': 198,
                  'whitelist_country': [],
-                 'select': [34]})
+                 'select': [34]}, follow=True)
         self.failUnlessEqual(response.status_code, 200)
 
         response = self.client.post(
             '/admin/cdr_alert/whitelist/whitelist_by_country/',
             {'country': 198,
              'whitelist_country': [198],
-             'select': [34]})
+             'select': [34]}, follow=True)
         self.failUnlessEqual(response.status_code, 200)
 
     def test_admin_alert_blacklist_list(self):
@@ -110,14 +109,14 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
                 {'country': 198,
                  'blacklist_country': [],
                  'select': [34]})
-        self.failUnlessEqual(response.status_code, 200)
+        self.failUnlessEqual(response.status_code, 302)
 
         response = self.client.post(
             '/admin/cdr_alert/blacklist/blacklist_by_country/',
             {'country': 198,
              'blacklist_country': [1],
              'select': [34]})
-        self.failUnlessEqual(response.status_code, 200)
+        self.failUnlessEqual(response.status_code, 302)
 
 
 class CdrAlertTaskTestCase(TestCase):
