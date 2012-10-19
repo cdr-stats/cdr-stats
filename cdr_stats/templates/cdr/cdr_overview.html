@@ -45,18 +45,16 @@
                         <span class="help-block">{{ form.to_date.help_text|safe }} </span>
                     </div>
                 </div>
+                <div class="span4">
+                    <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }}</label>
+                    <div class="input">
+                        {{ form.switch }}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="span6">
-            <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }}</label>
-            <div class="input">
-                {{ form.switch }}
-            </div>
-        </div>
-    </div>
     <label>&nbsp;</label>
     <div class="actions">
         <input class="btn-primary" type=submit name=submit value={% trans "Search" %} />
