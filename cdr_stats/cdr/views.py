@@ -157,6 +157,14 @@ def check_cdr_exists(function=None,):
     return _dec(function) if function is not None else _dec
 
 
+def show_menu(request):
+    """Check if we suppose to show menu"""
+    try:
+        return request.GET.get('menu')
+    except:
+        return 'on'
+
+
 def cdr_view_daily_report(query_var):
     logging.debug('Map-reduce cdr analytic')
     #Retrieve Map Reduce
@@ -378,10 +386,7 @@ def cdr_view(request):
             return render_to_response(template_name, template_data,
                 context_instance=RequestContext(request))
 
-    try:
-        menu = request.GET.get('menu')
-    except:
-        menu = 'on'
+    menu = show_menu(request)
 
     try:
         if request.GET.get('page') or request.GET.get('sort_by'):
@@ -637,10 +642,7 @@ def cdr_detail(request, id, switch_id):
     """
     c_switch = get_object_or_404(Switch, id=switch_id)
     ipaddress = c_switch.ipaddress
-    try:
-        menu = request.GET.get('menu')
-    except:
-        menu = 'on'
+    menu = show_menu(request)
 
     if settings.LOCAL_SWITCH_TYPE == 'freeswitch':
         #Connect on MongoDB Database
