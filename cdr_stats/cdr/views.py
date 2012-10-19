@@ -22,8 +22,8 @@ from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 from notification import models as notification
 from common.common_functions import current_view, get_news, \
-                                    variable_value, \
-                                    source_desti_field_chk_mongodb, \
+                                    variable_value,\
+                                    mongodb_collection_filter,\
                                     duration_field_chk_mongodb, \
                                     int_convert_to_minute, \
                                     validate_days
@@ -42,8 +42,15 @@ from cdr.forms import CdrSearchForm, \
                         EmailReportForm
 from frontend.forms import LoginForm
 from user_profile.models import UserProfile
-#TODO: Remove wildcard *
-from cdr.mapreduce import *
+from cdr.mapreduce import mapreduce_cdr_view,\
+                          mapreduce_cdr_mail_report,\
+                          mapreduce_hourly_country_report,\
+                          mapreduce_world_report,\
+                          mapreduce_monthly_overview,\
+                          mapreduce_daily_overview,\
+                          mapreduce_hourly_country_report,\
+                          mapreduce_hourly_overview,\
+                          mapreduce_cdr_hourly_report
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -451,14 +458,12 @@ def cdr_view(request):
     mr_query_var = {}
     mr_query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
-    #TODO: source_desti_field_chk_mongodb should not we find a more generic name
-    # maybe something like conv_mongodb_str_filter
-    dst = source_desti_field_chk_mongodb(destination, destination_type)
+    dst = mongodb_collection_filter(destination, destination_type)
     if dst:
         query_var['destination_number'] = dst
 
     if request.user.is_superuser:  # superuser
-        acc = source_desti_field_chk_mongodb(accountcode, accountcode_type)
+        acc = mongodb_collection_filter(accountcode, accountcode_type)
         if acc:
             mr_query_var['metadata.accountcode'] = acc
             query_var['accountcode'] = acc
@@ -470,7 +475,7 @@ def cdr_view(request):
             mr_query_var['metadata.accountcode'] = chk_account_code(request)
             query_var['accountcode'] = mr_query_var['metadata.accountcode']
 
-    cli = source_desti_field_chk_mongodb(caller, caller_type)
+    cli = mongodb_collection_filter(caller, caller_type)
     if cli:
         query_var['caller_id_number'] = cli
 
