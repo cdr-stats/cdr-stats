@@ -9,24 +9,27 @@
         });
     </script>
 
+
 {% endblock %}
 
 {% block content %}
     <div id="form_collapse" class="collapse">
-        <form class="well form-search" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
+        <form class="form-horizontal well" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
             <div class="row">
                 <div class="span6">
-                    <label class="control-label" for="id_{{ form.from_date.name }}">{{ form.from_date.label }}</label>
-                    <div class="input">
+                    <label class="control-label" for="id_{{ form.from_date.name }}">
+                        {{ form.from_date.label }}
+                    </label>
+                    <div class="controls">
                         {{ form.from_date }}&nbsp;&nbsp;{{ form.comp_days }}
                         <span class="help-block">{{ form.from_date.help_text|safe }}</span>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="span6">
-                    <label class="control-label" for="id_{{ form.check_days.name }}">{{ form.check_days.label }}</label>
-                    <div class="input">
+                <div class="span5">
+                    <label class="control-label" for="id_{{ form.check_days.name }}">
+                        {{ form.check_days.label }}
+                    </label>
+                    <div class="controls inline">
                         {{ form.check_days|removetags:"ul li label"|safe }}
                         <span class="help-block">{{ form.check_days.help_text|safe }}</span>
                     </div>
@@ -35,15 +38,13 @@
             <div class="row">
                 <div class="span6">
                     <label class="control-label" for="id_{{ form.graph_view.name }}">{{ form.graph_view.label }}</label>
-                    <div class="input">
+                    <div class="controls">
                         {{ form.graph_view }}
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="span6">
+                <div class="span4">
                     <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }}</label>
-                    <div class="input">
+                    <div class="controls">
                         {{ form.switch }}
                     </div>
                 </div>
@@ -54,6 +55,49 @@
             </div>
         </form>
     </div>
+
+    <!--<div id="form_collapse" class="collapse">
+        <form class="well" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
+            <div class="row">
+                <div class="span6">
+                    <label class="control-label" for="id_{{ form.from_date.name }}">
+                        {{ form.from_date.label }}
+                    </label>
+                    <div class="controls">
+                        {{ form.from_date }}&nbsp;&nbsp;{{ form.comp_days }}
+                        <span class="help-block">{{ form.from_date.help_text|safe }}</span>
+                    </div>
+                </div>
+                <div class="span5">
+                    <label class="control-label" for="id_{{ form.check_days.name }}">
+                        {{ form.check_days.label }}
+                    </label>
+                    <div class="controls inline">
+                        {{ form.check_days|removetags:"ul li label"|safe }}
+                        <span class="help-block">{{ form.check_days.help_text|safe }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="span6">
+                    <label class="control-label" for="id_{{ form.graph_view.name }}">{{ form.graph_view.label }}</label>
+                    <div class="controls">
+                        {{ form.graph_view }}
+                    </div>
+                </div>
+                <div class="span4">
+                    <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }}</label>
+                    <div class="controls">
+                        {{ form.switch }}
+                    </div>
+                </div>
+            </div>
+            <label>&nbsp;</label>
+            <div class="actions">
+                <input class="btn-primary" type=submit name=submit value={% trans "Search" %} />
+            </div>
+        </form>
+    </div>-->
 
     <a class="btn btn-small" id="toggle_btn" href="#" data-toggle="collapse" data-target="#form_collapse">
         <i class="icon-search"></i> <span>{% trans "advanced search"|title %}</span>
