@@ -172,23 +172,23 @@ def cdr_view_daily_report(query_var):
 
     cdr_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
     logging.debug('Before MapReduce')
-    total_data = cdr_data.map_reduce(map,
+    list_data = cdr_data.map_reduce(map,
                                      reduce,
                                      out,
                                      query=query_var,
                                      finalize=finalfc)
     logging.debug('After MapReduce')
 
-    total_data = total_data.find().sort([('_id.a_Year', -1),
+    list_data = list_data.find().sort([('_id.a_Year', -1),
                                          ('_id.b_Month', -1),
                                          ('_id.c_Day', -1)])
 
-    detail_data = []
+    total_data = []
     total_duration = 0
     total_calls = 0
     duration__avg = 0.0
-    for doc in total_data:
-        detail_data.append(
+    for doc in list_data:
+        total_data.append(
             {
                 'calldate': datetime(int(doc['_id']['a_Year']),
                 int(doc['_id']['b_Month']), int(doc['_id']['c_Day'])),
@@ -201,15 +201,15 @@ def cdr_view_daily_report(query_var):
         total_calls += int(doc['value']['calldate__count'])
         duration__avg += float(doc['value']['duration__avg'])
 
-    if total_data.count() != 0:
-        max_duration = max([int(x['duration__sum']) for x in detail_data])
-        total_avg_duration = (float(duration__avg)) / total_data.count()
+    if list_data.count() != 0:
+        max_duration = max([int(x['duration__sum']) for x in total_data])
+        total_avg_duration = (float(duration__avg)) / list_data.count()
     else:
         max_duration = 0
         total_avg_duration = 0
 
     cdr_view_daily_data = {
-        'total_data': detail_data,
+        'total_data': total_data,
         'total_duration': total_duration,
         'total_calls': total_calls,
         'total_avg_duration': total_avg_duration,
