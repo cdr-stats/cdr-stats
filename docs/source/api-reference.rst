@@ -16,4 +16,5 @@ Contents:
     ./api-doc/cdr_resource
 
     ./api-doc/api-playground/cdr_playground
+    ./api-doc/api-playground/switch_playground
 
