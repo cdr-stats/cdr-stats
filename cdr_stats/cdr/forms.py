@@ -19,14 +19,8 @@ from django.core.validators import validate_email
 from django.utils.translation import ugettext_lazy as _
 from common.common_functions import comp_day_range
 from cdr.functions_def import get_switch_list, get_country_list, get_hc_list
+from cdr.constants import STRING_SEARCH_TYPE_LIST
 from user_profile.models import UserProfile
-
-
-STRING_SEARCH_TYPE_LIST = ((2, _('Begins with')),
-                           (3, _('Contains')),
-                           (4, _('Ends with')),
-                           (1, _('Equals')),
-                           )
 
 COMPARE_LIST = ((2, '>'),
                 (3, '>='),
@@ -85,20 +79,20 @@ class SearchForm(forms.Form):
 
     caller = forms.CharField(label=_('Caller ID'), required=False)
     caller_type = forms.ChoiceField(label='', required=False,
-                                    choices=STRING_SEARCH_TYPE_LIST)
+                                    choices=list(STRING_SEARCH_TYPE_LIST))
     caller_type.widget.attrs['class'] = 'input-small'
 
     destination = forms.CharField(label=_('Destination'),
                                   required=False)
     destination_type = forms.ChoiceField(label='',
                                          required=False,
-                                         choices=STRING_SEARCH_TYPE_LIST)
+                                         choices=list(STRING_SEARCH_TYPE_LIST))
     destination_type.widget.attrs['class'] = 'input-small'
     accountcode = forms.CharField(label=_('Account Code'),
                                   required=False)
     accountcode_type = forms.ChoiceField(label='',
                                          required=False,
-                                         choices=STRING_SEARCH_TYPE_LIST)
+                                         choices=list(STRING_SEARCH_TYPE_LIST))
     accountcode_type.widget.attrs['class'] = 'input-small'
     duration = forms.CharField(label=_('Duration'),
                                required=False)
