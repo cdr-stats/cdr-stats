@@ -15,3 +15,5 @@ Contents:
     ./api-doc/cdr_daily_resource
     ./api-doc/cdr_resource
 
+    ./api-doc/api-playground/cdr_playground
+

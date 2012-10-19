@@ -299,7 +299,6 @@ class EmailReportForm(forms.ModelForm):
 
 
 class FileImport(forms.Form):
-
     """General Form : CSV file upload"""
 
     csv_file = forms.FileField(label=_('Upload CSV File '), required=True,
