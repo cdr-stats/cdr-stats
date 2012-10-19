@@ -451,6 +451,8 @@ def cdr_view(request):
     mr_query_var = {}
     mr_query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
+    #TODO: source_desti_field_chk_mongodb should not we find a more generic name
+    # maybe something like conv_mongodb_str_filter
     dst = source_desti_field_chk_mongodb(destination, destination_type)
     if dst:
         query_var['destination_number'] = dst
@@ -1743,6 +1745,8 @@ def cdr_country_report(request):
             duration = form.cleaned_data.get('duration')
             duration_type = form.cleaned_data.get('duration_type')
             if duration:
+                #TODO: duration_field_chk_mongodb should not we find a more generic name
+                # maybe something like conv_mongodb_int_filter
                 due = duration_field_chk_mongodb(duration, duration_type)
                 if due:
                     for i in range(0, 24):
