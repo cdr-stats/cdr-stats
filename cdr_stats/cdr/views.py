@@ -24,7 +24,7 @@ from notification import models as notification
 from common.common_functions import current_view, get_news, \
                                     variable_value,\
                                     mongodb_collection_filter,\
-                                    duration_field_chk_mongodb, \
+                                    mongodb_collection_duration_filter, \
                                     int_convert_to_minute, \
                                     validate_days
 
@@ -479,7 +479,7 @@ def cdr_view(request):
     if cli:
         query_var['caller_id_number'] = cli
 
-    due = duration_field_chk_mongodb(duration, duration_type)
+    due = mongodb_collection_duration_filter(duration, duration_type)
     if due:
         query_var['duration'] = mr_query_var['duration_daily'] = due
 
@@ -1750,9 +1750,7 @@ def cdr_country_report(request):
             duration = form.cleaned_data.get('duration')
             duration_type = form.cleaned_data.get('duration_type')
             if duration:
-                #TODO: duration_field_chk_mongodb should not we find a more generic name
-                # maybe something like conv_mongodb_int_filter
-                due = duration_field_chk_mongodb(duration, duration_type)
+                due = mongodb_collection_duration_filter(duration, duration_type)
                 if due:
                     for i in range(0, 24):
                         query_var['duration_hourly.%d' % (i)] = due
