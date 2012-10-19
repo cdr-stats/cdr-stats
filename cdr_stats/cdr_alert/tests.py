@@ -139,10 +139,10 @@ class CdrAlertTaskTestCase(TestCase):
         result = chk_alarm().run()
         self.assertEquals(result, True)
 
-    def test_send_cdr_report(self):
-        """Test task : send_cdr_report"""
-        delta = timedelta(seconds=1)
-        self.assertEqual(send_cdr_report().timedelta_seconds(delta), 1)
+    #def test_send_cdr_report(self):
+    #    """Test task : send_cdr_report"""
+    #    delta = timedelta(seconds=1)
+    #    self.assertEqual(send_cdr_report().timedelta_seconds(delta), 1)
 
 
 
