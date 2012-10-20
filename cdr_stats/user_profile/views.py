@@ -16,11 +16,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render_to_response, get_object_or_404
-from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.http import HttpResponseRedirect
+#TODO: Remove wildcard
 from django.db.models import *
 from django.template.context import RequestContext
 from django.utils.translation import ugettext_lazy as _
-from django.utils import simplejson
 from django.db.models import Q
 from django.conf import settings
 
@@ -29,15 +29,16 @@ from common.common_functions import variable_value, current_view
 
 from cdr.functions_def import chk_account_code
 from user_profile.models import UserProfile
+#TODO: Remove wildcard
 from user_profile.forms import *
 
 
 def notice_count(request):
     """Get count of logged in user's notifications"""
     try:
-        notice_count = \
-            notification.Notice.objects.filter(recipient=request.user,
-                                               unseen=1).count()
+        notice_count = notification.Notice.objects\
+                            .filter(recipient=request.user, unseen=1)\
+                            .count()
     except:
         notice_count = ''
     return notice_count
@@ -56,7 +57,7 @@ def customer_detail_change(request):
 
         * User is able to change his/her detail.
     """
-    if not request.user.is_superuser: # not superuser
+    if not request.user.is_superuser:  # not superuser
         if not chk_account_code(request):
             return HttpResponseRedirect('/?acc_code_error=true')
 
@@ -72,10 +73,8 @@ def customer_detail_change(request):
                                             instance=user_detail)
     user_detail_extened_form = UserChangeDetailExtendForm(
         request.user, instance=user_detail_extened)
-    
-    user_password_form = PasswordChangeForm(user=request.user)
-    check_phone_no_form = CheckPhoneNumberForm()
 
+    user_password_form = PasswordChangeForm(user=request.user)
     try:
         user_ds = UserProfile.objects.get(user=request.user)
     except:
@@ -97,8 +96,8 @@ def customer_detail_change(request):
 
     sort_field = variable_value(request, 'sort_by')
     if not sort_field:
-        sort_field = 'message' # default sort field
-        sort_order = '-' + sort_field # desc
+        sort_field = 'message'  # default sort field
+        sort_order = '-' + sort_field  # desc
     else:
         if "-" in sort_field:
             sort_order = sort_field
@@ -106,7 +105,7 @@ def customer_detail_change(request):
         else:
             sort_order = sort_field
             col_name_with_order[sort_field] = '-' + sort_field
-    
+
     user_notification = \
         notification.Notice.objects.filter(recipient=request.user)
     # Search on sender name
@@ -118,16 +117,14 @@ def customer_detail_change(request):
 
     msg_detail = ''
     msg_pass = ''
-    msg_number = ''
     msg_note = ''
     error_detail = ''
     error_pass = ''
-    error_number = ''
     action = ''
 
     if 'action' in request.GET:
         action = request.GET['action']
-        
+
     if request.GET.get('msg_note') == 'true':
         msg_note = request.session['msg_note']
 
@@ -152,7 +149,8 @@ def customer_detail_change(request):
                 msg_detail = _('Detail has been changed.')
             else:
                 error_detail = _('Please correct the errors below.')
-        else: # "change-password"
+        else:
+            # change-password
             user_password_form = PasswordChangeForm(user=request.user,
                                                     data=request.POST)
             action = 'tabs-2'

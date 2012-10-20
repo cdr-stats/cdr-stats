@@ -54,12 +54,6 @@ class UserChangeDetailExtendForm(ModelForm):
         super(UserChangeDetailExtendForm, self).__init__(*args, **kwargs)
 
 
-class CheckPhoneNumberForm(forms.Form):
-    """A form used to check the phone number in the Customer UI."""
-    phone_number = forms.CharField(label=_('Phone Number'), required=True,
-                            help_text=_("Check number is authorised to call"))
-
-
 class UserProfileForm(ModelForm):
 
     class Meta:

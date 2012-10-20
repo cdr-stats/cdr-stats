@@ -409,6 +409,10 @@ MG_MONTHLY_ANALYTIC = 'monthly_analytic'
 MG_CONC_CALL = 'concurrent_call'
 MG_CONC_CALL_AGG = 'concurrent_call_map_reduce'
 
+#API PLAYGROUND
+#==============
+API_PLAYGROUND_FEEDBACK = False
+
 #No of records per page
 #=======================
 PAGE_SIZE = 10

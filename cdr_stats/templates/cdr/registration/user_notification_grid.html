@@ -39,8 +39,7 @@
                     <td>{{ row.added }}</td>
                     <td>
                         <a href="../update_notice_status_cust/{{ row.id }}/">
-                            <i class="{{ row.unseen|seen_unseen }}"></i>
-                            <span>{{ row.unseen|seen_unseen_word }}</span>
+                            <span class="label label-info">{{ row.unseen|seen_unseen_word }}</span>
                         </a>
                     </td>
                 </tr>
