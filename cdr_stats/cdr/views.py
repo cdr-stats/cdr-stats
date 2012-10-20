@@ -59,11 +59,6 @@ import time
 import logging
 
 
-#TODO: Move this to settings
-TOTAL_GRAPH_COLOR = '#A61700'
-NUM_COUNTRY = 10
-
-
 cdr_data = settings.DBCON[settings.MG_CDR_COMMON]
 #db.cdr.ensureIndex({"variables.answer_stamp":1}, {background:true});
 (map, reduce, finalfc, out) = mapreduce_cdr_view()
@@ -1502,7 +1497,7 @@ def cdr_overview(request):
                          'total_month_data': total_month_data,
                          'start_date': start_date,
                          'end_date': end_date,
-                         'TOTAL_GRAPH_COLOR': TOTAL_GRAPH_COLOR,
+                         'TOTAL_GRAPH_COLOR': settings.TOTAL_GRAPH_COLOR,
                          'notice_count': notice_count(request),
                          }
 
@@ -1686,7 +1681,7 @@ def cdr_overview(request):
                      'total_month_data': total_month_data,
                      'start_date': start_date,
                      'end_date': end_date,
-                     'TOTAL_GRAPH_COLOR': TOTAL_GRAPH_COLOR,
+                     'TOTAL_GRAPH_COLOR': settings.TOTAL_GRAPH_COLOR,
                      'notice_count': notice_count(request),
                      }
 
@@ -1782,7 +1777,7 @@ def cdr_country_report(request):
                          'top10_country': country_analytic_array[0:11],
                          'form': form,
                          'search_tag': search_tag,
-                         'NUM_COUNTRY': NUM_COUNTRY,
+                         'NUM_COUNTRY': settings.NUM_COUNTRY,
                          }
 
             return render_to_response(template_name, variables,
@@ -1864,7 +1859,7 @@ def cdr_country_report(request):
         total_duration += int(i['value']['duration__sum'])
 
     # Top countries list
-    for i in country_analytic_array[0: NUM_COUNTRY]:
+    for i in country_analytic_array[0: settings.NUM_COUNTRY]:
         # i[0] - country name, i[1] - call count,
         # i[2] - call duration, i[3] - country id,
         country_final.append((i[0], int(i[1]), int(i[2]), int(i[3])))
@@ -1872,7 +1867,7 @@ def cdr_country_report(request):
     # Other countries analytic
     other_country_call_count = 0
     other_country_call_duration = 0
-    for i in country_analytic_array[NUM_COUNTRY:]:
+    for i in country_analytic_array[settings.NUM_COUNTRY:]:
         #i[0] - country name, i[1] - call count, i[2] - call duration
         other_country_call_count += int(i[1])
         other_country_call_duration += int(i[2])
@@ -1891,10 +1886,10 @@ def cdr_country_report(request):
                  'total_record': total_record_final,
                  'country_final': country_final,
                  'top10_country':\
-                     country_analytic_array[0:NUM_COUNTRY],
+                     country_analytic_array[0:settings.NUM_COUNTRY],
                  'form': form,
                  'search_tag': search_tag,
-                 'NUM_COUNTRY': NUM_COUNTRY,
+                 'NUM_COUNTRY': settings.NUM_COUNTRY,
                  'notice_count': notice_count(request),
                  }
 
