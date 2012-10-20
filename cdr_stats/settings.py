@@ -413,6 +413,15 @@ MG_CONC_CALL_AGG = 'concurrent_call_map_reduce'
 #=======================
 PAGE_SIZE = 10
 
+#TOTAL_GRAPH_COLOR For TOTAL Variable
+#====================================
+TOTAL_GRAPH_COLOR = '#A61700'
+
+# Display Total Countries 
+#========================
+NUM_COUNTRY = 10
+
+
 #TASTYPIE API
 #============
 API_ALLOWED_IP = ['127.0.0.1', 'localhost']
