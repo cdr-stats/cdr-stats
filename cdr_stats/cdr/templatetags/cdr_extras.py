@@ -15,6 +15,7 @@ from django import template
 from django.utils.translation import gettext as _
 from cdr.models import Switch
 from cdr.functions_def import get_hangupcause_name
+from cdr.views import notice_count
 import re
 
 register = template.Library()
@@ -119,6 +120,10 @@ def mongo_id(value, sub_val):
     # Return value
     return value
 
+def get_notice_count(request):
+    """tag to display notice count"""
+    return notice_count(request)
+
 register.filter('seen_unseen', seen_unseen)
 register.filter('seen_unseen_word', seen_unseen_word)
 register.filter('notice_count', notice_count)
@@ -127,3 +132,5 @@ register.filter('hangupcause_name', hangupcause_name)
 register.filter('hangupcause_name_with_title',
                 hangupcause_name_with_title)
 register.filter('mongo_id', mongo_id)
+
+register.simple_tag(get_notice_count)
