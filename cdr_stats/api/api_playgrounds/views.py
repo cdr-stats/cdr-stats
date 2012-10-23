@@ -16,6 +16,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.conf import settings
+from cdr.views import notice_count
+from common.common_functions import current_view
 import os
 
 
@@ -38,6 +40,8 @@ def api_list_view(request):
     template = 'frontend/api/api_list.html'
     data = {
         'list_of_api': list_of_api,
+        'notice_count': notice_count(request),
+        'module': current_view(request),
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))
