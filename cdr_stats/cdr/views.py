@@ -69,10 +69,10 @@ def index(request):
 
     **Attributes**:
 
-        * ``template`` - cdr/index.html
+        * ``template`` - frontend/index.html
         * ``form`` - loginForm
     """
-    template = 'cdr/index.html'
+    template = 'frontend/index.html'
     errorlogin = ''
     loginform = LoginForm()
 
@@ -152,7 +152,7 @@ def check_cdr_exists(function=None,):
             doc = cdr_data.find_one()
             if not doc:
                 return render_to_response(
-                    'cdr/error_import.html',
+                    'frontend/error_import.html',
                     context_instance=RequestContext(request))
             else:
                 return run_func(request, *args, **kwargs)
@@ -240,7 +240,7 @@ def cdr_view(request):
 
     **Attributes**:
 
-        * ``template`` - cdr/cdr_view.html
+        * ``template`` - frontend/cdr_view.html
         * ``form`` - CdrSearchForm
         * ``mongodb_data_set`` - MG_CDR_COMMON
         * ``map_reduce`` - mapreduce_cdr_view()
@@ -250,7 +250,7 @@ def cdr_view(request):
         get the call records as well as daily call analytics
         from mongodb collection according to search parameters
     """
-    template_name = 'cdr/cdr_view.html'
+    template_name = 'frontend/cdr_view.html'
     logging.debug('CDR View Start')
     query_var = {}
     result = 1  # default min
@@ -651,7 +651,7 @@ def cdr_detail(request, id, switch_id):
 
     **Attributes**:
 
-        * ``template`` - cdr/cdr_detail.html
+        * ``template`` - frontend/cdr_detail.html
 
     **Logic Description**:
 
@@ -675,7 +675,7 @@ def cdr_detail(request, id, switch_id):
 
         doc = DBCON[table_name].find({'_id': ObjectId(id)})
         return render_to_response(
-                        'cdr/cdr_detail_freeswitch.html',
+                        'frontend/cdr_detail_freeswitch.html',
                         {'row': list(doc), 'menu': menu},
                         context_instance=RequestContext(request))
 
@@ -707,7 +707,7 @@ def cdr_detail(request, id, switch_id):
             raise Http404
 
         return render_to_response(
-                            'cdr/cdr_detail_asterisk.html',
+                            'frontend/cdr_detail_asterisk.html',
                             {'row': list(row), 'menu': menu},
                             context_instance=RequestContext(request))
 
@@ -733,7 +733,7 @@ def cdr_dashboard(request):
 
     **Attributes**:
 
-        * ``template`` - cdr/cdr_dashboard.html
+        * ``template`` - frontend/cdr_dashboard.html
         * ``form`` - SwitchForm
         * ``mongodb_data_set`` - MG_DAILY_ANALYTIC
 
@@ -895,7 +895,7 @@ def cdr_dashboard(request):
                  'notice_count': notice_count(request),
                 }
 
-    return render_to_response('cdr/cdr_dashboard.html', variables,
+    return render_to_response('frontend/cdr_dashboard.html', variables,
            context_instance=RequestContext(request))
 
 
@@ -906,7 +906,7 @@ def cdr_concurrent_calls(request):
 
     **Attributes**:
 
-        * ``template`` - cdr/cdr_graph_concurrent_calls.html
+        * ``template`` - frontend/cdr_graph_concurrent_calls.html
         * ``form`` - ConcurrentCallForm
         * ``mongodb_data_set`` - MG_CONC_CALL_AGG (map-reduce collection)
 
@@ -968,7 +968,7 @@ def cdr_concurrent_calls(request):
                      'notice_count': notice_count(request),
                     }
 
-    return render_to_response('cdr/cdr_graph_concurrent_calls.html', variables,
+    return render_to_response('frontend/cdr_graph_concurrent_calls.html', variables,
            context_instance=RequestContext(request))
 
 
@@ -978,7 +978,7 @@ def cdr_realtime(request):
 
     **Attributes**:
 
-        * ``template`` - cdr/cdr_realtime.html
+        * ``template`` - frontend/cdr_realtime.html
         * ``form`` - SwitchForm
         * ``mongodb_collection`` - MG_CONC_CALL_AGG (map-reduce collection)
 
@@ -1037,7 +1037,7 @@ def cdr_realtime(request):
                      'notice_count': notice_count(request),
                     }
 
-    return render_to_response('cdr/cdr_graph_realtime.html', variables,
+    return render_to_response('frontend/cdr_graph_realtime.html', variables,
            context_instance=RequestContext(request))
 
 
@@ -1158,7 +1158,7 @@ def mail_report(request):
 
     **Attributes**:
 
-        * ``template`` - cdr/cdr_mail_report.html
+        * ``template`` - frontend/cdr_mail_report.html
         * ``form`` - MailreportForm
         * ``mongodb_data_set`` - MG_CDR_COMMON
 
@@ -1168,7 +1168,7 @@ def mail_report(request):
         to generate mail report
     """
     logging.debug('CDR mail report view start')
-    template = 'cdr/cdr_mail_report.html'
+    template = 'frontend/cdr_mail_report.html'
     user_obj = User.objects.get(username=request.user)
     msg = ''
     try:
@@ -1267,7 +1267,7 @@ def cdr_report_by_hour(request):
 
     **Attributes**:
 
-        * ``template`` - cdr/cdr_report_by_hour.html
+        * ``template`` - frontend/cdr_report_by_hour.html
         * ``form`` - CompareCallSearchForm
         * ``mongodb_data_set`` - MG_DAILY_ANALYTIC
         * ``map_reduce`` - mapreduce_cdr_hourly_analytic()
@@ -1278,7 +1278,7 @@ def cdr_report_by_hour(request):
         hourly analytics for given date
     """
     logging.debug('CDR hourly view start')
-    template_name = 'cdr/cdr_report_by_hour.html'
+    template_name = 'frontend/cdr_report_by_hour.html'
     query_var = {}
     total_record = []
     #default
@@ -1416,7 +1416,7 @@ def cdr_overview(request):
 
     **Attributes**:
 
-        * ``template`` - cdr/cdr_overview.html.html
+        * ``template`` - frontend/cdr_overview.html.html
         * ``form`` - CdrOverviewForm
         * ``mongodb_data_set`` - MG_DAILY_ANALYTIC
         * ``map_reduce`` - mapreduce_hourly_overview()
@@ -1428,7 +1428,7 @@ def cdr_overview(request):
         get all call records from mongodb collection for
         all monthly, daily, hourly analytics
     """
-    template_name = 'cdr/cdr_overview.html'
+    template_name = 'frontend/cdr_overview.html'
     logging.debug('CDR overview start')
     query_var = {}
     tday = datetime.today()
@@ -1698,7 +1698,7 @@ def cdr_country_report(request):
 
     **Attributes**:
 
-        * ``template`` - cdr/cdr_country_report.html
+        * ``template`` - frontend/cdr_country_report.html
         * ``form`` - CountryReportForm
         * ``mongodb_data_set`` - MG_DAILY_ANALYTIC
         * ``map_reduce`` -  mapreduce_world_report()
@@ -1709,7 +1709,7 @@ def cdr_country_report(request):
         to create country call
     """
     logging.debug('CDR country report view start')
-    template_name = 'cdr/cdr_country_report.html'
+    template_name = 'frontend/cdr_country_report.html'
     form = CountryReportForm()
 
     switch_id = 0
@@ -1903,7 +1903,7 @@ def world_map_view(request):
 
     **Attributes**:
 
-        * ``template`` - cdr/world_map.html
+        * ``template`` - frontend/world_map.html
         * ``form`` - WorldForm
         * ``mongodb_data_set`` - MG_DAILY_ANALYTIC
         * ``map_reduce`` - mapreduce_world_report()
@@ -1914,7 +1914,7 @@ def world_map_view(request):
         to create country call
     """
     logging.debug('CDR world report view start')
-    template_name = 'cdr/world_map.html'
+    template_name = 'frontend/world_map.html'
 
     switch_id = 0
     query_var = {}

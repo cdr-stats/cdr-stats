@@ -1,8 +1,8 @@
-{% extends "cdr/master.html" %}
+{% extends "frontend/master.html" %}
 {% load i18n %}
 
 {% block extra_header %}
-    {% include "cdr/custom_jquery_select_all.html" %}
+    {% include "frontend/custom_jquery_select_all.html" %}
 {% endblock %}
 
 {% block content_header %}
@@ -22,15 +22,15 @@
 <div class="tab-content">
     
 	<div id="tabs-1" class="tab-pane {% if action == "tabs-1" or action == "" %}active{% endif %}">
-        {% include "cdr/registration/user_account.html" %}
+        {% include "frontend/registration/user_account.html" %}
     </div>
 
     <div id="tabs-2" class="tab-pane {% if action == "tabs-2" %}active{% endif %}">
-        {% include "cdr/registration/user_change_password.html" %}
+        {% include "frontend/registration/user_change_password.html" %}
     </div>
 
     <div id="tabs-3" class="tab-pane {% if action == "tabs-3" %}active{% endif %}">
-        {% include "cdr/registration/user_notification_grid.html" %}
+        {% include "frontend/registration/user_notification_grid.html" %}
 	</div>
 
     <div id="tabs-4" align="left" class="tab-pane {% if action == "tabs-4" %}active{% endif %}">

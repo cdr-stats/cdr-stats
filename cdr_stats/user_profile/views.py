@@ -51,7 +51,7 @@ def customer_detail_change(request):
     **Attributes**:
 
         * ``form`` - UserChangeDetailForm, UserChangeDetailExtendForm, PasswordChangeForm
-        * ``template`` - 'cdr/registration/user_detail_change.html'
+        * ``template`` - 'frontend/registration/user_detail_change.html'
 
     **Logic Description**:
 
@@ -160,7 +160,7 @@ def customer_detail_change(request):
             else:
                 error_pass = _('Please correct the errors below.')
 
-    template = 'cdr/registration/user_detail_change.html'
+    template = 'frontend/registration/user_detail_change.html'
     data = {
         'module': current_view(request),
         'user_detail_form': user_detail_form,

@@ -125,7 +125,7 @@
 <body>
 {% block menu %}
     {% ifnotequal menu 'off' %}
-        {% include "cdr/bootstrap_menu.html" %}
+        {% include "frontend/bootstrap_menu.html" %}
     {% endifnotequal %}
 {% endblock %}
 
@@ -179,7 +179,7 @@
     {% endblock %}
 
     {% ifnotequal menu 'off' %}
-        {% include "cdr/footer.html" %}
+        {% include "frontend/footer.html" %}
     {% endifnotequal %}
 
 </div>

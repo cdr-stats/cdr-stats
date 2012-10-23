@@ -58,7 +58,7 @@ def login_view(request):
         * If submitted user credentials are valid then system will redirect to
           the dashboard.
     """
-    template = 'cdr/index.html'
+    template = 'frontend/index.html'
     errorlogin = ''
 
     if request.method == 'POST':
@@ -99,7 +99,7 @@ def login_view(request):
 
 
 def pleaselog(request):
-    template = 'cdr/index.html'
+    template = 'frontend/index.html'
 
     data = {
         'loginform': LoginForm(),
@@ -120,8 +120,8 @@ def cust_password_reset(request):
         data = {'loginform': LoginForm()}
         return password_reset(
             request,
-            template_name='cdr/registration/password_reset_form.html',
-            email_template_name='cdr/registration/password_reset_email.html',
+            template_name='frontend/registration/password_reset_form.html',
+            email_template_name='frontend/registration/password_reset_email.html',
             post_reset_redirect='/password_reset/done/',
             from_email='cdr_stats_admin@localhost.com',
             extra_context=data
@@ -141,7 +141,7 @@ def cust_password_reset_done(request):
         data = {'loginform': LoginForm()}
         return password_reset_done(
             request,
-            template_name='cdr/registration/password_reset_done.html',
+            template_name='frontend/registration/password_reset_done.html',
             extra_context=data
         )
     else:
@@ -160,7 +160,7 @@ def cust_password_reset_confirm(request, uidb36=None, token=None):
             request,
             uidb36=uidb36,
             token=token,
-            template_name='cdr/registration/password_reset_confirm.html',
+            template_name='frontend/registration/password_reset_confirm.html',
             post_reset_redirect='/reset/done/',
             extra_context=data)
     else:
@@ -178,7 +178,7 @@ def cust_password_reset_complete(request):
         data = {'loginform': LoginForm()}
         return password_reset_complete(
             request,
-            template_name='cdr/registration/password_reset_complete.html',
+            template_name='frontend/registration/password_reset_complete.html',
             extra_context=data)
     else:
         return HttpResponseRedirect("/")

@@ -35,7 +35,7 @@ def api_list_view(request):
                 list_of_api.append({'api_name': api_arr[0],
                                     'api_link': api_link})
 
-    template = 'cdr/api/api_list.html'
+    template = 'frontend/api/api_list.html'
     data = {
         'list_of_api': list_of_api,
     }

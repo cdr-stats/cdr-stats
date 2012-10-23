@@ -1,4 +1,4 @@
-{% extends "cdr/master.html" %}
+{% extends "frontend/master.html" %}
 {% load i18n cdr_extras common_tags %}
 
 {% block title %}{% trans "CDR Mail Report" %}{% endblock %}
@@ -41,6 +41,6 @@
     <h2>{% trans "Preview of the mail report" %} :</h2>
     <hr/>
 
-    {% include 'cdr/mail_report_template.html' %}
+    {% include 'frontend/mail_report_template.html' %}
 
 {% endblock %}
