@@ -193,7 +193,9 @@ def cdr_view_daily_report(query_var):
         ]
 
     logging.debug('Before Aggregate')
-    list_data = settings.DBCON.command('aggregate', settings.MG_DAILY_ANALYTIC, pipeline=pipeline)
+    list_data = settings.DBCON.command('aggregate',
+                                       settings.MG_DAILY_ANALYTIC,
+                                       pipeline=pipeline)
     logging.debug('After Aggregate')
 
     total_data = []
@@ -206,7 +208,9 @@ def cdr_view_daily_report(query_var):
 
         total_data.append(
             {
-                'calldate': datetime(int(doc['_id'][0:4]), int(doc['_id'][4:6]), int(doc['_id'][6:8])),
+                'calldate': datetime(int(doc['_id'][0:4]),
+                                     int(doc['_id'][4:6]),
+                                     int(doc['_id'][6:8])),
                 'duration__sum': int(doc['durationperday']),
                 'calldate__count': int(doc['callperday']),
                 'duration__avg': doc['avgdurationperday'],
@@ -1208,7 +1212,6 @@ def mail_report(request):
 
 
 def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
-    hourly_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
     logging.debug('Map-reduce cdr hourly report')
     #Retrieve Map Reduce
     (map, reduce, finalfc, out) = mapreduce_cdr_hourly_report()
@@ -1622,6 +1625,45 @@ def cdr_overview(request):
         settings.DBCON[out].drop()
 
         # Collect monthly data
+        ################################
+        logging.debug('Aggregate cdr monthly analytic')
+        pipeline = [
+            {'$match':
+                 query_var
+            },
+            {'$group': {
+                '_id': {'$substr': ['$_id', 0, 6]},
+                'switch_id': {'$addToSet' :'$metadata.switch_id'},
+                'call_per_month': {'$sum': '$call_monthly'},
+                'duration_per_month': {'$sum': '$duration_monthly'}
+            }
+            },
+            {'$project': {
+                'switch_id': 1,
+                'call_per_month': 1,
+                'duration_per_month': 1,
+                'avgduration_per_month': {'$divide': ['$duration_per_month',
+                                                      '$call_per_month']},
+                }
+            },
+            {'$unwind': '$switch_id'},
+            {'$sort': {
+                '_id': 1
+            }
+            }
+        ]
+
+        logging.debug('Before Aggregate')
+        list_data = settings.DBCON.command('aggregate',
+                                           settings.MG_MONTHLY_ANALYTIC,
+                                           pipeline=pipeline)
+        logging.debug('After Aggregate')
+
+        for doc in list_data['result']:
+            print doc
+
+        ###########################
+
         monthly_data = settings.DBCON[settings.MG_MONTHLY_ANALYTIC]
 
         (map, reduce, finalfc, out) = mapreduce_monthly_overview()
