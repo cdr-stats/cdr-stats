@@ -20,7 +20,7 @@ import re
 
 register = template.Library()
 
-@register.filter()
+@register.filter(name='seen_unseen')
 def seen_unseen(value):
     """Tag is for icon which is
     used on user notification list
@@ -37,7 +37,7 @@ def seen_unseen(value):
         return "icon-ok"
 
 
-@register.filter()
+@register.filter(name='seen_unseen_word')
 def seen_unseen_word(value):
     """Tag is for notification status which is
     used on user notification list
@@ -54,22 +54,7 @@ def seen_unseen_word(value):
         return _("Read")
 
 
-@register.filter()
-def notice_count(user):
-    """To get unseen notification for admin user & this tag is also used on
-       admin template admin/base_site.html"""
-    from notification import models as notification
-    notice_count = 0
-    # get notification count
-    try:
-        notice_count = notification.Notice.objects.\
-                        filter(recipient=user, unseen=1).count()
-    except:
-        pass
-    return str(notice_count) + _(" Notification")
-
-
-@register.filter()
+@register.filter(name='get_switch_ip')
 def get_switch_ip(id):
     """Tag is used to get switch name
 
@@ -83,13 +68,13 @@ def get_switch_ip(id):
         return u''
 
 
-@register.filter()
+@register.filter(name='hangupcause_name')
 def hangupcause_name(id):
     """Tag is used to get hangupcause name"""
     return get_hangupcause_name(id)
 
 
-@register.filter()
+@register.filter(name='hangupcause_name_with_title')
 def hangupcause_name_with_title(id):
     """Tag is used to get hangupcause name with lowercase
 
@@ -108,7 +93,7 @@ def hangupcause_name_with_title(id):
         return ''
 
 
-@register.filter()
+@register.filter(name='mongo_id')
 def mongo_id(value, sub_val):
     """Tag is used to get mongo mapreduce _id.value"""
     if type(value) == type({}):
@@ -120,17 +105,8 @@ def mongo_id(value, sub_val):
     # Return value
     return value
 
+@register.simple_tag(name='get_notice_count')
 def get_notice_count(request):
     """tag to display notice count"""
     return notice_count(request)
 
-register.filter('seen_unseen', seen_unseen)
-register.filter('seen_unseen_word', seen_unseen_word)
-register.filter('notice_count', notice_count)
-register.filter('get_switch_ip', get_switch_ip)
-register.filter('hangupcause_name', hangupcause_name)
-register.filter('hangupcause_name_with_title',
-                hangupcause_name_with_title)
-register.filter('mongo_id', mongo_id)
-
-register.simple_tag(get_notice_count)
