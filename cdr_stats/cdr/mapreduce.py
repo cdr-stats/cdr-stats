@@ -459,43 +459,6 @@ def mapreduce_daily_overview():
     return (map, reduce, False, out)
 
 
-def mapreduce_monthly_overview():
-    """
-    To get the overview analytic of cdr
-
-       * Total calls per year-month-switch
-       * Total call duration per year-month-switch
-
-    Attributes:
-
-        * ``map`` - Grouping perform on year, month & switch
-        * ``reduce`` - Calculate call count, sum of call duration based on map
-
-    Result Collection: ``aggregate_monthly_overview``
-    """
-    (map, reduce, finalfc, out) = mapreduce_default()
-
-    # Get cdr graph by overview report
-    map = mark_safe(u'''
-        function(){
-            var year = this.metadata.date.getFullYear();
-            var month = this.metadata.date.getMonth();
-
-            var d = new Date(year, month);
-            emit( {
-                f_Switch: this.metadata.switch_id,
-                g_Millisec: d.getTime(),
-            },
-            {
-                calldate__count: this.call_monthly,
-                duration__sum: this.duration_monthly
-            } )
-          }''')
-
-    out = 'aggregate_monthly_overview'
-    return (map, reduce, False, out)
-
-
 def mapreduce_world_report():
     """
     To get the world map report of cdr

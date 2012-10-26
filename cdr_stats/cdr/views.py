@@ -46,7 +46,6 @@ from cdr.mapreduce import mapreduce_cdr_view,\
                           mapreduce_cdr_mail_report,\
                           mapreduce_hourly_country_report,\
                           mapreduce_world_report,\
-                          mapreduce_monthly_overview,\
                           mapreduce_daily_overview,\
                           mapreduce_hourly_overview,\
                           mapreduce_cdr_hourly_report
@@ -1423,7 +1422,6 @@ def cdr_overview(request):
         * ``form`` - CdrOverviewForm
         * ``mongodb_data_set`` - MG_DAILY_ANALYTIC
         * ``map_reduce`` - mapreduce_hourly_overview()
-                           mapreduce_monthly_overview()
                            mapreduce_daily_overview()
 
     **Logic Description**:
@@ -1625,12 +1623,15 @@ def cdr_overview(request):
         settings.DBCON[out].drop()
 
         # Collect monthly data
-        ################################
+        ######################
         logging.debug('Aggregate cdr monthly analytic')
+        query_var['metadata.date'] = {
+            '$gte': month_start_date,
+            '$lt': month_end_date
+        }
+
         pipeline = [
-            {'$match':
-                 query_var
-            },
+            {'$match': query_var},
             {'$group': {
                 '_id': {'$substr': ['$_id', 0, 6]},
                 'switch_id': {'$addToSet' :'$metadata.switch_id'},
@@ -1642,14 +1643,15 @@ def cdr_overview(request):
                 'switch_id': 1,
                 'call_per_month': 1,
                 'duration_per_month': 1,
-                'avgduration_per_month': {'$divide': ['$duration_per_month',
-                                                      '$call_per_month']},
+                'avg_duration_per_month': {'$divide': ['$duration_per_month',
+                                                       '$call_per_month']},
                 }
             },
             {'$unwind': '$switch_id'},
             {'$sort': {
-                '_id': 1
-            }
+                '_id': -1,
+                'switch_id': 1,
+                }
             }
         ]
 
@@ -1659,57 +1661,36 @@ def cdr_overview(request):
                                            pipeline=pipeline)
         logging.debug('After Aggregate')
 
-        for doc in list_data['result']:
-            print doc
-
-        ###########################
-
-        monthly_data = settings.DBCON[settings.MG_MONTHLY_ANALYTIC]
-
-        (map, reduce, finalfc, out) = mapreduce_monthly_overview()
-        query_var['metadata.date'] = {
-                                        '$gte': month_start_date,
-                                        '$lt': month_end_date
-                                     }
-
-        #Run Map Reduce
-        logging.debug('Before MapReduce')
-        calls_in_month = monthly_data.map_reduce(map,
-                                                 reduce,
-                                                 out,
-                                                 query=query_var)
-        logging.debug('After MapReduce')
-        calls_in_month = calls_in_month.find().sort([('_id.g_Millisec', -1),
-                                                     ('_id.f_Switch', 1)])
         total_month_record = []
         total_month_data = []
-        if calls_in_month.count() != 0:
+        if list_data:
             month_data = dict()
-            for i in calls_in_month:
-                dt = int(i['_id']['g_Millisec'])
+            for doc in list_data['result']:
+                graph_day = datetime(int(doc['_id'][0:4]),
+                                     int(doc['_id'][4:6]),
+                                     1, 0, 0, 0, 0)
+                dt = int(1000 * time.mktime(graph_day.timetuple()))
+
                 total_month_record.append({
-                        'dt': dt,
-                        'calldate__count': int(i['value']['calldate__count']),
-                        'duration__sum': int(i['value']['duration__sum']),
-                        'switch_id': int(i['_id']['f_Switch'])
-                    })
+                    'dt': dt,
+                    'calldate__count': int(doc['call_per_month']),
+                    'duration__sum': int(doc['duration_per_month']),
+                    'switch_id': int(doc['switch_id'])
+                })
 
                 if dt in month_data:
                     month_data[dt]['call_count'] +=\
-                        int(i['value']['calldate__count'])
+                        int(doc['call_per_month'])
                     month_data[dt]['duration_sum'] +=\
-                        int(i['value']['duration__sum'])
+                        int(doc['duration_per_month'])
                 else:
                     month_data[dt] = {
-                        'call_count': int(i['value']['calldate__count']),
-                        'duration_sum': int(i['value']['duration__sum'])
+                        'call_count': int(doc['call_per_month']),
+                        'duration_sum': int(doc['duration_per_month'])
                     }
 
             total_month_data = month_data.items()
             total_month_data = sorted(total_month_data, key=lambda k: k[0])
-
-        # remove mapreduce output from database (no longer required)
-        settings.DBCON[out].drop()
 
         logging.debug('CDR daily view end')
         variables = {'module': current_view(request),
