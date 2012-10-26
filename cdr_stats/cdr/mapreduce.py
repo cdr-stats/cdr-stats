@@ -74,43 +74,6 @@ def mapreduce_default():
     return (map, reduce, finalfc, out)
 
 
-def mapreduce_cdr_view():
-    """
-    To get the default analytic of cdr
-
-        * Total calls per year-month-day
-        * Total duration per year-month-day
-        * Avereage duration per year-month-day
-
-    Attributes:
-
-        * ``map`` - Grouping perform on year, month & day
-        * ``reduce`` - Calculate call count, sum of call duration based on map
-        * ``finalfc`` - To get avg of call duration
-                        (sum_call_duration / sum_call_count)
-
-    Result Collection: ``aggregate_result_cdr_view``
-    """
-    (map, reduce, finalfc, out) = mapreduce_default()
-
-    map = mark_safe(u'''
-        function(){
-            emit( {
-                        a_Year: this.metadata.date.getFullYear(),
-                        b_Month: this.metadata.date.getMonth() + 1,
-                        c_Day: this.metadata.date.getDate(),
-                    },
-                    {
-                        calldate__count: this.call_daily,
-                        duration__sum: this.duration_daily,
-                        duration__avg: 0
-                    } )
-        }''')
-
-    out = 'aggregate_result_cdr_view'
-    return (map, reduce, finalfc, out)
-
-
 def mapreduce_cdr_mail_report():
     """
     To get the previous day's analytic of cdr

@@ -42,7 +42,7 @@ from cdr.forms import CdrSearchForm, \
                         EmailReportForm
 from frontend.forms import LoginForm
 from user_profile.models import UserProfile
-from cdr.mapreduce import mapreduce_cdr_view,\
+from cdr.mapreduce import mapreduce_default,\
                           mapreduce_cdr_mail_report,\
                           mapreduce_hourly_country_report,\
                           mapreduce_hourly_overview,\
@@ -62,7 +62,7 @@ import logging
 
 cdr_data = settings.DBCON[settings.MG_CDR_COMMON]
 #db.cdr.ensureIndex({"variables.answer_stamp":1}, {background:true});
-(map, reduce, finalfc, out) = mapreduce_cdr_view()
+(map, reduce, finalfc, out) = mapreduce_default()
 
 
 def index(request):
@@ -228,7 +228,6 @@ def cdr_view(request):
         * ``template`` - frontend/cdr_view.html
         * ``form`` - CdrSearchForm
         * ``mongodb_data_set`` - MG_CDR_COMMON
-        * ``map_reduce`` - mapreduce_cdr_view()
 
     **Logic Description**:
 
