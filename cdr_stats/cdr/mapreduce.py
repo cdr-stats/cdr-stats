@@ -419,36 +419,3 @@ def mapreduce_hourly_country_report():
 
     out = 'aggregate_hourly_country_report'
     return (map, reduce, False, out)
-
-
-def mapreduce_world_report():
-    """
-    To get the world map report of cdr
-
-       * Total calls per country_id
-       * Total call duration country_id
-
-    Attributes:
-
-        * ``map`` - Grouping perform on country_id
-        * ``reduce`` - Calculate call count based on map
-
-    Result Collection: ``aggregate_world_report``
-    """
-    (map, reduce, finalfc, out) = mapreduce_default()
-
-    # Get cdr graph by day report
-    map = mark_safe(u'''
-        function(){
-
-            emit( {
-                    f_Country: this.metadata.country_id,
-                  },
-                  {
-                    calldate__count: this.call_daily,
-                    duration__sum: this.duration_daily
-                  } );
-        }''')
-
-    out = 'aggregate_world_report'
-    return (map, reduce, False, out)

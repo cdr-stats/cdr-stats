@@ -45,12 +45,12 @@ from user_profile.models import UserProfile
 from cdr.mapreduce import mapreduce_cdr_view,\
                           mapreduce_cdr_mail_report,\
                           mapreduce_hourly_country_report,\
-                          mapreduce_world_report,\
                           mapreduce_hourly_overview,\
                           mapreduce_cdr_hourly_report
 from cdr.aggregate import pipeline_monthly_overview,\
                           pipeline_cdr_view_daily_report,\
-                          pipeline_daily_overview
+                          pipeline_daily_overview,\
+                          pipeline_country_report
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -1773,7 +1773,7 @@ def cdr_country_report(request):
         else:
             return HttpResponseRedirect('/?acc_code_error=true')
 
-    # Country Hourly data
+    # Country daily data
     (map, reduce, finalfc, out) = mapreduce_hourly_country_report()
     country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
 
@@ -1813,32 +1813,29 @@ def cdr_country_report(request):
                 })
 
     total_record_final = sorted(total_record_final, key=lambda k: k['dt'])
-    logging.debug('Map-reduce cdr country calls report')
-    #Retrieve Map Reduce
-    (map, reduce, finalfc, out) = mapreduce_world_report()
 
-    #Run Map Reduce
-    country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-    logging.debug('Map-reduce cdr country calls report start')
-    calls = country_data.map_reduce(map,
-                                    reduce,
-                                    out,
-                                    query=query_var)
-    logging.debug('Map-reduce cdr country calls report end')
-    calls = calls.find().sort([('value.calldate__count', -1),
-                               ('value.duration__sum', -1)])
+    # World report
+    logging.debug('Aggregate world report')
+    pipeline = pipeline_country_report(query_var)
 
+    logging.debug('Before Aggregate')
+    list_data = settings.DBCON.command('aggregate',
+                                       settings.MG_DAILY_ANALYTIC,
+                                       pipeline=pipeline)
+    logging.debug('After Aggregate')
     country_analytic_array = []
     country_final = []
-    for i in calls:
-        #country id - country name - call count - call duration - country_id
-        country_analytic_array.append(
-                        (get_country_name(int(i['_id']['f_Country'])),
-                         int(i['value']['calldate__count']),
-                         int(i['value']['duration__sum']),
-                         int(i['_id']['f_Country'])))
-        total_calls += int(i['value']['calldate__count'])
-        total_duration += int(i['value']['duration__sum'])
+    if list_data:
+        for doc in list_data['result']:
+            #country id - country name - call count - call duration - country_id
+            # _id = country id
+            country_analytic_array.append(
+                (get_country_name(int(doc['_id'])),
+                 int(doc['call_per_day']),
+                 int(doc['duration_per_day']),
+                 int(doc['_id'])))
+            total_calls += int(doc['call_per_day'])
+            total_duration += int(doc['duration_per_day'])
 
     # Top countries list
     for i in country_analytic_array[0: settings.NUM_COUNTRY]:
