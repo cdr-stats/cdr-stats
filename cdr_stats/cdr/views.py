@@ -48,7 +48,8 @@ from cdr.mapreduce import mapreduce_cdr_view,\
                           mapreduce_world_report,\
                           mapreduce_daily_overview,\
                           mapreduce_hourly_overview,\
-                          mapreduce_cdr_hourly_report
+                          mapreduce_cdr_hourly_report,\
+                          pipeline_monthly_overview
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -1629,31 +1630,7 @@ def cdr_overview(request):
             '$gte': month_start_date,
             '$lt': month_end_date
         }
-
-        pipeline = [
-            {'$match': query_var},
-            {'$group': {
-                '_id': {'$substr': ['$_id', 0, 6]},
-                'switch_id': {'$addToSet' :'$metadata.switch_id'},
-                'call_per_month': {'$sum': '$call_monthly'},
-                'duration_per_month': {'$sum': '$duration_monthly'}
-            }
-            },
-            {'$project': {
-                'switch_id': 1,
-                'call_per_month': 1,
-                'duration_per_month': 1,
-                'avg_duration_per_month': {'$divide': ['$duration_per_month',
-                                                       '$call_per_month']},
-                }
-            },
-            {'$unwind': '$switch_id'},
-            {'$sort': {
-                '_id': -1,
-                'switch_id': 1,
-                }
-            }
-        ]
+        pipeline = pipeline_monthly_overview(query_var)
 
         logging.debug('Before Aggregate')
         list_data = settings.DBCON.command('aggregate',
