@@ -48,8 +48,9 @@ from cdr.mapreduce import mapreduce_cdr_view,\
                           mapreduce_world_report,\
                           mapreduce_daily_overview,\
                           mapreduce_hourly_overview,\
-                          mapreduce_cdr_hourly_report,\
-                          pipeline_monthly_overview
+                          mapreduce_cdr_hourly_report
+from cdr.aggregate import pipeline_monthly_overview,\
+                          pipeline_cdr_view_daily_report
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -170,27 +171,7 @@ def show_menu(request):
 
 def cdr_view_daily_report(query_var):
     logging.debug('Aggregate cdr analytic')
-    pipeline = [
-            {'$match':
-                query_var
-            },
-            {'$group': {
-                '_id': {'$substr': ["$_id", 0, 8]},
-                'callperday': {'$sum': '$call_daily'},
-                'durationperday': {'$sum': '$duration_daily'}
-                }
-            },
-            {'$project': {
-                'callperday': 1,
-                'durationperday': 1,
-                'avgdurationperday': {'$divide': ["$durationperday", "$callperday"]}
-                }
-            },
-            {'$sort': {
-                '_id': 1
-                }
-            }
-        ]
+    pipeline = pipeline_cdr_view_daily_report(query_var)
 
     logging.debug('Before Aggregate')
     list_data = settings.DBCON.command('aggregate',
