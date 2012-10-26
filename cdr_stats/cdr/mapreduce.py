@@ -421,44 +421,6 @@ def mapreduce_hourly_country_report():
     return (map, reduce, False, out)
 
 
-def mapreduce_daily_overview():
-    """
-    To get the daily analytic of cdr
-
-       * Total calls per year-month-day-switch
-       * Total call duration per year-month-day-switch
-
-    Attributes:
-
-        * ``map`` - Grouping perform on year, month, day & switch
-        * ``reduce`` - Calculate call count based on map
-
-    Result Collection: ``aggregate_daily_overview``
-    """
-    (map, reduce, finalfc, out) = mapreduce_default()
-
-    # Get cdr graph by day report
-    map = mark_safe(u'''
-        function(){
-            var year = this.metadata.date.getFullYear();
-            var month = this.metadata.date.getMonth();
-            var day = this.metadata.date.getDate();
-
-            var d = new Date(year, month, day);
-            emit( {
-                    f_Switch: this.metadata.switch_id,
-                    g_Millisec: d.getTime(),
-                  },
-                  {
-                    calldate__count: this.call_daily,
-                    duration__sum: this.duration_daily
-                  } );
-        }''')
-
-    out = 'aggregate_daily_overview'
-    return (map, reduce, False, out)
-
-
 def mapreduce_world_report():
     """
     To get the world map report of cdr

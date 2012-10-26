@@ -46,11 +46,11 @@ from cdr.mapreduce import mapreduce_cdr_view,\
                           mapreduce_cdr_mail_report,\
                           mapreduce_hourly_country_report,\
                           mapreduce_world_report,\
-                          mapreduce_daily_overview,\
                           mapreduce_hourly_overview,\
                           mapreduce_cdr_hourly_report
 from cdr.aggregate import pipeline_monthly_overview,\
-                          pipeline_cdr_view_daily_report
+                          pipeline_cdr_view_daily_report,\
+                          pipeline_daily_overview
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -1198,6 +1198,7 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
     (map, reduce, finalfc, out) = mapreduce_cdr_hourly_report()
 
     #Run Map Reduce
+    hourly_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
     calls_in_day = hourly_data.map_reduce(map,
                                           reduce,
                                           out,
@@ -1404,7 +1405,6 @@ def cdr_overview(request):
         * ``form`` - CdrOverviewForm
         * ``mongodb_data_set`` - MG_DAILY_ANALYTIC
         * ``map_reduce`` - mapreduce_hourly_overview()
-                           mapreduce_daily_overview()
 
     **Logic Description**:
 
@@ -1565,44 +1565,45 @@ def cdr_overview(request):
         settings.DBCON[out].drop()
 
         # Collect daily data
-        daily_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
+        ####################
+        logging.debug('Aggregate cdr daily analytic')
+        pipeline = pipeline_daily_overview(query_var)
 
-        (map, reduce, finalfc, out) = mapreduce_daily_overview()
-        logging.debug('Before MapReduce')
-        calls_in_day = daily_data.map_reduce(map,
-                                             reduce,
-                                             out,
-                                             query=query_var)
-        logging.debug('After MapReduce')
-        calls_in_day = calls_in_day.find().sort([('_id.g_Millisec', 1),
-                                                 ('_id.f_Switch', 1)])
+        logging.debug('Before Aggregate')
+        list_data = settings.DBCON.command('aggregate',
+                                           settings.MG_DAILY_ANALYTIC,
+                                           pipeline=pipeline)
+        logging.debug('After Aggregate')
+
         total_day_record = []
         total_day_data = []
-        if calls_in_day.count() != 0:
+        if list_data:
             day_data = dict()
-            for i in calls_in_day:
-                dt = int(i['_id']['g_Millisec'])
+            for doc in list_data['result']:
+                graph_day = datetime(int(doc['_id'][0:4]),
+                                     int(doc['_id'][4:6]),
+                                     int(doc['_id'][6:8]),
+                                     0, 0, 0, 0)
+                dt = int(1000 * time.mktime(graph_day.timetuple()))
+
                 total_day_record.append({
-                        'dt': dt,
-                        'calldate__count': int(i['value']['calldate__count']),
-                        'duration__sum': int(i['value']['duration__sum']),
-                        'switch_id': int(i['_id']['f_Switch'])
-                    })
+                    'dt': dt,
+                    'calldate__count': int(doc['call_per_day']),
+                    'duration__sum': int(doc['duration_per_day']),
+                    'switch_id': int(doc['switch_id'])
+                })
 
                 if dt in day_data:
-                    day_data[dt]['call_count'] += int(i['value']['calldate__count'])
-                    day_data[dt]['duration_sum'] += int(i['value']['duration__sum'])
+                    day_data[dt]['call_count'] += int(doc['call_per_day'])
+                    day_data[dt]['duration_sum'] += int(doc['duration_per_day'])
                 else:
                     day_data[dt] = {
-                        'call_count': int(i['value']['calldate__count']),
-                        'duration_sum': int(i['value']['duration__sum']),
+                        'call_count': int(doc['call_per_day']),
+                        'duration_sum': int(doc['duration_per_day']),
                     }
 
             total_day_data = day_data.items()
             total_day_data = sorted(total_day_data, key=lambda k: k[0])
-
-        # remove mapreduce output from database (no longer required)
-        settings.DBCON[out].drop()
 
         # Collect monthly data
         ######################
@@ -1624,10 +1625,10 @@ def cdr_overview(request):
         if list_data:
             month_data = dict()
             for doc in list_data['result']:
-                graph_day = datetime(int(doc['_id'][0:4]),
-                                     int(doc['_id'][4:6]),
-                                     1, 0, 0, 0, 0)
-                dt = int(1000 * time.mktime(graph_day.timetuple()))
+                graph_month = datetime(int(doc['_id'][0:4]),
+                                       int(doc['_id'][4:6]),
+                                       1, 0, 0, 0, 0)
+                dt = int(1000 * time.mktime(graph_month.timetuple()))
 
                 total_month_record.append({
                     'dt': dt,
