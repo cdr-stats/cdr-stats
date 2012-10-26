@@ -192,14 +192,14 @@ def cdr_view_daily_report(query_var):
                 'calldate': datetime(int(doc['_id'][0:4]),
                                      int(doc['_id'][4:6]),
                                      int(doc['_id'][6:8])),
-                'duration__sum': int(doc['durationperday']),
-                'calldate__count': int(doc['callperday']),
-                'duration__avg': doc['avgdurationperday'],
+                'duration__sum': int(doc['duration_per_day']),
+                'calldate__count': int(doc['call_per_day']),
+                'duration__avg': doc['avg_duration_per_day'],
             })
 
-        total_duration += int(doc['durationperday'])
-        total_calls += int(doc['callperday'])
-        duration__avg += float(doc['avgdurationperday'])
+        total_duration += int(doc['duration_per_day'])
+        total_calls += int(doc['call_per_day'])
+        duration__avg += float(doc['avg_duration_per_day'])
 
     if count_days != 0:
         max_duration = max([int(x['duration__sum']) for x in total_data])

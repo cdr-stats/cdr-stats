@@ -24,19 +24,19 @@ def pipeline_cdr_view_daily_report(query_var):
         {'$match': query_var},
         {'$group': {
             '_id': {'$substr': ["$_id", 0, 8]},
-            'callperday': {'$sum': '$call_daily'},
-            'durationperday': {'$sum': '$duration_daily'}
-        }
+            'call_per_day': {'$sum': '$call_daily'},
+            'duration_per_day': {'$sum': '$duration_daily'}
+            }
         },
         {'$project': {
-            'callperday': 1,
-            'durationperday': 1,
-            'avgdurationperday': {'$divide': ["$durationperday", "$callperday"]}
-        }
+            'call_per_day': 1,
+            'duration_per_day': 1,
+            'avg_duration_per_day': {'$divide': ["$duration_per_day", "$call_per_day"]}
+            }
         },
         {'$sort': {
             '_id': 1
-        }
+            }
         }
     ]
     return pipeline
