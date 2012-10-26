@@ -1683,7 +1683,6 @@ def cdr_country_report(request):
         * ``template`` - frontend/cdr_country_report.html
         * ``form`` - CountryReportForm
         * ``mongodb_data_set`` - MG_DAILY_ANALYTIC
-        * ``map_reduce`` -  mapreduce_world_report()
 
     **Logic Description**:
 
@@ -1885,7 +1884,6 @@ def world_map_view(request):
         * ``template`` - frontend/world_map.html
         * ``form`` - WorldForm
         * ``mongodb_data_set`` - MG_DAILY_ANALYTIC
-        * ``map_reduce`` - mapreduce_world_report()
 
     **Logic Description**:
 
@@ -1953,29 +1951,27 @@ def world_map_view(request):
         else:
             return HttpResponseRedirect('/?acc_code_error=true')
 
-    logging.debug('Map-reduce cdr world analytic')
-    #Retrieve Map Reduce
-    (map, reduce, finalfc, out) = mapreduce_world_report()
+    logging.debug('Aggregate world report')
+    pipeline = pipeline_country_report(query_var)
 
-    #Run Map Reduce
-    country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-    calls = country_data.map_reduce(map,
-                                    reduce,
-                                    out,
-                                    query=query_var)
-    calls = calls.find().sort([('value.calldate__count', -1),
-                               ('value.duration__sum', -1)])
-
+    logging.debug('Before Aggregate')
+    list_data = settings.DBCON.command('aggregate',
+                                       settings.MG_DAILY_ANALYTIC,
+                                       pipeline=pipeline)
+    logging.debug('After Aggregate')
     world_analytic_array = []
-    for i in calls:
-        #country id - country name - country_code - call count - call duration
-        world_analytic_array.append((int(i['_id']['f_Country']),
-                    get_country_name(int(i['_id']['f_Country']), type='iso2'),
-                    int(i['value']['calldate__count']),
-                    i['value']['duration__sum'],
-                    get_country_name(int(i['_id']['f_Country']))))
+    if list_data:
+        for doc in list_data['result']:
+            #country id - country name - call count - call duration - country_id
+            # _id = country id
+            world_analytic_array.append((int(doc['_id']),
+                                         get_country_name(int(doc['_id']), type='iso2'),
+                                         int(doc['call_per_day']),
+                                         doc['duration_per_day'],
+                                         get_country_name(int(doc['_id']))))
 
     logging.debug('CDR world report view end')
+
     variables = {'module': current_view(request),
                  'form': form,
                  'search_tag': search_tag,
