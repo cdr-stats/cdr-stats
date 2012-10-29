@@ -35,7 +35,7 @@ def pipeline_cdr_view_daily_report(query_var):
             }
         },
         {'$sort': {
-            '_id': 1
+            '_id': -1
             }
         }
     ]
