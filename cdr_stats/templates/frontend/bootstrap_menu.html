@@ -63,7 +63,9 @@
                   <li {% ifequal module 'detail_change' %}class="active"{% endifequal %}><a href="/user_detail_change/?action=tabs-4">
                           {% trans "Change Language" %}</a></li>
                   <li class="divider"></li>
-                  <li><a href="/api-explorer/"> {% trans "API Explorer" %}</a></li>
+                  {% if perms.user_profile.view_api_explorer %}
+                      <li><a href="/api-explorer/"> {% trans "API Explorer" %}</a></li>
+                  {% endif %}
                   <li class="divider"></li>
                   {% if user.is_superuser %}
                   <li><a href="/admin/"> {% trans "Administration" %}</a></li>

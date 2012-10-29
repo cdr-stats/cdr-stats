@@ -80,6 +80,9 @@ class UserProfile(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
+        permissions = (
+            ("view_api_explorer", _('Can see API-Explorer')),
+        )
         db_table = 'user_profile'
         verbose_name = _("User Profile")
         verbose_name_plural = _("User Profile")
