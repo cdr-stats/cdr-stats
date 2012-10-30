@@ -50,7 +50,8 @@ from cdr.mapreduce import mapreduce_default,\
 from cdr.aggregate import pipeline_monthly_overview,\
                           pipeline_cdr_view_daily_report,\
                           pipeline_daily_overview,\
-                          pipeline_country_report
+                          pipeline_country_report,\
+                          pipeline_hourly_report
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -1193,6 +1194,44 @@ def mail_report(request):
 
 def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
     logging.debug('Map-reduce cdr hourly report')
+
+    logging.debug('Aggregate cdr hourly report')
+    pipeline = pipeline_hourly_report(query_var)
+    logging.debug('Before Aggregate')
+    list_data = settings.DBCON.command('aggregate',
+                                       settings.MG_DAILY_ANALYTIC,
+                                       pipeline=pipeline)
+
+    total_record = {}
+    if list_data:
+        for doc in list_data['result']:
+            print doc#['call_per_hour']
+    """
+           called_time = datetime(int(doc['_id'][0:4]),
+                                  int(doc['_id'][4:6]),
+                                  int(doc['_id'][6:8]))
+           day_hours = {}
+           for i in range(0, 24):
+               day_hours[i] = 0
+           if graph_view == 1:  # Calls per hour
+               for dict_in_list in doc['call_per_hour']:
+                   for key, value in dict_in_list.iteritems():
+                       day_hours[int(key)] += int(value)
+
+               total_record[str(called_time)[:10]] = day_hours
+
+           if graph_view == 2:  # Min per hour
+               for dict_in_list in doc['duration_per_hour']:
+                   for key, value in dict_in_list.iteritems():
+                       day_hours[int(key)] = int(value)
+
+               total_record[str(called_time)[:10]] = day_hours
+   """
+    #print "####"
+    #print total_record
+    logging.debug('After Aggregate')
+
+    #"""
     #Retrieve Map Reduce
     (map, reduce, finalfc, out) = mapreduce_cdr_hourly_report()
 
@@ -1237,7 +1276,8 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
 
     # remove mapreduce output from database (no longer required)
     settings.DBCON[out].drop()
-
+    #"""
+    print total_record
     variables = {
         'total_record': total_record,
     }
