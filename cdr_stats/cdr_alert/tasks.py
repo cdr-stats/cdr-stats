@@ -364,8 +364,9 @@ def blacklist_whitelist_notification(notice_type):
         FMT = '%H:%M:%S'
         diff = datetime.strptime(curtime, FMT) - datetime.strptime(prevtime,
                 FMT)
-        # if difference is more than 30 min than notification resend
-        if int(diff.seconds / 60) >= 30:
+        # if difference is more than 10 min than notification resend
+        #TODO: make a setting for 10 DELAY_BETWEEN_MAIL_NOTIFICATION
+        if int(diff.seconds / 60) >= 10:
             # blacklist notification id - 3 | whitelist notification type - 4
             notify_admin_without_mail(notice_type, 'admin@localhost.com')
     except:
