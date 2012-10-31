@@ -149,29 +149,21 @@ def pipeline_hourly_report(query_var):
 
         * ``query_var`` - filter variable for collection
     """
-    #print query_var
-    hr_list = range(0, 24)
     pipeline = [
         {'$match': query_var},
         {'$group': {
             '_id': {'$substr': ['$_id', 0, 8]},
-            #'switch_id': {'$addToSet' :'$metadata.switch_id'},
-            #'call_per_hour': {'$hour': '$call_hourly'},
-            'call_per_hour': {'$addToSet' : '$call_hourly'},
-            'duration_per_hour': {'$addToSet': '$duration_hourly' },
+            'call_per_hour': {'$push': '$call_hourly'},
+            'duration_per_hour': {'$push': '$duration_hourly' },
             }
         },
         {'$project': {
-            #'switch_id': 1,
             'call_per_hour': 1,
             'duration_per_hour': 1,
             }
         },
-        #{'$unwind': '$call_per_hour'},
-        #{'$unwind': '$duration_per_hour'},
         {'$sort': {
             '_id': -1,
-            #'switch_id': 1,
             }
         }
     ]

@@ -1193,8 +1193,7 @@ def mail_report(request):
 
 
 def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
-    logging.debug('Map-reduce cdr hourly report')
-
+    """Get Hourly report for date"""
     logging.debug('Aggregate cdr hourly report')
     pipeline = pipeline_hourly_report(query_var)
     logging.debug('Before Aggregate')
@@ -1205,8 +1204,6 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
     total_record = {}
     if list_data:
         for doc in list_data['result']:
-            print doc#['call_per_hour']
-    """
            called_time = datetime(int(doc['_id'][0:4]),
                                   int(doc['_id'][4:6]),
                                   int(doc['_id'][6:8]))
@@ -1223,15 +1220,13 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
            if graph_view == 2:  # Min per hour
                for dict_in_list in doc['duration_per_hour']:
                    for key, value in dict_in_list.iteritems():
-                       day_hours[int(key)] = int(value)
+                       day_hours[int(key)] += float(value)/60
 
                total_record[str(called_time)[:10]] = day_hours
-   """
-    #print "####"
-    #print total_record
+
     logging.debug('After Aggregate')
 
-    #"""
+    """
     #Retrieve Map Reduce
     (map, reduce, finalfc, out) = mapreduce_cdr_hourly_report()
 
@@ -1276,8 +1271,7 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
 
     # remove mapreduce output from database (no longer required)
     settings.DBCON[out].drop()
-    #"""
-    print total_record
+    """
     variables = {
         'total_record': total_record,
     }
