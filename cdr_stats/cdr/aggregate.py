@@ -42,6 +42,38 @@ def pipeline_cdr_view_daily_report(query_var):
     return pipeline
 
 
+def pipeline_country_hourly_report(query_var):
+    """
+    To get monthly overview of calls and their duration
+
+    Attributes:
+
+        * ``query_var`` - filter variable for collection
+    """
+    pipeline = [
+        {'$match': query_var},
+        {'$group': {
+            '_id': {'country_id': '$metadata.country_id',
+                    'date': {'$substr': ['$metadata.date', 0, 10]}},
+            'call_per_hour': {'$push': '$call_hourly'},
+            'duration_per_hour': {'$push': '$duration_hourly' },
+            }
+        },
+        {'$project': {
+            'call_per_hour': 1,
+            'duration_per_hour': 1,
+            }
+        },
+        {'$sort': {
+            '_id.date': -1,
+            '_id.country_id': 1,
+            }
+        }
+    ]
+
+    return pipeline
+
+
 def pipeline_country_report(query_var):
     """
     To get all calls and their duration for all countries
@@ -168,3 +200,5 @@ def pipeline_hourly_report(query_var):
         }
     ]
     return pipeline
+
+

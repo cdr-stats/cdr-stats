@@ -51,7 +51,9 @@ from cdr.aggregate import pipeline_monthly_overview,\
                           pipeline_cdr_view_daily_report,\
                           pipeline_daily_overview,\
                           pipeline_country_report,\
-                          pipeline_hourly_report
+                          pipeline_hourly_report,\
+                          pipeline_country_hourly_report
+
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -1204,25 +1206,25 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
     total_record = {}
     if list_data:
         for doc in list_data['result']:
-           called_time = datetime(int(doc['_id'][0:4]),
-                                  int(doc['_id'][4:6]),
-                                  int(doc['_id'][6:8]))
-           day_hours = {}
-           for i in range(0, 24):
-               day_hours[i] = 0
-           if graph_view == 1:  # Calls per hour
-               for dict_in_list in doc['call_per_hour']:
-                   for key, value in dict_in_list.iteritems():
-                       day_hours[int(key)] += int(value)
+            called_time = datetime(int(doc['_id'][0:4]),
+                                   int(doc['_id'][4:6]),
+                                   int(doc['_id'][6:8]))
+            day_hours = {}
+            for i in range(0, 24):
+                day_hours[i] = 0
+            if graph_view == 1:  # Calls per hour
+                for dict_in_list in doc['call_per_hour']:
+                    for key, value in dict_in_list.iteritems():
+                        day_hours[int(key)] += int(value)
 
-               total_record[str(called_time)[:10]] = day_hours
+                total_record[str(called_time)[:10]] = day_hours
 
-           if graph_view == 2:  # Min per hour
-               for dict_in_list in doc['duration_per_hour']:
-                   for key, value in dict_in_list.iteritems():
-                       day_hours[int(key)] += float(value)/60
+            if graph_view == 2:  # Min per hour
+                for dict_in_list in doc['duration_per_hour']:
+                    for key, value in dict_in_list.iteritems():
+                        day_hours[int(key)] += float(value)/60
 
-               total_record[str(called_time)[:10]] = day_hours
+                total_record[str(called_time)[:10]] = day_hours
 
     logging.debug('After Aggregate')
 
@@ -1806,6 +1808,7 @@ def cdr_country_report(request):
             return HttpResponseRedirect('/?acc_code_error=true')
 
     # Country daily data
+    """
     (map, reduce, finalfc, out) = mapreduce_hourly_country_report()
     country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
 
@@ -1820,6 +1823,52 @@ def cdr_country_report(request):
                                        ('b_Month', -1),
                                        ('c_Day', -1),
                                        ('f_Country', -1)])
+    """
+
+    pipeline = pipeline_country_hourly_report(query_var)
+
+    logging.debug('Before Aggregate')
+    list_data = settings.DBCON.command('aggregate',
+                                       settings.MG_DAILY_ANALYTIC,
+                                       pipeline=pipeline)
+    total_record_final = []
+    if list_data:
+        for doc in list_data['result']:
+            #print str(doc['_id']['country_id']) + '==>' + \
+            #      str(doc['_id']['date']) + '==>' \
+            #      + str(doc['call_per_hour']) + '==>'+\
+            #      str(doc['duration_per_hour'])
+
+            a_Year = int(doc['_id']['date'][0:4])
+            b_Month = int(doc['_id']['date'][5:7])
+            c_Day = int(doc['_id']['date'][8:10])
+
+            day_hours = dict()
+            for hr in range(0, 24):
+                graph_day = datetime(a_Year, b_Month, c_Day, int(hr))
+                dt = int(1000 * time.mktime(graph_day.timetuple()))
+                day_hours[hr] = {
+                    'dt': dt,
+                    'calldate__count': 0,
+                    'duration__sum': 0,
+                    'country_id': doc['_id']['country_id']
+                }
+
+            for dict_in_list in doc['call_per_hour']:
+                for key, value in dict_in_list.iteritems():
+                    day_hours[int(key)]['calldate__count'] += int(value)
+
+            for dict_in_list in doc['duration_per_hour']:
+                for key, value in dict_in_list.iteritems():
+                    day_hours[int(key)]['duration__sum'] += int(value)
+
+                    #print day_hours[int(key)]
+                    total_record_final.append(day_hours[int(key)])
+
+        total_record_final = sorted(total_record_final, key=lambda k: k['dt'])
+
+
+    """
     total_record_final = []
     for i in country_calls:
         country_id = int(i['_id']['f_Country'])
@@ -1845,6 +1894,7 @@ def cdr_country_report(request):
                 })
 
     total_record_final = sorted(total_record_final, key=lambda k: k['dt'])
+    """
 
     # World report
     logging.debug('Aggregate world report')
