@@ -44,7 +44,6 @@ from frontend.forms import LoginForm
 from user_profile.models import UserProfile
 from cdr.mapreduce import mapreduce_default,\
                           mapreduce_cdr_mail_report,\
-                          mapreduce_hourly_country_report,\
                           mapreduce_hourly_overview,\
                           mapreduce_cdr_hourly_report
 from cdr.aggregate import pipeline_monthly_overview,\
@@ -1210,8 +1209,9 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
                                    int(doc['_id'][4:6]),
                                    int(doc['_id'][6:8]))
             day_hours = {}
-            for i in range(0, 24):
-                day_hours[i] = 0
+            for hr in range(0, 24):
+                day_hours[hr] = 0
+                
             if graph_view == 1:  # Calls per hour
                 for dict_in_list in doc['call_per_hour']:
                     for key, value in dict_in_list.iteritems():
@@ -1228,52 +1228,6 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
 
     logging.debug('After Aggregate')
 
-    """
-    #Retrieve Map Reduce
-    (map, reduce, finalfc, out) = mapreduce_cdr_hourly_report()
-
-    #Run Map Reduce
-    hourly_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-    calls_in_day = hourly_data.map_reduce(map,
-                                          reduce,
-                                          out,
-                                          query=query_var)
-    calls_in_day = calls_in_day.find().sort([('_id.a_Year', 1),
-                                             ('_id.b_Month', 1),
-                                             ('_id.c_Day', 1)])
-    total_analytic_final = []
-    for i in calls_in_day:
-        called_time = datetime(
-                            int(i['_id']['a_Year']),
-                            int(i['_id']['b_Month']),
-                            int(i['_id']['c_Day']))
-        for j in range(0, 24):
-            if graph_view == 1:  # Calls per hour
-                try:
-                    calldate__count = int(i['value']['calldate__count'][j])
-                except KeyError:
-                    calldate__count = 0
-                total_analytic_final.append((str(called_time)[:10],
-                                             j,
-                                             calldate__count,
-                                             ))
-            if graph_view == 2:  # Min per hour
-                duration__sum = int(i['value']['duration__sum'][j])
-                total_analytic_final.append((str(called_time)[:10],
-                                             j,
-                                             duration__sum))
-    total_record = {}
-    for i in total_analytic_final:
-        if (i[0] in total_record.keys()) \
-            and (i[1] not in total_record[i[0]].keys()):
-            total_record[i[0]][i[1]] = i[2]
-        elif i[0] not in total_record.keys():
-            total_record[i[0]] = {}
-            total_record[i[0]][i[1]] = i[2]
-
-    # remove mapreduce output from database (no longer required)
-    settings.DBCON[out].drop()
-    """
     variables = {
         'total_record': total_record,
     }
@@ -1808,23 +1762,6 @@ def cdr_country_report(request):
             return HttpResponseRedirect('/?acc_code_error=true')
 
     # Country daily data
-    """
-    (map, reduce, finalfc, out) = mapreduce_hourly_country_report()
-    country_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-
-    logging.debug('Map-reduce cdr country hourly analytic start')
-    country_calls = country_data.map_reduce(map,
-                                            reduce,
-                                            out,
-                                            query=query_var)
-    logging.debug('Map-reduce cdr country hourly analytic end')
-    country_calls = country_calls.find()\
-                                .sort([('a_Year', -1),
-                                       ('b_Month', -1),
-                                       ('c_Day', -1),
-                                       ('f_Country', -1)])
-    """
-
     pipeline = pipeline_country_hourly_report(query_var)
 
     logging.debug('Before Aggregate')
@@ -1862,39 +1799,9 @@ def cdr_country_report(request):
                 for key, value in dict_in_list.iteritems():
                     day_hours[int(key)]['duration__sum'] += int(value)
 
-                    #print day_hours[int(key)]
                     total_record_final.append(day_hours[int(key)])
 
         total_record_final = sorted(total_record_final, key=lambda k: k['dt'])
-
-
-    """
-    total_record_final = []
-    for i in country_calls:
-        country_id = int(i['_id']['f_Country'])
-        for hr in range(0, 24):
-            try:
-                call_count = int(i['value']['calldate__count'][hr])
-                duration_sum = int(i['value']['duration__sum'][hr])
-            except KeyError:
-                call_count = 0
-                duration_sum = 0
-
-            if call_count > 0:
-                a_Year = int(i['_id']['a_Year'])
-                b_Month = int(i['_id']['b_Month'])
-                c_Day = int(i['_id']['c_Day'])
-                graph_day = datetime(a_Year, b_Month, c_Day, int(hr))
-                dt = int(1000 * time.mktime(graph_day.timetuple()))
-                total_record_final.append({
-                    'dt': dt,
-                    'calldate__count': call_count,
-                    'duration__sum': duration_sum,
-                    'country_id': country_id
-                })
-
-    total_record_final = sorted(total_record_final, key=lambda k: k['dt'])
-    """
 
     # World report
     logging.debug('Aggregate world report')
