@@ -46,9 +46,10 @@ from cdr.mapreduce import mapreduce_default,\
                           mapreduce_cdr_mail_report,\
                           mapreduce_hourly_overview,\
                           mapreduce_cdr_hourly_report
-from cdr.aggregate import pipeline_monthly_overview,\
-                          pipeline_cdr_view_daily_report,\
+from cdr.aggregate import pipeline_cdr_view_daily_report,\
+                          pipeline_monthly_overview,\
                           pipeline_daily_overview,\
+                          pipeline_hourly_overview,\
                           pipeline_country_report,\
                           pipeline_hourly_report,\
                           pipeline_country_hourly_report
@@ -1211,7 +1212,7 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
             day_hours = {}
             for hr in range(0, 24):
                 day_hours[hr] = 0
-                
+
             if graph_view == 1:  # Calls per hour
                 for dict_in_list in doc['call_per_hour']:
                     for key, value in dict_in_list.iteritems():
@@ -1516,6 +1517,64 @@ def cdr_overview(request):
                                                  ('_id.b_Month', 1),
                                                  ('_id.c_Day', 1),
                                                  ('_id.f_Switch', 1)])
+
+        logging.debug('Aggregate cdr daily analytic')
+        pipeline = pipeline_hourly_overview(query_var)
+
+        logging.debug('Before Aggregate')
+        list_data = settings.DBCON.command('aggregate',
+                                           settings.MG_DAILY_ANALYTIC,
+                                           pipeline=pipeline)
+        logging.debug('After Aggregate')
+
+        total_hour_record = []
+        total_hour_data = []
+        hour_data = dict()
+        if list_data:
+            for doc in list_data['result']:
+                a_Year = int(doc['_id'][0:4])
+                b_Month = int(doc['_id'][4:6])
+                c_Day = int(doc['_id'][6:8])
+                day_hours = dict()
+                for hr in range(0, 24):
+                    graph_day = datetime(a_Year, b_Month, c_Day, hr)
+                    dt = int(1000 * time.mktime(graph_day.timetuple()))
+                    day_hours[hr] = {
+                        'dt': dt,
+                        'calldate__count': 0,
+                        'duration__sum': 0,
+                        'switch_id': int(doc['switch_id'])
+                    }
+
+                for dict_in_list in doc['call_per_hour']:
+                    for key, value in dict_in_list.iteritems():
+                        day_hours[int(key)]['calldate__count'] += int(value)
+
+                for dict_in_list in doc['duration_per_hour']:
+                    for key, value in dict_in_list.iteritems():
+                        day_hours[int(key)]['duration__sum'] += int(value)
+
+                        total_hour_record.append(day_hours[int(key)])
+
+                        # All switch hourly data
+                        temp_dt = day_hours[int(key)]['dt']
+                        temp_call_count = int(day_hours[int(key)]['calldate__count'])
+                        temp_duration_sum = day_hours[int(key)]['duration__sum']
+                        if dt in hour_data:
+                            hour_data[dt]['call_count'] += temp_call_count
+                            hour_data[dt]['duration_sum'] += temp_duration_sum
+                        else:
+                            hour_data[temp_dt] = {
+                                'call_count': temp_call_count,
+                               'duration_sum': temp_duration_sum,
+                            }
+
+        total_hour_record = sorted(total_hour_record, key=lambda k: k['dt'])
+
+        total_hour_data = hour_data.items()
+        total_hour_data = sorted(total_hour_data, key=lambda k: k[0])
+
+        """
         total_hour_record = []
         total_hour_data = []
         hour_data = dict()
@@ -1552,6 +1611,7 @@ def cdr_overview(request):
 
         # remove mapreduce output from database (no longer required)
         settings.DBCON[out].drop()
+        """
 
         # Collect daily data
         ####################
