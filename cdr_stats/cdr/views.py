@@ -98,16 +98,13 @@ def index(request):
     return render_to_response(template, data,
         context_instance=RequestContext(request))
 
-
+@login_required
 def notice_count(request):
     """Get count of logged in user's notifications"""
-    try:
-        notice_count = notification.Notice.objects\
-            .filter(recipient=request.user,
-                    unseen=1)\
-            .count()
-    except:
-        notice_count = ''
+    notice_count = notification.Notice.objects\
+        .filter(recipient=request.user,
+                unseen=1)\
+        .count()
     return notice_count
 
 
@@ -1521,19 +1518,22 @@ def cdr_overview(request):
                 b_Month = int(doc['_id'][4:6])
                 c_Day = int(doc['_id'][6:8])
                 day_hours = dict()
-                for hr in range(0, 24):
-                    graph_day = datetime(a_Year, b_Month, c_Day, hr)
-                    dt = int(1000 * time.mktime(graph_day.timetuple()))
-                    day_hours[hr] = {
-                        'dt': dt,
-                        'calldate__count': 0,
-                        'duration__sum': 0,
-                        'switch_id': int(doc['switch_id'])
-                    }
 
                 for dict_in_list in doc['call_per_hour']:
                     for key, value in dict_in_list.iteritems():
-                        day_hours[int(key)]['calldate__count'] += int(value)
+                        key = int(key)
+                        graph_day = datetime(a_Year, b_Month, c_Day, key)
+                        dt = int(1000 * time.mktime(graph_day.timetuple()))
+
+                        if key in day_hours:
+                            day_hours[key]['calldate__count'] += int(value)
+                        else:
+                            day_hours[key] = {
+                                'dt': dt,
+                                'calldate__count': int(value),
+                                'duration__sum': 0,
+                                'switch_id': int(doc['switch_id'])
+                            }
 
                 for dict_in_list in doc['duration_per_hour']:
                     for key, value in dict_in_list.iteritems():
