@@ -130,9 +130,9 @@ def mapreduce_cdr_mail_report():
 
     finalfc = mark_safe(u'''
         function(key, value) {
-                    if (parseInt(value.calldate__count) > 0)
-                        value.duration__avg = parseFloat( parseFloat(value.duration__sum) / parseInt(value.calldate__count) );
-                    return value;
+                if (parseInt(value.calldate__count) > 0)
+                    value.duration__avg = parseFloat( parseFloat(value.duration__sum) / parseInt(value.calldate__count) );
+                return value;
         }''')
 
     out = 'aggregate_result_cdr_mail_report'

@@ -235,3 +235,35 @@ def pipeline_hourly_report(query_var):
     return pipeline
 
 
+def pipeline_mail_report(query_var):
+    """
+    To get monthly overview of calls and their duration
+
+    Attributes:
+
+        * ``query_var`` - filter variable for collection
+    """
+    pipeline = [
+        {'$match': query_var},
+        {'$group': {
+            '_id': {'country_id': '$country_id',
+                    'hangup_cause_id': '$hangup_cause_id'
+            },
+            'duration_sum': {'$push': '$duration'},
+            'call_count': {'$sum': 1},
+            }
+        },
+        {'$project': {
+            'call_count': 1,
+            'duration_sum': 1,
+            #'avg_duration': {'$divide': ['$duration_sum',
+            #                             '$call_count']},
+            }
+        },
+        {'$sort': {
+            '_id.country_id': 1,
+            #'_id.hangup_cause_id': 1,
+            }
+        },
+    ]
+    return pipeline

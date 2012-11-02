@@ -50,7 +50,8 @@ from cdr.aggregate import pipeline_cdr_view_daily_report,\
                           pipeline_hourly_overview,\
                           pipeline_country_report,\
                           pipeline_hourly_report,\
-                          pipeline_country_hourly_report
+                          pipeline_country_hourly_report,\
+                          pipeline_mail_report
 
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
@@ -1034,6 +1035,22 @@ def get_cdr_mail_report():
                         yesterday.day, 23, 59, 59, 999999)
 
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
+
+
+    # Collect Hourly data
+    logging.debug('Aggregate cdr mail report')
+    pipeline = pipeline_mail_report(query_var)
+
+    logging.debug('Before Aggregate')
+    list_data = settings.DBCON.command('aggregate',
+                                       settings.MG_CDR_COMMON,
+                                       pipeline=pipeline)
+    logging.debug('After Aggregate')
+
+    if list_data:
+        for doc in list_data['result']:
+            print doc
+
     # result set
     final_result = \
         cdr_data.find(query_var).sort([('start_uepoch', -1)]).limit(10)
@@ -1051,6 +1068,7 @@ def get_cdr_mail_report():
                                          ('_id.d_Hour', -1),
                                          ('_id.f_Country', 1),
                                          ('value.hangup_cause_id', 1)])
+
     detail_data = []
     total_duration = 0
     total_calls = 0
