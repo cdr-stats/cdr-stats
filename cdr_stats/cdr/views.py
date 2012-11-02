@@ -44,7 +44,6 @@ from frontend.forms import LoginForm
 from user_profile.models import UserProfile
 from cdr.mapreduce import mapreduce_default,\
                           mapreduce_cdr_mail_report,\
-                          mapreduce_hourly_overview,\
                           mapreduce_cdr_hourly_report
 from cdr.aggregate import pipeline_cdr_view_daily_report,\
                           pipeline_monthly_overview,\
@@ -1394,7 +1393,6 @@ def cdr_overview(request):
         * ``template`` - frontend/cdr_overview.html.html
         * ``form`` - CdrOverviewForm
         * ``mongodb_data_set`` - MG_DAILY_ANALYTIC
-        * ``map_reduce`` - mapreduce_hourly_overview()
 
     **Logic Description**:
 
@@ -1505,20 +1503,7 @@ def cdr_overview(request):
     if query_var:
         logging.debug('Map-reduce cdr overview analytic')
         # Collect Hourly data
-        hourly_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-        (map, reduce, finalfc, out) = mapreduce_hourly_overview()
-        logging.debug('Before MapReduce')
-        calls_in_day = hourly_data.map_reduce(map,
-                                              reduce,
-                                              out,
-                                              query=query_var)
-        logging.debug('After MapReduce')
-        calls_in_day = calls_in_day.find().sort([('_id.a_Year', 1),
-                                                 ('_id.b_Month', 1),
-                                                 ('_id.c_Day', 1),
-                                                 ('_id.f_Switch', 1)])
-
-        logging.debug('Aggregate cdr daily analytic')
+        logging.debug('Aggregate cdr hourly overview')
         pipeline = pipeline_hourly_overview(query_var)
 
         logging.debug('Before Aggregate')
@@ -1554,64 +1539,27 @@ def cdr_overview(request):
                     for key, value in dict_in_list.iteritems():
                         day_hours[int(key)]['duration__sum'] += int(value)
 
-                        total_hour_record.append(day_hours[int(key)])
+                        # To avoid duplicate entry in total_hour_record
+                        if not day_hours[int(key)] in total_hour_record:
+                            total_hour_record.append(day_hours[int(key)])
 
-                        # All switch hourly data
-                        temp_dt = day_hours[int(key)]['dt']
-                        temp_call_count = int(day_hours[int(key)]['calldate__count'])
-                        temp_duration_sum = day_hours[int(key)]['duration__sum']
-                        if dt in hour_data:
-                            hour_data[dt]['call_count'] += temp_call_count
-                            hour_data[dt]['duration_sum'] += temp_duration_sum
-                        else:
-                            hour_data[temp_dt] = {
-                                'call_count': temp_call_count,
-                               'duration_sum': temp_duration_sum,
-                            }
+                            # All switches hourly data
+                            temp_dt = day_hours[int(key)]['dt']
+                            temp_call_count = int(day_hours[int(key)]['calldate__count'])
+                            temp_duration_sum = day_hours[int(key)]['duration__sum']
+                            if temp_dt in hour_data:
+                                hour_data[temp_dt]['call_count'] += temp_call_count
+                                hour_data[temp_dt]['duration_sum'] += temp_duration_sum
+                            else:
+                                hour_data[temp_dt] = {
+                                    'call_count': temp_call_count,
+                                    'duration_sum': temp_duration_sum
+                                }
 
         total_hour_record = sorted(total_hour_record, key=lambda k: k['dt'])
 
         total_hour_data = hour_data.items()
         total_hour_data = sorted(total_hour_data, key=lambda k: k[0])
-
-        """
-        total_hour_record = []
-        total_hour_data = []
-        hour_data = dict()
-        for i in calls_in_day:
-            for h in range(0, 24):
-                try:
-                    calldate__count = int(i['value']['calldate__count'][h])
-                    duration__sum = int(i['value']['duration__sum'][h])
-                    if calldate__count != 0:
-                        graph_day = datetime(int(i['_id']['a_Year']),
-                                             int(i['_id']['b_Month']),
-                                             int(i['_id']['c_Day']), h)
-                        dt = int(1000 * time.mktime(graph_day.timetuple()))
-                        total_hour_record.append({
-                            'dt': dt,
-                            'calldate__count': calldate__count,
-                            'duration__sum': duration__sum,
-                            'switch_id': int(i['_id']['f_Switch'])
-                        })
-
-                        if dt in hour_data:
-                            hour_data[dt]['call_count'] += calldate__count
-                            hour_data[dt]['duration_sum'] += duration__sum
-                        else:
-                            hour_data[dt] = {
-                                'call_count': calldate__count,
-                                'duration_sum': duration__sum,
-                            }
-                except:
-                    pass
-
-        total_hour_data = hour_data.items()
-        total_hour_data = sorted(total_hour_data, key=lambda k: k[0])
-
-        # remove mapreduce output from database (no longer required)
-        settings.DBCON[out].drop()
-        """
 
         # Collect daily data
         ####################

@@ -224,38 +224,3 @@ def mapreduce_cdr_hourly_report():
     out = 'aggregate_cdr_hourly_report'
     return (map, reduce, False, out)
 
-
-def mapreduce_hourly_overview():
-    """
-    To get the overview analytic of cdr
-
-       * Total calls per year-month-day-switch
-       * Total call duration per year-month-day-switch
-
-    Attributes:
-
-        * ``map`` - Grouping perform on year, month, day & switch
-        * ``reduce`` - Calculate call count, sum of call duration based on map
-
-    Result Collection: ``aggregate_hourly_overview``
-    """
-    (map, reduce, finalfc, out) = mapreduce_cdr_hourly_report()
-
-    map = mark_safe(u'''
-        function(){
-            emit(
-                {
-                    a_Year: this.metadata.date.getFullYear(),
-                    b_Month: this.metadata.date.getMonth() + 1,
-                    c_Day: this.metadata.date.getDate(),
-                    f_Switch: this.metadata.switch_id,
-                },
-                {
-                    calldate__count: this.call_hourly,
-                    duration__sum: this.duration_hourly,
-                }
-            )
-          }''')
-
-    out = 'aggregate_hourly_overview'
-    return (map, reduce, False, out)
