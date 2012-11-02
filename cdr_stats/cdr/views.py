@@ -43,8 +43,7 @@ from cdr.forms import CdrSearchForm, \
 from frontend.forms import LoginForm
 from user_profile.models import UserProfile
 from cdr.mapreduce import mapreduce_default,\
-                          mapreduce_cdr_mail_report,\
-                          mapreduce_cdr_hourly_report
+                          mapreduce_cdr_mail_report
 from cdr.aggregate import pipeline_cdr_view_daily_report,\
                           pipeline_monthly_overview,\
                           pipeline_daily_overview,\
