@@ -110,7 +110,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         """Test Function to check customer index page"""
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'cdr/index.html')
+        self.assertTemplateUsed(response, 'frontend/index.html')
 
         request = self.factory.get('/')
         request.user = self.user
@@ -121,7 +121,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
     def test_dashboard(self):
         """Test Function to check customer dashboard"""
         response = self.client.get('/dashboard/')
-        self.assertTemplateUsed(response, 'cdr/cdr_dashboard.html')
+        self.assertTemplateUsed(response, 'frontend/cdr_dashboard.html')
         self.assertTrue(response.context['form'], SwitchForm())
         self.assertEqual(response.status_code, 200)
 
@@ -148,7 +148,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         """Test Function to check cdr_view"""
         response = self.client.get('/cdr_view/')
         self.assertTrue(response.context['form'], CdrSearchForm())
-        self.assertTemplateUsed(response, 'cdr/cdr_view.html')
+        self.assertTemplateUsed(response, 'frontend/cdr_view.html')
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.get('/cdr_view/')
@@ -192,7 +192,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         """Test Function to check cdr_overview"""
         response = self.client.get('/cdr_overview/')
         self.assertTrue(response.context['form'], CdrOverviewForm())
-        self.assertTemplateUsed(response, 'cdr/cdr_overview.html')
+        self.assertTemplateUsed(response, 'frontend/cdr_overview.html')
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.get('/cdr_overview/')
@@ -218,7 +218,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         """Test Function to check cdr hourly report"""
         response = self.client.get('/hourly_report/')
         self.assertTrue(response.context['form'], CompareCallSearchForm())
-        self.assertTemplateUsed(response, 'cdr/cdr_report_by_hour.html')
+        self.assertTemplateUsed(response, 'frontend/cdr_report_by_hour.html')
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.get('/hourly_report/')
@@ -322,7 +322,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         """Test Function to check mail report"""
         response = self.client.get('/mail_report/')
         self.assertTrue(response.context['form'], EmailReportForm(self.user))
-        self.assertTemplateUsed(response, 'cdr/cdr_mail_report.html')
+        self.assertTemplateUsed(response, 'frontend/cdr_mail_report.html')
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.get('/mail_report/')

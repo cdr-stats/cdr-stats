@@ -109,7 +109,7 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
                 {'country': 198,
                  'blacklist_country': [],
                  'select': [34]}, follow=True)
-        self.failUnlessEqual(response.status_code, 302)
+        self.failUnlessEqual(response.status_code, 200)
 
         response = self.client.post(
             '/admin/cdr_alert/blacklist/blacklist_by_country/',

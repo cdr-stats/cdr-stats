@@ -82,7 +82,7 @@ class FrontendCustomerView(BaseAuthenticatedClient):
     def test_pleaselog(self):
         """Test Function to check pleaselog view"""
         response = self.client.get('/pleaselog/')
-        self.assertTemplateUsed(response, 'cdr/index.html')
+        self.assertTemplateUsed(response, 'frontend/index.html')
         self.assertEqual(response.status_code, 200)
 
     def test_index(self):
@@ -90,7 +90,7 @@ class FrontendCustomerView(BaseAuthenticatedClient):
         response = self.client.get('/')
         self.assertTrue(response.context['loginform'], LoginForm())
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'cdr/index.html')
+        self.assertTemplateUsed(response, 'frontend/index.html')
         response = self.client.post('/login/',
                                     {'username': 'admin',
                                      'password': 'admin'})
