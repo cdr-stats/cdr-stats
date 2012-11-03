@@ -70,7 +70,7 @@ class UserProfileCustomerView(BaseAuthenticatedClient):
                         PasswordChangeForm(self.user))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response,
-            'cdr/registration/user_detail_change.html')
+            'frontend/registration/user_detail_change.html')
 
         request = self.factory.get('/user_detail_change/')
         request.user = self.user

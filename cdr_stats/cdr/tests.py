@@ -247,7 +247,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         """Test Function to check concurrent calls"""
         response = self.client.get('/cdr_concurrent_calls/')
         self.assertTrue(response.context['form'], ConcurrentCallForm())
-        self.assertTemplateUsed(response, 'cdr/cdr_graph_concurrent_calls.html')
+        self.assertTemplateUsed(response, 'frontend/cdr_graph_concurrent_calls.html')
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.get('/cdr_concurrent_calls/')
@@ -272,7 +272,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         """Test Function to check realtime calls"""
         response = self.client.get('/cdr_realtime/')
         self.assertTrue(response.context['form'], SwitchForm())
-        self.assertTemplateUsed(response, 'cdr/cdr_graph_realtime.html')
+        self.assertTemplateUsed(response, 'frontend/cdr_graph_realtime.html')
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.get('/cdr_realtime/')
@@ -296,7 +296,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         """Test Function to check country report"""
         response = self.client.get('/country_report/')
         self.assertTrue(response.context['form'], CountryReportForm())
-        self.assertTemplateUsed(response, 'cdr/cdr_country_report.html')
+        self.assertTemplateUsed(response, 'frontend/cdr_country_report.html')
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.get('/country_report/')
@@ -334,7 +334,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
     def test_cdr_world_map(self):
         """Test Function to check world map"""
         response = self.client.get('/world_map/')
-        self.assertTemplateUsed(response, 'cdr/world_map.html')
+        self.assertTemplateUsed(response, 'frontend/world_map.html')
         self.assertTrue(response.context['form'], WorldForm())
         self.assertEqual(response.status_code, 200)
 
