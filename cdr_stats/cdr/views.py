@@ -558,24 +558,24 @@ def cdr_view(request):
         request.session['session_cdr_view_daily_data'] = cdr_view_daily_data
 
     template_data = {
-            'module': current_view(request),
-            'rows': rows,
-            'form': form,
-            'PAGE_SIZE': PAGE_SIZE,
-            'total_data': cdr_view_daily_data['total_data'],
-            'total_duration': cdr_view_daily_data['total_duration'],
-            'total_calls': cdr_view_daily_data['total_calls'],
-            'total_avg_duration': cdr_view_daily_data['total_avg_duration'],
-            'max_duration': cdr_view_daily_data['max_duration'],
-            'user': request.user,
-            'search_tag': search_tag,
-            'col_name_with_order': col_name_with_order,
-            'menu': menu,
-            'start_date': start_date,
-            'end_date': end_date,
-            'action': action,
-            'result': int(result),
-            'notice_count': notice_count(request),
+        'module': current_view(request),
+        'rows': rows,
+        'form': form,
+        'PAGE_SIZE': PAGE_SIZE,
+        'total_data': cdr_view_daily_data['total_data'],
+        'total_duration': cdr_view_daily_data['total_duration'],
+        'total_calls': cdr_view_daily_data['total_calls'],
+        'total_avg_duration': cdr_view_daily_data['total_avg_duration'],
+        'max_duration': cdr_view_daily_data['max_duration'],
+        'user': request.user,
+        'search_tag': search_tag,
+        'col_name_with_order': col_name_with_order,
+        'menu': menu,
+        'start_date': start_date,
+        'end_date': end_date,
+        'action': action,
+        'result': int(result),
+        'notice_count': notice_count(request),
         }
     logging.debug('CDR View End')
     return render_to_response(template_name, template_data,
@@ -598,13 +598,13 @@ def cdr_export_to_csv(request):
 
     query_var = request.session['query_var']
     final_result = cdr_data.find(query_var, {"uuid": 0,
-                                              "answer_uepoch": 0,
-                                              "end_uepoch": 0,
-                                              "mduration": 0,
-                                              "billmsec": 0,
-                                              "read_codec": 0,
-                                              "write_codec": 0,
-                                              "remote_media_ip": 0
+                                             "answer_uepoch": 0,
+                                             "end_uepoch": 0,
+                                             "mduration": 0,
+                                             "billmsec": 0,
+                                             "read_codec": 0,
+                                             "write_codec": 0,
+                                             "remote_media_ip": 0
                                             })
 
     writer = csv.writer(response, dialect=csv.excel_tab)
@@ -862,18 +862,19 @@ def cdr_dashboard(request):
         ACD = int_convert_to_minute(math.floor(total_duration / total_calls))
 
     logging.debug('CDR dashboard view end')
-    variables = {'module': current_view(request),
-                 'total_calls': total_calls,
-                 'total_duration': int_convert_to_minute(total_duration),
-                 'ACT': ACT,
-                 'ACD': ACD,
-                 'total_record': final_record,
-                 'hangup_analytic': hangup_analytic,
-                 'country_analytic': country_analytic,
-                 'form': form,
-                 'search_tag': search_tag,
-                 'notice_count': notice_count(request),
-                }
+    variables = {
+        'module': current_view(request),
+        'total_calls': total_calls,
+        'total_duration': int_convert_to_minute(total_duration),
+        'ACT': ACT,
+        'ACD': ACD,
+        'total_record': final_record,
+        'hangup_analytic': hangup_analytic,
+        'country_analytic': country_analytic,
+        'form': form,
+        'search_tag': search_tag,
+        'notice_count': notice_count(request),
+    }
 
     return render_to_response('frontend/cdr_dashboard.html', variables,
            context_instance=RequestContext(request))
@@ -941,12 +942,13 @@ def cdr_concurrent_calls(request):
                            'switch_id': int(d['_id']['f_Switch'])})
 
         logging.debug('CDR concurrent view end')
-        variables = {'module': current_view(request),
-                     'form': form,
-                     'final_data': final_data,
-                     'start_date': start_date,
-                     'notice_count': notice_count(request),
-                    }
+        variables = {
+            'module': current_view(request),
+            'form': form,
+            'final_data': final_data,
+            'start_date': start_date,
+            'notice_count': notice_count(request),
+        }
 
     return render_to_response('frontend/cdr_graph_concurrent_calls.html', variables,
            context_instance=RequestContext(request))
@@ -1003,19 +1005,20 @@ def cdr_realtime(request):
 
         logging.debug('Realtime view end')
         list_switch = Switch.objects.all()
-        variables = {'module': current_view(request),
-                     'form': form,
-                     'final_data': final_data,
-                     'list_switch': list_switch,
-                     'user_id': request.user.id,
-                     'colorgraph1': '180, 0, 0',
-                     'colorgraph2': '0, 180, 0',
-                     'colorgraph3': '0, 0, 180',
-                     'realtime_graph_maxcall': settings.REALTIME_Y_AXIS_LIMIT,
-                     'socketio_host': settings.SOCKETIO_HOST,
-                     'socketio_port': settings.SOCKETIO_PORT,
-                     'notice_count': notice_count(request),
-                    }
+        variables = {
+            'module': current_view(request),
+            'form': form,
+            'final_data': final_data,
+            'list_switch': list_switch,
+            'user_id': request.user.id,
+            'colorgraph1': '180, 0, 0',
+            'colorgraph2': '0, 180, 0',
+            'colorgraph3': '0, 0, 180',
+            'realtime_graph_maxcall': settings.REALTIME_Y_AXIS_LIMIT,
+            'socketio_host': settings.SOCKETIO_HOST,
+            'socketio_port': settings.SOCKETIO_PORT,
+            'notice_count': notice_count(request),
+        }
 
     return render_to_response('frontend/cdr_graph_realtime.html', variables,
            context_instance=RequestContext(request))
@@ -1170,18 +1173,19 @@ def mail_report(request):
 
     mail_data = get_cdr_mail_report()
     logging.debug('CDR mail report view end')
-    data = {'module': current_view(request),
-            'yesterday_date': mail_data['yesterday_date'],
-            'rows': mail_data['rows'],
-            'form': form,
-            'total_duration': mail_data['total_duration'],
-            'total_calls': mail_data['total_calls'],
-            'ACT': mail_data['ACT'],
-            'ACD': mail_data['ACD'],
-            'country_analytic_array': mail_data['country_analytic_array'],
-            'hangup_analytic_array': mail_data['hangup_analytic_array'],
-            'msg': msg,
-            'notice_count': notice_count(request),
+    data = {
+        'module': current_view(request),
+        'yesterday_date': mail_data['yesterday_date'],
+        'rows': mail_data['rows'],
+        'form': form,
+        'total_duration': mail_data['total_duration'],
+        'total_calls': mail_data['total_calls'],
+        'ACT': mail_data['ACT'],
+        'ACD': mail_data['ACD'],
+        'country_analytic_array': mail_data['country_analytic_array'],
+        'hangup_analytic_array': mail_data['hangup_analytic_array'],
+        'msg': msg,
+        'notice_count': notice_count(request),
     }
     return render_to_response(template, data,
            context_instance=RequestContext(request))
@@ -1309,16 +1313,17 @@ def cdr_report_by_hour(request):
             # form is not valid
             logging.debug('Error : CDR hourly search form')
             total_record = []
-            variables = {'module': current_view(request),
-                         'form': form,
-                         'result': 'min',
-                         'graph_view': graph_view,
-                         'search_tag': search_tag,
-                         'from_date': from_date,
-                         'comp_days': comp_days,
-                         'total_record': total_record,
-                         'notice_count': notice_count(request),
-                         }
+            variables = {
+                'module': current_view(request),
+                'form': form,
+                'result': 'min',
+                'graph_view': graph_view,
+                'search_tag': search_tag,
+                'from_date': from_date,
+                'comp_days': comp_days,
+                'total_record': total_record,
+                'notice_count': notice_count(request),
+            }
 
             return render_to_response(template_name, variables,
                             context_instance=RequestContext(request))
@@ -1362,16 +1367,17 @@ def cdr_report_by_hour(request):
             total_record.append((result_data['total_record']))
 
         logging.debug('CDR hourly view end')
-        variables = {'module': current_view(request),
-                     'form': form,
-                     'result': 'min',
-                     'graph_view': graph_view,
-                     'search_tag': search_tag,
-                     'from_date': from_date,
-                     'comp_days': comp_days,
-                     'total_record': total_record,
-                     'notice_count': notice_count(request),
-                     }
+        variables = {
+            'module': current_view(request),
+            'form': form,
+            'result': 'min',
+            'graph_view': graph_view,
+            'search_tag': search_tag,
+            'from_date': from_date,
+            'comp_days': comp_days,
+            'total_record': total_record,
+            'notice_count': notice_count(request),
+        }
 
         return render_to_response(template_name, variables,
                                 context_instance=RequestContext(request))
@@ -1451,20 +1457,21 @@ def cdr_overview(request):
             end_date = datetime(tday.year, tday.month,
                 tday.day, 23, 59, 59, 999999)
 
-            variables = {'module': current_view(request),
-                         'form': form,
-                         'search_tag': search_tag,
-                         'total_hour_record': total_hour_record,
-                         'total_hour_data': total_hour_data,
-                         'total_day_record': total_day_record,
-                         'total_day_data': total_day_data,
-                         'total_month_record': total_month_record,
-                         'total_month_data': total_month_data,
-                         'start_date': start_date,
-                         'end_date': end_date,
-                         'TOTAL_GRAPH_COLOR': settings.TOTAL_GRAPH_COLOR,
-                         'notice_count': notice_count(request),
-                         }
+            variables = {
+                'module': current_view(request),
+                'form': form,
+                'search_tag': search_tag,
+                'total_hour_record': total_hour_record,
+                'total_hour_data': total_hour_data,
+                'total_day_record': total_day_record,
+                'total_day_data': total_day_data,
+                'total_month_record': total_month_record,
+                'total_month_data': total_month_data,
+                'start_date': start_date,
+                'end_date': end_date,
+                'TOTAL_GRAPH_COLOR': settings.TOTAL_GRAPH_COLOR,
+                'notice_count': notice_count(request),
+            }
 
             return render_to_response(
                 template_name, variables,
@@ -1646,20 +1653,21 @@ def cdr_overview(request):
             total_month_data = sorted(total_month_data, key=lambda k: k[0])
 
         logging.debug('CDR daily view end')
-        variables = {'module': current_view(request),
-                     'form': form,
-                     'search_tag': search_tag,
-                     'total_hour_record': total_hour_record,
-                     'total_hour_data': total_hour_data,
-                     'total_day_record': total_day_record,
-                     'total_day_data': total_day_data,
-                     'total_month_record': total_month_record,
-                     'total_month_data': total_month_data,
-                     'start_date': start_date,
-                     'end_date': end_date,
-                     'TOTAL_GRAPH_COLOR': settings.TOTAL_GRAPH_COLOR,
-                     'notice_count': notice_count(request),
-                     }
+        variables = {
+            'module': current_view(request),
+            'form': form,
+            'search_tag': search_tag,
+            'total_hour_record': total_hour_record,
+            'total_hour_data': total_hour_data,
+            'total_day_record': total_day_record,
+            'total_day_data': total_day_data,
+            'total_month_record': total_month_record,
+            'total_month_data': total_month_data,
+            'start_date': start_date,
+            'end_date': end_date,
+            'TOTAL_GRAPH_COLOR': settings.TOTAL_GRAPH_COLOR,
+            'notice_count': notice_count(request),
+        }
 
         return render_to_response(
             template_name,
@@ -1744,16 +1752,17 @@ def cdr_country_report(request):
         else:
             country_final = country_analytic_array = []
             logging.debug('Error : CDR country report form')
-            variables = {'module': current_view(request),
-                         'total_calls': total_calls,
-                         'total_duration': total_duration,
-                         'total_record': total_record_final,
-                         'country_final': country_final,
-                         'top10_country': country_analytic_array[0:11],
-                         'form': form,
-                         'search_tag': search_tag,
-                         'NUM_COUNTRY': settings.NUM_COUNTRY,
-                         }
+            variables = {
+                'module': current_view(request),
+                'total_calls': total_calls,
+                'total_duration': total_duration,
+                'total_record': total_record_final,
+                'country_final': country_final,
+                'top10_country': country_analytic_array[0:11],
+                'form': form,
+                'search_tag': search_tag,
+                'NUM_COUNTRY': settings.NUM_COUNTRY,
+            }
 
             return render_to_response(template_name, variables,
                 context_instance=RequestContext(request))
@@ -1776,11 +1785,6 @@ def cdr_country_report(request):
     total_record_final = []
     if list_data:
         for doc in list_data['result']:
-            #print str(doc['_id']['country_id']) + '==>' + \
-            #      str(doc['_id']['date']) + '==>' \
-            #      + str(doc['call_per_hour']) + '==>'+\
-            #      str(doc['duration_per_hour'])
-
             a_Year = int(doc['_id']['date'][0:4])
             b_Month = int(doc['_id']['date'][5:7])
             c_Day = int(doc['_id']['date'][8:10])
@@ -1828,6 +1832,7 @@ def cdr_country_report(request):
                  int(doc['call_per_day']),
                  int(doc['duration_per_day']),
                  int(doc['_id'])))
+
             total_calls += int(doc['call_per_day'])
             total_duration += int(doc['duration_per_day'])
 
@@ -1849,23 +1854,20 @@ def cdr_country_report(request):
                          other_country_call_count,
                          other_country_call_duration))
 
-    # remove mapreduce output & country analytic from database
-    settings.DBCON[out].drop()
-
     logging.debug('CDR country report view end')
-    variables = {'module': current_view(request),
-                 'total_calls': total_calls,
-                 'total_duration': total_duration,
-                 'total_record': total_record_final,
-                 'country_final': country_final,
-                 'top10_country':\
-                     country_analytic_array[0:settings.NUM_COUNTRY],
-                 'form': form,
-                 'search_tag': search_tag,
-                 'NUM_COUNTRY': settings.NUM_COUNTRY,
-                 'notice_count': notice_count(request),
-                 }
-
+    variables = {
+        'module': current_view(request),
+        'total_calls': total_calls,
+        'total_duration': total_duration,
+        'total_record': total_record_final,
+        'country_final': country_final,
+        'top10_country':\
+            country_analytic_array[0:settings.NUM_COUNTRY],
+        'form': form,
+        'search_tag': search_tag,
+        'NUM_COUNTRY': settings.NUM_COUNTRY,
+        'notice_count': notice_count(request),
+    }
     return render_to_response(template_name, variables,
         context_instance=RequestContext(request))
 
@@ -1967,15 +1969,15 @@ def world_map_view(request):
 
     logging.debug('CDR world report view end')
 
-    variables = {'module': current_view(request),
-                 'form': form,
-                 'search_tag': search_tag,
-                 'start_date': start_date,
-                 'end_date': end_date,
-                 'world_analytic_array': world_analytic_array,
-                 'action': action,
-                 'notice_count': notice_count(request),
-                 }
-
+    variables = {
+        'module': current_view(request),
+        'form': form,
+        'search_tag': search_tag,
+        'start_date': start_date,
+        'end_date': end_date,
+        'world_analytic_array': world_analytic_array,
+        'action': action,
+        'notice_count': notice_count(request),
+    }
     return render_to_response(template_name, variables,
         context_instance=RequestContext(request))
