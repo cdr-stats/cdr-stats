@@ -42,8 +42,6 @@ from cdr.forms import CdrSearchForm, \
                         EmailReportForm
 from frontend.forms import LoginForm
 from user_profile.models import UserProfile
-from cdr.mapreduce import mapreduce_default,\
-                          mapreduce_cdr_mail_report
 from cdr.aggregate import pipeline_cdr_view_daily_report,\
                           pipeline_monthly_overview,\
                           pipeline_daily_overview,\
@@ -64,7 +62,6 @@ import logging
 
 cdr_data = settings.DBCON[settings.MG_CDR_COMMON]
 #db.cdr.ensureIndex({"variables.answer_stamp":1}, {background:true});
-(map, reduce, finalfc, out) = mapreduce_default()
 
 
 def index(request):
@@ -1036,8 +1033,11 @@ def get_cdr_mail_report():
 
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
+    # result set
+    final_result =\
+        cdr_data.find(query_var).sort([('start_uepoch', -1)]).limit(10)
 
-    # Collect Hourly data
+    # Collect analytics
     logging.debug('Aggregate cdr mail report')
     pipeline = pipeline_mail_report(query_var)
 
@@ -1047,61 +1047,44 @@ def get_cdr_mail_report():
                                        pipeline=pipeline)
     logging.debug('After Aggregate')
 
-    if list_data:
-        for doc in list_data['result']:
-            print doc
-
-    # result set
-    final_result = \
-        cdr_data.find(query_var).sort([('start_uepoch', -1)]).limit(10)
-
-    #Retrieve Map Reduce
-    (map, reduce, finalfc, out) = mapreduce_cdr_mail_report()
-
-    total_data = cdr_data.map_reduce(map,
-                                     reduce,
-                                     out,
-                                     query=query_var,
-                                     finalize=finalfc)
-
-    total_data = total_data.find().sort([('_id.c_Day', -1),
-                                         ('_id.d_Hour', -1),
-                                         ('_id.f_Country', 1),
-                                         ('value.hangup_cause_id', 1)])
-
     detail_data = []
     total_duration = 0
     total_calls = 0
     country_analytic = dict()
     hangup_analytic = dict()
-    for doc in total_data:
-        detail_data.append({
-                'duration__sum': int(doc['value']['duration__sum']),
-                'calldate__count': int(doc['value']['calldate__count']),
-                'duration__avg': doc['value']['duration__avg'],
-            })
+    if list_data:
+        for doc in list_data['result']:
+            duration_sum = 0
+            if doc['duration_sum']:
+                duration_sum = sum([ int(x) for x in doc['duration_sum'] ])
 
-        total_duration += int(doc['value']['duration__sum'])
-        total_calls += int(doc['value']['calldate__count'])
+            detail_data.append({
+                'duration__sum': duration_sum,
+                'calldate__count': int(doc['call_count']),
+                'duration__avg': duration_sum/int(doc['call_count']),
+                })
 
-        # created cdr_hangup_analytic
-        hangup_cause_id = int(doc['value']['hangup_cause_id'])
-        if hangup_cause_id in hangup_analytic:
-            hangup_analytic[hangup_cause_id] += 1
-        else:
-            hangup_analytic[hangup_cause_id] = 1
+            total_duration += duration_sum
+            total_calls += int(doc['call_count'])
 
-        country_id = int(doc['_id']['f_Country'])
-        if country_id in country_analytic:
-            country_analytic[country_id]['count_call'] +=\
-                int(doc['value']['calldate__count'])
-            country_analytic[country_id]['duration_sum'] +=\
-                int(doc['value']['duration__sum'])
-        else:
-            country_analytic[country_id] = {
-                'count_call': int(doc['value']['calldate__count']),
-                'duration_sum': int(doc['value']['duration__sum'])
-            }
+            # created cdr_hangup_analytic
+            hangup_cause_id = int(doc['_id']['hangup_cause_id'])
+            if hangup_cause_id in hangup_analytic:
+                hangup_analytic[hangup_cause_id] += 1
+            else:
+                hangup_analytic[hangup_cause_id] = 1
+
+            country_id = int(doc['_id']['country_id'])
+            if country_id in country_analytic:
+                country_analytic[country_id]['count_call'] +=\
+                    int(doc['call_count'])
+                country_analytic[country_id]['duration_sum'] +=\
+                    int(duration_sum)
+            else:
+                country_analytic[country_id] = {
+                    'count_call': int(doc['call_count']),
+                    'duration_sum': int(duration_sum)
+                }
 
     #Calculate the Average Time of Call
     ACT = math.floor(total_calls / 24)
@@ -1135,19 +1118,16 @@ def get_cdr_mail_report():
                 (get_hangupcause_name(int(i[0])),
                 "{0:.0f}%".format((float(i[1]) / float(total_hangup)) * 100)))
 
-    # remove mapreduce output from database (no longer required)
-    settings.DBCON[out].drop()
-
     mail_data = {
-                'yesterday_date': start_date,
-                'rows': final_result,
-                'total_duration': total_duration,
-                'total_calls': total_calls,
-                'ACT': ACT,
-                'ACD': ACD,
-                'country_analytic_array': country_analytic_array,
-                'hangup_analytic_array': hangup_analytic_array,
-                }
+        'yesterday_date': start_date,
+        'rows': final_result,
+        'total_duration': total_duration,
+        'total_calls': total_calls,
+        'ACT': ACT,
+        'ACD': ACD,
+        'country_analytic_array': country_analytic_array,
+        'hangup_analytic_array': hangup_analytic_array,
+    }
     return mail_data
 
 
