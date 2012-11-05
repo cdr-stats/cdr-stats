@@ -15,44 +15,8 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from country_dialcode.models import Country
-
-
-PERIOD = (
-    (1, _('Day')),
-    (2, _('Week')),
-    (3, _('Month')),
-)
-
-STATUS = (
-    (1, _('Active')),
-    (2, _('Inactive')),
-)
-
-ALARM_TYPE = (
-    (1, _('ALOC (Average Length of Call)')),
-    (2, _('ASR (Answer Seize Ratio)')),
-)
-
-ALERT_CONDITION = (
-    (1, _('Is less than')),
-    (2, _('Is greater than')),
-    (3, _('Decrease by more than')),
-    (4, _('Increase by more than')),
-    (5, _('Percentage decrease by more than')),
-    (6, _('Percentage increase by more than')),
-)
-
-#This condition only apply if PERIOD is "Day",
-#otherwise we will compare to previous week or previous month
-ALERT_CONDITION_ADD_ON = (
-    (1, _('Same day')),
-    (2, _('Same day in the previous week')),
-)
-
-ALARM_REPROT_STATUS = (
-    (1, _('No alarm sent')),
-    (2, _('Alarm Sent')),
-)
+from cdr_alert.constants import PERIOD, STATUS, ALARM_TYPE, \
+    ALERT_CONDITION, ALERT_CONDITION_ADD_ON, ALARM_REPROT_STATUS
 
 
 class AlertRemovePrefix(models.Model):
@@ -101,23 +65,23 @@ class Alarm(models.Model):
     **Name of DB table**: alert
     """
     name = models.CharField(max_length=100, verbose_name=_('Name'))
-    period = models.PositiveIntegerField(choices=PERIOD, default=1,
+    period = models.PositiveIntegerField(choices=list(PERIOD), default=1,
                                 verbose_name=_('Period'),
                                 help_text=_('Interval to apply alarm'))
-    type = models.PositiveIntegerField(choices=ALARM_TYPE, default=1,
+    type = models.PositiveIntegerField(choices=list(ALARM_TYPE), default=1,
                                 verbose_name=_('Type'),
                                 help_text=_('ALOC (average length of call) ; ASR (answer seize ratio) ; CIC (Consecutive Incomplete Calls) '))
     alert_condition = models.PositiveIntegerField(
-                                choices=ALERT_CONDITION, default=1,
+                                choices=list(ALERT_CONDITION), default=1,
                                 verbose_name=_('Condition'))
     alert_value = models.DecimalField(verbose_name=_('Value'), max_digits=5,
                                 decimal_places=2, blank=True, null=True,
                                 help_text=_('Input the value for the alert'))
     alert_condition_add_on = models.PositiveIntegerField(
-                                    choices=ALERT_CONDITION_ADD_ON,
+                                    choices=list(ALERT_CONDITION_ADD_ON),
                                     default=1)
 
-    status = models.PositiveIntegerField(choices=STATUS, default=1,
+    status = models.PositiveIntegerField(choices=list(STATUS), default=1,
                                          verbose_name=_('Status'))
 
     email_to_send_alarm = models.EmailField(max_length=100,
@@ -151,7 +115,7 @@ class AlarmReport(models.Model):
     calculatedvalue = models.DecimalField(verbose_name=_('Calculated value'),
                                           max_digits=10, decimal_places=3,
                                           blank=True, null=True)
-    status = models.PositiveIntegerField(choices=ALARM_REPROT_STATUS,
+    status = models.PositiveIntegerField(choices=list(ALARM_REPROT_STATUS),
                         default=1, verbose_name=_('Status'))
 
     daterun = models.DateTimeField(auto_now=True, verbose_name=_('Date'))

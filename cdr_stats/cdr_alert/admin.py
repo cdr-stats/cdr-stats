@@ -200,7 +200,7 @@ class WhitelistAdmin(admin.ModelAdmin):
             'model_name': opts.object_name.lower(),
             'app_label': _('cdr_alert'),
             'prefix_list': prefix_list,
-            })
+        })
 
         template_name = 'admin/cdr_alert/whitelist/whitelist_by_country.html'
         return render_to_response(template_name, context_instance=ctx)

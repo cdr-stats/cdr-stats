@@ -121,10 +121,12 @@ class SwitchAdmin(admin.ModelAdmin):
                 if len(uni) == len(CDR_FIELD_LIST) - len(field_notin_list):
 
                     # To count total rows of CSV file
-                    records = csv.reader(request.FILES['csv_file'], delimiter=',', quotechar='"')
+                    records = csv.reader(
+                        request.FILES['csv_file'], delimiter=',', quotechar='"')
                     total_rows = len(list(records))
 
-                    rdr = csv.reader(request.FILES['csv_file'], delimiter=',', quotechar='"')
+                    rdr = csv.reader(
+                        request.FILES['csv_file'], delimiter=',', quotechar='"')
                     cdr_record_count = 0
 
                     # Read each Row
@@ -216,7 +218,7 @@ class SwitchAdmin(admin.ModelAdmin):
                                     'cdr_object_id': '',
                                     'country_id': country_id,
                                     'authorized': authorized,
-                                    }
+                                }
 
                                 try:
                                     # check if cdr is already existing in cdr_common
@@ -284,7 +286,7 @@ class SwitchAdmin(admin.ModelAdmin):
             'type_error_import_list': type_error_import_list,
             'CDR_FIELD_LIST': list(CDR_FIELD_LIST),
             'CDR_FIELD_LIST_NUM': list(CDR_FIELD_LIST_NUM),
-            })
+        })
         template = 'admin/cdr/switch/import_cdr.html'
         return render_to_response(template, context_instance=ctx)
 

@@ -87,11 +87,12 @@ def index(request):
         if request.GET['acc_code_error'] == 'true':
             errorlogin = code_error
 
-    data = {'module': current_view(request),
-            'loginform': loginform,
-            'errorlogin': errorlogin,
-            'news': get_news(settings.NEWS_URL),
-            }
+    data = {
+        'module': current_view(request),
+        'loginform': loginform,
+        'errorlogin': errorlogin,
+        'news': get_news(settings.NEWS_URL),
+    }
     return render_to_response(template, data,
         context_instance=RequestContext(request))
 
@@ -358,25 +359,25 @@ def cdr_view(request):
                         - relativedelta(days=1)).strftime('%d')
             end_date = tday.strftime('%Y-%m-' + last_day)
             template_data = {
-                            'module': current_view(request),
-                            'rows': rows,
-                            'form': form,
-                            'PAGE_SIZE': PAGE_SIZE,
-                            'total_data': detail_data,
-                            'total_duration': total_duration,
-                            'total_calls': total_calls,
-                            'total_avg_duration': total_avg_duration,
-                            'max_duration': max_duration,
-                            'user': request.user,
-                            'search_tag': search_tag,
-                            'col_name_with_order': col_name_with_order,
-                            'menu': menu,
-                            'start_date': start_date,
-                            'end_date': end_date,
-                            'action': action,
-                            'result': result,
-                            'notice_count': notice_count(request),
-                            }
+                'module': current_view(request),
+                'rows': rows,
+                'form': form,
+                'PAGE_SIZE': PAGE_SIZE,
+                'total_data': detail_data,
+                'total_duration': total_duration,
+                'total_calls': total_calls,
+                'total_avg_duration': total_avg_duration,
+                'max_duration': max_duration,
+                'user': request.user,
+                'search_tag': search_tag,
+                'col_name_with_order': col_name_with_order,
+                'menu': menu,
+                'start_date': start_date,
+                'end_date': end_date,
+                'action': action,
+                'result': result,
+                'notice_count': notice_count(request),
+            }
             logging.debug('CDR View End')
             return render_to_response(template_name, template_data,
                 context_instance=RequestContext(request))
@@ -576,7 +577,7 @@ def cdr_view(request):
         'action': action,
         'result': int(result),
         'notice_count': notice_count(request),
-        }
+    }
     logging.debug('CDR View End')
     return render_to_response(template_name, template_data,
                               context_instance=RequestContext(request))
@@ -784,8 +785,8 @@ def cdr_dashboard(request):
                         b_Month = int(i['metadata']['date'].strftime('%m'))
                         c_Day = int(i['metadata']['date'].strftime('%d'))
                         graph_day = datetime(int(a_Year), int(b_Month),
-                            int(c_Day), int(call_hour),
-                            int(min))
+                                             int(c_Day), int(call_hour),
+                                             int(min))
                         dt = int(1000 * time.mktime(graph_day.timetuple()))
                         # check graph date
                         if chk_date_for_hrs(graph_day):
@@ -796,9 +797,9 @@ def cdr_dashboard(request):
                                 final_record[dt]['count_call'] += calldate__count
                             else:
                                 final_record[dt] = {
-                                                'duration_sum': duration__sum,
-                                                'count_call': calldate__count
-                                                }
+                                    'duration_sum': duration__sum,
+                                    'count_call': calldate__count
+                                }
 
                             total_calls += calldate__count
                             total_duration += duration__sum
@@ -1065,7 +1066,7 @@ def get_cdr_mail_report():
                 'duration__sum': duration_sum,
                 'calldate__count': int(doc['call_count']),
                 'duration__avg': duration_sum/int(doc['call_count']),
-                })
+            })
 
             total_duration += duration_sum
             total_calls += int(doc['call_count'])
@@ -1163,10 +1164,8 @@ def mail_report(request):
 
     form = EmailReportForm(request.user, instance=user_profile_obj)
     if request.method == 'POST':
-        form = EmailReportForm(
-                    request.user,
-                    request.POST,
-                    instance=user_profile_obj)
+        form = EmailReportForm(request.user, request.POST,
+                               instance=user_profile_obj)
         if form.is_valid():
             form.save()
             msg = _('Email ids are saved successfully.')
@@ -1669,9 +1668,7 @@ def cdr_overview(request):
             'notice_count': notice_count(request),
         }
 
-        return render_to_response(
-            template_name,
-            variables,
+        return render_to_response(template_name, variables,
             context_instance=RequestContext(request))
 
 
@@ -1927,15 +1924,16 @@ def world_map_view(request):
         else:
             world_analytic_array = []
             logging.debug('Error : CDR world report form')
-            variables = {'module': current_view(request),
-                         'form': form,
-                         'search_tag': search_tag,
-                         'start_date': start_date,
-                         'end_date': end_date,
-                         'world_analytic_array': world_analytic_array,
-                         'action': action,
-                         'notice_count': notice_count(request),
-                         }
+            variables = {
+                'module': current_view(request),
+                'form': form,
+                'search_tag': search_tag,
+                'start_date': start_date,
+                'end_date': end_date,
+                'world_analytic_array': world_analytic_array,
+                'action': action,
+                'notice_count': notice_count(request),
+            }
 
             return render_to_response(template_name, variables,
                 context_instance=RequestContext(request))
