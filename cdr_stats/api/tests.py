@@ -48,11 +48,11 @@ class ApiTestCase(BaseAuthenticatedClient):
 
     def test_cdr_daily_api(self):
         """Test Function cdr daily api"""
-        data = {"start_uepoch": "2012-02-15",
+        data = simplejson.dumps({"start_uepoch": "2012-02-15",
                 "switch_id": 1,
                 "destination_number": 3000,
                 "accountcode": 123
-        }
+        })
         response = self.client.post('/api/v1/cdr_daily_report/', data,
             content_type='application/json', **self.extra)
         self.assertEqual(response.status_code, 401)
