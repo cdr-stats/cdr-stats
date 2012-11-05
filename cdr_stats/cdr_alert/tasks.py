@@ -119,35 +119,35 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
         if alarm_obj.alert_value < current_value:
             notify_admin_with_mail(alarm_obj.type,
                                    alarm_obj.email_to_send_alarm)
-            create_alarm_report_object(alarm_obj, status=ALERT_CONDITION_ADD_ON.ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
         else:
-            create_alarm_report_object(alarm_obj, status=ALERT_CONDITION_ADD_ON.NO_ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
 
     if alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN:  # Is greater than
         if alarm_obj.alert_value > current_value:
             notify_admin_with_mail(alarm_obj.type,
                                    alarm_obj.email_to_send_alarm)
-            create_alarm_report_object(alarm_obj, status=ALERT_CONDITION_ADD_ON.ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
         else:
-            create_alarm_report_object(alarm_obj, status=ALERT_CONDITION_ADD_ON.NO_ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
 
     if alarm_obj.alert_condition == ALERT_CONDITION.DECREASE_BY_MORE_THAN:  # Decrease by more than
         diff = abs(current_value - previous_value)
         if diff < alarm_obj.alert_value:
             notify_admin_with_mail(alarm_obj.type,
                                    alarm_obj.email_to_send_alarm)
-            create_alarm_report_object(alarm_obj, status=ALERT_CONDITION_ADD_ON.ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
         else:
-            create_alarm_report_object(alarm_obj, status=ALERT_CONDITION_ADD_ON.NO_ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
 
     if alarm_obj.alert_condition == ALERT_CONDITION.INCREASE_BY_MORE_THAN:  # Increase by more than
         diff = abs(current_value - previous_value)
         if diff > alarm_obj.alert_value:
             notify_admin_with_mail(alarm_obj.type,
                                    alarm_obj.email_to_send_alarm)
-            create_alarm_report_object(alarm_obj, status=ALERT_CONDITION_ADD_ON.ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
         else:
-            create_alarm_report_object(alarm_obj, status=ALERT_CONDITION_ADD_ON.NO_ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
 
     # http://www.mathsisfun.com/percentage-difference.html
     if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_DECREASE_BY_MORE_THAN:  # % decrease by more than
@@ -157,9 +157,9 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
         if percentage < alarm_obj.alert_value:
             notify_admin_with_mail(alarm_obj.type,
                                    alarm_obj.email_to_send_alarm)
-            create_alarm_report_object(alarm_obj, status=ALERT_CONDITION_ADD_ON.ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
         else:
-            create_alarm_report_object(alarm_obj, status=ALERT_CONDITION_ADD_ON.NO_ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
 
     if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_INCREASE_BY_MORE_THAN:  # % Increase by more than
         diff = abs(current_value - previous_value)
@@ -168,9 +168,9 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
         if percentage > alarm_obj.alert_value:
             notify_admin_with_mail(alarm_obj.type,
                                    alarm_obj.email_to_send_alarm)
-            create_alarm_report_object(alarm_obj, status=ALERT_CONDITION_ADD_ON.ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
         else:
-            create_alarm_report_object(alarm_obj, status=ALERT_CONDITION_ADD_ON.NO_ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
 
     return True
 
