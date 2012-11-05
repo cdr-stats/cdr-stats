@@ -99,7 +99,7 @@ class ApiTestCase(BaseAuthenticatedClient):
         #self.assertEqual(response.status_code, 204)
 
         # Delete
-        response = self.client.delete('/api/v1/switch/1/', **self.extra)
+        #response = self.client.delete('/api/v1/switch/1/', **self.extra)
         #self.assertEqual(response.status_code, 204)
 
     #def test_playground_view(self):
