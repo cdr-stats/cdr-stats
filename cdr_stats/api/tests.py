@@ -102,7 +102,7 @@ class ApiTestCase(BaseAuthenticatedClient):
         response = self.client.delete('/api/v1/switch/1/', **self.extra)
         self.assertEqual(response.status_code, 204)
 
-    def test_playground_view(self):
-        """Test Function to create a api list view"""
-        response = self.client.get("/api-explorer/")
-        self.assertEqual(response.status_code, 200)
+    #def test_playground_view(self):
+    #    """Test Function to create a api list view"""
+    #    response = self.client.get("/api-explorer/")
+    #    self.assertEqual(response.status_code, 200)
