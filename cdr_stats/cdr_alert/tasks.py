@@ -427,7 +427,7 @@ class send_cdr_report(PeriodicTask):
 
             msg = EmailMultiAlternatives(subject, html_content, from_email,
                     [to])
-            logger.info('Email sent to %s' % to)
+            #logger.info('Email sent to %s' % to)
             msg.content_subtype = 'html'
             msg.send()
 
