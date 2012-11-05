@@ -70,7 +70,7 @@ class ApiTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
         # Update
-        data = simplejson.dumps({"code": "16", "enumeration": "NORMAL_CLEARING"})
+        data = simplejson.dumps({"code": "705"})
         response = self.client.put('/api/v1/hangup_cause/1/',
             data, content_type='application/json', **self.extra)
         self.assertEqual(response.status_code, 204)
