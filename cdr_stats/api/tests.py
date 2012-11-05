@@ -23,7 +23,7 @@ class ApiTestCase(BaseAuthenticatedClient):
 
     def test_cdr_api(self):
         """Test Function cdr api"""
-        data = {"switch_id": 1,
+        data = simplejson.dumps({"switch_id": 1,
                 "caller_id_number": 12345,
                 "caller_id_name": "xyz",
                 "destination_number": 9972374874,
@@ -41,7 +41,7 @@ class ApiTestCase(BaseAuthenticatedClient):
                 "billmsec": 43,
                 "read_codec": "xyz",
                 "write_codec": "abc",
-                "cdr_type": 1}
+                "cdr_type": 1})
         #response = self.client.post('/api/v1/cdr/',
         #    data, content_type='application/json', **self.extra)
         #self.assertEqual(response.status_code, 200)
@@ -83,10 +83,10 @@ class ApiTestCase(BaseAuthenticatedClient):
     def test_switch(self):
         """Test Function to create a switch"""
         # Create
-        data = simplejson.dumps({"name": "local", "ipaddress": "127.0.0.2"})
-        response = self.client.post('/api/v1/switch/', data,
-            content_type='application/json', **self.extra)
-        self.assertEqual(response.status_code, 201)
+        #data = simplejson.dumps({"name": "local", "ipaddress": "127.0.0.2"})
+        #response = self.client.post('/api/v1/switch/', data,
+        #    content_type='application/json', **self.extra)
+        #self.assertEqual(response.status_code, 201)
 
         # Read
         response = self.client.get('/api/v1/switch/?format=json', **self.extra)
