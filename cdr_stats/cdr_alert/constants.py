@@ -45,6 +45,6 @@ class ALERT_CONDITION_ADD_ON(Choice):
     SAME_DAY_IN_PRE_WEEK = 2, _('Same day in the previous week')
 
 
-class ALERT_CONDITION_ADD_ON(Choice):
+class ALARM_REPROT_STATUS(Choice):
     NO_ALARM_SENT = 1, _('No alarm sent')
     ALARM_SENT = 2, _('Alarm Sent')
