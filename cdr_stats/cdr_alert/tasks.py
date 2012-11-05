@@ -33,6 +33,7 @@ from cdr.mapreduce import mapreduce_task_cdr_alert
 from cdr.functions_def import get_hangupcause_id
 from cdr.views import get_cdr_mail_report
 from user_profile.models import UserProfile
+from user_profile.constants import NOTICE_TYPE
 
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -348,9 +349,9 @@ def blacklist_whitelist_notification(notice_type):
 
         blacklist_whitelist_notification.delay(notice_type)
     """
-    if notice_type == 3:
+    if notice_type == NOTICE_TYPE.blacklist_prefix:
         notice_type_name = 'blacklist'
-    if notice_type == 4:
+    if notice_type == NOTICE_TYPE.whitelist_prefix:
         notice_type_name = 'whitelist'
 
     logger = blacklist_whitelist_notification.get_logger()
@@ -410,7 +411,7 @@ class send_cdr_report(PeriodicTask):
 
             subject = _('CDR Report')
 
-            html_content = get_template('cdr/mail_report_template.html'
+            html_content = get_template('frontend/mail_report_template.html'
                     ).render(Context(
                         {'yesterday_date': mail_data['yesterday_date'],
                         'rows': mail_data['rows'],

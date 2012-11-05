@@ -15,6 +15,7 @@
 from django.conf import settings
 from django.db.models import signals
 from django.utils.translation import ugettext_noop as _
+from user_profile.constants import NOTICE_TYPE
 
 
 if "notification" in settings.INSTALLED_APPS:
@@ -24,19 +25,19 @@ if "notification" in settings.INSTALLED_APPS:
         notification.create_notice_type("average_length_of_call",
                                         _("ALOC (Average Length of Call)"),
                                         _("Average Length of Call"),
-                                        1)
+                                        NOTICE_TYPE.average_length_of_call)
         notification.create_notice_type("answer_seize_ratio",
                                         _("ASR (Answer Seize Ratio)"),
                                         _("Answer Seize Ratio"),
-                                        2)
+                                        NOTICE_TYPE.answer_seize_ratio)
         notification.create_notice_type("blacklist_prefix",
                                         _("Blacklist Prefix"),
                                         _("Blacklist Prefix"),
-                                        3)
+                                        NOTICE_TYPE.blacklist_prefix)
         notification.create_notice_type("whitelist_prefix",
                                         _("Whitelist Prefix"),
                                         _("Whitelist Prefix"),
-                                        4)
+                                        NOTICE_TYPE.whitelist_prefix)
     signals.post_syncdb.connect(create_notice_types, sender=notification)
 
 # else:
