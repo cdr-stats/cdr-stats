@@ -24,6 +24,7 @@ from cdr_alert.tasks import send_cdr_report, \
                             chk_alarm
 from cdr_alert.forms import BWCountryForm
 from cdr_alert.functions_blacklist import chk_destination
+from user_profile.constants import NOTICE_TYPE
 from country_dialcode.models import Country
 from datetime import timedelta
 
@@ -126,10 +127,10 @@ class CdrAlertTaskTestCase(TestCase):
     def test_blacklist_whitelist_notification(self):
         """Test task : blacklist_whitelist_notification"""
         # notice_type = 3 blacklist
-        result = blacklist_whitelist_notification.delay(3)
+        result = blacklist_whitelist_notification.delay(NOTICE_TYPE.blacklist_prefix)
         self.assertEquals(result.get(), True)
 
-        result = blacklist_whitelist_notification.delay(4)
+        result = blacklist_whitelist_notification.delay(NOTICE_TYPE.whitelist_prefix)
         self.assertEquals(result.get(), True)
 
     def test_chk_alarm(self):
