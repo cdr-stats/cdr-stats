@@ -87,13 +87,18 @@ class FrontendCustomerView(BaseAuthenticatedClient):
 
     def test_index(self):
         """Test Function to check customer index page"""
-        response = self.client.get('/')
-        self.assertTrue(response.context['loginform'], LoginForm())
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'frontend/index.html')
-        response = self.client.post('/login/',
-                                    {'username': 'admin',
-                                     'password': 'admin'})
+        #response = self.client.get('/')
+        #self.assertTrue(response.context['loginform'], LoginForm())
+        #self.assertEqual(response.status_code, 200)
+        #self.assertTemplateUsed(response, 'frontend/index.html')
+        #response = self.client.post('/login/',
+        #                            {'username': 'admin',
+        #                             'password': 'admin'})
+        #self.assertEqual(response.status_code, 200)
+        request = self.factory.get('/login/')
+        request.user = self.user
+        request.session = {}
+        response = login_view(request)
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.post('/login/',

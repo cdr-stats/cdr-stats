@@ -19,8 +19,8 @@ django-kombu
 linaro_django_pagination
 django-uuidfield
 django-jsonfield
+switch2bill-common==2.2.3
 git+git://github.com/Star2Billing/django-notification
-git+git://github.com/Star2Billing/switch2bill-common.git
 hg+https://bitbucket.org/smileychris/django-countries
 git+git://github.com/Star2Billing/django-country-dialcode.git
 -e hg+http://bitbucket.org/andrewgodwin/south/@ecaafda23e600e510e252734d67bf8f9f2362dc9#egg=South-dev

@@ -1,4 +1,4 @@
-django-celery==3.0.10
+django-celery==3.0.11
 django-kombu==0.9.4
 django-pagination==1.0.7
 django-urlauth==0.1.8
@@ -11,7 +11,7 @@ linaro-django-pagination==2.0.2
 django-admin-tools==0.4.1
 django-country-dialcode==0.4.4
 django-admin-tools-stats==0.3.1
-switch2bill-common==2.1.2
+switch2bill-common==2.2.3
 django-socketio==0.3.5
 django-cache-machine==0.6
 git+git://github.com/Star2Billing/django-notification
