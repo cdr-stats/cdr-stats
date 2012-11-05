@@ -66,8 +66,8 @@ class ApiTestCase(BaseAuthenticatedClient):
         #self.assertEqual(response.status_code, 201)
 
         # Read
-        #response = self.client.get('/api/v1/hangup_cause/?format=json', **self.extra)
-        #self.assertEqual(response.status_code, 200)
+        response = self.client.get('/api/v1/hangup_cause/?format=json', **self.extra)
+        self.assertEqual(response.status_code, 200)
 
         # Update
         #data = simplejson.dumps({"code": "16", "enumeration": "NORMAL_CLEARING"})
