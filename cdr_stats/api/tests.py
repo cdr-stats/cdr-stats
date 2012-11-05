@@ -42,9 +42,9 @@ class ApiTestCase(BaseAuthenticatedClient):
                 "read_codec": "xyz",
                 "write_codec": "abc",
                 "cdr_type": 1})
-        #response = self.client.post('/api/v1/cdr/',
-        #    data, content_type='application/json', **self.extra)
-        #self.assertEqual(response.status_code, 200)
+        response = self.client.post('/api/v1/cdr/',
+            data, content_type='application/json', **self.extra)
+        self.assertEqual(response.status_code, 200)
 
     def test_cdr_daily_api(self):
         """Test Function cdr daily api"""
