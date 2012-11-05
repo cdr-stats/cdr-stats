@@ -17,8 +17,8 @@ To get started with CDR-Stats you must have the following installed:
 - python >= 2.5 (programming language)
 - Apache / http server with WSGI modules
 - Django Framework >= 1.4 (Python based Web framework)
-- Celery >= 2.2 (Asynchronous task queue/job queue based on distributed message passing)
-- django-celery >= 2.2.4 (Celery integration for Django)
+- Celery >= 3.0 (Asynchronous task queue/job queue based on distributed message passing)
+- django-celery >= 3.0 (Celery integration for Django)
 - linaro_django_pagination (Utilities for creating robust pagination tools throughout a django application)
 - django-uuidfield >= 0.2 (Provides a UUIDField for your Django models)
 - django-reusableapps >= 0.1.1 (Python module to enable Django to load reusable, pluggable and egg-based applications)
@@ -37,14 +37,14 @@ To get started with CDR-Stats you must have the following installed:
 - django-countries - List of world countries
 - django-socketio - A Django app providing the features required to use websockets with Django via Socket.IO
 
+We advice you to install those requirements into a virtual environement, a virtual environement will allow you to not mix dependencies of an application with an other installed application on your server. You can find more information about virtualenv here : http://pypi.python.org/pypi/virtualenv
+
+PIP is a tool for installing and managing Python packages, more information about PIP here http://www.pip-installer.org/en/latest/index.html.
+With PIP you can easily install all the requirements for CDR-Stats.
 
 Use PIP to install all the requirements,::
 
-    $ pip install -r requirements.txt
-
-We advice you to install those requirements into a virtual environement, you can find more information about virtualenv here :
-http://pypi.python.org/pypi/virtualenv
-
+    $ pip install -r install/requirements/all-requirements.txt
 
 
 .. _running-cdrstats:
@@ -57,7 +57,7 @@ Inside CDR-Stats directory you should run, the following::
     $ python manage.py syncdb --noinput
 
     $ python manage.py collectstatic
-    
+
     $ python manage.py migrate
 
     $ python manage.py createsuperuser
@@ -68,7 +68,7 @@ Inside CDR-Stats directory you should run, the following::
 ``syncdb`` will create a database named test.db in ``database`` folder of the
 CDR-Stats directory. We have configured CDR-Stats to do this, but you
 can change this simply by modifying settings.py where DATABASES dictionary is
-constructed. You can find more information about this in the 
+constructed. You can find more information about this in the
 Django documentation.
 
 ``collectstatic`` will fetch all necessary media files and put them into
