@@ -1064,13 +1064,13 @@ def get_cdr_mail_report():
 
             country_id = int(doc['_id']['country_id'])
             if country_id in country_analytic:
-                country_analytic[country_id]['count_call'] +=\
+                country_analytic[country_id]['call_count'] +=\
                     int(doc['call_count'])
                 country_analytic[country_id]['duration_sum'] +=\
                     int(duration_sum)
             else:
                 country_analytic[country_id] = {
-                    'count_call': int(doc['call_count']),
+                    'call_count': int(doc['call_count']),
                     'duration_sum': int(duration_sum)
                 }
 
@@ -1083,17 +1083,9 @@ def get_cdr_mail_report():
 
     country_analytic = country_analytic.items()
     country_analytic = sorted(country_analytic,
-                              key=lambda k: (k[1]['count_call'],
+                              key=lambda k: (k[1]['call_count'],
                                              k[1]['duration_sum']),
                               reverse=True)
-    # Top 5 called countries
-    country_analytic_array = []
-    for i in country_analytic[0:5]:
-        # All countries list
-        country_analytic_array.append((get_country_name(int(i[0])),
-                                       int(i[1]['count_call']),
-                                       int(i[1]['duration_sum']),
-                                       int(i[0])))
 
     # Country call analytic end
     hangup_analytic_array = []
@@ -1113,7 +1105,7 @@ def get_cdr_mail_report():
         'total_calls': total_calls,
         'ACT': ACT,
         'ACD': ACD,
-        'country_analytic_array': country_analytic_array,
+        'country_analytic_array': country_analytic[0:5],
         'hangup_analytic_array': hangup_analytic_array,
     }
     return mail_data

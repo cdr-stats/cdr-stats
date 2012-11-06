@@ -105,17 +105,17 @@
                             {% for country_data in country_analytic_array %}
                             <tr>
                                 <td class="td-dashboard">
-                                    {% if country_data.3 %}
-                                        {% cache 1800 country_data country_data.3 %}
-                                            <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
+                                    {% if country_data.0 %}
+                                        {% cache 1800 country_data country_data.0 %}
+                                            <img src="{{STATIC_URL}}cdr-stats/{{ country_data.0|iso_flag }}" class="elemtooltip" title="{{ country_data.0|country_name }}">
                                         {% endcache %}
                                     {% else %}
                                         <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip">
                                     {% endif %}
                                 </td>
-                                <td class="td-dashboard" width="100">{{ country_data.0 }}</td>
-                                <td width="100">{{ country_data.1 }} {% trans "Calls"%}</td>
-                                <td>{{ country_data.2|conv_min }} {% trans "minutes"%}</td>
+                                <td class="td-dashboard" width="100">{{ country_data.0|country_name }}</td>
+                                <td width="100">{{ country_data.1.call_count }} {% trans "Calls"%}</td>
+                                <td>{{ country_data.1.duration_sum|conv_min }} {% trans "minutes"%}</td>
                             </tr>
                             {% endfor %}
                             </tbody>
