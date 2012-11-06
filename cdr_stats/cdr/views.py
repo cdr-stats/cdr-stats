@@ -839,22 +839,6 @@ def cdr_dashboard(request):
     logging.debug("Result hangup_analytic %d" % len(hangup_analytic))
     logging.debug("Result country_call_count %d" % len(total_country_data))
 
-    country_analytic = []
-    logging.debug('Before Loop create country_analytic')
-    for i in total_country_data[0:5]:
-        c_id = int(i[0])  # i[0] - country id
-        c_call_count = int(i[1]['call_count'])  # i[1] - call count
-        c_duration_sum = int(i[1]['duration_sum'])  # call duration
-
-        country_analytic.append((get_country_name(c_id),
-                                 c_call_count,
-                                 c_duration_sum,
-                                 c_id))
-
-    logging.debug('After Loop create country_analytic')
-    # Top 5 countries list
-    country_analytic = country_analytic[0:5]
-
     #Calculate the Average Time of Call
     ACT = math.floor(total_calls / 24)
     if total_calls == 0:
@@ -871,10 +855,10 @@ def cdr_dashboard(request):
         'ACD': ACD,
         'total_record': final_record,
         'hangup_analytic': hangup_analytic,
-        'country_analytic': country_analytic,
         'form': form,
         'search_tag': search_tag,
         'notice_count': notice_count(request),
+        'total_country_data': total_country_data[0:5],
     }
 
     return render_to_response('frontend/cdr_dashboard.html', variables,

@@ -230,7 +230,7 @@ $(function () {
     </script>
 {% endif %}
 
-{% if country_analytic %}
+{% if total_country_data %}
 
     <script type="text/javascript">
     //country pi
@@ -251,8 +251,8 @@ $(function () {
     $(function () {
 
         var data = [
-            {% for td in country_analytic %}
-                { label: '{{ td.0 }}' , data: [[1, {{ td.1 }}]]},
+            {% for td in total_country_data %}
+                { label: '{{ td.0|country_name }}' , data: [[1, {{ td.1.call_count }}]]},
             {% endfor %}
         ];
 
@@ -323,38 +323,40 @@ $(function () {
     <div class="span6 welldashboard">
         <h2 align="center">{% trans "countries report"|title %}</h2>
         <hr/>
-        {% if country_analytic %}
+        {% if total_country_data %}
             <div id="country_pie" style="width:350px;height:350px;margin:auto;"></div>
             <div id="country_hover"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
         {% endif %}
         <br/>
         <div class="dashboard_summary_header span6">{% trans "5 most called countries"|title %}</div>
-        {% if country_analytic %}
-        <div class="span6">
-            <table>
-                <tbody>
-                {% for country_data in country_analytic %}
-                <tr>
-                    <td class="td-dashboard">
-                        {% if country_data.3 %}
-                            {% cache 1800 country_data country_data.3 %}
-                                <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
-                            {% endcache %}
-                        {% else %}
-                            <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip">
-                        {% endif %}
-                    </td>
-                    <td class="td-dashboard" width="100">{{ country_data.0 }}</td>
-                    <td width="100">{{ country_data.1 }} {% trans "Calls"%}</td>
-                    <td>{{ country_data.2|conv_min }} {% trans "minutes"%}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        {% if total_country_data %}
+            <div class="span6">
+                <table>
+                    <tbody>
+                    {% for country_data in total_country_data %}
+                        <tr>
+                            <td class="td-dashboard">
+                                {% if country_data.0 %}
+                                    {% cache 1800 country_data country_data.0 %}
+                                        <img src="{{STATIC_URL}}cdr-stats/{{ country_data.0|iso_flag }}" class="elemtooltip" title="{{ country_data.0|country_name }}">
+                                    {% endcache %}
+                                {% else %}
+                                    <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip">
+                                {% endif %}
+                            </td>
+                            <td class="td-dashboard" width="100">{{ country_data.0|country_name }}</td>
+                            <td width="100">{{ country_data.1.call_count }} {% trans "Calls"%}</td>
+                            <td>{{ country_data.1.duration_sum|conv_min }} {% trans "minutes"%}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% else %}
             <div class="span5">{% trans "No record found" %}</div>
         {% endif %}
+    <div>
+
     </div>
 </div>
 {% endblock %}

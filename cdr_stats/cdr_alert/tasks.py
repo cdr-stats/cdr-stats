@@ -404,7 +404,7 @@ class send_cdr_report(PeriodicTask):
                 user_profile_obj = UserProfile.objects.get(user=c_user)
                 to = user_profile_obj.multiple_email
             except UserProfile.DoesNotExist:
-                to = 'admin@localhost.com'
+                to = ''
                 logger.error('Error : UserProfile notfound (user_id:%d)'
                              % c_user.id)
 
