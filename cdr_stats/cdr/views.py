@@ -1087,7 +1087,7 @@ def get_cdr_mail_report():
                                              k[1]['duration_sum']),
                               reverse=True)
 
-    # Country call analytic end
+    # Hangup Cause analytic end
     hangup_analytic_array = []
     hangup_analytic = hangup_analytic.items()
     hangup_analytic = sorted(hangup_analytic, key=lambda k: k[0])
@@ -1809,23 +1809,6 @@ def cdr_country_report(request):
             total_calls += int(doc['call_per_day'])
             total_duration += int(doc['duration_per_day'])
 
-    # Top countries list
-    for i in country_analytic_array[0: settings.NUM_COUNTRY]:
-        # i[0] - country name, i[1] - call count,
-        # i[2] - call duration, i[3] - country id,
-        country_final.append((i[0], int(i[1]), int(i[2]), int(i[3])))
-
-    # Other countries analytic
-    other_country_call_count = 0
-    other_country_call_duration = 0
-    for i in country_analytic_array[settings.NUM_COUNTRY:]:
-        #i[0] - country name, i[1] - call count, i[2] - call duration
-        other_country_call_count += int(i[1])
-        other_country_call_duration += int(i[2])
-
-    country_final.append((_('Other'),
-                         other_country_call_count,
-                         other_country_call_duration))
 
     logging.debug('CDR country report view end')
     variables = {
@@ -1833,9 +1816,7 @@ def cdr_country_report(request):
         'total_calls': total_calls,
         'total_duration': total_duration,
         'total_record': total_record_final,
-        'country_final': country_final,
-        'top10_country':\
-            country_analytic_array[0:settings.NUM_COUNTRY],
+        'country_analytic': country_analytic_array,
         'form': form,
         'search_tag': search_tag,
         'NUM_COUNTRY': settings.NUM_COUNTRY,

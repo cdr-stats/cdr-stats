@@ -11,6 +11,8 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
+from django.conf import settings
+
 
 def pipeline_cdr_view_daily_report(query_var):
     """
@@ -99,7 +101,8 @@ def pipeline_country_report(query_var):
             'call_per_day': -1,
             'duration_per_day': -1,
             }
-        }
+        },
+        {'$limit': settings.NUM_COUNTRY}
     ]
     return pipeline
 
