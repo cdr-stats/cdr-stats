@@ -26,8 +26,8 @@ from common.common_functions import current_view, get_news, \
                                     mongodb_str_filter,\
                                     mongodb_int_filter, \
                                     int_convert_to_minute, \
-                                    validate_days
-
+                                    validate_days,\
+                                    ceil_strdate
 from cdr.models import Switch
 from cdr.functions_def import get_country_name, \
                                 chk_account_code, \
@@ -279,17 +279,13 @@ def cdr_view(request):
             if "from_date" in request.POST:
                 # From
                 from_date = request.POST['from_date']
-                start_date = datetime(int(from_date[0:4]),
-                                      int(from_date[5:7]),
-                                      int(from_date[8:10]), 0, 0, 0, 0)
+                start_date = ceil_strdate(from_date, 'start')
                 request.session['session_from_date'] = from_date
 
             if "to_date" in request.POST:
                 # To
                 to_date = request.POST['to_date']
-                end_date = datetime(int(to_date[0:4]),
-                                    int(to_date[5:7]),
-                                    int(to_date[8:10]), 23, 59, 59, 999999)
+                end_date = ceil_strdate(to_date, 'end')
                 request.session['session_to_date'] = to_date
 
             result = request.POST['result']
@@ -890,12 +886,8 @@ def cdr_concurrent_calls(request):
         if form.is_valid():
             if "from_date" in request.POST and request.POST['from_date'] != '':
                 from_date = request.POST['from_date']
-                start_date = datetime(int(from_date[0:4]),
-                                      int(from_date[5:7]),
-                                      int(from_date[8:10]), 0, 0, 0, 0)
-                end_date = datetime(int(from_date[0:4]),
-                                    int(from_date[5:7]),
-                                    int(from_date[8:10]), 23, 59, 59, 0)
+                start_date = ceil_strdate(from_date, 'start')
+                end_date = ceil_strdate(from_date, 'end')
 
             switch_id = form.cleaned_data.get('switch')
             if switch_id and int(switch_id) != 0:
@@ -1248,8 +1240,8 @@ def cdr_report_by_hour(request):
             if "from_date" in request.POST:
                 from_date = request.POST['from_date']
                 select_date = datetime(int(from_date[0:4]),
-                    int(from_date[5:7]),
-                    int(from_date[8:10]), 0, 0, 0, 0)
+                                       int(from_date[5:7]),
+                                       int(from_date[8:10]), 0, 0, 0, 0)
             else:
                 from_date = tday.strftime('%Y-%m-%d')
                 select_date = tday
@@ -1276,9 +1268,9 @@ def cdr_report_by_hour(request):
                 start_date = end_date + \
                                 relativedelta(days=-int(comp_days))
                 start_date = datetime(start_date.year, start_date.month,
-                                        start_date.day, 0, 0, 0, 0)
+                                      start_date.day, 0, 0, 0, 0)
                 end_date = datetime(end_date.year, end_date.month,
-                                        end_date.day, 23, 59, 59, 999999)
+                                    end_date.day, 23, 59, 59, 999999)
                 if check_days == 1:
                     query_var['metadata.date'] = {
                                                     '$gte': start_date,
@@ -1385,16 +1377,14 @@ def cdr_overview(request):
         form = CdrOverviewForm(request.POST)
         if form.is_valid():
             if "from_date" in request.POST:
-                from_date = datetime(int(request.POST['from_date'][0:4]),
-                    int(request.POST['from_date'][5:7]),
-                    int(request.POST['from_date'][8:10]), 0, 0, 0, 0)
+                from_date = request.POST['from_date']
+                start_date = ceil_strdate(from_date, 'start')
             else:
                 from_date = tday
 
             if "to_date" in request.POST:
-                to_date = datetime(int(request.POST['to_date'][0:4]),
-                    int(request.POST['to_date'][5:7]),
-                    int(request.POST['to_date'][8:10]), 23, 59, 59, 999999)
+                to_date = request.POST['to_date']
+                end_date = ceil_strdate(to_date, 'end')
             else:
                 to_date = tday
 
@@ -1403,10 +1393,10 @@ def cdr_overview(request):
                 query_var['metadata.switch_id'] = int(switch_id)
 
             if from_date != '' and to_date != '':
-                start_date = datetime(from_date.year, from_date.month,
-                    from_date.day, 0, 0, 0, 0)
-                end_date = datetime(to_date.year, to_date.month,
-                    to_date.day, 23, 59, 59, 999999)
+                start_date = datetime(
+                    from_date.year, from_date.month, from_date.day, 0, 0, 0, 0)
+                end_date = datetime(
+                    to_date.year, to_date.month, to_date.day, 23, 59, 59, 999999)
                 query_var['metadata.date'] = {
                     '$gte': start_date,
                     '$lt': end_date
@@ -1691,16 +1681,12 @@ def cdr_country_report(request):
             if "from_date" in request.POST:
                 # From
                 from_date = form.cleaned_data.get('from_date')
-                start_date = datetime(int(from_date[0:4]),
-                                      int(from_date[5:7]),
-                                      int(from_date[8:10]), 0, 0, 0, 0)
+                start_date = ceil_strdate(from_date, 'start')
 
             if "to_date" in request.POST:
                 # To
                 to_date = form.cleaned_data.get('to_date')
-                end_date = datetime(int(to_date[0:4]),
-                                    int(to_date[5:7]),
-                                    int(to_date[8:10]), 23, 59, 59, 999999)
+                end_date = ceil_strdate(to_date, 'end')
 
             country_id = form.cleaned_data.get('country_id')
             # convert list value in int
@@ -1863,16 +1849,12 @@ def world_map_view(request):
             if "from_date" in request.POST:
                 # From
                 from_date = form.cleaned_data.get('from_date')
-                start_date = datetime(int(from_date[0:4]),
-                                      int(from_date[5:7]),
-                                      int(from_date[8:10]), 0, 0, 0, 0)
+                start_date = ceil_strdate(from_date, 'start')
 
             if "to_date" in request.POST:
                 # To
                 to_date = form.cleaned_data.get('to_date')
-                end_date = datetime(int(to_date[0:4]),
-                                    int(to_date[5:7]),
-                                    int(to_date[8:10]), 23, 59, 59, 999999)
+                end_date = ceil_strdate(to_date, 'end')
 
             switch_id = form.cleaned_data.get('switch')
             if switch_id and int(switch_id) != 0:
