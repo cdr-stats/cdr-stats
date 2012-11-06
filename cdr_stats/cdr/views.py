@@ -703,6 +703,17 @@ def chk_date_for_hrs(graph_date):
     return False
 
 
+def calculate_act_and_acd(total_calls, total_duration):
+    #Calculate the Average Time of Call
+    ACT = math.floor(total_calls / 24)
+    if total_calls == 0:
+        ACD = 0
+    else:
+        ACD = int_convert_to_minute(math.floor(total_duration / total_calls))
+
+    return {'ACT': ACT, 'ACD': ACD}
+
+
 @check_cdr_exists
 @login_required
 def cdr_dashboard(request):
@@ -836,11 +847,9 @@ def cdr_dashboard(request):
     logging.debug("Result country_call_count %d" % len(total_country_data))
 
     #Calculate the Average Time of Call
-    ACT = math.floor(total_calls / 24)
-    if total_calls == 0:
-        ACD = 0
-    else:
-        ACD = int_convert_to_minute(math.floor(total_duration / total_calls))
+    act_acd_array = calculate_act_and_acd(total_calls, total_duration)
+    ACT = act_acd_array['ACT']
+    ACD = act_acd_array['ACD']
 
     logging.debug('CDR dashboard view end')
     variables = {
@@ -1067,11 +1076,9 @@ def get_cdr_mail_report():
                 }
 
     #Calculate the Average Time of Call
-    ACT = math.floor(total_calls / 24)
-    if total_calls == 0:
-        ACD = 0
-    else:
-        ACD = int_convert_to_minute(math.floor(total_duration / total_calls))
+    act_acd_array = calculate_act_and_acd(total_calls, total_duration)
+    ACT = act_acd_array['ACT']
+    ACD = act_acd_array['ACD']
 
     country_analytic = country_analytic.items()
     country_analytic = sorted(country_analytic,
@@ -1380,23 +1387,21 @@ def cdr_overview(request):
                 from_date = request.POST['from_date']
                 start_date = ceil_strdate(from_date, 'start')
             else:
-                from_date = tday
+                from_date = tday.strftime('%Y-%m-%d')
 
             if "to_date" in request.POST:
                 to_date = request.POST['to_date']
                 end_date = ceil_strdate(to_date, 'end')
             else:
-                to_date = tday
+                to_date = tday.strftime('%Y-%m-%d')
 
             switch_id = form.cleaned_data.get('switch')
             if switch_id and int(switch_id) != 0:
                 query_var['metadata.switch_id'] = int(switch_id)
 
             if from_date != '' and to_date != '':
-                start_date = datetime(
-                    from_date.year, from_date.month, from_date.day, 0, 0, 0, 0)
-                end_date = datetime(
-                    to_date.year, to_date.month, to_date.day, 23, 59, 59, 999999)
+                start_date = ceil_strdate(from_date, 'start')
+                end_date = ceil_strdate(to_date, 'end')
                 query_var['metadata.date'] = {
                     '$gte': start_date,
                     '$lt': end_date
