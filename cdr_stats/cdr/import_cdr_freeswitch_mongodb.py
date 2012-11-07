@@ -257,9 +257,13 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         destination_number = cdr['callflow']['caller_profile'][ \
                                             'destination_number']
 
-        destination_data = chk_destination(destination_number)
-        authorized = destination_data['authorized']
-        country_id = destination_data['country_id']
+        if len(destination_number) <= settings.INTERNAL_CALL:
+            authorized = 1
+            country_id = 999
+        else:
+            destination_data = chk_destination(destination_number)
+            authorized = destination_data['authorized']
+            country_id = destination_data['country_id']
 
         hangup_cause_id = get_hangupcause_id(cdr['variables'][ \
                                             'hangup_cause_q850'])

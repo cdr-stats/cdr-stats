@@ -17,6 +17,7 @@ from django.conf import settings
 from cdr.models import Switch, HangupCause
 from country_dialcode.models import Country, Prefix
 from cache_utils.decorators import cached
+from django.utils.translation import gettext as _
 import re
 
 
@@ -151,6 +152,8 @@ def get_country_name(id, type=''):
     >>>  get_country_name(198)
     'Spain'
     """
+    if id == 999:
+        return _('Internal Call')
     try:
         obj = Country.objects.get(pk=id)
         if type == 'iso2':
@@ -158,7 +161,7 @@ def get_country_name(id, type=''):
         else:
             return obj.countryname
     except:
-        return ''
+        return _('Unknow')
 
 
 @cached(3600)

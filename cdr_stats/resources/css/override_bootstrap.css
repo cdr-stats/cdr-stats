@@ -11,6 +11,7 @@
 footer {
     padding: 40px 20px 10px;
     text-align: center; /* center align it with the container */
+    clear: both;
 }
 
 .brand img {

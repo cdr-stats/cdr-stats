@@ -182,10 +182,13 @@ def import_cdr_asterisk(shell=False):
 
             # Check Destination number
             destination_number = row[0]
-            destination_data = chk_destination(destination_number)
-
-            authorized = destination_data['authorized']
-            country_id = destination_data['country_id']
+            if len(destination_number) <= settings.INTERNAL_CALL:
+                authorized = 1
+                country_id = 999
+            else:
+                destination_data = chk_destination(destination_number)
+                authorized = destination_data['authorized']
+                country_id = destination_data['country_id']
 
             # Prepare global CDR
             cdr_record = {

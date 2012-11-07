@@ -279,7 +279,7 @@
                                 <img src="{{STATIC_URL}}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name }}">
                             {% endcache %}
                         {% else %}
-                            <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip">
+                            <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World" %}">
                         {% endif %}
                         {% if row.authorized == 1  %}
                             <img src="{{STATIC_URL}}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans "Authorized call" %}"/>

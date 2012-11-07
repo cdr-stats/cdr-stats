@@ -159,15 +159,15 @@
                 </thead>
                 <tbody>
                 {% for country_data in world_analytic_array %}
-                    <tr> 
+                    <tr>
                         <td>
                             {% if country_data.0 %}
                                 <img src="{{STATIC_URL}}cdr-stats/{{ country_data.0|iso_flag }}" class="elemtooltip" title="{{ country_data.0|country_name }}">
                                 {{ country_data.4 }}
                             {% else %}
-                                <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip">
+                                <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World" %}">
                                 {% trans "world"|title  %}
-                            {% endif %}                            
+                            {% endif %}
                         </td>
                         <td>{{ country_data.2 }} {% trans "Calls"%}</td>
                         <td>{{ country_data.3|conv_min }} {% trans "minutes"%}</td>

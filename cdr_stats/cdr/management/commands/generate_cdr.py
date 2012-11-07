@@ -65,7 +65,13 @@ def generate_cdr_data(day_delta_int):
     channel_name = 'sofia/internal/' + caller_id + '@127.0.0.1'
     destination_number = ''.join([choice(digit) for i in range(8)])
 
-    destination_number = choice(COUNTRY_PREFIX) + destination_number
+    if random.randint(1, 20) == 1:
+        #Add local calls
+        destination_number = ''.join([choice(digit) for i in range(5)])
+    else:
+        #International calls
+        #destination_number = choice(COUNTRY_PREFIX) + destination_number
+        destination_number = ''.join([choice(digit) for i in range(5)])
 
     hangup_cause = choice(HANGUP_CAUSE)
     hangup_cause_q850 = choice(HANGUP_CAUSE_Q850)

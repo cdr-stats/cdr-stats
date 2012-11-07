@@ -20,6 +20,7 @@ import re
 
 register = template.Library()
 
+
 @register.filter(name='seen_unseen')
 def seen_unseen(value):
     """Tag is for icon which is
@@ -83,12 +84,8 @@ def hangupcause_name_with_title(id):
     """
     try:
         val = get_hangupcause_name(id)
-        t = re.sub("([a-z])'([A-Z])",
-                   lambda m: m.group(0).lower(),
-                   val.title())
-        return re.sub("\d([A-Z])",
-                      lambda m: m.group(0).lower(),
-                      t)
+        t = re.sub("([a-z])'([A-Z])", lambda m: m.group(0).lower(), val.title())
+        return re.sub("\d([A-Z])", lambda m: m.group(0).lower(), t)
     except:
         return ''
 
@@ -105,8 +102,8 @@ def mongo_id(value, sub_val):
     # Return value
     return value
 
+
 @register.simple_tag(name='get_notice_count')
 def get_notice_count(request):
     """tag to display notice count"""
     return notice_count(request)
-

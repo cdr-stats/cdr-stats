@@ -96,7 +96,7 @@ $(function () {
     {% for rc in country_list %}
         {
             label: {% cache 1800 c_id rc.grouper %}
-                   '{{ rc.grouper|country_name }}'
+                   '{{ rc.grouper|country_name|title }}'
                    {% endcache %},
             data: [
                 {% for item in rc.list %}
@@ -373,10 +373,10 @@ $(function () {
                             <td class="td-dashboard">
                                 {% if country_data.3 %}
                                     {% cache 1800 hcountry_flag country_data.3 %}
-                                        <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
+                                        <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name|title }}">
                                     {% endcache %}
                                 {% else %}
-                                    <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip">
+                                    <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World" %}">
                                 {% endif %}
                             </td>
                             <td class="td-dashboard" width="100">
@@ -418,10 +418,10 @@ $(function () {
                             <td class="td-dashboard">
                                 {% if country_data.3 %}
                                     {% cache 1800 hcountry_flag country_data.3 %}
-                                        <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name }}">
+                                        <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name|title }}">
                                     {% endcache %}
                                 {% else %}
-                                    <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip">
+                                    <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World" %}">
                                 {% endif %}
                             </td>
                             <td class="td-dashboard" width="100">
