@@ -123,7 +123,7 @@ def common_send_notification(request, status, recipient=None):
     """
     if not recipient:
         recipient = request.user
-        sender = User.objects.get(is_superuser=1, username=recipient)
+        sender = User.objects.get(username=recipient)
     else:
         if request.user.is_anonymous():
             sender = User.objects.get(is_superuser=1, username=recipient)
@@ -139,7 +139,7 @@ def common_send_notification(request, status, recipient=None):
     return True
 
 
-def check_cdr_exists(function=None,):
+def check_cdr_exists(function=None):
     """
     decorator check if cdr exists if not go to error page
     """

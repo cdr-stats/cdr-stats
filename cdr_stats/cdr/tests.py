@@ -29,7 +29,7 @@ from cdr.tasks import sync_cdr_pending, get_channels_info
 from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
                       cdr_report_by_hour, cdr_concurrent_calls,\
                       cdr_realtime, cdr_country_report, mail_report,\
-                      world_map_view, index, cdr_detail
+                      world_map_view, index, cdr_detail, common_send_notification
 from cdr.functions_def import get_switch_list, get_hangupcause_name,\
                               get_hangupcause_id
 from cdr.templatetags.cdr_extras import hangupcause_name_with_title,\
@@ -189,6 +189,9 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
                 'records_per_page': 10}
         response = self.client.post('/cdr_view/', data)
         self.assertTrue(response.context['form'], CdrSearchForm(data))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get('/cdr_view/?page=1')
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.post('/cdr_view/', data)
@@ -373,6 +376,8 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         request.session = {}
         response = world_map_view(request)
         self.assertEqual(response.status_code, 200)
+
+        common_send_notification(request, 1, request.user)
 
 
 class CdrStatsTaskTestCase(TestCase):
