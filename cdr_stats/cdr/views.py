@@ -704,7 +704,11 @@ def chk_date_for_hrs(graph_date):
 
 
 def calculate_act_and_acd(total_calls, total_duration):
-    #Calculate the Average Time of Call
+    """Calculate the Average Time of Call
+
+    >>> calculate_act_and_acd(5, 100)
+    {'ACD': '00:20', 'ACT': 0.0}
+    """
     ACT = math.floor(total_calls / 24)
     if total_calls == 0:
         ACD = 0
@@ -745,8 +749,6 @@ def cdr_dashboard(request):
             if switch_id and int(switch_id) != 0:
                 query_var['metadata.switch_id'] = int(switch_id)
 
-    #start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
-    #end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
     end_date = datetime(now.year, now.month, now.day,
                         now.hour, now.minute, now.second, now.microsecond)
     # -2 cause the collection metadata.date only contains year-month-day
