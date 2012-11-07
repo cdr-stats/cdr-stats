@@ -1036,26 +1036,13 @@ def get_cdr_mail_report():
                                        pipeline=pipeline)
     logging.debug('After Aggregate')
 
-    detail_data = []
     total_duration = 0
     total_calls = 0
     country_analytic = dict()
     hangup_analytic = dict()
     if list_data:
         for doc in list_data['result']:
-            duration_sum = 0
-            #print doc
-            duration_sum = doc['duration_sum']
-            #if doc['duration_sum']:
-            #    duration_sum = sum([ int(x) for x in doc['duration_sum'] ])
-
-            detail_data.append({
-                'duration__sum': duration_sum,
-                'calldate__count': int(doc['call_count']),
-                'duration__avg': duration_sum / int(doc['call_count']),
-            })
-
-            total_duration += duration_sum
+            total_duration += doc['duration_sum']
             total_calls += int(doc['call_count'])
 
             # created cdr_hangup_analytic
@@ -1070,11 +1057,11 @@ def get_cdr_mail_report():
                 country_analytic[country_id]['call_count'] +=\
                     int(doc['call_count'])
                 country_analytic[country_id]['duration_sum'] +=\
-                    int(duration_sum)
+                    doc['duration_sum']
             else:
                 country_analytic[country_id] = {
                     'call_count': int(doc['call_count']),
-                    'duration_sum': int(duration_sum)
+                    'duration_sum': doc['duration_sum']
                 }
 
     #Calculate the Average Time of Call
