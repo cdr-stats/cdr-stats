@@ -14,6 +14,7 @@
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.conf import settings
+from django.test import TestCase
 from common.utils import BaseAuthenticatedClient
 from cdr.models import Switch, HangupCause
 from cdr.forms import CdrSearchForm,\
@@ -24,7 +25,7 @@ from cdr.forms import CdrSearchForm,\
                       SwitchForm,\
                       WorldForm,\
                       EmailReportForm
-#from cdr.tasks import sync_cdr_pending, get_channels_info
+from cdr.tasks import sync_cdr_pending, get_channels_info
 from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
                       cdr_report_by_hour, cdr_concurrent_calls,\
                       cdr_realtime, cdr_country_report, mail_report,\
@@ -34,6 +35,7 @@ from cdr.functions_def import get_switch_list, get_hangupcause_name,\
 from cdr.templatetags.cdr_extras import hangupcause_name_with_title,\
                                         mongo_id, seen_unseen,\
                                         seen_unseen_word
+
 from bson.objectid import ObjectId
 from datetime import datetime
 
@@ -105,6 +107,25 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Customer Interface."""
 
     fixtures = ['auth_user.json', 'switch.json']
+
+    def test_mgt_command(self):
+        # Test mgt command
+        call_command('generate_cdr',
+            '--number-cdr=10', '--delta-day=1', '--duration=10')
+        call_command('generate_cdr',
+            '--number-cdr=10', '--delta-day=0', '--duration=0')
+        call_command('generate_cdr', '--number-cdr=10', '--delta-day=0')
+        call_command('generate_cdr', '--number-cdr=10')
+
+        call_command('sync_cdr_freeswitch', '--apply-index')
+        call_command('sync_cdr_freeswitch')
+
+        #call_command('sync_cdr_asterisk', '--apply-index')
+        #call_command('sync_cdr_asterisk')
+
+        #Don't test generate_concurrent_call - No need
+        #call_command('generate_concurrent_call', '--delta-day=1')
+        #call_command('generate_concurrent_call')
 
     def test_index(self):
         """Test Function to check customer index page"""
@@ -358,19 +379,19 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
 
-#class CdrStatsTaskTestCase(TestCase):
-#
-#    fixtures = ['auth_user.json']
-#
-#    def test_get_channels_info(self):
-#        """Test task : get_channels_info"""
-#        delta = timedelta(seconds=1)
-#        self.assertEqual(get_channels_info().timedelta_seconds(delta), 1)
-#
-#    def test_sync_cdr_pending(self):
-#        """Test task : sync_cdr_pending"""
-#        delta = timedelta(seconds=1)
-#        self.assertEqual(sync_cdr_pending().timedelta_seconds(delta), 1)
+class CdrStatsTaskTestCase(TestCase):
+
+    fixtures = ['auth_user.json']
+
+    def test_get_channels_info(self):
+        """Test task : get_channels_info"""
+        result = get_channels_info().run()
+        self.assertEqual(result, True)
+
+    def test_sync_cdr_pending(self):
+        """Test task : sync_cdr_pending"""
+        result = sync_cdr_pending().run()
+        self.assertEqual(result, True)
 
 
 class CdrModelTestCase(BaseAuthenticatedClient):
@@ -457,21 +478,4 @@ class CdrModelTestCase(BaseAuthenticatedClient):
         self.switch.delete()
         self.hangupcause.delete()
 
-    def test_mgt_command(self):
-        # Test mgt command
-        call_command('generate_cdr',
-            '--number-cdr=10', '--delta-day=1', '--duration=10')
-        call_command('generate_cdr',
-            '--number-cdr=10', '--delta-day=0', '--duration=0')
-        call_command('generate_cdr', '--number-cdr=10', '--delta-day=0')
-        call_command('generate_cdr', '--number-cdr=10')
 
-        call_command('sync_cdr_freeswitch', '--apply-index')
-        call_command('sync_cdr_freeswitch')
-
-        #call_command('sync_cdr_asterisk', '--apply-index')
-        #call_command('sync_cdr_asterisk')
-
-        #Don't test generate_concurrent_call - No need
-        #call_command('generate_concurrent_call', '--delta-day=1')
-        #call_command('generate_concurrent_call')
