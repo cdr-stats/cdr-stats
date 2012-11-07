@@ -68,7 +68,7 @@ def get_element(cdr):
     #Get duration
     if 'variables' in cdr and 'duration' in cdr['variables'] \
         and cdr['variables']['duration']:
-        duration = cdr['variables']['duration']
+        duration = float(cdr['variables']['duration'])
     else:
         duration = 0
     #Get billsec

@@ -252,7 +252,8 @@ def pipeline_mail_report(query_var):
             '_id': {'country_id': '$country_id',
                     'hangup_cause_id': '$hangup_cause_id'
             },
-            'duration_sum': {'$push': '$duration'},
+            #'duration_sum': {'$push': '$duration'},
+            'duration_sum': {'$sum': '$duration'},
             'call_count': {'$sum': 1},
             }
         },

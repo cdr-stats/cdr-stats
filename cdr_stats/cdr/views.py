@@ -1044,13 +1044,15 @@ def get_cdr_mail_report():
     if list_data:
         for doc in list_data['result']:
             duration_sum = 0
-            if doc['duration_sum']:
-                duration_sum = sum([ int(x) for x in doc['duration_sum'] ])
+            #print doc
+            duration_sum = doc['duration_sum']
+            #if doc['duration_sum']:
+            #    duration_sum = sum([ int(x) for x in doc['duration_sum'] ])
 
             detail_data.append({
                 'duration__sum': duration_sum,
                 'calldate__count': int(doc['call_count']),
-                'duration__avg': duration_sum/int(doc['call_count']),
+                'duration__avg': duration_sum / int(doc['call_count']),
             })
 
             total_duration += duration_sum
