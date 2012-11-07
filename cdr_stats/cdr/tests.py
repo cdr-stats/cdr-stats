@@ -194,6 +194,12 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         response = self.client.get('/cdr_view/?page=1')
         self.assertEqual(response.status_code, 200)
 
+        response = self.client.get('/cdr_view/?page=1&sort_by=-caller_id_number')
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get('/cdr_view/?page=1&sort_by=caller_id_number')
+        self.assertEqual(response.status_code, 200)
+
         request = self.factory.post('/cdr_view/', data)
         request.user = self.user
         request.session = {}
