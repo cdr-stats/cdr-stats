@@ -88,6 +88,10 @@ PN_MAX_DIGITS = 9
 # List of phonenumber prefix to ignore, this will be remove prior analysis
 PREFIX_TO_IGNORE = "+,0,00,000,0000,00000,011,55555,99999"
 
+# When the dialed number is less or equal to INTERNAL_CALL, the call will be considered
+# as a internal call, for example when dialed number is 41200
+INTERNAL_CALL = 5
+
 #Realtime Graph : set the Y axis limit
 REALTIME_Y_AXIS_LIMIT = 10
 
