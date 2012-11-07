@@ -123,10 +123,6 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         #call_command('sync_cdr_asterisk', '--apply-index')
         #call_command('sync_cdr_asterisk')
 
-        #Don't test generate_concurrent_call - No need
-        #call_command('generate_concurrent_call', '--delta-day=1')
-        #call_command('generate_concurrent_call')
-
     def test_index(self):
         """Test Function to check customer index page"""
         response = self.client.get('/')
