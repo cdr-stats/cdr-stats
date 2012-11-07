@@ -1703,26 +1703,24 @@ def cdr_country_report(request):
             if switch_id and int(switch_id) != 0:
                 query_var['metadata.switch_id'] = int(switch_id)
 
-            # TODO : How to check this in new collection
             duration = form.cleaned_data.get('duration')
             duration_type = form.cleaned_data.get('duration_type')
             if duration:
                 due = mongodb_int_filter(duration, duration_type)
+                temp = []
                 if due:
                     for i in range(0, 24):
-                        query_var['duration_hourly.%d' % (i)] = due
-                        #for j in range(0, 60):
-                        #    query_var['duration_minute.%d.%d' % (i, j)] = due
+                        temp.append({'duration_hourly.%d' % (i) : due})
+                    query_var['$or'] = temp
         else:
-            country_final = country_analytic_array = []
+            country_analytic_array = []
             logging.debug('Error : CDR country report form')
             variables = {
                 'module': current_view(request),
                 'total_calls': total_calls,
                 'total_duration': total_duration,
                 'total_record': total_record_final,
-                'country_final': country_final,
-                'top10_country': country_analytic_array[0:11],
+                'country_final': country_analytic_array,
                 'form': form,
                 'search_tag': search_tag,
                 'NUM_COUNTRY': settings.NUM_COUNTRY,
@@ -1799,7 +1797,6 @@ def cdr_country_report(request):
 
             total_calls += int(doc['call_per_day'])
             total_duration += int(doc['duration_per_day'])
-
 
     logging.debug('CDR country report view end')
     variables = {
