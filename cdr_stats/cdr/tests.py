@@ -256,6 +256,15 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         response = cdr_overview(request)
         self.assertEqual(response.status_code, 200)
 
+        data = {'switch_id': -1,
+                'from_date': '',
+                'to_date': ''}
+        request = self.factory.post('/cdr_overview/', data)
+        request.user = self.user
+        request.session = {}
+        response = cdr_overview(request)
+        self.assertEqual(response.status_code, 200)
+
     def test_cdr_hourly_report(self):
         """Test Function to check cdr hourly report"""
         response = self.client.get('/hourly_report/')
@@ -283,6 +292,17 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
                 'comp_days': 2,
                 'graph_view': 2,
                 'check_days': 2}
+        request = self.factory.post('/hourly_report/', data)
+        request.user = self.user
+        request.session = {}
+        response = cdr_report_by_hour(request)
+        self.assertEqual(response.status_code, 200)
+
+        data = {'switch_id': 0,
+                'from_date': datetime.now().strftime("%Y-%m-%d"),
+                'comp_days': 10,
+                'graph_view': 3,
+                'check_days': 7}
         request = self.factory.post('/hourly_report/', data)
         request.user = self.user
         request.session = {}
@@ -371,7 +391,8 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertTemplateUsed(response, 'frontend/cdr_mail_report.html')
         self.assertEqual(response.status_code, 200)
 
-        request = self.factory.get('/mail_report/')
+        data = {'multiple_email': 'abc@localhost.com,xyzlocalhost.com'}
+        request = self.factory.post('/mail_report/', data)
         request.user = self.user
         request.session = {}
         response = mail_report(request)
