@@ -29,7 +29,8 @@ from cdr.tasks import sync_cdr_pending, get_channels_info
 from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
                       cdr_report_by_hour, cdr_concurrent_calls,\
                       cdr_realtime, cdr_country_report, mail_report,\
-                      world_map_view, index, cdr_detail, common_send_notification
+                      world_map_view, index, cdr_detail, common_send_notification,\
+                      cdr_export_to_csv
 from cdr.functions_def import get_switch_list, get_hangupcause_name,\
                               get_hangupcause_id
 from cdr.templatetags.cdr_extras import hangupcause_name_with_title,\
@@ -206,6 +207,19 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         request.user = self.user
         request.session = {}
         response = cdr_view(request)
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.get('/cdr_export_csv/')
+        request.user = self.user
+        request.session = {}
+
+        now = datetime.today()
+        start_date = datetime(now.year, now.month, 1, 0, 0, 0, 0)
+        end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 99999)
+        request.session['query_var'] = {
+            'start_uepoch': {'$gte': start_date, '$lt': end_date}
+        }
+        response = cdr_export_to_csv(request)
         self.assertEqual(response.status_code, 200)
 
     def test_cdr_detail(self):

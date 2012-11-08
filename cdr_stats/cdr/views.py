@@ -594,6 +594,7 @@ def cdr_export_to_csv(request):
     # the csv writer
 
     query_var = request.session['query_var']
+
     final_result = cdr_data.find(query_var, {"uuid": 0,
                                              "answer_uepoch": 0,
                                              "end_uepoch": 0,
