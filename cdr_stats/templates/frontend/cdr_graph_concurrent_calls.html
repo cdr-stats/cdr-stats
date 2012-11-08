@@ -4,7 +4,7 @@
 {% block extra_header %}
 <script type="text/javascript">
 $(function() {
-    $("#id_from_date").datepicker({ dateFormat: 'yy-mm-dd' });
+    $("#id_from_date").datepicker({ format: 'yyyy-mm-dd' });
 });
 </script>
 {% endblock %}
@@ -105,7 +105,7 @@ $(function () {
                 var year = myDate.getFullYear();
                 var month = myDate.getMonth() + 1;
                 var day = myDate.getDate();
-            
+
                 var hours = myDate.getHours();
                 var minutes = myDate.getMinutes();
 
@@ -131,7 +131,7 @@ $(function () {
             previousPoint = null;
         }
     });
-        
+
 });
 </script>
 
