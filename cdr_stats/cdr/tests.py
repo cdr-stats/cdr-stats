@@ -255,16 +255,20 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         response = cdr_report_by_hour(request)
         self.assertEqual(response.status_code, 200)
 
-        data = {'switch_id': 1,
+        data = {'switch_id': 0,
                 'from_date': datetime.now().strftime("%Y-%m-%d"),
                 'comp_days': 2,
                 'graph_view': 1,
-                'check_days': 2,
-                'result': 'min'}
+                'check_days': 1}
         response = self.client.post('/hourly_report/', data)
         self.assertTrue(response.context['form'], CompareCallSearchForm(data))
         self.assertEqual(response.status_code, 200)
 
+        data = {'switch_id': 0,
+                'from_date': datetime.now().strftime("%Y-%m-%d"),
+                'comp_days': 2,
+                'graph_view': 2,
+                'check_days': 2}
         request = self.factory.post('/hourly_report/', data)
         request.user = self.user
         request.session = {}

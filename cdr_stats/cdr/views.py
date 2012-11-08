@@ -926,8 +926,8 @@ def cdr_concurrent_calls(request):
 
         for d in calls_in_day.clone():
             final_data.append({'millisec': int(d['_id']['g_Millisec']),
-                           'call__count': int(d['value']['numbercall__max']),
-                           'switch_id': int(d['_id']['f_Switch'])})
+                               'call__count': int(d['value']['numbercall__max']),
+                               'switch_id': int(d['_id']['f_Switch'])})
 
         logging.debug('CDR concurrent view end')
         variables = {
