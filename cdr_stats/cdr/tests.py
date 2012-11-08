@@ -174,19 +174,21 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         response = cdr_view(request)
         self.assertEqual(response.status_code, 200)
 
-        data = {'switch_id': 1,
-                'from_date': datetime.now().strftime("%Y-%m-%d"),
-                'to_date': datetime.now().strftime("%Y-%m-%d"),
-                'destination': '91',
-                'destination_type': 1,
-                'accountcode': '123',
-                'caller': 'abc',
-                'duration': '30',
-                'duration_type': '>',
-                'direction': 'INBOUND',
-                'hangup_cause': 1,
-                'result': 1,
-                'records_per_page': 10}
+        data = {
+            'switch_id': 1,
+            'from_date': datetime.now().strftime("%Y-%m-%d"),
+            'to_date': datetime.now().strftime("%Y-%m-%d"),
+            'destination': '91',
+            'destination_type': 1,
+            'accountcode': '123',
+            'caller': 'abc',
+            'duration': '30',
+            'duration_type': '>',
+            'direction': 'INBOUND',
+            'hangup_cause': 1,
+            'result': 1,
+            'records_per_page': 10
+        }
         response = self.client.post('/cdr_view/', data)
         self.assertTrue(response.context['form'], CdrSearchForm(data))
         self.assertEqual(response.status_code, 200)
