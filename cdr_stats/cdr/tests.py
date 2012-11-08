@@ -373,11 +373,17 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
         data = {'switch_id': 1,
                 'from_date': datetime.now().strftime("%Y-%m-%d"),
-                'to_date': datetime.now().strftime("%Y-%m-%d")}
+                'to_date': datetime.now().strftime("%Y-%m-%d"),
+                'duration': 10,
+                'duration_type': 1,
+                'country_id': 1}
         response = self.client.post('/country_report/', data)
         self.assertTrue(response.context['form'], CountryReportForm(data))
         self.assertEqual(response.status_code, 200)
 
+        data = {'switch_id': -1,
+                'from_date': '',
+                'to_date': ''}
         request = self.factory.post('/country_report/', data)
         request.user = self.user
         request.session = {}
@@ -418,6 +424,9 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertTrue(response.context['form'], WorldForm(data))
         self.assertEqual(response.status_code, 200)
 
+        data = {'switch_id': -1,
+                'from_date': '',
+                'to_date': ''}
         request = self.factory.post('/world_map/', data)
         request.user = self.user
         request.session = {}
