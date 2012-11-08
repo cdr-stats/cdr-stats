@@ -98,18 +98,14 @@
                 $('#toggle_btn i').toggleClass('icon-zoom-out');
             });
 
+            $(".collapse").on('shown', function () {
+                $('#toggle_btn span').text('{% trans "Hide search" %}');
+            });
+
             $(".collapse").on('hide', function () {
                 $('#toggle_btn span').text('{% trans "advanced search"|title %}');
                 $('#toggle_btn i').toggleClass('icon-search');
                 $('#toggle_btn i').toggleClass('icon-zoom-out');
-            });
-
-            $(".collapse").on('hidden', function () {
-                $('#toggle_btn span').text('{% trans "advanced search"|title %}');
-            });
-
-            $(".collapse").on('shown', function () {
-                $('#toggle_btn span').text('{% trans "Hide search" %}');
             });
 
             {% if search_tag == 0 %}
