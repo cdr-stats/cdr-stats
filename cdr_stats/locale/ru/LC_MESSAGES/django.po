@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-09 13:55+0100\n"
+"POT-Creation-Date: 2012-11-09 16:02+0100\n"
 "PO-Revision-Date: 2012-06-17 01:05+0400\n"
 "Last-Translator: Ilya Shchepetkin <shchepyotkin@gmail.com>\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -506,6 +506,7 @@ msgstr "Префикс"
 #: templates/frontend/cdr_overview.html:374
 #: templates/frontend/cdr_view.html:351
 #: templates/frontend/mail_report_template.html:12
+#: user_profile/constants.py:30
 msgid "Date"
 msgstr "Дата"
 
@@ -784,11 +785,17 @@ msgstr "Добавить %(name)s"
 
 #: templates/admin/cdr_alert/blacklist/change_list.html:27
 #: templates/admin/cdr_alert/whitelist/change_list.html:27
+#, fuzzy
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] "Фильтр"
+msgstr[1] "Фильтр"
+msgstr[2] "Фильтр"
 
 #: templates/admin/cdr_alert/blacklist/change_list.html:38
 #: templates/admin/cdr_alert/whitelist/change_list.html:38
-msgid "Please correct the error below."
-msgstr "Фильтр"
+msgid "Filter"
+msgstr ""
 
 #: templates/admin_tools/dashboard/module.html:7
 #: templates/admin_tools/dashboard/modules/app_list.html:7
@@ -1396,7 +1403,9 @@ msgstr "CDR-Stats под лицензией"
 msgid ""
 "however an alternative license can be purchased if the MPL V2 license is not "
 "suitable for your requirements."
-msgstr "Однако альтернативные лицензии могут быть приобретены при наличии лицензии MPL V2 не подходит для ваших требований."
+msgstr ""
+"Однако альтернативные лицензии могут быть приобретены при наличии лицензии "
+"MPL V2 не подходит для ваших требований."
 
 #: templates/frontend/index.html:35
 msgid "View Licensing details"
@@ -1666,6 +1675,18 @@ msgstr ""
 
 #: user_profile/constants.py:23
 msgid "whitelist prefix"
+msgstr ""
+
+#: user_profile/constants.py:27
+msgid "Message"
+msgstr ""
+
+#: user_profile/constants.py:28
+msgid "Notice type"
+msgstr ""
+
+#: user_profile/constants.py:29
+msgid "Sender"
 msgstr ""
 
 #: user_profile/fields.py:35
@@ -2484,38 +2505,38 @@ msgstr "Администратор"
 msgid "Admins"
 msgstr "Администраторы"
 
-#: user_profile/views.py:137
+#: user_profile/views.py:138
 msgid "All notifications are marked as read."
 msgstr "Все уведомления, отмечены как прочитанные."
 
-#: user_profile/views.py:149
+#: user_profile/views.py:150
 msgid "Detail has been changed."
 msgstr "Деталь была изменена."
 
-#: user_profile/views.py:151 user_profile/views.py:161
+#: user_profile/views.py:152 user_profile/views.py:162
 msgid "Please correct the errors below."
 msgstr "Пожалуйста, исправьте ошибки ниже."
 
-#: user_profile/views.py:159
+#: user_profile/views.py:160
 msgid "Your password has been changed."
 msgstr "Ваш пароль был изменен."
 
-#: user_profile/views.py:203
+#: user_profile/views.py:205
 #, python-format
 msgid "\"%(name)s\" is deleted."
 msgstr "\"%(name)s\" удалён"
 
-#: user_profile/views.py:207
+#: user_profile/views.py:209
 #, python-format
 msgid "\"%(name)s\" is marked as read."
 msgstr "\"%(name)s\" помечен как прочитанные."
 
-#: user_profile/views.py:219
+#: user_profile/views.py:221
 #, python-format
 msgid "%(count)s notification(s) are deleted."
 msgstr "%(count)s уведомлением(ы) будут удалены."
 
-#: user_profile/views.py:224
+#: user_profile/views.py:226
 #, python-format
 msgid "%(count)s notification(s) are marked as read."
 msgstr "%(count)s уведомлением(ы) отмечены как прочитанные."

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-09 13:55+0100\n"
+"POT-Creation-Date: 2012-11-09 16:02+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Areski Belaid <areski@gmail.com>\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -517,6 +517,7 @@ msgstr ""
 #: templates/frontend/cdr_overview.html:374
 #: templates/frontend/cdr_view.html:351
 #: templates/frontend/mail_report_template.html:12
+#: user_profile/constants.py:30
 msgid "Date"
 msgstr "Fecha"
 
@@ -1704,6 +1705,18 @@ msgstr ""
 msgid "whitelist prefix"
 msgstr ""
 
+#: user_profile/constants.py:27
+msgid "Message"
+msgstr ""
+
+#: user_profile/constants.py:28
+msgid "Notice type"
+msgstr ""
+
+#: user_profile/constants.py:29
+msgid "Sender"
+msgstr ""
+
 #: user_profile/fields.py:35
 msgid "Afar"
 msgstr ""
@@ -2521,38 +2534,38 @@ msgstr ""
 msgid "Admins"
 msgstr ""
 
-#: user_profile/views.py:137
+#: user_profile/views.py:138
 msgid "All notifications are marked as read."
 msgstr ""
 
-#: user_profile/views.py:149
+#: user_profile/views.py:150
 msgid "Detail has been changed."
 msgstr ""
 
-#: user_profile/views.py:151 user_profile/views.py:161
+#: user_profile/views.py:152 user_profile/views.py:162
 msgid "Please correct the errors below."
 msgstr ""
 
-#: user_profile/views.py:159
+#: user_profile/views.py:160
 msgid "Your password has been changed."
 msgstr ""
 
-#: user_profile/views.py:203
+#: user_profile/views.py:205
 #, python-format
 msgid "\"%(name)s\" is deleted."
 msgstr ""
 
-#: user_profile/views.py:207
+#: user_profile/views.py:209
 #, python-format
 msgid "\"%(name)s\" is marked as read."
 msgstr ""
 
-#: user_profile/views.py:219
+#: user_profile/views.py:221
 #, python-format
 msgid "%(count)s notification(s) are deleted."
 msgstr ""
 
-#: user_profile/views.py:224
+#: user_profile/views.py:226
 #, python-format
 msgid "%(count)s notification(s) are marked as read."
 msgstr ""
