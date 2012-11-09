@@ -8,7 +8,8 @@
 {% block extra_header %}
     <script type="text/javascript">
     $(function() {
-        var dates = $('#id_from_date, #id_to_date').datepicker({
+
+        /*var dates = $('#id_from_date, #id_to_date').datepicker({
             defaultDate: "+1w",
             changeMonth: true,
             format: 'yyyy-mm-dd',
@@ -18,7 +19,46 @@
                 var date = $.datepicker.parseDate(instance.settings.format || $.datepicker._defaults.format, selectedDate, instance.settings);
                 dates.not(this).datepicker("option", option, date);
             }
+        });*/
+
+        var today = new Date();
+        var startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        var last_day = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
+        var endDate = new Date(today.getFullYear(), today.getMonth(), last_day);
+
+        $('#id_from_date').datepicker({
+            format: 'yyyy-mm-dd'
+        }).on('changeDate', function(selectedDate){
+            if (selectedDate.date.valueOf() > endDate.valueOf()){
+                var Year = startDate.getFullYear();
+                var Month = startDate.getMonth() + 1;
+                var Day = startDate.getDate();
+                Month = Month < 10 ? '0' + Month : Month;
+                Day = Day < 10 ? '0' + Day : Day;
+                startDate_string = (Year + '-' + Month + '-' + Day);
+                $('#id_from_date').datepicker('setValue', startDate_string);
+
+            } else {
+                startDate = new Date(selectedDate.date);
+            }
         });
+
+        $('#id_to_date').datepicker({
+            format: 'yyyy-mm-dd'
+        }).on('changeDate', function(selectedDate){
+            if (selectedDate.date.valueOf() < startDate.valueOf()){
+                var Year = endDate.getFullYear();
+                var Month = endDate.getMonth() + 1;
+                var Day = endDate.getDate();
+                Month = Month < 10 ? '0' + Month : Month;
+                Day = Day < 10 ? '0' + Day : Day;
+                endDate_string = (Year + '-' + Month + '-' + Day);
+                $('#id_to_date').datepicker('setValue', endDate_string);
+            } else {
+                endDate = new Date(selectedDate.date);
+            }
+        });
+
     });
     </script>
 {% endblock %}
