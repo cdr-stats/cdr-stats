@@ -2,40 +2,15 @@
 {% load i18n cdr_extras cache %}
 
 {% block extra_header %}
-<script type="text/javascript">
-    $(function() {
-
-        var today = new Date();
-        var fromDate, toDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
-        $('#id_from_date').datepicker({
-            format: 'yyyy-mm-dd'
-        }).on('changeDate', function(selectedDate){
-            if (selectedDate.date.valueOf() > toDate.valueOf()){
-                $('#id_from_date').datepicker('setValue', fromDate);
-            } else {
-                fromDate = new Date(selectedDate.date);
-            }
-        });
-
-        $('#id_to_date').datepicker({
-            format: 'yyyy-mm-dd'
-        }).on('changeDate', function(selectedDate){
-            if (selectedDate.date.valueOf() < fromDate.valueOf()){
-                $('#id_to_date').datepicker('setValue', toDate);
-            } else {
-                toDate = new Date(selectedDate.date);
-            }
-        });
-
-    });
-</script>
-<style type="text/css">
-    #placeholder_cdr_analytic div.legend table {
-        width: 5%;
-        margin-right: -70px;
-    }
-</style>
+    <script type="text/javascript">
+        {% include "frontend/common_datepicker.js" %}
+    </script>
+    <style type="text/css">
+        #placeholder_cdr_analytic div.legend table {
+            width: 5%;
+            margin-right: -70px;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
