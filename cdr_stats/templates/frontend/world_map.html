@@ -3,10 +3,7 @@
 {% load cache %}
 
 {% block extra_head %}
-    <script type="text/javascript">
-        {% include "frontend/common_datepicker.js" %}
-    </script>
-
+    {% include "frontend/common_datepicker.html" %}
     <!--css-->
     <link type="text/css" media="screen" href="{{STATIC_URL}}cdr-stats/js/jquery.vector-map/jquery.vector-map.css" rel="stylesheet">
     <!-- Javascript -->
