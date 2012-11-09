@@ -267,7 +267,7 @@ class EmailReportForm(forms.ModelForm):
     Form used to change the detail of a user in the Customer UI.
     """
     multiple_email = forms.CharField(max_length=300, required=False,
-        label=_('Enter emails to receive the report separated by a comma'))
+        label=_('Email to send the report'))
     multiple_email.widget.attrs['class'] = 'span6'
 
     class Meta:
