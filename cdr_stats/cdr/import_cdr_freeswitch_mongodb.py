@@ -149,25 +149,25 @@ def create_daily_analytic(daily_date, switch_id, country_id,
     d = datetime.datetime.combine(daily_date.date(), datetime.time.min)
 
     DAILY_ANALYTIC.update(
-            {
-            "_id": id_daily,
-            "metadata": {
-                "date": d,
-                "switch_id": switch_id,
-                "country_id": country_id,
-                "accountcode": accountcode,
-                "hangup_cause_id": hangup_cause_id,
-                },
+        {
+        "_id": id_daily,
+        "metadata": {
+            "date": d,
+            "switch_id": switch_id,
+            "country_id": country_id,
+            "accountcode": accountcode,
+            "hangup_cause_id": hangup_cause_id,
             },
-            {
-            "$inc": {
-                "call_daily": 1,
-                "call_hourly.%d" % (hour,): 1,
-                "call_minute.%d.%d" % (hour, minute,): 1,
-                "duration_daily": int(duration),
-                "duration_hourly.%d" % (hour,): int(duration),
-                "duration_minute.%d.%d" % (hour, minute,): int(duration),
-                }
+        },
+        {
+        "$inc": {
+            "call_daily": 1,
+            "call_hourly.%d" % (hour,): 1,
+            "call_minute.%d.%d" % (hour, minute,): 1,
+            "duration_daily": int(duration),
+            "duration_hourly.%d" % (hour,): int(duration),
+            "duration_minute.%d.%d" % (hour, minute,): int(duration),
+            }
         }, upsert=True)
 
     return True
@@ -222,8 +222,8 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
 
     result = importcdr_handler.find(
         {
-            '$or': [{'import_cdr': {'$exists': False}},
-                    {'import_cdr': 0}]
+        '$or': [{'import_cdr': {'$exists': False}},
+                {'import_cdr': 0}]
         },
         {
             "callflow.caller_profile.caller_id_number": 1,
