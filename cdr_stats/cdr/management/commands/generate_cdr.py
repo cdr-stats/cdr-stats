@@ -70,8 +70,7 @@ def generate_cdr_data(day_delta_int):
         destination_number = ''.join([choice(digit) for i in range(5)])
     else:
         #International calls
-        #destination_number = choice(COUNTRY_PREFIX) + destination_number
-        destination_number = ''.join([choice(digit) for i in range(5)])
+        destination_number = choice(COUNTRY_PREFIX) + destination_number
 
     hangup_cause = choice(HANGUP_CAUSE)
     hangup_cause_q850 = choice(HANGUP_CAUSE_Q850)
