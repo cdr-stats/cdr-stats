@@ -4,17 +4,30 @@
 {% block extra_header %}
 <script type="text/javascript">
     $(function() {
-        var dates = $('#id_from_date, #id_to_date').datepicker({
-            defaultDate: "+1w",
-            changeMonth: true,
-            format: 'yyyy-mm-dd',
-            onSelect: function(selectedDate) {
-                var option = this.id == "id_from_date" ? "minDate" : "maxDate";
-                var instance = $(this).data("datepicker");
-                var date = $.datepicker.parseDate(instance.settings.format || $.datepicker._defaults.format, selectedDate, instance.settings);
-                dates.not(this).datepicker("option", option, date);
+
+        var today = new Date();
+        var fromDate, toDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+        $('#id_from_date').datepicker({
+            format: 'yyyy-mm-dd'
+        }).on('changeDate', function(selectedDate){
+            if (selectedDate.date.valueOf() > toDate.valueOf()){
+                $('#id_from_date').datepicker('setValue', fromDate);
+            } else {
+                fromDate = new Date(selectedDate.date);
             }
         });
+
+        $('#id_to_date').datepicker({
+            format: 'yyyy-mm-dd'
+        }).on('changeDate', function(selectedDate){
+            if (selectedDate.date.valueOf() < fromDate.valueOf()){
+                $('#id_to_date').datepicker('setValue', toDate);
+            } else {
+                toDate = new Date(selectedDate.date);
+            }
+        });
+
     });
 </script>
 <style type="text/css">
