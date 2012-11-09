@@ -2,9 +2,7 @@
 {% load i18n cdr_extras cache %}
 
 {% block extra_header %}
-    <script type="text/javascript">
-        {% include "frontend/common_datepicker.js" %}
-    </script>
+    {% include "frontend/common_datepicker.html" %}
     <style type="text/css">
         #placeholder_cdr_analytic div.legend table {
             width: 5%;
