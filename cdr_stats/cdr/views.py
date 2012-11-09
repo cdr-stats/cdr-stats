@@ -690,7 +690,7 @@ def cdr_detail(request, id, switch_id):
                             context_instance=RequestContext(request))
 
 
-def chk_date_for_hrs(graph_date):
+def chk_date_for_hrs(previous_date, graph_date):
     """Check given graph_date is in last 24 hours range
 
     >>> graph_date = datetime(2012, 8, 20)
@@ -698,7 +698,6 @@ def chk_date_for_hrs(graph_date):
     >>> chk_date_for_hrs(graph_date)
     False
     """
-    previous_date = datetime.now() - relativedelta(days=1)
     if graph_date > previous_date:
         return True
     return False
@@ -778,6 +777,7 @@ def cdr_dashboard(request):
     logging.debug('After daily_data.find')
     total_calls = 0
     total_duration = 0
+    previous_date = datetime.now() - relativedelta(days=1)
 
     hangup_analytic = dict()
     country_all_data = dict()
@@ -786,23 +786,25 @@ def cdr_dashboard(request):
     for i in daily_data:
         calldate_dict = i['call_minute']
         duration_dict = i['duration_minute']
+        a_Year = int(i['metadata']['date'].strftime('%Y'))
+        b_Month = int(i['metadata']['date'].strftime('%m'))
+        c_Day = int(i['metadata']['date'].strftime('%d'))
+        country_id = int(i['metadata']['country_id'])
+        hc = int(i['metadata']['hangup_cause_id'])
+
         if len(calldate_dict) > 0:
             for call_hour, min_dict in calldate_dict.iteritems():
                 for min, count_val in min_dict.iteritems():
                     calldate__count = int(calldate_dict[call_hour][min])
                     if calldate__count > 0:
-                        a_Year = int(i['metadata']['date'].strftime('%Y'))
-                        b_Month = int(i['metadata']['date'].strftime('%m'))
-                        c_Day = int(i['metadata']['date'].strftime('%d'))
-                        graph_day = datetime(int(a_Year), int(b_Month),
-                                             int(c_Day), int(call_hour),
-                                             int(min))
+                        graph_day = datetime(a_Year, b_Month, c_Day,
+                                             int(call_hour), int(min))
                         dt = int(1000 * time.mktime(graph_day.timetuple()))
                         # check graph date
-                        if chk_date_for_hrs(graph_day):
+                        if chk_date_for_hrs(previous_date, graph_day):
                             duration__sum = int(duration_dict[call_hour][min])
 
-                            if int(dt) in final_record:
+                            if dt in final_record:
                                 final_record[dt]['duration_sum'] += duration__sum
                                 final_record[dt]['count_call'] += calldate__count
                             else:
@@ -810,18 +812,15 @@ def cdr_dashboard(request):
                                     'duration_sum': duration__sum,
                                     'count_call': calldate__count
                                 }
-
                             total_calls += calldate__count
                             total_duration += duration__sum
 
                             # created hangup_analytic
-                            hc = int(i['metadata']['hangup_cause_id'])
                             if hc in hangup_analytic:
                                 hangup_analytic[hc] += calldate__count
                             else:
                                 hangup_analytic[hc] = calldate__count
 
-                            country_id = int(i['metadata']['country_id'])
                             if country_id in country_all_data:
                                 country_all_data[country_id]['call_count'] += calldate__count
                                 country_all_data[country_id]['duration_sum'] += duration__sum
@@ -830,8 +829,7 @@ def cdr_dashboard(request):
                                     'call_count': calldate__count,
                                     'duration_sum': duration__sum
                                 }
-
-    logging.debug('After loop to handle data')
+    logging.debug('*** After loop to handle data ***')
 
     # sorting on date col
     final_record = final_record.items()
