@@ -50,18 +50,15 @@ msgstr "CDR уже существует!!!"
 #, python-format
 msgid ""
 "%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!"
-msgstr ""
+msgstr "%(cdr_record_count)s Ком(ы) загружены, из %(total_rows)s строку(и)!"
 
 #: cdr/admin.py:259 cdr/admin.py:263
-#, fuzzy
 msgid "Error : invalid value for import"
 msgstr ""
-"Ошибка: неправильные значения для импорта! Сравните с примером для импорта."
 
 #: cdr/admin.py:272
-#, fuzzy
 msgid "Error : importing several times the same column"
-msgstr "Ошибка: Вы выбрали для импорта в несколько раз той же колонке"
+msgstr ""
 
 #: cdr/admin.py:277 templates/admin_tools/dashboard/modules/app_list.html:31
 #: templates/admin_tools/dashboard/modules/model_list.html:20
@@ -207,9 +204,8 @@ msgid "Same day of the week"
 msgstr "В тот же день недели"
 
 #: cdr/forms.py:270
-#, fuzzy
 msgid "Email to send the report"
-msgstr "Электронной почты для отправки тревоги"
+msgstr ""
 
 #: cdr/forms.py:304
 msgid "Upload CSV File "
@@ -222,7 +218,7 @@ msgstr "Просмотреть CSV файл"
 #: cdr/forms.py:313
 #, python-format
 msgid "Document types accepted: %s"
-msgstr ""
+msgstr "Типы документов принимаются: %s"
 
 #: cdr/forms.py:354
 msgid "Select switch"
@@ -301,13 +297,12 @@ msgid "accountcode"
 msgstr "accountcode"
 
 #: cdr/functions_def.py:156
-#, fuzzy
 msgid "Internal Call"
-msgstr "Всего звонков"
+msgstr ""
 
 #: cdr/functions_def.py:164
 msgid "Unknow"
-msgstr ""
+msgstr "Unknow"
 
 #: cdr/models.py:29
 msgid "ANSWER"
@@ -616,7 +611,7 @@ msgstr "Оповещение"
 #: cdr_alert/tasks.py:90
 #, python-format
 msgid "Alert Message \"%(user)s\" - \"%(user_id)s\""
-msgstr ""
+msgstr "Предупреждающее сообщение \"%(user)s\" - \"%(user_id)s\""
 
 #: cdr_alert/tasks.py:413
 msgid "CDR Report"
@@ -679,7 +674,7 @@ msgstr "Управление"
 #: custom_admin_tools/menu.py:37 templates/api_browser/base.html:50
 #: templates/frontend/bootstrap_menu.html:67
 msgid "API Explorer"
-msgstr ""
+msgstr "API Обозреватель"
 
 #: custom_admin_tools/menu.py:38
 msgid "Customer Panel"
@@ -687,12 +682,11 @@ msgstr "Клиент группы"
 
 #: frontend/forms.py:21
 msgid "Username:"
-msgstr ""
+msgstr "Имя пользователя:"
 
 #: frontend/forms.py:24
-#, fuzzy
 msgid "Password:"
-msgstr "Пароль"
+msgstr "Пароль:"
 
 #: frontend/views.py:79
 msgid "Disabled Account"
@@ -704,7 +698,7 @@ msgstr "Неверный Войти."
 
 #: frontend/views.py:85
 msgid "Enter Valid User Credentials."
-msgstr ""
+msgstr "Введите действительные учетные данные пользователя."
 
 #: templates/documentation.html:19
 msgid "CDR-Stats : API Documentation"
@@ -786,19 +780,14 @@ msgstr "Черный список выбранной страны"
 #: templates/admin/cdr_alert/whitelist/change_list.html:16
 #, python-format
 msgid "Add %(name)s"
-msgstr ""
+msgstr "Добавить %(name)s"
 
 #: templates/admin/cdr_alert/blacklist/change_list.html:27
 #: templates/admin/cdr_alert/whitelist/change_list.html:27
-msgid "Please correct the error below."
-msgid_plural "Please correct the errors below."
-msgstr[0] "Фильтр"
-msgstr[1] "Фильтр"
-msgstr[2] "Фильтр"
 
 #: templates/admin/cdr_alert/blacklist/change_list.html:38
 #: templates/admin/cdr_alert/whitelist/change_list.html:38
-msgid "Filter"
+msgid "Please correct the error below."
 msgstr "Фильтр"
 
 #: templates/admin_tools/dashboard/module.html:7
@@ -818,7 +807,7 @@ msgstr "Изменение"
 
 #: templates/api_browser/base.html:5
 msgid "API Browser"
-msgstr ""
+msgstr "API браузера"
 
 #: templates/frontend/bootstrap_menu.html:21
 msgid "Dashboard"
@@ -911,7 +900,7 @@ msgstr "Звонки"
 
 #: templates/frontend/cdr_country_report.html:224
 msgid "country call statistics"
-msgstr ""
+msgstr "Статистика стране вызова"
 
 #: templates/frontend/cdr_country_report.html:347
 #: templates/frontend/cdr_country_report.html:354
@@ -973,7 +962,7 @@ msgstr "Статистика звонков"
 
 #: templates/frontend/cdr_dashboard.html:292
 msgid "call totals report"
-msgstr ""
+msgstr "Отчет вызова итоги"
 
 #: templates/frontend/cdr_dashboard.html:299
 #: templates/frontend/cdr_overview.html:108
@@ -986,7 +975,7 @@ msgstr "Всего звонков"
 #: templates/frontend/cdr_dashboard.html:305
 #: templates/frontend/mail_report_template.html:78
 msgid "Amount Calls"
-msgstr ""
+msgstr "Количество вызовов"
 
 #: templates/frontend/cdr_dashboard.html:309
 #: templates/frontend/mail_report_template.html:82
@@ -1003,9 +992,8 @@ msgstr "Продолжительность всего"
 
 #: templates/frontend/cdr_dashboard.html:317
 #: templates/frontend/mail_report_template.html:90
-#, fuzzy
 msgid "Average Call Duration"
-msgstr "Минут средняя продолжительность звонка"
+msgstr ""
 
 #: templates/frontend/cdr_dashboard.html:324
 msgid "countries report"
@@ -1033,7 +1021,7 @@ msgstr "FreeSWITCH CDR"
 
 #: templates/frontend/cdr_detail_freeswitch.html:9
 msgid "channel_data"
-msgstr ""
+msgstr "channel_data"
 
 #: templates/frontend/cdr_detail_freeswitch.html:11
 msgid "callflow"
@@ -1049,7 +1037,7 @@ msgstr "переменные"
 
 #: templates/frontend/cdr_graph_concurrent_calls.html:124
 msgid "concurrent calls"
-msgstr ""
+msgstr "одновременных вызовов"
 
 #: templates/frontend/cdr_graph_concurrent_calls.html:141
 msgid "Concurrent Calls"
@@ -1057,7 +1045,7 @@ msgstr "Одновременных вызовов"
 
 #: templates/frontend/cdr_mail_report.html:4
 msgid "CDR Mail Report"
-msgstr ""
+msgstr "CDR письмо с отчетом"
 
 #: templates/frontend/cdr_mail_report.html:35
 msgid "Save"
@@ -1221,7 +1209,7 @@ msgstr "Просмотр CDR"
 
 #: templates/frontend/cdr_view.html:16 templates/frontend/cdr_view.html:147
 msgid "calls detail records"
-msgstr ""
+msgstr "призывает подробные записи"
 
 #: templates/frontend/cdr_view.html:17
 msgid "report by day"
@@ -1237,7 +1225,7 @@ msgstr "CLID"
 
 #: templates/frontend/cdr_view.html:200 templates/frontend/cdr_view.html:203
 msgid "Bill Seconds"
-msgstr ""
+msgstr "Билл секунд"
 
 #: templates/frontend/cdr_view.html:200
 msgid "Bill"
@@ -1247,7 +1235,7 @@ msgstr "Билл"
 #: templates/frontend/mail_report_template.html:18
 #: templates/frontend/registration/user_detail_change.html:16
 msgid "Account"
-msgstr ""
+msgstr "Счет"
 
 #: templates/frontend/cdr_view.html:271
 #: templates/frontend/mail_report_template.html:42
@@ -1377,7 +1365,6 @@ msgid "Support"
 msgstr "Поддержка"
 
 #: templates/frontend/index.html:26
-#, fuzzy
 msgid ""
 "Star2Billing S.L. offers consultancy including installation, training and "
 "customisation on CDR-Stats."
@@ -1409,7 +1396,7 @@ msgstr "CDR-Stats под лицензией"
 msgid ""
 "however an alternative license can be purchased if the MPL V2 license is not "
 "suitable for your requirements."
-msgstr ""
+msgstr "Однако альтернативные лицензии могут быть приобретены при наличии лицензии MPL V2 не подходит для ваших требований."
 
 #: templates/frontend/index.html:35
 msgid "View Licensing details"
@@ -1479,18 +1466,16 @@ msgid "World map Report"
 msgstr "Глобальный доклад"
 
 #: templates/frontend/api/api_list.html:13
-#, fuzzy
 msgid "CDR-Stats APIs"
-msgstr "CDR-Stats"
+msgstr "CDR-Stats APIs"
 
 #: templates/frontend/api/api_list.html:14
 msgid "Browser playground"
-msgstr ""
+msgstr "Браузер площадка"
 
 #: templates/frontend/api/api_list.html:25
-#, fuzzy
 msgid "No"
-msgstr "Ноябрь"
+msgstr ""
 
 #: templates/frontend/registration/password_reset_complete.html:4
 #: templates/frontend/registration/password_reset_complete.html:8
@@ -1567,7 +1552,7 @@ msgstr "Ваше имя пользователя, в случае, если вы
 #: templates/frontend/registration/password_reset_email.html:13
 #, python-format
 msgid "The %(site_name)s team"
-msgstr ""
+msgstr "%(site_name)s команда"
 
 #: templates/frontend/registration/password_reset_form.html:10
 msgid "Forgotten your password?"
@@ -1586,9 +1571,8 @@ msgid "Reset my password"
 msgstr "Сброс пароля"
 
 #: templates/frontend/registration/user_account.html:51
-#, fuzzy
 msgid "Change detail"
-msgstr "Показать детали"
+msgstr ""
 
 #: templates/frontend/registration/user_detail_change.html:9
 msgid "Settings"
@@ -1624,7 +1608,7 @@ msgstr "Удаление уведомлений"
 
 #: templates/frontend/registration/user_notification_grid.html:37
 msgid "Action"
-msgstr ""
+msgstr "Действие"
 
 #: templates/pagination/pagination.html:11
 #: templates/pagination/pagination.html:14
@@ -1669,24 +1653,20 @@ msgid "Mark notification as seen"
 msgstr "Отметить уведомление, как видно"
 
 #: user_profile/constants.py:20
-#, fuzzy
 msgid "average length of call"
-msgstr "Средняя продолжительность вызова"
+msgstr ""
 
 #: user_profile/constants.py:21
-#, fuzzy
 msgid "answer seize ratio"
-msgstr "Ответ Лови соотношение"
+msgstr ""
 
 #: user_profile/constants.py:22
-#, fuzzy
 msgid "blacklist prefix"
-msgstr "Черный список префиксов"
+msgstr ""
 
 #: user_profile/constants.py:23
-#, fuzzy
 msgid "whitelist prefix"
-msgstr "Белый список префиксов"
+msgstr ""
 
 #: user_profile/fields.py:35
 msgid "Afar"
@@ -2482,7 +2462,7 @@ msgstr "Введите действительный адрес электрон�
 
 #: user_profile/models.py:84
 msgid "Can see API-Explorer"
-msgstr ""
+msgstr "Можно видеть, API-Explorer"
 
 #: user_profile/models.py:87 user_profile/models.py:88
 msgid "User Profile"
@@ -2533,56 +2513,9 @@ msgstr "\"%(name)s\" помечен как прочитанные."
 #: user_profile/views.py:219
 #, python-format
 msgid "%(count)s notification(s) are deleted."
-msgstr "%(count)s уведомлением (ы) будут удалены."
+msgstr "%(count)s уведомлением(ы) будут удалены."
 
 #: user_profile/views.py:224
 #, python-format
 msgid "%(count)s notification(s) are marked as read."
-msgstr "%(count)s уведомлением (ы) отмечены как прочитанные."
-
-#, fuzzy
-#~ msgid "Enter emails to receive the report separated by a comma"
-#~ msgstr ""
-#~ "Введите адреса электронной почты, чтобы получать отчеты, через запятую"
-
-#~ msgid "Other"
-#~ msgstr "Другое"
-
-#~ msgid " Notification"
-#~ msgstr "Оповещение"
-
-#~ msgid "Global Report"
-#~ msgstr "Глобальный доклад"
-
-#~ msgid "Minutes Total Duration"
-#~ msgstr "Минут Общая длительность"
-
-#~ msgid "Calls :"
-#~ msgstr "Звонки:"
-
-#~ msgid "Duration :"
-#~ msgstr "Продолжительность:"
-
-#~ msgid "ACT :"
-#~ msgstr "ACT:"
-
-#~ msgid "week"
-#~ msgstr "неделя"
-
-#~ msgid "month"
-#~ msgstr "месяц"
-
-#~ msgid "months"
-#~ msgstr "месяцев"
-
-#~ msgid "year"
-#~ msgstr "год"
-
-#~ msgid "Phone Number"
-#~ msgstr "Телефонный номер"
-
-#~ msgid "Check number is authorised to call"
-#~ msgstr "Проверить номер имеет право вызывать"
-
-#~ msgid "CDR in Detail hi"
-#~ msgstr "CDR в деталях привет"
+msgstr "%(count)s уведомлением(ы) отмечены как прочитанные."
