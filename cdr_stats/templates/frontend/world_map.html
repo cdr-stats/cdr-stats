@@ -114,23 +114,26 @@
         <i class="icon-search"></i> <span>{% trans "advanced search"|title %}</span>
     </a>
 
+
+    <div class="row">
+        <div class="span12">
+            <div class="graph_header">
+                <span id="id_title_span">{% trans "World map Report"|title %}</span> -
+                <b>
+                    {% if start_date  %}
+                        {{ start_date|date:"jS N Y" }}
+                    {% endif %}
+                    {% if end_date  %}
+                        {% trans "to" %} {{ end_date|date:"jS N Y" }}
+                    {% endif %}
+                </b>
+            </div>
+        </div>
+    </div>
+
     <div class="tab-content">
         <div id="tabs-1" class="tab-pane {% if action == "tabs-1" or action == "" %}active{% endif %}">
-            <div class="row">
-                <div class="span12">
-                    <div class="graph_header">
-                        <span id="id_title_span">{% trans "World map Report"|title %}</span> -
-                        <b>
-                            {% if start_date  %}
-                                {{ start_date|date:"jS N Y" }}
-                            {% endif %}
-                            {% if end_date  %}
-                                {% trans "to" %} {{ end_date|date:"jS N Y" }}
-                            {% endif %}
-                        </b>
-                    </div>
-                </div>
-            </div>
+
             <div class="row">
                 <div class="span12">
                     <div id="call-world-map" style="margin:auto; width: 1150px; height: 500px"></div>
