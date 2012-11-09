@@ -6,9 +6,18 @@
     </div>
 {% endif %}
 
-<button class="btn btn-danger" href="#" onclick="delete_button()">{% trans "Delete notifications" %}</button>
-<button class="btn" href="#" onclick="make_read_button()">{% trans "Mark as read" %}</button>
-<button class="btn" href="#" onclick="mark_read_all_button()">{% trans "Mark all as read" %}</button>
+<div class="btn-group">
+    <button class="btn btn-small">Action</button>
+    <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+        <li><a href="#" onclick="mark_read_all_button()">{% trans "Mark all as read" %}</a></li>
+        <li><a href="#" onclick="make_read_button()">{% trans "Mark as read" %}</a></li>
+        <li><a href="#" onclick="delete_button()">{% trans "Delete notifications" %}</a></li>
+    </ul>
+</div>
+
 <br/><br/>
 
 <form method="POST" action="del/0/" enctype="multipart/form-data" id="ListForm">
