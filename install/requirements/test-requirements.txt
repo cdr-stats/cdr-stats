@@ -4,5 +4,5 @@ nose-cov==1.6
 nose-progressive==1.3
 xtraceback==0.3.3
 rudolf2==0.3
-pylint==0.25.2
+pylint==0.26.0
 clonedigger==1.0.11-beta
