@@ -73,37 +73,37 @@
 </ul>
 
 <div id="form_collapse" class="collapse">
-  <form class="well" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
-  <div class="row">
-      <div class="span12">
-          <div class="row">
-              <div class="span4">
-                  <label class="control-label" for="id_{{ form.from_date.name }}">{{ form.from_date.label }}</label>
-                  <div class="input">
-                    {{ form.from_date }}
-                    <span class="help-block">{{ form.from_date.help_text|safe }} </span>
-                   </div>
-              </div>
-              <div class="span4">
-                  <label class="control-label" for="id_{{ form.to_date.name }}">{{ form.to_date.label }}</label>
-                  <div class="input">
-                    {{ form.to_date }}
-                    <span class="help-block">{{ form.to_date.help_text|safe }} </span>
-                  </div>
-              </div>
-              <div class="span4">
-                  <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }}</label>
-                  <div class="input">
-                    {{ form.switch }}
-                    <span class="help-block">{{ form.switch.help_text|safe }} </span>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
+    <form class="well" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
+    <div class="row">
+        <div class="span12">
+            <div class="row">
+                <div class="span4">
+                    <label class="control-label" for="id_{{ form.from_date.name }}">{{ form.from_date.label }}</label>
+                    <div class="input">
+                        {{ form.from_date }}
+                        <span class="help-block">{{ form.from_date.help_text|safe }} </span>
+                    </div>
+                </div>
+                <div class="span4">
+                    <label class="control-label" for="id_{{ form.to_date.name }}">{{ form.to_date.label }}</label>
+                    <div class="input">
+                        {{ form.to_date }}
+                        <span class="help-block">{{ form.to_date.help_text|safe }} </span>
+                    </div>
+                </div>
+                <div class="span4">
+                    <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }}</label>
+                    <div class="input">
+                        {{ form.switch }}
+                        <span class="help-block">{{ form.switch.help_text|safe }} </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  <div class="row">
-  <div class="span12">
+    <div class="row">
+    <div class="span12">
       <div class="row">
           <div class="span4">
             <label class="control-label" for="id_{{ form.destination.name }}">{{ form.destination.label }}</label>
