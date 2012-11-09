@@ -37,7 +37,7 @@
             if (selectedDate.date.valueOf() > endDate.valueOf()){
                 var Year = startDate.getFullYear();
                 var Month = string_with_leading_zero(startDate.getMonth() + 1);
-                var Day = string_with_leading_zero((startDate.getDate());
+                var Day = string_with_leading_zero(startDate.getDate());
                 startDate_string = (Year + '-' + Month + '-' + Day);
                 $('#id_from_date').datepicker('setValue', startDate_string);
 
