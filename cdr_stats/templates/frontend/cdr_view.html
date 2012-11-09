@@ -9,54 +9,28 @@
     <script type="text/javascript">
     $(function() {
 
-        /*var dates = $('#id_from_date, #id_to_date').datepicker({
-            defaultDate: "+1w",
-            changeMonth: true,
-            format: 'yyyy-mm-dd',
-            onSelect: function(selectedDate) {
-                var option = this.id == "id_from_date" ? "minDate" : "maxDate";
-                var instance = $(this).data("datepicker");
-                var date = $.datepicker.parseDate(instance.settings.format || $.datepicker._defaults.format, selectedDate, instance.settings);
-                dates.not(this).datepicker("option", option, date);
-            }
-        });*/
-
         var today = new Date();
-        var startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-        var last_day = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
-        var endDate = new Date(today.getFullYear(), today.getMonth(), last_day);
-
-        function string_with_leading_zero(val){
-            Value = val < 10 ? '0' + val : val;
-            return Value;
-        }
+        var fromDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        var last_day_of_month = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
+        var toDate = new Date(today.getFullYear(), today.getMonth(), last_day_of_month);
 
         $('#id_from_date').datepicker({
             format: 'yyyy-mm-dd'
         }).on('changeDate', function(selectedDate){
-            if (selectedDate.date.valueOf() > endDate.valueOf()){
-                var Year = startDate.getFullYear();
-                var Month = string_with_leading_zero(startDate.getMonth() + 1);
-                var Day = string_with_leading_zero(startDate.getDate());
-                startDate_string = (Year + '-' + Month + '-' + Day);
-                $('#id_from_date').datepicker('setValue', startDate_string);
-
+            if (selectedDate.date.valueOf() > toDate.valueOf()){
+                $('#id_from_date').datepicker('setValue', fromDate);
             } else {
-                startDate = new Date(selectedDate.date);
+                fromDate = new Date(selectedDate.date);
             }
         });
 
         $('#id_to_date').datepicker({
             format: 'yyyy-mm-dd'
         }).on('changeDate', function(selectedDate){
-            if (selectedDate.date.valueOf() < startDate.valueOf()){
-                var Year = endDate.getFullYear();
-                var Month = string_with_leading_zero(endDate.getMonth() + 1);
-                var Day = string_with_leading_zero(endDate.getDate());
-                endDate_string = (Year + '-' + Month + '-' + Day);
-                $('#id_to_date').datepicker('setValue', endDate_string);
+            if (selectedDate.date.valueOf() < fromDate.valueOf()){
+                $('#id_to_date').datepicker('setValue', toDate);
             } else {
-                endDate = new Date(selectedDate.date);
+                toDate = new Date(selectedDate.date);
             }
         });
 
