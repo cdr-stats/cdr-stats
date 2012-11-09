@@ -3,26 +3,14 @@
 {% load cache %}
 
 {% block extra_head %}
-  <script type="text/javascript">
-  $(document).ready(function() {
-    $("#accordion").accordion({ autoHeight: false,  clearStyle: true  });
-  });
-  </script>
-  <script type="text/javascript">
-    $(function() {
-        var dates = $('#id_from_date, #id_to_date').datepicker({
-            defaultDate: "+1w",
-            changeMonth: true,
-            format: 'yyyy-mm-dd',
-            onSelect: function(selectedDate) {
-                var option = this.id == "id_from_date" ? "minDate" : "maxDate";
-                var instance = $(this).data("datepicker");
-                var date = $.datepicker.parseDate(instance.settings.format || $.datepicker._defaults.format, selectedDate, instance.settings);
-                dates.not(this).datepicker("option", option, date);
-            }
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#accordion").accordion({ autoHeight: false,  clearStyle: true  });
         });
-    });
-  </script>
+    </script>
+    <script type="text/javascript">
+        {% include "frontend/common_datepicker.js" %}
+    </script>
 {% endblock %}
 
 

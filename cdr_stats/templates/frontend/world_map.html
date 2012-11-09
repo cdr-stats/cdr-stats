@@ -4,20 +4,9 @@
 
 {% block extra_head %}
     <script type="text/javascript">
-        $(function() {
-            var dates = $('#id_from_date, #id_to_date').datepicker({
-                defaultDate: "+1w",
-                changeMonth: true,
-                format: 'yyyy-mm-dd',
-                onSelect: function(selectedDate) {
-                    var option = this.id == "id_from_date" ? "minDate" : "maxDate";
-                    var instance = $(this).data("datepicker");
-                    var date = $.datepicker.parseDate(instance.settings.format || $.datepicker._defaults.format, selectedDate, instance.settings);
-                    dates.not(this).datepicker("option", option, date);
-                }
-            });
-        });
+        {% include "frontend/common_datepicker.js" %}
     </script>
+
     <!--css-->
     <link type="text/css" media="screen" href="{{STATIC_URL}}cdr-stats/js/jquery.vector-map/jquery.vector-map.css" rel="stylesheet">
     <!-- Javascript -->
