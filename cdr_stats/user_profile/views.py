@@ -17,8 +17,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
-#TODO: Remove wildcard
-from django.db.models import *
+
 from django.template.context import RequestContext
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
@@ -29,8 +28,10 @@ from common.common_functions import variable_value, current_view
 
 from cdr.functions_def import chk_account_code
 from user_profile.models import UserProfile
-#TODO: Remove wildcard
-from user_profile.forms import *
+from user_profile.constants import NOTICE_COLUMN_NAME
+
+from user_profile.forms import UserChangeDetailForm, \
+                               UserChangeDetailExtendForm, UserProfileForm
 
 
 def notice_count(request):
@@ -176,6 +177,7 @@ def customer_detail_change(request):
         'notice_count': notice_count(request),
         'action': action,
         'col_name_with_order': col_name_with_order,
+        'NOTICE_COLUMN_NAME': NOTICE_COLUMN_NAME,
     }
     return render_to_response(template, data,
            context_instance=RequestContext(request))

@@ -12,7 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from common.utils import Choice
 
 
@@ -21,3 +21,10 @@ class NOTICE_TYPE(Choice):
     answer_seize_ratio = 2, _('answer seize ratio')
     blacklist_prefix = 3, _('blacklist prefix')
     whitelist_prefix = 4, _('whitelist prefix')
+
+
+class NOTICE_COLUMN_NAME(Choice):
+    message = _('Message')
+    notice_type = _('Notice type')
+    sender = _('Sender')
+    date_field = _('Date')

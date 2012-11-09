@@ -21,10 +21,10 @@
         <thead>
         <tr>
             <th><input type="checkbox" onclick="toggleChecked(this.checked)"></th>
-            <th>{% sort_link "Message" col_name_with_order.message %}</th>
-            <th>{% sort_link "Notice type" col_name_with_order.notice_type %}</th>
-            <th>{% sort_link "Sender" col_name_with_order.sender %}</th>
-            <th>{% sort_link "Date" col_name_with_order.added %}</th>
+            <th>{% sort_link NOTICE_COLUMN_NAME.message col_name_with_order.message %}</th>
+            <th>{% sort_link NOTICE_COLUMN_NAME.notice_type col_name_with_order.notice_type %}</th>
+            <th>{% sort_link NOTICE_COLUMN_NAME.sender col_name_with_order.sender %}</th>
+            <th>{% sort_link NOTICE_COLUMN_NAME.date_field col_name_with_order.added %}</th>
             <th>{% trans "Action" %}</th>
         </tr>
         </thead>
