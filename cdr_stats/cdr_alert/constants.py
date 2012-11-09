@@ -21,13 +21,16 @@ class PERIOD(Choice):
     WEEK = 2, _('Week')
     MONTH = 3, _('Month')
 
+
 class STATUS(Choice):
     ACTIVE = 1, _('Active')
     INACTIVE = 2, _('Inactive')
 
+
 class ALARM_TYPE(Choice):
     ALOC = 1, _('ALOC (Average Length of Call)')
     ASR = 2, _('ASR (Answer Seize Ratio)')
+
 
 class ALERT_CONDITION(Choice):
     IS_LESS_THAN = 1, _('Is less than')

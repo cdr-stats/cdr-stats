@@ -22,11 +22,9 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.template import Context
 from celery.task import PeriodicTask, task
-from celery.schedules import crontab
-#from celery.decorators import task
 from notification import models as notification
 from common.only_one_task import only_one
-from cdr_alert.constants import PERIOD, STATUS, ALARM_TYPE,\
+from cdr_alert.constants import PERIOD, ALARM_TYPE,\
     ALERT_CONDITION, ALERT_CONDITION_ADD_ON, ALARM_REPROT_STATUS
 from cdr_alert.models import Alarm, AlarmReport
 from cdr.mapreduce import mapreduce_task_cdr_alert
@@ -286,7 +284,6 @@ class chk_alarm(PeriodicTask):
     """
 
     run_every = timedelta(seconds=86400)  # every day
-    # run_every = crontab(hours=12, minute=30) #"Execute every day at 12:30AM."
 
     def run(self, **kwargs):
         logger = self.get_logger(**kwargs)
