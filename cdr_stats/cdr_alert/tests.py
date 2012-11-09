@@ -122,7 +122,8 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
 
 class CdrAlertTaskTestCase(TestCase):
 
-    fixtures = ['auth_user.json']
+    fixtures = ['auth_user.json', 'country_dialcode.json', 'alarm.json',
+                'blacklist_prefix.json', 'whitelist_prefix.json']
 
     def test_blacklist_whitelist_notification(self):
         """Test task : blacklist_whitelist_notification"""
@@ -135,15 +136,13 @@ class CdrAlertTaskTestCase(TestCase):
 
     def test_chk_alarm(self):
         """Test task : chk_alarm"""
-        # PeriodicTask
-        result = chk_alarm().run()
-        self.assertEquals(result, True)
+        result = chk_alarm.delay()
+        self.assertEqual(result.get(), True)
 
     def test_send_cdr_report(self):
         """Test task : send_cdr_report"""
-        result = send_cdr_report().run()
-        self.assertEqual(result, True)
-
+        result = send_cdr_report.delay()
+        self.assertEqual(result.get(), True)
 
 
 class CdrAlertModelTestCase(TestCase):
@@ -227,3 +226,4 @@ class CdrAlertModelTestCase(TestCase):
         self.alarm_report.delete()
         self.blacklist.delete()
         self.whitelist.delete()
+
