@@ -177,6 +177,66 @@ class CdrAlertModelTestCase(TestCase):
         self.alarm.save()
         self.assertEquals(self.alarm.__unicode__(), 'Alarm name')
 
+        self.alarm_new = Alarm(
+            name='Alarm name new',
+            period=1,
+            type=1,
+            alert_condition=2,
+            alert_value=10,
+            alert_condition_add_on=2,
+            status=1,
+            email_to_send_alarm='localhost@cdr-stats.org'
+        )
+        self.alarm_new.save()
+
+        self.alarm_new = Alarm(
+            name='Alarm name new',
+            period=2,
+            type=1,
+            alert_condition=3,
+            alert_value=10,
+            alert_condition_add_on=2,
+            status=1,
+            email_to_send_alarm='localhost@cdr-stats.org'
+        )
+        self.alarm_new.save()
+
+        self.alarm_new = Alarm(
+            name='Alarm name new',
+            period=2,
+            type=1,
+            alert_condition=4,
+            alert_value=10,
+            alert_condition_add_on=2,
+            status=1,
+            email_to_send_alarm='localhost@cdr-stats.org'
+        )
+        self.alarm_new.save()
+
+        self.alarm_new = Alarm(
+            name='Alarm name new',
+            period=3,
+            type=1,
+            alert_condition=5,
+            alert_value=10,
+            alert_condition_add_on=2,
+            status=1,
+            email_to_send_alarm='localhost@cdr-stats.org'
+        )
+        self.alarm_new.save()
+
+        self.alarm_new = Alarm(
+            name='Alarm name new',
+            period=3,
+            type=1,
+            alert_condition=6,
+            alert_value=10,
+            alert_condition_add_on=2,
+            status=1,
+            email_to_send_alarm='localhost@cdr-stats.org'
+        )
+        self.alarm_new.save()
+
         # AlarmReport model
         self.alarm_report = AlarmReport(
             alarm=self.alarm,
@@ -226,4 +286,23 @@ class CdrAlertModelTestCase(TestCase):
         self.alarm_report.delete()
         self.blacklist.delete()
         self.whitelist.delete()
+
+    def test_blacklist_whitelist_notification(self):
+        """Test task : blacklist_whitelist_notification"""
+        # notice_type = 3 blacklist
+        result = blacklist_whitelist_notification.delay(NOTICE_TYPE.blacklist_prefix)
+        self.assertEquals(result.get(), True)
+
+        result = blacklist_whitelist_notification.delay(NOTICE_TYPE.whitelist_prefix)
+        self.assertEquals(result.get(), True)
+
+    def test_chk_alarm(self):
+        """Test task : chk_alarm"""
+        result = chk_alarm.delay()
+        self.assertEqual(result.get(), True)
+
+    def test_send_cdr_report(self):
+        """Test task : send_cdr_report"""
+        result = send_cdr_report.delay()
+        self.assertEqual(result.get(), True)
 
