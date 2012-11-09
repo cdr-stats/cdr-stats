@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-09 12:03+0100\n"
+"POT-Creation-Date: 2012-11-09 13:55+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Areski Belaid <areski@gmail.com>\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -99,7 +99,7 @@ msgstr ""
 msgid "Caller ID"
 msgstr ""
 
-#: cdr/forms.py:85 templates/frontend/cdr_view.html:184
+#: cdr/forms.py:85 templates/frontend/cdr_view.html:182
 #: templates/frontend/mail_report_template.html:14
 msgid "Destination"
 msgstr ""
@@ -108,18 +108,18 @@ msgstr ""
 msgid "Account Code"
 msgstr ""
 
-#: cdr/forms.py:97 templates/frontend/cdr_country_report.html:208
+#: cdr/forms.py:97 templates/frontend/cdr_country_report.html:206
 #: templates/frontend/cdr_dashboard.html:135
-#: templates/frontend/cdr_overview.html:378
-#: templates/frontend/cdr_overview.html:531
-#: templates/frontend/cdr_view.html:193 templates/frontend/cdr_view.html:354
+#: templates/frontend/cdr_overview.html:376
+#: templates/frontend/cdr_overview.html:529
+#: templates/frontend/cdr_view.html:191 templates/frontend/cdr_view.html:352
 #: templates/frontend/mail_report_template.html:15
 #: templates/frontend/world_map.html:147
 #: templates/frontend/world_map_analytic.html:157
 msgid "Duration"
 msgstr ""
 
-#: cdr/forms.py:103 templates/frontend/cdr_view.html:213
+#: cdr/forms.py:103 templates/frontend/cdr_view.html:211
 #: templates/frontend/mail_report_template.html:17
 msgid "Hangup cause"
 msgstr ""
@@ -422,7 +422,7 @@ msgstr ""
 msgid "Whitelist by country"
 msgstr ""
 
-#: cdr_alert/constants.py:20 templates/frontend/cdr_overview.html:521
+#: cdr_alert/constants.py:20 templates/frontend/cdr_overview.html:519
 msgid "Day"
 msgstr ""
 
@@ -430,7 +430,7 @@ msgstr ""
 msgid "Week"
 msgstr ""
 
-#: cdr_alert/constants.py:22 templates/frontend/cdr_overview.html:522
+#: cdr_alert/constants.py:22 templates/frontend/cdr_overview.html:520
 msgid "Month"
 msgstr ""
 
@@ -499,8 +499,8 @@ msgid "Prefix"
 msgstr ""
 
 #: cdr_alert/models.py:39 cdr_alert/models.py:90 cdr_alert/models.py:121
-#: templates/frontend/cdr_overview.html:376
-#: templates/frontend/cdr_view.html:353
+#: templates/frontend/cdr_overview.html:374
+#: templates/frontend/cdr_view.html:351
 #: templates/frontend/mail_report_template.html:12
 msgid "Date"
 msgstr ""
@@ -812,11 +812,11 @@ msgid "Dashboard"
 msgstr ""
 
 #: templates/frontend/bootstrap_menu.html:22
-#: templates/frontend/cdr_country_report.html:71
+#: templates/frontend/cdr_country_report.html:69
 #: templates/frontend/cdr_graph_concurrent_calls.html:29
-#: templates/frontend/cdr_overview.html:48
+#: templates/frontend/cdr_overview.html:46
 #: templates/frontend/cdr_report_by_hour.html:58
-#: templates/frontend/cdr_view.html:137 templates/frontend/world_map.html:108
+#: templates/frontend/cdr_view.html:135 templates/frontend/world_map.html:105
 #: templates/frontend/world_map_analytic.html:118
 msgid "Search"
 msgstr ""
@@ -866,28 +866,29 @@ msgstr ""
 msgid "Change Language"
 msgstr ""
 
-#: templates/frontend/cdr_country_report.html:77
-#: templates/frontend/cdr_overview.html:54
+#: templates/frontend/cdr_country_report.html:75
+#: templates/frontend/cdr_overview.html:52
 #: templates/frontend/cdr_report_by_hour.html:64
-#: templates/frontend/cdr_view.html:142 templates/frontend/master.html:98
-#: templates/frontend/world_map.html:114
+#: templates/frontend/cdr_view.html:140 templates/frontend/master.html:98
+#: templates/frontend/world_map.html:111
 #: templates/frontend/world_map_analytic.html:124
 msgid "advanced search"
 msgstr ""
 
-#: templates/frontend/cdr_country_report.html:209
+#: templates/frontend/cdr_country_report.html:207
 #: templates/frontend/cdr_dashboard.html:135
 msgid "secs"
 msgstr ""
 
-#: templates/frontend/cdr_country_report.html:209
-#: templates/frontend/cdr_country_report.html:377
-#: templates/frontend/cdr_country_report.html:388
+#: templates/frontend/cdr_country_report.html:207
+#: templates/frontend/cdr_country_report.html:375
+#: templates/frontend/cdr_country_report.html:386
 #: templates/frontend/cdr_dashboard.html:135
 #: templates/frontend/cdr_dashboard.html:348
-#: templates/frontend/cdr_overview.html:377
+#: templates/frontend/cdr_graph_realtime.html:99
+#: templates/frontend/cdr_overview.html:375
 #: templates/frontend/cdr_report_by_hour.html:159
-#: templates/frontend/cdr_view.html:356
+#: templates/frontend/cdr_view.html:354
 #: templates/frontend/mail_report_template.html:117
 #: templates/frontend/world_map.html:146 templates/frontend/world_map.html:164
 #: templates/frontend/world_map_analytic.html:156
@@ -895,26 +896,26 @@ msgstr ""
 msgid "Calls"
 msgstr ""
 
-#: templates/frontend/cdr_country_report.html:226
+#: templates/frontend/cdr_country_report.html:224
 msgid "country call statistics"
 msgstr ""
 
-#: templates/frontend/cdr_country_report.html:349
-#: templates/frontend/cdr_country_report.html:356
+#: templates/frontend/cdr_country_report.html:347
+#: templates/frontend/cdr_country_report.html:354
 msgid "calls by country"
 msgstr ""
 
-#: templates/frontend/cdr_country_report.html:356
-#: templates/frontend/cdr_country_report.html:401
+#: templates/frontend/cdr_country_report.html:354
+#: templates/frontend/cdr_country_report.html:399
 msgid "top"
 msgstr ""
 
-#: templates/frontend/cdr_country_report.html:367
-#: templates/frontend/cdr_country_report.html:386
-#: templates/frontend/cdr_country_report.html:412
-#: templates/frontend/cdr_country_report.html:431
+#: templates/frontend/cdr_country_report.html:365
+#: templates/frontend/cdr_country_report.html:384
+#: templates/frontend/cdr_country_report.html:410
+#: templates/frontend/cdr_country_report.html:429
 #: templates/frontend/cdr_dashboard.html:344
-#: templates/frontend/cdr_view.html:270
+#: templates/frontend/cdr_view.html:268
 #: templates/frontend/mail_report_template.html:40
 #: templates/frontend/mail_report_template.html:113
 #: templates/frontend/world_map.html:160
@@ -922,29 +923,29 @@ msgstr ""
 msgid "World"
 msgstr ""
 
-#: templates/frontend/cdr_country_report.html:374
-#: templates/frontend/cdr_country_report.html:419
+#: templates/frontend/cdr_country_report.html:372
+#: templates/frontend/cdr_country_report.html:417
 #: templates/frontend/world_map.html:161
 #: templates/frontend/world_map_analytic.html:169
 msgid "world"
 msgstr ""
 
-#: templates/frontend/cdr_country_report.html:387
-#: templates/frontend/cdr_country_report.html:432
-#: templates/frontend/cdr_view.html:374
+#: templates/frontend/cdr_country_report.html:385
+#: templates/frontend/cdr_country_report.html:430
+#: templates/frontend/cdr_view.html:372
 msgid "Total"
 msgstr ""
 
-#: templates/frontend/cdr_country_report.html:395
+#: templates/frontend/cdr_country_report.html:393
 msgid "Duration by Country"
 msgstr ""
 
-#: templates/frontend/cdr_country_report.html:401
+#: templates/frontend/cdr_country_report.html:399
 msgid "duration by country"
 msgstr ""
 
-#: templates/frontend/cdr_country_report.html:422
-#: templates/frontend/cdr_country_report.html:433
+#: templates/frontend/cdr_country_report.html:420
+#: templates/frontend/cdr_country_report.html:431
 #: templates/frontend/cdr_dashboard.html:349
 #: templates/frontend/mail_report_template.html:118
 #: templates/frontend/world_map.html:165
@@ -962,9 +963,9 @@ msgid "call totals report"
 msgstr ""
 
 #: templates/frontend/cdr_dashboard.html:299
-#: templates/frontend/cdr_overview.html:110
-#: templates/frontend/cdr_overview.html:166
-#: templates/frontend/cdr_overview.html:222
+#: templates/frontend/cdr_overview.html:108
+#: templates/frontend/cdr_overview.html:164
+#: templates/frontend/cdr_overview.html:220
 #: templates/frontend/mail_report_template.html:72
 msgid "Total Calls"
 msgstr ""
@@ -980,9 +981,9 @@ msgid "Average Calls Per Hour"
 msgstr ""
 
 #: templates/frontend/cdr_dashboard.html:313
-#: templates/frontend/cdr_overview.html:138
-#: templates/frontend/cdr_overview.html:194
-#: templates/frontend/cdr_overview.html:250
+#: templates/frontend/cdr_overview.html:136
+#: templates/frontend/cdr_overview.html:192
+#: templates/frontend/cdr_overview.html:248
 #: templates/frontend/mail_report_template.html:86
 msgid "Total Duration"
 msgstr ""
@@ -1052,142 +1053,142 @@ msgstr ""
 msgid "Preview of the mail report"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:61
+#: templates/frontend/cdr_overview.html:59
 msgid "Jan"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:62
+#: templates/frontend/cdr_overview.html:60
 msgid "Feb"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:63
+#: templates/frontend/cdr_overview.html:61
 msgid "Mar"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:64
+#: templates/frontend/cdr_overview.html:62
 msgid "Apr"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:65
-#: templates/frontend/cdr_overview.html:78
+#: templates/frontend/cdr_overview.html:63
+#: templates/frontend/cdr_overview.html:76
 msgid "May"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:66
+#: templates/frontend/cdr_overview.html:64
 msgid "Jun"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:67
+#: templates/frontend/cdr_overview.html:65
 msgid "Jul"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:68
+#: templates/frontend/cdr_overview.html:66
 msgid "Aug"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:69
+#: templates/frontend/cdr_overview.html:67
 msgid "Sep"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:70
+#: templates/frontend/cdr_overview.html:68
 msgid "Oct"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:71
+#: templates/frontend/cdr_overview.html:69
 msgid "Nov"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:72
+#: templates/frontend/cdr_overview.html:70
 msgid "Dec"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:74
+#: templates/frontend/cdr_overview.html:72
 msgid "January"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:75
+#: templates/frontend/cdr_overview.html:73
 msgid "February"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:76
+#: templates/frontend/cdr_overview.html:74
 msgid "March"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:77
+#: templates/frontend/cdr_overview.html:75
 msgid "April"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:79
+#: templates/frontend/cdr_overview.html:77
 msgid "June"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:80
+#: templates/frontend/cdr_overview.html:78
 msgid "July"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:81
+#: templates/frontend/cdr_overview.html:79
 msgid "August"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:82
+#: templates/frontend/cdr_overview.html:80
 msgid "September"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:83
+#: templates/frontend/cdr_overview.html:81
 msgid "October"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:84
+#: templates/frontend/cdr_overview.html:82
 msgid "November"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:85
+#: templates/frontend/cdr_overview.html:83
 msgid "December"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:379
-#: templates/frontend/cdr_overview.html:382
-#: templates/frontend/cdr_overview.html:387
-#: templates/frontend/cdr_overview.html:520
+#: templates/frontend/cdr_overview.html:377
+#: templates/frontend/cdr_overview.html:380
+#: templates/frontend/cdr_overview.html:385
+#: templates/frontend/cdr_overview.html:518
 #: templates/frontend/cdr_report_by_hour.html:157
 msgid "Hour"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:434
-#: templates/frontend/cdr_overview.html:451
-#: templates/frontend/cdr_overview.html:475
-#: templates/frontend/cdr_overview.html:549
+#: templates/frontend/cdr_overview.html:432
+#: templates/frontend/cdr_overview.html:449
+#: templates/frontend/cdr_overview.html:473
+#: templates/frontend/cdr_overview.html:547
 msgid "Load by Hour"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:438
-#: templates/frontend/cdr_overview.html:457
-#: templates/frontend/cdr_overview.html:481
+#: templates/frontend/cdr_overview.html:436
+#: templates/frontend/cdr_overview.html:455
+#: templates/frontend/cdr_overview.html:479
 msgid "Load by Day"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:442
-#: templates/frontend/cdr_overview.html:463
-#: templates/frontend/cdr_overview.html:487
+#: templates/frontend/cdr_overview.html:440
+#: templates/frontend/cdr_overview.html:461
+#: templates/frontend/cdr_overview.html:485
 msgid "Load by Month"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:497
+#: templates/frontend/cdr_overview.html:495
 msgid "Points Off"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:502
-#: templates/frontend/cdr_overview.html:536
+#: templates/frontend/cdr_overview.html:500
+#: templates/frontend/cdr_overview.html:534
 msgid "Points On"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:530
+#: templates/frontend/cdr_overview.html:528
 msgid "Count"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:555
-#: templates/frontend/cdr_view.html:155 templates/frontend/cdr_view.html:347
-#: templates/frontend/world_map.html:128
+#: templates/frontend/cdr_overview.html:553
+#: templates/frontend/cdr_view.html:153 templates/frontend/cdr_view.html:345
+#: templates/frontend/world_map.html:124
 #: templates/frontend/world_map_analytic.html:138
 msgid "to"
 msgstr ""
@@ -1204,93 +1205,93 @@ msgstr ""
 msgid "CDR View"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:18 templates/frontend/cdr_view.html:149
+#: templates/frontend/cdr_view.html:16 templates/frontend/cdr_view.html:147
 msgid "calls detail records"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:19
+#: templates/frontend/cdr_view.html:17
 msgid "report by day"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:166
+#: templates/frontend/cdr_view.html:164
 msgid "Call-date"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:175
+#: templates/frontend/cdr_view.html:173
 msgid "CLID"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:202 templates/frontend/cdr_view.html:205
+#: templates/frontend/cdr_view.html:200 templates/frontend/cdr_view.html:203
 msgid "Bill Seconds"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:202
+#: templates/frontend/cdr_view.html:200
 msgid "Bill"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:222
+#: templates/frontend/cdr_view.html:220
 #: templates/frontend/mail_report_template.html:18
 #: templates/frontend/registration/user_detail_change.html:16
 msgid "Account"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:273
+#: templates/frontend/cdr_view.html:271
 #: templates/frontend/mail_report_template.html:42
 msgid "Authorized call"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:275
+#: templates/frontend/cdr_view.html:273
 msgid "Unauthorized call"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:278 templates/frontend/cdr_view.html:280
+#: templates/frontend/cdr_view.html:276 templates/frontend/cdr_view.html:278
 #: templates/frontend/mail_report_template.html:44
 #: templates/frontend/mail_report_template.html:46
 msgid "call"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:283
+#: templates/frontend/cdr_view.html:281
 msgid "Show details"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:298
+#: templates/frontend/cdr_view.html:296
 msgid "Call Details"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:303
+#: templates/frontend/cdr_view.html:301
 msgid "Close"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:314
-#: templates/frontend/registration/user_notification_grid.html:55
+#: templates/frontend/cdr_view.html:312
+#: templates/frontend/registration/user_notification_grid.html:64
 msgid "no records found"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:320
+#: templates/frontend/cdr_view.html:318
 msgid "show rows"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:322
+#: templates/frontend/cdr_view.html:320
 msgid "total calls"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:333
+#: templates/frontend/cdr_view.html:331
 msgid "Export CSV file"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:341
+#: templates/frontend/cdr_view.html:339
 msgid "daily report"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:355
+#: templates/frontend/cdr_view.html:353
 msgid "Graphic"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:357
+#: templates/frontend/cdr_view.html:355
 msgid "Average Connection Time"
 msgstr ""
 
-#: templates/frontend/cdr_view.html:357
+#: templates/frontend/cdr_view.html:355
 msgid "ACT"
 msgstr ""
 
@@ -1437,17 +1438,17 @@ msgstr ""
 msgid "Display language"
 msgstr ""
 
-#: templates/frontend/world_map.html:73
+#: templates/frontend/world_map.html:70
 #: templates/frontend/world_map_analytic.html:83
 msgid "country calls detail"
 msgstr ""
 
-#: templates/frontend/world_map.html:74
+#: templates/frontend/world_map.html:71
 #: templates/frontend/world_map_analytic.html:84
 msgid "country list"
 msgstr ""
 
-#: templates/frontend/world_map.html:122
+#: templates/frontend/world_map.html:118
 #: templates/frontend/world_map_analytic.html:132
 msgid "World map Report"
 msgstr ""
@@ -1573,19 +1574,19 @@ msgstr ""
 msgid "Select language"
 msgstr ""
 
-#: templates/frontend/registration/user_notification_grid.html:9
-msgid "Delete notifications"
-msgstr ""
-
-#: templates/frontend/registration/user_notification_grid.html:10
-msgid "Mark as read"
-msgstr ""
-
-#: templates/frontend/registration/user_notification_grid.html:11
+#: templates/frontend/registration/user_notification_grid.html:15
 msgid "Mark all as read"
 msgstr ""
 
-#: templates/frontend/registration/user_notification_grid.html:28
+#: templates/frontend/registration/user_notification_grid.html:16
+msgid "Mark as read"
+msgstr ""
+
+#: templates/frontend/registration/user_notification_grid.html:17
+msgid "Delete notifications"
+msgstr ""
+
+#: templates/frontend/registration/user_notification_grid.html:37
 msgid "Action"
 msgstr ""
 
