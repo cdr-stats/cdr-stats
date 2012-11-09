@@ -58,7 +58,7 @@ def pipeline_country_hourly_report(query_var):
             '_id': {'country_id': '$metadata.country_id',
                     'date': {'$substr': ['$metadata.date', 0, 10]}},
             'call_per_hour': {'$push': '$call_hourly'},
-            'duration_per_hour': {'$push': '$duration_hourly' },
+            'duration_per_hour': {'$push': '$duration_hourly'},
             }
         },
         {'$project': {
@@ -87,7 +87,7 @@ def pipeline_country_report(query_var):
     pipeline = [
         {'$match': query_var},
         {'$group': {
-            '_id': '$metadata.country_id', # grouping on country id
+            '_id': '$metadata.country_id',  # grouping on country id
             'call_per_day': {'$sum': '$call_daily'},
             'duration_per_day': {'$sum': '$duration_daily'}
         }
@@ -119,7 +119,7 @@ def pipeline_hourly_overview(query_var):
         {'$match': query_var},
         {'$group': {
             '_id': {'$substr': ["$_id", 0, 8]},
-            'switch_id': {'$addToSet' :'$metadata.switch_id'},
+            'switch_id': {'$addToSet': '$metadata.switch_id'},
             'call_per_hour': {'$push': '$call_hourly'},
             'duration_per_hour': {'$push': '$duration_hourly'}
             }
@@ -152,7 +152,7 @@ def pipeline_daily_overview(query_var):
         {'$match': query_var},
         {'$group': {
             '_id': {'$substr': ["$_id", 0, 8]},
-            'switch_id': {'$addToSet' :'$metadata.switch_id'},
+            'switch_id': {'$addToSet': '$metadata.switch_id'},
             'call_per_day': {'$sum': '$call_daily'},
             'duration_per_day': {'$sum': '$duration_daily'}
         }
@@ -186,7 +186,7 @@ def pipeline_monthly_overview(query_var):
         {'$match': query_var},
         {'$group': {
             '_id': {'$substr': ['$_id', 0, 6]},
-            'switch_id': {'$addToSet' :'$metadata.switch_id'},
+            'switch_id': {'$addToSet': '$metadata.switch_id'},
             'call_per_month': {'$sum': '$call_monthly'},
             'duration_per_month': {'$sum': '$duration_monthly'}
         }
@@ -222,7 +222,7 @@ def pipeline_hourly_report(query_var):
         {'$group': {
             '_id': {'$substr': ['$_id', 0, 8]},
             'call_per_hour': {'$push': '$call_hourly'},
-            'duration_per_hour': {'$push': '$duration_hourly' },
+            'duration_per_hour': {'$push': '$duration_hourly'},
             }
         },
         {'$project': {

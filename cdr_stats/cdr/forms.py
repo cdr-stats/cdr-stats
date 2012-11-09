@@ -38,8 +38,6 @@ PAGE_SIZE_LIST = ((10, '10'),
 
 DATE_HELP_TEXT = _('Please use the following format') \
     + ': <em>YYYY-MM-DD</em>.'
-COUNTRY_HELP_TEXT = \
-    _('Hold down "Ctrl", "Command" on Mac, to select more than one.')
 
 
 def sw_list_with_all():
@@ -107,8 +105,7 @@ class SearchForm(forms.Form):
                                required=False,
                                choices=get_switch_list())
     country_id = forms.MultipleChoiceField(label=_('Country'), required=False,
-                                           choices=country_list_with_all(),
-                                           help_text=COUNTRY_HELP_TEXT)
+                                           choices=country_list_with_all())
 
     def __init__(self, *args, **kwargs):
         super(SearchForm, self).__init__(*args, **kwargs)
