@@ -20,7 +20,7 @@ from cdr.import_cdr_asterisk import import_cdr_asterisk
 from common.only_one_task import only_one
 from datetime import datetime, timedelta
 import sqlite3
-
+import asterisk.manager
 
 #Note: if you import a lot of CDRs the first time you can have an issue here
 #we need to make sure the user import their CDR before starting Celery
@@ -59,57 +59,98 @@ class get_channels_info(PeriodicTask):
     @only_one(key="get_channels_info", timeout=LOCK_EXPIRE)
     def run(self, **kwargs):
 
+        logger = self.get_logger()
+        logger.info('TASK :: get_channels_info')
+
+        # Get calldate
+        now = datetime.today()
+        date_now = datetime(now.year, now.month, now.day,
+                            now.hour, now.minute, now.second, 0)
+
+        # Retrieve SwitchID
+        switch_id = settings.LOCAL_SWITCH_ID
+
         if settings.LOCAL_SWITCH_TYPE == 'freeswitch':
-            logger = self.get_logger()
-            logger.info('TASK :: get_channels_info')
+            con = False
+            try:
+                con = sqlite3.connect('/usr/local/freeswitch/db/core.db')
+                cur = con.cursor()
+                cur.execute('SELECT accountcode, count(*) FROM channels')
+                rows = cur.fetchall()
+                for row in rows:
+                    if not row[0]:
+                        accountcode = ''
+                    else:
+                        accountcode = row[0]
+                    number_call = row[1]
+                    logger.debug('%s (accountcode:%s, switch_id:%d) ==> %s'
+                            % (date_now, accountcode, switch_id,
+                               str(number_call)))
 
-            # Get calldate
-            now = datetime.today()
-            date_now = datetime(
-                now.year,
-                now.month,
-                now.day,
-                now.hour,
-                now.minute,
-                now.second,
-                0,
-                )
-
-            # Retrieve SwitchID
-            switch_id = settings.LOCAL_SWITCH_ID
-            if settings.LOCAL_SWITCH_TYPE == 'freeswitch':
-                con = False
+                    call_json = {
+                        'switch_id': switch_id,
+                        'call_date': date_now,
+                        'numbercall': number_call,
+                        'accountcode': accountcode,
+                    }
+                    settings.DBCON[settings.MG_CONC_CALL].insert(call_json)
+            except sqlite3.Error, e:
+                logger.error('Error %s:' % e.args[0])
+            finally:
+                if con:
+                    con.close()
+        elif settings.LOCAL_SWITCH_TYPE == 'asterisk':
+            manager = asterisk.manager.Manager()
+            listaccount = {}
+            try:
+                # connect to the manager
                 try:
-                    con = sqlite3.connect('/usr/local/freeswitch/db/core.db')
-                    cur = con.cursor()
-                    cur.execute('SELECT accountcode, count(*) FROM channels')
-                    rows = cur.fetchall()
-                    for row in rows:
-                        if not row[0]:
-                            accountcode = ''
-                        else:
-                            accountcode = row[0]
-                        number_call = row[1]
-                        logger.debug('%s (accountcode:%s, switch_id:%d) ==> %s'
-                                 % (date_now, accountcode, switch_id,
-                                str(number_call)))
+                    manager.connect(settings.ASTERISK_MANAGER_HOST)
+                    manager.login(settings.ASTERISK_MANAGER_USER, settings.ASTERISK_MANAGER_SECRET)
 
-                        call_json = {
-                            'switch_id': switch_id,
-                            'call_date': date_now,
-                            'numbercall': number_call,
-                            'accountcode': accountcode,
-                            }
-                        settings.DBCON[settings.MG_CONC_CALL].insert(call_json)
-                except sqlite3.Error, e:
+                    # get list of channels
+                    response = manager.command('core show channels concise')
+                    # response.data = "SIP/areski-00000006!a2billing-echotest!34902800102*!2!Ring!Echo!!34650784355!4267877355!!3!35!(None)!1352663344.6\nSIP/areski-00000006!a2billing-echotest!34902800102*!2!Ring!Echo!!34650784355!4267877355!!3!35!(None)!1352663344.6\n"
+                    # response.data += "SIP/areski-00000006!a2billing-echotest!34902800102*!2!Ring!Echo!!34650784355!12346!!3!35!(None)!1352663344.6\nSIP/areski-00000006!a2billing-echotest!34902800102*!2!Ring!Echo!!34650784355!4267877355!!3!35!(None)!1352663344.6\n"
 
-                    logger.error('Error %s:' % e.args[0])
-                finally:
-                    if con:
-                        con.close()
-            elif settings.LOCAL_SWITCH_TYPE == 'asterisk':
+                    if response.data:
+                        lines = response.data.split('\n')
+                        for line in lines:
+                            col = line.split('!')
+                            if col and len(col) >= 8:
+                                if col[8] in listaccount:
+                                    listaccount[col[8]] = listaccount[col[8]] + 1
+                                else:
+                                    listaccount[col[8]] = 1
+                    manager.logoff()
+                except asterisk.manager.ManagerSocketException, (errno, reason):
+                    logger.error("Error connecting to the manager: %s" % reason)
+                    return False
+                except asterisk.manager.ManagerAuthException, reason:
+                    logger.error("Error logging in to the manager: %s" % reason)
+                    return False
+                except asterisk.manager.ManagerException, reason:
+                    logger.error("Error: %s" % reason)
+                    return False
+            finally:
+                # remember to clean up
+                try:
+                    manager.close()
+                except:
+                    logger.error("Manager didn't close")
 
-                # TODO: Implement concurrent calls in Asterisk
-                print 'Asterisk needs to be implemented'
+            for account in listaccount:
+                number_call = listaccount[account]
+                logger.debug('%s (accountcode:%s, switch_id:%d) ==> %s'
+                            % (date_now, account, switch_id,
+                               str(number_call)))
+                call_json = {
+                    'switch_id': switch_id,
+                    'call_date': date_now,
+                    'numbercall': number_call,
+                    'accountcode': account,
+                }
+                print call_json
+                settings.DBCON[settings.MG_CONC_CALL].insert(call_json)
 
-            return True
+        return True

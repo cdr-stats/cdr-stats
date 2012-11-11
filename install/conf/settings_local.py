@@ -99,6 +99,12 @@ REALTIME_Y_AXIS_LIMIT = 10
 LOCAL_SWITCH_TYPE = 'freeswitch'
 LOCAL_SWITCH_ID = 1
 
+#Asterisk Manager / Used for Realtime and Concurrent calls
+ASTERISK_MANAGER_HOST = 'localhost'
+ASTERISK_MANAGER_USER = 'user'
+ASTERISK_MANAGER_SECRET = 'secret'
+
+
 #ASTERISK IMPORT
 #===============
 ASTERISK_PRIMARY_KEY = 'acctid'  # acctid, _id

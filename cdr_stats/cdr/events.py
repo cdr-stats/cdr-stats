@@ -104,6 +104,10 @@ def my_message_handler(request, socket, context, message):
     if not user.is_superuser:
         # use accountcode in filter
         query_var['accountcode'] = str(user.userprofile.accountcode)
+    elif user.userprofile.accountcode and user.is_superuser:
+        # use accountcode in filter
+        query_var['accountcode'] = str(user.userprofile.accountcode)
+
     collectionresult = settings.DBCON[settings.MG_CONC_CALL].find(query_var)
     if not collectionresult:
         logger.debug('No collection')

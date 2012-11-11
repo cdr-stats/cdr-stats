@@ -399,6 +399,11 @@ LOCAL_SWITCH_TYPE = 'freeswitch'
 #TODO: See if we can replace LOCAL_SWITCH_ID by local ip from CDR_BACKEND,
 LOCAL_SWITCH_ID = 1
 
+#Asterisk Manager / Used for Realtime and Concurrent calls
+ASTERISK_MANAGER_HOST = 'localhost'
+ASTERISK_MANAGER_USER = 'user'
+ASTERISK_MANAGER_SECRET = 'secret'
+
 
 #MONGODB
 #=======
