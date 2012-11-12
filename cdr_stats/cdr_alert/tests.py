@@ -120,31 +120,6 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
         self.failUnlessEqual(response.status_code, 200)
 
 
-class CdrAlertTaskTestCase(TestCase):
-
-    fixtures = ['auth_user.json', 'country_dialcode.json', 'alarm.json',
-                'blacklist_prefix.json', 'whitelist_prefix.json']
-
-    def test_blacklist_whitelist_notification(self):
-        """Test task : blacklist_whitelist_notification"""
-        # notice_type = 3 blacklist
-        result = blacklist_whitelist_notification.delay(NOTICE_TYPE.blacklist_prefix)
-        self.assertEquals(result.get(), True)
-
-        result = blacklist_whitelist_notification.delay(NOTICE_TYPE.whitelist_prefix)
-        self.assertEquals(result.get(), True)
-
-    def test_chk_alarm(self):
-        """Test task : chk_alarm"""
-        result = chk_alarm.delay()
-        self.assertEqual(result.get(), True)
-
-    def test_send_cdr_report(self):
-        """Test task : send_cdr_report"""
-        result = send_cdr_report.delay()
-        self.assertEqual(result.get(), True)
-
-
 class CdrAlertModelTestCase(TestCase):
     """Test AlertRemovePrefix, Alarm, AlarmReport,
     Blacklist, Whitelist models

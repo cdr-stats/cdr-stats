@@ -195,8 +195,8 @@ def pipeline_monthly_overview(query_var):
             'switch_id': 1,
             'call_per_month': 1,
             'duration_per_month': 1,
-            #'avg_duration_per_month': {'$divide': ['$duration_per_month',
-            #                                       '$call_per_month']},
+            'avg_duration_per_month': {'$divide': ['$duration_per_month',
+                                                   '$call_per_month']},
             }
         },
         {'$unwind': '$switch_id'},

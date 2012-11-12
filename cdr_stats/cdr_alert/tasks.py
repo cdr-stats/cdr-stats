@@ -181,48 +181,42 @@ def run_alarm(alarm_obj, logger):
 
         # Previous date data
         query_var = {}
-        query_var['start_uepoch'] = {'$gte': dt_list['p_start_date'],
-                                     '$lte': dt_list['p_end_date']}
-        # previous date map_reduce
-        pre_total_data = cdr_data.map_reduce(map, reduce, out,
-                query=query_var, finalize=finalfc)
-        pre_total_data = pre_total_data.find().sort([('_id.a_Year', -1),
-                ('_id.b_Month', -1)])
+        query_var['metadata.date'] = {'$gte': dt_list['p_start_date'],
+                                      '$lte': dt_list['p_end_date']}
+
+        daily_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
+        pre_total_data = daily_data.find(query_var)
 
         pre_day_data = {}
         for doc in pre_total_data:
             pre_date = dt_list['p_start_date']
-            pre_day_data[pre_date.strftime('%Y-%m-%d')] = \
-                                              doc['value']['duration__avg']
+            duration_avg = doc['duration_daily'] / doc['call_daily']
+            pre_day_data[pre_date.strftime('%Y-%m-%d')] = duration_avg
             if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or \
                     alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN:
-                chk_alert_value(alarm_obj, doc['value']['duration__avg'])
+                chk_alert_value(alarm_obj, duration_avg)
             else:
-                previous_date_duration = doc['value']['duration__avg']
+                previous_date_duration = duration_avg
 
         # Current date data
         query_var = {}
         query_var['start_uepoch'] = {'$gte': dt_list['c_start_date'],
                                      '$lte': dt_list['c_end_date']}
-        # current date map_reduce
-        cur_total_data = cdr_data.map_reduce(map, reduce, out,
-                query=query_var, finalize=finalfc)
-
-        cur_total_data = cur_total_data.find().sort([('_id.a_Year', -1),
-                                                     ('_id.b_Month', -1)])
+        # current date
+        daily_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
+        cur_total_data = daily_data.find(query_var)
 
         cur_day_data = {}
         for doc in cur_total_data:
             cur_date = dt_list['c_start_date']
-            cur_day_data[cur_date.strftime('%Y-%m-%d')] = \
-                                             doc['value']['duration__avg']
+            duration_avg = doc['duration_daily'] / doc['call_daily']
+            cur_day_data[cur_date.strftime('%Y-%m-%d')] = duration_avg
             if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or \
                     alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN:
-                chk_alert_value(alarm_obj, doc['value']['duration__avg'])
+                chk_alert_value(alarm_obj, duration_avg)
             else:
-                current_date_duration = doc['value']['duration__avg']
-                chk_alert_value(alarm_obj, current_date_duration,
-                                previous_date_duration)
+                current_date_duration = duration_avg
+                chk_alert_value(alarm_obj, current_date_duration, previous_date_duration)
 
     if alarm_obj.type == ALARM_TYPE.ASR:  # ASR (Answer Seize Ratio)
         logger.debug('ASR (Answer Seize Ratio)')
