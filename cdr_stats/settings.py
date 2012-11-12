@@ -11,24 +11,22 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-
 import os
 import djcelery
-
 djcelery.setup_loader()
 
-APPLICATION_DIR = os.path.dirname(globals()['__file__'])
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-     ('admin', 'admin@cdr-stats.com'),
+    ('Your Name', 'your_email@domain.com'),
 )
-
 MANAGERS = ADMINS
 
 SERVER_EMAIL = 'cdr-stats@localhost.com'
+
+APPLICATION_DIR = os.path.dirname(globals()['__file__'])
 
 DATABASES = {
     'default': {
@@ -39,9 +37,7 @@ DATABASES = {
         'USER': 'postgres',       # Not used with sqlite3.
         'PASSWORD': 'postgres',   # Not used with sqlite3.
         'HOST': 'localhost',      # Set to empty string for localhost.
-                                  # Not used with sqlite3.
         'PORT': '',               # Set to empty string for default.
-                                  # Not used with sqlite3.
     }
 }
 
@@ -116,7 +112,6 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -126,7 +121,6 @@ SECRET_KEY = ')ey%^d=pk^jxgam92tdqb0z+0bbhk=7dub_0$ttw#u8yj)rgo$'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -273,12 +267,8 @@ LOGIN_URL = '/pleaselog/'
 #==============
 DICTIONARY = "/usr/share/dict/words"
 DILLA_USE_LOREM_IPSUM = False  # set to True ignores dictionary
-DILLA_APPS = [
-                'cdr',
-             ]
-DILLA_SPAMLIBS = [
-                'cdr.cdr_custom_spamlib',
-                ]
+DILLA_APPS = ['cdr']
+DILLA_SPAMLIBS = ['cdr.cdr_custom_spamlib']
 # To use Dilla
 # > python manage.py run_dilla --cycles=100
 
@@ -468,7 +458,6 @@ LOGGING = {
         'mail_admins': {
             'class': 'django.utils.log.AdminEmailHandler',
             'level': 'ERROR',
-             # But the emails are plain text by default - HTML is nicer
             'include_html': True,
         },
         'default': {
