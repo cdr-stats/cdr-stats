@@ -17,10 +17,7 @@
 # To download and run the script on your server :
 #
 # cd /usr/src/ ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-mongodb.sh -O install-mongodb.sh ; bash install-mongodb.sh
-
-
-#Get Scripts dependencies
-wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh -O bash-common-functions.sh
+#
 
 #Include general functions
 source bash-common-functions.sh
@@ -33,13 +30,11 @@ func_install_mongodb() {
         echo ""
         echo "MongoDB is already installed!"
         echo ""
-        echo ""
 
     else
         #Identify the OS
         func_identify_os
 
-        echo ""
         echo ""
         echo "We will now install MongoDB on your server"
 	    echo "============================================"
@@ -80,20 +75,13 @@ gpgcheck=0' > /etc/yum.repos.d/10gen-mongodb.repo
                 /etc/init.d/mongod start
             ;;
         esac
-
-
-        echo ""
         echo ""
         echo "**************************************************************"
         echo "Congratulations, MongoDB is now installed!"
         echo "**************************************************************"
         echo ""
-        echo ""
     fi
 }
 
-
 #Install Mongo
 func_install_mongodb
-
-

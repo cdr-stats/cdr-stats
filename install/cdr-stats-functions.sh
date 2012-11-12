@@ -23,20 +23,13 @@ DB_USERNAME="cdr_stats_$DB_USERSALT"
 DB_PASSWORD=`</dev/urandom tr -dc A-Za-z0-9| (head -c $1 > /dev/null 2>&1 || head -c 20)`
 DB_HOSTNAME='localhost'
 DB_PORT='5432'
-
-MYSQLUSER=""
-MYSQLPASSWORD=""
-MYHOST=""
-MYHOSTPORT=""
-
-
 CDRSTATS_USER='cdr_stats'
 CELERYD_USER="celery"
 CELERYD_GROUP="celery"
 CDRSTATS_ENV="cdr-stats"
 HTTP_PORT="8008"
 SOUTH_SOURCE='hg+http://bitbucket.org/andrewgodwin/south/@ecaafda23e600e510e252734d67bf8f9f2362dc9#egg=South-dev'
-BRANCH=STABLE
+BRANCH='develop'
 DB_BACKEND=PostgreSQL
 
 
@@ -296,20 +289,11 @@ func_install_frontend(){
             git clone git://github.com/Star2Billing/cdr-stats.git
 
             #Install Develop / Master
-            if echo $BRANCH | grep -i "^DEVEL" > /dev/null ; then
+            if echo $BRANCH | grep -i "^develop" > /dev/null ; then
                 cd cdr-stats
                 git checkout -b develop --track origin/develop
             fi
         ;;
-        # 'DOWNLOAD')
-        #    VERSION=master
-        #    wget --no-check-certificate https://github.com/Star2Billing/cdr-stats/tarball/$VERSION
-        #    mv master Star2Billing-cdr-stats-$VERSION.tar.gz
-        #    tar xvzf Star2Billing-cdr-stats-*.tar.gz
-        #    rm -rf Star2Billing-cdr-stats-*.tar.gz
-        #    mv cdr-stats cdr-stats_$DATETIME
-        #    mv Star2Billing-cdr-stats-* cdr-stats
-        #;;
     esac
 
     # Copy files
@@ -762,7 +746,7 @@ func_logrotate() {
 func_install_mongodb() {
     cd /usr/src/
     rm install-mongodb.sh
-    wget https://raw.github.com/Star2Billing/cdr-stats/master/install/install-mongodb.sh
+    wget https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/install-mongodb.sh
     bash install-mongodb.sh
 }
 

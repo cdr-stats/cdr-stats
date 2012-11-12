@@ -17,9 +17,10 @@
 # To download and run the script on your server :
 # cd /usr/src/ ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-freeswitch.sh -O install-freeswitch.sh ; bash install-freeswitch.sh
 
+BRANCH='develop'
 
 #Get Scripts dependencies
-wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh -O bash-common-functions.sh
+wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/bash-common-functions.sh -O bash-common-functions.sh
 
 #Include general functions
 source bash-common-functions.sh
@@ -28,8 +29,8 @@ source bash-common-functions.sh
 func_identify_os
 
 
-FS_CONF_PATH=https://raw.github.com/Star2Billing/cdr-stats/master/install/freeswitch-conf
-FS_INIT_PATH=https://raw.github.com/Star2Billing/cdr-stats/master/install/freeswitch-init
+FS_CONF_PATH=https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/freeswitch-conf
+FS_INIT_PATH=https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/freeswitch-init
 FS_GIT_REPO=git://git.freeswitch.org/freeswitch.git
 FS_INSTALLED_PATH=/usr/local/freeswitch
 FS_CONFIG_PATH=/etc/freeswitch

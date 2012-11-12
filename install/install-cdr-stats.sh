@@ -18,13 +18,17 @@
 #
 # cd /usr/src/ ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats.sh -O install-cdr-stats.sh ; bash install-cdr-stats.sh
 #
+# Install develop branch
+# cd /usr/src/ ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/develop/install/install-cdr-stats.sh -O install-cdr-stats.sh ; sed -i "s/cdr-stats\/master/cdr-stats\/develop/g" install-cdr-stats.sh ; bash install-cdr-stats.sh
+#
 
+BRANCH='develop'
 INSTALLMODE='FULL' # Set to FULL to update Selinux / Firewall / etc...
 
 
 #Get Scripts dependencies
-wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh -O bash-common-functions.sh
-wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
+wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/bash-common-functions.sh -O bash-common-functions.sh
+wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
 
 
 #Menu Section for Script
