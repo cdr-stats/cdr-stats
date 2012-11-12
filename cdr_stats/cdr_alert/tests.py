@@ -124,7 +124,6 @@ class CdrAlertModelTestCase(TestCase):
     """Test AlertRemovePrefix, Alarm, AlarmReport,
     Blacklist, Whitelist models
     """
-
     # initial_data.json is taken from country_dialcode
     fixtures = ['auth_user.json', 'country_dialcode.json']
 
@@ -159,6 +158,54 @@ class CdrAlertModelTestCase(TestCase):
             alert_condition=2,
             alert_value=10,
             alert_condition_add_on=2,
+            status=1,
+            email_to_send_alarm='localhost@cdr-stats.org'
+        )
+        self.alarm_new.save()
+
+        self.alarm_new = Alarm(
+            name='Alarm name new',
+            period=1,
+            type=1,
+            alert_condition=3,
+            alert_value=10,
+            alert_condition_add_on=1,
+            status=1,
+            email_to_send_alarm='localhost@cdr-stats.org'
+        )
+        self.alarm_new.save()
+
+        self.alarm_new = Alarm(
+            name='Alarm name new',
+            period=1,
+            type=1,
+            alert_condition=4,
+            alert_value=10,
+            alert_condition_add_on=1,
+            status=1,
+            email_to_send_alarm='localhost@cdr-stats.org'
+        )
+        self.alarm_new.save()
+
+        self.alarm_new = Alarm(
+            name='Alarm name new',
+            period=1,
+            type=1,
+            alert_condition=5,
+            alert_value=10,
+            alert_condition_add_on=1,
+            status=1,
+            email_to_send_alarm='localhost@cdr-stats.org'
+        )
+        self.alarm_new.save()
+
+        self.alarm_new = Alarm(
+            name='Alarm name new',
+            period=1,
+            type=1,
+            alert_condition=6,
+            alert_value=10,
+            alert_condition_add_on=1,
             status=1,
             email_to_send_alarm='localhost@cdr-stats.org'
         )
