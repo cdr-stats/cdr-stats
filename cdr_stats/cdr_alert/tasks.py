@@ -27,7 +27,6 @@ from common.only_one_task import only_one
 from cdr_alert.constants import PERIOD, ALARM_TYPE,\
     ALERT_CONDITION, ALERT_CONDITION_ADD_ON, ALARM_REPROT_STATUS
 from cdr_alert.models import Alarm, AlarmReport
-from cdr.mapreduce import mapreduce_task_cdr_alert
 from cdr.functions_def import get_hangupcause_id
 from cdr.views import get_cdr_mail_report
 from user_profile.models import UserProfile
@@ -40,7 +39,6 @@ from dateutil.relativedelta import relativedelta
 LOCK_EXPIRE = 60 * 30
 
 cdr_data = settings.DBCON[settings.MG_CDR_COMMON]
-(map, reduce, finalfc, out) = mapreduce_task_cdr_alert()
 
 
 def get_start_end_date(alert_condition_add_on):

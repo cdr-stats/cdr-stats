@@ -34,14 +34,12 @@ from user_profile.forms import UserChangeDetailForm, \
                                UserChangeDetailExtendForm, UserProfileForm
 
 
+@login_required
 def notice_count(request):
     """Get count of logged in user's notifications"""
-    try:
-        notice_count = notification.Notice.objects\
-                            .filter(recipient=request.user, unseen=1)\
-                            .count()
-    except:
-        notice_count = ''
+    notice_count = notification.Notice.objects\
+                        .filter(recipient=request.user, unseen=1)\
+                        .count()
     return notice_count
 
 
