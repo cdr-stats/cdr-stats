@@ -94,8 +94,6 @@ STATIC_URL = '/static/'
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = os.path.join(APPLICATION_DIR, 'static')
 
-ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
-
 COUNTRIES_FLAG_PATH = 'flags/%s.png'
 
 # Additional locations of static files
@@ -294,7 +292,6 @@ ADMIN_TOOLS_INDEX_DASHBOARD = \
     'cdr_stats.custom_admin_tools.dashboard.CustomIndexDashboard'
 ADMIN_TOOLS_APP_INDEX_DASHBOARD = \
     'cdr_stats.custom_admin_tools.dashboard.CustomAppIndexDashboard'
-ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 #CELERY
 #======
