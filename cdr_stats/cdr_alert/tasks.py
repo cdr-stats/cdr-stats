@@ -24,6 +24,7 @@ from django.template import Context
 from celery.task import PeriodicTask, task
 from notification import models as notification
 from common.only_one_task import only_one
+from cdr.aggregate import pipeline_cdr_alert_task
 from cdr_alert.constants import PERIOD, ALARM_TYPE,\
     ALERT_CONDITION, ALERT_CONDITION_ADD_ON, ALARM_REPROT_STATUS
 from cdr_alert.models import Alarm, AlarmReport
@@ -184,38 +185,38 @@ def run_alarm(alarm_obj, logger):
         query_var['metadata.date'] = {'$gte': dt_list['p_start_date'],
                                       '$lte': dt_list['p_end_date']}
 
-        daily_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-        pre_total_data = daily_data.find(query_var)
-
+        pipeline = pipeline_cdr_alert_task(query_var)
+        pre_total_data = settings.DBCON.command('aggregate',
+                                                settings.MG_DAILY_ANALYTIC,
+                                                pipeline=pipeline)
         pre_day_data = {}
-        for doc in pre_total_data:
+        for doc in pre_total_data['result']:
             pre_date = dt_list['p_start_date']
-            duration_avg = doc['duration_daily'] / doc['call_daily']
-            pre_day_data[pre_date.strftime('%Y-%m-%d')] = duration_avg
+            pre_day_data[pre_date.strftime('%Y-%m-%d')] = doc['duration_avg']
             if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or \
                     alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN:
-                chk_alert_value(alarm_obj, duration_avg)
+                chk_alert_value(alarm_obj, doc['duration_avg'])
             else:
-                previous_date_duration = duration_avg
+                previous_date_duration = doc['duration_avg']
 
         # Current date data
         query_var = {}
         query_var['metadata.date'] = {'$gte': dt_list['c_start_date'],
                                       '$lte': dt_list['c_end_date']}
         # current date
-        daily_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-        cur_total_data = daily_data.find(query_var)
-
+        pipeline = pipeline_cdr_alert_task(query_var)
+        cur_total_data = settings.DBCON.command('aggregate',
+                                                settings.MG_DAILY_ANALYTIC,
+                                                pipeline=pipeline)
         cur_day_data = {}
-        for doc in cur_total_data:
+        for doc in cur_total_data['result']:
             cur_date = dt_list['c_start_date']
-            duration_avg = doc['duration_daily'] / doc['call_daily']
-            cur_day_data[cur_date.strftime('%Y-%m-%d')] = duration_avg
+            cur_day_data[cur_date.strftime('%Y-%m-%d')] = doc['duration_avg']
             if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or \
                     alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN:
-                chk_alert_value(alarm_obj, duration_avg)
+                chk_alert_value(alarm_obj, doc['duration_avg'])
             else:
-                current_date_duration = duration_avg
+                current_date_duration = doc['duration_avg']
                 chk_alert_value(alarm_obj, current_date_duration, previous_date_duration)
 
     if alarm_obj.type == ALARM_TYPE.ASR:  # ASR (Answer Seize Ratio)

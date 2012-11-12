@@ -270,3 +270,31 @@ def pipeline_mail_report(query_var):
         },
     ]
     return pipeline
+
+
+def pipeline_cdr_alert_task(query_var):
+    """
+    To get avg duration from daily collection
+
+    Attributes:
+
+        * ``query_var`` - filter variable for collection
+    """
+    pipeline = [
+        {'$match': query_var},
+        {'$group': {
+            '_id': {'$substr': ["$_id", 0, 6]},
+            'call_count': {'$sum': '$call_daily'},
+            'duration_sum': {'$sum': '$duration_daily'}
+        }
+        },
+        {'$project': {
+            'duration_avg': {'$divide': ["$duration_sum", "$call_count"]}
+        }
+        },
+        {'$sort': {
+            '_id': -1,
+            }
+        }
+    ]
+    return pipeline
