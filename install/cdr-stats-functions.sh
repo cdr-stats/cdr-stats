@@ -30,7 +30,7 @@ CDRSTATS_ENV="cdr-stats"
 HTTP_PORT="8008"
 SOUTH_SOURCE='hg+http://bitbucket.org/andrewgodwin/south/@ecaafda23e600e510e252734d67bf8f9f2362dc9#egg=South-dev'
 BRANCH='develop'
-DB_BACKEND=PostgreSQL
+DB_BACKEND="PostgreSQL"
 
 
 #Django bug https://code.djangoproject.com/ticket/16017
@@ -219,7 +219,8 @@ func_install_frontend(){
             if echo $DB_BACKEND | grep -i "^SQLITE" > /dev/null ; then
                 yum -y install sqlite
             elif echo $DB_BACKEND | grep -i "^PostgreSQL" > /dev/null ; then
-                #Install & Start PostgreSQL
+                #Configure PostgreSQL
+                echo "Configure PostgreSQL pg_hba.conf"
                 yum -y install postgresql-server postgresql-devel
                 sed -i "s/ident/md5/g" /var/lib/pgsql/data/pg_hba.conf
                 chkconfig --levels 235 postgresql on
@@ -364,6 +365,7 @@ func_install_frontend(){
         sudo -u postgres psql --command="CREATE USER $DB_USERNAME with password '$DB_PASSWORD';"
 
         echo "Grant all privileges to user..."
+        echo "sudo -u postgres psql --command=\"GRANT ALL PRIVILEGES on database $DATABASENAME to $DB_USERNAME;\""
         sudo -u postgres psql --command="GRANT ALL PRIVILEGES on database $DATABASENAME to $DB_USERNAME;"
 
     else
