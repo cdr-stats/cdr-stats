@@ -17,19 +17,31 @@
 INSTALL_MODE='CLONE'
 INSTALL_DIR='/usr/share/cdr_stats'
 INSTALL_DIR_WELCOME='/var/www/cdr-stats'
-DATABASENAME=$INSTALL_DIR'/database/cdr-stats.db'
+DATABASENAME='cdr_stats'
+DB_USERSALT=`</dev/urandom tr -dc 0-9| (head -c $1 > /dev/null 2>&1 || head -c 5)`
+DB_USERNAME="cdr_stats_$DB_USERSALT"
+DB_PASSWORD=`</dev/urandom tr -dc A-Za-z0-9| (head -c $1 > /dev/null 2>&1 || head -c 20)`
+DB_HOSTNAME='localhost'
+DB_PORT='5432'
+
 MYSQLUSER=""
 MYSQLPASSWORD=""
 MYHOST=""
 MYHOSTPORT=""
+
+
+CDRSTATS_USER='cdr_stats'
 CELERYD_USER="celery"
 CELERYD_GROUP="celery"
 CDRSTATS_ENV="cdr-stats"
 HTTP_PORT="8008"
 SOUTH_SOURCE='hg+http://bitbucket.org/andrewgodwin/south/@ecaafda23e600e510e252734d67bf8f9f2362dc9#egg=South-dev'
-branch=STABLE
-db_backend=MySQL
+BRANCH=STABLE
+DB_BACKEND=PostgreSQL
 
+
+#Django bug https://code.djangoproject.com/ticket/16017
+export LANG="en_US.UTF-8"
 
 #Include general functions
 source bash-common-functions.sh
@@ -79,8 +91,8 @@ func_check_dependencies() {
     echo ""
 
     #Check South
-    grep_pip=`pip freeze| grep south`
-    if echo $grep_pip | grep -i "south" > /dev/null ; then
+    grep_pip=`pip freeze| grep South`
+    if echo $grep_pip | grep -i "South" > /dev/null ; then
         echo "OK : South installed..."
     else
         echo "Error : South not installed..."
@@ -157,43 +169,29 @@ func_install_frontend(){
     echo "We will now install CDR-Stats on your server"
 	echo "============================================"
     echo ""
-    echo "Which version do you want to install ? DEVEL or STABLE [DEVEL/STABLE] (default:STABLE)"
-    read branch
-    echo "Do you want to install CDR-Stats with SQLite or MySQL? [SQLite/MySQL] (default:MySQL)"
-    read db_backend
 
     #python setup tools
     echo "Install Dependencies and python modules..."
     case $DIST in
         'DEBIAN')
-            apt-get -y install python-setuptools python-dev build-essential libevent-dev libapache2-mod-python libapache2-mod-wsgi git-core mercurial gawk
+            apt-get -y install python-setuptools python-dev build-essential libevent-dev libapache2-mod-python libapache2-mod-wsgi
             apt-get -y install postgresql-client-9.1
-            easy_install pip
-
-            #|FIXME: Strangely South need to be installed outside the Virtualenv
-            pip install -e $SOUTH_SOURCE
-
-            if echo $db_backend | grep -i "^SQLITE" > /dev/null ; then
-                apt-get -y install sqlite3 libsqlite3-dev
-            else
-                apt-get -y install mysql-server libmysqlclient-dev
-                #Start MySQL
-                /etc/init.d/mysql start
-
-                #Configure MySQL
-                if [ "$INSTALLMODE" = "FULL" ]; then
-                    /usr/bin/mysql_secure_installation
-                fi
-
-				until mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST -e ";" ; do
-					clear
-                	echo "Enter your database settings"
-                	func_get_mysql_database_setting
-                done
-            fi
-
+            apt-get -y install git-core mercurial gawk
+            apt-get -y install python-pip
             #for audiofile convertion
             apt-get -y install libsox-fmt-mp3 libsox-fmt-all mpg321 ffmpeg
+
+            #PostgreSQL
+            apt-get -y install postgresql
+            apt-get -y install libpq-dev
+            #Start PostgreSQL
+            /etc/init.d/postgresql start
+
+            #Create CDRStats User
+            echo ""
+            echo "Create CDRStats User/Group : $CDRSTATS_USER"
+            useradd $CDRSTATS_USER --user-group --system --no-create-home
+
         ;;
         'CENTOS')
             if [ "$INSTALLMODE" = "FULL" ]; then
@@ -225,9 +223,17 @@ func_install_frontend(){
             #start http after reboot
             chkconfig --levels 235 httpd on
 
-            if echo $db_backend | grep -i "^SQLITE" > /dev/null ; then
+            if echo $DB_BACKEND | grep -i "^SQLITE" > /dev/null ; then
                 yum -y install sqlite
+            elif echo $DB_BACKEND | grep -i "^PostgreSQL" > /dev/null ; then
+                #Install & Start PostgreSQL
+                yum -y install postgresql-server postgresql-devel
+                sed -i "s/ident/md5/g" /var/lib/pgsql/data/pg_hba.conf
+                chkconfig --levels 235 postgresql on
+                service postgresql initdb
+                service postgresql restart
             else
+                #Install & Start MySQL
                 yum -y install mysql-server mysql-devel
                 chkconfig --levels 235 mysqld on
                 #Start Mysql
@@ -257,11 +263,23 @@ func_install_frontend(){
         mkdir /tmp/old-cdr-stats_$DATETIME
         mv $INSTALL_DIR /tmp/old-cdr-stats_$DATETIME
         echo "Files from $INSTALL_DIR has been moved to /tmp/old-cdr-stats_$DATETIME"
-        echo "Run backup with mysqldump..."
-        mysqldump -u $MYSQLUSER --password=$MYSQLPASSWORD $DATABASENAME > /tmp/old-cdr-stats_$DATETIME.mysqldump.sql
-        echo "Mysql Dump of database $DATABASENAME added in /tmp/old-cdr-stats_$DATETIME.mysqldump.sql"
-        echo "Press Enter to continue"
-        read TEMP
+
+
+        if echo $DB_BACKEND | grep -i "^PostgreSQL" > /dev/null ; then
+            if [ `sudo -u postgres psql -qAt --list | egrep '^$DATABASENAME\|' | wc -l` -eq 1 ]; then
+                echo "Run backup with postgresql..."
+                sudo -u postgres pg_dump $DATABASENAME > /tmp/old-cdr-stats_$DATETIME.pgsqldump.sql
+                echo "PostgreSQL Dump of database $DATABASENAME added in /tmp/old-cdr-stats_$DATETIME.pgsqldump.sql"
+                echo "Press Enter to continue"
+                read TEMP
+            fi
+        elif echo $DB_BACKEND | grep -i "^MYSQL" > /dev/null ; then
+            echo "Run backup with mysqldump..."
+            mysqldump -u $MYSQLUSER --password=$MYSQLPASSWORD $DATABASENAME > /tmp/old-cdr-stats_$DATETIME.mysqldump.sql
+            echo "Mysql Dump of database $DATABASENAME added in /tmp/old-cdr-stats_$DATETIME.mysqldump.sql"
+            echo "Press Enter to continue"
+            read TEMP
+        fi
     fi
 
     #Create and enable virtualenv
@@ -278,7 +296,7 @@ func_install_frontend(){
             git clone git://github.com/Star2Billing/cdr-stats.git
 
             #Install Develop / Master
-            if echo $branch | grep -i "^DEVEL" > /dev/null ; then
+            if echo $BRANCH | grep -i "^DEVEL" > /dev/null ; then
                 cd cdr-stats
                 git checkout -b develop --track origin/develop
             fi
@@ -310,46 +328,78 @@ func_install_frontend(){
         pip install $line
     done
 
-    #Add South install again
-    pip install -e $SOUTH_SOURCE
-
     #Check Python dependencies
     func_check_dependencies
 
-    # copy settings_local.py into cdr-stats dir
+    echo "**********"
+    echo "PIP Freeze"
+    echo "**********"
+    pip freeze
+
+
+    #Copy settings_local.py into cdr-stats dir
     cp /usr/src/cdr-stats/install/conf/settings_local.py $INSTALL_DIR
 
-    # Update Secret Key
+    #Update Secret Key
     echo "Update Secret Key..."
     RANDPASSW=`</dev/urandom tr -dc A-Za-z0-9| (head -c $1 > /dev/null 2>&1 || head -c 50)`
     sed -i "s/^SECRET_KEY.*/SECRET_KEY = \'$RANDPASSW\'/g"  $INSTALL_DIR/settings.py
     echo ""
 
-    # Disable Debug
+    #Disable Debug
     sed -i "s/DEBUG = True/DEBUG = False/g"  $INSTALL_DIR/settings_local.py
     sed -i "s/TEMPLATE_DEBUG = DEBUG/TEMPLATE_DEBUG = False/g"  $INSTALL_DIR/settings_local.py
 
-    if echo $db_backend | grep -i "^SQLITE" > /dev/null ; then
+    if echo $DB_BACKEND | grep -i "^SQLITE" > /dev/null ; then
         # Setup settings_local.py for SQLite
         sed -i "s/'init_command/#'init_command/g"  $INSTALL_DIR/settings_local.py
+
+    elif echo $DB_BACKEND | grep -i "^PostgreSQL" > /dev/null ; then
+        #Setup settings_local.py for POSTGRESQL
+        sed -i "s/DATABASENAME/$DATABASENAME/"  $INSTALL_DIR/settings_local.py
+        sed -i "s/DB_USERNAME/$DB_USERNAME/" $INSTALL_DIR/settings_local.py
+        sed -i "s/DB_PASSWORD/$DB_PASSWORD/" $INSTALL_DIR/settings_local.py
+        sed -i "s/DB_HOSTNAME/$DB_HOSTNAME/" $INSTALL_DIR/settings_local.py
+        sed -i "s/DB_PORT/$DB_PORT/" $INSTALL_DIR/settings_local.py
+
+        # Create the Database
+        echo "Remove Existing Database if exists..."
+        if [ `sudo -u postgres psql -qAt --list | egrep '^$DATABASENAME\|' | wc -l` -eq 1 ]; then
+            echo "sudo -u postgres dropdb $DATABASENAME"
+            sudo -u postgres dropdb $DATABASENAME
+        fi
+        echo "Create Database..."
+        echo "sudo -u postgres createdb $DATABASENAME"
+        sudo -u postgres createdb $DATABASENAME
+
+        #CREATE ROLE / USER
+        echo "Create Postgresql user $DB_USERNAME"
+        #echo "sudo -u postgres createuser --no-createdb --no-createrole --no-superuser $DB_USERNAME"
+        #sudo -u postgres createuser --no-createdb --no-createrole --no-superuser $DB_USERNAME
+        echo "sudo -u postgres psql --command=\"create user $DB_USERNAME with password '$DB_PASSWORD';\""
+        sudo -u postgres psql --command="CREATE USER $DB_USERNAME with password '$DB_PASSWORD';"
+
+        echo "Grant all privileges to user..."
+        sudo -u postgres psql --command="GRANT ALL PRIVILEGES on database $DATABASENAME to $DB_USERNAME;"
+
     else
         # Setup settings_local.py for MySQL
-        sed -i "s/'django.db.backends.sqlite3'/'django.db.backends.mysql'/"  $INSTALL_DIR/settings_local.py
-        sed -i "s/.*'NAME'/       'NAME': '$DATABASENAME',#/"  $INSTALL_DIR/settings_local.py
-        sed -i "/'USER'/s/''/'$MYSQLUSER'/" $INSTALL_DIR/settings_local.py
-        sed -i "/'PASSWORD'/s/''/'$MYSQLPASSWORD'/" $INSTALL_DIR/settings_local.py
-        sed -i "/'HOST'/s/''/'$MYHOST'/" $INSTALL_DIR/settings_local.py
-        sed -i "/'PORT'/s/''/'$MYHOSTPORT'/" $INSTALL_DIR/settings_local.py
+        sed -i "s/'django.db.backends.postgresql_psycopg2'/'django.db.backends.mysql'/"  $INSTALL_DIR/settings_local.py
+        sed -i "s/DATABASENAME/$DATABASENAME/"  $INSTALL_DIR/settings_local.py
+        sed -i "s/DB_USERNAME/$DB_USERNAME/" $INSTALL_DIR/settings_local.py
+        sed -i "s/DB_PASSWORD/$DB_PASSWORD/" $INSTALL_DIR/settings_local.py
+        sed -i "s/DB_HOSTNAME/$DB_HOSTNAME/" $INSTALL_DIR/settings_local.py
+        sed -i "s/DB_PORT/$DB_PORT/" $INSTALL_DIR/settings_local.py
 
         # Create the Database
         echo "Remove Existing Database if exists..."
   		if [ -d "/var/lib/mysql/$DATABASENAME" ]; then
-	        echo "mysql --user=$MYSQLUSER --password=$MYSQLPASSWORD -e 'DROP DATABASE $DATABASENAME;'"
-    	    mysql --user=$MYSQLUSER --password=$MYSQLPASSWORD -e "DROP DATABASE $DATABASENAME;"
+	        echo "mysql --user=$DB_USERNAME --password=$DB_PASSWORD -e 'DROP DATABASE $DATABASENAME;'"
+    	    mysql --user=$DB_USERNAME --password=$DB_PASSWORD -e "DROP DATABASE $DATABASENAME;"
 		fi
         echo "Create Database..."
-        echo "mysql --user=$MYSQLUSER --password=$MYSQLPASSWORD -e 'CREATE DATABASE $DATABASENAME CHARACTER SET UTF8;'"
-        mysql --user=$MYSQLUSER --password=$MYSQLPASSWORD -e "CREATE DATABASE $DATABASENAME CHARACTER SET UTF8;"
+        echo "mysql --user=$DB_USERNAME --password=$DB_PASSWORD -e 'CREATE DATABASE $DATABASENAME CHARACTER SET UTF8;'"
+        mysql --user=$DB_USERNAME --password=$DB_PASSWORD -e "CREATE DATABASE $DATABASENAME CHARACTER SET UTF8;"
     fi
 
     cd $INSTALL_DIR/
@@ -372,19 +422,8 @@ func_install_frontend(){
     python manage.py syncdb --noinput
     python manage.py migrate
     echo ""
-    echo ""
     echo "Create a super admin user..."
     python manage.py createsuperuser
-
-    #echo ""
-    #echo "Create a super user for API, use a different username..."
-    #python manage.py createsuperuser
-    #echo ""
-    #echo "Enter the Username you enteded for the API"
-    #read APIUSERNAME
-    #echo ""
-    #echo "Enter the Password for the API "
-    #read APIPASSWORD
 
     #Collect static files from apps and other locations in a single location.
     python manage.py collectstatic -l --noinput
@@ -395,14 +434,13 @@ func_install_frontend(){
     #Permission on database folder if we use SQLite
     chown -R $APACHE_USER:$APACHE_USER $INSTALL_DIR/database/
 
-
     #Configure for Asterisk / Freeswitch etc...
     case $INSTALL_TYPE in
         'ASTERISK')
             DATABASENAME='asteriskcdr'
             MYSQLUSER='root'
             MYSQLPASSWORD='password'
-            MYHOST='localhost'
+            MYHOST='127.0.0.1'
             MYHOSTPORT='3306'
 
             echo ""
@@ -530,12 +568,15 @@ func_install_frontend(){
                 #add HTTP port
                 iptables -I INPUT 2 -p tcp -m state --state NEW -m tcp --dport $HTTP_PORT -j ACCEPT
                 iptables -I INPUT 3 -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
+                #Add port for websocket
+                iptables -I INPUT 4 -p tcp -m state --state NEW -m tcp --dport 9000 -j ACCEPT
                 service iptables save
 
                 #Selinux to allow apache to access this directory
                 chcon -Rv --type=httpd_sys_content_t /usr/share/virtualenvs/cdr-stats/
                 chcon -Rv --type=httpd_sys_content_t $INSTALL_DIR/usermedia
                 semanage port -a -t http_port_t -p tcp $HTTP_PORT
+                semanage port -a -t http_port_t -p tcp 9000
                 #Allowing Apache to access Redis and MongoDB port
                 semanage port -a -t http_port_t -p tcp 6379
                 semanage port -a -t http_port_t -p tcp 27017
@@ -667,9 +708,9 @@ func_install_redis_server() {
             else
                 #Ubuntu 10.04 TLS
                 cd /usr/src
-                wget http://redis.googlecode.com/files/redis-2.4.17.tar.gz
-                tar -zxf redis-2.4.17.tar.gz
-                cd redis-2.4.17
+                wget https://redis.googlecode.com/files/redis-2.6.4.tar.gz
+                tar -zxf redis-2.6.4.tar.gz
+                cd redis-2.6.4
                 make
                 make install
 
@@ -755,37 +796,6 @@ run_menu_cdr_stats_install() {
             ;;
             2)
                 func_install_frontend
-            ;;
-            3)
-                func_install_backend
-            ;;
-            4)
-                func_install_mongodb
-            ;;
-            0)
-                ExitFinish=1
-            ;;
-            *)
-        esac
-    done
-}
-
-run_menu_cdr_stats_install_landingpage() {
-    ExitFinish=0
-    while [ $ExitFinish -eq 0 ]; do
-        # Show menu with Installation items
-        show_menu_cdr_stats
-        case $OPTION in
-            1)
-                func_install_mongodb
-                func_install_frontend
-                func_install_landing_page
-                func_install_backend
-                echo done
-            ;;
-            2)
-                func_install_frontend
-                func_install_landing_page
             ;;
             3)
                 func_install_backend

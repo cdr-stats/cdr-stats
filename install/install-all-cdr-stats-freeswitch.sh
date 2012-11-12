@@ -111,7 +111,8 @@ func_identify_os
 #Request the user to accept the license
 func_accept_license_mplv2
 
-#run install menu
-run_menu_cdr_stats_install_landingpage
+#Install Landing page
+func_install_landing_page
 
-
+#Run install menu
+run_menu_cdr_stats_install

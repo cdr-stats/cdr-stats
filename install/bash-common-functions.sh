@@ -145,9 +145,6 @@ func_get_mysql_database_setting_asteriskcdrdb() {
 #Function accept license mplv2
 func_accept_license_mplv2() {
     echo ""
-    wget --no-check-certificate -q -O  MPL-V2.0.txt https://raw.github.com/Star2Billing/cdr-stats/develop/COPYING
-    more MPL-V2.0.txt
-    echo ""
     echo ""
     echo "CDR-Stats License MPL V2.0"
     echo "Further information at http://www.cdr-stats.org/support/licensing/"
@@ -167,12 +164,9 @@ func_accept_license_mplv2() {
         echo "I agree to be bound by the terms of the license - [YES/NO]"
         read ACCEPT
     done
-
     if [ "$ACCEPT" != "yes" ]  && [ "$ACCEPT" != "Yes" ] && [ "$ACCEPT" != "YES" ]; then
         echo "License rejected !"
         exit 0
-    else
-        echo "Licence accepted !"
     fi
 }
 

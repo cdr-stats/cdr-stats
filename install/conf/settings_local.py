@@ -29,19 +29,22 @@ APPLICATION_DIR = os.path.dirname(globals()['__file__'])
 #=================
 DATABASES = {
     'default': {
-        # 'postgresql_psycopg2','postgresql','sqlite3','oracle', 'django.db.backends.mysql'
-        'ENGINE': 'django.db.backends.sqlite3',
-        # Database name or path to database file if using sqlite3.
-        'NAME': APPLICATION_DIR + '/database/cdr-stats.db',
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Not used with sqlite3.
-        'PORT': '',                      # Not used with sqlite3.
+        # Add 'postgresql_psycopg2','postgresql','mysql','sqlite3','oracle'
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'DATABASENAME',
+        'USER': 'DB_USERNAME',
+        'PASSWORD': 'DB_PASSWORD',
+        'HOST': 'DB_HOSTNAME',
+        'PORT': 'DB_PORT',
         'OPTIONS': {
-           'init_command': 'SET storage_engine=INNODB',
+            #Needed on Mysql
+            # 'init_command': 'SET storage_engine=INNODB',
+            #Postgresql Autocommit
+            'autocommit': True,
         }
     }
 }
+
 
 #CELERY SETTINGS
 #===============
@@ -113,15 +116,15 @@ ASTERISK_PRIMARY_KEY = 'acctid'  # acctid, _id
 #===========
 #list of CDR Backends to import
 CDR_BACKEND = {
-    '127.0.0.1': {
+    'MYSQL_IMPORT_CDR_HOST': {
         'db_engine': 'mysql',  # mysql, pgsql, mongo
         'cdr_type': 'asterisk',  # asterisk or freeswitch
-        'db_name': 'asteriskcdr',
-        'table_name': 'cdrprivate',
-        'host': 'localhost',
+        'db_name': 'MYSQL_IMPORT_CDR_DBNAME',
+        'table_name': 'MYSQL_IMPORT_CDR_TABLENAME',
+        'host': 'MYSQL_IMPORT_CDR_HOST',
         'port': 3366,  # 3366 mysql, 5432 pgsql
-        'user': 'root',
-        'password': 'password',
+        'user': 'MYSQL_IMPORT_CDR_USER',
+        'password': 'MYSQL_IMPORT_CDR_PASSWORD',
     },
     # '127.0.0.1': {
     #     'db_engine': 'mysql',  # mysql, pgsql, mongodb
@@ -133,16 +136,16 @@ CDR_BACKEND = {
     #     'user': 'root',
     #     'password': 'password',
     # },
-    '127.0.0.1': {
-        'db_engine': 'mongodb',  # mysql, pgsql, mongodb
-        'cdr_type': 'freeswitch',  # asterisk or freeswitch
-        'db_name': 'freeswitch_cdr',
-        'table_name': 'cdr',  # collection if mongodb
-        'host': 'localhost',
-        'port': 27017,  # 3366 mysql, 5432 pgsql, 27017 mongodb
-        'user': '',
-        'password': '',
-    },
+    # '127.0.0.1': {
+    #     'db_engine': 'mongodb',  # mysql, pgsql, mongodb
+    #     'cdr_type': 'freeswitch',  # asterisk or freeswitch
+    #     'db_name': 'freeswitch_cdr',
+    #     'table_name': 'cdr',  # collection if mongodb
+    #     'host': 'localhost',
+    #     'port': 27017,  # 3366 mysql, 5432 pgsql, 27017 mongodb
+    #     'user': '',
+    #     'password': '',
+    # },
 }
 
 #MONGODB
