@@ -200,8 +200,8 @@ def run_alarm(alarm_obj, logger):
 
         # Current date data
         query_var = {}
-        query_var['start_uepoch'] = {'$gte': dt_list['c_start_date'],
-                                     '$lte': dt_list['c_end_date']}
+        query_var['metadata.date'] = {'$gte': dt_list['c_start_date'],
+                                      '$lte': dt_list['c_end_date']}
         # current date
         daily_data = settings.DBCON[settings.MG_DAILY_ANALYTIC]
         cur_total_data = daily_data.find(query_var)
