@@ -222,8 +222,10 @@ func_install_frontend(){
                 echo "Configure PostgreSQL pg_hba.conf"
                 yum -y install postgresql-server postgresql-devel
                 chkconfig --levels 235 postgresql on
-                service postgresql initdb
-                service postgresql start
+                echo "service postgresql initdb"
+                echo "/etc/init.d/postgresql initdb"
+                /etc/init.d/postgresql initdb
+                /etc/init.d/postgresql start
 
                 mv /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf.bak
                 sed -e '/^local/ d' -e '/^host / d' /var/lib/pgsql/data/pg_hba.conf.bak > /var/lib/pgsql/data/pg_hba.conf
