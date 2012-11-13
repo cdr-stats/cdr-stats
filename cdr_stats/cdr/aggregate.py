@@ -24,20 +24,26 @@ def pipeline_cdr_view_daily_report(query_var):
     """
     pipeline = [
         {'$match': query_var},
-        {'$group': {
-            '_id': {'$substr': ["$_id", 0, 8]},
-            'call_per_day': {'$sum': '$call_daily'},
-            'duration_per_day': {'$sum': '$duration_daily'}
+        {
+            '$group':
+            {
+                '_id': {'$substr': ["$_id", 0, 8]},
+                'call_per_day': {'$sum': '$call_daily'},
+                'duration_per_day': {'$sum': '$duration_daily'}
             }
         },
-        {'$project': {
-            'call_per_day': 1,
-            'duration_per_day': 1,
-            'avg_duration_per_day': {'$divide': ["$duration_per_day", "$call_per_day"]}
+        {
+            '$project':
+            {
+                'call_per_day': 1,
+                'duration_per_day': 1,
+                'avg_duration_per_day': {'$divide': ["$duration_per_day", "$call_per_day"]}
             }
         },
-        {'$sort': {
-            '_id': -1
+        {
+            '$sort':
+            {
+                '_id': -1
             }
         }
     ]
@@ -54,21 +60,25 @@ def pipeline_country_hourly_report(query_var):
     """
     pipeline = [
         {'$match': query_var},
-        {'$group': {
-            '_id': {'country_id': '$metadata.country_id',
-                    'date': {'$substr': ['$metadata.date', 0, 10]}},
-            'call_per_hour': {'$push': '$call_hourly'},
-            'duration_per_hour': {'$push': '$duration_hourly'},
+        {
+            '$group':
+            {
+                '_id': {'country_id': '$metadata.country_id',
+                        'date': {'$substr': ['$metadata.date', 0, 10]}},
+                'call_per_hour': {'$push': '$call_hourly'},
+                'duration_per_hour': {'$push': '$duration_hourly'},
             }
         },
-        {'$project': {
-            'call_per_hour': 1,
-            'duration_per_hour': 1,
+        {
+            '$project': {
+                'call_per_hour': 1,
+                'duration_per_hour': 1,
             }
         },
-        {'$sort': {
-            '_id.date': -1,
-            '_id.country_id': 1,
+        {
+            '$sort': {
+                '_id.date': -1,
+                '_id.country_id': 1,
             }
         }
     ]
@@ -282,18 +292,20 @@ def pipeline_cdr_alert_task(query_var):
     """
     pipeline = [
         {'$match': query_var},
-        {'$group': {
-            '_id': {'$substr': ["$_id", 0, 6]},
-            'call_count': {'$sum': '$call_daily'},
-            'duration_sum': {'$sum': '$duration_daily'}
-        }
+        {
+            '$group': {
+                '_id': {'$substr': ["$_id", 0, 6]},
+                'call_count': {'$sum': '$call_daily'},
+                'duration_sum': {'$sum': '$duration_daily'}
+            }
         },
         {'$project': {
             'duration_avg': {'$divide': ["$duration_sum", "$call_count"]}
         }
         },
-        {'$sort': {
-            '_id': -1,
+        {
+            '$sort': {
+                '_id': -1,
             }
         }
     ]

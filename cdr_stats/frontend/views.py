@@ -13,9 +13,8 @@
 #
 
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import password_reset, password_reset_done,\
-                        password_reset_confirm, password_reset_complete
+    password_reset_confirm, password_reset_complete
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.conf import settings
@@ -72,8 +71,7 @@ def login_view(request):
                     login(request, user)
                     request.session['has_notified'] = False
                     # Redirect to a success page (dashboard).
-                    return \
-                    HttpResponseRedirect('/dashboard/')
+                    return HttpResponseRedirect('/dashboard/')
                 else:
                     # Return a 'disabled account' error message
                     errorlogin = _('Disabled Account')

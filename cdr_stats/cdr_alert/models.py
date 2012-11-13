@@ -34,7 +34,7 @@ class AlertRemovePrefix(models.Model):
     """
     label = models.CharField(max_length=100, verbose_name=_('Label'))
     prefix = models.CharField(max_length=100, unique=True,
-                                    verbose_name=_('Prefix'))
+                              verbose_name=_('Prefix'))
     created_date = models.DateTimeField(auto_now_add=True,
                                     verbose_name=_('Date'))
     updated_date = models.DateTimeField(auto_now=True)
@@ -71,16 +71,14 @@ class Alarm(models.Model):
     type = models.PositiveIntegerField(choices=list(ALARM_TYPE), default=1,
                                 verbose_name=_('Type'),
                                 help_text=_('ALOC (average length of call) ; ASR (answer seize ratio) ; CIC (Consecutive Incomplete Calls) '))
-    alert_condition = models.PositiveIntegerField(
-                                choices=list(ALERT_CONDITION), default=1,
-                                verbose_name=_('Condition'))
+    alert_condition = models.PositiveIntegerField(choices=list(ALERT_CONDITION),
+                                                  default=1,
+                                                  verbose_name=_('Condition'))
     alert_value = models.DecimalField(verbose_name=_('Value'), max_digits=5,
                                 decimal_places=2, blank=True, null=True,
                                 help_text=_('Input the value for the alert'))
-    alert_condition_add_on = models.PositiveIntegerField(
-                                    choices=list(ALERT_CONDITION_ADD_ON),
-                                    default=1)
-
+    alert_condition_add_on = models.PositiveIntegerField(choices=list(ALERT_CONDITION_ADD_ON),
+                                                         default=1)
     status = models.PositiveIntegerField(choices=list(STATUS), default=1,
                                          verbose_name=_('Status'))
 
@@ -111,7 +109,7 @@ class AlarmReport(models.Model):
     **Name of DB table**: alert_report
     """
     alarm = models.ForeignKey(Alarm, verbose_name=_('Alarm'),
-                               help_text=_("Select Alarm"))
+                              help_text=_("Select Alarm"))
     calculatedvalue = models.DecimalField(verbose_name=_('Calculated value'),
                                           max_digits=10, decimal_places=3,
                                           blank=True, null=True)

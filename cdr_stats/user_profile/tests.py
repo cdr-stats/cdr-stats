@@ -17,13 +17,10 @@ from django.test import TestCase
 from django.contrib.auth.forms import PasswordChangeForm
 from user_profile.models import UserProfile
 from user_profile.forms import UserChangeDetailForm, \
-                               UserChangeDetailExtendForm, \
-                               UserProfileForm
+    UserChangeDetailExtendForm
 from user_profile.views import customer_detail_change, \
-                               notification_del_read, \
-                               update_notice_status_cust,\
-                               notice_count,\
-                               common_notification_status
+    notification_del_read, update_notice_status_cust,\
+    notice_count, common_notification_status
 from common.utils import BaseAuthenticatedClient
 
 #from django.contrib import admin
@@ -103,7 +100,6 @@ class UserProfileCustomerView(BaseAuthenticatedClient):
         response = notice_count(request)
         self.assertEqual(response, 0)
 
-
     def test_notification_del_read(self):
         """Test Function to check delete notification"""
         request = self.factory.post('/user_detail_change/del/1/',
@@ -146,7 +142,6 @@ class UserProfileCustomerView(BaseAuthenticatedClient):
         self.assertEqual(response, True)
 
 
-
 class UserProfileModel(TestCase):
     """Test UserProfile Model"""
     fixtures = ['auth_user.json']
@@ -168,7 +163,7 @@ class UserProfileModel(TestCase):
         form.user.save()
 
         form = UserChangeDetailExtendForm(self.user)
-        form.user.address="test address"
+        form.user.address = "test address"
         form.user.save()
 
     def teardown(self):

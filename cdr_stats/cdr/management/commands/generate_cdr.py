@@ -99,7 +99,7 @@ def generate_cdr_data(day_delta_int):
         billsec,
         end_stamp,
         uuid,
-        )
+    )
 
 
 class Command(BaseCommand):
@@ -121,7 +121,7 @@ class Command(BaseCommand):
                     default=None,
                     dest='duration',
                     help=help),
-        )
+    )
 
     def handle(self, *args, **options):
         """
@@ -196,8 +196,7 @@ class Command(BaseCommand):
                 print '%d CDRs created...' % i
 
             print "CDR => date:%s, uuid:%s, dur:%s, pn:%s, hg_cause:%s" % \
-                    (answer_stamp, uuid, duration, destination_number, \
-                    hangup_cause)
+                (answer_stamp, uuid, duration, destination_number, hangup_cause)
 
             cdr_json = {
                 'channel_data': {

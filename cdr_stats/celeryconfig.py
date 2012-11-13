@@ -1,5 +1,6 @@
 
 #CELERY CONFIG
+#-------------
 
 SITE_ID = 1
 

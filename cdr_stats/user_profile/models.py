@@ -15,7 +15,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-
 from user_profile.fields import LanguageField
 from django_countries import CountryField
 
@@ -73,8 +72,8 @@ class UserProfile(models.Model):
             verbose_name=_('Note'))
     accountcode = models.CharField(max_length=50, null=True, blank=True)
     multiple_email = models.TextField(blank=True, null=True,
-            verbose_name=_('Report mail list'),
-            help_text=_('Enter a valid e-mail address separated by commas.'))
+        verbose_name=_('Report mail list'),
+        help_text=_('Enter a valid e-mail address separated by commas.'))
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

@@ -11,30 +11,25 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.contrib.auth.models import User
 from django.test import TestCase
 from common.utils import BaseAuthenticatedClient
 from cdr_alert.models import AlertRemovePrefix, \
-                             Alarm, \
-                             AlarmReport, \
-                             Blacklist, \
-                             Whitelist
+    Alarm, AlarmReport, Blacklist, Whitelist
 from cdr_alert.tasks import send_cdr_report, \
-                            blacklist_whitelist_notification, \
-                            chk_alarm
+    blacklist_whitelist_notification, chk_alarm
 from cdr_alert.forms import BWCountryForm
 from cdr_alert.functions_blacklist import chk_destination
 from user_profile.constants import NOTICE_TYPE
 from country_dialcode.models import Country
-from datetime import timedelta
 
 
 class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Admin Interface."""
 
-    fixtures = ['auth_user.json', 'country_dialcode.json',
-                'blacklist_prefix.json', 'whitelist_prefix.json'
-               ]
+    fixtures = [
+        'auth_user.json', 'country_dialcode.json',
+        'blacklist_prefix.json', 'whitelist_prefix.json'
+    ]
 
     def test_admin_alarm_list(self):
         """Test Function to check alarm list"""
@@ -78,9 +73,12 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
 
         response = self.client.post(
             '/admin/cdr_alert/whitelist/whitelist_by_country/',
-                {'country': 198,
-                 'whitelist_country': [],
-                 'select': [34]}, follow=True)
+            {
+                'country': 198,
+                'whitelist_country': [],
+                'select': [34]
+            },
+            follow=True)
         self.failUnlessEqual(response.status_code, 200)
 
         response = self.client.post(
@@ -107,9 +105,12 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
 
         response = self.client.post(
             '/admin/cdr_alert/blacklist/blacklist_by_country/',
-                {'country': 198,
-                 'blacklist_country': [],
-                 'select': [34]}, follow=True)
+            {
+                'country': 198,
+                'blacklist_country': [],
+                'select': [34]
+            },
+            follow=True)
         self.failUnlessEqual(response.status_code, 200)
 
         response = self.client.post(
@@ -147,7 +148,7 @@ class CdrAlertModelTestCase(TestCase):
             alert_condition_add_on=1,
             status=1,
             email_to_send_alarm='localhost@cdr-stats.org'
-            )
+        )
         self.alarm.save()
         self.assertEquals(self.alarm.__unicode__(), 'Alarm name')
 
@@ -264,17 +265,16 @@ class CdrAlertModelTestCase(TestCase):
             alarm=self.alarm,
             calculatedvalue=10,
             status=1
-            )
+        )
         self.alarm_report.save()
         self.assertEquals(self.alarm_report.__unicode__(), 'Alarm name')
-
 
         self.country = Country.objects.get(pk=198)
         # Blacklist model
         self.blacklist = Blacklist(
             phonenumber_prefix=32,
             country=self.country
-            )
+        )
         self.blacklist.save()
         self.assertTrue(self.blacklist.__unicode__())
 
@@ -327,4 +327,3 @@ class CdrAlertModelTestCase(TestCase):
         """Test task : send_cdr_report"""
         result = send_cdr_report.delay()
         self.assertEqual(result.get(), True)
-

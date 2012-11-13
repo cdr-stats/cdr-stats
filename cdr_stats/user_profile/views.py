@@ -17,29 +17,25 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
-
 from django.template.context import RequestContext
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
 from django.conf import settings
-
 from notification import models as notification
 from common.common_functions import variable_value, current_view
-
 from cdr.functions_def import chk_account_code
 from user_profile.models import UserProfile
 from user_profile.constants import NOTICE_COLUMN_NAME
-
 from user_profile.forms import UserChangeDetailForm, \
-                               UserChangeDetailExtendForm, UserProfileForm
+    UserChangeDetailExtendForm
 
 
 @login_required
 def notice_count(request):
     """Get count of logged in user's notifications"""
     notice_count = notification.Notice.objects\
-                        .filter(recipient=request.user, unseen=1)\
-                        .count()
+        .filter(recipient=request.user, unseen=1)\
+        .count()
     return notice_count
 
 
@@ -74,10 +70,6 @@ def customer_detail_change(request):
         request.user, instance=user_detail_extened)
 
     user_password_form = PasswordChangeForm(user=request.user)
-    try:
-        user_ds = UserProfile.objects.get(user=request.user)
-    except:
-        dialer_set = ''
 
     # Define no of records per page
     PAGE_SIZE = settings.PAGE_SIZE
@@ -222,7 +214,7 @@ def notification_del_read(request, object_id):
         else:
             request.session["msg_note"] = \
                 _('%(count)s notification(s) are marked as read.')\
-                    % {'count': notification_list.count()}
+                % {'count': notification_list.count()}
             notification_list.update(unseen=0)
         return HttpResponseRedirect('/user_detail_change/?action=tabs-3&msg_note=true')
 

@@ -17,25 +17,20 @@ from django.conf import settings
 from django.test import TestCase
 from common.utils import BaseAuthenticatedClient
 from cdr.models import Switch, HangupCause
-from cdr.forms import CdrSearchForm,\
-                      CountryReportForm,\
-                      CdrOverviewForm,\
-                      CompareCallSearchForm,\
-                      ConcurrentCallForm,\
-                      SwitchForm,\
-                      WorldForm,\
-                      EmailReportForm
+from cdr.forms import CdrSearchForm, CountryReportForm,\
+    CdrOverviewForm, CompareCallSearchForm,\
+    ConcurrentCallForm, SwitchForm,\
+    WorldForm, EmailReportForm
 from cdr.tasks import sync_cdr_pending, get_channels_info
 from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
-                      cdr_report_by_hour, cdr_concurrent_calls,\
-                      cdr_realtime, cdr_country_report, mail_report,\
-                      world_map_view, index, cdr_detail, common_send_notification,\
-                      cdr_export_to_csv
+    cdr_report_by_hour, cdr_concurrent_calls,\
+    cdr_realtime, cdr_country_report, mail_report,\
+    world_map_view, index, cdr_detail, common_send_notification,\
+    cdr_export_to_csv
 from cdr.functions_def import get_switch_list, get_hangupcause_name,\
-                              get_hangupcause_id
+    get_hangupcause_id
 from cdr.templatetags.cdr_extras import hangupcause_name_with_title,\
-                                        mongo_id, seen_unseen,\
-                                        seen_unseen_word
+    mongo_id, seen_unseen, seen_unseen_word
 
 from bson.objectid import ObjectId
 from datetime import datetime
@@ -65,7 +60,8 @@ class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
             data={
                 "name": "localhost",
                 "ipaddress": "127.0.0.1",
-                }, follow=True)
+            },
+            follow=True)
         self.assertEqual(response.status_code, 200)
 
     def test_admin_switch_import_cdr(self):
@@ -100,7 +96,7 @@ class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
             data={
                 "code": "1",
                 "enumeration": "UNALLOCATED_NUMBER",
-                })
+            })
         self.assertEqual(response.status_code, 302)
 
 
@@ -464,14 +460,14 @@ class CdrModelTestCase(BaseAuthenticatedClient):
         self.switch = Switch(
             name='localhost',
             ipaddress='127.0.0.1'
-            )
+        )
         self.switch.save()
         self.assertTrue(self.switch.__unicode__())
 
         self.hangupcause = HangupCause(
             code=700,
             enumeration='UNALLOCATED_NUMBER'
-            )
+        )
         self.hangupcause.save()
         self.assertTrue(self.hangupcause.__unicode__())
 
@@ -534,5 +530,3 @@ class CdrModelTestCase(BaseAuthenticatedClient):
         """Delete created object"""
         self.switch.delete()
         self.hangupcause.delete()
-
-

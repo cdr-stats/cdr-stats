@@ -67,13 +67,13 @@ def get_element(cdr):
         remote_media_ip = ''
     #Get duration
     if 'variables' in cdr and 'duration' in cdr['variables'] \
-        and cdr['variables']['duration']:
+       and cdr['variables']['duration']:
         duration = float(cdr['variables']['duration'])
     else:
         duration = 0
     #Get billsec
     if 'variables' in cdr and 'billsec' in cdr['variables'] \
-        and cdr['variables']['billsec']:
+       and cdr['variables']['billsec']:
         billsec = cdr['variables']['billsec']
     else:
         billsec = 0
@@ -89,13 +89,13 @@ def get_element(cdr):
         uuid = ''
     #Get caller_id_number
     if 'callflow' in cdr and 'caller_profile' in cdr['callflow'] \
-        and 'caller_id_number' in cdr['callflow']['caller_profile']:
+       and 'caller_id_number' in cdr['callflow']['caller_profile']:
         caller_id_number = cdr['callflow']['caller_profile']['caller_id_number']
     else:
         caller_id_number = ''
     #Get caller_id_name
     if 'callflow' in cdr and 'caller_profile' in cdr['callflow'] \
-        and 'caller_id_name' in cdr['callflow']['caller_profile']:
+       and 'caller_id_name' in cdr['callflow']['caller_profile']:
         caller_id_name = cdr['callflow']['caller_profile']['caller_id_name']
     else:
         caller_id_name = ''
@@ -139,10 +139,10 @@ def apply_index(shell):
 
 
 def create_daily_analytic(daily_date, switch_id, country_id,
-    accountcode, hangup_cause_id, duration):
+                          accountcode, hangup_cause_id, duration):
     """Create DAILY_ANALYTIC"""
-    id_daily = daily_date.strftime('%Y%m%d') + "/%d/%s/%d/%d" %\
-                (switch_id, accountcode, country_id, hangup_cause_id)
+    id_daily = daily_date.strftime('%Y%m%d') + "/%d/%s/%d/%d" % \
+        (switch_id, accountcode, country_id, hangup_cause_id)
     hour = daily_date.hour
     minute = daily_date.minute
     # Get a datetime that only include date info
@@ -150,23 +150,23 @@ def create_daily_analytic(daily_date, switch_id, country_id,
 
     DAILY_ANALYTIC.update(
         {
-        "_id": id_daily,
-        "metadata": {
-            "date": d,
-            "switch_id": switch_id,
-            "country_id": country_id,
-            "accountcode": accountcode,
-            "hangup_cause_id": hangup_cause_id,
+            "_id": id_daily,
+            "metadata": {
+                "date": d,
+                "switch_id": switch_id,
+                "country_id": country_id,
+                "accountcode": accountcode,
+                "hangup_cause_id": hangup_cause_id,
             },
         },
         {
-        "$inc": {
-            "call_daily": 1,
-            "call_hourly.%d" % (hour,): 1,
-            "call_minute.%d.%d" % (hour, minute,): 1,
-            "duration_daily": int(duration),
-            "duration_hourly.%d" % (hour,): int(duration),
-            "duration_minute.%d.%d" % (hour, minute,): int(duration),
+            "$inc": {
+                "call_daily": 1,
+                "call_hourly.%d" % (hour,): 1,
+                "call_minute.%d.%d" % (hour, minute,): 1,
+                "duration_daily": int(duration),
+                "duration_hourly.%d" % (hour,): int(duration),
+                "duration_minute.%d.%d" % (hour, minute,): int(duration),
             }
         }, upsert=True)
 
@@ -174,29 +174,29 @@ def create_daily_analytic(daily_date, switch_id, country_id,
 
 
 def create_monthly_analytic(daily_date, start_uepoch, switch_id,
-    country_id, accountcode, duration):
+                            country_id, accountcode, duration):
     """Create DAILY_ANALYTIC"""
     # Get a datetime that only include year-month info
     d = datetime.datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
 
     id_monthly = daily_date.strftime('%Y%m') + "/%d/%s/%d" %\
-                    (switch_id, accountcode, country_id)
+        (switch_id, accountcode, country_id)
 
     MONTHLY_ANALYTIC.update(
-            {
+        {
             "_id": id_monthly,
             "metadata": {
                 "date": d,
                 "switch_id": switch_id,
                 "country_id": country_id,
                 "accountcode": accountcode,
-                },
             },
-            {
+        },
+        {
             "$inc": {
                 "call_monthly": 1,
                 "duration_monthly": int(duration),
-                }
+            }
         }, upsert=True)
 
     return True
@@ -222,7 +222,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
 
     result = importcdr_handler.find(
         {
-        '$or': [{'import_cdr': {'$exists': False}},
+            '$or': [{'import_cdr': {'$exists': False}},
                 {'import_cdr': 0}]
         },
         {
@@ -252,10 +252,9 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
     for cdr in result:
         #find result so let's look later for more records
         start_uepoch = datetime.datetime.fromtimestamp(
-                        int(cdr['variables']['start_uepoch'][:10]))
+            int(cdr['variables']['start_uepoch'][:10]))
         # Check Destination number
-        destination_number = cdr['callflow']['caller_profile'][ \
-                                            'destination_number']
+        destination_number = cdr['callflow']['caller_profile']['destination_number']
 
         if len(destination_number) <= settings.INTERNAL_CALL:
             authorized = 1
@@ -265,8 +264,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             authorized = destination_data['authorized']
             country_id = destination_data['country_id']
 
-        hangup_cause_id = get_hangupcause_id(cdr['variables'][ \
-                                            'hangup_cause_q850'])
+        hangup_cause_id = get_hangupcause_id(cdr['variables']['hangup_cause_q850'])
 
         #Retrieve Element from CDR Object
         data_element = get_element(cdr)
@@ -324,7 +322,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
 
         # DAILY_ANALYTIC
         daily_date = datetime.datetime.fromtimestamp(
-                        int(cdr['variables']['start_uepoch'][:10]))
+            int(cdr['variables']['start_uepoch'][:10]))
 
         # DAILY_ANALYTIC
         daily_date = datetime.datetime.fromtimestamp(
@@ -353,11 +351,11 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         CDR_COMMON.insert(cdr_bulk_record)
         # Reset counter to zero
         local_count_import = 0
-        print_shell(shell, "Switch(%s) - currently imported CDRs:%d" % \
-                        (ipaddress, count_import))
+        print_shell(shell, "Switch(%s) - currently imported CDRs:%d" %
+            (ipaddress, count_import))
 
-    print_shell(shell, "Import on Switch(%s) - Total Record(s) imported:%d" % \
-                            (ipaddress, count_import))
+    print_shell(shell, "Import on Switch(%s) - Total Record(s) imported:%d" %
+        (ipaddress, count_import))
 
 
 def chk_ipaddress(ipaddress):
@@ -422,8 +420,8 @@ def import_cdr_freeswitch_mongodb(shell=False):
             connection = Connection(host, port)
             DBCON = connection[db_name]
         except ConnectionFailure, e:
-            sys.stderr.write("Could not connect to MongoDB: %s - %s" % \
-                                                            (e, ipaddress))
+            sys.stderr.write("Could not connect to MongoDB: %s - %s" %
+                (e, ipaddress))
             sys.exit(1)
 
         #Connect to Mongo

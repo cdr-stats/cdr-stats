@@ -88,11 +88,11 @@ class HangupCause(caching.base.CachingMixin, models.Model):
     code = models.PositiveIntegerField(unique=True, verbose_name=_('Code'),
                                        help_text=_("ITU-T Q.850 Code"))
     enumeration = models.CharField(max_length=100, null=True, blank=True,
-                                    verbose_name=_('Enumeration'))
+                                   verbose_name=_('Enumeration'))
     cause = models.CharField(max_length=100, null=True, blank=True,
-                              verbose_name=_('Cause'))
+                             verbose_name=_('Cause'))
     description = models.TextField(null=True, blank=True,
-                                    verbose_name=_('Description'))
+                                   verbose_name=_('Description'))
 
     def __unicode__(self):
         return '[%s] %s' % (self.code, self.enumeration)

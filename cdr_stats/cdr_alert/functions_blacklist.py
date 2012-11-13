@@ -13,8 +13,7 @@
 #
 from django.conf import settings
 from cdr.functions_def import remove_prefix, \
-                              prefix_list_string, \
-                              get_country_id
+    prefix_list_string, get_country_id
 from cdr_alert.models import Blacklist, Whitelist
 from cdr_alert.tasks import blacklist_whitelist_notification
 
@@ -110,8 +109,8 @@ def chk_destination(destination_number):
     if len(sanitized_destination) < settings.PN_MIN_DIGITS:
         # It might be an extension
         country_id = 0
-    elif len(sanitized_destination) >= settings.PN_MIN_DIGITS\
-        and len(sanitized_destination) <= settings.PN_MAX_DIGITS:
+    elif (len(sanitized_destination) >= settings.PN_MIN_DIGITS
+         and len(sanitized_destination) <= settings.PN_MAX_DIGITS):
         # It might be an local call
         # Need to add coma for get_country_id to eval correctly
         country_id = get_country_id(str(settings.LOCAL_DIALCODE) + ',')

@@ -14,11 +14,8 @@
 from django.conf import settings
 from cdr.models import CDR_TYPE
 from cdr.import_cdr_freeswitch_mongodb import apply_index,\
-                                              chk_ipaddress,\
-                                              CDR_COMMON,\
-                                              create_daily_analytic,\
-                                              create_monthly_analytic,\
-                                              set_int_default
+    chk_ipaddress, CDR_COMMON, create_daily_analytic,\
+    create_monthly_analytic, set_int_default
 from cdr.functions_def import get_hangupcause_id
 from cdr_alert.functions_blacklist import chk_destination
 from datetime import datetime
@@ -94,8 +91,8 @@ def import_cdr_asterisk(shell=False):
         elif db_engine == 'pgsql':
             import psycopg2 as Database
         else:
-            sys.stderr.write("Wrong setting for db_engine: %s" % \
-                                                            (str(db_engine)))
+            sys.stderr.write("Wrong setting for db_engine: %s" %
+                (str(db_engine)))
             sys.exit(1)
 
         data = chk_ipaddress(ipaddress)
@@ -110,8 +107,8 @@ def import_cdr_asterisk(shell=False):
         host = settings.CDR_BACKEND[ipaddress]['host']
         port = settings.CDR_BACKEND[ipaddress]['port']
         try:
-            connection = Database.connect(user=user, passwd=password, \
-                                            db=db_name, host=host, port=port)
+            connection = Database.connect(user=user, passwd=password,
+                db=db_name, host=host, port=port)
             if db_engine == 'mysql':
                 connection.autocommit(True)
             elif db_engine == 'pgsql':
@@ -121,34 +118,34 @@ def import_cdr_asterisk(shell=False):
             #to fetch on 1st cursor
             cursor_updated = connection.cursor()
         except Exception, e:
-            sys.stderr.write("Could not connect to Database: %s - %s" % \
-                                                            (e, ipaddress))
+            sys.stderr.write("Could not connect to Database: %s - %s" %
+                (e, ipaddress))
             sys.exit(1)
 
         try:
-            cursor.execute("SELECT VERSION() from %s WHERE import_cdr "\
-                            "IS NOT NULL LIMIT 0,1" % table_name)
+            cursor.execute("SELECT VERSION() from %s WHERE import_cdr "
+                "IS NOT NULL LIMIT 0,1" % table_name)
             row = cursor.fetchone()
         except Exception, e:
             #Add missing field to flag import
-            cursor.execute("ALTER TABLE %s  ADD import_cdr TINYINT NOT NULL "\
-                            "DEFAULT '0'" % table_name)
-            cursor.execute("ALTER TABLE %s ADD INDEX (import_cdr)" % \
-                            table_name)
+            cursor.execute("ALTER TABLE %s  ADD import_cdr TINYINT NOT NULL "
+                "DEFAULT '0'" % table_name)
+            cursor.execute("ALTER TABLE %s ADD INDEX (import_cdr)" %
+                table_name)
 
         count_import = 0
 
         #TODO Check UNIX_TIMESTAMP for postgresql
         if db_engine == 'mysql':
-            cursor.execute("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel," \
-                    "duration, billsec, disposition, accountcode, uniqueid," \
-                    " %s FROM %s WHERE import_cdr=0  LIMIT 0, 1000" % \
-                    (settings.ASTERISK_PRIMARY_KEY, table_name))
+            cursor.execute("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel,"
+                "duration, billsec, disposition, accountcode, uniqueid,"
+                " %s FROM %s WHERE import_cdr=0  LIMIT 0, 1000" %
+                (settings.ASTERISK_PRIMARY_KEY, table_name))
         elif db_engine == 'pgsql':
-            cursor.execute("SELECT dst, extract(epoch FROM calldate), clid, channel," \
-                    "duration, billsec, disposition, accountcode, uniqueid," \
-                    " %s FROM %s WHERE import_cdr=0  LIMIT 0, 1000" % \
-                    (settings.ASTERISK_PRIMARY_KEY, table_name))
+            cursor.execute("SELECT dst, extract(epoch FROM calldate), clid, channel,"
+                "duration, billsec, disposition, accountcode, uniqueid,"
+                " %s FROM %s WHERE import_cdr=0  LIMIT 0, 1000" %
+                (settings.ASTERISK_PRIMARY_KEY, table_name))
         row = cursor.fetchone()
 
         while row is not None:
@@ -170,7 +167,7 @@ def import_cdr_asterisk(shell=False):
             ast_disposition = row[6]
             try:
                 id_disposition = dic_disposition.get(
-                                        ast_disposition.encode("utf-8"), 0)
+                    ast_disposition.encode("utf-8"), 0)
                 transdisposition = DISPOSITION_TRANSLATION[id_disposition]
             except:
                 transdisposition = 0
@@ -247,11 +244,11 @@ def import_cdr_asterisk(shell=False):
             try:
                 #TODO: Build Update by batch of max 100
                 cursor_updated.execute(
-                        "UPDATE %s SET import_cdr=1 WHERE %s=%d" % \
-                        (table_name, settings.ASTERISK_PRIMARY_KEY, acctid))
+                    "UPDATE %s SET import_cdr=1 WHERE %s=%d" %
+                    (table_name, settings.ASTERISK_PRIMARY_KEY, acctid))
             except:
-                print_shell(shell, "ERROR : Update failed (%s:%d)" % \
-                                    (settings.ASTERISK_PRIMARY_KEY, acctid))
+                print_shell(shell, "ERROR : Update failed (%s:%d)" %
+                    (settings.ASTERISK_PRIMARY_KEY, acctid))
 
             #Fetch a other record
             row = cursor.fetchone()
@@ -264,5 +261,5 @@ def import_cdr_asterisk(shell=False):
             #TODO: Apply index only if needed
             apply_index(shell)
 
-        print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" % \
-                            (ipaddress, count_import))
+        print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" %
+            (ipaddress, count_import))

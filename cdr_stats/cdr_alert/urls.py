@@ -11,11 +11,10 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.conf.urls import patterns
 
-urlpatterns = patterns('',
+# from django.conf.urls import patterns
 
-# User detail change for Customer UI
-#(r'^alert/$', 'cdr_alert.views.alert'),
-
-)
+# urlpatterns = patterns('',
+#     # User detail change for Customer UI
+#     #(r'^alert/$', 'cdr_alert.views.alert'),
+# )

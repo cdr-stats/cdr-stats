@@ -14,7 +14,6 @@
 
 from django.test import TestCase
 from common.utils import BaseAuthenticatedClient
-from frontend.forms import LoginForm
 from frontend.views import login_view, logout_view
 
 
