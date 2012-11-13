@@ -456,7 +456,7 @@ func_install_frontend(){
             mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST $DATABASENAME -e "ALTER TABLE cdr ADD acctid BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST;"
 
             #enable CDR-Stats for Asterisk
-            sed -i "s/freeswitch/asterisk/g"  $INSTALL_DIR/settings_local.py
+            sed -i "s/'freeswitch'/'asterisk'/g"  $INSTALL_DIR/settings_local.py
 
             #Configure CDR Import
             sed -i "s/MYSQL_IMPORT_CDR_DBNAME/$DATABASENAME/g"  $INSTALL_DIR/settings_local.py
