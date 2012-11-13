@@ -292,6 +292,7 @@ ADMIN_TOOLS_INDEX_DASHBOARD = \
     'cdr_stats.custom_admin_tools.dashboard.CustomIndexDashboard'
 ADMIN_TOOLS_APP_INDEX_DASHBOARD = \
     'cdr_stats.custom_admin_tools.dashboard.CustomAppIndexDashboard'
+ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 #CELERY
 #======
