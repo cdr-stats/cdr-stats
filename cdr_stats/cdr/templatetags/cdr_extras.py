@@ -98,7 +98,6 @@ def mongo_id(value, sub_val):
             value = int(value['_id'][sub_val])
         else:
             value = value['_id']
-    # Return value
     return value
 
 

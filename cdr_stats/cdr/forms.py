@@ -163,7 +163,7 @@ class CdrSearchForm(SearchForm):
     from_date = forms.CharField(label=_('From'),
                                 required=True, max_length=10)
     to_date = forms.CharField(label=_('To'),
-                                required=True, max_length=10)
+                              required=True, max_length=10)
     direction = forms.TypedChoiceField(label=_('Direction'),
                                 required=False,
                                 coerce=bool,
@@ -299,8 +299,8 @@ class FileImport(forms.Form):
     """General Form : CSV file upload"""
 
     csv_file = forms.FileField(label=_('Upload CSV File '), required=True,
-                               error_messages={'required': 'Please upload File'
-                               }, help_text=_('Browse CSV file'))
+                               error_messages={'required': 'Please upload File'},
+                               help_text=_('Browse CSV file'))
 
     def clean_csv_file(self):
         """Form Validation :  File extension Check"""
@@ -331,7 +331,7 @@ CDR_FIELD_LIST = (
     'read_codec',
     'write_codec',
     'accountcode',
-    )
+)
 
 CDR_FIELD_LIST_NUM = [(x, 'column-' + str(x)) for x in range(1,
                       len(CDR_FIELD_LIST) + 1)]
@@ -339,8 +339,7 @@ ACCOUNTCODE_FIELD_LIST_NUM = [(x, 'column-' + str(x)) for x in range(1,
                               len(CDR_FIELD_LIST) + 1)]
 ACCOUNTCODE_FIELD_LIST_NUM.append((0, 'No import'))
 ACCOUNTCODE_FIELD_LIST_NUM = sorted(ACCOUNTCODE_FIELD_LIST_NUM,
-                                    key=lambda ACCOUNTCODE_FIELD_LIST_NUM: \
-                                    ACCOUNTCODE_FIELD_LIST_NUM[0])
+    key=lambda ACCOUNTCODE_FIELD_LIST_NUM: ACCOUNTCODE_FIELD_LIST_NUM[0])
 
 
 class CDR_FileImport(FileImport):
