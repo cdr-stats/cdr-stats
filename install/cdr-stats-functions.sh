@@ -439,6 +439,9 @@ func_install_frontend(){
             MYHOST='127.0.0.1'
             MYHOSTPORT='3306'
 
+            echo "Install Mysql..."
+            yum -y install mysql-server mysql-devel
+
             echo ""
             echo "Enter database settings for Asterisk..."
             echo ""
