@@ -30,7 +30,7 @@ CDRSTATS_ENV="cdr-stats"
 HTTP_PORT="8008"
 SOUTH_SOURCE='hg+http://bitbucket.org/andrewgodwin/south/@ecaafda23e600e510e252734d67bf8f9f2362dc9#egg=South-dev'
 BRANCH='develop'
-DB_BACKEND="PostgreSQL"
+DB_BACKEND="POSTGRESQL"
 
 
 #Django bug https://code.djangoproject.com/ticket/16017
@@ -217,10 +217,14 @@ func_install_frontend(){
 
             if echo $DB_BACKEND | grep -i "^SQLITE" > /dev/null ; then
                 yum -y install sqlite
-            elif echo $DB_BACKEND | grep -i "^PostgreSQL" > /dev/null ; then
+            elif echo $DB_BACKEND | grep -i "^POSTGRESQL" > /dev/null ; then
                 #Configure PostgreSQL
                 echo "Configure PostgreSQL pg_hba.conf"
                 yum -y install postgresql-server postgresql-devel
+                chkconfig --levels 235 postgresql on
+                service postgresql initdb
+                service postgresql start
+
                 mv /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf.bak
                 sed -e '/^local/ d' -e '/^host / d' /var/lib/pgsql/data/pg_hba.conf.bak > /var/lib/pgsql/data/pg_hba.conf
                 echo 'local   all         postgres                          trust' >> /var/lib/pgsql/data/pg_hba.conf
@@ -229,8 +233,7 @@ func_install_frontend(){
                 echo 'host    all         all         127.0.0.1/32          md5' >> /var/lib/pgsql/data/pg_hba.conf
                 echo 'host    all         postgres    ::1/128               trust' >> /var/lib/pgsql/data/pg_hba.conf
                 echo 'host    all         all         ::1/128               md5' >> /var/lib/pgsql/data/pg_hba.conf
-                chkconfig --levels 235 postgresql on
-                service postgresql initdb
+                #Restart PostgreSQL
                 service postgresql restart
             else
                 #Install & Start MySQL
@@ -264,7 +267,7 @@ func_install_frontend(){
         mv $INSTALL_DIR /tmp/old-cdr-stats_$DATETIME
         echo "Files from $INSTALL_DIR has been moved to /tmp/old-cdr-stats_$DATETIME"
 
-        if echo $DB_BACKEND | grep -i "^PostgreSQL" > /dev/null ; then
+        if echo $DB_BACKEND | grep -i "^POSTGRESQL" > /dev/null ; then
             if [ `sudo -u postgres psql -qAt --list | egrep '^$DATABASENAME\|' | wc -l` -eq 1 ]; then
                 echo "Run backup with postgresql..."
                 sudo -u postgres pg_dump $DATABASENAME > /tmp/old-cdr-stats_$DATETIME.pgsqldump.sql
@@ -344,7 +347,7 @@ func_install_frontend(){
         # Setup settings_local.py for SQLite
         sed -i "s/'init_command/#'init_command/g"  $INSTALL_DIR/settings_local.py
 
-    elif echo $DB_BACKEND | grep -i "^PostgreSQL" > /dev/null ; then
+    elif echo $DB_BACKEND | grep -i "^POSTGRESQL" > /dev/null ; then
         #Setup settings_local.py for POSTGRESQL
         sed -i "s/DATABASENAME/$DATABASENAME/"  $INSTALL_DIR/settings_local.py
         sed -i "s/DB_USERNAME/$DB_USERNAME/" $INSTALL_DIR/settings_local.py
