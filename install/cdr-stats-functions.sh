@@ -184,7 +184,6 @@ func_install_frontend(){
             echo ""
             echo "Create CDRStats User/Group : $CDRSTATS_USER"
             useradd $CDRSTATS_USER --user-group --system --no-create-home
-
         ;;
         'CENTOS')
             if [ "$INSTALLMODE" = "FULL" ]; then
@@ -222,7 +221,7 @@ func_install_frontend(){
                 #Configure PostgreSQL
                 echo "Configure PostgreSQL pg_hba.conf"
                 yum -y install postgresql-server postgresql-devel
-                sed -i "s/ident/md5/g" /var/lib/pgsql/data/pg_hba.conf
+                sed -i "s/ident/trust/g" /var/lib/pgsql/data/pg_hba.conf
                 chkconfig --levels 235 postgresql on
                 service postgresql initdb
                 service postgresql restart
