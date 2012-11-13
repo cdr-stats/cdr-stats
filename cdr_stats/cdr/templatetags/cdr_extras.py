@@ -93,12 +93,11 @@ def hangupcause_name_with_title(id):
 @register.filter(name='mongo_id')
 def mongo_id(value, sub_val):
     """Tag is used to get mongo mapreduce _id.value"""
-    if type(value) == type({}):
-        if '_id' in value:
-            if sub_val in value['_id']:
-                value = int(value['_id'][sub_val])
-            else:
-                value = value['_id']
+    if isinstance(value, dict) and '_id' in value:
+        if sub_val in value['_id']:
+            value = int(value['_id'][sub_val])
+        else:
+            value = value['_id']
     # Return value
     return value
 
