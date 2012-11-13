@@ -17,7 +17,7 @@
 INSTALL_MODE='CLONE'
 INSTALL_DIR='/usr/share/cdr_stats'
 INSTALL_DIR_WELCOME='/var/www/cdr-stats'
-DATABASENAME='cdr_stats'
+DATABASENAME='cdrstats_db'
 DB_USERSALT=`</dev/urandom tr -dc 0-9| (head -c $1 > /dev/null 2>&1 || head -c 5)`
 DB_USERNAME="cdr_stats_$DB_USERSALT"
 DB_PASSWORD=`</dev/urandom tr -dc A-Za-z0-9| (head -c $1 > /dev/null 2>&1 || head -c 20)`

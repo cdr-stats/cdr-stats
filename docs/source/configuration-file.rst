@@ -4,63 +4,43 @@ Configuration
 =============
 
 Some of the more important parts of the configuration module for the cdr_stats,
-``settings.py``, are explained below::
-
-  import os.path
-  APPLICATION_DIR = os.path.dirname(globals()['__file__'])
+``settings.py``, are explained below.
 
 ``APPLICATION_DIR`` now contains the full path of your project folder and can be used elsewhere
 in the ``settings.py`` module so that your project may be moved around the system without you having to
 worry about changing any hard-coded paths. ::
 
-  DEBUG = True
+    import os.path
+    APPLICATION_DIR = os.path.dirname(globals()['__file__'])
 
-turns on debug mode allowing the browser user to see project settings and temporary variables. ::
+Turns on debug mode allowing the browser user to see project settings and temporary variables. ::
 
-  ADMINS = ( ('xyz', 'xyz@abc.com') )
+    DEBUG = True
 
-sends all errors from the production server to the admin's email address. ::
+Sends all errors from the production server to the admin's email address. ::
 
-      DATABASES = {
-          'default': {
-              # Add 'postgresql_psycopg2','postgresql','mysql','sqlite3','oracle'
-              'ENGINE': 'django.db.backends.sqlite3',
-              # Or path to database file if using sqlite3.
-              'NAME': os.path.dirname(os.path.abspath(__file__)) + '/database/local.db',
-              'USER': '',                      # Not used with sqlite3.
-              'PASSWORD': '',                  # Not used with sqlite3.
-              'HOST': '',                      # Set to empty string for localhost.
-                                               # Not used with sqlite3.
-              'PORT': '',                      # Set to empty string for default.
-                                               # Not used with sqlite3.
-          }
-      }
+    ADMINS = ( ('xyz', 'xyz@abc.com') )
 
-      or
 
-      DATABASES = {
-          'default': {
-                  'ENGINE': 'django.db.backends.postgresql_psycopg2',
-                  'NAME': 'cdr_stats_psql',
-                  'USER': 'postgresuser',
-                  'PASSWORD': 'postgrespasswd',
-                  'HOST': 'localhost',
-                  'PORT': '5432',
-              }
-      }
+Sets up the options required for Django to connect to your database engine::
 
-      or
-
-      DATABASES = {
-          'default': {
-                  'ENGINE': 'mysql',
-                  'NAME': 'cdr_stats_mysql',
-                  'USER': 'mysqluser',
-                  'PASSWORD': 'mysqlpasswd',
-                  'HOST': 'localhost',
-                  'PORT': '3306',
-              }
-      }
+    DATABASES = {
+        'default': {
+            # Add 'postgresql_psycopg2','postgresql','mysql','sqlite3','oracle'
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'DATABASENAME',
+            'USER': 'DB_USERNAME',
+            'PASSWORD': 'DB_PASSWORD',
+            'HOST': 'DB_HOSTNAME',
+            'PORT': 'DB_PORT',
+            'OPTIONS': {
+                #Needed on Mysql
+                # 'init_command': 'SET storage_engine=INNODB',
+                #Postgresql Autocommit
+                'autocommit': True,
+            }
+        }
+    }
 
       #MONGODB
       #=======
@@ -68,12 +48,13 @@ sends all errors from the production server to the admin's email address. ::
       MG_HOST = 'localhost'
       MG_PORT = 27017
 
-sets up the options required for Django to connect to your database. ::
+
+Tells Django where to find your media files such as images that the ``HTML
+templates`` might use. ::
+
 
      MEDIA_ROOT = os.path.join(APPLICATION_DIR, 'static')
 
-tells Django where to find your media files such as images that the ``HTML
-templates`` might use. ::
 
      ROOT_URLCONF = 'urls'
 
