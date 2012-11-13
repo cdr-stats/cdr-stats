@@ -168,7 +168,9 @@ func_install_frontend(){
     case $DIST in
         'DEBIAN')
             apt-get -y install python-setuptools python-dev build-essential libevent-dev libapache2-mod-python libapache2-mod-wsgi
+            #We need both Postgresql and Mysql for the Connectors
             apt-get -y install postgresql-client-9.1
+            apt-get -y install libmysqlclient-dev
             apt-get -y install git-core mercurial gawk
             apt-get -y install python-pip
             #for audiofile convertion

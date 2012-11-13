@@ -84,10 +84,7 @@ def import_cdr_asterisk(shell=False):
 
         db_engine = settings.CDR_BACKEND[ipaddress]['db_engine']
         if db_engine == 'mysql':
-            try:
-                import MySQLdb as Database
-            except:
-                pass
+            import MySQLdb as Database
         elif db_engine == 'pgsql':
             import psycopg2 as Database
         else:
@@ -135,7 +132,6 @@ def import_cdr_asterisk(shell=False):
 
         count_import = 0
 
-        #TODO Check UNIX_TIMESTAMP for postgresql
         if db_engine == 'mysql':
             cursor.execute("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel,"
                 "duration, billsec, disposition, accountcode, uniqueid,"
