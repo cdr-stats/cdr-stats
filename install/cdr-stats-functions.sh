@@ -221,7 +221,14 @@ func_install_frontend(){
                 #Configure PostgreSQL
                 echo "Configure PostgreSQL pg_hba.conf"
                 yum -y install postgresql-server postgresql-devel
-                sed -i "s/ident/trust/g" /var/lib/pgsql/data/pg_hba.conf
+                mv /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf.bak
+                sed -e '/^local/ d' -e '/^host / d' /var/lib/pgsql/data/pg_hba.conf.bak > /var/lib/pgsql/data/pg_hba.conf
+                echo 'local   all         postgres                          trust' >> /var/lib/pgsql/data/pg_hba.conf
+                echo 'local   all         all                               md5' >> /var/lib/pgsql/data/pg_hba.conf
+                echo 'host    all         postgres    127.0.0.1/32          trust' >> /var/lib/pgsql/data/pg_hba.conf
+                echo 'host    all         all         127.0.0.1/32          md5' >> /var/lib/pgsql/data/pg_hba.conf
+                echo 'host    all         postgres    ::1/128               trust' >> /var/lib/pgsql/data/pg_hba.conf
+                echo 'host    all         all         ::1/128               md5' >> /var/lib/pgsql/data/pg_hba.conf
                 chkconfig --levels 235 postgresql on
                 service postgresql initdb
                 service postgresql restart
@@ -256,7 +263,6 @@ func_install_frontend(){
         mkdir /tmp/old-cdr-stats_$DATETIME
         mv $INSTALL_DIR /tmp/old-cdr-stats_$DATETIME
         echo "Files from $INSTALL_DIR has been moved to /tmp/old-cdr-stats_$DATETIME"
-
 
         if echo $DB_BACKEND | grep -i "^PostgreSQL" > /dev/null ; then
             if [ `sudo -u postgres psql -qAt --list | egrep '^$DATABASENAME\|' | wc -l` -eq 1 ]; then
