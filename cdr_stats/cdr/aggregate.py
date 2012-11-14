@@ -12,6 +12,50 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.conf import settings
+import datetime
+
+CONC_CALL_AGG = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL_AGG']]
+
+
+def set_concurrentcall_analytic(call_date, switch_id, accountcode, numbercall):
+    """Create Concurrent call Analytic"""
+    date_minprec = datetime.datetime(
+        call_date.year, call_date.month, call_date.day,
+        call_date.hour, call_date.minute)
+
+    #Get current value in CONC_CALL_AGG
+    get_cc_obj = CONC_CALL_AGG.find_one(
+        {
+            "date": date_minprec,
+            "switch_id": switch_id,
+            "accountcode": accountcode
+        })
+
+    if not get_cc_obj:
+        #If doesn't exist set numbercall
+        #TODO: Add index to CONC_CALL_AGG
+        CONC_CALL_AGG.insert(
+            {
+                "date": date_minprec,
+                "switch_id": switch_id,
+                "accountcode": accountcode,
+                "numbercall": int(numbercall),
+            })
+    else:
+        if int(get_cc_obj['numbercall']) < int(numbercall):
+            #If numbercall is not max, update
+            CONC_CALL_AGG.update(
+                {
+                    "date": date_minprec,
+                    "switch_id": switch_id,
+                    "accountcode": accountcode,
+                },
+                {
+                    "$set": {
+                        "numbercall": int(numbercall),
+                    }
+                })
+    return True
 
 
 def pipeline_cdr_view_daily_report(query_var):
