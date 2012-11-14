@@ -15,7 +15,7 @@
 #
 from django.conf import settings
 from django.core.management.base import BaseCommand
-#from django.utils.safestring import mark_safe
+from cdr.aggregate import set_concurrentcall_analytic
 from random import choice
 from optparse import make_option
 import random
@@ -27,49 +27,6 @@ random.seed()
 HANGUP_CAUSE = ['NORMAL_CLEARING', 'NORMAL_CLEARING', 'NORMAL_CLEARING',
                 'NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED',
                 'INVALID_NUMBER_FORMAT']
-
-CONC_CALL_AGG = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL_AGG']]
-
-
-def set_concurrentcall_analytic(call_date, switch_id, accountcode, numbercall):
-    """Create Concurrent call Analytic"""
-    date_minprec = datetime.datetime(
-        call_date.year, call_date.month, call_date.day,
-        call_date.hour, call_date.minute)
-
-    #Get current value in CONC_CALL_AGG
-    get_cc_obj = CONC_CALL_AGG.find_one(
-        {
-            "date": date_minprec,
-            "switch_id": switch_id,
-            "accountcode": accountcode
-        })
-
-    if not get_cc_obj:
-        #If doesn't exist set numbercall
-        #TODO: Add index to CONC_CALL_AGG
-        CONC_CALL_AGG.insert(
-            {
-                "date": date_minprec,
-                "switch_id": switch_id,
-                "accountcode": accountcode,
-                "numbercall": int(numbercall),
-            })
-    else:
-        if int(get_cc_obj['numbercall']) < int(numbercall):
-            #If numbercall is not max, update
-            CONC_CALL_AGG.update(
-                {
-                    "date": date_minprec,
-                    "switch_id": switch_id,
-                    "accountcode": accountcode,
-                },
-                {
-                    "$set": {
-                        "numbercall": int(numbercall),
-                    }
-                })
-    return True
 
 
 class Command(BaseCommand):
@@ -139,49 +96,3 @@ class Command(BaseCommand):
                 ('switch_id', 1), ('accountcode', 1)], unique=True)
         except:
             print "Error: Adding unique index"
-
-        # print "Create map reduce for concurrent call"
-        # # Map-reduce collection
-        # map = \
-        #     mark_safe(u'''
-        #     function(){
-        #         var year = this.call_date.getFullYear();
-        #         var month = this.call_date.getMonth();
-        #         var day = this.call_date.getDate();
-        #         var hours = this.call_date.getHours();
-        #         var minutes = this.call_date.getMinutes();
-        #         var d = new Date(year, month, day, hours, minutes);
-        #         emit(
-        #         {
-        #             f_Switch: this.switch_id,
-        #             g_Millisec: d.getTime()
-        #         },
-        #         {
-        #         numbercall__max: this.numbercall, call_date: this.call_date,
-        #         accountcode: this.accountcode
-        #         } )
-        #       }''')
-
-        # reduce = \
-        #     mark_safe(u'''
-        #          function(key,vals) {
-        #              var ret = {numbercall__max: 0, call_date: '',
-        #                          accountcode: ''};
-        #              max = vals[0].numbercall__max;
-
-        #              for (var i=0; i < vals.length; i++){
-
-        #                 if(vals[i].numbercall__max > max){
-        #                     max = parseInt(vals[i].numbercall__max);
-        #                 };
-        #              }
-        #              ret.numbercall__max = max;
-        #              ret.call_date = vals[0].call_date;
-        #              ret.accountcode = vals[0].accountcode;
-        #              return ret;
-        #          }
-        #          ''')
-
-        # cdr_conn_call = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']]
-
-        # cdr_conn_call.map_reduce(map, reduce, out=settings.MONGO_CDRSTATS['CONC_CALL_AGG'])
