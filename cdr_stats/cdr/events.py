@@ -69,7 +69,6 @@ def my_message_handler(request, socket, context, message):
 
     key_uuid = message['voipswitch']
     switch_id = get_switch_id(key_uuid)
-    logger.debug(switch_id)
     if not switch_id:
         logger.debug('Wrong Switch ID')
         result[message['voipswitch']] = 0
@@ -77,7 +76,6 @@ def my_message_handler(request, socket, context, message):
         return True
 
     user = get_user(message['user'])
-    logger.debug(user)
 
     if not user:
         logger.debug('Wrong User')
@@ -86,7 +84,7 @@ def my_message_handler(request, socket, context, message):
         return True
 
     if not user.is_superuser and (not hasattr(user, 'userprofile')
-                                  or not user.userprofile.accountcode):
+       or not user.userprofile.accountcode):
         logger.debug('Wrong User')
         result[message['voipswitch']] = settings.SOCKETIO_CALLNUM_DEFAULT
         socket.send(result)
@@ -97,32 +95,31 @@ def my_message_handler(request, socket, context, message):
     start_date = datetime(now.year, now.month, now.day, now.hour, now.minute,
                           now.second, 0)
     end_date = datetime(now.year, now.month, now.day, now.hour, now.minute,
-                        now.second, 0) + timedelta(seconds=1)
+                        now.second, 99999) + timedelta(seconds=2)
     query_var['call_date'] = {'$gte': start_date, '$lte': end_date}
     query_var['switch_id'] = int(switch_id)
 
     if not user.is_superuser:
         # use accountcode in filter
         query_var['accountcode'] = str(user.userprofile.accountcode)
-    elif user.userprofile.accountcode and user.is_superuser:
+    elif (hasattr(user, 'userprofile') and user.userprofile.accountcode
+         and user.is_superuser):
         # use accountcode in filter
         query_var['accountcode'] = str(user.userprofile.accountcode)
+    logger.debug(query_var)
 
-    collectionresult = settings.DBCON[settings.MG_CONC_CALL].find(query_var)
+    collectionresult = settings.DBCON[settings.MG_CONC_CALL].find_one(query_var)
     if not collectionresult:
         logger.debug('No collection')
 
-    value = False
-    for rec in collectionresult:
-        if rec and rec['numbercall']:
-            logger.debug('numbercall :::>' + str(rec['numbercall']))
-            result[message['voipswitch']] = int(rec['numbercall'])
-            socket.send(result)
-            value = True
-            break
-
-    # No record found in collection
-    if not value:
+    try:
+        numbercall = int(collectionresult['numbercall'])
+        logger.debug('numbercall :::> %d' % numbercall)
+        result[message['voipswitch']] = numbercall
+        socket.send(result)
+    except:
+        # No record found in collection
+        logger.debug('No record found in collection')
         result[message['voipswitch']] = 0
         # result[message['voipswitch']] = incr = random.randint(1, 500)
         socket.send(result)
