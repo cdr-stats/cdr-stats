@@ -1,4 +1,4 @@
-.. _confifuration:
+.. _configuration:
 
 Configuration
 =============
@@ -42,6 +42,11 @@ Sets up the options required for Django to connect to your database engine::
         }
     }
 
+
+Sets up the options to connect to MongoDB Server, this server and Database will be used to store the analytic data.
+You should normally have no need to change those settings, except if your MongoDB server is on a distant machine
+or if you want to have a different name for your collections.
+
     #MONGODB
     #=======
     MONGO_CDRSTATS = {
@@ -52,24 +57,24 @@ Sets up the options required for Django to connect to your database engine::
         'DAILY_ANALYTIC': 'daily_analytic',
         'MONTHLY_ANALYTIC': 'monthly_analytic',
         'CONC_CALL': 'concurrent_call',
-        'CONC_CALL_AGG': 'concurrent_call_map_reduce'
+        'CONC_CALL_AGG': 'concurrent_call_aggregate'
     }
 
 
 Tells Django where to find your media files such as images that the ``HTML
 templates`` might use. ::
 
-
     MEDIA_ROOT = os.path.join(APPLICATION_DIR, 'static')
-
 
     ROOT_URLCONF = 'urls'
 
-tells Django to start finding URL matches at in the ``urls.py`` module in the ``cdr_stats`` project folder. ::
+
+Tells Django to start finding URL matches at in the ``urls.py`` module in the ``cdr_stats`` project folder. ::
 
       TEMPLATE_DIRS = ( os.path.join(APPLICATION_DIR, 'templates'), )
 
-tells Django where to find your HTML template files. ::
+
+Tells Django where to find your HTML template files. ::
 
     INSTALLED_APPS = (
         'django.contrib.auth',
@@ -83,12 +88,12 @@ tells Django where to find your HTML template files. ::
         ...
     )
 
-tells Django which applications (custom and external) to use in your project.
+Tells Django which applications (custom and external) to use in your project.
 The custom applications, ``cdr`` etc. are stored in the project folder along with
 these custom applications.
 
 
-.. _confifuration-country-reporting:
+.. _configuration-country-reporting:
 
 Country Reporting
 -----------------
@@ -141,7 +146,7 @@ In Spain, where there is no "0" trunk code, and the length of all numbers is 9, 
 NB: After changing this file, then both celery and apache should be restarted.
 
 
-.. _confifuration-asterisk:
+.. _configuration-asterisk:
 
 Import configuration for Asterisk
 ---------------------------------
@@ -176,7 +181,7 @@ The asterisk settings may be as follows::
 To add a new remote Asterisk MySQL CDR store, you would ensure connection to the remote MySQL database, then uncomment the new server settings by removing the # and configuring the credentials to connect to the remote Asterisk CDR store.
 
 
-.. _confifuration-freeswitch:
+.. _configuration-freeswitch:
 
 Import configuration for FreeSWITCH
 ------------------------------------

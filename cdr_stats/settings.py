@@ -388,6 +388,7 @@ ASTERISK_MANAGER_SECRET = 'secret'
 
 #MONGODB
 #=======
+#Settings of CDR-Stats MongoDB server, this is used to store the analytic data
 MONGO_CDRSTATS = {
     'DB_NAME': 'cdr-stats',
     'HOST': 'localhost',

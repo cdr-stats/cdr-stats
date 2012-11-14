@@ -147,6 +147,7 @@ LOCAL_SWITCH_IP = '127.0.0.1'
 
 #MONGODB
 #=======
+#Settings of CDR-Stats MongoDB server, this is used to store the analytic data
 MONGO_CDRSTATS = {
     'DB_NAME': 'cdr-stats',
     'HOST': 'localhost',
