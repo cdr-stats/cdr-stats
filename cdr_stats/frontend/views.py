@@ -20,7 +20,6 @@ from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
-
 from common.common_functions import current_view, get_news
 from frontend.forms import LoginForm
 
@@ -167,7 +166,7 @@ def cust_password_reset_confirm(request, uidb36=None, token=None):
 
 def cust_password_reset_complete(request):
     """Use ``django.contrib.auth.views.password_reset_complete`` view method
-    for forgotten password on theCustomer UI
+    for forgotten password on the Customer UI
 
     This shows an acknowledgement to the user after successfully resetting
     their password for the system.

@@ -14,18 +14,15 @@
 
 from django.contrib import admin
 from django.contrib import messages
-from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
-
 from django.utils.translation import ugettext_lazy as _
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls.defaults import patterns
 from django.template import RequestContext
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
-
 from country_dialcode.models import Country, Prefix
-from cdr_alert.models import AlertRemovePrefix, Alarm, AlarmReport, Blacklist, Whitelist
+from cdr_alert.models import AlertRemovePrefix, Alarm, AlarmReport, \
+    Blacklist, Whitelist
 from cdr_alert.forms import BWCountryForm
 
 
@@ -33,7 +30,7 @@ from cdr_alert.forms import BWCountryForm
 class AlertRemovePrefixAdmin(admin.ModelAdmin):
     list_display = ('id', 'label', 'prefix')
     search_fields = ('label', 'prefix')
-    
+
 
 # Alarm
 class AlarmAdmin(admin.ModelAdmin):
@@ -47,7 +44,7 @@ class AlarmReportAdmin(admin.ModelAdmin):
     list_display = ('id', 'alarm', 'calculatedvalue', 'daterun')
     search_fields = ('alarm', 'calculatedvalue')
 
-    
+
 # Blacklist
 class BlacklistAdmin(admin.ModelAdmin):
     list_display = ('id', 'phonenumber_prefix', 'country')
@@ -78,7 +75,6 @@ class BlacklistAdmin(admin.ModelAdmin):
         **Important variable**:
         """
         opts = Blacklist._meta
-        app_label = opts.app_label
         form = BWCountryForm()
         prefix_list = []
 
@@ -113,7 +109,6 @@ class BlacklistAdmin(admin.ModelAdmin):
                         return HttpResponseRedirect(
                             reverse("admin:cdr_alert_blacklist_changelist"))
 
-
         ctx = RequestContext(request, {
             'title': _('Blacklist by country'),
             'form': form,
@@ -121,15 +116,18 @@ class BlacklistAdmin(admin.ModelAdmin):
             'model_name': opts.object_name.lower(),
             'app_label': _('cdr_alert'),
             'prefix_list': prefix_list,
-            })
+        })
 
         template_name = 'admin/cdr_alert/blacklist/blacklist_by_country.html'
         return render_to_response(template_name, context_instance=ctx)
 
-    
+
 # Whitelist
 class WhitelistAdmin(admin.ModelAdmin):
-    list_display = ('id', 'phonenumber_prefix','country')
+    """
+    Whitelist Admin
+    """
+    list_display = ('id', 'phonenumber_prefix', 'country')
 
     def has_add_permission(self, request):
         return False
@@ -157,7 +155,6 @@ class WhitelistAdmin(admin.ModelAdmin):
         **Important variable**:
         """
         opts = Blacklist._meta
-        app_label = opts.app_label
         form = BWCountryForm()
         prefix_list = []
 
@@ -191,7 +188,6 @@ class WhitelistAdmin(admin.ModelAdmin):
                         messages.info(request, msg)
                         return HttpResponseRedirect(
                             reverse("admin:cdr_alert_whitelist_changelist"))
-
 
         ctx = RequestContext(request, {
             'title': _('Whitelist by country'),
