@@ -24,11 +24,8 @@ from cdr.models import Switch, HangupCause
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.functions_def import get_hangupcause_id
 from cdr.import_cdr_freeswitch_mongodb import apply_index,\
-                                              CDR_COMMON,\
-                                              DAILY_ANALYTIC,\
-                                              MONTHLY_ANALYTIC,\
-                                              create_daily_analytic,\
-                                              create_monthly_analytic
+    CDR_COMMON, DAILY_ANALYTIC, \
+    create_daily_analytic, create_monthly_analytic
 
 from cdr_alert.functions_blacklist import chk_destination
 
@@ -252,8 +249,8 @@ class SwitchAdmin(admin.ModelAdmin):
 
                                         msg =\
                                             _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
-                                                % {'cdr_record_count': cdr_record_count,
-                                                   'total_rows': total_rows}
+                                            % {'cdr_record_count': cdr_record_count,
+                                            'total_rows': total_rows}
                                         success_import_list.append(row)
                                 except:
                                     msg = _("Error : invalid value for import")

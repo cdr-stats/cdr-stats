@@ -98,10 +98,6 @@ INTERNAL_CALL = 5
 #Realtime Graph : set the Y axis limit
 REALTIME_Y_AXIS_LIMIT = 10
 
-# freeswitch, asterisk : see support Switches
-LOCAL_SWITCH_TYPE = 'freeswitch'
-LOCAL_SWITCH_ID = 1
-
 #Asterisk Manager / Used for Realtime and Concurrent calls
 ASTERISK_MANAGER_HOST = 'localhost'
 ASTERISK_MANAGER_USER = 'user'
@@ -147,6 +143,9 @@ CDR_BACKEND = {
     #     'password': '',
     # },
 }
+
+#Define the IP of your local Switch, it needs to exist in the CDR_BACKEND list
+LOCAL_SWITCH_IP = '127.0.0.1'
 
 #MONGODB
 #=======

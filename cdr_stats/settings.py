@@ -378,12 +378,8 @@ CDR_BACKEND = {
     },
 }
 
-# freeswitch, asterisk : see support Switches
-LOCAL_SWITCH_TYPE = 'freeswitch'
-#this will make LOCAL_SWITCH_TYPE redudant too and keep settings more DRY
-
-#TODO: See if we can replace LOCAL_SWITCH_ID by local ip from CDR_BACKEND,
-LOCAL_SWITCH_ID = 1
+#Define the IP of your local Switch, it needs to exist in the CDR_BACKEND list
+LOCAL_SWITCH_IP = '127.0.0.1'
 
 #Asterisk Manager / Used for Realtime and Concurrent calls
 ASTERISK_MANAGER_HOST = 'localhost'

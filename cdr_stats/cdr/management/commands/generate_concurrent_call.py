@@ -40,7 +40,7 @@ class Command(BaseCommand):
             default=None,
             dest='delta-day',
             help=help),
-        )
+    )
 
     def handle(self, *args, **options):
         """Note that subscriber created this way are only for devel purposes"""
@@ -55,10 +55,7 @@ class Command(BaseCommand):
         else:
             day_delta_int = 1
 
-
-        digit = '1234567890'
-
-        accountcode = ''.join([choice(digit) for i in range(4)])
+        accountcode = ''.join([choice('1234567890') for i in range(4)])
         accountcode = '12345'
         now = datetime.datetime.today()
         date_now = datetime.datetime(now.year, now.month, now.day, now.hour,
@@ -91,8 +88,13 @@ class Command(BaseCommand):
             settings.DBCON[settings.MG_CONC_CALL].insert(call_json)
 
         # Add unique index with sorting
-        settings.DBCON[settings.MG_CONC_CALL].ensure_index([('call_date', -1),
+        try:
+            settings.DBCON[settings.MG_CONC_CALL].ensure_index([('call_date', -1),
                 ('switch_id', 1), ('accountcode', 1)], unique=True)
+        except:
+            print "Error: Adding unique index"
+
+        print "Create map reduce for concurrent call"
         # Map-reduce collection
         map = \
             mark_safe(u'''
@@ -137,4 +139,3 @@ class Command(BaseCommand):
         cdr_conn_call = settings.DBCON[settings.MG_CONC_CALL]
 
         cdr_conn_call.map_reduce(map, reduce, out=settings.MG_CONC_CALL_AGG)
-

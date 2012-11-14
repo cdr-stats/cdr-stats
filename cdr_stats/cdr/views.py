@@ -22,35 +22,21 @@ from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 from notification import models as notification
 from common.common_functions import current_view, get_news, \
-                                    variable_value,\
-                                    mongodb_str_filter,\
-                                    mongodb_int_filter, \
-                                    int_convert_to_minute, \
-                                    validate_days,\
-                                    ceil_strdate
+    variable_value, mongodb_str_filter, mongodb_int_filter, \
+    int_convert_to_minute, validate_days, ceil_strdate
 from cdr.models import Switch
 from cdr.functions_def import get_country_name, \
-                                chk_account_code, \
-                                get_hangupcause_name
+    chk_account_code, get_hangupcause_name
 from cdr.forms import CdrSearchForm, \
-                        CountryReportForm, \
-                        CdrOverviewForm, \
-                        CompareCallSearchForm, \
-                        ConcurrentCallForm, \
-                        SwitchForm, \
-                        WorldForm, \
-                        EmailReportForm
+    CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
+    ConcurrentCallForm, SwitchForm, WorldForm, EmailReportForm
 from frontend.forms import LoginForm
 from user_profile.models import UserProfile
 from cdr.aggregate import pipeline_cdr_view_daily_report,\
-                          pipeline_monthly_overview,\
-                          pipeline_daily_overview,\
-                          pipeline_hourly_overview,\
-                          pipeline_country_report,\
-                          pipeline_hourly_report,\
-                          pipeline_country_hourly_report,\
-                          pipeline_mail_report
-
+    pipeline_monthly_overview, pipeline_daily_overview,\
+    pipeline_hourly_overview, pipeline_country_report,\
+    pipeline_hourly_report, pipeline_country_hourly_report,\
+    pipeline_mail_report
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -95,6 +81,7 @@ def index(request):
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))
+
 
 @login_required
 def notice_count(request):
@@ -350,9 +337,9 @@ def cdr_view(request):
             detail_data = []
             tday = datetime.today()
             start_date = tday.strftime('%Y-%m-01')
-            last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) \
-                        + relativedelta(months=1)) \
-                        - relativedelta(days=1)).strftime('%d')
+            last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999)
+                + relativedelta(months=1))
+                - relativedelta(days=1)).strftime('%d')
             end_date = tday.strftime('%Y-%m-' + last_day)
             template_data = {
                 'module': current_view(request),
@@ -399,15 +386,14 @@ def cdr_view(request):
             search_tag = request.session.get('session_search_tag')
             records_per_page = request.session.get('session_records_per_page')
             country_id = request.session['session_country_id']
-            cdr_view_daily_data = request.session.get(
-                                            'session_cdr_view_daily_data')
+            cdr_view_daily_data = request.session.get('session_cdr_view_daily_data')
         else:
             from_date
     except NameError:
         tday = datetime.today()
         from_date = tday.strftime('%Y-%m-01')
-        last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) + \
-                    relativedelta(months=1)) - \
+        last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) +
+                    relativedelta(months=1)) -
                     relativedelta(days=1)).strftime('%d')
         to_date = tday.strftime('%Y-%m-' + last_day)
         search_tag = 0
@@ -433,9 +419,9 @@ def cdr_view(request):
         request.session['session_country_id'] = ''
         request.session['session_cdr_view_daily_data'] = {}
 
-    start_date = datetime(int(from_date[0:4]), int(from_date[5:7]), \
+    start_date = datetime(int(from_date[0:4]), int(from_date[5:7]),
                           int(from_date[8:10]), 0, 0, 0, 0)
-    end_date = datetime(int(to_date[0:4]), int(to_date[5:7]), \
+    end_date = datetime(int(to_date[0:4]), int(to_date[5:7]),
                         int(to_date[8:10]), 23, 59, 59, 999999)
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
@@ -492,35 +478,38 @@ def cdr_view(request):
         PAGE_NUMBER = 1
 
     final_result = cdr_data.find(query_var,
-                        {
-                            "uuid": 0,
-                            "answer_uepoch": 0,
-                            "end_uepoch": 0,
-                            "mduration": 0,
-                            "billmsec": 0,
-                            "read_codec": 0,
-                            "write_codec": 0,
-                            "remote_media_ip": 0,
-                        })
+        {
+            "uuid": 0,
+            "answer_uepoch": 0,
+            "end_uepoch": 0,
+            "mduration": 0,
+            "billmsec": 0,
+            "read_codec": 0,
+            "write_codec": 0,
+            "remote_media_ip": 0,
+        }
+    )
 
-    form = CdrSearchForm(initial={
-                            'from_date': from_date,
-                            'to_date': to_date,
-                            'destination': destination,
-                            'destination_type': destination_type,
-                            'accountcode': accountcode,
-                            'accountcode_type': accountcode_type,
-                            'caller': caller,
-                            'caller_type': caller_type,
-                            'duration': duration,
-                            'duration_type': duration_type,
-                            'result': result,
-                            'direction': direction,
-                            'hangup_cause': hangup_cause_id,
-                            'switch': switch_id,
-                            'country_id': country_id,
-                            'records_per_page': records_per_page
-                            })
+    form = CdrSearchForm(
+        initial={
+            'from_date': from_date,
+            'to_date': to_date,
+            'destination': destination,
+            'destination_type': destination_type,
+            'accountcode': accountcode,
+            'accountcode_type': accountcode_type,
+            'caller': caller,
+            'caller_type': caller_type,
+            'duration': duration,
+            'duration_type': duration_type,
+            'result': result,
+            'direction': direction,
+            'hangup_cause': hangup_cause_id,
+            'switch': switch_id,
+            'country_id': country_id,
+            'records_per_page': records_per_page
+        }
+    )
 
     request.session['query_var'] = query_var
 
@@ -543,8 +532,8 @@ def cdr_view(request):
     logging.debug('Create cdr result')
 
     rows = final_result.skip(PAGE_SIZE * (PAGE_NUMBER - 1))\
-                .limit(PAGE_SIZE)\
-                .sort([(sort_field, default_order)])
+        .limit(PAGE_SIZE)\
+        .sort([(sort_field, default_order)])
 
     # Get daily report from session while using pagination & sorting
     if request.GET.get('page') or request.GET.get('sort_by'):
@@ -595,31 +584,34 @@ def cdr_export_to_csv(request):
 
     query_var = request.session['query_var']
 
-    final_result = cdr_data.find(query_var, {"uuid": 0,
-                                             "answer_uepoch": 0,
-                                             "end_uepoch": 0,
-                                             "mduration": 0,
-                                             "billmsec": 0,
-                                             "read_codec": 0,
-                                             "write_codec": 0,
-                                             "remote_media_ip": 0
-                                            })
+    final_result = cdr_data.find(query_var,
+        {
+            "uuid": 0,
+            "answer_uepoch": 0,
+            "end_uepoch": 0,
+            "mduration": 0,
+            "billmsec": 0,
+            "read_codec": 0,
+            "write_codec": 0,
+            "remote_media_ip": 0
+        }
+    )
 
     writer = csv.writer(response, dialect=csv.excel_tab)
-    writer.writerow(['Call-date', 'CLID', 'Destination', 'Duration', \
+    writer.writerow(['Call-date', 'CLID', 'Destination', 'Duration',
                      'Bill sec', 'Hangup cause', 'AccountCode', 'Direction'])
 
     for cdr in final_result:
         writer.writerow([
-                         cdr['start_uepoch'],
-                         cdr['caller_id_number'] + '-' + cdr['caller_id_name'],
-                         cdr['destination_number'],
-                         cdr['duration'],
-                         cdr['billsec'],
-                         get_hangupcause_name(cdr['hangup_cause_id']),
-                         cdr['accountcode'],
-                         cdr['direction']
-                       ])
+            cdr['start_uepoch'],
+            cdr['caller_id_number'] + '-' + cdr['caller_id_name'],
+            cdr['destination_number'],
+            cdr['duration'],
+            cdr['billsec'],
+            get_hangupcause_name(cdr['hangup_cause_id']),
+            cdr['accountcode'],
+            cdr['direction']
+        ])
     return response
 
 
@@ -639,7 +631,7 @@ def cdr_detail(request, id, switch_id):
     ipaddress = c_switch.ipaddress
     menu = show_menu(request)
 
-    if settings.LOCAL_SWITCH_TYPE == 'freeswitch':
+    if settings.CDR_BACKEND[settings.LOCAL_SWITCH_IP]['cdr_type'] == 'freeswitch':
         #Connect on MongoDB Database
         host = settings.CDR_BACKEND[ipaddress]['host']
         port = settings.CDR_BACKEND[ipaddress]['port']
@@ -653,11 +645,11 @@ def cdr_detail(request, id, switch_id):
 
         doc = DBCON[table_name].find({'_id': ObjectId(id)})
         return render_to_response(
-                        'frontend/cdr_detail_freeswitch.html',
-                        {'row': list(doc), 'menu': menu},
-                        context_instance=RequestContext(request))
+            'frontend/cdr_detail_freeswitch.html',
+            {'row': list(doc), 'menu': menu},
+            context_instance=RequestContext(request))
 
-    elif settings.LOCAL_SWITCH_TYPE == 'asterisk':
+    elif settings.CDR_BACKEND[settings.LOCAL_SWITCH_IP]['cdr_type'] == 'asterisk':
         #Connect on Mysql Database
         #TODO: support other DBMS
         #TODO: Support postgresql
@@ -675,19 +667,20 @@ def cdr_detail(request, id, switch_id):
             raise Http404
 
         #TODO: SQL for different DBMS
-        cursor.execute("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel, "\
-                        "duration, billsec, disposition, accountcode, " \
-                        "uniqueid, %s FROM %s WHERE %s=%s" % \
-                        (settings.ASTERISK_PRIMARY_KEY, table_name,
-                        settings.ASTERISK_PRIMARY_KEY, id))
+        cursor.execute(
+            "SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel, "
+            "duration, billsec, disposition, accountcode, "
+            "uniqueid, %s FROM %s WHERE %s=%s" %
+            (settings.ASTERISK_PRIMARY_KEY, table_name,
+            settings.ASTERISK_PRIMARY_KEY, id))
         row = cursor.fetchone()
         if not row:
             raise Http404
 
         return render_to_response(
-                            'frontend/cdr_detail_asterisk.html',
-                            {'row': list(row), 'menu': menu},
-                            context_instance=RequestContext(request))
+            'frontend/cdr_detail_asterisk.html',
+            {'row': list(row), 'menu': menu},
+            context_instance=RequestContext(request))
 
 
 def chk_date_for_hrs(previous_date, graph_date):
@@ -771,9 +764,9 @@ def cdr_dashboard(request):
                          'duration_hourly': 0}
     logging.debug('Before daily_data.find')
     daily_data = daily_data.find(query_var, not_require_field)\
-                        .sort([('metadata.date', 1),
-                               ('metadata.country_id', 1),
-                               ('metadata.hangup_cause_id', 1)])
+        .sort([('metadata.date', 1),
+               ('metadata.country_id', 1),
+               ('metadata.hangup_cause_id', 1)])
     logging.debug('After daily_data.find')
     total_calls = 0
     total_duration = 0
@@ -921,7 +914,7 @@ def cdr_concurrent_calls(request):
     if query_var:
         calls_in_day = settings.DBCON[settings.MG_CONC_CALL_AGG]
         calls_in_day = calls_in_day.find(query_var).\
-                                sort([('_id.g_Millisec', 1)])
+            sort([('_id.g_Millisec', 1)])
 
         for d in calls_in_day.clone():
             final_data.append({'millisec': int(d['_id']['g_Millisec']),
@@ -983,7 +976,7 @@ def cdr_realtime(request):
     if query_var:
         calls_in_day = settings.DBCON[settings.MG_CONC_CALL_AGG]
         calls_in_day = calls_in_day.find(query_var).\
-                                sort([('_id.g_Millisec', -1)])
+            sort([('_id.g_Millisec', -1)])
 
         final_data = []
         for d in calls_in_day:
@@ -1184,7 +1177,7 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
             if graph_view == 2:  # Min per hour
                 for dict_in_list in doc['duration_per_hour']:
                     for key, value in dict_in_list.iteritems():
-                        day_hours[int(key)] += float(value)/60
+                        day_hours[int(key)] += float(value) / 60
 
                 total_record[str(called_time)[:10]] = day_hours
 
@@ -1263,16 +1256,16 @@ def cdr_report_by_hour(request):
             if from_date != '':
                 end_date = from_date = select_date
                 start_date = end_date + \
-                                relativedelta(days=-int(comp_days))
+                    relativedelta(days=-int(comp_days))
                 start_date = datetime(start_date.year, start_date.month,
                                       start_date.day, 0, 0, 0, 0)
                 end_date = datetime(end_date.year, end_date.month,
                                     end_date.day, 23, 59, 59, 999999)
                 if check_days == 1:
                     query_var['metadata.date'] = {
-                                                    '$gte': start_date,
-                                                    '$lt': end_date
-                                                 }
+                        '$gte': start_date,
+                        '$lt': end_date
+                    }
         else:
             # form is not valid
             logging.debug('Error : CDR hourly search form')
@@ -1700,7 +1693,7 @@ def cdr_country_report(request):
                 temp = []
                 if due:
                     for i in range(0, 24):
-                        temp.append({'duration_hourly.%d' % (i) : due})
+                        temp.append({'duration_hourly.%d' % (i): due})
                     query_var['$or'] = temp
         else:
             country_analytic_array = []
@@ -1774,7 +1767,6 @@ def cdr_country_report(request):
                                        pipeline=pipeline)
     logging.debug('After Aggregate')
     country_analytic_array = []
-    country_final = []
     if list_data:
         for doc in list_data['result']:
             #country id - country name - call count - call duration - country_id

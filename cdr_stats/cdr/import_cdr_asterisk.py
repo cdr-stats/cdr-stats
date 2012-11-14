@@ -75,7 +75,7 @@ def import_cdr_asterisk(shell=False):
 
     print_shell(shell, "Starting the synchronization...")
 
-    if settings.LOCAL_SWITCH_TYPE != 'asterisk':
+    if settings.CDR_BACKEND[settings.LOCAL_SWITCH_IP]['cdr_type'] != 'asterisk':
         print_shell(shell, "The switch is not configured to import Asterisk")
         return False
 

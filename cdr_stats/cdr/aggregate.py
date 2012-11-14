@@ -102,14 +102,16 @@ def pipeline_country_report(query_var):
             'duration_per_day': {'$sum': '$duration_daily'}
         }
         },
-        {'$project': {
-            'call_per_day': 1,
-            'duration_per_day': 1,
+        {
+            '$project': {
+                'call_per_day': 1,
+                'duration_per_day': 1,
             }
         },
-        {'$sort': {
-            'call_per_day': -1,
-            'duration_per_day': -1,
+        {
+            '$sort': {
+                'call_per_day': -1,
+                'duration_per_day': -1,
             }
         },
         {'$limit': settings.NUM_COUNTRY}
@@ -127,23 +129,26 @@ def pipeline_hourly_overview(query_var):
     """
     pipeline = [
         {'$match': query_var},
-        {'$group': {
-            '_id': {'$substr': ["$_id", 0, 8]},
-            'switch_id': {'$addToSet': '$metadata.switch_id'},
-            'call_per_hour': {'$push': '$call_hourly'},
-            'duration_per_hour': {'$push': '$duration_hourly'}
+        {
+            '$group': {
+                '_id': {'$substr': ["$_id", 0, 8]},
+                'switch_id': {'$addToSet': '$metadata.switch_id'},
+                'call_per_hour': {'$push': '$call_hourly'},
+                'duration_per_hour': {'$push': '$duration_hourly'}
             }
         },
-        {'$project': {
-            'switch_id': 1,
-            'call_per_hour': 1,
-            'duration_per_hour': 1,
+        {
+            '$project': {
+                'switch_id': 1,
+                'call_per_hour': 1,
+                'duration_per_hour': 1,
             }
         },
         {'$unwind': '$switch_id'},
-        {'$sort': {
-            '_id': -1,
-            'switch_id': 1,
+        {
+            '$sort': {
+                '_id': -1,
+                'switch_id': 1,
             }
         }
     ]
@@ -167,17 +172,19 @@ def pipeline_daily_overview(query_var):
             'duration_per_day': {'$sum': '$duration_daily'}
         }
         },
-        {'$project': {
-            'switch_id': 1,
-            'call_per_day': 1,
-            'duration_per_day': 1,
-            'avg_duration_per_day': {'$divide': ["$duration_per_day", "$call_per_day"]}
+        {
+            '$project': {
+                'switch_id': 1,
+                'call_per_day': 1,
+                'duration_per_day': 1,
+                'avg_duration_per_day': {'$divide': ["$duration_per_day", "$call_per_day"]}
             }
         },
         {'$unwind': '$switch_id'},
-        {'$sort': {
-            '_id': -1,
-            'switch_id': 1,
+        {
+            '$sort': {
+                '_id': -1,
+                'switch_id': 1,
             }
         }
     ]
@@ -201,18 +208,20 @@ def pipeline_monthly_overview(query_var):
             'duration_per_month': {'$sum': '$duration_monthly'}
         }
         },
-        {'$project': {
-            'switch_id': 1,
-            'call_per_month': 1,
-            'duration_per_month': 1,
-            'avg_duration_per_month': {'$divide': ['$duration_per_month',
-                                                   '$call_per_month']},
+        {
+            '$project': {
+                'switch_id': 1,
+                'call_per_month': 1,
+                'duration_per_month': 1,
+                'avg_duration_per_month': {'$divide': ['$duration_per_month',
+                                                       '$call_per_month']},
             }
         },
         {'$unwind': '$switch_id'},
-        {'$sort': {
-            '_id': -1,
-            'switch_id': 1,
+        {
+            '$sort': {
+                '_id': -1,
+                'switch_id': 1,
             }
         }
     ]
@@ -229,19 +238,22 @@ def pipeline_hourly_report(query_var):
     """
     pipeline = [
         {'$match': query_var},
-        {'$group': {
-            '_id': {'$substr': ['$_id', 0, 8]},
-            'call_per_hour': {'$push': '$call_hourly'},
-            'duration_per_hour': {'$push': '$duration_hourly'},
+        {
+            '$group': {
+                '_id': {'$substr': ['$_id', 0, 8]},
+                'call_per_hour': {'$push': '$call_hourly'},
+                'duration_per_hour': {'$push': '$duration_hourly'},
             }
         },
-        {'$project': {
-            'call_per_hour': 1,
-            'duration_per_hour': 1,
+        {
+            '$project': {
+                'call_per_hour': 1,
+                'duration_per_hour': 1,
             }
         },
-        {'$sort': {
-            '_id': -1,
+        {
+            '$sort': {
+                '_id': -1,
             }
         }
     ]
@@ -258,24 +270,26 @@ def pipeline_mail_report(query_var):
     """
     pipeline = [
         {'$match': query_var},
-        {'$group': {
-            '_id': {'country_id': '$country_id',
-                    'hangup_cause_id': '$hangup_cause_id'
-            },
-            'duration_sum': {'$sum': '$duration'},
-            'call_count': {'$sum': 1},
+        {
+            '$group': {
+                '_id': {'country_id': '$country_id',
+                        'hangup_cause_id': '$hangup_cause_id'},
+                'duration_sum': {'$sum': '$duration'},
+                'call_count': {'$sum': 1},
             }
         },
-        {'$project': {
-            'call_count': 1,
-            'duration_sum': 1,
-            #'avg_duration': {'$divide': ['$duration_sum',
-            #                             '$call_count']},
+        {
+            '$project': {
+                'call_count': 1,
+                'duration_sum': 1,
+                #'avg_duration': {'$divide': ['$duration_sum',
+                #                             '$call_count']},
             }
         },
-        {'$sort': {
-            '_id.country_id': 1,
-            #'_id.hangup_cause_id': 1,
+        {
+            '$sort': {
+                '_id.country_id': 1,
+                #'_id.hangup_cause_id': 1,
             }
         },
     ]

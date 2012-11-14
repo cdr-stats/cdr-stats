@@ -17,6 +17,7 @@ from django.conf import settings
 from celery.task import PeriodicTask
 from cdr.import_cdr_freeswitch_mongodb import import_cdr_freeswitch_mongodb
 from cdr.import_cdr_asterisk import import_cdr_asterisk
+from cdr.models import Switch
 from common.only_one_task import only_one
 from datetime import datetime, timedelta
 import sqlite3
@@ -39,11 +40,11 @@ class sync_cdr_pending(PeriodicTask):
         logger = self.get_logger()
         logger.info('TASK :: sync_cdr_pending')
 
-        if settings.LOCAL_SWITCH_TYPE == 'asterisk':
+        if settings.CDR_BACKEND[settings.LOCAL_SWITCH_IP]['cdr_type'] == 'asterisk':
             # Import from Asterisk
             import_cdr_asterisk()
 
-        elif settings.LOCAL_SWITCH_TYPE == 'freeswitch':
+        elif settings.CDR_BACKEND[settings.LOCAL_SWITCH_IP]['cdr_type'] == 'freeswitch':
             # Import from Freeswitch Mongo
             import_cdr_freeswitch_mongodb()
 
@@ -68,9 +69,14 @@ class get_channels_info(PeriodicTask):
                             now.hour, now.minute, now.second, 0)
 
         # Retrieve SwitchID
-        switch_id = settings.LOCAL_SWITCH_ID
+        try:
+            switch = Switch.objects.get(ipaddress=settings.LOCAL_SWITCH_IP)
+            switch_id = switch.id
+        except:
+            logger.error("Cannot retrieve Switch %s" % settings.LOCAL_SWITCH_IP)
+            return False
 
-        if settings.LOCAL_SWITCH_TYPE == 'freeswitch':
+        if settings.CDR_BACKEND[settings.LOCAL_SWITCH_IP]['cdr_type'] == 'freeswitch':
             con = False
             try:
                 con = sqlite3.connect('/usr/local/freeswitch/db/core.db')
@@ -99,7 +105,7 @@ class get_channels_info(PeriodicTask):
             finally:
                 if con:
                     con.close()
-        elif settings.LOCAL_SWITCH_TYPE == 'asterisk':
+        elif settings.CDR_BACKEND[settings.LOCAL_SWITCH_IP]['cdr_type'] == 'asterisk':
             manager = asterisk.manager.Manager()
             listaccount = {}
             try:
