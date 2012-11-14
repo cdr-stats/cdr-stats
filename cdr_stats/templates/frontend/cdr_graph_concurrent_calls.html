@@ -36,18 +36,20 @@ $(function() {
 <script id="source">
 $(function () {
 
+    //TODO: Load data on deman, not all the data for all switches
+    //That will improve performance if several switches
     var data = [
         {% regroup final_data|dictsort:"switch_id" by switch_id as switch_list %}
         {% for rc in switch_list %}
             {% ifnotequal rc.grouper 0 %}
-                 {
-                     label: '{{ rc.grouper|get_switch_ip }}',
-                     data: [
-                     {% for item in rc.list %}
-                         [ {{ item.millisec }}, {{ item.call__count }}],
-                     {% endfor %}
-                     ]
-                 },
+                {
+                    label: '{{ rc.grouper|get_switch_ip }}',
+                    data: [
+                    {% for item in rc.list %}
+                        [ {{ item.today_minute }}, {{ item.call__count }}],
+                    {% endfor %}
+                    ]
+                },
             {% endifnotequal %}
         {% endfor %}
     ];
@@ -68,10 +70,10 @@ $(function () {
 
     var options = {
         legend: {
-                position: "ne",
-                margin: [-10, 0],
-                backgroundOpacity: 0
-            },
+            position: "ne",
+            margin: [-10, 0],
+            backgroundOpacity: 0
+        },
         xaxis: {
             mode: "time",
             tickLength: 5,
@@ -81,10 +83,9 @@ $(function () {
                 lines: { show: true, steps: true, fill: true }
         },
         grid: {
-                hoverable: true,
-                xaxis: false
-            }
-
+            hoverable: true,
+            xaxis: false
+        }
     };
 
     var plot = $.plot($("#graph_responsive"), data, options);

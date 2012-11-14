@@ -121,9 +121,6 @@ class get_channels_info(PeriodicTask):
 
                     # get list of channels
                     response = manager.command('core show channels concise')
-                    # response.data = "SIP/areski-00000006!a2billing-echotest!34902800102*!2!Ring!Echo!!34650784355!4267877355!!3!35!(None)!1352663344.6\nSIP/areski-00000006!a2billing-echotest!34902800102*!2!Ring!Echo!!34650784355!4267877355!!3!35!(None)!1352663344.6\n"
-                    # response.data += "SIP/areski-00000006!a2billing-echotest!34902800102*!2!Ring!Echo!!34650784355!12346!!3!35!(None)!1352663344.6\nSIP/areski-00000006!a2billing-echotest!34902800102*!2!Ring!Echo!!34650784355!4267877355!!3!35!(None)!1352663344.6\n"
-
                     if response.data:
                         lines = response.data.split('\n')
                         for line in lines:
@@ -144,7 +141,6 @@ class get_channels_info(PeriodicTask):
                     logger.error("Error: %s" % reason)
                     return False
             finally:
-                # remember to clean up
                 try:
                     manager.close()
                 except:

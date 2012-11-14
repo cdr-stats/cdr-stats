@@ -894,7 +894,7 @@ def cdr_concurrent_calls(request):
 
             switch_id = form.cleaned_data.get('switch')
             if switch_id and int(switch_id) != 0:
-                query_var['_id.f_Switch'] = int(switch_id)
+                query_var['switch_id'] = int(switch_id)
     else:
         now = datetime.today()
         from_date = now.strftime('%Y-%m-%d')
@@ -902,26 +902,25 @@ def cdr_concurrent_calls(request):
         end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 0)
         form = ConcurrentCallForm(initial={'from_date': from_date})
 
-    query_var['value.call_date'] = {'$gte': start_date, '$lt': end_date}
+    query_var['date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
         if chk_account_code(request):
-            query_var['value.accountcode'] = chk_account_code(request)
+            query_var['accountcode'] = chk_account_code(request)
         else:
             return HttpResponseRedirect('/?acc_code_error=true')
 
     final_data = []
     if query_var:
-        calls_in_day = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL_AGG']]
-        calls_in_day = calls_in_day.find(query_var).\
-            sort([('_id.g_Millisec', 1)])
+        CONC_CALL_AGG = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL_AGG']]
+        calls_in_day = CONC_CALL_AGG.find(query_var).sort([('date', 1)])
 
-        for d in calls_in_day.clone():
-            final_data.append({'millisec': int(d['_id']['g_Millisec']),
-                               'call__count': int(d['value']['numbercall__max']),
-                               'switch_id': int(d['_id']['f_Switch'])})
-        print final_data
-
+        for d in calls_in_day:
+            ts = time.mktime(d['date'].timetuple())
+            tsint = int(ts * 1000)
+            final_data.append({'today_minute': tsint,
+                               'call__count': int(d['numbercall']),
+                               'switch_id': int(d['switch_id'])})
         logging.debug('CDR concurrent view end')
         variables = {
             'module': current_view(request),

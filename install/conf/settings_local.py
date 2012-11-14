@@ -102,7 +102,6 @@ ASTERISK_MANAGER_HOST = 'localhost'
 ASTERISK_MANAGER_USER = 'user'
 ASTERISK_MANAGER_SECRET = 'secret'
 
-
 #ASTERISK IMPORT
 #===============
 ASTERISK_PRIMARY_KEY = 'acctid'  # acctid, _id
@@ -156,5 +155,5 @@ MONGO_CDRSTATS = {
     'DAILY_ANALYTIC': 'daily_analytic',
     'MONTHLY_ANALYTIC': 'monthly_analytic',
     'CONC_CALL': 'concurrent_call',
-    'CONC_CALL_AGG': 'concurrent_call_map_reduce'
+    'CONC_CALL_AGG': 'concurrent_call_aggregate'
 }
