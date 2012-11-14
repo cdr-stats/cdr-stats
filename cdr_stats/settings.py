@@ -396,7 +396,7 @@ MONGO_CDRSTATS = {
     'DAILY_ANALYTIC': 'daily_analytic',
     'MONTHLY_ANALYTIC': 'monthly_analytic',
     'CONC_CALL': 'concurrent_call',
-    'CONC_CALL_AGG': 'concurrent_call_map_reduce'
+    'CONC_CALL_AGG': 'concurrent_call_aggregate'
 }
 
 #API PLAYGROUND
