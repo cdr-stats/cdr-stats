@@ -217,4 +217,3 @@ was open to ONLY the CDR-Stats server on the remote system, uncomment the settin
 by removing the #, and then configure the IP address and db_name to match those in
 the mod_cdr_mongodb configuration as described at
 http://www.cdr-stats.org/documentation/beginners-guide/howto-installing-on-freeswitch/
-
