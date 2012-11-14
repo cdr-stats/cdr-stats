@@ -160,7 +160,7 @@ class CdrResource(ModelResource):
             'read_codec': read_codec,
             'write_codec': write_codec,
             'cdr_type': cdr_type,
-            }
+        }
 
         # Create CDR record
         settings.DBCON[settings.MG_CDR_COMMON].insert(cdr_record)

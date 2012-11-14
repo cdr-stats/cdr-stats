@@ -391,6 +391,17 @@ ASTERISK_MANAGER_SECRET = 'secret'
 #=======
 #TODO: Rename this to a better structure :
 #CDRSTATS_DB = { 'db_name': 'cdr-stats', 'host': 'localhost', 'port': 3366, 'cdr_common': 'cdr_common', etc...}
+MONGO_CDRSTATS = {
+    'DB_NAME': 'cdr-stats',
+    'HOST': 'localhost',
+    'PORT': 27017,
+    'CDR_COMMON': 'cdr_common',
+    'DAILY_ANALYTIC': 'daily_analytic',
+    'MONTHLY_ANALYTIC': 'monthly_analytic',
+    'CONC_CALL': 'concurrent_call',
+    'CONC_CALL_AGG': 'concurrent_call_map_reduce'
+}
+
 MG_DB_NAME = 'cdr-stats'
 MG_HOST = 'localhost'
 MG_PORT = 27017
@@ -426,6 +437,10 @@ API_ALLOWED_IP = ['127.0.0.1', 'localhost']
 # Use only in Debug mode. Not in production
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+
+#Define the delay in minute between mail notification
+#This setting avoid getting span with loads of alarms
+DELAY_BETWEEN_MAIL_NOTIFICATION = 10
 
 #LOGGING
 #=======
@@ -511,7 +526,7 @@ from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 import sys
 try:
-    connection = Connection(MG_HOST, MG_PORT)
+    connection = Connection(MONGO_CDRSTATS['MG_HOST'], MONGO_CDRSTATS['MG_PORT'])
     DBCON = connection[MG_DB_NAME]
 except ConnectionFailure, e:
     sys.stderr.write("Could not connect to MongoDB: %s" % e)

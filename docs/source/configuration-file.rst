@@ -42,21 +42,28 @@ Sets up the options required for Django to connect to your database engine::
         }
     }
 
-      #MONGODB
-      #=======
-      MG_DB_NAME = 'cdr-stats'
-      MG_HOST = 'localhost'
-      MG_PORT = 27017
+    #MONGODB
+    #=======
+    MONGO_CDRSTATS = {
+        'DB_NAME': 'cdr-stats',
+        'HOST': 'localhost',
+        'PORT': 27017,
+        'CDR_COMMON': 'cdr_common',
+        'DAILY_ANALYTIC': 'daily_analytic',
+        'MONTHLY_ANALYTIC': 'monthly_analytic',
+        'CONC_CALL': 'concurrent_call',
+        'CONC_CALL_AGG': 'concurrent_call_map_reduce'
+    }
 
 
 Tells Django where to find your media files such as images that the ``HTML
 templates`` might use. ::
 
 
-     MEDIA_ROOT = os.path.join(APPLICATION_DIR, 'static')
+    MEDIA_ROOT = os.path.join(APPLICATION_DIR, 'static')
 
 
-     ROOT_URLCONF = 'urls'
+    ROOT_URLCONF = 'urls'
 
 tells Django to start finding URL matches at in the ``urls.py`` module in the ``cdr_stats`` project folder. ::
 
@@ -64,16 +71,16 @@ tells Django to start finding URL matches at in the ``urls.py`` module in the ``
 
 tells Django where to find your HTML template files. ::
 
-     INSTALLED_APPS = (
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.sites',
-    'django.contrib.admin',
-    ...
-    'cdr',
-    'cdr_alert',
-    ...
+    INSTALLED_APPS = (
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.sites',
+        'django.contrib.admin',
+        ...
+        'cdr',
+        'cdr_alert',
+        ...
     )
 
 tells Django which applications (custom and external) to use in your project.

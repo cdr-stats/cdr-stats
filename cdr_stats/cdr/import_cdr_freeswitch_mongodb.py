@@ -209,7 +209,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
     - build the pre-aggregate
     """
 
-    #TODO: Limit the import tasks to a maximum - maybe 1000
+    #We limit the import tasks to a maximum - 1000
     #This will reduce the speed but that s the only way to make sure
     #we dont have several time the same tasks running
 

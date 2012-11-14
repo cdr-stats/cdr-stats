@@ -286,7 +286,7 @@ class chk_alarm(PeriodicTask):
         for alarm_obj in alarm_objs:
             try:
                 alarm_report = AlarmReport.objects.filter(alarm=alarm_obj).\
-                               latest('daterun')
+                    latest('daterun')
                 diff_run = (datetime.now() - alarm_report.daterun).days
                 diff_run = 1
                 if alarm_obj.period == PERIOD.DAY:  # Day
@@ -349,17 +349,16 @@ def blacklist_whitelist_notification(notice_type):
     notice_type_obj = notification.NoticeType.objects.get(default=notice_type)
     try:
         notice_obj = notification.Notice.objects.\
-                        filter(notice_type=notice_type_obj).\
-                        latest('added')
+            filter(notice_type=notice_type_obj).\
+            latest('added')
         # Get time difference between two time intervals
         prevtime = str(datetime.time(notice_obj.added.replace(microsecond=0)))
         curtime = str(datetime.time(datetime.now().replace(microsecond=0)))
         FMT = '%H:%M:%S'
         diff = datetime.strptime(curtime, FMT) - datetime.strptime(prevtime,
                 FMT)
-        # if difference is more than 10 min than notification resend
-        #TODO: make a setting for 10 DELAY_BETWEEN_MAIL_NOTIFICATION
-        if int(diff.seconds / 60) >= 10:
+        # if difference is more than X min than notification resend
+        if int(diff.seconds / 60) >= settings.DELAY_BETWEEN_MAIL_NOTIFICATION:
             # blacklist notification id - 3 | whitelist notification type - 4
             notify_admin_without_mail(notice_type, 'admin@localhost.com')
     except:
@@ -402,19 +401,18 @@ class send_cdr_report(PeriodicTask):
 
             subject = _('CDR Report')
 
-            html_content = get_template('frontend/mail_report_template.html'
-                    ).render(Context(
-                        {'yesterday_date': mail_data['yesterday_date'],
-                        'rows': mail_data['rows'],
-                        'total_duration': mail_data['total_duration'],
-                        'total_calls': mail_data['total_calls'],
-                        'ACT': mail_data['ACT'],
-                        'ACD': mail_data['ACD'],
-                        'country_analytic_array': \
-                                mail_data['country_analytic_array'],
-                        'hangup_analytic_array': \
-                             mail_data['hangup_analytic_array']
-                        }))
+            html_content = get_template('frontend/mail_report_template.html')\
+                .render(Context({
+                    'yesterday_date': mail_data['yesterday_date'],
+                    'rows': mail_data['rows'],
+                    'total_duration': mail_data['total_duration'],
+                    'total_calls': mail_data['total_calls'],
+                    'ACT': mail_data['ACT'],
+                    'ACD': mail_data['ACD'],
+                    'country_analytic_array': mail_data['country_analytic_array'],
+                    'hangup_analytic_array': mail_data['hangup_analytic_array']
+                }
+                ))
 
             msg = EmailMultiAlternatives(
                 subject, html_content, from_email, [to])

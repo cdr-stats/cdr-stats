@@ -30,7 +30,6 @@ CELERYD_OPTS='-EB -l info'
 CELERYD_LOG_FILE="/var/log/cdr-stats/celery-%n.log"
 CELERYD_PID_FILE="/var/run/celery-%n.pid"
 
-#TODO : review user / group
 # Workers should run as an unprivileged user.
 #CELERYD_USER="celery"
 #CELERYD_GROUP="celery"
