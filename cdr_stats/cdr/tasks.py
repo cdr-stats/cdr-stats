@@ -17,6 +17,7 @@ from django.conf import settings
 from celery.task import PeriodicTask
 from cdr.import_cdr_freeswitch_mongodb import import_cdr_freeswitch_mongodb
 from cdr.import_cdr_asterisk import import_cdr_asterisk
+from cdr.aggregate import set_concurrentcall_analytic
 from cdr.models import Switch
 from common.only_one_task import only_one
 from datetime import datetime, timedelta
@@ -88,18 +89,22 @@ class get_channels_info(PeriodicTask):
                         accountcode = ''
                     else:
                         accountcode = row[0]
-                    number_call = row[1]
+                    numbercall = row[1]
                     logger.debug('%s (accountcode:%s, switch_id:%d) ==> %s'
                             % (date_now, accountcode, switch_id,
-                               str(number_call)))
+                               str(numbercall)))
 
                     call_json = {
                         'switch_id': switch_id,
                         'call_date': date_now,
-                        'numbercall': number_call,
+                        'numbercall': numbercall,
                         'accountcode': accountcode,
                     }
                     settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].insert(call_json)
+
+                    #Create collection for Analytics
+                    set_concurrentcall_analytic(date_now, switch_id, accountcode, numbercall)
+
             except sqlite3.Error, e:
                 logger.error('Error %s:' % e.args[0])
             finally:
@@ -146,17 +151,19 @@ class get_channels_info(PeriodicTask):
                     logger.error("Manager didn't close")
 
             for account in listaccount:
-                number_call = listaccount[account]
+                numbercall = listaccount[account]
                 logger.debug('%s (accountcode:%s, switch_id:%d) ==> %s'
                             % (date_now, account, switch_id,
-                               str(number_call)))
+                               str(numbercall)))
                 call_json = {
                     'switch_id': switch_id,
                     'call_date': date_now,
-                    'numbercall': number_call,
+                    'numbercall': numbercall,
                     'accountcode': account,
                 }
-                print call_json
                 settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].insert(call_json)
+
+                #Create collection for Analytics
+                set_concurrentcall_analytic(date_now, switch_id, accountcode, numbercall)
 
         return True
