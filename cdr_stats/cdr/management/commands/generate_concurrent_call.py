@@ -85,11 +85,11 @@ class Command(BaseCommand):
             call_json = {'switch_id': switch_id, 'call_date': call_date,
                          'numbercall': number_call, 'accountcode': accountcode}
 
-            settings.DBCON[settings.MG_CONC_CALL].insert(call_json)
+            settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].insert(call_json)
 
         # Add unique index with sorting
         try:
-            settings.DBCON[settings.MG_CONC_CALL].ensure_index([('call_date', -1),
+            settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].ensure_index([('call_date', -1),
                 ('switch_id', 1), ('accountcode', 1)], unique=True)
         except:
             print "Error: Adding unique index"
@@ -136,6 +136,6 @@ class Command(BaseCommand):
                  }
                  ''')
 
-        cdr_conn_call = settings.DBCON[settings.MG_CONC_CALL]
+        cdr_conn_call = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']]
 
-        cdr_conn_call.map_reduce(map, reduce, out=settings.MG_CONC_CALL_AGG)
+        cdr_conn_call.map_reduce(map, reduce, out=settings.MONGO_CDRSTATS['CONC_CALL_AGG'])

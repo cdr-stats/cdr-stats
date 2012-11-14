@@ -127,7 +127,7 @@ class CdrDailyResource(ModelResource):
         if 'switch_id' in query_var:
             query_var['switch_id'] = int(temp_var['switch_id'])
 
-        daily_data = settings.DBCON[settings.MG_CDR_COMMON]
+        daily_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
 
         if query_var:
             daily_data = daily_data.find(query_var)

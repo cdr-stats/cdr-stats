@@ -108,7 +108,7 @@ def my_message_handler(request, socket, context, message):
         query_var['accountcode'] = str(user.userprofile.accountcode)
     logger.debug(query_var)
 
-    collectionresult = settings.DBCON[settings.MG_CONC_CALL].find_one(query_var)
+    collectionresult = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].find_one(query_var)
     if not collectionresult:
         logger.debug('No collection')
 

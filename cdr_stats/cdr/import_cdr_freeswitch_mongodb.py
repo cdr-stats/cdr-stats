@@ -33,9 +33,9 @@ HANGUP_CAUSE = ['NORMAL_CLEARING', 'NORMAL_CLEARING', 'NORMAL_CLEARING',
 STATUS_SYNC = {"new": 0, "in_process": 1, "verified": 2}
 
 # Assign collection names to variables
-CDR_COMMON = settings.DBCON[settings.MG_CDR_COMMON]
-DAILY_ANALYTIC = settings.DBCON[settings.MG_DAILY_ANALYTIC]
-MONTHLY_ANALYTIC = settings.DBCON[settings.MG_MONTHLY_ANALYTIC]
+CDR_COMMON = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
+DAILY_ANALYTIC = settings.DBCON[settings.MONGO_CDRSTATS['DAILY_ANALYTIC']]
+MONTHLY_ANALYTIC = settings.DBCON[settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC']]
 
 
 def print_shell(shell, message):

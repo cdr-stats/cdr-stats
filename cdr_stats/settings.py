@@ -386,11 +386,8 @@ ASTERISK_MANAGER_HOST = 'localhost'
 ASTERISK_MANAGER_USER = 'user'
 ASTERISK_MANAGER_SECRET = 'secret'
 
-
 #MONGODB
 #=======
-#TODO: Rename this to a better structure :
-#CDRSTATS_DB = { 'db_name': 'cdr-stats', 'host': 'localhost', 'port': 3366, 'cdr_common': 'cdr_common', etc...}
 MONGO_CDRSTATS = {
     'DB_NAME': 'cdr-stats',
     'HOST': 'localhost',
@@ -401,15 +398,6 @@ MONGO_CDRSTATS = {
     'CONC_CALL': 'concurrent_call',
     'CONC_CALL_AGG': 'concurrent_call_map_reduce'
 }
-
-MG_DB_NAME = 'cdr-stats'
-MG_HOST = 'localhost'
-MG_PORT = 27017
-MG_CDR_COMMON = 'cdr_common'
-MG_DAILY_ANALYTIC = 'daily_analytic'
-MG_MONTHLY_ANALYTIC = 'monthly_analytic'
-MG_CONC_CALL = 'concurrent_call'
-MG_CONC_CALL_AGG = 'concurrent_call_map_reduce'
 
 #API PLAYGROUND
 #==============
@@ -526,8 +514,8 @@ from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 import sys
 try:
-    connection = Connection(MONGO_CDRSTATS['MG_HOST'], MONGO_CDRSTATS['MG_PORT'])
-    DBCON = connection[MG_DB_NAME]
+    connection = Connection(MONGO_CDRSTATS['HOST'], MONGO_CDRSTATS['PORT'])
+    DBCON = connection[MONGO_CDRSTATS['DB_NAME']]
 except ConnectionFailure, e:
     sys.stderr.write("Could not connect to MongoDB: %s" % e)
     sys.exit(1)

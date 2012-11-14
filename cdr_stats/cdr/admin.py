@@ -219,7 +219,7 @@ class SwitchAdmin(admin.ModelAdmin):
 
                                 try:
                                     # check if cdr is already existing in cdr_common
-                                    cdr_data = settings.DBCON[settings.MG_CDR_COMMON]
+                                    cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
                                     query_var = {}
                                     query_var['uuid'] = uuid
                                     record_count = cdr_data.find(query_var).count()

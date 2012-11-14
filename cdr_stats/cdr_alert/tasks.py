@@ -39,7 +39,7 @@ from dateutil.relativedelta import relativedelta
 # Lock expires in 30 minutes
 LOCK_EXPIRE = 60 * 30
 
-cdr_data = settings.DBCON[settings.MG_CDR_COMMON]
+cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
 
 
 def get_start_end_date(alert_condition_add_on):
@@ -187,7 +187,7 @@ def run_alarm(alarm_obj, logger):
 
         pipeline = pipeline_cdr_alert_task(query_var)
         pre_total_data = settings.DBCON.command('aggregate',
-                                                settings.MG_DAILY_ANALYTIC,
+                                                settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
                                                 pipeline=pipeline)
         pre_day_data = {}
         for doc in pre_total_data['result']:
@@ -206,7 +206,7 @@ def run_alarm(alarm_obj, logger):
         # current date
         pipeline = pipeline_cdr_alert_task(query_var)
         cur_total_data = settings.DBCON.command('aggregate',
-                                                settings.MG_DAILY_ANALYTIC,
+                                                settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
                                                 pipeline=pipeline)
         cur_day_data = {}
         for doc in cur_total_data['result']:

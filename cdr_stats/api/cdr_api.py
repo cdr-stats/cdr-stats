@@ -163,9 +163,9 @@ class CdrResource(ModelResource):
         }
 
         # Create CDR record
-        settings.DBCON[settings.MG_CDR_COMMON].insert(cdr_record)
+        settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']].insert(cdr_record)
         # get last inserted cdr record
-        new_obj = settings.DBCON[settings.MG_CDR_COMMON].find_one()
+        new_obj = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']].find_one()
 
         # print new_obj['_id']
         logger.debug('CDR API : result ok 200')

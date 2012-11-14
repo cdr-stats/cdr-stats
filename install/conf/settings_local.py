@@ -148,11 +148,13 @@ LOCAL_SWITCH_IP = '127.0.0.1'
 
 #MONGODB
 #=======
-MG_DB_NAME = 'cdr-stats'
-MG_HOST = 'localhost'
-MG_PORT = 27017
-MG_CDR_COMMON = 'cdr_common'
-MG_DAILY_ANALYTIC = 'daily_analytic'
-MG_MONTHLY_ANALYTIC = 'monthly_analytic'
-MG_CONC_CALL = 'concurrent_call'
-MG_CONC_CALL_AGG = 'concurrent_call_map_reduce'
+MONGO_CDRSTATS = {
+    'DB_NAME': 'cdr-stats',
+    'HOST': 'localhost',
+    'PORT': 27017,
+    'CDR_COMMON': 'cdr_common',
+    'DAILY_ANALYTIC': 'daily_analytic',
+    'MONTHLY_ANALYTIC': 'monthly_analytic',
+    'CONC_CALL': 'concurrent_call',
+    'CONC_CALL_AGG': 'concurrent_call_map_reduce'
+}

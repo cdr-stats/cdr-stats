@@ -99,7 +99,7 @@ class get_channels_info(PeriodicTask):
                         'numbercall': number_call,
                         'accountcode': accountcode,
                     }
-                    settings.DBCON[settings.MG_CONC_CALL].insert(call_json)
+                    settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].insert(call_json)
             except sqlite3.Error, e:
                 logger.error('Error %s:' % e.args[0])
             finally:
@@ -157,6 +157,6 @@ class get_channels_info(PeriodicTask):
                     'accountcode': account,
                 }
                 print call_json
-                settings.DBCON[settings.MG_CONC_CALL].insert(call_json)
+                settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].insert(call_json)
 
         return True

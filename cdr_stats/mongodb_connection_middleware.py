@@ -27,7 +27,7 @@ class MongodbConnectionMiddleware(object):
 
     def process_request(self, request):
         try:
-            connection = Connection(settings.MONGO_CDRSTATS['MG_HOST'], settings.MONGO_CDRSTATS['MG_PORT'])
+            connection = Connection(settings.MONGO_CDRSTATS['HOST'], settings.MONGO_CDRSTATS['PORT'])
             if connection.is_locked:
                 if connection.unlock():  # if db gets unlocked
                     return None
