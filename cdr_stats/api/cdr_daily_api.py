@@ -70,8 +70,8 @@ class CdrDailyResource(ModelResource):
         resource_name = 'cdr_daily_report'
         authorization = Authorization()
         authentication = BasicAuthentication()
-        #list_allowed_methods = ['get']
-        #detail_allowed_methods = ['get']
+        list_allowed_methods = ['get']
+        detail_allowed_methods = ['get']
         # default 1000 calls / hour
         throttle = BaseThrottle(throttle_at=1000, timeframe=3600)
 
@@ -123,11 +123,11 @@ class CdrDailyResource(ModelResource):
         if 'destination_number' in query_var:
             query_var['destination_number'] = int(temp_var['destination_number'])
         if 'accountcode' in query_var:
-            query_var['accountcode'] = int(temp_var['accountcode'])
+            query_var['accountcode'] = temp_var['accountcode']
         if 'switch_id' in query_var:
             query_var['switch_id'] = int(temp_var['switch_id'])
 
-        daily_data = settings.DBCON[settings.MG_CDR_COMMON]
+        daily_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
 
         if query_var:
             daily_data = daily_data.find(query_var)

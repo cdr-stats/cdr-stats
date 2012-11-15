@@ -37,7 +37,7 @@ do_start()
 	server_already_running="false"
 	$VENV_OFF &>/dev/null
 	source $VENV_ON
-	
+
 	kill -0 $(cat $SOCKETIO_SERVER_PIDFILE 2>/dev/null) 2>/dev/null
 	if [ $? -eq 0 ]; then
 		echo "$SERVER_NAME already running"
@@ -45,12 +45,12 @@ do_start()
 	else
 		$NICE $SOCKETIO_SERVER -d -p $SOCKETIO_SERVER_PIDFILE start
 	fi
-	
+
 	if [ "$server_already_running" = "true" ]; then
 		$VENV_OFF &>/dev/null
 		exit 0
 	fi
-	
+
 	sleep 1s
 	if [ "$server_already_running" = "false" ]; then
 		kill -0 $(cat $SOCKETIO_SERVER_PIDFILE 2>/dev/null) 2>/dev/null \

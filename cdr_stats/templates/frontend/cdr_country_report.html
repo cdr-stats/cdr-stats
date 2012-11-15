@@ -1,0 +1,439 @@
+{% extends "frontend/master.html" %}
+{% load i18n cdr_extras country_dialcode_tags common_tags %}
+{% load cache %}
+
+{% block extra_head %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#accordion").accordion({ autoHeight: false,  clearStyle: true  });
+        });
+    </script>
+    {% include "frontend/common_datepicker.html" %}
+{% endblock %}
+
+
+{% block content %}
+<div id="form_collapse" class="collapse">
+    <form class="well" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
+    <div class="row">
+        <div class="span12">
+            <div class="row">
+                <div class="span4">
+                    <label class="control-label" for="id_{{ form.from_date.name }}">{{ form.from_date.label }}</label>
+                    <div class="input">
+                        {{ form.from_date }}
+                        <span class="help-block">{{ form.from_date.help_text|safe }} </span>
+                    </div>
+                </div>
+                <div class="span4">
+                    <label class="control-label" for="id_{{ form.to_date.name }}">{{ form.to_date.label }}</label>
+                    <div class="input">
+                        {{ form.to_date }}
+                        <span class="help-block">{{ form.to_date.help_text|safe }} </span>
+                    </div>
+                </div>
+                <div class="span4">
+                    <label class="control-label" for="id_{{ form.duration.name }}">{{ form.duration.label }}</label>
+                    <div class="input">
+                        {{ form.duration }}&nbsp;{{ form.duration_type }}
+                    </div>
+                    {% if form.duration.errors %}
+                        <span class="help-inline error">{{ form.duration.errors }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span12">
+            <div class="row">
+                <div class="span4">
+                    <label class="control-label" for="id_{{ form.country_id.name }}">{{ form.country_id.label }}</label>
+                    <div class="input">
+                        {{ form.country_id }}
+                        <span class="help-block">{{ form.country_id.help_text|safe }} </span>
+                    </div>
+                </div>
+                <div class="span4">
+                    <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }}</label>
+                    <div class="input">
+                        {{ form.switch }}
+                        <span class="help-block">{{ form.switch.help_text|safe }} </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <label></label>
+    <div class="actions">
+      <input type="submit" class="btn btn-primary" name="search" value={% trans "Search" %} />
+    </div>
+    </form>
+</div>
+
+<a class="btn btn-small" id="toggle_btn" href="#" data-toggle="collapse" data-target="#form_collapse">
+  <i class="icon-search"></i> <span>{% trans "advanced search"|title %}</span>
+</a>
+
+<script id="source" language="javascript" type="text/javascript">
+$(function () {
+    var data = [
+    {% regroup total_record|dictsort:"country_id" by country_id as country_list %}
+    {% for rc in country_list %}
+        {
+            label: {% cache 1800 c_id rc.grouper %}
+                   '{{ rc.grouper|country_name|title }}'
+                   {% endcache %},
+            data: [
+                {% for item in rc.list %}
+                    [{{ item.dt }}, {{ item.duration__sum }}, {{ item.calldate__count }}],
+                {% endfor %}
+            ]
+        },
+    {% endfor %}
+    ];
+
+    function Info(time, info, series_data){
+
+        for(var i in series_data){
+            if(series_data[i][0] == parseInt(time)){
+                switch(info){
+                    case 0:
+                        return series_data[i][0];
+                    break;
+                    case 1:
+                        return series_data[i][1];
+                    break;
+                    case 2:
+                        return series_data[i][2];
+                    break;
+                    default:
+                        return series_data[i][0];
+                }
+            }
+        }
+
+    }
+
+    function formTicks(val) {
+
+        var dt = new Date(parseInt(val));
+        var Year = dt.getFullYear();
+        var Month = dt.getMonth() + 1;
+        var Day = dt.getDate();
+        Month = Month < 10 ? '0' + Month : Month;
+        Day = Day < 10 ? '0' + Day : Day;
+        var hour = dt.getHours();
+        var minute = dt.getMinutes();
+        var ampm = hour >= 12 ? 'pm' : 'am';
+        var hour = hour % 12;
+        hour = hour ? hour : 12;
+        minute = minute < 10 ? '0' + minute : minute;
+
+        strTime = Day + '-' + Month + '-' + Year + '<br/>' + hour + ':' + minute + ' ' + ampm;
+        return strTime
+    }
+
+    var options = {
+        xaxis: { mode: "time",
+                 tickLength: 5,
+                 tickFormatter: function(val) { return formTicks(val) }
+        },
+        yaxis: { min: 0, tickDecimals: false },
+        selection: { mode: "x" },
+        grid: {
+                hoverable: true,
+                xaxis: false
+              },
+        legend: {
+                position: "ne",
+                margin: [-10, 0],
+                backgroundOpacity: 0
+              },
+    };
+
+    var plot = $.plot($("#graph_responsive"), data, options);
+
+    var overview = $.plot($("#overview"), data, {
+        legend: {show: false},
+        series: {
+            lines: { show: true, lineWidth: 1 },
+            shadowSize: 0
+        },
+        xaxis: { ticks: [], mode: "time" },
+        yaxis: { ticks: [], min: 0, autoscaleMargin: 0.1 },
+        selection: { mode: "x" }
+    });
+
+    // now connect the two
+    $("#graph_responsive").bind("plotselected", function (event, ranges) {
+        // do the zooming
+        plot = $.plot($("#graph_responsive"), data,
+                      $.extend(true, {}, options, {
+                          xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to }
+                      }));
+
+        // don't fire event on the overview to prevent eternal loop
+        overview.setSelection(ranges, true);
+    });
+
+    $("#overview").bind("plotselected", function (event, ranges) {
+        plot.setSelection(ranges);
+    });
+
+    $("#graph_responsive").bind("plothover", function (event, pos, item) {
+        if (item) {
+            if (previousPoint != item.dataIndex) {
+                previousPoint = item.dataIndex;
+
+                $("#tooltip").remove();
+                var x = item.datapoint[0].toFixed(2),
+                    y = item.datapoint[1].toFixed(2);
+
+                var time = x;
+                var dt = new Date(parseInt(time));
+                var hour = dt.getHours();//(time.toString().split("."))[0];
+                var minute = dt.getMinutes();//Math.round(time * 60 - (hour * 60));
+                var output = '';
+                output += '<div class="graph_tooltip_header">';
+
+                var ampm = hour >= 12 ? 'pm' : 'am';
+                var hour = hour % 12;
+                hour = hour ? hour : 12; // the hour '0' should be '12'
+                minute = minute < 10 ? '0'+minute : minute;
+                strTime = hour + ':' + minute + ' ' + ampm;
+
+                output += strTime + ' - ' + item.series.label + '</div><div class="graph_tooltip_info">{% trans "Duration" %}: '
+                        + Info(time, 1, item.series.data) + '{% trans "secs" %}<br>{% trans "Calls" %}: '
+                        + Info(time, 2, item.series.data) + '</div>';
+
+                showTooltip(item.pageX, item.pageY, output);
+            }
+        }
+        else {
+            $("#tooltip").remove();
+            previousPoint = null;
+        }
+    });
+});
+</script>
+
+<div class="row">
+    <div class="span12">
+        <div class="graph_header">
+            <h2>{% trans "country call statistics"|title %}</h2>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+        <div id="graph_responsive" style="margin:auto;"></div>
+    </div>
+</div>
+<div class="row">
+    <div class="span12">
+        <div id="overview" style="margin:auto;margin-bottom:20px;margin-top:20px;width:400px;height:50px"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //country pi
+    function pieHoverCountrycalls(event, pos, obj){
+        if (!obj)
+            return;
+        percent = parseFloat(obj.series.percent).toFixed(2);
+        $("#country_hover_calls").html('<span style="font-weight: bold; color: '+obj.series.color+'">'+obj.series.label+' ('+percent+'%)</span>');
+    }
+
+    function pieClickCountrycalls(event, pos, obj){
+        if (!obj)
+           return;
+        percent = parseFloat(obj.series.percent).toFixed(2);
+        alert(''+obj.series.label+': '+percent+'%');
+    }
+
+    $(function () {
+
+        var data = [
+            {% for td in country_analytic %}
+                { label: '{{ td.0 }}' , data: [[1, {{ td.1 }}]]},
+            {% endfor %}
+        ];
+
+        var options = {
+            series: {
+                pie: {
+                    show: true,
+                    innerRadius: 0.35,
+                    radius: 1,
+                    label: {
+                        show: true,
+                        radius: 3/4,
+                        formatter: function(label, series){
+                            return '<div style="font-size:8pt;text-align:center;padding-bottom:2px;color:white;">'+label+'<br/>'+Math.round(series.percent)+'%</div>';
+                            }
+                        },
+                    background: { opacity: 0.5 }
+                }
+            },
+            legend: {
+                show: false
+            },
+            grid: {
+                hoverable: true,
+                clickable: true
+            }
+        };
+        $("#country_pie_calls").bind("plothover", pieHoverCountrycalls);
+        $("#country_pie_calls").bind("plotclick", pieClickCountrycalls);
+        var plot = $.plot($("#country_pie_calls"), data, options);
+    });
+
+    function pieHoverCountryduration(event, pos, obj){
+        if (!obj)
+            return;
+        percent = parseFloat(obj.series.percent).toFixed(2);
+        $("#country_hover_duration").html('<span style="font-weight: bold; color: '+obj.series.color+'">'+obj.series.label+' ('+percent+'%)</span>');
+    }
+
+    function pieClickCountryduration(event, pos, obj){
+        if (!obj)
+            return;
+        percent = parseFloat(obj.series.percent).toFixed(2);
+        alert(''+obj.series.label+': '+percent+'%');
+    }
+
+    $(function () {
+
+        var data = [
+            {% for td in country_analytic %}
+                { label: '{{ td.0 }}' , data: [[1, {{ td.2 }}]]},
+            {% endfor %}
+        ];
+
+        var options = {
+            series: {
+                pie: {
+                    show: true,
+                    innerRadius: 0.35,
+                    radius: 1,
+                    label: {
+                        show: true,
+                        radius: 3/4,
+                        formatter: function(label, series){
+                            return '<div style="font-size:8pt;text-align:center;padding-bottom:2px;color:white;">'+label+'<br/>'+Math.round(series.percent)+'%</div>';
+                        }
+                    },
+                    background: { opacity: 0.5 }
+                }
+            },
+            legend: {
+                show: false
+            },
+            grid: {
+                hoverable: true,
+                clickable: true
+            }
+        };
+        $("#country_pie_duration").bind("plothover", pieHoverCountryduration);
+        $("#country_pie_duration").bind("plotclick", pieClickCountryduration);
+        var plot = $.plot($("#country_pie_duration"), data, options);
+    });
+</script>
+
+    <div class="row">
+        <div class="span6 welldashboard">
+            <h2 align="center">{% trans "calls by country"|title %}</h2>
+            <hr/>
+            <div id="country_pie_calls" style="width:350px;height:350px;margin:auto;"></div>
+            <div id="country_hover_calls"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
+
+            <br/>
+            <div class="span6">
+                <h3 align="left">{% trans "top"|title %} {{ NUM_COUNTRY }} {% trans "calls by country"|title %}</h3>
+                <table>
+                    <tbody>
+                    {% for country_data in country_analytic %}
+                        <tr>
+                            <td class="td-dashboard">
+                                {% if country_data.3 %}
+                                    {% cache 1800 hcountry_flag country_data.3 %}
+                                        <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name|title }}">
+                                    {% endcache %}
+                                {% else %}
+                                    <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World" %}">
+                                {% endif %}
+                            </td>
+                            <td class="td-dashboard" width="100">
+                                {% if country_data.0 %}
+                                    {{ country_data.0 }}
+                                {% else %}
+                                    {% trans "world"|title  %}
+                                {% endif %}
+                            </td>
+                            <td width="100">{{ country_data.1 }} {% trans "Calls"%}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <hr style="width:400px;"/>
+                <table>
+                    <tbody>
+                    <tr>
+                        <td class="td-dashboard"></td>
+                        <td class="td-dashboard" width="100">{% trans "Total"%}</td>
+                        <td width="100">{{ total_calls }} {% trans "Calls"%}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="span6 welldashboard">
+            <h2 align="center">{% trans "Duration by Country"|title %}</h2>
+            <hr/>
+            <div id="country_pie_duration" style="width:350px;height:350px;margin:auto;"></div>
+            <div id="country_hover_duration"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
+            <br/>
+            <div class="span6">
+                <h3 align="left">{% trans "top"|title %} {{ NUM_COUNTRY }} {% trans "duration by country"|title %}</h3>
+                <table>
+                    <tbody>
+                    {% for country_data in country_analytic %}
+                        <tr>
+                            <td class="td-dashboard">
+                                {% if country_data.3 %}
+                                    {% cache 1800 hcountry_flag country_data.3 %}
+                                        <img src="{{STATIC_URL}}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name|title }}">
+                                    {% endcache %}
+                                {% else %}
+                                    <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World" %}">
+                                {% endif %}
+                            </td>
+                            <td class="td-dashboard" width="100">
+                                {% if country_data.0 %}
+                                    {{ country_data.0 }}
+                                {% else %}
+                                    {% trans "world"|title  %}
+                                {% endif %}
+                            </td>
+                            <td>{{ country_data.2|conv_min }} {% trans "minutes"%}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <hr style="width:400px;"/>
+                <table>
+                    <tbody>
+                    <tr>
+                        <td class="td-dashboard"></td>
+                        <td class="td-dashboard" width="100">{% trans "Total"%}</td>
+                        <td>{{ total_duration|conv_min }} {% trans "minutes"%}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

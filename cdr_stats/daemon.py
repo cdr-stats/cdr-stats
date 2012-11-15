@@ -38,8 +38,8 @@ class Daemon:
 
     Usage: subclass the Daemon class and override the run() method
     """
-    def __init__(self, pidfile, stdin=os.devnull, \
-                stdout=os.devnull, stderr=os.devnull):
+    def __init__(self, pidfile, stdin=os.devnull,
+                 stdout=os.devnull, stderr=os.devnull):
         self.stdin = stdin
         self.stdout = stdout
         self.stderr = stderr
@@ -57,8 +57,8 @@ class Daemon:
                 # Exit first parent
                 sys.exit(0)
         except OSError, e:
-            sys.stderr.write("fork #1 failed: %d (%s)\n" % \
-                                (e.errno, e.strerror))
+            sys.stderr.write("fork #1 failed: %d (%s)\n" %
+                (e.errno, e.strerror))
             sys.exit(1)
 
         # Decouple from parent environment
@@ -73,8 +73,8 @@ class Daemon:
                 # Exit from second parent
                 sys.exit(0)
         except OSError, e:
-            sys.stderr.write("fork #2 failed: %d (%s)\n" % \
-                                (e.errno, e.strerror))
+            sys.stderr.write("fork #2 failed: %d (%s)\n" %
+                (e.errno, e.strerror))
             sys.exit(1)
 
         if sys.platform != 'darwin':  # This block breaks on OS X

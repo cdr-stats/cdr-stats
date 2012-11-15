@@ -20,7 +20,6 @@ ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
 
-#TODO : Installation script should ask the timezone
 TIME_ZONE = 'Europe/Madrid'
 
 APPLICATION_DIR = os.path.dirname(globals()['__file__'])
@@ -30,20 +29,21 @@ APPLICATION_DIR = os.path.dirname(globals()['__file__'])
 DATABASES = {
     'default': {
         # Add 'postgresql_psycopg2','postgresql','mysql','sqlite3','oracle'
-        'ENGINE': 'django.db.backends.sqlite3',
-        # Or path to database file if using sqlite3.
-        'NAME': APPLICATION_DIR + '/database/cdr-stats.db',
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost.
-                                         # Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default.
-                                         # Not used with sqlite3.
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'DATABASENAME',
+        'USER': 'DB_USERNAME',
+        'PASSWORD': 'DB_PASSWORD',
+        'HOST': 'DB_HOSTNAME',
+        'PORT': 'DB_PORT',
         'OPTIONS': {
-           'init_command': 'SET storage_engine=INNODB',
+            #Needed on Mysql
+            # 'init_command': 'SET storage_engine=INNODB',
+            #Postgresql Autocommit
+            'autocommit': True,
         }
     }
 }
+
 
 #CELERY SETTINGS
 #===============
@@ -65,7 +65,11 @@ REDIS_DB = 0
 
 #TASTYPIE
 #========
-API_ALLOWED_IP = ['127.0.0.1', 'localhost', ]
+API_ALLOWED_IP = [
+    '127.0.0.1',
+    'localhost',
+    #'SERVER_IP',
+]
 
 #SOCKETIO
 #========
@@ -90,56 +94,71 @@ PN_MAX_DIGITS = 9
 # List of phonenumber prefix to ignore, this will be remove prior analysis
 PREFIX_TO_IGNORE = "+,0,00,000,0000,00000,011,55555,99999"
 
-#Realtime Graph : set the Y axis limit
-REALTIME_Y_AXIS_LIMIT = 10
+# When the dialed number is less or equal to INTERNAL_CALL, the call will be considered
+# as a internal call, for example when dialed number is 41200
+INTERNAL_CALL = 5
 
-# freeswitch, asterisk : see support Switches
-LOCAL_SWITCH_TYPE = 'freeswitch'
-LOCAL_SWITCH_ID = 1
+#Realtime Graph : set the Y axis limit
+REALTIME_Y_AXIS_LIMIT = 300
 
 #ASTERISK IMPORT
 #===============
-ASTERISK_IMPORT_TYPE = 'mysql'  # Only mysql supported
 ASTERISK_PRIMARY_KEY = 'acctid'  # acctid, _id
 
-#Mysql Settings to use for import
-ASTERISK_MYSQL = {
-    '127.0.0.1': {
+#CDR_BACKEND
+#===========
+#list of CDR Backends to import
+CDR_BACKEND = {
+    'MYSQL_IMPORT_CDR_HOST': {
+        'db_engine': 'mysql',  # mysql, pgsql, mongo
+        'cdr_type': 'asterisk',  # asterisk or freeswitch
         'db_name': 'MYSQL_IMPORT_CDR_DBNAME',
         'table_name': 'MYSQL_IMPORT_CDR_TABLENAME',
         'host': 'MYSQL_IMPORT_CDR_HOST',
+        'port': 3306,  # 3306 mysql, 5432 pgsql
         'user': 'MYSQL_IMPORT_CDR_USER',
         'password': 'MYSQL_IMPORT_CDR_PASSWORD',
     },
+    # '127.0.0.1': {
+    #     'db_engine': 'mysql',  # mysql, pgsql, mongodb
+    #     'cdr_type': 'asterisk',  # asterisk or freeswitch
+    #     'db_name': 'asteriskcdr',
+    #     'table_name': 'cdr',  # collection if mongodb
+    #     'host': 'localhost',
+    #     'port': 3306,  # 3306 mysql, 5432 pgsql, 27017 mongodb
+    #     'user': 'root',
+    #     'password': 'password',
+    # },
+    # '127.0.0.1': {
+    #     'db_engine': 'mongodb',  # mysql, pgsql, mongodb
+    #     'cdr_type': 'freeswitch',  # asterisk or freeswitch
+    #     'db_name': 'freeswitch_cdr',
+    #     'table_name': 'cdr',  # collection if mongodb
+    #     'host': 'localhost',
+    #     'port': 27017,  # 3306 mysql, 5432 pgsql, 27017 mongodb
+    #     'user': '',
+    #     'password': '',
+    # },
 }
+
+#Define the IP of your local Switch, it needs to exist in the CDR_BACKEND list
+LOCAL_SWITCH_IP = 'SERVER_IP'
+
+#Asterisk Manager / Used for Realtime and Concurrent calls
+ASTERISK_MANAGER_HOST = 'localhost'
+ASTERISK_MANAGER_USER = 'cdrstats_user'
+ASTERISK_MANAGER_SECRET = 'cdrstats_secret'
 
 #MONGODB
 #=======
-MG_DB_NAME = 'cdr-stats'
-MG_HOST = 'localhost'
-MG_PORT = 27017
-MG_CDR_COMMON = 'cdr_common'
-MG_CONC_CALL = 'concurrent_call'
-MG_CDR_COUNTRY_REPORT = 'cdr_country_report'
-MG_CONC_CALL_AGG = 'concurrent_call_map_reduce'
-MG_CDR_MONTHLY = 'cdr_monthly_analytic'
-MG_CDR_DAILY = 'cdr_daily_analytic'
-MG_CDR_HOURLY = 'cdr_hourly_analytic'
-MG_CDR_HANGUP = 'cdr_hangup_cause_analytic'
-MG_CDR_COUNTRY = 'cdr_country_analytic'
-
-#MongoDB Setting(s) to use for import
-MG_IMPORT = {
-    '127.0.0.1': {
-        'db_name': 'freeswitch_cdr',
-        'host': 'localhost',
-        'port': 27017,
-        'collection': 'cdr',
-    },
-    #'192.168.1.15': {
-    #    'db_name': 'freeswitch_cdr',
-    #    'host': '192.168.1.15',
-    #    'port': 27017,
-    #    'collection': 'cdr',
-    #},
+#Settings of CDR-Stats MongoDB server, this is used to store the analytic data
+MONGO_CDRSTATS = {
+    'DB_NAME': 'cdr-stats',
+    'HOST': 'localhost',
+    'PORT': 27017,
+    'CDR_COMMON': 'cdr_common',
+    'DAILY_ANALYTIC': 'daily_analytic',
+    'MONTHLY_ANALYTIC': 'monthly_analytic',
+    'CONC_CALL': 'concurrent_call',
+    'CONC_CALL_AGG': 'concurrent_call_aggregate'
 }

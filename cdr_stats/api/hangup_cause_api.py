@@ -17,7 +17,6 @@ from tastypie.resources import ModelResource
 from tastypie.throttle import BaseThrottle
 from tastypie.authentication import BasicAuthentication
 from tastypie.authorization import Authorization
-
 from cdr.models import HangupCause
 
 

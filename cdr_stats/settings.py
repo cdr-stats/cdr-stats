@@ -11,24 +11,22 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-
 import os
 import djcelery
-
 djcelery.setup_loader()
 
-APPLICATION_DIR = os.path.dirname(globals()['__file__'])
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-     ('admin', 'admin@cdr-stats.com'),
+    ('Your Name', 'your_email@domain.com'),
 )
-
 MANAGERS = ADMINS
 
 SERVER_EMAIL = 'cdr-stats@localhost.com'
+
+APPLICATION_DIR = os.path.dirname(globals()['__file__'])
 
 DATABASES = {
     'default': {
@@ -39,9 +37,7 @@ DATABASES = {
         'USER': 'postgres',       # Not used with sqlite3.
         'PASSWORD': 'postgres',   # Not used with sqlite3.
         'HOST': 'localhost',      # Set to empty string for localhost.
-                                  # Not used with sqlite3.
         'PORT': '',               # Set to empty string for default.
-                                  # Not used with sqlite3.
     }
 }
 
@@ -114,7 +110,6 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -124,12 +119,9 @@ SECRET_KEY = ')ey%^d=pk^jxgam92tdqb0z+0bbhk=7dub_0$ttw#u8yj)rgo$'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
-    #'raven.contrib.django.middleware.SentryResponseErrorIdMiddleware',
-    #'raven.contrib.django.middleware.Sentry404CatchMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -137,7 +129,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     #'geordi.VisorMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    #'pagination.middleware.PaginationMiddleware',
     'linaro_django_pagination.middleware.PaginationMiddleware',
     'common.filter_persist_middleware.FilterPersistMiddleware',
     'mongodb_connection_middleware.MongodbConnectionMiddleware',
@@ -183,24 +174,23 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.markup',
-    #'django.contrib.admindocs',
+    'api',
     'cdr',
     'cdr_alert',
     'user_profile',
+    'frontend',
     'dateutil',
     'south',
-    #'dilla',
-    #'pagination',
     'linaro_django_pagination',
     'djcelery',
     'tastypie',
     'django_socketio',
     'common',
-    #'raven.contrib.django',
     'notification',
     'country_dialcode',
     #'geordi',
     'gunicorn',
+    'apiplayground',
 )
 
 # Debug Toolbar
@@ -216,8 +206,17 @@ else:
         'INTERCEPT_REDIRECTS': False,
     }
 
+# Nose
+try:
+    import nose
+except ImportError:
+    pass
+else:
+    INSTALLED_APPS = INSTALLED_APPS + ('django_nose',)
+    TEST_RUNNER = 'utils.test_runner.MyRunner'
+
 # Debug Toolbar mongo
-"""
+
 # commented cause this module doesn't work at the moment
 # https://groups.google.com/forum/?fromgroups#!topic/mongoengine-users/cwIdHSNPCwY
 
@@ -227,36 +226,24 @@ except ImportError:
     pass
 else:
     INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar_mongo',)
-    #DEBUG_TOOLBAR_PANELS = DEBUG_TOOLBAR_PANELS + \
-    #    ('debug_toolbar_mongo.panel.MongoDebugPanel',)
-    DEBUG_TOOLBAR_MONGO_STACKTRACES = False
+
+    DEBUG_TOOLBAR_MONGO_STACKTRACES = True
     DEBUG_TOOLBAR_PANELS = (
         'debug_toolbar.panels.version.VersionDebugPanel',
         'debug_toolbar.panels.timer.TimerDebugPanel',
+        #Warning: If you run profiling this will duplicate the view execution
+        'debug_toolbar.panels.profiling.ProfilingDebugPanel',
         'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
         'debug_toolbar.panels.headers.HeaderDebugPanel',
         'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
         'debug_toolbar.panels.template.TemplateDebugPanel',
-        'debug_toolbar_mongo.panel.MongoDebugPanel',
         'debug_toolbar.panels.sql.SQLDebugPanel',
         'debug_toolbar.panels.signals.SignalDebugPanel',
         'debug_toolbar.panels.logger.LoggingPanel',
     )
-"""
+    DEBUG_TOOLBAR_PANELS = DEBUG_TOOLBAR_PANELS + \
+        ('debug_toolbar_mongo.panel.MongoDebugPanel',)
 
-DEBUG_TOOLBAR_PANELS = (
-    'debug_toolbar.panels.version.VersionDebugPanel',
-    'debug_toolbar.panels.timer.TimerDebugPanel',
-    #Warning: If you run profiling this will duplicate the view execution
-    #'debug_toolbar.panels.profiling.ProfilingDebugPanel',
-    'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
-    'debug_toolbar.panels.headers.HeaderDebugPanel',
-    'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-    'debug_toolbar.panels.template.TemplateDebugPanel',
-    'debug_toolbar.panels.sql.SQLDebugPanel',
-    'debug_toolbar.panels.signals.SignalDebugPanel',
-    'debug_toolbar.panels.logger.LoggingPanel',
-)
 
 # Django extensions
 try:
@@ -278,12 +265,8 @@ LOGIN_URL = '/pleaselog/'
 #==============
 DICTIONARY = "/usr/share/dict/words"
 DILLA_USE_LOREM_IPSUM = False  # set to True ignores dictionary
-DILLA_APPS = [
-                'cdr',
-             ]
-DILLA_SPAMLIBS = [
-                'cdr.cdr_custom_spamlib',
-                ]
+DILLA_APPS = ['cdr']
+DILLA_SPAMLIBS = ['cdr.cdr_custom_spamlib']
 # To use Dilla
 # > python manage.py run_dilla --cycles=100
 
@@ -305,27 +288,35 @@ NEWS_URL = 'http://www.cdr-stats.org/news.php'
 #DJANGO-ADMIN-TOOL
 #=================
 ADMIN_TOOLS_MENU = 'cdr_stats.custom_admin_tools.menu.CustomMenu'
-
 ADMIN_TOOLS_INDEX_DASHBOARD = \
     'cdr_stats.custom_admin_tools.dashboard.CustomIndexDashboard'
 ADMIN_TOOLS_APP_INDEX_DASHBOARD = \
     'cdr_stats.custom_admin_tools.dashboard.CustomAppIndexDashboard'
+ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 #CELERY
 #======
 CARROT_BACKEND = 'ghettoq.taproot.Redis'
-#CARROT_BACKEND = 'redis'
 
-BROKER_HOST = 'localhost'  # Maps to redis host.
-BROKER_PORT = 6379         # Maps to redis port.
-BROKER_VHOST = 0        # Maps to database number.
-
+BROKER_HOST = 'localhost'  # Maps to redis host
+BROKER_PORT = 6379         # Maps to redis port
+BROKER_VHOST = 0           # Maps to database number
 
 CELERY_RESULT_BACKEND = 'redis'
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 REDIS_DB = 0
 #REDIS_CONNECT_RETRY = True
+
+CELERY_DEFAULT_QUEUE = 'cdrstats'
+CELERY_DEFAULT_EXCHANGE = "cdrstats_tasks"
+CELERY_DEFAULT_EXCHANGE_TYPE = "topic"
+CELERY_DEFAULT_ROUTING_KEY = "task.cdrstats"
+CELERY_QUEUES = {
+    'cdrstats': {
+        'binding_key': '#',
+    },
+}
 
 #SOCKETIO
 #========
@@ -350,59 +341,81 @@ PN_MAX_DIGITS = 9
 # List of phonenumber prefix to ignore, this will be remove prior analysis
 PREFIX_TO_IGNORE = "+,0,00,000,0000,00000,011,55555,99999"
 
-#Realtime Graph : set the Y axis limit
-REALTIME_Y_AXIS_LIMIT = 100
+# When the dialed number is less or equal to INTERNAL_CALL, the call will be considered
+# as a internal call, for example when dialed number is 41200
+INTERNAL_CALL = 5
 
-# freeswitch, asterisk : see support Switches
-LOCAL_SWITCH_TYPE = 'freeswitch'
-LOCAL_SWITCH_ID = 1
+#Realtime Graph : set the Y axis limit
+REALTIME_Y_AXIS_LIMIT = 300
 
 #ASTERISK IMPORT
 #===============
-ASTERISK_IMPORT_TYPE = 'mysql'  # Only mysql supported
 ASTERISK_PRIMARY_KEY = 'acctid'  # acctid, _id
 
-#Mysql Settings to use for import
-ASTERISK_MYSQL = {
+#CDR_BACKEND
+#===========
+#list of CDR Backends to import
+CDR_BACKEND = {
+    # '127.0.0.1': {
+    #     'db_engine': 'mysql',  # mysql, pgsql, mongodb
+    #     'cdr_type': 'asterisk',  # asterisk or freeswitch
+    #     'db_name': 'asteriskcdr',
+    #     'table_name': 'cdr',  # collection if mongodb
+    #     'host': 'localhost',
+    #     'port': 3306,  # 3306 mysql, 5432 pgsql, 27017 mongodb
+    #     'user': 'root',
+    #     'password': 'password',
+    # },
     '127.0.0.1': {
-        'db_name': 'asteriskcdr',
-        'table_name': 'cdr',
+        'db_engine': 'mongodb',  # mysql, pgsql, mongodb
+        'cdr_type': 'freeswitch',  # asterisk or freeswitch
+        'db_name': 'freeswitch_cdr',
+        'table_name': 'cdr',  # collection if mongodb
         'host': 'localhost',
-        'user': 'root',
-        'password': 'password',
+        'port': 27017,  # 3306 mysql, 5432 pgsql, 27017 mongodb
+        'user': '',
+        'password': '',
     },
 }
+
+#Define the IP of your local Switch, it needs to exist in the CDR_BACKEND list
+LOCAL_SWITCH_IP = '127.0.0.1'
+
+#Asterisk Manager / Used for Realtime and Concurrent calls
+ASTERISK_MANAGER_HOST = 'localhost'
+ASTERISK_MANAGER_USER = 'cdrstats_user'
+ASTERISK_MANAGER_SECRET = 'cdrstats_secret'
 
 #MONGODB
 #=======
-MG_DB_NAME = 'cdr-stats'
-MG_HOST = 'localhost'
-MG_PORT = 27017
-MG_CDR_COMMON = 'cdr_common'
-MG_DAILY_ANALYTIC = 'daily_analytic'
-MG_MONTHLY_ANALYTIC = 'monthly_analytic'
-MG_CONC_CALL = 'concurrent_call'
-MG_CONC_CALL_AGG = 'concurrent_call_map_reduce'
-
-#MongoDB setting(s) to use for import
-MG_IMPORT = {
-    '127.0.0.1': {
-        'db_name': 'freeswitch_cdr',  # cdr-stats
-        'host': 'localhost',
-        'port': 27017,
-        'collection': 'cdr',
-    },
-    #'192.168.1.15': {
-    #    'db_name': 'freeswitch_cdr',
-    #    'host': '192.168.1.15',
-    #    'port': 27017,
-    #    'collection': 'cdr',
-    #},
+#Settings of CDR-Stats MongoDB server, this is used to store the analytic data
+MONGO_CDRSTATS = {
+    'DB_NAME': 'cdr-stats',
+    'HOST': 'localhost',
+    'PORT': 27017,
+    'CDR_COMMON': 'cdr_common',
+    'DAILY_ANALYTIC': 'daily_analytic',
+    'MONTHLY_ANALYTIC': 'monthly_analytic',
+    'CONC_CALL': 'concurrent_call',
+    'CONC_CALL_AGG': 'concurrent_call_aggregate'
 }
+
+#API PLAYGROUND
+#==============
+API_PLAYGROUND_FEEDBACK = False
 
 #No of records per page
 #=======================
 PAGE_SIZE = 10
+
+#TOTAL_GRAPH_COLOR For TOTAL Variable
+#====================================
+TOTAL_GRAPH_COLOR = '#A61700'
+
+# Display Total Countries
+#========================
+NUM_COUNTRY = 10
+
 
 #TASTYPIE API
 #============
@@ -413,6 +426,10 @@ API_ALLOWED_IP = ['127.0.0.1', 'localhost']
 # Use only in Debug mode. Not in production
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+
+#Define the delay in minute between mail notification
+#This setting avoid getting span with loads of alarms
+DELAY_BETWEEN_MAIL_NOTIFICATION = 10
 
 #LOGGING
 #=======
@@ -437,7 +454,6 @@ LOGGING = {
         'mail_admins': {
             'class': 'django.utils.log.AdminEmailHandler',
             'level': 'ERROR',
-             # But the emails are plain text by default - HTML is nicer
             'include_html': True,
         },
         'default': {
@@ -499,8 +515,8 @@ from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 import sys
 try:
-    connection = Connection(MG_HOST, MG_PORT)
-    DBCON = connection[MG_DB_NAME]
+    connection = Connection(MONGO_CDRSTATS['HOST'], MONGO_CDRSTATS['PORT'])
+    DBCON = connection[MONGO_CDRSTATS['DB_NAME']]
 except ConnectionFailure, e:
     sys.stderr.write("Could not connect to MongoDB: %s" % e)
     sys.exit(1)

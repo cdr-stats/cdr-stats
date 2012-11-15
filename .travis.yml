@@ -2,7 +2,12 @@ language: python
 python:
   - "2.7"
 env:
-  - DJANGO=1.4.1
+  - DJANGO=1.4.2
+services:
+  - mongodb     # will start riak
+  - redis-server
+#  - rabbitmq # will start rabbitmq-server
+#  - memcache # will start memcached
 install:
   # - pip install -q Django==$DJANGO --use-mirrors
   - bash install/requirements/install-requirements.sh

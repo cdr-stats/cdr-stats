@@ -1,0 +1,16 @@
+[
+   {
+      "pk":1,
+      "model":"notification.notice",
+      "fields":{
+         "archived":false,
+         "added":"2012-08-17T01:27:05",
+         "sender":1,
+         "on_site":true,
+         "notice_type":1,
+         "unseen":true,
+         "message":"Campaign started",
+         "recipient":1
+      }
+   }
+]

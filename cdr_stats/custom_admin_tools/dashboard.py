@@ -46,12 +46,8 @@ class CustomIndexDashboard(Dashboard):
     """
 
     def init_with_context(self, context):
-
-        request = context['request']
-
         # we want a 3 columns layout
         self.columns = 3
-
         site_name = get_admin_site_name(context)
 
         #self.children.append(
@@ -120,7 +116,6 @@ class CustomAppIndexDashboard(AppIndexDashboard):
     """
     Custom app index dashboard for admin.
     """
-
     # we disable title because its redundant with the model list module
     title = ''
 

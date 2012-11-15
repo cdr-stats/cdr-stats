@@ -1,0 +1,190 @@
+{% extends "frontend/master.html" %}
+{% load i18n cdr_extras %}
+
+{% block extra_header %}
+
+    <script type="text/javascript">
+        $(function() {
+            $("#id_from_date").datepicker({ format: 'yyyy-mm-dd' });
+        });
+    </script>
+
+
+{% endblock %}
+
+{% block content %}
+    <div id="form_collapse" class="collapse">
+        <form class="form-search well" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
+        <div class="row">
+            <div class="span12">
+                <div class="row">
+                    <div class="span6">
+                        <label class="control-label" for="id_{{ form.from_date.name }}">{{ form.from_date.label }}</label>
+                        <div class="input">
+                            {{ form.from_date }}&nbsp;&nbsp;{{ form.comp_days }}
+                            <span class="help-block">{{ form.from_date.help_text|safe }} </span>
+                        </div>
+                    </div>
+                    <div class="span4">
+                        <label class="control-label" for="id_{{ form.check_days.name }}">{{ form.check_days.label }}</label>
+                        <div class="input">
+                            {{ form.check_days|removetags:"ul li label"|safe }}
+                            <span class="help-block">{{ form.check_days.help_text|safe }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="span12">
+                <div class="row">
+                    <div class="span6">
+                        <label class="control-label" for="id_{{ form.graph_view.name }}">{{ form.graph_view.label }}</label>
+                        <div class="input">
+                            {{ form.graph_view }}
+                        </div>
+                    </div>
+                    <div class="span4">
+                        <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }}</label>
+                        <div class="input">
+                            {{ form.switch }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <label>&nbsp;</label>
+        <div class="actions">
+            <input class="btn btn-primary" type=submit name=submit value={% trans "Search" %} />
+        </div>
+        </form>
+    </div>
+
+    <a class="btn btn-small" id="toggle_btn" href="#" data-toggle="collapse" data-target="#form_collapse">
+        <i class="icon-search"></i> <span>{% trans "advanced search"|title %}</span>
+    </a>
+
+    <script id="source" language="javascript" type="text/javascript">
+        $(function () {
+            var data = [
+                {% for date in total_record %}
+                    {% for date, calls in date.items %}
+                        {
+                            label: '{{ date }}',
+                            data: [
+                                {% for hour, calls in calls.items %}
+                                    [{{ hour }}, {{ calls }}],
+                                {% endfor %}
+                            ],
+                        },
+                    {% endfor %}
+                {% endfor %}
+            ];
+
+
+            function Info(date,time,info){
+                data = [
+                    {% for date in total_record %}
+                        {% for d, calls in date.items %}
+                            {% for hour, calls in calls.items %}
+                                ['{{ d }}', {{ hour }}, {{ calls }}],
+                            {% endfor %}
+                        {% endfor %}
+                    {% endfor %}
+                ];
+
+                for(var i in data){
+                    if(data[i][0] == date){
+
+                        switch(info){
+                            case 0:
+                                return data[i][0];
+                                break;
+                            case 1:
+                                if(time < 10)
+                                    time = '0' + time;
+                                return String(parseInt(time) + ':00');
+                                break;
+                            case 2:
+                                if(data[i][1] == time)
+                                    return data[i][2];
+                                break;
+                            default:
+                                return data[i][0];
+                        }
+                    }
+                }
+            }
+            var options = {
+                legend: {
+                    position: "ne",
+                    margin: [-10, 0],
+                    backgroundOpacity: 0
+                },
+                series: {
+                    lines: { show: true },
+                    points: { show: true }
+                },
+                yaxis: {
+                    min: 0,
+                    tickDecimals: false
+                },
+                xaxis: {
+                    min: 0,
+                    max: 23,
+                    tickSize: 1,
+                    tickDecimals: false,
+                },
+                grid: {
+                    hoverable: true,
+                    xaxis: false
+                }
+            };
+            var plot = $.plot($("#graph_responsive"), data, options);
+
+            $("#graph_responsive").bind("plothover", function (event, pos, item) {
+
+                if (item) {
+                    if (previousPoint != item.dataIndex) {
+                        previousPoint = item.dataIndex;
+
+                        $("#tooltip").remove();
+                        var x = item.datapoint[0].toFixed(2),
+                                y = item.datapoint[1].toFixed(2);
+
+                        var time = x;
+                        var date = item.series.label;
+                        output = '<div class="graph_tooltip_header">' + date + '</div><div class="graph_tooltip_info">{% trans "Hour" %}: ' + Info(date,time,1) + '<br>';
+                        {% if graph_view == 1 %}
+                            output +=  '{% trans "Calls" %}: ' + Info(date, time, 2) + '</div>';
+                        {% else %}
+                            output += '{% trans "Minutes" %}: ' + Info(date, time, 2) + ' min</div>';
+                        {% endif %}
+
+                        showTooltip(item.pageX, item.pageY, output);
+                    }
+                }
+                else {
+                    $("#tooltip").remove();
+                    previousPoint = null;
+                }
+            });
+        });
+    </script>
+
+    <div class="row">
+        <div class="span12">
+        <div class="graph_header">
+            {% trans "Call Statistics" %} -
+            <b>
+                {% if from_date  %}
+                    {{ from_date|date:"jS N Y" }} {% trans "with previous" %} {{ comp_days|cut:"-" }} {% trans "days" %}
+                {% endif %}
+            </b>
+        </div>
+        <div id="graph_responsive"></div>
+        </div>
+    </div>
+
+
+{% endblock %}

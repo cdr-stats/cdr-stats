@@ -17,6 +17,7 @@ from django.conf import settings
 from cdr.models import Switch, HangupCause
 from country_dialcode.models import Country, Prefix
 from cache_utils.decorators import cached
+from django.utils.translation import gettext as _
 import re
 
 
@@ -47,7 +48,14 @@ def get_hc_list():
 
 @cached(3600)
 def get_hangupcause_name(id):
-    """Get hangupcause name from its id"""
+    """Get hangupcause name from its id
+
+    >>> get_hangupcause_name(1)
+    'UNSPECIFIED'
+
+    >>> get_hangupcause_name(900)
+    ''
+    """
     try:
         obj = HangupCause.objects.get(pk=id)
         return obj.enumeration
@@ -57,7 +65,14 @@ def get_hangupcause_name(id):
 
 @cached(3600)
 def get_hangupcause_id(hangupcause_code):
-    """Get hangupcause id from its code"""
+    """Get hangupcause id from its code
+
+    >>> get_hangupcause_id(0)
+    1
+
+    >>> get_hangupcause_id(900)
+    0
+    """
     try:
         obj = HangupCause.objects.get(code=hangupcause_code)
         return obj.id
@@ -88,6 +103,16 @@ def prefix_list_string(phone_number):
     For Example :-
     phone_no = 34650XXXXXX
     prefix_string = (34650, 3465, 346, 34)
+
+    >>> phone_no = 34650123456
+
+    >>> prefix_list_string(phone_no)
+    '34650, 3465, 346, 34'
+
+    >>> phone_no = -34650123456
+
+    >>> prefix_list_string(phone_no)
+    False
     """
     try:
         int(phone_number)
@@ -122,7 +147,13 @@ def get_country_id(prefix_list):
 @cached(3600)
 def get_country_name(id, type=''):
     """Get country name from its id & return iso2 type name (e.g 'fr')
-     or country name"""
+     or country name
+
+    >>>  get_country_name(198)
+    'Spain'
+    """
+    if id == 999:
+        return _('Internal Calls')
     try:
         obj = Country.objects.get(pk=id)
         if type == 'iso2':
@@ -130,7 +161,7 @@ def get_country_name(id, type=''):
         else:
             return obj.countryname
     except:
-        return ''
+        return _('Unknown')
 
 
 @cached(3600)
@@ -138,8 +169,8 @@ def chk_account_code(request):
     """Get account code from  request"""
     acc_code = ''
     try:
-        if not request.user.is_superuser \
-            and request.user.get_profile().accountcode is not None:
+        if (not request.user.is_superuser
+           and request.user.get_profile().accountcode is not None):
             acc_code = request.user.get_profile().accountcode
             return '%s' % str(acc_code)
         else:

@@ -15,7 +15,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-
 from user_profile.fields import LanguageField
 from django_countries import CountryField
 
@@ -71,15 +70,18 @@ class UserProfile(models.Model):
     language = LanguageField(blank=True, null=True, verbose_name=_('Language'))
     note = models.CharField(max_length=250, blank=True, null=True,
             verbose_name=_('Note'))
-    accountcode = models.PositiveIntegerField(null=True, blank=True)
+    accountcode = models.CharField(max_length=50, null=True, blank=True)
     multiple_email = models.TextField(blank=True, null=True,
-            verbose_name=_('Report mail list'),
-            help_text=_('Enter a valid e-mail address separated by commas.'))
+        verbose_name=_('Report mail list'),
+        help_text=_('Enter a valid e-mail address separated by commas.'))
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
+        permissions = (
+            ("view_api_explorer", _('Can see API-Explorer')),
+        )
         db_table = 'user_profile'
         verbose_name = _("User Profile")
         verbose_name_plural = _("User Profile")

@@ -1,6 +1,9 @@
 
 .. image:: https://github.com/Star2Billing/cdr-stats/raw/master/docs/source/_static/images/cdr-stats_600.png
 
+.. image:: https://secure.travis-ci.org/Star2Billing/cdr-stats.png?branch=develop
+
+
 CDR-Stats is a free and open source call detail record analysis and reporting software for Freeswitch, 
 Asterisk and other types of VoIP Switch. It allows you to interrogate CDR to provide reports 
 and statistics via a simple to use powerful web interface.

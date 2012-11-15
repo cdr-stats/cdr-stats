@@ -3,12 +3,12 @@
 # CDR-Stats License
 # http://www.cdr-stats.org
 #
-# This Source Code Form is subject to the terms of the Mozilla Public 
+# This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 # Copyright (C) 2011-2012 Star2Billing S.L.
-# 
+#
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
@@ -18,6 +18,8 @@
 # cd /usr/src/ ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-all-cdr-stats-freeswitch.sh -O install-all-cdr-stats-freeswitch.sh; bash install-all-cdr-stats-freeswitch.sh
 #
 
+BRANCH='develop'
+
 #INSTALL TYPE (ASTERISK or FREESWITCH)
 INSTALL_TYPE='FREESWITCH'
 
@@ -25,8 +27,8 @@ INSTALLMODE='FULL' # Set to FULL to update Selinux / Firewall / etc...
 
 
 #Get Scripts dependencies
-wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh -O bash-common-functions.sh
-wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
+wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/bash-common-functions.sh -O bash-common-functions.sh
+wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
 
 #Include general functions
 source bash-common-functions.sh
@@ -46,7 +48,7 @@ read TEMP
 
 
 case $DIST in
-    'DEBIAN') 
+    'DEBIAN')
         apt-get -y update
         apt-get -y install vim git-core
     ;;
@@ -84,20 +86,20 @@ esac
 
 #Install MongoDB
 cd /usr/src/
-wget https://raw.github.com/Star2Billing/cdr-stats/master/install/install-mongodb.sh -O install-mongodb.sh
+wget https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/install-mongodb.sh -O install-mongodb.sh
 bash install-mongodb.sh
 
 
 #Install Freeswitch
 cd /usr/src/
-wget https://raw.github.com/Star2Billing/cdr-stats/master/install/install-freeswitch.sh -O install-freeswitch.sh
+wget https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/install-freeswitch.sh -O install-freeswitch.sh
 bash install-freeswitch.sh
 /etc/init.d/freeswitch start
 
 #Install CDR-Stats
 cd /usr/src/
-wget https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh -O bash-common-functions.sh
-wget https://raw.github.com/Star2Billing/cdr-stats/master/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
+wget https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/bash-common-functions.sh -O bash-common-functions.sh
+wget https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
 
 
 #Include general functions
@@ -111,7 +113,8 @@ func_identify_os
 #Request the user to accept the license
 func_accept_license_mplv2
 
-#run install menu
-run_menu_cdr_stats_install_landingpage
+#Install Landing page
+func_install_landing_page
 
-
+#Run install menu
+run_menu_cdr_stats_install

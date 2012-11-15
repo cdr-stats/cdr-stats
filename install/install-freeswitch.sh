@@ -3,12 +3,12 @@
 # CDR-Stats License
 # http://www.cdr-stats.org
 #
-# This Source Code Form is subject to the terms of the Mozilla Public 
+# This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 # Copyright (C) 2011-2012 Star2Billing S.L.
-# 
+#
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
@@ -17,9 +17,10 @@
 # To download and run the script on your server :
 # cd /usr/src/ ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-freeswitch.sh -O install-freeswitch.sh ; bash install-freeswitch.sh
 
+BRANCH='develop'
 
 #Get Scripts dependencies
-wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh -O bash-common-functions.sh
+wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/bash-common-functions.sh -O bash-common-functions.sh
 
 #Include general functions
 source bash-common-functions.sh
@@ -28,8 +29,8 @@ source bash-common-functions.sh
 func_identify_os
 
 
-FS_CONF_PATH=https://raw.github.com/Star2Billing/cdr-stats/master/install/freeswitch-conf
-FS_INIT_PATH=https://raw.github.com/Star2Billing/cdr-stats/master/install/freeswitch-init
+FS_CONF_PATH=https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/freeswitch-conf
+FS_INIT_PATH=https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/freeswitch-init
 FS_GIT_REPO=git://git.freeswitch.org/freeswitch.git
 FS_INSTALLED_PATH=/usr/local/freeswitch
 FS_CONFIG_PATH=/etc/freeswitch
@@ -50,24 +51,23 @@ read INPUT
 func_install_fs_source() {
     #install fs from source
    	echo "installing from source"
-   	
+
    	#Add Freeswitch group and user
 	grep -c "^freeswitch:" /etc/group &> /dev/null
 	if [ $? = 1 ]; then
-       /usr/sbin/groupadd -r -f freeswitch
+        /usr/sbin/groupadd -r -f freeswitch
 	else
-       echo "group freeswitch already present"
+        echo "group freeswitch already present"
 	fi
 
 	grep -c "^freeswitch:" /etc/passwd &> /dev/null
 	if [ $? = 1 ]; then
-       echo "adding user freeswitch..."
-       /usr/sbin/useradd -r -c "freeswitch" -g freeswitch freeswitch
+        echo "adding user freeswitch..."
+        /usr/sbin/useradd -r -c "freeswitch" -g freeswitch freeswitch
 	else
-       echo "user freeswitch already present"
+        echo "user freeswitch already present"
 	fi
 
-	    	
 	# Install FreeSWITCH
 	cd $FS_BASE_PATH
 	git clone $FS_GIT_REPO
@@ -75,30 +75,28 @@ func_install_fs_source() {
 	sh bootstrap.sh && ./configure --without-pgsql --prefix=/usr/local/freeswitch --sysconfdir=/etc/freeswitch/
 	[ -f modules.conf ] && cp modules.conf modules.conf.bak
 	sed -i -e \
-	"s/#applications\/mod_curl/applications\/mod_curl/g" \
-	-e "s/#asr_tts\/mod_flite/asr_tts\/mod_flite/g" \
-	-e "s/#asr_tts\/mod_tts_commandline/asr_tts\/mod_tts_commandline/g" \
-	-e "s/#formats\/mod_shout/formats\/mod_shout/g" \
-	-e "s/#endpoints\/mod_dingaling/endpoints\/mod_dingaling/g" \
-	-e "s/#formats\/mod_shell_stream/formats\/mod_shell_stream/g" \
-	-e "s/#say\/mod_say_de/say\/mod_say_de/g" \
-	-e "s/#say\/mod_say_es/say\/mod_say_es/g" \
-	-e "s/#say\/mod_say_fr/say\/mod_say_fr/g" \
-	-e "s/#say\/mod_say_it/say\/mod_say_it/g" \
-	-e "s/#say\/mod_say_nl/say\/mod_say_nl/g" \
-	-e "s/#say\/mod_say_ru/say\/mod_say_ru/g" \
-	-e "s/#say\/mod_say_zh/say\/mod_say_zh/g" \
-	-e "s/#say\/mod_say_hu/say\/mod_say_hu/g" \
-	-e "s/#say\/mod_say_th/say\/mod_say_th/g" \
-	-e "s/#xml_int\/mod_xml_cdr/xml_int\/mod_xml_cdr/g" \
-	-e "s/#event_handlers\/mod_cdr_mongodb/event_handlers\/mod_cdr_mongodb/g" \
-	modules.conf
+    	"s/#applications\/mod_curl/applications\/mod_curl/g" \
+    	-e "s/#asr_tts\/mod_flite/asr_tts\/mod_flite/g" \
+    	-e "s/#asr_tts\/mod_tts_commandline/asr_tts\/mod_tts_commandline/g" \
+    	-e "s/#formats\/mod_shout/formats\/mod_shout/g" \
+    	-e "s/#endpoints\/mod_dingaling/endpoints\/mod_dingaling/g" \
+    	-e "s/#formats\/mod_shell_stream/formats\/mod_shell_stream/g" \
+    	-e "s/#say\/mod_say_de/say\/mod_say_de/g" \
+    	-e "s/#say\/mod_say_es/say\/mod_say_es/g" \
+    	-e "s/#say\/mod_say_fr/say\/mod_say_fr/g" \
+    	-e "s/#say\/mod_say_it/say\/mod_say_it/g" \
+    	-e "s/#say\/mod_say_nl/say\/mod_say_nl/g" \
+    	-e "s/#say\/mod_say_ru/say\/mod_say_ru/g" \
+    	-e "s/#say\/mod_say_zh/say\/mod_say_zh/g" \
+    	-e "s/#say\/mod_say_hu/say\/mod_say_hu/g" \
+    	-e "s/#say\/mod_say_th/say\/mod_say_th/g" \
+    	-e "s/#xml_int\/mod_xml_cdr/xml_int\/mod_xml_cdr/g" \
+    	-e "s/#event_handlers\/mod_cdr_mongodb/event_handlers\/mod_cdr_mongodb/g" \
+    	modules.conf
 	make && make install && make sounds-install && make moh-install
-    
+
 	#Set permissions
 	chown -R freeswitch:freeswitch /usr/local/freeswitch /etc/freeswitch
-	
-#installed fs from source 
 }
 
 
@@ -115,7 +113,7 @@ case $DIST in
         ;;
     'CENTOS')
     	echo ""
-    	echo "Do you want to install Freeswitch via the yum repository instead of from source [y/n]" 
+    	echo "Do you want to install Freeswitch via the yum repository instead of from source [y/n]"
 		read YUMSOURCE
         yum -y update
         yum -y install autoconf automake bzip2 cpio curl curl-devel curl-devel expat-devel fileutils gcc-c++ gettext-devel gnutls-devel libjpeg-devel libogg-devel libtiff-devel libtool libvorbis-devel make ncurses-devel nmap openssl openssl-devel openssl-devel perl patch unixODBC unixODBC-devel unzip wget zip zlib zlib-devel
@@ -133,9 +131,9 @@ case $DIST in
 					rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
 				fi
         fi
-        
+
         yum -y --enablerepo=rpmforge install git-core
-        
+
 		if [ "$YUMSOURCE" = "y" ] || [ "$YUMSOURCE" = "Y" ]; then
 	    	echo "Installing via yum repository"
 	    	# install the Freeswitch Repo
@@ -146,10 +144,10 @@ case $DIST in
         	echo "installing from source"
         	func_install_fs_source
     	fi
-     
+
     ;;
 esac
-    
+
 
 # Enable FreeSWITCH modules
 cd $FS_CONFIG_PATH/autoload_configs/
@@ -183,7 +181,7 @@ case $DIST in
         wget --no-check-certificate $FS_INIT_PATH/debian/freeswitch -O /etc/init.d/freeswitch
         chmod 0755 /etc/init.d/freeswitch
         cd /etc/init.d; update-rc.d freeswitch defaults 90
-     ;;
+    ;;
     'CENTOS')
         #Install init.d script
         wget --no-check-certificate $FS_INIT_PATH/centos/freeswitch -O /etc/init.d/freeswitch
@@ -196,32 +194,35 @@ esac
 
 #replace with our own working init script as per http://jira.freeswitch.org/browse/FS-4042
 if [ "$YUMSOURCE" = "y" ] || [ "$YUMSOURCE" = "Y" ]; then
-    	echo "Installed via yum repository"
-    	
-		#replace with our own working init script as per http://jira.freeswitch.org/browse/FS-4042
-    	rm -f /etc/init.d/freeswitch
-    	#Install init.d script
-       	wget --no-check-certificate $FS_INIT_PATH/centos/freeswitch -O /etc/init.d/freeswitch
-       	chmod 0755 /etc/init.d/freeswitch
-       	chkconfig --add freeswitch
-       	chkconfig --level 345 freeswitch on
-       	sed -i "s@/usr/local/freeswitch/bin@/usr/bin@g" /etc/init.d/freeswitch
-		sed -i "s@/usr/local/freeswitch/run@/var/run/freeswitch@g" /etc/init.d/freeswitch
+	echo "Installed via yum repository"
+	#replace with our own working init script as per http://jira.freeswitch.org/browse/FS-4042
+	rm -f /etc/init.d/freeswitch
+	#Install init.d script
+   	wget --no-check-certificate $FS_INIT_PATH/centos/freeswitch -O /etc/init.d/freeswitch
+   	chmod 0755 /etc/init.d/freeswitch
+   	chkconfig --add freeswitch
+   	chkconfig --level 345 freeswitch on
+   	sed -i "s@/usr/local/freeswitch/bin@/usr/bin@g" /etc/init.d/freeswitch
+	sed -i "s@/usr/local/freeswitch/run@/var/run/freeswitch@g" /etc/init.d/freeswitch
 else
-       	echo "installing from source"
-		#Add alias fs_cli
-		chk=`grep "fs_cli" ~/.bashrc|wc -l`
-		if [ $chk -lt 1 ] ; then
-   			echo "alias fs_cli='/usr/local/freeswitch/bin/fs_cli'" >> ~/.bashrc
-    	fi
+   	echo "installing from source"
+	#Add alias fs_cli
+	chk=`grep "fs_cli" ~/.bashrc|wc -l`
+	if [ $chk -lt 1 ] ; then
+		echo "alias fs_cli='/usr/local/freeswitch/bin/fs_cli'" >> ~/.bashrc
+    fi
 fi
-
 
 #Extra configuration for FreeSwitch
 
 #Update crontab to add Core.db Freeswitch Update
-echo "* * * * * echo 'ALTER TABLE channels ADD accountcode VARCHAR(50);' | sqlite3 /usr/local/freeswitch/db/core.db" > /var/spool/cron/crontabs/root
-/etc/init.d/cron restart
+grep -c "^freeswitch" /var/spool/cron/crontabs/root &> /dev/null
+if [ $? = 1 ]; then
+    echo "* * * * * echo 'ALTER TABLE channels ADD accountcode VARCHAR(50);' | sqlite3 /usr/local/freeswitch/db/core.db" >> /var/spool/cron/crontabs/root
+    /etc/init.d/cron restart
+else
+    echo "cront already present"
+fi
 
 #ADD XML Config files for FreeSwitch
 cp /etc/freeswitch/dialplan/default.xml /etc/freeswitch/dialplan/default.xml.backup.cdrstats

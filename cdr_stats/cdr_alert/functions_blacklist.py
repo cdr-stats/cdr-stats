@@ -13,14 +13,20 @@
 #
 from django.conf import settings
 from cdr.functions_def import remove_prefix, \
-                              prefix_list_string, \
-                              get_country_id
+    prefix_list_string, get_country_id
 from cdr_alert.models import Blacklist, Whitelist
 from cdr_alert.tasks import blacklist_whitelist_notification
 
 
 def chk_prefix_in_whitelist(prefix_list):
-    """Check destination no with allowed prefix"""
+    """Check destination no with allowed prefix
+
+    >>> chk_prefix_in_whitelist([34, 345, 3456])
+    False
+
+    >>> chk_prefix_in_whitelist('')
+    False
+    """
     if not prefix_list:
         return False
     white_prefix_list = Whitelist.objects.all()
@@ -44,7 +50,14 @@ def chk_prefix_in_whitelist(prefix_list):
 
 
 def chk_prefix_in_blacklist(prefix_list):
-    """Check destination no with ban prefix"""
+    """Check destination no with ban prefix
+
+    >>> chk_prefix_in_blacklist([34, 345, 3456])
+    True
+
+    >>> chk_prefix_in_blacklist([])
+    True
+    """
     if not prefix_list:
         return True
     banned_prefix_list = Blacklist.objects.all()
@@ -68,6 +81,13 @@ def chk_prefix_in_blacklist(prefix_list):
 
 
 def chk_destination(destination_number):
+    """
+    >>> chk_destination('1234567890')
+    {
+        'authorized': 0,
+        'country_id': 0,
+    }
+    """
     #remove prefix
     sanitized_destination = remove_prefix(destination_number,
         settings.PREFIX_TO_IGNORE)
@@ -89,8 +109,8 @@ def chk_destination(destination_number):
     if len(sanitized_destination) < settings.PN_MIN_DIGITS:
         # It might be an extension
         country_id = 0
-    elif len(sanitized_destination) >= settings.PN_MIN_DIGITS\
-    and len(sanitized_destination) <= settings.PN_MAX_DIGITS:
+    elif (len(sanitized_destination) >= settings.PN_MIN_DIGITS
+         and len(sanitized_destination) <= settings.PN_MAX_DIGITS):
         # It might be an local call
         # Need to add coma for get_country_id to eval correctly
         country_id = get_country_id(str(settings.LOCAL_DIALCODE) + ',')
@@ -101,5 +121,5 @@ def chk_destination(destination_number):
     destination_data = {
         'authorized': authorized,
         'country_id': country_id,
-        }
+    }
     return destination_data

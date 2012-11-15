@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-17 12:01+0200\n"
+"POT-Creation-Date: 2012-11-15 17:34+0100\n"
 "PO-Revision-Date: 2012-05-04 13:44-0300\n"
 "Last-Translator: Emerson Reis <eluizbr@gmail.com>\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -17,35 +17,35 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: settings.py:301 user_profile/fields.py:80
+#: settings.py:277 user_profile/fields.py:80
 msgid "English"
 msgstr "Inglês"
 
-#: settings.py:302 user_profile/fields.py:89 user_profile/fields.py:90
+#: settings.py:278 user_profile/fields.py:89 user_profile/fields.py:90
 msgid "French"
 msgstr "Francês"
 
-#: settings.py:303
+#: settings.py:279
 msgid "Spanish"
 msgstr "Espanhol"
 
-#: settings.py:304 user_profile/fields.py:181
+#: settings.py:280 user_profile/fields.py:181
 msgid "Portuguese"
 msgstr "Português"
 
-#: settings.py:305 user_profile/fields.py:75 user_profile/fields.py:94
+#: settings.py:281 user_profile/fields.py:75 user_profile/fields.py:94
 msgid "German"
 msgstr "Alemão"
 
-#: settings.py:306 user_profile/fields.py:188
+#: settings.py:282 user_profile/fields.py:188
 msgid "Russian"
 msgstr "Russo"
 
-#: cdr/admin.py:223
+#: cdr/admin.py:227
 msgid "CDR already exists !!"
 msgstr "CDR já existe!"
 
-#: cdr/admin.py:291
+#: cdr/admin.py:251
 #, python-format
 msgid ""
 "%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!"
@@ -53,264 +53,255 @@ msgstr ""
 "%(cdr_record_count)s CDR (s) foi(ram) carregado(s), fora de %(total_rows)s "
 "linha(s)!"
 
-#: cdr/admin.py:296 cdr/admin.py:300
+#: cdr/admin.py:256 cdr/admin.py:260
 #, fuzzy
 msgid "Error : invalid value for import"
 msgstr "Erro: valor inválido para importação! Confira exemplo de importação."
 
-#: cdr/admin.py:309
+#: cdr/admin.py:269
 msgid "Error : importing several times the same column"
 msgstr ""
 
-#: cdr/admin.py:314 templates/admin_tools/dashboard/modules/app_list.html:31
+#: cdr/admin.py:274 templates/admin_tools/dashboard/modules/app_list.html:31
+#: templates/admin_tools/dashboard/modules/model_list.html:20
 msgid "Import CDR"
 msgstr "Importar CDR"
 
-#: cdr/admin.py:318 cdr/forms.py:113 cdr/forms.py:376 cdr/models.py:71
-#: templates/cdr/cdr_graph_realtime.html:89
-msgid "Switch"
-msgstr "Servidor"
-
-#: cdr/forms.py:26
-msgid "Begins with"
-msgstr "Começa com"
-
-#: cdr/forms.py:27
-msgid "Contains"
-msgstr "Contém"
-
-#: cdr/forms.py:28
-msgid "Ends with"
-msgstr "Termina com"
-
-#: cdr/forms.py:29
+#: cdr/constants.py:20
 msgid "Equals"
 msgstr "Igual a"
 
-#: cdr/forms.py:46
+#: cdr/constants.py:21
+msgid "Begins with"
+msgstr "Começa com"
+
+#: cdr/constants.py:22
+msgid "Contains"
+msgstr "Contém"
+
+#: cdr/constants.py:23
+msgid "Ends with"
+msgstr "Termina com"
+
+#: cdr/forms.py:39
 msgid "Please use the following format"
 msgstr "Por favor use o seguinte formato"
 
-#: cdr/forms.py:49
-msgid "Hold down \"Ctrl\", \"Command\" on Mac, to select more than one."
-msgstr ""
-"Segure a tecla \"Ctrl\", \"Command\" no Mac, para selecionar mais de um."
-
-#: cdr/forms.py:55
+#: cdr/forms.py:46
 msgid "All Switches"
 msgstr "Todos os Switches"
 
-#: cdr/forms.py:65 cdr/forms.py:75 cdr/forms.py:181
+#: cdr/forms.py:56 cdr/forms.py:66 cdr/forms.py:170
 msgid "All"
 msgstr "Todos"
 
-#: cdr/forms.py:87
+#: cdr/forms.py:78
 msgid "Caller ID"
 msgstr "Caller ID"
 
-#: cdr/forms.py:92 templates/cdr/cdr_view.html:197
-#: templates/cdr/mail_report_template.html:14
+#: cdr/forms.py:83 templates/frontend/cdr_view.html:182
+#: templates/frontend/mail_report_template.html:14
 msgid "Destination"
 msgstr "Destino"
 
-#: cdr/forms.py:98
+#: cdr/forms.py:89
 msgid "Account Code"
 msgstr "Código de conta"
 
-#: cdr/forms.py:104 templates/cdr/cdr_country_report.html:198
-#: templates/cdr/cdr_dashboard.html:115 templates/cdr/cdr_overview.html:355
-#: templates/cdr/cdr_overview.html:508 templates/cdr/cdr_view.html:206
-#: templates/cdr/cdr_view.html.py:361
-#: templates/cdr/mail_report_template.html:15 templates/cdr/world_map.html:158
-#: templates/cdr/world_map_analytic.html:157
-msgid "Duration"
+#: cdr/forms.py:95
+#, fuzzy
+msgid "Duration (Secs)"
 msgstr "Duração"
 
-#: cdr/forms.py:110 templates/cdr/cdr_view.html:226
-#: templates/cdr/mail_report_template.html:17
+#: cdr/forms.py:101 templates/frontend/cdr_view.html:211
+#: templates/frontend/mail_report_template.html:17
 msgid "Hangup cause"
 msgstr "Motivo do desligamento"
 
-#: cdr/forms.py:117 cdr_alert/forms.py:21 cdr_alert/models.py:183
-#: cdr_alert/models.py:207 templates/cdr/world_map.html:156
-#: templates/cdr/world_map_analytic.html:155 user_profile/models.py:59
+#: cdr/forms.py:104 cdr/forms.py:349 cdr/models.py:71
+#: templates/frontend/cdr_graph_realtime.html:89
+msgid "Switch"
+msgstr "Servidor"
+
+#: cdr/forms.py:107 cdr_alert/forms.py:21 cdr_alert/models.py:142
+#: cdr_alert/models.py:166 templates/frontend/world_map.html:145
+#: templates/frontend/world_map_analytic.html:155 user_profile/models.py:58
 msgid "Country"
 msgstr "País"
 
-#: cdr/forms.py:174
+#: cdr/forms.py:163
 msgid "From"
 msgstr "De"
 
-#: cdr/forms.py:176
+#: cdr/forms.py:165
 msgid "To"
 msgstr "Para"
 
-#: cdr/forms.py:178
+#: cdr/forms.py:167
 msgid "Direction"
 msgstr "Direção"
 
-#: cdr/forms.py:182
+#: cdr/forms.py:171
 msgid "Inbound"
 msgstr "Entrada"
 
-#: cdr/forms.py:183
+#: cdr/forms.py:172
 msgid "Outbound"
 msgstr "Saída"
 
-#: cdr/forms.py:184
+#: cdr/forms.py:173
 msgid "Result"
 msgstr "Resultado"
 
-#: cdr/forms.py:187 templates/cdr/cdr_report_by_hour.html:156
+#: cdr/forms.py:176 templates/frontend/cdr_report_by_hour.html:161
 msgid "Minutes"
 msgstr "Minutos"
 
-#: cdr/forms.py:188
+#: cdr/forms.py:177
 msgid "Seconds"
 msgstr "Segundos"
 
-#: cdr/forms.py:190
+#: cdr/forms.py:179
 msgid "CDR per page"
 msgstr "CDR por página"
 
-#: cdr/forms.py:225 cdr/forms.py:251
+#: cdr/forms.py:214 cdr/forms.py:240
 msgid "Select date"
 msgstr "Selecione a data"
 
-#: cdr/forms.py:231
+#: cdr/forms.py:220
 msgid "Graph"
 msgstr "Gráfico"
 
-#: cdr/forms.py:232
+#: cdr/forms.py:221
 msgid "Calls per Hour"
 msgstr "Ligações por hora"
 
-#: cdr/forms.py:233
+#: cdr/forms.py:222
 msgid "Minutes per Hour"
 msgstr "Minutos por hora"
 
-#: cdr/forms.py:234
+#: cdr/forms.py:223
 msgid "Check with"
 msgstr "Verifique com"
 
-#: cdr/forms.py:235
+#: cdr/forms.py:224
 msgid "Previous days"
 msgstr "Dias anteriores"
 
-#: cdr/forms.py:236
+#: cdr/forms.py:225
 msgid "Same day of the week"
 msgstr "Mesmo dia da semana"
 
-#: cdr/forms.py:277 templates/cdr/login_option.html:11
-#: templates/cdr/master.html:153
-msgid "Login"
-msgstr "Logar"
-
-#: cdr/forms.py:280 templates/cdr/registration/user_detail_change.html:17
-msgid "Password"
-msgstr "senha"
-
-#: cdr/forms.py:291
+#: cdr/forms.py:267
 #, fuzzy
-msgid "Enter emails to receive the report separated by a comma"
-msgstr ""
-"Digite o endereço de e-mail para receber o relatório separados por vírgula"
+msgid "Email to send the report"
+msgstr "Enviar e-mail para enviar alarme"
 
-#: cdr/forms.py:327
+#: cdr/forms.py:301
 msgid "Upload CSV File "
 msgstr "Enviar arquivo CSV"
 
-#: cdr/forms.py:329
+#: cdr/forms.py:303
 msgid "Browse CSV file"
 msgstr "Procurar arquivo CSV"
 
-#: cdr/forms.py:336
+#: cdr/forms.py:310
 #, python-format
 msgid "Document types accepted: %s"
 msgstr "Tipos de documentos aceitos: %s"
 
-#: cdr/forms.py:377
+#: cdr/forms.py:350
 msgid "Select switch"
 msgstr "Selecionar switch"
 
-#: cdr/forms.py:378
+#: cdr/forms.py:351
 msgid "Account code"
 msgstr "Código da conta"
 
-#: cdr/forms.py:380 templates/admin/cdr/switch/import_cdr.html:23
+#: cdr/forms.py:353 templates/admin/cdr/switch/import_cdr.html:23
 msgid "caller_id_number"
 msgstr ""
 
-#: cdr/forms.py:383 templates/admin/cdr/switch/import_cdr.html:24
+#: cdr/forms.py:356 templates/admin/cdr/switch/import_cdr.html:24
 #, fuzzy
 msgid "caller_id_name"
 msgstr "data da ligação"
 
-#: cdr/forms.py:386 templates/admin/cdr/switch/import_cdr.html:25
+#: cdr/forms.py:359 templates/admin/cdr/switch/import_cdr.html:25
 #, fuzzy
 msgid "destination_number"
 msgstr "Canal de destino"
 
-#: cdr/forms.py:389 templates/admin/cdr/switch/import_cdr.html:26
+#: cdr/forms.py:362 templates/admin/cdr/switch/import_cdr.html:26
 #, fuzzy
 msgid "duration"
 msgstr "Duração"
 
-#: cdr/forms.py:391 templates/admin/cdr/switch/import_cdr.html:27
+#: cdr/forms.py:364 templates/admin/cdr/switch/import_cdr.html:27
 msgid "billsec"
 msgstr ""
 
-#: cdr/forms.py:393 templates/admin/cdr/switch/import_cdr.html:28
+#: cdr/forms.py:366 templates/admin/cdr/switch/import_cdr.html:28
 #, fuzzy
 msgid "hangup_cause_id"
 msgstr "Hangupcause"
 
-#: cdr/forms.py:396 templates/admin/cdr/switch/import_cdr.html:29
+#: cdr/forms.py:369 templates/admin/cdr/switch/import_cdr.html:29
 #, fuzzy
 msgid "direction"
 msgstr "Direção"
 
-#: cdr/forms.py:398 templates/admin/cdr/switch/import_cdr.html:30
+#: cdr/forms.py:371 templates/admin/cdr/switch/import_cdr.html:30
 msgid "uuid"
 msgstr ""
 
-#: cdr/forms.py:400 templates/admin/cdr/switch/import_cdr.html:31
+#: cdr/forms.py:373 templates/admin/cdr/switch/import_cdr.html:31
 msgid "remote_media_ip"
 msgstr ""
 
-#: cdr/forms.py:403 templates/admin/cdr/switch/import_cdr.html:32
+#: cdr/forms.py:376 templates/admin/cdr/switch/import_cdr.html:32
 msgid "start_uepoch"
 msgstr ""
 
-#: cdr/forms.py:405 templates/admin/cdr/switch/import_cdr.html:33
+#: cdr/forms.py:378 templates/admin/cdr/switch/import_cdr.html:33
 msgid "answer_uepoch"
 msgstr ""
 
-#: cdr/forms.py:407 templates/admin/cdr/switch/import_cdr.html:34
+#: cdr/forms.py:380 templates/admin/cdr/switch/import_cdr.html:34
 msgid "end_uepoch"
 msgstr ""
 
-#: cdr/forms.py:409 templates/admin/cdr/switch/import_cdr.html:35
+#: cdr/forms.py:382 templates/admin/cdr/switch/import_cdr.html:35
 #, fuzzy
 msgid "mduration"
 msgstr "Duração"
 
-#: cdr/forms.py:411 templates/admin/cdr/switch/import_cdr.html:36
+#: cdr/forms.py:384 templates/admin/cdr/switch/import_cdr.html:36
 msgid "billmsec"
 msgstr ""
 
-#: cdr/forms.py:413 templates/admin/cdr/switch/import_cdr.html:37
+#: cdr/forms.py:386 templates/admin/cdr/switch/import_cdr.html:37
 msgid "read_codec"
 msgstr ""
 
-#: cdr/forms.py:415 templates/admin/cdr/switch/import_cdr.html:38
+#: cdr/forms.py:388 templates/admin/cdr/switch/import_cdr.html:38
 msgid "write_codec"
 msgstr ""
 
-#: cdr/forms.py:417
+#: cdr/forms.py:390
 #, fuzzy
 msgid "accountcode"
 msgstr "Código de conta"
+
+#: cdr/functions_def.py:156
+#, fuzzy
+msgid "Internal Calls"
+msgstr "Total Chamadas"
+
+#: cdr/functions_def.py:164
+msgid "Unknown"
+msgstr ""
 
 #: cdr/models.py:29
 msgid "ANSWER"
@@ -389,47 +380,31 @@ msgstr "Hangupcause"
 msgid "Hangupcauses"
 msgstr "Hangupcauses"
 
-#: cdr/views.py:143
-msgid "Disabled Account"
-msgstr "Conta desativada"
-
-#: cdr/views.py:146
-msgid "Invalid Login."
-msgstr "Usuário inválido."
-
-#: cdr/views.py:1290
-msgid "Email ids are saved successfully."
-msgstr "Ids e-mail foram salvos com sucesso."
-
-#: cdr/views.py:1323
+#: cdr/views.py:67
 msgid "Mongodb Database connection is closed!"
 msgstr "A conexão com o banco de dados Mongodb foi fechada!"
 
-#: cdr/views.py:1325
+#: cdr/views.py:69
 msgid "Mongodb Database is locked!"
 msgstr "Banco de dados MongoDB esta bloqueado!"
 
-#: cdr/views.py:1327
+#: cdr/views.py:71
 msgid "Account code is not assigned!"
 msgstr "Código de conta não esta atribuído!"
 
-#: cdr/views.py:2101
-msgid "Other"
-msgstr "Outro"
+#: cdr/views.py:1129
+msgid "Email ids are saved successfully."
+msgstr "Ids e-mail foram salvos com sucesso."
 
-#: cdr/templatetags/cdr_extras.py:43
+#: cdr/templatetags/cdr_extras.py:53
 msgid "New"
 msgstr "Noticia"
 
-#: cdr/templatetags/cdr_extras.py:45
+#: cdr/templatetags/cdr_extras.py:55
 msgid "Read"
 msgstr "Ler"
 
-#: cdr/templatetags/cdr_extras.py:60
-msgid " Notification"
-msgstr "Notificação"
-
-#: cdr_alert/admin.py:91
+#: cdr_alert/admin.py:88
 msgid "Successfully added prefix into blacklist"
 msgstr "Prefixo adicionado com sucesso na lista negra"
 
@@ -438,128 +413,130 @@ msgstr "Prefixo adicionado com sucesso na lista negra"
 msgid "Blacklist by country"
 msgstr "Lista negra por país"
 
-#: cdr_alert/admin.py:117 cdr_alert/admin.py:191
+#: cdr_alert/admin.py:117 cdr_alert/admin.py:197
 msgid "cdr_alert"
 msgstr "cdr_alert"
 
-#: cdr_alert/admin.py:165
+#: cdr_alert/admin.py:168
 msgid "Successfully added prefix into whitelist"
 msgstr "Prefixo adicionado com sucesso na lista branca"
 
-#: cdr_alert/admin.py:187
+#: cdr_alert/admin.py:193
 #: templates/admin/cdr_alert/whitelist/change_list.html:21
 msgid "Whitelist by country"
 msgstr "LIsta branca por país"
 
-#: cdr_alert/models.py:24 templates/cdr/cdr_overview.html:498
+#: cdr_alert/constants.py:20 templates/frontend/cdr_overview.html:512
 msgid "Day"
 msgstr "dia"
 
-#: cdr_alert/models.py:25
+#: cdr_alert/constants.py:21
 msgid "Week"
 msgstr "Semana"
 
-#: cdr_alert/models.py:26 templates/cdr/cdr_overview.html:499
+#: cdr_alert/constants.py:22 templates/frontend/cdr_overview.html:513
 msgid "Month"
 msgstr "Mês"
 
-#: cdr_alert/models.py:30
+#: cdr_alert/constants.py:26
 msgid "Active"
 msgstr "Ativo"
 
-#: cdr_alert/models.py:31
+#: cdr_alert/constants.py:27
 msgid "Inactive"
 msgstr "Inativo"
 
-#: cdr_alert/models.py:35 user_profile/management.py:25
+#: cdr_alert/constants.py:31 user_profile/management.py:26
 msgid "ALOC (Average Length of Call)"
 msgstr "Aloc (Duração médioa da chamada)"
 
-#: cdr_alert/models.py:36 user_profile/management.py:29
+#: cdr_alert/constants.py:32 user_profile/management.py:30
 msgid "ASR (Answer Seize Ratio)"
 msgstr "ASR (Media de ligações atendidas)"
 
-#: cdr_alert/models.py:40
+#: cdr_alert/constants.py:36
 msgid "Is less than"
 msgstr "É menor do que"
 
-#: cdr_alert/models.py:41
+#: cdr_alert/constants.py:37
 msgid "Is greater than"
 msgstr "É maior do que"
 
-#: cdr_alert/models.py:42
+#: cdr_alert/constants.py:38
 msgid "Decrease by more than"
 msgstr "Diminuir mais do que"
 
-#: cdr_alert/models.py:43
+#: cdr_alert/constants.py:39
 msgid "Increase by more than"
 msgstr "Aumentar em mais de"
 
-#: cdr_alert/models.py:44
+#: cdr_alert/constants.py:40
 #, fuzzy
 msgid "Percentage decrease by more than"
 msgstr "% diminuir mais do que"
 
-#: cdr_alert/models.py:45
+#: cdr_alert/constants.py:41
 #, fuzzy
 msgid "Percentage increase by more than"
 msgstr "% aumentar mais do que"
 
-#: cdr_alert/models.py:50
+#: cdr_alert/constants.py:47
 msgid "Same day"
 msgstr "Mesmo dia"
 
-#: cdr_alert/models.py:51
+#: cdr_alert/constants.py:48
 msgid "Same day in the previous week"
 msgstr "Mesmo dia na semana anterior"
 
-#: cdr_alert/models.py:55
+#: cdr_alert/constants.py:52
 msgid "No alarm sent"
 msgstr "Sem alarme enviado"
 
-#: cdr_alert/models.py:56
+#: cdr_alert/constants.py:53
 msgid "Alarm Sent"
 msgstr "Alarme enviado"
 
-#: cdr_alert/models.py:73
+#: cdr_alert/models.py:35
 msgid "Label"
 msgstr "legenda"
 
-#: cdr_alert/models.py:75
+#: cdr_alert/models.py:37
 msgid "Prefix"
 msgstr "Prefixo"
 
-#: cdr_alert/models.py:77 cdr_alert/models.py:127 cdr_alert/models.py:160
-#: templates/cdr/cdr_overview.html:353 templates/cdr/cdr_view.html:360
-#: templates/cdr/mail_report_template.html:12
+#: cdr_alert/models.py:39 cdr_alert/models.py:88 cdr_alert/models.py:119
+#: templates/frontend/cdr_overview.html:367
+#: templates/frontend/cdr_view.html:351
+#: templates/frontend/mail_report_template.html:12
+#: user_profile/constants.py:30
 msgid "Date"
 msgstr "Data"
 
-#: cdr_alert/models.py:85
+#: cdr_alert/models.py:46
 msgid "Alert Remove Prefix"
 msgstr "Alertar Remover Prefixo"
 
-#: cdr_alert/models.py:86
+#: cdr_alert/models.py:47
 msgid "Alert Remove Prefixes"
 msgstr "Alertar remover prefixos"
 
-#: cdr_alert/models.py:106
+#: cdr_alert/models.py:67 templates/frontend/api/api_list.html:26
 msgid "Name"
 msgstr "Nome"
 
-#: cdr_alert/models.py:108
+#: cdr_alert/models.py:69
 msgid "Period"
 msgstr "Período"
 
-#: cdr_alert/models.py:109
+#: cdr_alert/models.py:70
 msgid "Interval to apply alarm"
 msgstr "Intervalo para aplicar alarme"
 
-#: cdr_alert/models.py:111
+#: cdr_alert/models.py:72
 msgid "Type"
 msgstr "Tipo"
 
-#: cdr_alert/models.py:112
+#: cdr_alert/models.py:73
 msgid ""
 "ALOC (average length of call) ; ASR (answer seize ratio) ; CIC (Consecutive "
 "Incomplete Calls) "
@@ -567,120 +544,121 @@ msgstr ""
 "Aloc (duração média de chamada); ASR (resposta aproveitar ratio); CIC "
 "(consecutivos Convida incompletos)"
 
-#: cdr_alert/models.py:114
+#: cdr_alert/models.py:76
 msgid "Condition"
 msgstr "Condição"
 
-#: cdr_alert/models.py:115
+#: cdr_alert/models.py:77
 msgid "Value"
 msgstr "Valor"
 
-#: cdr_alert/models.py:117
+#: cdr_alert/models.py:79
 msgid "Input the value for the alert"
 msgstr "O valor de entrada para o alerta do"
 
-#: cdr_alert/models.py:122 cdr_alert/models.py:158
+#: cdr_alert/models.py:83 cdr_alert/models.py:117
 msgid "Status"
 msgstr "Estado"
 
-#: cdr_alert/models.py:125
+#: cdr_alert/models.py:86
 msgid "Email to send alarm"
 msgstr "Enviar e-mail para enviar alarme"
 
-#: cdr_alert/models.py:135 cdr_alert/models.py:152
+#: cdr_alert/models.py:95 cdr_alert/models.py:111
 msgid "Alarm"
 msgstr "Alarme"
 
-#: cdr_alert/models.py:136
+#: cdr_alert/models.py:96
 msgid "Alarms"
 msgstr "Alarmes"
 
-#: cdr_alert/models.py:153
+#: cdr_alert/models.py:112
 msgid "Select Alarm"
 msgstr "Selecionar alarme"
 
-#: cdr_alert/models.py:154
+#: cdr_alert/models.py:113
 msgid "Calculated value"
 msgstr "Valor calculado"
 
-#: cdr_alert/models.py:166
+#: cdr_alert/models.py:125
 msgid "Alarm Report"
 msgstr "Relatório do alarme"
 
-#: cdr_alert/models.py:167
+#: cdr_alert/models.py:126
 msgid "Alarms Report"
 msgstr "Relatórios dos alarmes"
 
-#: cdr_alert/models.py:184 cdr_alert/models.py:208
+#: cdr_alert/models.py:143 cdr_alert/models.py:167
 msgid "Select Country"
 msgstr "Selecionar país"
 
-#: cdr_alert/models.py:190 cdr_alert/models.py:191
+#: cdr_alert/models.py:149 cdr_alert/models.py:150
 msgid "Blacklist"
 msgstr "Lista negra"
 
-#: cdr_alert/models.py:213 cdr_alert/models.py:214
+#: cdr_alert/models.py:173 cdr_alert/models.py:174
 msgid "Whitelist"
 msgstr "Whitelist"
 
-#: cdr_alert/tasks.py:82 custom_admin_tools/dashboard.py:87
-#: templates/cdr/cdr_mail_report.html:9 templates/cdr/master.html:135
-#: templates/cdr/master.html.py:140
-#: templates/cdr/registration/user_detail_change.html:28
-#: templates/cdr/registration/user_detail_change.html:34
-#: templates/cdr/registration/user_detail_change.html:101
-#: templates/cdr/registration/user_detail_change.html:106
-#: templates/cdr/registration/user_detail_change.html:139
+#: cdr_alert/tasks.py:86 custom_admin_tools/dashboard.py:83
+#: templates/frontend/cdr_mail_report.html:9
+#: templates/frontend/master.html:126 templates/frontend/master.html.py:131
+#: templates/frontend/registration/user_account.html:5
+#: templates/frontend/registration/user_account.html:11
+#: templates/frontend/registration/user_change_password.html:5
+#: templates/frontend/registration/user_change_password.html:10
+#: templates/frontend/registration/user_notification_grid.html:5
 msgid "Alert"
 msgstr "Alerta"
 
-#: cdr_alert/tasks.py:83
+#: cdr_alert/tasks.py:87
 #, python-format
 msgid "Alert Message \"%(user)s\" - \"%(user_id)s\""
 msgstr "Alerta de Mensagem \"%(user)s\" - \"%(user_id)s\""
 
-#: cdr_alert/tasks.py:403
+#: cdr_alert/tasks.py:402
 msgid "CDR Report"
 msgstr "Relatório do CDR"
 
-#: custom_admin_tools/dashboard.py:70
+#: custom_admin_tools/dashboard.py:66
 msgid "Task Manager"
 msgstr "Gerenciador de Tarefas"
 
-#: custom_admin_tools/dashboard.py:74
+#: custom_admin_tools/dashboard.py:70
 msgid "Dashboard Stats"
 msgstr "Estatísticas do Dashboard"
 
-#: custom_admin_tools/dashboard.py:77 custom_admin_tools/dashboard.py:134
+#: custom_admin_tools/dashboard.py:73 custom_admin_tools/dashboard.py:129
 msgid "Recent Actions"
 msgstr "Ações recentes"
 
-#: custom_admin_tools/dashboard.py:82
+#: custom_admin_tools/dashboard.py:78
 msgid "CDR Voip"
 msgstr "CDR Voip"
 
-#: custom_admin_tools/dashboard.py:92
+#: custom_admin_tools/dashboard.py:88
 msgid "Country Dialcode"
 msgstr "Dialcode País"
 
-#: custom_admin_tools/dashboard.py:98
+#: custom_admin_tools/dashboard.py:94
 msgid "Quick links"
 msgstr "Links rápidos"
 
-#: custom_admin_tools/dashboard.py:104
+#: custom_admin_tools/dashboard.py:100
 msgid "Go to CDR-Stats.org"
 msgstr "Ir para CDR-Stats.org"
 
-#: custom_admin_tools/dashboard.py:105
-#: templates/cdr/registration/user_detail_change.html:129
+#: custom_admin_tools/dashboard.py:101
+#: templates/frontend/registration/user_change_password.html:35
 msgid "Change password"
 msgstr "Alterar senha"
 
-#: custom_admin_tools/dashboard.py:107 templates/cdr/bootstrap_menu.html:57
+#: custom_admin_tools/dashboard.py:103
+#: templates/frontend/bootstrap_menu.html:74
 msgid "Log out"
 msgstr "Sair"
 
-#: custom_admin_tools/dashboard.py:113
+#: custom_admin_tools/dashboard.py:109
 msgid "Latest CDR-Stats News"
 msgstr "Últimas Notícias CDR-Stats"
 
@@ -688,17 +666,43 @@ msgstr "Últimas Notícias CDR-Stats"
 msgid "CDR-Stats"
 msgstr "CDR-Stats"
 
-#: custom_admin_tools/menu.py:29
+#: custom_admin_tools/menu.py:30
 msgid "Applications"
 msgstr "Aplicações"
 
-#: custom_admin_tools/menu.py:33 templates/cdr/bootstrap_menu.html:54
+#: custom_admin_tools/menu.py:34 templates/frontend/bootstrap_menu.html:71
 msgid "Administration"
 msgstr "Administração"
 
-#: custom_admin_tools/menu.py:36
+#: custom_admin_tools/menu.py:37 templates/api_browser/base.html:50
+#: templates/frontend/bootstrap_menu.html:67
+msgid "API Explorer"
+msgstr ""
+
+#: custom_admin_tools/menu.py:38
 msgid "Customer Panel"
 msgstr "Painel do Cliente"
+
+#: frontend/forms.py:21
+msgid "Username:"
+msgstr ""
+
+#: frontend/forms.py:24
+#, fuzzy
+msgid "Password:"
+msgstr "senha"
+
+#: frontend/views.py:76
+msgid "Disabled Account"
+msgstr "Conta desativada"
+
+#: frontend/views.py:79
+msgid "Invalid Login."
+msgstr "Usuário inválido."
+
+#: frontend/views.py:82
+msgid "Enter Valid User Credentials."
+msgstr ""
 
 #: templates/documentation.html:19
 msgid "CDR-Stats : API Documentation"
@@ -795,538 +799,548 @@ msgstr[1] "Por favor, corrija o erro abaixo."
 msgid "Filter"
 msgstr ""
 
+#: templates/admin_tools/dashboard/module.html:7
 #: templates/admin_tools/dashboard/modules/app_list.html:7
 msgid "CDR Alert"
 msgstr "Alerta de CDR"
 
 #: templates/admin_tools/dashboard/modules/app_list.html:24
+#: templates/admin_tools/dashboard/modules/model_list.html:11
 msgid "Add"
 msgstr "Adicionar"
 
 #: templates/admin_tools/dashboard/modules/app_list.html:25
+#: templates/admin_tools/dashboard/modules/model_list.html:12
 msgid "Change"
 msgstr "Canal"
 
-#: templates/cdr/bootstrap_menu.html:21
+#: templates/api_browser/base.html:5
+msgid "API Browser"
+msgstr ""
+
+#: templates/frontend/bootstrap_menu.html:21
 msgid "Dashboard"
 msgstr "Dashboard"
 
-#: templates/cdr/bootstrap_menu.html:22
-#: templates/cdr/cdr_country_report.html:83
-#: templates/cdr/cdr_graph_concurrent_calls.html:29
-#: templates/cdr/cdr_overview.html:62 templates/cdr/cdr_report_by_hour.html:53
-#: templates/cdr/cdr_view.html:150 templates/cdr/world_map.html:119
-#: templates/cdr/world_map_analytic.html:118
+#: templates/frontend/bootstrap_menu.html:22
+#: templates/frontend/cdr_country_report.html:69
+#: templates/frontend/cdr_graph_concurrent_calls.html:29
+#: templates/frontend/cdr_overview.html:46
+#: templates/frontend/cdr_report_by_hour.html:58
+#: templates/frontend/cdr_view.html:135 templates/frontend/world_map.html:105
+#: templates/frontend/world_map_analytic.html:118
 msgid "Search"
 msgstr "Pesquisar"
 
-#: templates/cdr/bootstrap_menu.html:23
+#: templates/frontend/bootstrap_menu.html:23
 msgid "Analytics"
 msgstr "Analizar CDR"
 
-#: templates/cdr/bootstrap_menu.html:24
+#: templates/frontend/bootstrap_menu.html:24
 msgid "Compare"
 msgstr "Comparar"
 
-#: templates/cdr/bootstrap_menu.html:25
+#: templates/frontend/bootstrap_menu.html:25
 msgid "Realtime"
 msgstr "Em tempo real"
 
-#: templates/cdr/bootstrap_menu.html:26
+#: templates/frontend/bootstrap_menu.html:26
 msgid "Concurrent"
 msgstr "Concorrente"
 
-#: templates/cdr/bootstrap_menu.html:30
+#: templates/frontend/bootstrap_menu.html:30
 msgid "Report"
 msgstr "Relatório"
 
-#: templates/cdr/bootstrap_menu.html:32
-#: templates/cdr/cdr_global_report.html:89
-msgid "Global Report"
-msgstr "Relatório Global"
-
-#: templates/cdr/bootstrap_menu.html:33
+#: templates/frontend/bootstrap_menu.html:32
 msgid "Country Report"
 msgstr "Relatório do País"
 
-#: templates/cdr/bootstrap_menu.html:34
+#: templates/frontend/bootstrap_menu.html:33
 #, fuzzy
 msgid "World Map Report"
 msgstr "Relatório email"
 
-#: templates/cdr/bootstrap_menu.html:35
+#: templates/frontend/bootstrap_menu.html:34
 msgid "Mail Report"
 msgstr "Relatório email"
 
-#: templates/cdr/bootstrap_menu.html:47
+#: templates/frontend/bootstrap_menu.html:53
 msgid "Account settings"
 msgstr "Configurações da Conta"
 
-#: templates/cdr/bootstrap_menu.html:49
-#: templates/cdr/registration/user_detail_change.html:18
+#: templates/frontend/bootstrap_menu.html:55
+#: templates/frontend/registration/user_detail_change.html:18
 msgid "Notifications"
 msgstr "Notificações"
 
-#: templates/cdr/bootstrap_menu.html:51
+#: templates/frontend/bootstrap_menu.html:64
 msgid "Change Language"
 msgstr "Alterar Idioma"
 
-#: templates/cdr/cdr_country_report.html:89 templates/cdr/cdr_overview.html:68
-#: templates/cdr/cdr_report_by_hour.html:59 templates/cdr/cdr_view.html:155
-#: templates/cdr/master.html:96 templates/cdr/master.html.py:101
-#: templates/cdr/world_map.html:125 templates/cdr/world_map_analytic.html:124
+#: templates/frontend/cdr_country_report.html:75
+#: templates/frontend/cdr_overview.html:52
+#: templates/frontend/cdr_report_by_hour.html:64
+#: templates/frontend/cdr_view.html:140 templates/frontend/master.html:98
+#: templates/frontend/world_map.html:111
+#: templates/frontend/world_map_analytic.html:124
 msgid "advanced search"
 msgstr "pesquisa avançada"
 
-#: templates/cdr/cdr_country_report.html:199
-#: templates/cdr/cdr_dashboard.html:115
+#: templates/frontend/cdr_country_report.html:206
+#: templates/frontend/cdr_dashboard.html:135
+#: templates/frontend/cdr_overview.html:369
+#: templates/frontend/cdr_overview.html:522
+#: templates/frontend/cdr_view.html:191 templates/frontend/cdr_view.html:352
+#: templates/frontend/mail_report_template.html:15
+#: templates/frontend/world_map.html:147
+#: templates/frontend/world_map_analytic.html:157
+msgid "Duration"
+msgstr "Duração"
+
+#: templates/frontend/cdr_country_report.html:207
+#: templates/frontend/cdr_dashboard.html:135
 msgid "secs"
 msgstr "segs"
 
-#: templates/cdr/cdr_country_report.html:199
-#: templates/cdr/cdr_country_report.html:367
-#: templates/cdr/cdr_country_report.html:378
-#: templates/cdr/cdr_dashboard.html:115 templates/cdr/cdr_dashboard.html:328
-#: templates/cdr/cdr_overview.html:354
-#: templates/cdr/cdr_report_by_hour.html:154 templates/cdr/cdr_view.html:363
-#: templates/cdr/mail_report_template.html:110
-#: templates/cdr/world_map.html:157 templates/cdr/world_map.html.py:175
-#: templates/cdr/world_map_analytic.html:156
-#: templates/cdr/world_map_analytic.html:172
+#: templates/frontend/cdr_country_report.html:207
+#: templates/frontend/cdr_country_report.html:375
+#: templates/frontend/cdr_country_report.html:386
+#: templates/frontend/cdr_dashboard.html:135
+#: templates/frontend/cdr_dashboard.html:348
+#: templates/frontend/cdr_graph_realtime.html:99
+#: templates/frontend/cdr_overview.html:368
+#: templates/frontend/cdr_report_by_hour.html:159
+#: templates/frontend/cdr_view.html:354
+#: templates/frontend/mail_report_template.html:117
+#: templates/frontend/world_map.html:146 templates/frontend/world_map.html:164
+#: templates/frontend/world_map_analytic.html:156
+#: templates/frontend/world_map_analytic.html:172
 msgid "Calls"
 msgstr "Chamadas"
 
-#: templates/cdr/cdr_country_report.html:216
+#: templates/frontend/cdr_country_report.html:224
 #, fuzzy
 msgid "country call statistics"
 msgstr "Estatísticas de chamadas por país"
 
-#: templates/cdr/cdr_country_report.html:339
-#: templates/cdr/cdr_country_report.html:346
+#: templates/frontend/cdr_country_report.html:347
+#: templates/frontend/cdr_country_report.html:354
 #, fuzzy
 msgid "calls by country"
 msgstr "Lista negra por país"
 
-#: templates/cdr/cdr_country_report.html:346
-#: templates/cdr/cdr_country_report.html:391
+#: templates/frontend/cdr_country_report.html:354
+#: templates/frontend/cdr_country_report.html:399
 #, fuzzy
 msgid "top"
 msgstr "para"
 
-#: templates/cdr/cdr_country_report.html:364
-#: templates/cdr/cdr_country_report.html:409 templates/cdr/world_map.html:172
-#: templates/cdr/world_map_analytic.html:169
+#: templates/frontend/cdr_country_report.html:365
+#: templates/frontend/cdr_country_report.html:410
+#: templates/frontend/cdr_dashboard.html:344
+#: templates/frontend/cdr_view.html:268
+#: templates/frontend/mail_report_template.html:40
+#: templates/frontend/mail_report_template.html:113
+#: templates/frontend/world_map.html:160
+#: templates/frontend/world_map_analytic.html:168
+msgid "World"
+msgstr "Mundo"
+
+#: templates/frontend/cdr_country_report.html:372
+#: templates/frontend/cdr_country_report.html:417
+#: templates/frontend/world_map.html:161
+#: templates/frontend/world_map_analytic.html:169
 #, fuzzy
 msgid "world"
 msgstr "Mundo"
 
-#: templates/cdr/cdr_country_report.html:376
-#: templates/cdr/cdr_country_report.html:421
-msgid "World"
-msgstr "Mundo"
-
-#: templates/cdr/cdr_country_report.html:377
-#: templates/cdr/cdr_country_report.html:422 templates/cdr/cdr_view.html:381
+#: templates/frontend/cdr_country_report.html:385
+#: templates/frontend/cdr_country_report.html:430
+#: templates/frontend/cdr_view.html:372
 msgid "Total"
 msgstr "Total"
 
-#: templates/cdr/cdr_country_report.html:385
+#: templates/frontend/cdr_country_report.html:393
 #, fuzzy
 msgid "Duration by Country"
 msgstr "Duração"
 
-#: templates/cdr/cdr_country_report.html:391
+#: templates/frontend/cdr_country_report.html:399
 #, fuzzy
 msgid "duration by country"
 msgstr "Lista negra por país"
 
-#: templates/cdr/cdr_country_report.html:412
-#: templates/cdr/cdr_country_report.html:423
-#: templates/cdr/cdr_dashboard.html:329
-#: templates/cdr/mail_report_template.html:111
-#: templates/cdr/world_map.html:176 templates/cdr/world_map_analytic.html:173
+#: templates/frontend/cdr_country_report.html:420
+#: templates/frontend/cdr_country_report.html:431
+#: templates/frontend/cdr_dashboard.html:349
+#: templates/frontend/mail_report_template.html:118
+#: templates/frontend/world_map.html:165
+#: templates/frontend/world_map_analytic.html:173
 msgid "minutes"
 msgstr "Minutos"
 
-#: templates/cdr/cdr_dashboard.html:131
-#: templates/cdr/cdr_report_by_hour.html:173
+#: templates/frontend/cdr_dashboard.html:151
+#: templates/frontend/cdr_report_by_hour.html:178
 msgid "Call Statistics"
 msgstr "Estatísticas de chamadas"
 
-#: templates/cdr/cdr_dashboard.html:272
+#: templates/frontend/cdr_dashboard.html:292
 msgid "call totals report"
 msgstr "Relatório total das ligações"
 
-#: templates/cdr/cdr_dashboard.html:279 templates/cdr/cdr_overview.html:124
-#: templates/cdr/cdr_overview.html:180 templates/cdr/cdr_overview.html:236
-#: templates/cdr/mail_report_template.html:68
+#: templates/frontend/cdr_dashboard.html:299
+#: templates/frontend/cdr_overview.html:108
+#: templates/frontend/cdr_overview.html:164
+#: templates/frontend/cdr_overview.html:220
+#: templates/frontend/mail_report_template.html:72
 msgid "Total Calls"
 msgstr "Total Chamadas"
 
-#: templates/cdr/cdr_dashboard.html:285
-#: templates/cdr/mail_report_template.html:74
-msgid "Amount Calls"
-msgstr "Chamadas simultâneas"
+#: templates/frontend/cdr_dashboard.html:305
+#: templates/frontend/mail_report_template.html:78
+msgid "Number of Calls"
+msgstr ""
 
-#: templates/cdr/cdr_dashboard.html:289
-#: templates/cdr/mail_report_template.html:78
+#: templates/frontend/cdr_dashboard.html:309
+#: templates/frontend/mail_report_template.html:82
 msgid "Average Calls Per Hour"
 msgstr "Chamadas por hora"
 
-#: templates/cdr/cdr_dashboard.html:293
-#: templates/cdr/mail_report_template.html:82
-msgid "Minutes Total Duration"
-msgstr "Tempo total do minutos"
+#: templates/frontend/cdr_dashboard.html:313
+#: templates/frontend/cdr_overview.html:136
+#: templates/frontend/cdr_overview.html:192
+#: templates/frontend/cdr_overview.html:248
+#: templates/frontend/mail_report_template.html:86
+msgid "Total Duration"
+msgstr "Duração Total"
 
-#: templates/cdr/cdr_dashboard.html:297
-#: templates/cdr/mail_report_template.html:86
-msgid "Minutes Average Call Duration"
+#: templates/frontend/cdr_dashboard.html:317
+#: templates/frontend/mail_report_template.html:90
+#, fuzzy
+msgid "Average Call Duration"
 msgstr "Tempo de duração media em minutos"
 
-#: templates/cdr/cdr_dashboard.html:304
+#: templates/frontend/cdr_dashboard.html:324
 msgid "countries report"
 msgstr "relatório de países"
 
-#: templates/cdr/cdr_dashboard.html:311
-#: templates/cdr/mail_report_template.html:96
+#: templates/frontend/cdr_dashboard.html:331
+#: templates/frontend/mail_report_template.html:100
 msgid "5 most called countries"
 msgstr "Os 5 países mais chamados"
 
-#: templates/cdr/cdr_dashboard.html:336
-#: templates/cdr/mail_report_template.html:59
-#: templates/cdr/mail_report_template.html:118
-#: templates/cdr/mail_report_template.html:146
+#: templates/frontend/cdr_dashboard.html:356
+#: templates/frontend/mail_report_template.html:63
+#: templates/frontend/mail_report_template.html:125
+#: templates/frontend/mail_report_template.html:153
 msgid "No record found"
 msgstr "Nenhum registro encontrado"
 
-#: templates/cdr/cdr_detail_asterisk.html:8
+#: templates/frontend/cdr_detail_asterisk.html:8
 #, fuzzy
 msgid "Asterisk CDR"
 msgstr "Asterisk_CDR"
 
-#: templates/cdr/cdr_detail_freeswitch.html:7
+#: templates/frontend/cdr_detail_freeswitch.html:7
 msgid "FreeSWITCH CDR"
 msgstr ""
 
-#: templates/cdr/cdr_detail_freeswitch.html:9
+#: templates/frontend/cdr_detail_freeswitch.html:9
 msgid "channel_data"
 msgstr "Canal_dados"
 
-#: templates/cdr/cdr_detail_freeswitch.html:11
+#: templates/frontend/cdr_detail_freeswitch.html:11
 msgid "callflow"
 msgstr "callflow"
 
-#: templates/cdr/cdr_detail_freeswitch.html:13
+#: templates/frontend/cdr_detail_freeswitch.html:13
 msgid "app_log"
 msgstr "app_log"
 
-#: templates/cdr/cdr_detail_freeswitch.html:15
+#: templates/frontend/cdr_detail_freeswitch.html:15
 msgid "variables"
 msgstr "variáveis"
 
-#: templates/cdr/cdr_global_report.html:57
-msgid "Calls :"
-msgstr "Chamadas :"
-
-#: templates/cdr/cdr_global_report.html:57
-msgid "Duration :"
-msgstr "Duração"
-
-#: templates/cdr/cdr_global_report.html:57
-msgid "ACT :"
-msgstr "ACT :"
-
-#: templates/cdr/cdr_global_report.html:91
-msgid "week"
-msgstr "semana"
-
-#: templates/cdr/cdr_global_report.html:92
-msgid "month"
-msgstr "mes"
-
-#: templates/cdr/cdr_global_report.html:93
-#: templates/cdr/cdr_global_report.html:94
-msgid "months"
-msgstr "mes"
-
-#: templates/cdr/cdr_global_report.html:95
-msgid "year"
-msgstr "ano"
-
-#: templates/cdr/cdr_graph_concurrent_calls.html:109
+#: templates/frontend/cdr_graph_concurrent_calls.html:125
 msgid "concurrent calls"
 msgstr "chamadas simultâneas"
 
-#: templates/cdr/cdr_graph_concurrent_calls.html:126
+#: templates/frontend/cdr_graph_concurrent_calls.html:142
 msgid "Concurrent Calls"
 msgstr "Chamadas simultâneas"
 
-#: templates/cdr/cdr_mail_report.html:4
+#: templates/frontend/cdr_mail_report.html:4
 msgid "CDR Mail Report"
 msgstr "Relatório do CDR por email"
 
-#: templates/cdr/cdr_mail_report.html:35
-#: templates/cdr/registration/user_detail_change.html:91
+#: templates/frontend/cdr_mail_report.html:35
 msgid "Save"
 msgstr "Salvar"
 
-#: templates/cdr/cdr_mail_report.html:41
+#: templates/frontend/cdr_mail_report.html:41
 msgid "Preview of the mail report"
 msgstr "Pré-visualização do relatório e-mail"
 
-#: templates/cdr/cdr_overview.html:75
+#: templates/frontend/cdr_overview.html:59
 msgid "Jan"
 msgstr "Jan"
 
-#: templates/cdr/cdr_overview.html:76
+#: templates/frontend/cdr_overview.html:60
 msgid "Feb"
 msgstr "Fevereiro"
 
-#: templates/cdr/cdr_overview.html:77
+#: templates/frontend/cdr_overview.html:61
 msgid "Mar"
 msgstr "Estragar"
 
-#: templates/cdr/cdr_overview.html:78
+#: templates/frontend/cdr_overview.html:62
 msgid "Apr"
 msgstr "Abril"
 
-#: templates/cdr/cdr_overview.html:79 templates/cdr/cdr_overview.html.py:92
+#: templates/frontend/cdr_overview.html:63
+#: templates/frontend/cdr_overview.html:76
 msgid "May"
 msgstr "Maio"
 
-#: templates/cdr/cdr_overview.html:80
+#: templates/frontend/cdr_overview.html:64
 msgid "Jun"
 msgstr "Junho"
 
-#: templates/cdr/cdr_overview.html:81
+#: templates/frontend/cdr_overview.html:65
 msgid "Jul"
 msgstr "Julho"
 
-#: templates/cdr/cdr_overview.html:82
+#: templates/frontend/cdr_overview.html:66
 msgid "Aug"
 msgstr "Agosto"
 
-#: templates/cdr/cdr_overview.html:83
+#: templates/frontend/cdr_overview.html:67
 msgid "Sep"
 msgstr "Setembro"
 
-#: templates/cdr/cdr_overview.html:84
+#: templates/frontend/cdr_overview.html:68
 msgid "Oct"
 msgstr "Outubro"
 
-#: templates/cdr/cdr_overview.html:85
+#: templates/frontend/cdr_overview.html:69
 msgid "Nov"
 msgstr "Novembro"
 
-#: templates/cdr/cdr_overview.html:86
+#: templates/frontend/cdr_overview.html:70
 msgid "Dec"
 msgstr "Dezembro"
 
-#: templates/cdr/cdr_overview.html:88
+#: templates/frontend/cdr_overview.html:72
 msgid "January"
 msgstr "Janeiro"
 
-#: templates/cdr/cdr_overview.html:89
+#: templates/frontend/cdr_overview.html:73
 msgid "February"
 msgstr "Fevereiro"
 
-#: templates/cdr/cdr_overview.html:90
+#: templates/frontend/cdr_overview.html:74
 msgid "March"
 msgstr "Março"
 
-#: templates/cdr/cdr_overview.html:91
+#: templates/frontend/cdr_overview.html:75
 msgid "April"
 msgstr "Abril"
 
-#: templates/cdr/cdr_overview.html:93
+#: templates/frontend/cdr_overview.html:77
 msgid "June"
 msgstr "Junho"
 
-#: templates/cdr/cdr_overview.html:94
+#: templates/frontend/cdr_overview.html:78
 msgid "July"
 msgstr "Julho"
 
-#: templates/cdr/cdr_overview.html:95
+#: templates/frontend/cdr_overview.html:79
 msgid "August"
 msgstr "Agosto"
 
-#: templates/cdr/cdr_overview.html:96
+#: templates/frontend/cdr_overview.html:80
 msgid "September"
 msgstr "Setembro"
 
-#: templates/cdr/cdr_overview.html:97
+#: templates/frontend/cdr_overview.html:81
 msgid "October"
 msgstr "Outubro"
 
-#: templates/cdr/cdr_overview.html:98
+#: templates/frontend/cdr_overview.html:82
 msgid "November"
 msgstr "Novembro"
 
-#: templates/cdr/cdr_overview.html:99
+#: templates/frontend/cdr_overview.html:83
 msgid "December"
 msgstr "Dezembro"
 
-#: templates/cdr/cdr_overview.html:152 templates/cdr/cdr_overview.html:208
-#: templates/cdr/cdr_overview.html:264
-msgid "Total Duration"
-msgstr "Duração Total"
-
-#: templates/cdr/cdr_overview.html:356 templates/cdr/cdr_overview.html:359
-#: templates/cdr/cdr_overview.html:364 templates/cdr/cdr_overview.html:497
-#: templates/cdr/cdr_report_by_hour.html:152
+#: templates/frontend/cdr_overview.html:370
+#: templates/frontend/cdr_overview.html:373
+#: templates/frontend/cdr_overview.html:378
+#: templates/frontend/cdr_overview.html:511
+#: templates/frontend/cdr_report_by_hour.html:157
 msgid "Hour"
 msgstr "Origem"
 
-#: templates/cdr/cdr_overview.html:411 templates/cdr/cdr_overview.html:428
-#: templates/cdr/cdr_overview.html:452 templates/cdr/cdr_overview.html:526
+#: templates/frontend/cdr_overview.html:425
+#: templates/frontend/cdr_overview.html:442
+#: templates/frontend/cdr_overview.html:466
+#: templates/frontend/cdr_overview.html:540
 msgid "Load by Hour"
 msgstr "Carga por hora"
 
-#: templates/cdr/cdr_overview.html:415 templates/cdr/cdr_overview.html:434
-#: templates/cdr/cdr_overview.html:458
+#: templates/frontend/cdr_overview.html:429
+#: templates/frontend/cdr_overview.html:448
+#: templates/frontend/cdr_overview.html:472
 msgid "Load by Day"
 msgstr "Carga por dia"
 
-#: templates/cdr/cdr_overview.html:419 templates/cdr/cdr_overview.html:440
-#: templates/cdr/cdr_overview.html:464
+#: templates/frontend/cdr_overview.html:433
+#: templates/frontend/cdr_overview.html:454
+#: templates/frontend/cdr_overview.html:478
 msgid "Load by Month"
 msgstr "Carga por mês"
 
-#: templates/cdr/cdr_overview.html:474
+#: templates/frontend/cdr_overview.html:488
 msgid "Points Off"
 msgstr "Pontos Off"
 
-#: templates/cdr/cdr_overview.html:479 templates/cdr/cdr_overview.html:513
+#: templates/frontend/cdr_overview.html:493
+#: templates/frontend/cdr_overview.html:527
 msgid "Points On"
 msgstr "Pontos em"
 
-#: templates/cdr/cdr_overview.html:507
+#: templates/frontend/cdr_overview.html:521
 msgid "Count"
 msgstr "Contar"
 
-#: templates/cdr/cdr_overview.html:532 templates/cdr/cdr_view.html:168
-#: templates/cdr/cdr_view.html.py:354 templates/cdr/world_map.html:139
-#: templates/cdr/world_map_analytic.html:138
+#: templates/frontend/cdr_overview.html:546
+#: templates/frontend/cdr_view.html:153 templates/frontend/cdr_view.html:345
+#: templates/frontend/world_map.html:124
+#: templates/frontend/world_map_analytic.html:138
 msgid "to"
 msgstr "para"
 
-#: templates/cdr/cdr_report_by_hour.html:176
+#: templates/frontend/cdr_report_by_hour.html:181
 msgid "with previous"
 msgstr "com anterior"
 
-#: templates/cdr/cdr_report_by_hour.html:176
+#: templates/frontend/cdr_report_by_hour.html:181
 msgid "days"
 msgstr "dias"
 
-#: templates/cdr/cdr_view.html:6
+#: templates/frontend/cdr_view.html:6
 msgid "CDR View"
 msgstr "Ver CDR"
 
-#: templates/cdr/cdr_view.html:31 templates/cdr/cdr_view.html.py:162
+#: templates/frontend/cdr_view.html:16 templates/frontend/cdr_view.html:147
 msgid "calls detail records"
 msgstr "Registro de ligação detalhada"
 
-#: templates/cdr/cdr_view.html:32
+#: templates/frontend/cdr_view.html:17
 msgid "report by day"
 msgstr "relatório por dia"
 
-#: templates/cdr/cdr_view.html:179
+#: templates/frontend/cdr_view.html:164
 msgid "Call-date"
 msgstr "Data da Ligação"
 
-#: templates/cdr/cdr_view.html:188
+#: templates/frontend/cdr_view.html:173
 msgid "CLID"
 msgstr "CLID"
 
-#: templates/cdr/cdr_view.html:215 templates/cdr/cdr_view.html.py:218
+#: templates/frontend/cdr_view.html:200 templates/frontend/cdr_view.html:203
 msgid "Bill Seconds"
 msgstr "Bilhetagem por segundo"
 
-#: templates/cdr/cdr_view.html:215
+#: templates/frontend/cdr_view.html:200
 msgid "Bill"
 msgstr "Projeto de lei"
 
-#: templates/cdr/cdr_view.html:235 templates/cdr/mail_report_template.html:18
-#: templates/cdr/registration/user_detail_change.html:16
+#: templates/frontend/cdr_view.html:220
+#: templates/frontend/mail_report_template.html:18
+#: templates/frontend/registration/user_detail_change.html:16
 msgid "Account"
 msgstr "Conta"
 
-#: templates/cdr/cdr_view.html:280 templates/cdr/mail_report_template.html:38
+#: templates/frontend/cdr_view.html:271
+#: templates/frontend/mail_report_template.html:42
 msgid "Authorized call"
 msgstr "Chamada Autorizado"
 
-#: templates/cdr/cdr_view.html:282
+#: templates/frontend/cdr_view.html:273
 msgid "Unauthorized call"
 msgstr "Chamada não autorizada"
 
-#: templates/cdr/cdr_view.html:285 templates/cdr/cdr_view.html.py:287
-#: templates/cdr/mail_report_template.html:40
-#: templates/cdr/mail_report_template.html:42
+#: templates/frontend/cdr_view.html:276 templates/frontend/cdr_view.html:278
+#: templates/frontend/mail_report_template.html:44
+#: templates/frontend/mail_report_template.html:46
 msgid "call"
 msgstr "chamar"
 
-#: templates/cdr/cdr_view.html:290
+#: templates/frontend/cdr_view.html:281
 msgid "Show details"
 msgstr "Exibir detalhes"
 
-#: templates/cdr/cdr_view.html:305
+#: templates/frontend/cdr_view.html:296
 msgid "Call Details"
 msgstr "Detalhes das ligações"
 
-#: templates/cdr/cdr_view.html:310
+#: templates/frontend/cdr_view.html:301
 msgid "Close"
 msgstr "Fechar"
 
-#: templates/cdr/cdr_view.html:321
-#: templates/cdr/registration/user_detail_change.html:190
+#: templates/frontend/cdr_view.html:312
+#: templates/frontend/registration/user_notification_grid.html:64
 msgid "no records found"
 msgstr "Não encontramos nenhuma"
 
-#: templates/cdr/cdr_view.html:327
+#: templates/frontend/cdr_view.html:318
 msgid "show rows"
 msgstr "mostrar linhas"
 
-#: templates/cdr/cdr_view.html:329
+#: templates/frontend/cdr_view.html:320
 msgid "total calls"
 msgstr "Total de Chamadas"
 
-#: templates/cdr/cdr_view.html:340
+#: templates/frontend/cdr_view.html:331
 msgid "Export CSV file"
 msgstr "Exportar para um arquivo CSV"
 
-#: templates/cdr/cdr_view.html:348
+#: templates/frontend/cdr_view.html:339
 msgid "daily report"
 msgstr "Relatório diário"
 
-#: templates/cdr/cdr_view.html:362
+#: templates/frontend/cdr_view.html:353
 msgid "Graphic"
 msgstr "Gráfico"
 
-#: templates/cdr/cdr_view.html:364
+#: templates/frontend/cdr_view.html:355
 msgid "Average Connection Time"
 msgstr "Tempo médio de conexão"
 
-#: templates/cdr/cdr_view.html:364
+#: templates/frontend/cdr_view.html:355
 msgid "ACT"
 msgstr "ACT"
 
-#: templates/cdr/custom_jquery_select_all.html:16
+#: templates/frontend/custom_jquery_select_all.html:16
 msgid "You must check at least one box!"
 msgstr "Você deve verificar pelo menos uma caixa!"
 
-#: templates/cdr/custom_jquery_select_all.html:27
+#: templates/frontend/custom_jquery_select_all.html:27
 msgid " notification(s) are going to be deleted?"
 msgstr "notificação (s) vão ser excluídos?"
 
-#: templates/cdr/custom_jquery_select_all.html:31
+#: templates/frontend/custom_jquery_select_all.html:31
 msgid " notification(s) are going to be marked as read?"
 msgstr "notificação (s) vai ser marcada como lida?"
 
-#: templates/cdr/custom_jquery_select_all.html:46
+#: templates/frontend/custom_jquery_select_all.html:46
 msgid "Confirm deletion?"
 msgstr "Confirme a exclusão?"
 
-#: templates/cdr/error_import.html:10
+#: templates/frontend/error_import.html:10
 msgid ""
 "No data can be found in your collections, please make sure the import of "
 "data is working correctly."
@@ -1334,7 +1348,7 @@ msgstr ""
 "Não há dados podem ser encontrados em suas coleções, certifique-se a "
 "importação de dados está funcionando corretamente."
 
-#: templates/cdr/index.html:12
+#: templates/frontend/index.html:12
 msgid ""
 "is an application that allows you to browse and analyse CDR (Call Detail "
 "Records)."
@@ -1342,21 +1356,21 @@ msgstr ""
 "é uma aplicação que permite que você navegue e analisar CDR (Call Detail "
 "Records)."
 
-#: templates/cdr/index.html:13
+#: templates/frontend/index.html:13
 msgid "Different reporting tools are provided :"
 msgstr "Diferentes ferramentas de relatórios disponíveis:"
 
-#: templates/cdr/index.html:15
+#: templates/frontend/index.html:15
 msgid "Search CDR: Search, filter, display and export CDR."
 msgstr "Pesquisa CDR: Pesquise, filtro, visualizar e exportar CDR."
 
-#: templates/cdr/index.html:16
+#: templates/frontend/index.html:16
 msgid ""
 "Monthly Report: Summarise and compare call traffic history month on month."
 msgstr ""
 "Relatório Mensal: Resumir e compare chamada mês da história tráfego no mês."
 
-#: templates/cdr/index.html:17
+#: templates/frontend/index.html:17
 msgid ""
 "Analyse CDR : Analyse and compare call volumes with the previous day’s "
 "traffic."
@@ -1364,48 +1378,49 @@ msgstr ""
 "Analisar CDR: Analisar e comparar os volumes de chamadas com o tráfego do "
 "dia anterior."
 
-#: templates/cdr/index.html:18
+#: templates/frontend/index.html:18
 msgid "Daily Traffic : Graph and filter traffic loads by hour during the day."
 msgstr ""
 "Tráfego diário: Gráfico e cargas de tráfego filtro por hora durante o dia."
 
-#: templates/cdr/index.html:20
+#: templates/frontend/index.html:20
 msgid "Learn more"
 msgstr "Saiba mais"
 
-#: templates/cdr/index.html:25
+#: templates/frontend/index.html:25
 msgid "Support"
 msgstr "Suporte"
 
-#: templates/cdr/index.html:26
+#: templates/frontend/index.html:26
+#, fuzzy
 msgid ""
 "Star2Billing S.L. offers consultancy including installation, training and "
-"customisation on CDR-Stats"
+"customisation on CDR-Stats."
 msgstr ""
 "Star2Billing SL oferece consultoria, incluindo instalação, treinamento e "
 "personalização em todos os seus produtos, e o CDR-Stas não é exceção."
 
-#: templates/cdr/index.html:27
+#: templates/frontend/index.html:27
 msgid "Contact us at"
 msgstr "Fale conosco"
 
-#: templates/cdr/index.html:27
+#: templates/frontend/index.html:27
 msgid "for more information"
 msgstr "para mais informacões"
 
-#: templates/cdr/index.html:28
+#: templates/frontend/index.html:28
 msgid "Get Support"
 msgstr "Solicitar suporte"
 
-#: templates/cdr/index.html:32
+#: templates/frontend/index.html:32
 msgid "Licensing"
 msgstr "Licensas"
 
-#: templates/cdr/index.html:33
+#: templates/frontend/index.html:33
 msgid "CDR-Stats is licensed under"
 msgstr "CDR-Stats está licenciado sobre"
 
-#: templates/cdr/index.html:34
+#: templates/frontend/index.html:34
 msgid ""
 "however an alternative license can be purchased if the MPL V2 license is not "
 "suitable for your requirements."
@@ -1413,104 +1428,125 @@ msgstr ""
 "no entanto uma licença alternativa pode ser comprada se a licença AGPL não "
 "for adequada para suas necessidades."
 
-#: templates/cdr/index.html:35
+#: templates/frontend/index.html:35
 msgid "View Licensing details"
 msgstr "Ver detalhes de Licenciamento"
 
-#: templates/cdr/login_option.html:5
+#: templates/frontend/login_option.html:5
 msgid "Logout"
 msgstr "Sair"
 
-#: templates/cdr/mail_report_template.html:5
+#: templates/frontend/login_option.html:11 templates/frontend/master.html:144
+msgid "Login"
+msgstr "Logar"
+
+#: templates/frontend/mail_report_template.html:5
 msgid "CDR-Stats report of "
 msgstr "CDR-Stats relatório de"
 
-#: templates/cdr/mail_report_template.html:7
+#: templates/frontend/mail_report_template.html:7
 msgid "Last 10 Calls"
 msgstr "10 últimas chamadas"
 
-#: templates/cdr/mail_report_template.html:13
+#: templates/frontend/mail_report_template.html:13
 msgid "Clid"
 msgstr "CLID"
 
-#: templates/cdr/mail_report_template.html:16
+#: templates/frontend/mail_report_template.html:16
 msgid "Bill sec"
 msgstr "Bill seg"
 
-#: templates/cdr/mail_report_template.html:131
+#: templates/frontend/mail_report_template.html:138
 msgid "Calls Status"
 msgstr "Estatísticas das ligações"
 
-#: templates/cdr/master.html:19
+#: templates/frontend/master.html:19
 msgid "Customer Interface"
 msgstr "Interface do Cliente"
 
-#: templates/cdr/master.html:104 templates/cdr/master.html.py:110
+#: templates/frontend/master.html:88 templates/frontend/master.html.py:94
 msgid "Hide search"
 msgstr "Ocultar pesquisa"
 
-#: templates/cdr/master.html:140
+#: templates/frontend/master.html:131
 msgid "Please login by clicking on login button"
 msgstr "Por favor, autentique-se clicando no botão Login"
 
-#: templates/cdr/master.html:154
+#: templates/frontend/master.html:145
 msgid "Forgot password?"
 msgstr "Esqueceu a senha?"
 
-#: templates/cdr/master.html:160
+#: templates/frontend/master.html:151
 msgid "Display language"
 msgstr "Mostrar linguagem"
 
-#: templates/cdr/world_map.html:84 templates/cdr/world_map_analytic.html:83
+#: templates/frontend/world_map.html:70
+#: templates/frontend/world_map_analytic.html:83
 #, fuzzy
 msgid "country calls detail"
 msgstr "Estatísticas de chamadas por país"
 
-#: templates/cdr/world_map.html:85 templates/cdr/world_map_analytic.html:84
+#: templates/frontend/world_map.html:71
+#: templates/frontend/world_map_analytic.html:84
 #, fuzzy
 msgid "country list"
 msgstr "Estatísticas de chamadas por país"
 
-#: templates/cdr/world_map.html:133 templates/cdr/world_map_analytic.html:132
+#: templates/frontend/world_map.html:118
+#: templates/frontend/world_map_analytic.html:132
 #, fuzzy
 msgid "World map Report"
 msgstr "Relatório do alarme"
 
-#: templates/cdr/registration/password_reset_complete.html:4
-#: templates/cdr/registration/password_reset_complete.html:8
+#: templates/frontend/api/api_list.html:13
+#, fuzzy
+msgid "CDR-Stats APIs"
+msgstr "CDR-Stats"
+
+#: templates/frontend/api/api_list.html:14
+msgid "Browser playground"
+msgstr ""
+
+#: templates/frontend/api/api_list.html:25
+#, fuzzy
+msgid "No"
+msgstr "Novembro"
+
+#: templates/frontend/registration/password_reset_complete.html:4
+#: templates/frontend/registration/password_reset_complete.html:8
 msgid "Password reset complete"
 msgstr "Redefinição de senha completa"
 
-#: templates/cdr/registration/password_reset_complete.html:11
+#: templates/frontend/registration/password_reset_complete.html:11
 msgid "Your password has been set.  You may go ahead and log in now."
 msgstr "Sua senha foi definida. Você pode ir em frente e faça o login agora."
 
-#: templates/cdr/registration/password_reset_complete.html:14
+#: templates/frontend/registration/password_reset_complete.html:14
 msgid "Log in"
 msgstr "Entrar"
 
-#: templates/cdr/registration/password_reset_confirm.html:4
-#: templates/cdr/registration/password_reset_form.html:4
+#: templates/frontend/registration/password_reset_confirm.html:4
+#: templates/frontend/registration/password_reset_form.html:4
 msgid "Password reset"
 msgstr "Reiniciar senha"
 
-#: templates/cdr/registration/password_reset_confirm.html:11
+#: templates/frontend/registration/password_reset_confirm.html:11
 msgid "Enter new password"
 msgstr "Digite a nova senha"
 
-#: templates/cdr/registration/password_reset_confirm.html:13
+#: templates/frontend/registration/password_reset_confirm.html:13
 msgid "Please enter your new password twice for verification."
 msgstr "Por favor, digite a nova senha duas vezes para verificação."
 
-#: templates/cdr/registration/password_reset_confirm.html:26
+#: templates/frontend/registration/password_reset_confirm.html:26
 msgid "Change my password"
 msgstr "Alterar minha senha"
 
-#: templates/cdr/registration/password_reset_confirm.html:34
+#: templates/frontend/registration/password_reset_confirm.html:34
 msgid "Password reset unsuccessful"
 msgstr "Redefinição de senha vencida"
 
-#: templates/cdr/registration/password_reset_confirm.html:39
+#: templates/frontend/registration/password_reset_confirm.html:39
 msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used.  Please request a new password reset."
@@ -1518,12 +1554,12 @@ msgstr ""
 "O link de redefinição de senha era inválido, possivelmente porque ele já foi "
 "usado. Por favor, solicitar uma nova senha nova."
 
-#: templates/cdr/registration/password_reset_done.html:4
-#: templates/cdr/registration/password_reset_done.html:8
+#: templates/frontend/registration/password_reset_done.html:4
+#: templates/frontend/registration/password_reset_done.html:8
 msgid "Password reset successful"
 msgstr "Redefinição de senha bem-sucedido"
 
-#: templates/cdr/registration/password_reset_done.html:10
+#: templates/frontend/registration/password_reset_done.html:10
 msgid ""
 "We've e-mailed you instructions for setting your password to the e-mail "
 "address you submitted. You should be receiving it shortly."
@@ -1531,7 +1567,7 @@ msgstr ""
 "Nós e-mail instruções para configurar a senha para o endereço de e-mail que "
 "você enviou. Você deve estar recebendo-lo em breve."
 
-#: templates/cdr/registration/password_reset_email.html:5
+#: templates/frontend/registration/password_reset_email.html:5
 #, python-format
 msgid ""
 "You're receiving this e-mail because you requested a password reset for your "
@@ -1540,24 +1576,24 @@ msgstr ""
 "Você está recebendo este e-mail porque você pediu uma redefinição de senha "
 "para sua conta de usuário em %(site_name)s."
 
-#: templates/cdr/registration/password_reset_email.html:7
+#: templates/frontend/registration/password_reset_email.html:7
 msgid "Please go to the following page and choose a new password:"
 msgstr "Por favor, vá para a página seguinte e escolher uma nova senha:"
 
-#: templates/cdr/registration/password_reset_email.html:11
+#: templates/frontend/registration/password_reset_email.html:11
 msgid "Your username, in case you've forgotten:"
 msgstr "Seu nome de usuário, caso você tenha esquecido:"
 
-#: templates/cdr/registration/password_reset_email.html:13
+#: templates/frontend/registration/password_reset_email.html:13
 #, python-format
 msgid "The %(site_name)s team"
 msgstr "O %(site_name)s, a equipe de"
 
-#: templates/cdr/registration/password_reset_form.html:10
+#: templates/frontend/registration/password_reset_form.html:10
 msgid "Forgotten your password?"
 msgstr "Esqueceu sua senha?"
 
-#: templates/cdr/registration/password_reset_form.html:12
+#: templates/frontend/registration/password_reset_form.html:12
 msgid ""
 "Enter your e-mail address below, and we'll e-mail instructions for setting a "
 "new one."
@@ -1565,41 +1601,50 @@ msgstr ""
 "Digite seu endereço de e-mail, e nós vamos e-mail instruções para configurar "
 "um novo."
 
-#: templates/cdr/registration/password_reset_form.html:21
+#: templates/frontend/registration/password_reset_form.html:21
 msgid "Reset my password"
 msgstr "Redefinir minha senha"
 
-#: templates/cdr/registration/user_detail_change.html:9
+#: templates/frontend/registration/user_account.html:51
+#, fuzzy
+msgid "Change detail"
+msgstr "Exibir detalhes"
+
+#: templates/frontend/registration/user_detail_change.html:9
 msgid "Settings"
 msgstr "Configurações"
 
-#: templates/cdr/registration/user_detail_change.html:9
+#: templates/frontend/registration/user_detail_change.html:9
 msgid "User detail, Password and notifications"
 msgstr "Detalhe usuário, senha e notificações"
 
-#: templates/cdr/registration/user_detail_change.html:19
+#: templates/frontend/registration/user_detail_change.html:17
+msgid "Password"
+msgstr "senha"
+
+#: templates/frontend/registration/user_detail_change.html:19
 msgid "Change language "
 msgstr "Alterar idioma"
 
-#: templates/cdr/registration/user_detail_change.html:143
-msgid "Delete notifications"
-msgstr "Excluir notificações"
+#: templates/frontend/registration/user_detail_change.html:43
+msgid "Select language"
+msgstr "Selecionar idioma"
 
-#: templates/cdr/registration/user_detail_change.html:144
-msgid "Mark as read"
-msgstr "Marcar como lido"
-
-#: templates/cdr/registration/user_detail_change.html:145
+#: templates/frontend/registration/user_notification_grid.html:15
 msgid "Mark all as read"
 msgstr "Marcar tudo como lido"
 
-#: templates/cdr/registration/user_detail_change.html:162
+#: templates/frontend/registration/user_notification_grid.html:16
+msgid "Mark as read"
+msgstr "Marcar como lido"
+
+#: templates/frontend/registration/user_notification_grid.html:17
+msgid "Delete notifications"
+msgstr "Excluir notificações"
+
+#: templates/frontend/registration/user_notification_grid.html:37
 msgid "Action"
 msgstr "Ação"
-
-#: templates/cdr/registration/user_detail_change.html:234
-msgid "Select language"
-msgstr "Selecionar idioma"
 
 #: templates/pagination/pagination.html:11
 #: templates/pagination/pagination.html:14
@@ -1631,17 +1676,49 @@ msgstr "Permissão"
 msgid "Important dates"
 msgstr "Datas importantes"
 
-#: user_profile/admin.py:82
+#: user_profile/admin.py:83
 msgid "Notifications are successfully marked as read."
 msgstr "As notificações são sucesso marcada como lida."
 
-#: user_profile/admin.py:84
+#: user_profile/admin.py:85
 msgid "Notifications are not marked as read."
 msgstr "As notificações não são marcadas como lidas."
 
-#: user_profile/admin.py:85
+#: user_profile/admin.py:86
 msgid "Mark notification as seen"
 msgstr "Marcar notificação como visto"
+
+#: user_profile/constants.py:20
+#, fuzzy
+msgid "average length of call"
+msgstr "Duração média da chamada"
+
+#: user_profile/constants.py:21
+#, fuzzy
+msgid "answer seize ratio"
+msgstr "Resposta Aproveite Relação"
+
+#: user_profile/constants.py:22
+#, fuzzy
+msgid "blacklist prefix"
+msgstr "Lista negra Prefixo"
+
+#: user_profile/constants.py:23
+#, fuzzy
+msgid "whitelist prefix"
+msgstr "Prefixo Whitelist"
+
+#: user_profile/constants.py:27
+msgid "Message"
+msgstr ""
+
+#: user_profile/constants.py:28
+msgid "Notice type"
+msgstr ""
+
+#: user_profile/constants.py:29
+msgid "Sender"
+msgstr ""
 
 #: user_profile/fields.py:35
 msgid "Afar"
@@ -2370,136 +2447,126 @@ msgstr "Linguagem códigos lojas"
 msgid "Email address"
 msgstr "Endereço de email"
 
-#: user_profile/forms.py:57
-msgid "Phone Number"
-msgstr "Número de telefone"
-
-#: user_profile/forms.py:58
-msgid "Check number is authorised to call"
-msgstr "Número do cheque está autorizado a chamar"
-
-#: user_profile/management.py:26
+#: user_profile/management.py:27
 msgid "Average Length of Call"
 msgstr "Duração média da chamada"
 
-#: user_profile/management.py:30
+#: user_profile/management.py:31
 msgid "Answer Seize Ratio"
 msgstr "Resposta Aproveite Relação"
 
-#: user_profile/management.py:33 user_profile/management.py:34
+#: user_profile/management.py:34 user_profile/management.py:35
 msgid "Blacklist Prefix"
 msgstr "Lista negra Prefixo"
 
-#: user_profile/management.py:37 user_profile/management.py:38
+#: user_profile/management.py:38 user_profile/management.py:39
 msgid "Whitelist Prefix"
 msgstr "Prefixo Whitelist"
 
-#: user_profile/models.py:54
+#: user_profile/models.py:53
 msgid "Address"
 msgstr "Endereço"
 
-#: user_profile/models.py:56
+#: user_profile/models.py:55
 msgid "City"
 msgstr "Cidade"
 
-#: user_profile/models.py:58
+#: user_profile/models.py:57
 msgid "State"
 msgstr "Estado"
 
-#: user_profile/models.py:61
+#: user_profile/models.py:60
 msgid "Zip code"
 msgstr "CEP"
 
-#: user_profile/models.py:63
+#: user_profile/models.py:62
 msgid "Phone number"
 msgstr "Número de telefone"
 
-#: user_profile/models.py:65
+#: user_profile/models.py:64
 msgid "Fax Number"
 msgstr "Fax"
 
-#: user_profile/models.py:67
+#: user_profile/models.py:66
 msgid "Company name"
 msgstr "Nome da empresa"
 
-#: user_profile/models.py:70
+#: user_profile/models.py:69
 msgid "Company website"
 msgstr "Site da empresa"
 
-#: user_profile/models.py:71
+#: user_profile/models.py:70
 msgid "Language"
 msgstr "Linguagem"
 
-#: user_profile/models.py:73
+#: user_profile/models.py:72
 msgid "Note"
 msgstr "Nota"
 
-#: user_profile/models.py:77
+#: user_profile/models.py:75
 msgid "Report mail list"
 msgstr "Relatório lista de e-mail"
 
-#: user_profile/models.py:78
+#: user_profile/models.py:76
 msgid "Enter a valid e-mail address separated by commas."
 msgstr "Insira um endereço de e-mail válido separados por vírgulas."
 
-#: user_profile/models.py:85 user_profile/models.py:86
+#: user_profile/models.py:83
+msgid "Can see API-Explorer"
+msgstr ""
+
+#: user_profile/models.py:86 user_profile/models.py:87
 msgid "User Profile"
 msgstr "Perfil de Usuário"
 
-#: user_profile/models.py:94
+#: user_profile/models.py:95
 msgid "Customer"
 msgstr "Cliente"
 
-#: user_profile/models.py:95
+#: user_profile/models.py:96
 msgid "Customers"
 msgstr "Os clientes"
 
-#: user_profile/models.py:103
+#: user_profile/models.py:104
 msgid "Admin"
 msgstr "Administrador"
 
-#: user_profile/models.py:104
+#: user_profile/models.py:105
 msgid "Admins"
 msgstr "Admins"
 
-#: user_profile/views.py:138
+#: user_profile/views.py:128
 msgid "All notifications are marked as read."
 msgstr "Todas as notificações são marcadas como lidas."
 
-#: user_profile/views.py:151
+#: user_profile/views.py:140
 msgid "Detail has been changed."
 msgstr "Detalhe foi alterado."
 
-#: user_profile/views.py:153 user_profile/views.py:162
+#: user_profile/views.py:142 user_profile/views.py:152
 msgid "Please correct the errors below."
 msgstr "Por favor, corrija os erros abaixo."
 
-#: user_profile/views.py:160
+#: user_profile/views.py:150
 msgid "Your password has been changed."
 msgstr "Sua senha foi alterada."
 
-#: user_profile/views.py:204
+#: user_profile/views.py:195
 #, python-format
 msgid "\"%(name)s\" is deleted."
 msgstr "\"%(name)s\" é excluído."
 
-#: user_profile/views.py:208
+#: user_profile/views.py:199
 #, python-format
 msgid "\"%(name)s\" is marked as read."
 msgstr "\"%(name)s\" está marcada como lida."
 
-#: user_profile/views.py:219
+#: user_profile/views.py:211
 #, python-format
 msgid "%(count)s notification(s) are deleted."
 msgstr "%(count)s de notificação (s) são excluídos."
 
-#: user_profile/views.py:223
+#: user_profile/views.py:216
 #, fuzzy, python-format
 msgid "%(count)s notification(s) are marked as read."
 msgstr "Todas as notificações são marcadas como lidas."
-
-#~ msgid "CDR in Detail hi"
-#~ msgstr "CDR em detalhe oi"
-
-#~ msgid "CDR"
-#~ msgstr "CDR"

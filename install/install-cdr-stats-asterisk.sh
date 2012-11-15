@@ -3,12 +3,12 @@
 # CDR-Stats License
 # http://www.cdr-stats.org
 #
-# This Source Code Form is subject to the terms of the Mozilla Public 
+# This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 # Copyright (C) 2011-2012 Star2Billing S.L.
-# 
+#
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
@@ -18,6 +18,7 @@
 # cd /usr/src/ ; rm install-cdr-stats-asterisk.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats-asterisk.sh -O install-cdr-stats-asterisk.sh; bash install-cdr-stats-asterisk.sh
 #
 
+BRANCH='develop'
 INSTALL_DIR='/usr/share/cdr_stats'
 
 #INSTALL TYPE (ASTERISK or FREESWITCH)
@@ -36,8 +37,8 @@ read TEMP
 
 
 #Get Scripts dependencies
-wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh -O bash-common-functions.sh
-wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
+wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/bash-common-functions.sh -O bash-common-functions.sh
+wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
 
 
 #Include general functions

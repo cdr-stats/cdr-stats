@@ -27,15 +27,15 @@ class MongodbConnectionMiddleware(object):
 
     def process_request(self, request):
         try:
-            connection = Connection(settings.MG_HOST, settings.MG_PORT)
+            connection = Connection(settings.MONGO_CDRSTATS['HOST'], settings.MONGO_CDRSTATS['PORT'])
             if connection.is_locked:
                 if connection.unlock():  # if db gets unlocked
                     return None
                 return HttpResponseRedirect('/?db_error=locked')
             else:
                 #check if collection have any data
-                #db = connection[settings.MG_DB_NAME]
-                #collection = db[settings.MG_CDR_COMMON]
+                #db = connection[settings.MONGO_CDRSTATS['DB_NAME']]
+                #collection = db[settings.MONGO_CDRSTATS['CDR_COMMON']]
                 #doc = collection.find_one()
                 #if not doc:
                 #    return http.HttpResponseForbidden('<h1>Error Import data</h1> Make sure you have existing data in your collections')

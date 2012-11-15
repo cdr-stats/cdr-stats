@@ -1,106 +1,99 @@
-.. _confifuration:
+.. _configuration:
 
 Configuration
 =============
 
 Some of the more important parts of the configuration module for the cdr_stats,
-``settings.py``, are explained below::
-
-  import os.path
-  APPLICATION_DIR = os.path.dirname(globals()['__file__'])
+``settings.py``, are explained below.
 
 ``APPLICATION_DIR`` now contains the full path of your project folder and can be used elsewhere
 in the ``settings.py`` module so that your project may be moved around the system without you having to
 worry about changing any hard-coded paths. ::
 
-  DEBUG = True
+    import os.path
+    APPLICATION_DIR = os.path.dirname(globals()['__file__'])
 
-turns on debug mode allowing the browser user to see project settings and temporary variables. ::
+Turns on debug mode allowing the browser user to see project settings and temporary variables. ::
 
-  ADMINS = ( ('xyz', 'xyz@abc.com') )
+    DEBUG = True
 
-sends all errors from the production server to the admin's email address. ::
+Sends all errors from the production server to the admin's email address. ::
 
-      DATABASES = {
-          'default': {
-              # Add 'postgresql_psycopg2','postgresql','mysql','sqlite3','oracle'
-              'ENGINE': 'django.db.backends.sqlite3',
-              # Or path to database file if using sqlite3.
-              'NAME': os.path.dirname(os.path.abspath(__file__)) + '/database/local.db',
-              'USER': '',                      # Not used with sqlite3.
-              'PASSWORD': '',                  # Not used with sqlite3.
-              'HOST': '',                      # Set to empty string for localhost.
-                                               # Not used with sqlite3.
-              'PORT': '',                      # Set to empty string for default.
-                                               # Not used with sqlite3.
-          }
-      }
+    ADMINS = ( ('xyz', 'xyz@abc.com') )
 
-      or
 
-      DATABASES = {
-          'default': {
-                  'ENGINE': 'django.db.backends.postgresql_psycopg2',
-                  'NAME': 'cdr_stats_psql',
-                  'USER': 'postgresuser',
-                  'PASSWORD': 'postgrespasswd',
-                  'HOST': 'localhost',
-                  'PORT': '5432',
-              }
-      }
+Sets up the options required for Django to connect to your database engine::
 
-      or
+    DATABASES = {
+        'default': {
+            # Add 'postgresql_psycopg2','postgresql','mysql','sqlite3','oracle'
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'DATABASENAME',
+            'USER': 'DB_USERNAME',
+            'PASSWORD': 'DB_PASSWORD',
+            'HOST': 'DB_HOSTNAME',
+            'PORT': 'DB_PORT',
+            'OPTIONS': {
+                #Needed on Mysql
+                # 'init_command': 'SET storage_engine=INNODB',
+                #Postgresql Autocommit
+                'autocommit': True,
+            }
+        }
+    }
 
-      DATABASES = {
-          'default': {
-                  'ENGINE': 'mysql',
-                  'NAME': 'cdr_stats_mysql',
-                  'USER': 'mysqluser',
-                  'PASSWORD': 'mysqlpasswd',
-                  'HOST': 'localhost',
-                  'PORT': '3306',
-              }
-      }
 
-      #MONGODB
-      #=======
-      MG_DB_NAME = 'cdr-stats'
-      MG_HOST = 'localhost'
-      MG_PORT = 27017
+Sets up the options to connect to MongoDB Server, this server and Database will be used to store the analytic data.
+You should normally have no need to change those settings, except if your MongoDB server is on a distant machine
+or if you want to have a different name for your collections.
 
-sets up the options required for Django to connect to your database. ::
+    #MONGODB
+    #=======
+    MONGO_CDRSTATS = {
+        'DB_NAME': 'cdr-stats',
+        'HOST': 'localhost',
+        'PORT': 27017,
+        'CDR_COMMON': 'cdr_common',
+        'DAILY_ANALYTIC': 'daily_analytic',
+        'MONTHLY_ANALYTIC': 'monthly_analytic',
+        'CONC_CALL': 'concurrent_call',
+        'CONC_CALL_AGG': 'concurrent_call_aggregate'
+    }
 
-     MEDIA_ROOT = os.path.join(APPLICATION_DIR, 'static')
 
-tells Django where to find your media files such as images that the ``HTML
+Tells Django where to find your media files such as images that the ``HTML
 templates`` might use. ::
 
-     ROOT_URLCONF = 'urls'
+    MEDIA_ROOT = os.path.join(APPLICATION_DIR, 'static')
 
-tells Django to start finding URL matches at in the ``urls.py`` module in the ``cdr_stats`` project folder. ::
+    ROOT_URLCONF = 'urls'
+
+
+Tells Django to start finding URL matches at in the ``urls.py`` module in the ``cdr_stats`` project folder. ::
 
       TEMPLATE_DIRS = ( os.path.join(APPLICATION_DIR, 'templates'), )
 
-tells Django where to find your HTML template files. ::
 
-     INSTALLED_APPS = (
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.sites',
-    'django.contrib.admin',
-    ...
-    'cdr',
-    'cdr_alert',
-    ...
+Tells Django where to find your HTML template files. ::
+
+    INSTALLED_APPS = (
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.sites',
+        'django.contrib.admin',
+        ...
+        'cdr',
+        'cdr_alert',
+        ...
     )
 
-tells Django which applications (custom and external) to use in your project.
+Tells Django which applications (custom and external) to use in your project.
 The custom applications, ``cdr`` etc. are stored in the project folder along with
 these custom applications.
 
 
-.. _confifuration-country-reporting:
+.. _configuration-country-reporting:
 
 Country Reporting
 -----------------
@@ -153,7 +146,7 @@ In Spain, where there is no "0" trunk code, and the length of all numbers is 9, 
 NB: After changing this file, then both celery and apache should be restarted.
 
 
-.. _confifuration-asterisk:
+.. _configuration-asterisk:
 
 Import configuration for Asterisk
 ---------------------------------
@@ -161,45 +154,80 @@ Import configuration for Asterisk
 
 The asterisk settings may be as follows::
 
-    ASTERISK_MYSQL = {
+#list of CDR Backends to import
+    CDR_BACKEND = {
         '127.0.0.1': {
-           'db_name': 'asteriskcdrdb',
-           'table_name': 'cdr',
-           'host': 'localhost',
-           'user': 'root',
-           'password': 'passw0rd',
+            'db_engine': 'mysql',
+            'cdr_type': 'asterisk',
+            'db_name': 'asteriskcdrdb',
+            'table_name': 'cdr',
+            'host': 'localhost',
+            'port': '',
+            'user': 'root',
+            'password': 'password',
         },
         #'192.168.1.200': {
+            #'db_engine': 'mysql',
+            #'cdr_type': 'asterisk',
             #'db_name': 'asteriskcdrdb',
             #'table_name': 'cdr',
             #'host': 'localhost',
+            #'port': '',
             #'user': 'root',
-            #'password': 'passw0rd',
+            #'password': 'password',
         #},
     }
 
 To add a new remote Asterisk MySQL CDR store, you would ensure connection to the remote MySQL database, then uncomment the new server settings by removing the # and configuring the credentials to connect to the remote Asterisk CDR store.
 
 
-.. _confifuration-freeswitch:
+
+.. _realtime-configuration-asterisk:
+
+Realtime configuration for Asterisk
+------------------------------------
+
+You will find some extra settings, that will allow you to configure CDR-Stats to retrieve Realtime information.
+
+The settings to configure are::
+
+    #Asterisk Manager / Used for Realtime and Concurrent calls
+    ASTERISK_MANAGER_HOST = 'localhost'
+    ASTERISK_MANAGER_USER = 'cdrstats_user'
+    ASTERISK_MANAGER_SECRET = 'cdrstats_secret'
+
+
+You will need to configure your Asterisk manager API, add a new user for CDR-Stats, further information about Asterisk Manager can be found here : http://www.voip-info.org/wiki/view/Asterisk+config+manager.conf
+
+
+
+.. _configuration-freeswitch:
 
 Import configuration for FreeSWITCH
 ------------------------------------
 
-Freeswitch settings are under the MG_IMPORT section, and should look as follows::
+Freeswitch settings are under the CDR_BACKEND section, and should look as follows::
 
-    MG_IMPORT = {
+    CDR_BACKEND = {
         '127.0.0.1': {
+            'db_engine': 'mongodb',  # mysql, pgsql, mongodb
+            'cdr_type': 'freeswitch',  # asterisk or freeswitch
             'db_name': 'freeswitch_cdr',
+            'table_name': 'cdr',  # collection if mongodb
             'host': 'localhost',
-            'port': 27017,
-            'collection': 'cdr',
+            'port': 3306,  # 3306 mysql, 5432 pgsql, 27017 mongodb
+            'user': '',
+            'password': '',
         },
         #'192.168.1.15': {
-            # 'db_name': 'freeswitch_cdr',
-            # 'host': '192.168.1.15',
-            # 'port': 27017,
-            # 'collection': 'cdr',
+        #    'db_engine': 'mongodb',  # mysql, pgsql, mongodb
+        #    'cdr_type': 'freeswitch',  # asterisk or freeswitch
+        #    'db_name': 'freeswitch_cdr',
+        #    'table_name': 'cdr',  # collection if mongodb
+        #    'host': 'localhost',
+        #    'port': 3306,  # 3306 mysql, 5432 pgsql, 27017 mongodb
+        #    'user': '',
+        #    'password': '',
         #},
     }
 
@@ -209,4 +237,3 @@ was open to ONLY the CDR-Stats server on the remote system, uncomment the settin
 by removing the #, and then configure the IP address and db_name to match those in
 the mod_cdr_mongodb configuration as described at
 http://www.cdr-stats.org/documentation/beginners-guide/howto-installing-on-freeswitch/
-

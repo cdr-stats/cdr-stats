@@ -3,12 +3,12 @@
 # CDR-Stats License
 # http://www.cdr-stats.org
 #
-# This Source Code Form is subject to the terms of the Mozilla Public 
+# This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 # Copyright (C) 2011-2012 Star2Billing S.L.
-# 
+#
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
@@ -18,13 +18,17 @@
 #
 # cd /usr/src/ ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats.sh -O install-cdr-stats.sh ; bash install-cdr-stats.sh
 #
+# Install develop branch
+# cd /usr/src/ ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/develop/install/install-cdr-stats.sh -O install-cdr-stats.sh ; sed -i "s/cdr-stats\/master/cdr-stats\/develop/g" install-cdr-stats.sh ; bash install-cdr-stats.sh
+#
 
+BRANCH='develop'
 INSTALLMODE='FULL' # Set to FULL to update Selinux / Firewall / etc...
 
 
 #Get Scripts dependencies
-wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/bash-common-functions.sh -O bash-common-functions.sh
-wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
+wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/bash-common-functions.sh -O bash-common-functions.sh
+wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
 
 
 #Menu Section for Script

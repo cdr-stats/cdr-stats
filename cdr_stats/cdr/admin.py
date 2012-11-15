@@ -24,11 +24,8 @@ from cdr.models import Switch, HangupCause
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.functions_def import get_hangupcause_id
 from cdr.import_cdr_freeswitch_mongodb import apply_index,\
-                                              CDR_COMMON,\
-                                              DAILY_ANALYTIC,\
-                                              MONTHLY_ANALYTIC,\
-                                              create_daily_analytic,\
-                                              create_monthly_analytic
+    CDR_COMMON, DAILY_ANALYTIC, \
+    create_daily_analytic, create_monthly_analytic
 
 from cdr_alert.functions_blacklist import chk_destination
 
@@ -37,11 +34,22 @@ import csv
 
 
 def get_value_from_uni(j, row, field_name):
-    """Get value from unique dict list"""
+    """Get value from unique dict list
+
+    >>> j = ['abc', 2, 3]
+
+    >>> field_name = 'abc'
+
+    >>> row = [1, 2, 3]
+
+    >>> get_value_from_uni(j, row, field_name)
+    '2'
+    """
     if j[0] == field_name:
         return row[j[1] - 1]
     else:
         return ''
+
 
 # Switch
 class SwitchAdmin(admin.ModelAdmin):
@@ -64,7 +72,7 @@ class SwitchAdmin(admin.ModelAdmin):
         **Attributes**:
 
             * ``form`` - CDR_FileImport
-            * ``template`` - admin/cdr/switch/import_contact.html
+            * ``template`` - admin/cdr/switch/import_cdr.html
 
         **Logic Description**:
 
@@ -90,9 +98,7 @@ class SwitchAdmin(admin.ModelAdmin):
 
         if request.method == 'POST':
             form = CDR_FileImport(request.user, request.POST, request.FILES)
-
             if form.is_valid():
-
                 field_list = {}
                 field_notin_list = []
                 for i in CDR_FIELD_LIST:
@@ -105,20 +111,19 @@ class SwitchAdmin(admin.ModelAdmin):
                 countMap = {}
                 for v in field_list.itervalues():
                     countMap[v] = countMap.get(v, 0) + 1
-                uni = [(k, v) for k, v in field_list.iteritems() \
-                            if countMap[v] == 1]
+                uni = [(k, v) for k, v in field_list.iteritems() if countMap[v] == 1]
                 uni = sorted(uni, key=lambda uni: uni[1])
 
                 # if order list matched with CDR_FIELD_LIST count
                 if len(uni) == len(CDR_FIELD_LIST) - len(field_notin_list):
 
                     # To count total rows of CSV file
-                    records = csv.reader(request.FILES['csv_file'],
-                                         delimiter=',', quotechar='"')
+                    records = csv.reader(
+                        request.FILES['csv_file'], delimiter=',', quotechar='"')
                     total_rows = len(list(records))
 
-                    rdr = csv.reader(request.FILES['csv_file'],
-                                     delimiter=',', quotechar='"')
+                    rdr = csv.reader(
+                        request.FILES['csv_file'], delimiter=',', quotechar='"')
                     cdr_record_count = 0
 
                     # Read each Row
@@ -142,37 +147,25 @@ class SwitchAdmin(admin.ModelAdmin):
                                 for j in uni:
                                     get_cdr_from_row[j[0]] = row[j[1] - 1]
                                     #get_cdr_from_row[j[0]] = row[row_counter]
-                                    caller_id_name = \
-                                        get_value_from_uni(j, row, 'caller_id_name')
-                                    caller_id_number = \
-                                        get_value_from_uni(j, row, 'caller_id_number')
-                                    direction = \
-                                        get_value_from_uni(j, row, 'direction')
-                                    remote_media_ip = \
-                                        get_value_from_uni(j, row, 'remote_media_ip')
-                                    answer_uepoch = \
-                                        get_value_from_uni(j, row, 'answer_uepoch')
-                                    end_uepoch = \
-                                        get_value_from_uni(j, row, 'end_uepoch')
-                                    mduration = \
-                                        get_value_from_uni(j, row, 'mduration')
-                                    billmsec = \
-                                        get_value_from_uni(j, row, 'billmsec')
-                                    read_codec = \
-                                        get_value_from_uni(j, row, 'read_codec')
-                                    write_codec = \
-                                        get_value_from_uni(j, row, 'write_codec')
-
+                                    caller_id_name = get_value_from_uni(j, row, 'caller_id_name')
+                                    caller_id_number = get_value_from_uni(j, row, 'caller_id_number')
+                                    direction = get_value_from_uni(j, row, 'direction')
+                                    remote_media_ip = get_value_from_uni(j, row, 'remote_media_ip')
+                                    answer_uepoch = get_value_from_uni(j, row, 'answer_uepoch')
+                                    end_uepoch = get_value_from_uni(j, row, 'end_uepoch')
+                                    mduration = get_value_from_uni(j, row, 'mduration')
+                                    billmsec = get_value_from_uni(j, row, 'billmsec')
+                                    read_codec = get_value_from_uni(j, row, 'read_codec')
+                                    write_codec = get_value_from_uni(j, row, 'write_codec')
                                     row_counter = row_counter + 1
 
                                 if len(field_notin_list) != 0:
                                     for i in field_notin_list:
                                         if i == 'accountcode':
-                                            accountcode = int(request.POST[i + "_csv"])
+                                            accountcode = request.POST[i + "_csv"]
 
                                 if not accountcode:
-                                    accountcode = int(get_cdr_from_row['accountcode'])
-
+                                    accountcode = get_cdr_from_row['accountcode']
 
                                 # Mandatory fields to import
                                 switch_id = int(request.POST['switch'])
@@ -222,11 +215,11 @@ class SwitchAdmin(admin.ModelAdmin):
                                     'cdr_object_id': '',
                                     'country_id': country_id,
                                     'authorized': authorized,
-                                    }
+                                }
 
                                 try:
                                     # check if cdr is already existing in cdr_common
-                                    cdr_data = settings.DBCON[settings.MG_CDR_COMMON]
+                                    cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
                                     query_var = {}
                                     query_var['uuid'] = uuid
                                     record_count = cdr_data.find(query_var).count()
@@ -243,21 +236,21 @@ class SwitchAdmin(admin.ModelAdmin):
                                             fromtimestamp(int(get_cdr_from_row['start_uepoch'][:10]))
 
                                         # insert daily analytic record
-                                        create_daily_analytic(daily_date, switch.id, country_id,
+                                        create_daily_analytic(daily_date, switch_id, country_id,
                                                               accountcode, hangup_cause_id,
                                                               duration)
 
                                         # MONTHLY_ANALYTIC
                                         # insert monthly analytic record
-                                        create_monthly_analytic(daily_date, start_uepoch, switch.id,
+                                        create_monthly_analytic(daily_date, start_uepoch, switch_id,
                                                                 country_id, accountcode, duration)
 
                                         cdr_record_count = cdr_record_count + 1
 
                                         msg =\
-                                        _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
-                                        % {'cdr_record_count': cdr_record_count,
-                                           'total_rows': total_rows}
+                                            _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
+                                            % {'cdr_record_count': cdr_record_count,
+                                            'total_rows': total_rows}
                                         success_import_list.append(row)
                                 except:
                                     msg = _("Error : invalid value for import")
@@ -290,7 +283,7 @@ class SwitchAdmin(admin.ModelAdmin):
             'type_error_import_list': type_error_import_list,
             'CDR_FIELD_LIST': list(CDR_FIELD_LIST),
             'CDR_FIELD_LIST_NUM': list(CDR_FIELD_LIST_NUM),
-            })
+        })
         template = 'admin/cdr/switch/import_cdr.html'
         return render_to_response(template, context_instance=ctx)
 

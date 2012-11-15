@@ -24,7 +24,7 @@ class CustomMenu(Menu):
         Menu.__init__(self, **kwargs)
         self.children += [
             items.MenuItem(_('CDR-Stats' + ' V' + cdr_stats.__version__),
-                                reverse('admin:index')),
+                reverse('admin:index')),
             items.Bookmarks(),
             items.AppList(
                 _('Applications'),
@@ -34,8 +34,8 @@ class CustomMenu(Menu):
                 _('Administration'),
                 models=('django.contrib.*', )
             ),
-            items.MenuItem(_('Customer Panel'), reverse('admin:index')\
-            + '../'),
+            items.MenuItem(_('API Explorer'), reverse('admin:index') + '../api-explorer/'),
+            items.MenuItem(_('Customer Panel'), reverse('admin:index') + '../'),
         ]
 
     def init_with_context(self, context):

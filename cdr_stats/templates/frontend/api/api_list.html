@@ -1,0 +1,47 @@
+{% extends "frontend/master.html" %}
+{% load i18n %}
+
+{% block extra_files %}
+{% endblock %}
+
+
+{% block content %}
+
+    {% block content_header %}
+        <center>
+        <h3>
+            {% trans "CDR-Stats APIs" %}
+            <small>{% trans "Browser playground" %}</small>
+        </h3>
+        </center>
+    {% endblock %}
+
+    <div class="row">
+        <div class="span4">&nbsp;</div>
+        <div class="span4">
+            <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th>{% trans "No" %}</th>
+                    <th>{% trans "Name" %}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for api in list_of_api %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <a href="{{ api.api_link }}"> {{ api.api_name|title }} </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+

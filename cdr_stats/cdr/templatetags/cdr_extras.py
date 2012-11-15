@@ -15,55 +15,53 @@ from django import template
 from django.utils.translation import gettext as _
 from cdr.models import Switch
 from cdr.functions_def import get_hangupcause_name
+from cdr.views import notice_count
 import re
 
 register = template.Library()
 
-@register.filter()
-def cal_width(value, max):
-    """Calculate width of image from max value"""
-    width = (value / float(max)) * 200
-    return width
 
-
-@register.filter()
+@register.filter(name='seen_unseen')
 def seen_unseen(value):
     """Tag is for icon which is
-    used on user notification list"""
+    used on user notification list
+
+    >>> seen_unseen('1')
+    'icon-star'
+
+    >>> seen_unseen('')
+    'icon-ok'
+    """
     if value:
         return "icon-star"
     else:
         return "icon-ok"
 
 
-@register.filter()
+@register.filter(name='seen_unseen_word')
 def seen_unseen_word(value):
     """Tag is for notification status which is
-    used on user notification list"""
+    used on user notification list
+
+    >>> seen_unseen_word('1')
+    'New'
+
+    >>> seen_unseen_word('')
+    'Read'
+    """
     if value:
         return _("New")
     else:
         return _("Read")
 
 
-@register.filter()
-def notice_count(user):
-    """To get unseen notification for admin user & this tag is also used on
-       admin template admin/base_site.html"""
-    from notification import models as notification
-    notice_count = 0
-    # get notification count
-    try:
-        notice_count = notification.Notice.objects.\
-                        filter(recipient=user, unseen=1).count()
-    except:
-        pass
-    return str(notice_count) + _(" Notification")
-
-
-@register.filter()
+@register.filter(name='get_switch_ip')
 def get_switch_ip(id):
-    """Tag is used to get switch name"""
+    """Tag is used to get switch name
+
+    >>> get_switch_ip(0)
+    u''
+    """
     try:
         obj = Switch.objects.get(pk=id)
         return obj.name
@@ -71,44 +69,39 @@ def get_switch_ip(id):
         return u''
 
 
-@register.filter()
+@register.filter(name='hangupcause_name')
 def hangupcause_name(id):
     """Tag is used to get hangupcause name"""
     return get_hangupcause_name(id)
 
 
-@register.filter()
+@register.filter(name='hangupcause_name_with_title')
 def hangupcause_name_with_title(id):
-    """Tag is used to get hangupcause name with lowercase"""
+    """Tag is used to get hangupcause name with lowercase
+
+    >>> hangupcause_name_with_title(10000)
+    ''
+    """
     try:
         val = get_hangupcause_name(id)
-        t = re.sub("([a-z])'([A-Z])",
-                        lambda m: m.group(0).lower(), val.title())
-        return re.sub("\d([A-Z])",
-                        lambda m: m.group(0).lower(), t)
+        t = re.sub("([a-z])'([A-Z])", lambda m: m.group(0).lower(), val.title())
+        return re.sub("\d([A-Z])", lambda m: m.group(0).lower(), t)
     except:
         return ''
 
 
-@register.filter()
+@register.filter(name='mongo_id')
 def mongo_id(value, sub_val):
     """Tag is used to get mongo mapreduce _id.value"""
-    if type(value) == type({}):
-        if '_id' in value:
-            if sub_val in value['_id']:
-                value = int(value['_id'][sub_val])
-            else:
-                value = value['_id']
-    # Return value
+    if isinstance(value, dict) and '_id' in value:
+        if sub_val in value['_id']:
+            value = int(value['_id'][sub_val])
+        else:
+            value = value['_id']
     return value
 
 
-register.filter('cal_width', cal_width)
-register.filter('seen_unseen', seen_unseen)
-register.filter('seen_unseen_word', seen_unseen_word)
-register.filter('notice_count', notice_count)
-register.filter('get_switch_ip', get_switch_ip)
-register.filter('hangupcause_name', hangupcause_name)
-register.filter('hangupcause_name_with_title',
-                            hangupcause_name_with_title)
-register.filter('mongo_id', mongo_id)
+@register.simple_tag(name='get_notice_count')
+def get_notice_count(request):
+    """tag to display notice count"""
+    return notice_count(request)

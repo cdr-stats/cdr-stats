@@ -15,7 +15,6 @@ CELERY_CONFIG_MODULE="celeryconfig"
 CELERYBEAT_LOG_FILE="/var/log/cdr-stats/celerybeat-%n.log"
 CELERYBEAT_PID_FILE="/var/run/celerybeat-%n.pid"
 
-#TODO : review user / group
 # Workers should run as an unprivileged user.
 #CELERYBEAT_USER="celery"
 #CELERYBEAT_GROUP="celery"

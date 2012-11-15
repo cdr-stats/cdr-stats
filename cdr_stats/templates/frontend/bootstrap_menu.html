@@ -1,0 +1,83 @@
+{% load i18n cdr_extras %}
+
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+
+      <a class="brand" href="/">
+          <img src="{{STATIC_URL}}cdr-stats/images/cdr-stats.png" />
+          <span class="menu-label">CDR-Stats</span>
+      </a>
+
+      <div class="nav-collapse">
+          {% if user.is_authenticated %}
+            <ul class="nav">
+                <li {% ifequal module 'cdr_dashboard' %}class="active"{% endifequal %}><a href="/dashboard/">{% trans "Dashboard" %}</a></li>
+                <li {% ifequal module 'cdr_view' %}class="active"{% endifequal %}><a href="/cdr_view/">{% trans "Search" %}</a></li>
+                <li {% ifequal module 'cdr_overview' %}class="active"{% endifequal %}><a href="/cdr_overview/">{% trans "Analytics" %}</a></li>
+                <li {% ifequal module 'cdr_report_by_hour' %}class="active"{% endifequal %}><a href="/hourly_report/">{% trans "Compare" %}</a></li>
+                <li {% ifequal module 'cdr_realtime' %}class="active"{% endifequal %}><a href="/cdr_realtime/">{% trans "Realtime" %}</a></li>
+                <li {% ifequal module 'cdr_concurrent_calls' %}class="active"{% endifequal %}><a href="/cdr_concurrent_calls/">{% trans "Concurrent" %}</a></li>
+            </ul>
+            <ul class="nav pull-left">
+                <li id="fat-menu-I" class="dropdown">
+                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Report" %}<b class="caret"></b></a>
+                   <ul class="dropdown-menu">
+                      <li {% ifequal module 'cdr_country_report' %}class="active"{% endifequal %}><a href="/country_report/">{% trans "Country Report" %}</a></li>
+                      <li {% ifequal module 'world_map_view' %}class="active"{% endifequal %}><a href="/world_map/">{% trans "World Map Report" %}</a></li>
+                      <li {% ifequal module 'cdr_mail_report' %}class="active"{% endifequal %}><a href="/mail_report/">{% trans "Mail Report" %}</a></li>
+                   </ul>
+                </li>
+            </ul>
+          {% endif %}
+
+          {% if user.is_authenticated %}
+            <ul class="nav pull-right">
+              <li id="fat-menu-II" class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username|capfirst }}
+                    {% if notice_count %}
+                        <span class="label label-warning">{{ notice_count }}</span>
+                    {% elif "/api-explorer/" in request.get_full_path %}
+                        <span class="label label-warning">{% get_notice_count request %}</span>
+                    {% endif %}
+                    <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                  <li {% ifequal module 'detail_change' %}class="active"{% endifequal %}><a href="/user_detail_change/?action=tabs-1">
+                          {% trans "Account settings" %}</a></li>
+                  <li {% ifequal module 'detail_change' %}class="active"{% endifequal %}><a href="/user_detail_change/?action=tabs-3">
+                        {% trans "Notifications" %}
+                        {% if notice_count %}
+                            <span class="label label-warning">{{ notice_count }}</span>
+                        {% elif "/api-explorer/" in request.get_full_path %}
+                            <span class="label label-warning">{% get_notice_count request %}</span>
+                        {% endif %}
+                        </a>
+                    </li>
+                  <li {% ifequal module 'detail_change' %}class="active"{% endifequal %}><a href="/user_detail_change/?action=tabs-4">
+                          {% trans "Change Language" %}</a></li>
+                  <li class="divider"></li>
+                  {% if perms.user_profile.view_api_explorer %}
+                      <li><a href="/api-explorer/"> {% trans "API Explorer" %}</a></li>
+                  {% endif %}
+                  <li class="divider"></li>
+                  {% if user.is_superuser %}
+                  <li><a href="/admin/"> {% trans "Administration" %}</a></li>
+                  <li class="divider"></li>
+                  {% endif %}
+                  <li><a href="/logout/">{% trans "Log out" %}</a></li>
+                </ul>
+              </li>
+            </ul>
+          {% endif %}
+
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+</div>

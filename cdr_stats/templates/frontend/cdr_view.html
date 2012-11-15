@@ -1,0 +1,384 @@
+{% extends "frontend/master.html" %}
+{% load i18n pagination_tags cdr_extras common_tags %}
+{% load country_dialcode_tags %}
+{% load cache %}
+
+{% block title %}{% trans "CDR View" %}{% endblock %}
+
+{% block extra_header %}
+    {% include "frontend/common_datepicker.html" %}
+{% endblock %}
+
+
+{% block content %}
+<div class="tabbable">
+<ul class="nav nav-tabs">
+    <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "calls detail records"|title %}</a></li>
+    <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "report by day"|title %}</a></li>
+</ul>
+
+<div id="form_collapse" class="collapse">
+    <form class="well" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
+    <div class="row">
+        <div class="span12">
+            <div class="row">
+                <div class="span4">
+                    <label class="control-label" for="id_{{ form.from_date.name }}">{{ form.from_date.label }}</label>
+                    <div class="input">
+                        {{ form.from_date }}
+                        <span class="help-block">{{ form.from_date.help_text|safe }} </span>
+                    </div>
+                </div>
+                <div class="span4">
+                    <label class="control-label" for="id_{{ form.to_date.name }}">{{ form.to_date.label }}</label>
+                    <div class="input">
+                        {{ form.to_date }}
+                        <span class="help-block">{{ form.to_date.help_text|safe }} </span>
+                    </div>
+                </div>
+                <div class="span4">
+                    <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }}</label>
+                    <div class="input">
+                        {{ form.switch }}
+                        <span class="help-block">{{ form.switch.help_text|safe }} </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+    <div class="span12">
+      <div class="row">
+          <div class="span4">
+            <label class="control-label" for="id_{{ form.destination.name }}">{{ form.destination.label }}</label>
+            <div class="input">
+                {{ form.destination }}&nbsp;&nbsp;{{ form.destination_type }}
+            </div>
+            {% if form.destination.errors %}
+                <span class="help-inline">{{ form.destination.errors }}</span>
+            {% endif %}
+          </div>
+          {% if user.is_superuser %}
+          <div class="span4">
+            <label class="control-label" for="id_{{ form.accountcode.name }}">{{ form.accountcode.label }}</label>
+            <div class="input">
+                {{ form.accountcode }}&nbsp;&nbsp;{{ form.accountcode_type }}
+            </div>
+              {% if form.accountcode.errors %}
+                  <span class="help-inline">{{ form.accountcode.errors }}</span>
+              {% endif %}
+          </div>
+          {% endif %}
+          <div class="span4">
+            <label class="control-label" for="id_{{ form.caller.name }}">{{ form.caller.label }}</label>
+            <div class="input">
+              {{ form.caller }}&nbsp;&nbsp;{{ form.caller_type }}
+            </div>
+            {% if form.caller.errors %}
+                <span class="help-inline error">{{ form.caller.errors }}</span>
+            {% endif %}
+          </div>
+      </div>
+  </div>
+  </div>
+
+  <div class="row">
+    <div class="span12">
+        <div class="row">
+            <div class="span4">
+                <label class="control-label" for="id_{{ form.direction.name }}">{{ form.direction.label }}</label>
+                <div class="input">
+                    {{ form.direction }}
+                </div>
+            </div>
+            <div class="span4">
+                <label class="control-label" for="id_{{ form.hangup_cause.name }}">{{ form.hangup_cause.label }}</label>
+                <div class="input">
+                  {{ form.hangup_cause }}
+                </div>
+            </div>
+            <div class="span4">
+                <label class="control-label" for="id_{{ form.duration.name }}">{{ form.duration.label }}</label>
+                <div class="input">
+                    {{ form.duration }}&nbsp;&nbsp;{{ form.duration_type }}
+                </div>
+                {% if form.duration.errors %}
+                    <span class="help-inline">{{ form.duration.errors }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+  </div>
+  <div class="row">
+     <div class="span12">
+         <div class="row">
+             <div class="span4">
+                 <label class="control-label" for="id_{{ form.country_id.name }}">{{ form.country_id.label }}</label>
+                 <div class="input">
+                     {{ form.country_id }}
+                     <span class="help-block">{{ form.country_id.help_text|safe }} </span>
+                 </div>
+             </div>
+             <div class="span4">
+                 <label class="control-label" for="id_{{ form.result.name }}">{{ form.result.label }}</label>
+                 <div class="input">
+                     {{ form.result|removetags:"ul li label"|safe }}
+                 </div>
+             </div>
+         </div>
+     </div>
+  </div>
+
+  <label></label>
+  <div class="actions">
+      <input type="submit" class="btn btn-primary" name="search" value={% trans "Search" %} />
+  </div>
+</div>
+
+    <a class="btn btn-small" id="toggle_btn" href="#" data-toggle="collapse" data-target="#form_collapse">
+      <i class="icon-search"></i> <span>{% trans "advanced search"|title %}</span>
+    </a>
+
+
+    <div class="tab-content">
+    <div id="tabs-1" class="tab-pane {% if action == "tabs-1" or action == "" %}active{% endif %}">
+        <div class="graph_header">
+            {% trans "calls detail records"|title %} -
+            <b>
+            {% if start_date  %}
+                {{ start_date|date:"jS N Y" }}
+            {% endif %}
+            {% if end_date  %}
+                {% trans "to" %} {{ end_date|date:"jS N Y" }}
+            {% endif %}
+            </b>
+        </div>
+        <p>&nbsp;</p>
+        <table class="table table-striped table-bordered table-condensed">
+            <thead>
+            <tr>
+                <th>
+                    {% ifequal col_name_with_order.sort_field 'start_uepoch' %}
+                      {% sort_link "<i class='icon-chevron-up'></i>" "start_uepoch"  %}
+                      {% trans "Call-date" %}
+                      {% sort_link "<i class='icon-chevron-down'></i>" "-start_uepoch"  %}
+                    {% else %}
+                      {% sort_link "Call-date" "-start_uepoch"  %}
+                    {% endifequal %}
+                </th>
+                <th>
+                    {% ifequal col_name_with_order.sort_field 'caller_id_number' %}
+                      {% sort_link "<i class='icon-chevron-up'></i>" "caller_id_number"  %}
+                      {% trans "CLID" %}
+                      {% sort_link "<i class='icon-chevron-down'></i>" "-caller_id_number"  %}
+                    {% else %}
+                      {% sort_link "CLID" "-caller_id_number"  %}
+                    {% endifequal %}
+                </th>
+                <th>
+                    {% ifequal col_name_with_order.sort_field 'destination_number' %}
+                      {% sort_link "<i class='icon-chevron-up'></i>" "destination_number"  %}
+                      {% trans "Destination" %}
+                      {% sort_link "<i class='icon-chevron-down'></i>" "-destination_number"  %}
+                    {% else %}
+                      {% sort_link "Destination" "-destination_number"  %}
+                    {% endifequal %}
+                </th>
+                <th>
+                    {% ifequal col_name_with_order.sort_field 'duration' %}
+                      {% sort_link "<i class='icon-chevron-up'></i>" "duration"  %}
+                      {% trans "Duration" %}
+                      {% sort_link "<i class='icon-chevron-down'></i>" "-duration"  %}
+                    {% else %}
+                      {% sort_link "Duration" "-duration"  %}
+                    {% endifequal %}
+                </th>
+                <th>
+                    {% ifequal col_name_with_order.sort_field 'billsec' %}
+                      {% sort_link "<i class='icon-chevron-up'></i>" "billsec"  %}
+                      <abbr title='{% trans "Bill Seconds" %}'>{% trans "Bill" %}</abbr>
+                      {% sort_link "<i class='icon-chevron-down'></i>" "-billsec"  %}
+                    {% else %}
+                        <abbr title={% trans 'Bill Seconds' %}>
+                        {% sort_link "Bill" "-billsec"  %}
+                        </abbr>
+                    {% endifequal %}
+                </th>
+                <th>
+                    {% ifequal col_name_with_order.sort_field 'hangup_cause_id' %}
+                      {% sort_link "<i class='icon-chevron-up'></i>" "hangup_cause_id"  %}
+                      {% trans "Hangup cause" %}
+                      {% sort_link "<i class='icon-chevron-down'></i>" "-hangup_cause_id"  %}
+                    {% else %}
+                      {% sort_link "Hangup Cause" "-hangup_cause_id"  %}
+                    {% endifequal %}
+                </th>
+                <th>
+                    {% ifequal col_name_with_order.sort_field 'accountcode' %}
+                      {% sort_link "<i class='icon-chevron-up'></i>" "accountcode"  %}
+                      {% trans "Account" %}
+                      {% sort_link "<i class='icon-chevron-down'></i>" "-accountcode"  %}
+                    {% else %}
+                      {% sort_link "Account" "-accountcode"  %}
+                    {% endifequal %}
+                </th>
+                <th>
+                </th>
+            </tr>
+            </thead>
+            {% if rows %}
+            {% autopaginate rows PAGE_SIZE %}
+            {% for row in rows %}
+            <tr>
+                <td>{{ row.start_uepoch }}</td>
+                <td>
+                    {{ row.caller_id_number }}
+                    {% if row.caller_id_number and row.caller_id_name %}
+                        -
+                    {% endif %}
+                    {{ row.caller_id_name }}
+                </td>
+                <td>{{ row.destination_number }}</td>
+                <td>{% if result == 1 %}
+                        {{ row.duration|conv_min }}
+                    {% else %}
+                        {{ row.duration }}
+                    {% endif %}
+                </td>
+                <td>{% if result == 1 %}
+                        {{ row.billsec|conv_min }}
+                    {% else %}
+                        {{ row.billsec }}
+                    {% endif %}
+                </td>
+                <td>
+                  {% cache 1800 hangupcause_name row.hangup_cause_id %}
+                    {{ row.hangup_cause_id|hangupcause_name }}
+                  {% endcache %}
+                </td>
+                <td>{{ row.accountcode }}</td>
+                <td>
+                    <div class="flag_icon">
+                        {% if row.country_id %}
+                            {% cache 1800 hcountry_flag row.country_id %}
+                                <img src="{{STATIC_URL}}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name }}">
+                            {% endcache %}
+                        {% else %}
+                            <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World" %}">
+                        {% endif %}
+                        {% if row.authorized == 1  %}
+                            <img src="{{STATIC_URL}}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans "Authorized call" %}"/>
+                        {% else %}
+                            <img src="{{STATIC_URL}}cdr-stats/icons/flag_red.png" class="elemtooltip" title="{% trans "Unauthorized call" %}"/>
+                        {% endif %}
+                        {% ifequal row.direction 'inbound' %}
+                            <img src="{{STATIC_URL}}cdr-stats/icons/door_in.png" title="{{ row.direction|capfirst }} {% trans "call" %}" class="elemtooltip"/>
+                        {% else %}
+                            <img src="{{STATIC_URL}}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
+                        {% endifequal %}
+                        {% if "cdr_object_id" in row %}
+                            <a data-toggle="modal" href="#modal-create-{{ row.cdr_object_id }}" class="ajax-modal-{{ row.cdr_object_id }}" url='/cdr_detail/{{ row.cdr_object_id }}/{{ row.switch_id }}' data-controls-modal='modal-create-content-{{ row.cdr_object_id }}'><img src="{{STATIC_URL}}cdr-stats/icons/zoom.png" class="elemtooltip" title="{% trans "Show details" %}"/></a>
+                        {% endif %}
+
+                        <script type="text/javascript" charset="utf-8">
+                            $(".ajax-modal-{{ row.cdr_object_id }}").live('click', function() {
+                                var url = $(this).attr('url');
+                                var modal_id = $(this).attr('data-controls-modal');
+                                url = url + "/?menu=off";
+                                $("#" + modal_id).load(url);
+                            });
+                        </script>
+                        <!-- modal content -->
+                        <div id="modal-create-{{ row.cdr_object_id }}" class="modal hide fade" >
+                            <div class="modal-header">
+                                <a class="close" data-dismiss="modal" >&times;</a>
+                                <h3>{% trans "Call Details" %}</h3>
+                            </div>
+                            <div class="modal-body" id="modal-create-content-{{ row.cdr_object_id }}">
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#" class="btn" data-dismiss="modal">{% trans "Close" %}</a>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+
+            {% else %}
+            <tr>
+                <td colspan="8" align="center">
+                    {% trans "no records found"|title %}
+                </td>
+            </tr>
+            {% endif %}
+        </table>
+        <div align="right" class="show-rows">
+            {% trans "show rows"|title %} :
+            {{ form.records_per_page }}
+            {% trans "total calls"|title %} : {{ total_calls }}
+        </div>
+        </form>
+
+        {% if rows %}
+            {% paginate %}
+        {% endif %}
+
+        <p>&nbsp;</p>
+
+        <div class="show_export_file" id='export-container'>
+            {% trans "Export CSV file"  %} <br/>
+            <a href="/cdr_export_csv/"><img src='{{ STATIC_URL }}cdr-stats/icons/x-office-spreadsheet.png' width="75"/></a>
+        </div>
+    </div>
+
+    <div id="tabs-2" class="tab-pane {% if action == "tabs-2" %}active{% endif %}">
+        <table class="table table-striped table-bordered table-condensed">
+            <caption class="graph_header">
+                {% trans "daily report"|title  %} -
+                <b>
+                {% if start_date  %}
+                    {{ start_date|date:"jS N Y" }}
+                {% endif %}
+                {% if end_date  %}
+                    {% trans "to" %} {{ end_date|date:"jS N Y" }}
+                {% endif %}
+                </b>
+            </caption>
+            <thead>
+            <tr>
+                <th>{% trans "Date"  %}</th>
+                <th>{% trans "Duration"  %}</th>
+                <th>{% trans "Graphic"  %}</th>
+                <th>{% trans "Calls"  %}</th>
+                <th><acronym title="{% trans "Average Connection Time"  %}">{% trans "ACT"  %}</acronym></th>
+            </tr>
+            </thead>
+            {% for td in total_data %}
+            <tr>
+                <td>{{ td.calldate|date:"D d M Y" }}</td>
+                <td>{{ td.duration__sum|conv_min }}</td>
+                <td>{% if max_duration > 0 %}
+                    <img src="{{ STATIC_URL }}cdr-stats/images/spacer.png" width="{{ td.duration__sum|cal_width:max_duration }}" style="vertical-align:center; height:10px"/>
+                    {% endif %}
+                </td>
+                <td>{{ td.calldate__count }}</td>
+                <td>{{ td.duration__avg|conv_min }}</td>
+            </tr>
+            {% endfor %}
+
+            <tr>
+                <th scope="row">{% trans "Total"  %}</th>
+                <td>{{ total_duration|conv_min }}</td>
+                <td></td>
+                <td>{{ total_calls }}</td>
+                <td>{{ total_avg_duration|conv_min }}</td>
+            </tr>
+        </table>
+    </div>
+    </div>
+
+
+</div>
+{% endblock %}
