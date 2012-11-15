@@ -195,7 +195,7 @@ Freeswitch settings are under the CDR_BACKEND section, and should look as follow
             'db_name': 'freeswitch_cdr',
             'table_name': 'cdr',  # collection if mongodb
             'host': 'localhost',
-            'port': 3366,  # 3366 mysql, 5432 pgsql, 27017 mongodb
+            'port': 3306,  # 3306 mysql, 5432 pgsql, 27017 mongodb
             'user': '',
             'password': '',
         },
@@ -205,7 +205,7 @@ Freeswitch settings are under the CDR_BACKEND section, and should look as follow
         #    'db_name': 'freeswitch_cdr',
         #    'table_name': 'cdr',  # collection if mongodb
         #    'host': 'localhost',
-        #    'port': 3366,  # 3366 mysql, 5432 pgsql, 27017 mongodb
+        #    'port': 3306,  # 3306 mysql, 5432 pgsql, 27017 mongodb
         #    'user': '',
         #    'password': '',
         #},

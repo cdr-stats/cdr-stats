@@ -116,7 +116,7 @@ CDR_BACKEND = {
         'db_name': 'MYSQL_IMPORT_CDR_DBNAME',
         'table_name': 'MYSQL_IMPORT_CDR_TABLENAME',
         'host': 'MYSQL_IMPORT_CDR_HOST',
-        'port': 3366,  # 3366 mysql, 5432 pgsql
+        'port': 3306,  # 3306 mysql, 5432 pgsql
         'user': 'MYSQL_IMPORT_CDR_USER',
         'password': 'MYSQL_IMPORT_CDR_PASSWORD',
     },
@@ -126,7 +126,7 @@ CDR_BACKEND = {
     #     'db_name': 'asteriskcdr',
     #     'table_name': 'cdr',  # collection if mongodb
     #     'host': 'localhost',
-    #     'port': 3366,  # 3366 mysql, 5432 pgsql, 27017 mongodb
+    #     'port': 3306,  # 3306 mysql, 5432 pgsql, 27017 mongodb
     #     'user': 'root',
     #     'password': 'password',
     # },
@@ -136,7 +136,7 @@ CDR_BACKEND = {
     #     'db_name': 'freeswitch_cdr',
     #     'table_name': 'cdr',  # collection if mongodb
     #     'host': 'localhost',
-    #     'port': 27017,  # 3366 mysql, 5432 pgsql, 27017 mongodb
+    #     'port': 27017,  # 3306 mysql, 5432 pgsql, 27017 mongodb
     #     'user': '',
     #     'password': '',
     # },
