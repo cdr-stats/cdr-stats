@@ -92,7 +92,7 @@ class SearchForm(forms.Form):
                                          required=False,
                                          choices=list(STRING_SEARCH_TYPE_LIST))
     accountcode_type.widget.attrs['class'] = 'input-small'
-    duration = forms.CharField(label=_('Duration'),
+    duration = forms.CharField(label=_('Duration (Secs)'),
                                required=False)
     duration_type = forms.ChoiceField(label='',
                                       required=False,

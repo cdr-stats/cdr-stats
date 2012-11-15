@@ -153,7 +153,7 @@ def get_country_name(id, type=''):
     'Spain'
     """
     if id == 999:
-        return _('Internal Call')
+        return _('Internal Calls')
     try:
         obj = Country.objects.get(pk=id)
         if type == 'iso2':
@@ -161,7 +161,7 @@ def get_country_name(id, type=''):
         else:
             return obj.countryname
     except:
-        return _('Unknow')
+        return _('Unknown')
 
 
 @cached(3600)
