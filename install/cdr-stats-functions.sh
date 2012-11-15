@@ -457,7 +457,7 @@ func_install_frontend(){
             read TEMP
             mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST $DATABASENAME -e "ALTER TABLE cdr ADD acctid BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST;"
 
-            #enable CDR-Stats for Asterisk
+            #Enable CDR-Stats for Asterisk
             sed -i "s/'freeswitch'/'asterisk'/g"  $INSTALL_DIR/settings_local.py
 
             #Configure CDR Import
@@ -520,7 +520,6 @@ func_install_frontend(){
     sed -i "s/SERVER_IP_PORT/$IPADDR:$HTTP_PORT/g" $INSTALL_DIR/settings_local.py
     sed -i "s/#'SERVER_IP',/'$IPADDR',/g" $INSTALL_DIR/settings_local.py
     sed -i "s/SERVER_IP/$IPADDR/g" $INSTALL_DIR/settings_local.py
-
 
     #add service for socketio server
     echo "Add service for socketio server..."

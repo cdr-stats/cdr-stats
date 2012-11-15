@@ -65,7 +65,11 @@ REDIS_DB = 0
 
 #TASTYPIE
 #========
-API_ALLOWED_IP = ['127.0.0.1', 'localhost', ]
+API_ALLOWED_IP = [
+    '127.0.0.1',
+    'localhost',
+    #'SERVER_IP',
+]
 
 #SOCKETIO
 #========
@@ -143,7 +147,7 @@ CDR_BACKEND = {
 }
 
 #Define the IP of your local Switch, it needs to exist in the CDR_BACKEND list
-LOCAL_SWITCH_IP = '127.0.0.1'
+LOCAL_SWITCH_IP = 'SERVER_IP'
 
 #MONGODB
 #=======
