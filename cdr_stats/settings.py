@@ -383,8 +383,8 @@ LOCAL_SWITCH_IP = '127.0.0.1'
 
 #Asterisk Manager / Used for Realtime and Concurrent calls
 ASTERISK_MANAGER_HOST = 'localhost'
-ASTERISK_MANAGER_USER = 'user'
-ASTERISK_MANAGER_SECRET = 'secret'
+ASTERISK_MANAGER_USER = 'cdrstats_user'
+ASTERISK_MANAGER_SECRET = 'cdrstats_secret'
 
 #MONGODB
 #=======
