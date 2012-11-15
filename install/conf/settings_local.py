@@ -95,7 +95,7 @@ PREFIX_TO_IGNORE = "+,0,00,000,0000,00000,011,55555,99999"
 INTERNAL_CALL = 5
 
 #Realtime Graph : set the Y axis limit
-REALTIME_Y_AXIS_LIMIT = 10
+REALTIME_Y_AXIS_LIMIT = 300
 
 #Asterisk Manager / Used for Realtime and Concurrent calls
 ASTERISK_MANAGER_HOST = 'localhost'

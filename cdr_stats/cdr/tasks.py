@@ -146,16 +146,16 @@ class get_channels_info(PeriodicTask):
                 except:
                     logger.error("Manager didn't close")
 
-            for account in listaccount:
-                numbercall = listaccount[account]
+            for accountcode in listaccount:
+                numbercall = listaccount[accountcode]
                 logger.debug('%s (accountcode:%s, switch_id:%d) ==> %s'
-                            % (date_now, account, switch_id,
+                            % (date_now, accountcode, switch_id,
                                str(numbercall)))
                 call_json = {
                     'switch_id': switch_id,
                     'call_date': date_now,
                     'numbercall': numbercall,
-                    'accountcode': account,
+                    'accountcode': accountcode,
                 }
                 settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].insert(call_json)
 
