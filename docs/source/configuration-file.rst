@@ -181,6 +181,26 @@ The asterisk settings may be as follows::
 To add a new remote Asterisk MySQL CDR store, you would ensure connection to the remote MySQL database, then uncomment the new server settings by removing the # and configuring the credentials to connect to the remote Asterisk CDR store.
 
 
+
+.. _realtime-configuration-asterisk:
+
+Realtime configuration for Asterisk
+------------------------------------
+
+You will find some extra settings, that will allow you to configure CDR-Stats to retrieve Realtime information.
+
+The settings to configure are::
+
+    #Asterisk Manager / Used for Realtime and Concurrent calls
+    ASTERISK_MANAGER_HOST = 'localhost'
+    ASTERISK_MANAGER_USER = 'cdrstats_user'
+    ASTERISK_MANAGER_SECRET = 'cdrstats_secret'
+
+
+You will need to configure your Asterisk manager API, add a new user for CDR-Stats, further information about Asterisk Manager can be found here : http://www.voip-info.org/wiki/view/Asterisk+config+manager.conf
+
+
+
 .. _configuration-freeswitch:
 
 Import configuration for FreeSWITCH
