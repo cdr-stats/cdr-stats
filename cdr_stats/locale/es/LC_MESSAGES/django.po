@@ -1,5 +1,5 @@
 # CDR-Stats - PO File
-# Copyright (C) 2010 - Star2Billing S.L. 
+# Copyright (C) 2010 - Star2Billing S.L.
 # This file is distributed under the same license as the CDR-Stats application.
 # Areski Belaid <areski@gmail.com>, 2010.
 #
@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-09 16:02+0100\n"
+"POT-Creation-Date: 2012-11-15 17:35+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Areski Belaid <areski@gmail.com>\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -17,49 +17,49 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: settings.py:289 user_profile/fields.py:80
+#: settings.py:277 user_profile/fields.py:80
 msgid "English"
 msgstr "Inglés"
 
-#: settings.py:290 user_profile/fields.py:89 user_profile/fields.py:90
+#: settings.py:278 user_profile/fields.py:89 user_profile/fields.py:90
 msgid "French"
 msgstr "Francés"
 
-#: settings.py:291
+#: settings.py:279
 msgid "Spanish"
 msgstr "Español"
 
-#: settings.py:292 user_profile/fields.py:181
+#: settings.py:280 user_profile/fields.py:181
 msgid "Portuguese"
 msgstr ""
 
-#: settings.py:293 user_profile/fields.py:75 user_profile/fields.py:94
+#: settings.py:281 user_profile/fields.py:75 user_profile/fields.py:94
 msgid "German"
 msgstr ""
 
-#: settings.py:294 user_profile/fields.py:188
+#: settings.py:282 user_profile/fields.py:188
 msgid "Russian"
 msgstr ""
 
-#: cdr/admin.py:230
+#: cdr/admin.py:227
 msgid "CDR already exists !!"
 msgstr ""
 
-#: cdr/admin.py:254
+#: cdr/admin.py:251
 #, python-format
 msgid ""
 "%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!"
 msgstr ""
 
-#: cdr/admin.py:259 cdr/admin.py:263
+#: cdr/admin.py:256 cdr/admin.py:260
 msgid "Error : invalid value for import"
 msgstr ""
 
-#: cdr/admin.py:272
+#: cdr/admin.py:269
 msgid "Error : importing several times the same column"
 msgstr ""
 
-#: cdr/admin.py:277 templates/admin_tools/dashboard/modules/app_list.html:31
+#: cdr/admin.py:274 templates/admin_tools/dashboard/modules/app_list.html:31
 #: templates/admin_tools/dashboard/modules/model_list.html:20
 msgid "Import CDR"
 msgstr ""
@@ -84,231 +84,221 @@ msgstr "Termina con"
 msgid "Please use the following format"
 msgstr ""
 
-#: cdr/forms.py:42
-msgid "Hold down \"Ctrl\", \"Command\" on Mac, to select more than one."
-msgstr ""
-
-#: cdr/forms.py:48
+#: cdr/forms.py:46
 msgid "All Switches"
 msgstr ""
 
-#: cdr/forms.py:58 cdr/forms.py:68 cdr/forms.py:173
+#: cdr/forms.py:56 cdr/forms.py:66 cdr/forms.py:170
 msgid "All"
 msgstr ""
 
-#: cdr/forms.py:80
+#: cdr/forms.py:78
 #, fuzzy
 msgid "Caller ID"
 msgstr "Fecha de Llamada"
 
-#: cdr/forms.py:85 templates/frontend/cdr_view.html:182
+#: cdr/forms.py:83 templates/frontend/cdr_view.html:182
 #: templates/frontend/mail_report_template.html:14
 msgid "Destination"
 msgstr "Destino"
 
-#: cdr/forms.py:91
+#: cdr/forms.py:89
 msgid "Account Code"
 msgstr ""
 
-#: cdr/forms.py:97 templates/frontend/cdr_country_report.html:206
-#: templates/frontend/cdr_dashboard.html:135
-#: templates/frontend/cdr_overview.html:376
-#: templates/frontend/cdr_overview.html:529
-#: templates/frontend/cdr_view.html:191 templates/frontend/cdr_view.html:352
-#: templates/frontend/mail_report_template.html:15
-#: templates/frontend/world_map.html:147
-#: templates/frontend/world_map_analytic.html:157
-msgid "Duration"
-msgstr "Duración"
+#: cdr/forms.py:95
+#, fuzzy
+msgid "Duration (Secs)"
+msgstr "Duración :"
 
-#: cdr/forms.py:103 templates/frontend/cdr_view.html:211
+#: cdr/forms.py:101 templates/frontend/cdr_view.html:211
 #: templates/frontend/mail_report_template.html:17
 msgid "Hangup cause"
 msgstr ""
 
-#: cdr/forms.py:106 cdr/forms.py:353 cdr/models.py:71
+#: cdr/forms.py:104 cdr/forms.py:349 cdr/models.py:71
 #: templates/frontend/cdr_graph_realtime.html:89
 msgid "Switch"
 msgstr ""
 
-#: cdr/forms.py:109 cdr_alert/forms.py:21 cdr_alert/models.py:144
-#: cdr_alert/models.py:168 templates/frontend/world_map.html:145
-#: templates/frontend/world_map_analytic.html:155 user_profile/models.py:59
+#: cdr/forms.py:107 cdr_alert/forms.py:21 cdr_alert/models.py:142
+#: cdr_alert/models.py:166 templates/frontend/world_map.html:145
+#: templates/frontend/world_map_analytic.html:155 user_profile/models.py:58
 msgid "Country"
 msgstr ""
 
-#: cdr/forms.py:166
+#: cdr/forms.py:163
 msgid "From"
 msgstr "De"
 
-#: cdr/forms.py:168
+#: cdr/forms.py:165
 msgid "To"
 msgstr "Para"
 
-#: cdr/forms.py:170
+#: cdr/forms.py:167
 #, fuzzy
 msgid "Direction"
 msgstr "Duración"
 
-#: cdr/forms.py:174
+#: cdr/forms.py:171
 msgid "Inbound"
 msgstr ""
 
-#: cdr/forms.py:175
+#: cdr/forms.py:172
 msgid "Outbound"
 msgstr ""
 
-#: cdr/forms.py:176
+#: cdr/forms.py:173
 msgid "Result"
 msgstr "Resultados"
 
-#: cdr/forms.py:179 templates/frontend/cdr_report_by_hour.html:161
+#: cdr/forms.py:176 templates/frontend/cdr_report_by_hour.html:161
 msgid "Minutes"
 msgstr "Minutos"
 
-#: cdr/forms.py:180
+#: cdr/forms.py:177
 msgid "Seconds"
 msgstr "Segundos"
 
-#: cdr/forms.py:182
+#: cdr/forms.py:179
 msgid "CDR per page"
 msgstr ""
 
-#: cdr/forms.py:217 cdr/forms.py:243
+#: cdr/forms.py:214 cdr/forms.py:240
 msgid "Select date"
 msgstr "Seleccione la fecha"
 
-#: cdr/forms.py:223
+#: cdr/forms.py:220
 msgid "Graph"
 msgstr "Gráfico"
 
-#: cdr/forms.py:224
+#: cdr/forms.py:221
 msgid "Calls per Hour"
 msgstr "Llamada por hora"
 
-#: cdr/forms.py:225
+#: cdr/forms.py:222
 msgid "Minutes per Hour"
 msgstr "Minutos por hora"
 
-#: cdr/forms.py:226
+#: cdr/forms.py:223
 msgid "Check with"
 msgstr ""
 
-#: cdr/forms.py:227
+#: cdr/forms.py:224
 msgid "Previous days"
 msgstr ""
 
-#: cdr/forms.py:228
+#: cdr/forms.py:225
 msgid "Same day of the week"
 msgstr ""
 
-#: cdr/forms.py:270
+#: cdr/forms.py:267
 #, fuzzy
 msgid "Email to send the report"
 msgstr "Detalles de Llamadas por día"
 
-#: cdr/forms.py:304
+#: cdr/forms.py:301
 #, fuzzy
 msgid "Upload CSV File "
 msgstr "Exportar en un archivo CSV"
 
-#: cdr/forms.py:306
+#: cdr/forms.py:303
 #, fuzzy
 msgid "Browse CSV file"
 msgstr "Exportar en un archivo CSV"
 
-#: cdr/forms.py:313
+#: cdr/forms.py:310
 #, python-format
 msgid "Document types accepted: %s"
 msgstr ""
 
-#: cdr/forms.py:354
+#: cdr/forms.py:350
 #, fuzzy
 msgid "Select switch"
 msgstr "Seleccione la fecha"
 
-#: cdr/forms.py:355
+#: cdr/forms.py:351
 msgid "Account code"
 msgstr ""
 
-#: cdr/forms.py:357 templates/admin/cdr/switch/import_cdr.html:23
+#: cdr/forms.py:353 templates/admin/cdr/switch/import_cdr.html:23
 msgid "caller_id_number"
 msgstr ""
 
-#: cdr/forms.py:360 templates/admin/cdr/switch/import_cdr.html:24
+#: cdr/forms.py:356 templates/admin/cdr/switch/import_cdr.html:24
 msgid "caller_id_name"
 msgstr ""
 
-#: cdr/forms.py:363 templates/admin/cdr/switch/import_cdr.html:25
+#: cdr/forms.py:359 templates/admin/cdr/switch/import_cdr.html:25
 #, fuzzy
 msgid "destination_number"
 msgstr "Destino"
 
-#: cdr/forms.py:366 templates/admin/cdr/switch/import_cdr.html:26
+#: cdr/forms.py:362 templates/admin/cdr/switch/import_cdr.html:26
 #, fuzzy
 msgid "duration"
 msgstr "Duración"
 
-#: cdr/forms.py:368 templates/admin/cdr/switch/import_cdr.html:27
+#: cdr/forms.py:364 templates/admin/cdr/switch/import_cdr.html:27
 msgid "billsec"
 msgstr ""
 
-#: cdr/forms.py:370 templates/admin/cdr/switch/import_cdr.html:28
+#: cdr/forms.py:366 templates/admin/cdr/switch/import_cdr.html:28
 msgid "hangup_cause_id"
 msgstr ""
 
-#: cdr/forms.py:373 templates/admin/cdr/switch/import_cdr.html:29
+#: cdr/forms.py:369 templates/admin/cdr/switch/import_cdr.html:29
 msgid "direction"
 msgstr ""
 
-#: cdr/forms.py:375 templates/admin/cdr/switch/import_cdr.html:30
+#: cdr/forms.py:371 templates/admin/cdr/switch/import_cdr.html:30
 msgid "uuid"
 msgstr ""
 
-#: cdr/forms.py:377 templates/admin/cdr/switch/import_cdr.html:31
+#: cdr/forms.py:373 templates/admin/cdr/switch/import_cdr.html:31
 msgid "remote_media_ip"
 msgstr ""
 
-#: cdr/forms.py:380 templates/admin/cdr/switch/import_cdr.html:32
+#: cdr/forms.py:376 templates/admin/cdr/switch/import_cdr.html:32
 msgid "start_uepoch"
 msgstr ""
 
-#: cdr/forms.py:382 templates/admin/cdr/switch/import_cdr.html:33
+#: cdr/forms.py:378 templates/admin/cdr/switch/import_cdr.html:33
 msgid "answer_uepoch"
 msgstr ""
 
-#: cdr/forms.py:384 templates/admin/cdr/switch/import_cdr.html:34
+#: cdr/forms.py:380 templates/admin/cdr/switch/import_cdr.html:34
 msgid "end_uepoch"
 msgstr ""
 
-#: cdr/forms.py:386 templates/admin/cdr/switch/import_cdr.html:35
+#: cdr/forms.py:382 templates/admin/cdr/switch/import_cdr.html:35
 #, fuzzy
 msgid "mduration"
 msgstr "Duración"
 
-#: cdr/forms.py:388 templates/admin/cdr/switch/import_cdr.html:36
+#: cdr/forms.py:384 templates/admin/cdr/switch/import_cdr.html:36
 msgid "billmsec"
 msgstr ""
 
-#: cdr/forms.py:390 templates/admin/cdr/switch/import_cdr.html:37
+#: cdr/forms.py:386 templates/admin/cdr/switch/import_cdr.html:37
 msgid "read_codec"
 msgstr ""
 
-#: cdr/forms.py:392 templates/admin/cdr/switch/import_cdr.html:38
+#: cdr/forms.py:388 templates/admin/cdr/switch/import_cdr.html:38
 msgid "write_codec"
 msgstr ""
 
-#: cdr/forms.py:394
+#: cdr/forms.py:390
 msgid "accountcode"
 msgstr ""
 
 #: cdr/functions_def.py:156
 #, fuzzy
-msgid "Internal Call"
+msgid "Internal Calls"
 msgstr "Total Llamadas"
 
 #: cdr/functions_def.py:164
-msgid "Unknow"
+msgid "Unknown"
 msgstr ""
 
 #: cdr/models.py:29
@@ -389,19 +379,19 @@ msgstr ""
 msgid "Hangupcauses"
 msgstr ""
 
-#: cdr/views.py:81
+#: cdr/views.py:67
 msgid "Mongodb Database connection is closed!"
 msgstr ""
 
-#: cdr/views.py:83
+#: cdr/views.py:69
 msgid "Mongodb Database is locked!"
 msgstr ""
 
-#: cdr/views.py:85
+#: cdr/views.py:71
 msgid "Account code is not assigned!"
 msgstr ""
 
-#: cdr/views.py:1138
+#: cdr/views.py:1129
 msgid "Email ids are saved successfully."
 msgstr ""
 
@@ -414,29 +404,29 @@ msgstr "Noticias"
 msgid "Read"
 msgstr ""
 
-#: cdr_alert/admin.py:92
+#: cdr_alert/admin.py:88
 msgid "Successfully added prefix into blacklist"
 msgstr ""
 
-#: cdr_alert/admin.py:118
+#: cdr_alert/admin.py:113
 #: templates/admin/cdr_alert/blacklist/change_list.html:21
 msgid "Blacklist by country"
 msgstr ""
 
-#: cdr_alert/admin.py:122 cdr_alert/admin.py:201
+#: cdr_alert/admin.py:117 cdr_alert/admin.py:197
 msgid "cdr_alert"
 msgstr ""
 
-#: cdr_alert/admin.py:171
+#: cdr_alert/admin.py:168
 msgid "Successfully added prefix into whitelist"
 msgstr ""
 
-#: cdr_alert/admin.py:197
+#: cdr_alert/admin.py:193
 #: templates/admin/cdr_alert/whitelist/change_list.html:21
 msgid "Whitelist by country"
 msgstr ""
 
-#: cdr_alert/constants.py:20 templates/frontend/cdr_overview.html:519
+#: cdr_alert/constants.py:20 templates/frontend/cdr_overview.html:512
 msgid "Day"
 msgstr "día"
 
@@ -444,64 +434,64 @@ msgstr "día"
 msgid "Week"
 msgstr ""
 
-#: cdr_alert/constants.py:22 templates/frontend/cdr_overview.html:520
+#: cdr_alert/constants.py:22 templates/frontend/cdr_overview.html:513
 #, fuzzy
 msgid "Month"
 msgstr "mes"
 
-#: cdr_alert/constants.py:25
+#: cdr_alert/constants.py:26
 msgid "Active"
 msgstr ""
 
-#: cdr_alert/constants.py:26
+#: cdr_alert/constants.py:27
 msgid "Inactive"
 msgstr ""
 
-#: cdr_alert/constants.py:29 user_profile/management.py:26
+#: cdr_alert/constants.py:31 user_profile/management.py:26
 msgid "ALOC (Average Length of Call)"
 msgstr ""
 
-#: cdr_alert/constants.py:30 user_profile/management.py:30
+#: cdr_alert/constants.py:32 user_profile/management.py:30
 msgid "ASR (Answer Seize Ratio)"
 msgstr ""
 
-#: cdr_alert/constants.py:33
+#: cdr_alert/constants.py:36
 msgid "Is less than"
 msgstr ""
 
-#: cdr_alert/constants.py:34
+#: cdr_alert/constants.py:37
 msgid "Is greater than"
 msgstr ""
 
-#: cdr_alert/constants.py:35
+#: cdr_alert/constants.py:38
 msgid "Decrease by more than"
 msgstr ""
 
-#: cdr_alert/constants.py:36
+#: cdr_alert/constants.py:39
 msgid "Increase by more than"
 msgstr ""
 
-#: cdr_alert/constants.py:37
+#: cdr_alert/constants.py:40
 msgid "Percentage decrease by more than"
 msgstr ""
 
-#: cdr_alert/constants.py:38
+#: cdr_alert/constants.py:41
 msgid "Percentage increase by more than"
 msgstr ""
 
-#: cdr_alert/constants.py:44
+#: cdr_alert/constants.py:47
 msgid "Same day"
 msgstr ""
 
-#: cdr_alert/constants.py:45
+#: cdr_alert/constants.py:48
 msgid "Same day in the previous week"
 msgstr ""
 
-#: cdr_alert/constants.py:49
+#: cdr_alert/constants.py:52
 msgid "No alarm sent"
 msgstr ""
 
-#: cdr_alert/constants.py:50
+#: cdr_alert/constants.py:53
 msgid "Alarm Sent"
 msgstr ""
 
@@ -513,8 +503,8 @@ msgstr ""
 msgid "Prefix"
 msgstr ""
 
-#: cdr_alert/models.py:39 cdr_alert/models.py:90 cdr_alert/models.py:121
-#: templates/frontend/cdr_overview.html:374
+#: cdr_alert/models.py:39 cdr_alert/models.py:88 cdr_alert/models.py:119
+#: templates/frontend/cdr_overview.html:367
 #: templates/frontend/cdr_view.html:351
 #: templates/frontend/mail_report_template.html:12
 #: user_profile/constants.py:30
@@ -564,53 +554,53 @@ msgstr ""
 msgid "Input the value for the alert"
 msgstr ""
 
-#: cdr_alert/models.py:85 cdr_alert/models.py:119
+#: cdr_alert/models.py:83 cdr_alert/models.py:117
 msgid "Status"
 msgstr ""
 
-#: cdr_alert/models.py:88
+#: cdr_alert/models.py:86
 msgid "Email to send alarm"
 msgstr ""
 
-#: cdr_alert/models.py:97 cdr_alert/models.py:113
+#: cdr_alert/models.py:95 cdr_alert/models.py:111
 msgid "Alarm"
 msgstr ""
 
-#: cdr_alert/models.py:98
+#: cdr_alert/models.py:96
 msgid "Alarms"
 msgstr ""
 
-#: cdr_alert/models.py:114
+#: cdr_alert/models.py:112
 #, fuzzy
 msgid "Select Alarm"
 msgstr "Seleccione la fecha"
 
-#: cdr_alert/models.py:115
+#: cdr_alert/models.py:113
 msgid "Calculated value"
 msgstr ""
 
-#: cdr_alert/models.py:127
+#: cdr_alert/models.py:125
 msgid "Alarm Report"
 msgstr ""
 
-#: cdr_alert/models.py:128
+#: cdr_alert/models.py:126
 msgid "Alarms Report"
 msgstr ""
 
-#: cdr_alert/models.py:145 cdr_alert/models.py:169
+#: cdr_alert/models.py:143 cdr_alert/models.py:167
 #, fuzzy
 msgid "Select Country"
 msgstr "Seleccione la fecha"
 
-#: cdr_alert/models.py:151 cdr_alert/models.py:152
+#: cdr_alert/models.py:149 cdr_alert/models.py:150
 msgid "Blacklist"
 msgstr ""
 
-#: cdr_alert/models.py:175 cdr_alert/models.py:176
+#: cdr_alert/models.py:173 cdr_alert/models.py:174
 msgid "Whitelist"
 msgstr ""
 
-#: cdr_alert/tasks.py:89 custom_admin_tools/dashboard.py:83
+#: cdr_alert/tasks.py:86 custom_admin_tools/dashboard.py:83
 #: templates/frontend/cdr_mail_report.html:9
 #: templates/frontend/master.html:126 templates/frontend/master.html.py:131
 #: templates/frontend/registration/user_account.html:5
@@ -621,12 +611,12 @@ msgstr ""
 msgid "Alert"
 msgstr "Alerta"
 
-#: cdr_alert/tasks.py:90
+#: cdr_alert/tasks.py:87
 #, python-format
 msgid "Alert Message \"%(user)s\" - \"%(user_id)s\""
 msgstr ""
 
-#: cdr_alert/tasks.py:413
+#: cdr_alert/tasks.py:402
 msgid "CDR Report"
 msgstr ""
 
@@ -703,15 +693,15 @@ msgstr ""
 msgid "Password:"
 msgstr "Pontraseña"
 
-#: frontend/views.py:79
+#: frontend/views.py:76
 msgid "Disabled Account"
 msgstr "Cuenta desactivada"
 
-#: frontend/views.py:82
+#: frontend/views.py:79
 msgid "Invalid Login."
 msgstr "Nombre de usuario invalid."
 
-#: frontend/views.py:85
+#: frontend/views.py:82
 msgid "Enter Valid User Credentials."
 msgstr ""
 
@@ -902,6 +892,17 @@ msgstr ""
 msgid "advanced search"
 msgstr ""
 
+#: templates/frontend/cdr_country_report.html:206
+#: templates/frontend/cdr_dashboard.html:135
+#: templates/frontend/cdr_overview.html:369
+#: templates/frontend/cdr_overview.html:522
+#: templates/frontend/cdr_view.html:191 templates/frontend/cdr_view.html:352
+#: templates/frontend/mail_report_template.html:15
+#: templates/frontend/world_map.html:147
+#: templates/frontend/world_map_analytic.html:157
+msgid "Duration"
+msgstr "Duración"
+
 #: templates/frontend/cdr_country_report.html:207
 #: templates/frontend/cdr_dashboard.html:135
 msgid "secs"
@@ -913,7 +914,7 @@ msgstr ""
 #: templates/frontend/cdr_dashboard.html:135
 #: templates/frontend/cdr_dashboard.html:348
 #: templates/frontend/cdr_graph_realtime.html:99
-#: templates/frontend/cdr_overview.html:375
+#: templates/frontend/cdr_overview.html:368
 #: templates/frontend/cdr_report_by_hour.html:159
 #: templates/frontend/cdr_view.html:354
 #: templates/frontend/mail_report_template.html:117
@@ -939,9 +940,7 @@ msgid "top"
 msgstr ""
 
 #: templates/frontend/cdr_country_report.html:365
-#: templates/frontend/cdr_country_report.html:384
 #: templates/frontend/cdr_country_report.html:410
-#: templates/frontend/cdr_country_report.html:429
 #: templates/frontend/cdr_dashboard.html:344
 #: templates/frontend/cdr_view.html:268
 #: templates/frontend/mail_report_template.html:40
@@ -1003,9 +1002,8 @@ msgstr "Total Llamadas"
 
 #: templates/frontend/cdr_dashboard.html:305
 #: templates/frontend/mail_report_template.html:78
-#, fuzzy
-msgid "Amount Calls"
-msgstr "Total Llamadas"
+msgid "Number of Calls"
+msgstr ""
 
 #: templates/frontend/cdr_dashboard.html:309
 #: templates/frontend/mail_report_template.html:82
@@ -1068,11 +1066,11 @@ msgstr ""
 msgid "variables"
 msgstr ""
 
-#: templates/frontend/cdr_graph_concurrent_calls.html:124
+#: templates/frontend/cdr_graph_concurrent_calls.html:125
 msgid "concurrent calls"
 msgstr ""
 
-#: templates/frontend/cdr_graph_concurrent_calls.html:141
+#: templates/frontend/cdr_graph_concurrent_calls.html:142
 msgid "Concurrent Calls"
 msgstr ""
 
@@ -1182,49 +1180,49 @@ msgstr ""
 msgid "December"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:377
-#: templates/frontend/cdr_overview.html:380
-#: templates/frontend/cdr_overview.html:385
-#: templates/frontend/cdr_overview.html:518
+#: templates/frontend/cdr_overview.html:370
+#: templates/frontend/cdr_overview.html:373
+#: templates/frontend/cdr_overview.html:378
+#: templates/frontend/cdr_overview.html:511
 #: templates/frontend/cdr_report_by_hour.html:157
 msgid "Hour"
 msgstr "Hora"
 
-#: templates/frontend/cdr_overview.html:432
-#: templates/frontend/cdr_overview.html:449
-#: templates/frontend/cdr_overview.html:473
-#: templates/frontend/cdr_overview.html:547
+#: templates/frontend/cdr_overview.html:425
+#: templates/frontend/cdr_overview.html:442
+#: templates/frontend/cdr_overview.html:466
+#: templates/frontend/cdr_overview.html:540
 msgid "Load by Hour"
 msgstr "Carga por hora"
 
-#: templates/frontend/cdr_overview.html:436
-#: templates/frontend/cdr_overview.html:455
-#: templates/frontend/cdr_overview.html:479
+#: templates/frontend/cdr_overview.html:429
+#: templates/frontend/cdr_overview.html:448
+#: templates/frontend/cdr_overview.html:472
 #, fuzzy
 msgid "Load by Day"
 msgstr "Carga por hora"
 
-#: templates/frontend/cdr_overview.html:440
-#: templates/frontend/cdr_overview.html:461
-#: templates/frontend/cdr_overview.html:485
+#: templates/frontend/cdr_overview.html:433
+#: templates/frontend/cdr_overview.html:454
+#: templates/frontend/cdr_overview.html:478
 #, fuzzy
 msgid "Load by Month"
 msgstr "Carga por hora"
 
-#: templates/frontend/cdr_overview.html:495
+#: templates/frontend/cdr_overview.html:488
 msgid "Points Off"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:500
-#: templates/frontend/cdr_overview.html:534
+#: templates/frontend/cdr_overview.html:493
+#: templates/frontend/cdr_overview.html:527
 msgid "Points On"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:528
+#: templates/frontend/cdr_overview.html:521
 msgid "Count"
 msgstr ""
 
-#: templates/frontend/cdr_overview.html:553
+#: templates/frontend/cdr_overview.html:546
 #: templates/frontend/cdr_view.html:153 templates/frontend/cdr_view.html:345
 #: templates/frontend/world_map.html:124
 #: templates/frontend/world_map_analytic.html:138
@@ -2462,132 +2460,110 @@ msgstr ""
 msgid "Whitelist Prefix"
 msgstr ""
 
-#: user_profile/models.py:54
+#: user_profile/models.py:53
 msgid "Address"
 msgstr ""
 
-#: user_profile/models.py:56
+#: user_profile/models.py:55
 msgid "City"
 msgstr ""
 
-#: user_profile/models.py:58
+#: user_profile/models.py:57
 msgid "State"
 msgstr ""
 
-#: user_profile/models.py:61
+#: user_profile/models.py:60
 msgid "Zip code"
 msgstr ""
 
-#: user_profile/models.py:63
+#: user_profile/models.py:62
 msgid "Phone number"
 msgstr ""
 
-#: user_profile/models.py:65
+#: user_profile/models.py:64
 msgid "Fax Number"
 msgstr ""
 
-#: user_profile/models.py:67
+#: user_profile/models.py:66
 msgid "Company name"
 msgstr ""
 
-#: user_profile/models.py:70
+#: user_profile/models.py:69
 msgid "Company website"
 msgstr ""
 
-#: user_profile/models.py:71
+#: user_profile/models.py:70
 msgid "Language"
 msgstr ""
 
-#: user_profile/models.py:73
+#: user_profile/models.py:72
 msgid "Note"
 msgstr ""
 
-#: user_profile/models.py:76
+#: user_profile/models.py:75
 msgid "Report mail list"
 msgstr ""
 
-#: user_profile/models.py:77
+#: user_profile/models.py:76
 msgid "Enter a valid e-mail address separated by commas."
 msgstr ""
 
-#: user_profile/models.py:84
+#: user_profile/models.py:83
 msgid "Can see API-Explorer"
 msgstr ""
 
-#: user_profile/models.py:87 user_profile/models.py:88
+#: user_profile/models.py:86 user_profile/models.py:87
 msgid "User Profile"
 msgstr ""
 
-#: user_profile/models.py:96
+#: user_profile/models.py:95
 msgid "Customer"
 msgstr ""
 
-#: user_profile/models.py:97
+#: user_profile/models.py:96
 msgid "Customers"
 msgstr ""
 
-#: user_profile/models.py:105
+#: user_profile/models.py:104
 msgid "Admin"
 msgstr ""
 
-#: user_profile/models.py:106
+#: user_profile/models.py:105
 msgid "Admins"
 msgstr ""
 
-#: user_profile/views.py:138
+#: user_profile/views.py:128
 msgid "All notifications are marked as read."
 msgstr ""
 
-#: user_profile/views.py:150
+#: user_profile/views.py:140
 msgid "Detail has been changed."
 msgstr ""
 
-#: user_profile/views.py:152 user_profile/views.py:162
+#: user_profile/views.py:142 user_profile/views.py:152
 msgid "Please correct the errors below."
 msgstr ""
 
-#: user_profile/views.py:160
+#: user_profile/views.py:150
 msgid "Your password has been changed."
 msgstr ""
 
-#: user_profile/views.py:205
+#: user_profile/views.py:195
 #, python-format
 msgid "\"%(name)s\" is deleted."
 msgstr ""
 
-#: user_profile/views.py:209
+#: user_profile/views.py:199
 #, python-format
 msgid "\"%(name)s\" is marked as read."
 msgstr ""
 
-#: user_profile/views.py:221
+#: user_profile/views.py:211
 #, python-format
 msgid "%(count)s notification(s) are deleted."
 msgstr ""
 
-#: user_profile/views.py:226
+#: user_profile/views.py:216
 #, python-format
 msgid "%(count)s notification(s) are marked as read."
 msgstr ""
-
-#, fuzzy
-#~ msgid "Calls :"
-#~ msgstr "Fecha de Llamada"
-
-#~ msgid "Duration :"
-#~ msgstr "Duración :"
-
-#~ msgid "ACT :"
-#~ msgstr "PTC"
-
-#~ msgid "week"
-#~ msgstr "semana"
-
-#~ msgid "month"
-#~ msgstr "mes"
-
-#~ msgid "months"
-#~ msgstr "meses"
-
-#~ msgid "year"
-#~ msgstr "Búsqueda"
