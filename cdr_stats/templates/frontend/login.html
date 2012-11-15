@@ -1,7 +1,7 @@
 
 <script type="text/javascript">
       $(function(){
-        
+
         $('#buttonlogin').click(function(){
           $("#requestlogin").animate({ height: 'show', opacity: 'show' }, 'slow');
           $("#buttonlogin").animate({ height: 'hide', opacity: 'hide' }, 'fast');
@@ -12,7 +12,7 @@
       });
 </script>
 
-    
+
 {% block login %}
     <div id="requestlogin" style="margin: 10px; padding: 10px;  width: 180px; height: 80px; float : left; display: none; " class="ui-widget ui-widget-content ui-corner-all">
         <form action="/login/" method="post">
@@ -22,7 +22,7 @@
                 {{ field.errors }}
                 {{ field.label_tag }}: {{ field }}
             </div>
-            {% endfor %}
+            {% endfor %}d
             <input type="submit" value="login" class="ui-state-default">
         </form>
     </div>

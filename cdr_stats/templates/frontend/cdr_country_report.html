@@ -381,7 +381,7 @@ $(function () {
                 <table>
                     <tbody>
                     <tr>
-                        <td class="td-dashboard"><img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World"%}"></td>
+                        <td class="td-dashboard"></td>
                         <td class="td-dashboard" width="100">{% trans "Total"%}</td>
                         <td width="100">{{ total_calls }} {% trans "Calls"%}</td>
                     </tr>
@@ -426,7 +426,7 @@ $(function () {
                 <table>
                     <tbody>
                     <tr>
-                        <td class="td-dashboard"><img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World"%}"></td>
+                        <td class="td-dashboard"></td>
                         <td class="td-dashboard" width="100">{% trans "Total"%}</td>
                         <td>{{ total_duration|conv_min }} {% trans "minutes"%}</td>
                     </tr>
@@ -437,4 +437,3 @@ $(function () {
     </div>
 
 {% endblock %}
-

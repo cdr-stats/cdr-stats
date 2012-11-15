@@ -256,36 +256,30 @@ $(function () {
     ];
 
     function formTicks(val) {
-
         var dt = new Date(parseInt(val));
-
         var Year = dt.getFullYear();
         var Month = dt.getMonth() + 1;
         var Day = dt.getDate();
-        Month = Month < 10 ? '0' + Month : Month;
-        Day = Day < 10 ? '0' + Day : Day;
-        month_name = MonthName(Month, 0);
-
         var hour = dt.getHours();
         var minute = dt.getMinutes();
         var ampm = hour >= 12 ? 'pm' : 'am';
         var hour = hour % 12;
+        Month = Month < 10 ? '0' + Month : Month;
+        Day = Day < 10 ? '0' + Day : Day;
+        month_name = MonthName(Month, 0);
         hour = hour ? hour : 12; // the hour '0' should be '12'
         minute = minute < 10 ? '0' + minute : minute;
 
         var graph_type = $('#id_graph_type').val();
-        if(graph_type=='hour')
-        {
+        if (graph_type=='hour') {
             strTime = Day + ', ' + month_name + ' ' + Year + '<br/>' + hour + ':' + minute + ' ' + ampm;
             return strTime
         }
-        if(graph_type=='day')
-        {
+        if (graph_type=='day') {
             strTime = Day + ', '+ month_name + ' ' + Year
             return strTime
         }
-        if(graph_type=='month')
-        {
+        if (graph_type=='month') {
             strTime = month_name + '  ' +  Year
             return strTime
         }
@@ -320,7 +314,7 @@ $(function () {
     //default data set - hour_call_count
     var plot = $.plot($("#placeholder_cdr_analytic"), hour_call_count, options);
 
-    function onverview_graph(data_set) {
+    function e(data_set) {
         var overview_option = {
             legend: {show: false},
             series: {
@@ -338,10 +332,9 @@ $(function () {
         $("#placeholder_cdr_analytic").bind("plotselected", function (event, ranges) {
             // do the zooming
             plot = $.plot($("#placeholder_cdr_analytic"), data_set,
-                    $.extend(true, {}, options, {
-                        xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to }
-                    }));
-
+                $.extend(true, {}, options, {
+                    xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to }
+                }));
             // don't fire event on the overview to prevent eternal loop
             overview.setSelection(ranges, true);
         });
@@ -352,7 +345,7 @@ $(function () {
     }
 
     //default data set - hour_call_count
-    onverview_graph(hour_call_count);
+    e(hour_call_count);
 
     $("#placeholder_cdr_analytic").bind("plothover", function (event, pos, item) {
         if (item) {
@@ -424,7 +417,7 @@ $(function () {
         $('#id_graph_type').val(graph_type_val);
         $('#id_title_span').text(graph_title);
         var plot = $.plot($("#placeholder_cdr_analytic"), data_set, options);
-        onverview_graph(data_set);
+        overview_graph(data_set);
         $('#id_count').button('toggle');
     }
 
@@ -448,19 +441,19 @@ $(function () {
         {
             $('#id_title_span').text('{% trans "Load by Hour" %}');
             $.plot($("#placeholder_cdr_analytic"), hour_call_count, options);
-            onverview_graph(hour_call_count);
+            overview_graph(hour_call_count);
         }
         if(graph_type =='day')
         {
             $('#id_title_span').text('{% trans "Load by Day" %}');
             $.plot($("#placeholder_cdr_analytic"), day_call_count, options);
-            onverview_graph(day_call_count);
+            overview_graph(day_call_count);
         }
         if(graph_type =='month')
         {
             $('#id_title_span').text('{% trans "Load by Month" %}');
             $.plot($("#placeholder_cdr_analytic"), month_data_call_count, options);
-            onverview_graph(month_data_call_count);
+            e(month_data_call_count);
         }
 
     });
@@ -472,19 +465,19 @@ $(function () {
         {
             $('#id_title_span').text('{% trans "Load by Hour" %}');
             $.plot($("#placeholder_cdr_analytic"), hour_call_duration, options);
-            onverview_graph(hour_call_duration);
+            e(hour_call_duration);
         }
         if(graph_type =='day')
         {
             $('#id_title_span').text('{% trans "Load by Day" %}');
             $.plot($("#placeholder_cdr_analytic"), day_call_duration, options);
-            onverview_graph(day_call_duration);
+            e(day_call_duration);
         }
         if(graph_type =='month')
         {
             $('#id_title_span').text('{% trans "Load by Month" %}');
             $.plot($("#placeholder_cdr_analytic"), month_data_call_duration, options);
-            onverview_graph(month_data_call_duration);
+            e(month_data_call_duration);
         }
     });
 
