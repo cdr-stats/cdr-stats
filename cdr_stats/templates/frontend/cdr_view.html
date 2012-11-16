@@ -275,7 +275,11 @@
                         {% ifequal row.direction 'inbound' %}
                             <img src="{{STATIC_URL}}cdr-stats/icons/door_in.png" title="{{ row.direction|capfirst }} {% trans "call" %}" class="elemtooltip"/>
                         {% else %}
-                            <img src="{{STATIC_URL}}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
+                            {% ifequal row.direction 'outbound' %}
+                                <img src="{{STATIC_URL}}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
+                            {% else %}
+                                <img src="{{STATIC_URL}}cdr-stats/icons/door.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
+                            {% endifequal %}
                         {% endifequal %}
                         {% if "cdr_object_id" in row %}
                             <a data-toggle="modal" href="#modal-create-{{ row.cdr_object_id }}" class="ajax-modal-{{ row.cdr_object_id }}" url='/cdr_detail/{{ row.cdr_object_id }}/{{ row.switch_id }}' data-controls-modal='modal-create-content-{{ row.cdr_object_id }}'><img src="{{STATIC_URL}}cdr-stats/icons/zoom.png" class="elemtooltip" title="{% trans "Show details" %}"/></a>

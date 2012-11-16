@@ -169,7 +169,8 @@ class CdrSearchForm(SearchForm):
                                 coerce=bool,
                                 choices=(('all', _('All')),
                                     ('inbound', _('Inbound')),
-                                    ('outbound', _('Outbound'))))
+                                    ('outbound', _('Outbound')),
+                                    ('unknown', _('Unknown'))))
     result = forms.TypedChoiceField(label=_('Result'),
                                 required=False,
                                 coerce=bool,

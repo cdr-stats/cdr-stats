@@ -193,7 +193,7 @@ def import_cdr_asterisk(shell=False):
                 'billsec': billsec,
                 'hangup_cause_id': hangup_cause_id,
                 'accountcode': accountcode,
-                'direction': "inbound",
+                'direction': "unknown",
                 'uuid': uniqueid,
                 'remote_media_ip': '',
                 'start_uepoch': start_uepoch,

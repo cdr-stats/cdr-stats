@@ -81,7 +81,7 @@ def get_element(cdr):
     if 'variables' in cdr and 'direction' in cdr['variables']:
         direction = cdr['variables']['direction']
     else:
-        direction = 'inbound'
+        direction = 'unknown'
     #Get uuid
     if 'variables' in cdr and 'uuid' in cdr['variables']:
         uuid = cdr['variables']['uuid']

@@ -40,10 +40,15 @@
                     <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World" %}">
                 {% endif %}
                 <img src="{{STATIC_URL}}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans "Authorized call" %}"/>
+
                 {% ifequal row.direction 'inbound' %}
                     <img src="{{STATIC_URL}}cdr-stats/icons/door_in.png" title="{{ row.direction|capfirst }} {% trans "call" %}" class="elemtooltip"/>
                 {% else %}
-                    <img src="{{STATIC_URL}}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
+                    {% ifequal row.direction 'outbound' %}
+                        <img src="{{STATIC_URL}}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
+                    {% else %}
+                        <img src="{{STATIC_URL}}cdr-stats/icons/door.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
+                    {% endifequal %}
                 {% endifequal %}
             <div>
         </td>
