@@ -118,7 +118,7 @@ class SearchForm(forms.Form):
                 int(caller)
             except:
                 raise forms.ValidationError('%s is not a valid caller.'
-                        % caller)
+                    % caller)
         return caller
 
     def clean_duration(self):
@@ -131,7 +131,7 @@ class SearchForm(forms.Form):
                 int(duration)
             except:
                 raise forms.ValidationError('%s is not a valid duration.'
-                        % duration)
+                    % duration)
         return duration
 
     def clean_accountcode(self):
@@ -148,7 +148,7 @@ class SearchForm(forms.Form):
                 int(destination)
             except:
                 raise forms.ValidationError('%s is not a valid destination.'
-                        % destination)
+                    % destination)
         return destination
 
 
