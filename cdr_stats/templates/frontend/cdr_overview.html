@@ -417,7 +417,7 @@ $(function () {
         $('#id_graph_type').val(graph_type_val);
         $('#id_title_span').text(graph_title);
         var plot = $.plot($("#placeholder_cdr_analytic"), data_set, options);
-        overview_graph(data_set);
+        e(data_set);
         $('#id_count').button('toggle');
     }
 
@@ -441,13 +441,13 @@ $(function () {
         {
             $('#id_title_span').text('{% trans "Load by Hour" %}');
             $.plot($("#placeholder_cdr_analytic"), hour_call_count, options);
-            overview_graph(hour_call_count);
+            e(hour_call_count);
         }
         if(graph_type =='day')
         {
             $('#id_title_span').text('{% trans "Load by Day" %}');
             $.plot($("#placeholder_cdr_analytic"), day_call_count, options);
-            overview_graph(day_call_count);
+            e(day_call_count);
         }
         if(graph_type =='month')
         {
