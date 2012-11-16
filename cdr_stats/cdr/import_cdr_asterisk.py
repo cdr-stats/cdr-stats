@@ -183,6 +183,9 @@ def import_cdr_asterisk(shell=False):
                 authorized = destination_data['authorized']
                 country_id = destination_data['country_id']
 
+            #Option to get the direction from user_field
+            direction = "unknown"
+
             # Prepare global CDR
             cdr_record = {
                 'switch_id': switch.id,
@@ -193,7 +196,7 @@ def import_cdr_asterisk(shell=False):
                 'billsec': billsec,
                 'hangup_cause_id': hangup_cause_id,
                 'accountcode': accountcode,
-                'direction': "unknown",
+                'direction': direction,
                 'uuid': uniqueid,
                 'remote_media_ip': '',
                 'start_uepoch': start_uepoch,

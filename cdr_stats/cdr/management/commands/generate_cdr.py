@@ -201,9 +201,9 @@ class Command(BaseCommand):
             cdr_json = {
                 'channel_data': {
                     'state': 'CS_REPORTING',
-                    'direction': 'unknown'},
+                    'direction': 'inbound'},
                 'variables': {
-                    'direction': 'unknown',
+                    'direction': 'inbound',
                     'uuid': uuid,
                     'session_id': '3',
                     'sip_network_ip': '192.168.1.21',
