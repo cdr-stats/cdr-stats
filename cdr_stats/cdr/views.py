@@ -170,7 +170,6 @@ def cdr_view_daily_report(query_var):
     count_days = 0
     for doc in list_data['result']:
         count_days = count_days + 1
-
         total_data.append(
             {
                 'calldate': datetime(int(doc['_id'][0:4]),
