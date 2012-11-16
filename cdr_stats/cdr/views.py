@@ -665,11 +665,10 @@ def cdr_detail(request, id, switch_id):
         except:
             raise Http404
 
-        #TODO: SQL for different DBMS
         cursor.execute(
-            "SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel, "
-            "duration, billsec, disposition, accountcode, "
-            "uniqueid, %s FROM %s WHERE %s=%s" %
+            "SELECT dst, calldate, clid, src, dst, dcontext, channel, dstchannel "
+            "lastapp, duration, billsec, disposition, amaflags, accountcode, "
+            "uniqueid, userfield, %s FROM %s WHERE %s=%s" %
             (settings.ASTERISK_PRIMARY_KEY, table_name,
             settings.ASTERISK_PRIMARY_KEY, id))
         row = cursor.fetchone()
