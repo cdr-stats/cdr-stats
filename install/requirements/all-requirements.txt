@@ -31,7 +31,7 @@ django-tastypie==0.9.11
 linaro-django-pagination==2.0.2
 django-admin-tools==0.4.1
 django-country-dialcode==0.4.7
-django-admin-tools-stats==0.3.1
+django-admin-tools-stats==0.4.0
 switch2bill-common==2.2.3
 django-socketio==0.3.5
 django-cache-machine==0.6

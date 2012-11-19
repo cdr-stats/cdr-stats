@@ -55,7 +55,7 @@ case $DIST in
     'CENTOS')
         if [ ! -f /etc/yum.repos.d/rpmforge.repo ];
        	then
-			# Install RPMFORGE Repo
+			#Install RPMFORGE Repo
             #Check architecture
         	KERNELARCH=$(uname -p)
         	if [ $KERNELARCH = "x86_64" ]; then
