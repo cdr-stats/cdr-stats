@@ -18,6 +18,7 @@ from celery.task import PeriodicTask
 from cdr.import_cdr_freeswitch_mongodb import import_cdr_freeswitch_mongodb
 from cdr.import_cdr_asterisk import import_cdr_asterisk
 from cdr.aggregate import set_concurrentcall_analytic
+from django.core.cache import cache
 from cdr.models import Switch
 from common.only_one_task import only_one
 from datetime import datetime, timedelta
@@ -68,6 +69,8 @@ class get_channels_info(PeriodicTask):
         now = datetime.today()
         date_now = datetime(now.year, now.month, now.day,
                             now.hour, now.minute, now.second, 0)
+        #key_date / minute precision
+        key_date = "%d-%d-%d-%d-%d" % (now.year, now.month, now.day, now.hour, now.minute)
 
         # Retrieve SwitchID
         try:
@@ -121,6 +124,12 @@ class get_channels_info(PeriodicTask):
 
                     # get list of channels
                     response = manager.command('core show channels concise')
+                    # response.data = "SIP/areski-00000006!a2billing-echotest!34902800102*!2!Ring!Echo!!34650784355!4267877355!!3!35!(None)!1352663344.6\n"
+                    # response.data += "SIP/areski-00000006!a2billing-echotest!34902800102*!2!Ring!Echo!!34650784355!!!3!35!(None)!1352663344.6\n"
+                    # response.data += "SIP/areski-00000006!a2billing-echotest!34902800102*!2!Ring!Echo!!34650784355!!!3!35!(None)!1352663344.6\n"
+                    # response.data += "SIP/areski-00000006!a2billing-echotest!34902800102*!2!Ring!Echo!!34650784355!12346!!3!35!(None)!1352663344.6\n"
+                    # response.data += "SIP/areski-00000006!a2billing-echotest!34902800102*!2!Ring!Echo!!34650784355!!!3!35!(None)!1352663344.6\n"
+
                     if response.data:
                         lines = response.data.split('\n')
                         for line in lines:
@@ -146,6 +155,7 @@ class get_channels_info(PeriodicTask):
                 except:
                     logger.error("Manager didn't close")
 
+            totalcall = 0
             for accountcode in listaccount:
                 numbercall = listaccount[accountcode]
                 logger.debug('%s (accountcode:%s, switch_id:%d) ==> %s'
@@ -157,9 +167,16 @@ class get_channels_info(PeriodicTask):
                     'numbercall': numbercall,
                     'accountcode': accountcode,
                 }
+                totalcall = totalcall + numbercall
                 settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].insert(call_json)
+                key = "%s-%d-%s" % (key_date, switch_id, str(accountcode))
+                #print "key:%s, numbercall:%d" % (key, numbercall)
+                cache.set(key, numbercall, 1800)  # 30 minutes
 
                 #Create collection for Analytics
                 set_concurrentcall_analytic(date_now, switch_id, accountcode, numbercall)
+            key = "%s-%d-root" % (key_date, switch_id)
+            logger.debug("key:%s, totalcall:%d" % (key, totalcall))
+            cache.set(key, totalcall, 1800)  # 30 minutes
 
         return True

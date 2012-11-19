@@ -296,7 +296,7 @@ ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 #CELERY
 #======
-CARROT_BACKEND = 'ghettoq.taproot.Redis'
+CARROT_BACKEND = 'redis'
 
 BROKER_HOST = 'localhost'  # Maps to redis host
 BROKER_PORT = 6379         # Maps to redis port

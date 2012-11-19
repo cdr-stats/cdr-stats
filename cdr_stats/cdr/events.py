@@ -4,12 +4,12 @@ from django.conf import settings
 from django_socketio import events
 from django_socketio.events import on_message
 from django.contrib.auth.models import User
-from datetime import datetime, timedelta
-
+from datetime import datetime
 from cdr.models import Switch
-# import time
-# import random
-
+from django.core.cache import cache
+from hashlib import sha256
+#import time
+#import random
 import logging
 logger = logging.getLogger('cdr-stats.filelog')
 
@@ -22,8 +22,6 @@ def cached(ctime=3600):
     If that fails, check memcached.
     If all else fails, hit the db and cache on instance and in memcache.
     """
-    from django.core.cache import cache
-    from hashlib import sha256
 
     def decr(func):
 
@@ -90,39 +88,28 @@ def my_message_handler(request, socket, context, message):
         socket.send(result)
         return True
 
-    query_var = {}
     now = datetime.today()
-    start_date = datetime(now.year, now.month, now.day, now.hour, now.minute,
-                          now.second, 0)
-    end_date = datetime(now.year, now.month, now.day, now.hour, now.minute,
-                        now.second, 99999) + timedelta(seconds=2)
-    query_var['call_date'] = {'$gte': start_date, '$lte': end_date}
-    query_var['switch_id'] = int(switch_id)
+    key_date = "%d-%d-%d-%d-%d" % (now.year, now.month, now.day, now.hour, now.minute)
 
     if not user.is_superuser:
-        # use accountcode in filter
-        query_var['accountcode'] = str(user.userprofile.accountcode)
+        accountcode = str(user.userprofile.accountcode)
     elif (hasattr(user, 'userprofile') and user.userprofile.accountcode
          and user.is_superuser):
-        # use accountcode in filter
-        query_var['accountcode'] = str(user.userprofile.accountcode)
-    logger.debug(query_var)
+        accountcode = str(user.userprofile.accountcode)
+    elif user.is_superuser:
+        accountcode = 'root'
+    logger.debug(accountcode)
 
-    collectionresult = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].find_one(query_var)
-    if not collectionresult:
-        logger.debug('No collection')
+    key = "%s-%d-%s" % (key_date, switch_id, str(accountcode))
+    numbercall = cache.get(key)
+    logger.debug("key:%s, accountcode:%s, numbercall:%s" % (key, accountcode, str(numbercall)))
+    if not numbercall:
+        numbercall = 0
 
-    try:
-        numbercall = int(collectionresult['numbercall'])
-        logger.debug('numbercall :::> %d' % numbercall)
-        result[message['voipswitch']] = numbercall
-        socket.send(result)
-    except:
-        # No record found in collection
-        logger.debug('No record found in collection')
-        result[message['voipswitch']] = 0
-        # result[message['voipswitch']] = incr = random.randint(1, 500)
-        socket.send(result)
+    logger.debug('numbercall :::> %d' % numbercall)
+    result[message['voipswitch']] = numbercall
+    #result[message['voipswitch']] = incr = random.randint(1, 300)
+    socket.send(result)
 
 
 @events.on_message(channel='^switch-')
