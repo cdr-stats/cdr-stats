@@ -125,7 +125,7 @@ def import_cdr_asterisk(shell=False):
             row = cursor.fetchone()
         except Exception, e:
             #Add missing field to flag import
-            cursor.execute("ALTER TABLE %s  ADD import_cdr TINYINT NOT NULL "
+            cursor.execute("ALTER TABLE %s ADD import_cdr TINYINT NOT NULL "
                 "DEFAULT '0'" % table_name)
             cursor.execute("ALTER TABLE %s ADD INDEX (import_cdr)" %
                 table_name)
@@ -135,12 +135,12 @@ def import_cdr_asterisk(shell=False):
         if db_engine == 'mysql':
             cursor.execute("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel,"
                 "duration, billsec, disposition, accountcode, uniqueid,"
-                " %s FROM %s WHERE import_cdr=0  LIMIT 0, 1000" %
+                " %s FROM %s WHERE import_cdr=0 LIMIT 0, 1000" %
                 (settings.ASTERISK_PRIMARY_KEY, table_name))
         elif db_engine == 'pgsql':
             cursor.execute("SELECT dst, extract(epoch FROM calldate), clid, channel,"
                 "duration, billsec, disposition, accountcode, uniqueid,"
-                " %s FROM %s WHERE import_cdr=0  LIMIT 0, 1000" %
+                " %s FROM %s WHERE import_cdr=0 LIMIT 0, 1000" %
                 (settings.ASTERISK_PRIMARY_KEY, table_name))
         row = cursor.fetchone()
 
@@ -156,10 +156,8 @@ def import_cdr_asterisk(shell=False):
                 callerid_number = callerid
 
             channel = row[3]
-
             duration = set_int_default(row[4], 0)
             billsec = set_int_default(row[5], 0)
-
             ast_disposition = row[6]
             try:
                 id_disposition = dic_disposition.get(
