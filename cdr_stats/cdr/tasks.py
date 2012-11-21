@@ -64,6 +64,7 @@ class get_channels_info(PeriodicTask):
 
         logger = self.get_logger()
         logger.info('TASK :: get_channels_info')
+        totalcall = 0
 
         # Get calldate
         now = datetime.today()
@@ -93,6 +94,7 @@ class get_channels_info(PeriodicTask):
                     else:
                         accountcode = row[0]
                     numbercall = row[1]
+                    totalcall = totalcall + numbercall
                     logger.debug('%s (accountcode:%s, switch_id:%d) ==> %s'
                             % (date_now, accountcode, switch_id,
                                str(numbercall)))
@@ -105,6 +107,9 @@ class get_channels_info(PeriodicTask):
                     }
                     settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].insert(call_json)
 
+                    #Save to Redis cache
+                    key = "%s-%d-%s" % (key_date, switch_id, str(accountcode))
+                    cache.set(key, numbercall, 1800)  # 30 minutes
                     #Create collection for Analytics
                     set_concurrentcall_analytic(date_now, switch_id, accountcode, numbercall)
 
@@ -155,9 +160,9 @@ class get_channels_info(PeriodicTask):
                 except:
                     logger.error("Manager didn't close")
 
-            totalcall = 0
             for accountcode in listaccount:
                 numbercall = listaccount[accountcode]
+                totalcall = totalcall + numbercall
                 logger.debug('%s (accountcode:%s, switch_id:%d) ==> %s'
                             % (date_now, accountcode, switch_id,
                                str(numbercall)))
@@ -167,16 +172,32 @@ class get_channels_info(PeriodicTask):
                     'numbercall': numbercall,
                     'accountcode': accountcode,
                 }
-                totalcall = totalcall + numbercall
                 settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].insert(call_json)
+                #Save to Redis cache
                 key = "%s-%d-%s" % (key_date, switch_id, str(accountcode))
-                #print "key:%s, numbercall:%d" % (key, numbercall)
                 cache.set(key, numbercall, 1800)  # 30 minutes
-
                 #Create collection for Analytics
                 set_concurrentcall_analytic(date_now, switch_id, accountcode, numbercall)
-            key = "%s-%d-root" % (key_date, switch_id)
-            logger.info("key:%s, totalcall:%d" % (key, totalcall))
-            cache.set(key, totalcall, 1800)  # 30 minutes
+
+        #For any switches
+
+        #There is no calls
+        if totalcall == 0:
+            accountcode = ''
+            numbercall = 0
+            call_json = {
+                'switch_id': switch_id,
+                'call_date': date_now,
+                'numbercall': numbercall,
+                'accountcode': accountcode,
+            }
+            settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].insert(call_json)
+            key = "%s-%d-%s" % (key_date, switch_id, str(accountcode))
+            cache.set(key, numbercall, 1800)  # 30 minutes
+            set_concurrentcall_analytic(date_now, switch_id, accountcode, numbercall)
+
+        key = "%s-%d-root" % (key_date, switch_id)
+        logger.info("key:%s, totalcall:%d" % (key, totalcall))
+        cache.set(key, totalcall, 1800)  # 30 minutes
 
         return True

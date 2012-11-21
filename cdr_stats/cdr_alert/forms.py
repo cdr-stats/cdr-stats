@@ -23,5 +23,4 @@ class BWCountryForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(BWCountryForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['country',]
-
+        self.fields.keyOrder = ['country']
