@@ -139,7 +139,7 @@ class get_channels_info(PeriodicTask):
                                     listaccount[col[8]] = listaccount[col[8]] + 1
                                 else:
                                     listaccount[col[8]] = 1
-                    manager.logoff()
+                    #manager.logoff()
                 except asterisk.manager.ManagerSocketException, (errno, reason):
                     logger.error("Error connecting to the manager: %s" % reason)
                     return False
@@ -176,7 +176,7 @@ class get_channels_info(PeriodicTask):
                 #Create collection for Analytics
                 set_concurrentcall_analytic(date_now, switch_id, accountcode, numbercall)
             key = "%s-%d-root" % (key_date, switch_id)
-            logger.debug("key:%s, totalcall:%d" % (key, totalcall))
+            logger.info("key:%s, totalcall:%d" % (key, totalcall))
             cache.set(key, totalcall, 1800)  # 30 minutes
 
         return True
