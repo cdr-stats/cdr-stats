@@ -1746,19 +1746,17 @@ def cdr_country_report(request):
             c_Day = int(doc['_id']['date'][8:10])
 
             day_hours = dict()
-            for hr in range(0, 24):
-                graph_day = datetime(a_Year, b_Month, c_Day, int(hr))
-                dt = int(1000 * time.mktime(graph_day.timetuple()))
-                day_hours[hr] = {
-                    'dt': dt,
-                    'calldate__count': 0,
-                    'duration__sum': 0,
-                    'country_id': doc['_id']['country_id']
-                }
 
             for dict_in_list in doc['call_per_hour']:
                 for key, value in dict_in_list.iteritems():
-                    day_hours[int(key)]['calldate__count'] += int(value)
+                    graph_day = datetime(a_Year, b_Month, c_Day, int(key))
+                    dt = int(1000 * time.mktime(graph_day.timetuple()))
+                    day_hours[int(key)] = {
+                        'dt': dt,
+                        'calldate__count': int(value),
+                        'duration__sum': 0,
+                        'country_id': doc['_id']['country_id']
+                    }
 
             for dict_in_list in doc['duration_per_hour']:
                 for key, value in dict_in_list.iteritems():
