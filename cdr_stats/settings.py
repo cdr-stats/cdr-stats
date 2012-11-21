@@ -43,8 +43,10 @@ DATABASES = {
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        #'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         #'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': '127.0.0.1:6379',
         #'LOCATION': '/var/tmp/django_cache',
         'TIMEOUT': '600',  # 600 secs
     }
