@@ -505,10 +505,8 @@ class CdrModelTestCase(BaseAuthenticatedClient):
                 'records_per_page': 10}
         form = CdrSearchForm(data)
         self.assertFalse(form.is_valid())
-        self.assertEqual(form["caller"].errors, ['abc is not a valid caller.'])
         self.assertEqual(form["duration"].errors, ['abc is not a valid duration.'])
         #self.assertEqual(form["accountcode"].errors, ['abc is not a valid accountcode.'])
-        self.assertEqual(form["destination"].errors, ['abc is not a valid destination.'])
 
     def test_email_report_form(self):
         data = {'multiple_email': 'abc@localhost.com,xyzlocalhost.com'}

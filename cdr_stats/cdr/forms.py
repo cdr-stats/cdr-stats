@@ -108,19 +108,6 @@ class SearchForm(forms.Form):
         super(SearchForm, self).__init__(*args, **kwargs)
         self.fields['switch'].choices = sw_list_with_all()
 
-    def clean_caller(self):
-        """Retrieve valid caller & it should be integer
-        else will raise from validation error
-        """
-        caller = self.cleaned_data['caller']
-        if caller:
-            try:
-                int(caller)
-            except:
-                raise forms.ValidationError('%s is not a valid caller.'
-                    % caller)
-        return caller
-
     def clean_duration(self):
         """Retrieve valid duration & it should be integer
         else will raise from validation error
@@ -138,18 +125,6 @@ class SearchForm(forms.Form):
         """Retrieve valid accountcode"""
         accountcode = self.cleaned_data['accountcode']
         return accountcode
-
-    def clean_destination(self):
-        """Retrieve valid destination & it should be integer
-        else will raise from validation error"""
-        destination = self.cleaned_data['destination']
-        if destination:
-            try:
-                int(destination)
-            except:
-                raise forms.ValidationError('%s is not a valid destination.'
-                    % destination)
-        return destination
 
 
 class CdrSearchForm(SearchForm):
