@@ -37,6 +37,7 @@ from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_hourly_overview, pipeline_country_report,\
     pipeline_hourly_report, pipeline_country_hourly_report,\
     pipeline_mail_report
+from cdr.constants import CDR_COLUMN_NAME
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -359,6 +360,7 @@ def cdr_view(request):
                 'action': action,
                 'result': result,
                 'notice_count': notice_count(request),
+                'CDR_COLUMN_NAME': CDR_COLUMN_NAME,
             }
             logging.debug('CDR View End')
             return render_to_response(template_name, template_data,
@@ -562,6 +564,7 @@ def cdr_view(request):
         'action': action,
         'result': int(result),
         'notice_count': notice_count(request),
+        'CDR_COLUMN_NAME': CDR_COLUMN_NAME,
     }
     logging.debug('CDR View End')
     return render_to_response(template_name, template_data,

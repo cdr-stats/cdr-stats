@@ -161,70 +161,69 @@
                 <th>
                     {% ifequal col_name_with_order.sort_field 'start_uepoch' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "start_uepoch"  %}
-                      {% trans "Call-date" %}
+                        {{ CDR_COLUMN_NAME.call_date }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-start_uepoch"  %}
                     {% else %}
-                      {% sort_link "Call-date" "-start_uepoch"  %}
+                      {% sort_link CDR_COLUMN_NAME.call_date "-start_uepoch"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'caller_id_number' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "caller_id_number"  %}
-                      {% trans "CLID" %}
+                        {{ CDR_COLUMN_NAME.clid }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-caller_id_number"  %}
                     {% else %}
-                      {% sort_link "CLID" "-caller_id_number"  %}
+                      {% sort_link CDR_COLUMN_NAME.clid "-caller_id_number"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'destination_number' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "destination_number"  %}
-                      {% trans "Destination" %}
+                        {{ CDR_COLUMN_NAME.destination }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-destination_number"  %}
                     {% else %}
-                      {% sort_link "Destination" "-destination_number"  %}
+                      {% sort_link CDR_COLUMN_NAME.destination "-destination_number"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'duration' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "duration"  %}
-                      {% trans "Duration" %}
+                        {{ CDR_COLUMN_NAME.duration }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-duration"  %}
                     {% else %}
-                      {% sort_link "Duration" "-duration"  %}
+                      {% sort_link CDR_COLUMN_NAME.duration "-duration"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'billsec' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "billsec"  %}
-                      <abbr title='{% trans "Bill Seconds" %}'>{% trans "Bill" %}</abbr>
+                      <abbr title='{% trans "Bill Seconds" %}'>{{ CDR_COLUMN_NAME.bill }}</abbr>
                       {% sort_link "<i class='icon-chevron-down'></i>" "-billsec"  %}
                     {% else %}
                         <abbr title={% trans 'Bill Seconds' %}>
-                        {% sort_link "Bill" "-billsec"  %}
+                        {% sort_link CDR_COLUMN_NAME.bill "-billsec"  %}
                         </abbr>
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'hangup_cause_id' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "hangup_cause_id"  %}
-                      {% trans "Hangup cause" %}
+                        {{ CDR_COLUMN_NAME.hangup_cause }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-hangup_cause_id"  %}
                     {% else %}
-                      {% sort_link "Hangup Cause" "-hangup_cause_id"  %}
+                      {% sort_link CDR_COLUMN_NAME.hangup_cause "-hangup_cause_id"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'accountcode' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "accountcode"  %}
-                      {% trans "Account" %}
+                        {{ CDR_COLUMN_NAME.account }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-accountcode"  %}
                     {% else %}
-                      {% sort_link "Account" "-accountcode"  %}
+                      {% sort_link CDR_COLUMN_NAME.account "-accountcode"  %}
                     {% endifequal %}
                 </th>
-                <th>
-                </th>
+                <th></th>
             </tr>
             </thead>
             {% if rows %}

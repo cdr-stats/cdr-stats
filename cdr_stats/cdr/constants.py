@@ -21,3 +21,13 @@ class STRING_SEARCH_TYPE_LIST(Choice):
     BEGINS_WITH = 2, _('Begins with')
     CONTAINS = 3, _('Contains')
     ENDS_WITH = 4, _('Ends with')
+
+
+class CDR_COLUMN_NAME(Choice):
+    call_date = _('Call-date')
+    clid = _('CLID')
+    destination = _('Destination')
+    duration = _('Duration')
+    bill = _('Bill')
+    hangup_cause = _('Hangup cause')
+    account = _('Account')
