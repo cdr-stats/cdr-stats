@@ -202,6 +202,37 @@ def cdr_view_daily_report(query_var):
     return cdr_view_daily_data
 
 
+def get_pagination_vars(request, default_sort_field='start_uepoch'):
+    try:
+        PAGE_NUMBER = int(request.GET['page'])
+    except:
+        PAGE_NUMBER = 1
+
+    col_name_with_order = {}
+    sort_field = variable_value(request, 'sort_by')
+    if not sort_field:
+        sort_field = default_sort_field  # default sort field
+        default_order = -1  # desc
+    else:
+        if '-' in sort_field:
+            default_order = -1
+            sort_field = sort_field[1:]
+            col_name_with_order[sort_field] = sort_field
+        else:
+            default_order = 1
+            col_name_with_order[sort_field] = '-' + sort_field
+
+    col_name_with_order['sort_field'] = sort_field
+
+    data = {
+        'PAGE_NUMBER': PAGE_NUMBER,
+        'col_name_with_order': col_name_with_order,
+        'sort_field': sort_field,
+        'default_order': default_order,
+    }
+    return data
+
+
 @check_cdr_exists
 @login_required
 def cdr_view(request):
@@ -327,14 +358,7 @@ def cdr_view(request):
         else:
             # form is not valid
             logging.debug('Error : CDR search form')
-            rows = []
             PAGE_SIZE = settings.PAGE_SIZE
-            total_duration = 0
-            total_calls = 0
-            total_avg_duration = 0
-            max_duration = 0
-            col_name_with_order = []
-            detail_data = []
             tday = datetime.today()
             start_date = tday.strftime('%Y-%m-01')
             last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999)
@@ -343,17 +367,17 @@ def cdr_view(request):
             end_date = tday.strftime('%Y-%m-' + last_day)
             template_data = {
                 'module': current_view(request),
-                'rows': rows,
+                'rows': [],
                 'form': form,
                 'PAGE_SIZE': PAGE_SIZE,
-                'total_data': detail_data,
-                'total_duration': total_duration,
-                'total_calls': total_calls,
-                'total_avg_duration': total_avg_duration,
-                'max_duration': max_duration,
+                'total_data': [],
+                'total_duration': 0,
+                'total_calls': 0,
+                'total_avg_duration': 0,
+                'max_duration': 0,
                 'user': request.user,
                 'search_tag': search_tag,
-                'col_name_with_order': col_name_with_order,
+                'col_name_with_order': [],
                 'menu': menu,
                 'start_date': start_date,
                 'end_date': end_date,
@@ -420,10 +444,9 @@ def cdr_view(request):
         request.session['session_country_id'] = ''
         request.session['session_cdr_view_daily_data'] = {}
 
-    start_date = datetime(int(from_date[0:4]), int(from_date[5:7]),
-                          int(from_date[8:10]), 0, 0, 0, 0)
-    end_date = datetime(int(to_date[0:4]), int(to_date[5:7]),
-                        int(to_date[8:10]), 23, 59, 59, 999999)
+    start_date = ceil_strdate(from_date, 'start')
+    end_date = ceil_strdate(to_date, 'end')
+
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
     # aggregate query variable
@@ -472,13 +495,6 @@ def cdr_view(request):
         daily_report_query_var['metadata.country_id'] = {'$in': country_id}
         query_var['country_id'] = {'$in': country_id}
 
-    # Define no of records per page
-    PAGE_SIZE = int(records_per_page)
-    try:
-        PAGE_NUMBER = int(request.GET['page'])
-    except:
-        PAGE_NUMBER = 1
-
     final_result = cdr_data.find(query_var,
         {
             "uuid": 0,
@@ -515,21 +531,14 @@ def cdr_view(request):
 
     request.session['query_var'] = query_var
 
-    col_name_with_order = {}
-    sort_field = variable_value(request, 'sort_by')
-    if not sort_field:
-        sort_field = 'start_uepoch'  # default sort field
-        default_order = -1  # desc
-    else:
-        if '-' in sort_field:
-            default_order = -1
-            sort_field = sort_field[1:]
-            col_name_with_order[sort_field] = sort_field
-        else:
-            default_order = 1
-            col_name_with_order[sort_field] = '-' + sort_field
+    # Define no of records per page
+    PAGE_SIZE = int(records_per_page)
+    pagination_data = get_pagination_vars(request)
 
-    col_name_with_order['sort_field'] = sort_field
+    PAGE_NUMBER = pagination_data['PAGE_NUMBER']
+    col_name_with_order = pagination_data['col_name_with_order']
+    sort_field = pagination_data['sort_field']
+    default_order = pagination_data['default_order']
 
     logging.debug('Create cdr result')
 
