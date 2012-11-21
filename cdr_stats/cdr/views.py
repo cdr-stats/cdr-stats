@@ -424,9 +424,9 @@ def cdr_view(request):
                         int(to_date[8:10]), 23, 59, 59, 999999)
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
-    # Mapreduce query variable
-    mr_query_var = {}
-    mr_query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+    # aggregate query variable
+    daily_report_query_var = {}
+    daily_report_query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     dst = mongodb_str_filter(destination, destination_type)
     if dst:
@@ -436,7 +436,7 @@ def cdr_view(request):
         # superuser can see everything
         acc = mongodb_str_filter(accountcode, accountcode_type)
         if acc:
-            mr_query_var['metadata.accountcode'] = acc
+            daily_report_query_var['metadata.accountcode'] = acc
             query_var['accountcode'] = acc
 
     if not request.user.is_superuser:
@@ -444,8 +444,8 @@ def cdr_view(request):
         if not chk_account_code(request):
             return HttpResponseRedirect('/?acc_code_error=true')
         else:
-            mr_query_var['metadata.accountcode'] = chk_account_code(request)
-            query_var['accountcode'] = mr_query_var['metadata.accountcode']
+            daily_report_query_var['metadata.accountcode'] = chk_account_code(request)
+            query_var['accountcode'] = daily_report_query_var['metadata.accountcode']
 
     cli = mongodb_str_filter(caller, caller_type)
     if cli:
@@ -453,20 +453,21 @@ def cdr_view(request):
 
     due = mongodb_int_filter(duration, duration_type)
     if due:
-        query_var['duration'] = mr_query_var['duration_daily'] = due
+        query_var['duration'] = daily_report_query_var['duration_daily'] = due
 
     if switch_id and int(switch_id) != 0:
-        mr_query_var['metadata.switch_id'] = int(switch_id)
+        daily_report_query_var['metadata.switch_id'] = int(switch_id)
         query_var['switch_id'] = int(switch_id)
 
     if hangup_cause_id and int(hangup_cause_id) != 0:
+        daily_report_query_var['metadata.hangup_cause_id'] = int(hangup_cause_id)
         query_var['hangup_cause_id'] = int(hangup_cause_id)
 
     if direction and direction != 'all':
         query_var['direction'] = str(direction)
 
     if len(country_id) >= 1 and country_id[0] != 0:
-        mr_query_var['metadata.country_id'] = {'$in': country_id}
+        daily_report_query_var['metadata.country_id'] = {'$in': country_id}
         query_var['country_id'] = {'$in': country_id}
 
     # Define no of records per page
@@ -538,8 +539,8 @@ def cdr_view(request):
     if request.GET.get('page') or request.GET.get('sort_by'):
         cdr_view_daily_data = request.session['session_cdr_view_daily_data']
     else:
-        # pass mapreduce query to cdr_view_daily_report
-        cdr_view_daily_data = cdr_view_daily_report(mr_query_var)
+        # pass aggregate query to cdr_view_daily_report
+        cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
         request.session['session_cdr_view_daily_data'] = cdr_view_daily_data
 
     template_data = {
