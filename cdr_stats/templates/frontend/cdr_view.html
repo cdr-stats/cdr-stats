@@ -361,7 +361,13 @@
             {% for td in total_data %}
             <tr>
                 <td>{{ td.calldate|date:"D d M Y" }}</td>
-                <td>{{ td.duration__sum|conv_min }}</td>
+                <td>
+                    {% if result == 1 %}
+                        {{ td.duration__sum|conv_min }}
+                    {% else %}
+                        {{ td.duration__sum }}
+                    {% endif %}
+                </td>
                 <td>{% if max_duration > 0 %}
                     <img src="{{ STATIC_URL }}cdr-stats/images/spacer.png" width="{{ td.duration__sum|cal_width:max_duration }}" style="vertical-align:center; height:10px"/>
                     {% endif %}
