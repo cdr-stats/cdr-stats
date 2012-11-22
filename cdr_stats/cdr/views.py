@@ -1516,22 +1516,21 @@ def cdr_overview(request):
                     for key, value in dict_in_list.iteritems():
                         day_hours[int(key)]['duration__sum'] += int(value)
 
-                        # To avoid duplicate entry in total_hour_record
-                        if not day_hours[int(key)] in total_hour_record:
-                            total_hour_record.append(day_hours[int(key)])
+                for hr in day_hours:
+                    total_hour_record.append(day_hours[hr])
 
-                            # All switches hourly data
-                            temp_dt = day_hours[int(key)]['dt']
-                            temp_call_count = int(day_hours[int(key)]['calldate__count'])
-                            temp_duration_sum = day_hours[int(key)]['duration__sum']
-                            if temp_dt in hour_data:
-                                hour_data[temp_dt]['call_count'] += temp_call_count
-                                hour_data[temp_dt]['duration_sum'] += temp_duration_sum
-                            else:
-                                hour_data[temp_dt] = {
-                                    'call_count': temp_call_count,
-                                    'duration_sum': temp_duration_sum
-                                }
+                    # All switches hourly data
+                    temp_dt = day_hours[hr]['dt']
+                    temp_call_count = int(day_hours[hr]['calldate__count'])
+                    temp_duration_sum = day_hours[hr]['duration__sum']
+                    if temp_dt in hour_data:
+                        hour_data[temp_dt]['call_count'] += temp_call_count
+                        hour_data[temp_dt]['duration_sum'] += temp_duration_sum
+                    else:
+                        hour_data[temp_dt] = {
+                            'call_count': temp_call_count,
+                            'duration_sum': temp_duration_sum
+                        }
 
         total_hour_record = sorted(total_hour_record, key=lambda k: k['dt'])
 
