@@ -360,7 +360,6 @@ def cdr_view(request):
         else:
             # form is not valid
             logging.debug('Error : CDR search form')
-            PAGE_SIZE = settings.PAGE_SIZE
             tday = datetime.today()
             start_date = tday.strftime('%Y-%m-01')
             last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999)
@@ -371,7 +370,7 @@ def cdr_view(request):
                 'module': current_view(request),
                 'rows': [],
                 'form': form,
-                'PAGE_SIZE': PAGE_SIZE,
+                'PAGE_SIZE': settings.PAGE_SIZE,
                 'total_data': [],
                 'total_duration': 0,
                 'total_calls': 0,
@@ -543,9 +542,8 @@ def cdr_view(request):
     default_order = pagination_data['default_order']
 
     logging.debug('Create cdr result')
-
-    rows = final_result.skip(PAGE_SIZE * (PAGE_NUMBER - 1))\
-        .limit(PAGE_SIZE)\
+    SKIP_NO = PAGE_SIZE * (PAGE_NUMBER - 1)
+    rows = final_result.skip(SKIP_NO).limit(PAGE_SIZE)\
         .sort([(sort_field, default_order)])
 
     # Get daily report from session while using pagination & sorting
