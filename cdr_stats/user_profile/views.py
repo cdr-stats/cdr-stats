@@ -73,6 +73,7 @@ def customer_detail_change(request):
 
     # Define no of records per page
     PAGE_SIZE = settings.PAGE_SIZE
+    #TODO: PAGE_NUMBER is never used ?
     try:
         PAGE_NUMBER = int(request.GET['page'])
     except:

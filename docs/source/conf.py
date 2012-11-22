@@ -53,7 +53,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'CDR-Stats'
-copyright = u'2011, Arezqui Belaid <info@star2billing.com>'
+copyright = u'2011-2012, Arezqui Belaid <info@star2billing.com>'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

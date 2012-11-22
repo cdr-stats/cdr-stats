@@ -503,7 +503,6 @@ func_install_frontend(){
         </Directory>
 
     </VirtualHost>
-
     ' > $APACHE_CONF_DIR/cdr-stats.conf
     #correct the above file
     sed -i "s/@/'/g"  $APACHE_CONF_DIR/cdr-stats.conf

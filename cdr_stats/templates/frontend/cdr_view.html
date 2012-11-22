@@ -7,6 +7,17 @@
 
 {% block extra_header %}
     {% include "frontend/common_datepicker.html" %}
+    <script type="text/javascript">
+        $(function() {
+            {% if search_tag == 1 %}
+                $(".collapse").collapse();
+            {% endif %}
+
+            {% if search_tag == 0 %}
+                $(".collapse").collapse('hide');
+            {% endif %}
+        });
+    </script>
 {% endblock %}
 
 
@@ -137,7 +148,7 @@
 </div>
 
     <a class="btn btn-small" id="toggle_btn" href="#" data-toggle="collapse" data-target="#form_collapse">
-      <i class="icon-search"></i> <span>{% trans "advanced search"|title %}</span>
+      <i class="icon-zoom-out"></i> <span>{% trans "advanced search"|title %}</span>
     </a>
 
 
@@ -161,70 +172,69 @@
                 <th>
                     {% ifequal col_name_with_order.sort_field 'start_uepoch' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "start_uepoch"  %}
-                      {% trans "Call-date" %}
+                        {{ CDR_COLUMN_NAME.call_date }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-start_uepoch"  %}
                     {% else %}
-                      {% sort_link "Call-date" "-start_uepoch"  %}
+                      {% sort_link CDR_COLUMN_NAME.call_date "-start_uepoch"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'caller_id_number' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "caller_id_number"  %}
-                      {% trans "CLID" %}
+                        {{ CDR_COLUMN_NAME.clid }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-caller_id_number"  %}
                     {% else %}
-                      {% sort_link "CLID" "-caller_id_number"  %}
+                      {% sort_link CDR_COLUMN_NAME.clid "-caller_id_number"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'destination_number' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "destination_number"  %}
-                      {% trans "Destination" %}
+                        {{ CDR_COLUMN_NAME.destination }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-destination_number"  %}
                     {% else %}
-                      {% sort_link "Destination" "-destination_number"  %}
+                      {% sort_link CDR_COLUMN_NAME.destination "-destination_number"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'duration' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "duration"  %}
-                      {% trans "Duration" %}
+                        {{ CDR_COLUMN_NAME.duration }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-duration"  %}
                     {% else %}
-                      {% sort_link "Duration" "-duration"  %}
+                      {% sort_link CDR_COLUMN_NAME.duration "-duration"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'billsec' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "billsec"  %}
-                      <abbr title='{% trans "Bill Seconds" %}'>{% trans "Bill" %}</abbr>
+                      <abbr title='{% trans "Bill Seconds" %}'>{{ CDR_COLUMN_NAME.bill }}</abbr>
                       {% sort_link "<i class='icon-chevron-down'></i>" "-billsec"  %}
                     {% else %}
                         <abbr title={% trans 'Bill Seconds' %}>
-                        {% sort_link "Bill" "-billsec"  %}
+                        {% sort_link CDR_COLUMN_NAME.bill "-billsec"  %}
                         </abbr>
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'hangup_cause_id' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "hangup_cause_id"  %}
-                      {% trans "Hangup cause" %}
+                        {{ CDR_COLUMN_NAME.hangup_cause }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-hangup_cause_id"  %}
                     {% else %}
-                      {% sort_link "Hangup Cause" "-hangup_cause_id"  %}
+                      {% sort_link CDR_COLUMN_NAME.hangup_cause "-hangup_cause_id"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'accountcode' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "accountcode"  %}
-                      {% trans "Account" %}
+                        {{ CDR_COLUMN_NAME.account }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-accountcode"  %}
                     {% else %}
-                      {% sort_link "Account" "-accountcode"  %}
+                      {% sort_link CDR_COLUMN_NAME.account "-accountcode"  %}
                     {% endifequal %}
                 </th>
-                <th>
-                </th>
+                <th></th>
             </tr>
             </thead>
             {% if rows %}
@@ -275,10 +285,17 @@
                         {% ifequal row.direction 'inbound' %}
                             <img src="{{STATIC_URL}}cdr-stats/icons/door_in.png" title="{{ row.direction|capfirst }} {% trans "call" %}" class="elemtooltip"/>
                         {% else %}
-                            <img src="{{STATIC_URL}}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
+                            {% ifequal row.direction 'outbound' %}
+                                <img src="{{STATIC_URL}}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
+                            {% else %}
+                                <img src="{{STATIC_URL}}cdr-stats/icons/door.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
+                            {% endifequal %}
                         {% endifequal %}
+
                         {% if "cdr_object_id" in row %}
-                            <a data-toggle="modal" href="#modal-create-{{ row.cdr_object_id }}" class="ajax-modal-{{ row.cdr_object_id }}" url='/cdr_detail/{{ row.cdr_object_id }}/{{ row.switch_id }}' data-controls-modal='modal-create-content-{{ row.cdr_object_id }}'><img src="{{STATIC_URL}}cdr-stats/icons/zoom.png" class="elemtooltip" title="{% trans "Show details" %}"/></a>
+                            {% if perms.user_profile.allow_cdr_detail %}
+                                <a data-toggle="modal" href="#modal-create-{{ row.cdr_object_id }}" class="ajax-modal-{{ row.cdr_object_id }}" url='/cdr_detail/{{ row.cdr_object_id }}/{{ row.switch_id }}' data-controls-modal='modal-create-content-{{ row.cdr_object_id }}'><img src="{{STATIC_URL}}cdr-stats/icons/zoom.png" class="elemtooltip" title="{% trans "Show details" %}"/></a>
+                            {% endif %}
                         {% endif %}
 
                         <script type="text/javascript" charset="utf-8">
@@ -358,7 +375,13 @@
             {% for td in total_data %}
             <tr>
                 <td>{{ td.calldate|date:"D d M Y" }}</td>
-                <td>{{ td.duration__sum|conv_min }}</td>
+                <td>
+                    {% if result == 1 %}
+                        {{ td.duration__sum|conv_min }}
+                    {% else %}
+                        {{ td.duration__sum }}
+                    {% endif %}
+                </td>
                 <td>{% if max_duration > 0 %}
                     <img src="{{ STATIC_URL }}cdr-stats/images/spacer.png" width="{{ td.duration__sum|cal_width:max_duration }}" style="vertical-align:center; height:10px"/>
                     {% endif %}

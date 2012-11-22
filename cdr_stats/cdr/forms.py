@@ -23,21 +23,18 @@ from cdr.constants import STRING_SEARCH_TYPE_LIST
 from user_profile.models import UserProfile
 
 COMPARE_LIST = ((2, '>'),
-                (3, '>='),
-                (4, '<'),
-                (5, '<='),
-                (1, '='),)
+    (3, '>='),
+    (4, '<'),
+    (5, '<='),
+    (1, '='),)
 
 PAGE_SIZE_LIST = ((10, '10'),
-                  (25, '25'),
-                  (50, '50'),
-                  (100, '100'),
-                  (250, '250'),
-                  (500, '500'),
-                  (1000, '1000'))
-
-DATE_HELP_TEXT = _('Please use the following format') \
-    + ': <em>YYYY-MM-DD</em>.'
+    (25, '25'),
+    (50, '50'),
+    (100, '100'),
+    (250, '250'),
+    (500, '500'),
+    (1000, '1000'))
 
 
 def sw_list_with_all():
@@ -111,19 +108,6 @@ class SearchForm(forms.Form):
         super(SearchForm, self).__init__(*args, **kwargs)
         self.fields['switch'].choices = sw_list_with_all()
 
-    def clean_caller(self):
-        """Retrieve valid caller & it should be integer
-        else will raise from validation error
-        """
-        caller = self.cleaned_data['caller']
-        if caller:
-            try:
-                int(caller)
-            except:
-                raise forms.ValidationError('%s is not a valid caller.'
-                        % caller)
-        return caller
-
     def clean_duration(self):
         """Retrieve valid duration & it should be integer
         else will raise from validation error
@@ -134,25 +118,13 @@ class SearchForm(forms.Form):
                 int(duration)
             except:
                 raise forms.ValidationError('%s is not a valid duration.'
-                        % duration)
+                    % duration)
         return duration
 
     def clean_accountcode(self):
         """Retrieve valid accountcode"""
         accountcode = self.cleaned_data['accountcode']
         return accountcode
-
-    def clean_destination(self):
-        """Retrieve valid destination & it should be integer
-        else will raise from validation error"""
-        destination = self.cleaned_data['destination']
-        if destination:
-            try:
-                int(destination)
-            except:
-                raise forms.ValidationError('%s is not a valid destination.'
-                        % destination)
-        return destination
 
 
 class CdrSearchForm(SearchForm):
@@ -165,21 +137,22 @@ class CdrSearchForm(SearchForm):
     to_date = forms.CharField(label=_('To'),
                               required=True, max_length=10)
     direction = forms.TypedChoiceField(label=_('Direction'),
-                                required=False,
-                                coerce=bool,
-                                choices=(('all', _('All')),
-                                    ('inbound', _('Inbound')),
-                                    ('outbound', _('Outbound'))))
+                                       required=False,
+                                       coerce=bool,
+                                       choices=(('all', _('All')),
+                                       ('inbound', _('Inbound')),
+                                       ('outbound', _('Outbound')),
+                                       ('unknown', _('Unknown'))))
     result = forms.TypedChoiceField(label=_('Result'),
-                                required=False,
-                                coerce=bool,
-                                choices=((1, _('Minutes')),
+                                    required=False,
+                                    coerce=bool,
+                                    choices=((1, _('Minutes')),
                                     (2, _('Seconds'))),
                                     widget=forms.RadioSelect)
     records_per_page = forms.ChoiceField(label=_('CDR per page'),
-                                required=False,
-                                initial=settings.PAGE_SIZE,
-                                choices=PAGE_SIZE_LIST)
+                                         required=False,
+                                         initial=settings.PAGE_SIZE,
+                                         choices=PAGE_SIZE_LIST)
     records_per_page.widget.attrs['class'] = 'input-mini'
 
     def __init__(self, *args, **kwargs):

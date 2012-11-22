@@ -12,7 +12,8 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required,\
+    permission_required
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
@@ -37,6 +38,7 @@ from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_hourly_overview, pipeline_country_report,\
     pipeline_hourly_report, pipeline_country_hourly_report,\
     pipeline_mail_report
+from cdr.constants import CDR_COLUMN_NAME
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -170,7 +172,6 @@ def cdr_view_daily_report(query_var):
     count_days = 0
     for doc in list_data['result']:
         count_days = count_days + 1
-
         total_data.append(
             {
                 'calldate': datetime(int(doc['_id'][0:4]),
@@ -202,6 +203,38 @@ def cdr_view_daily_report(query_var):
     return cdr_view_daily_data
 
 
+def get_pagination_vars(request, default_sort_field='start_uepoch'):
+    try:
+        PAGE_NUMBER = int(request.GET['page'])
+    except:
+        PAGE_NUMBER = 1
+
+    col_name_with_order = {}
+    sort_field = variable_value(request, 'sort_by')
+    if not sort_field:
+        sort_field = default_sort_field  # default sort field
+        default_order = -1  # desc
+    else:
+        if '-' in sort_field:
+            default_order = -1
+            sort_field = sort_field[1:]
+            col_name_with_order[sort_field] = sort_field
+        else:
+            default_order = 1
+            col_name_with_order[sort_field] = '-' + sort_field
+
+    col_name_with_order['sort_field'] = sort_field
+
+    data = {
+        'PAGE_NUMBER': PAGE_NUMBER,
+        'col_name_with_order': col_name_with_order,
+        'sort_field': sort_field,
+        'default_order': default_order,
+    }
+    return data
+
+
+@permission_required('user_profile.allow_cdr_view', login_url='/')
 @check_cdr_exists
 @login_required
 def cdr_view(request):
@@ -327,14 +360,6 @@ def cdr_view(request):
         else:
             # form is not valid
             logging.debug('Error : CDR search form')
-            rows = []
-            PAGE_SIZE = settings.PAGE_SIZE
-            total_duration = 0
-            total_calls = 0
-            total_avg_duration = 0
-            max_duration = 0
-            col_name_with_order = []
-            detail_data = []
             tday = datetime.today()
             start_date = tday.strftime('%Y-%m-01')
             last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999)
@@ -343,23 +368,24 @@ def cdr_view(request):
             end_date = tday.strftime('%Y-%m-' + last_day)
             template_data = {
                 'module': current_view(request),
-                'rows': rows,
+                'rows': [],
                 'form': form,
-                'PAGE_SIZE': PAGE_SIZE,
-                'total_data': detail_data,
-                'total_duration': total_duration,
-                'total_calls': total_calls,
-                'total_avg_duration': total_avg_duration,
-                'max_duration': max_duration,
+                'PAGE_SIZE': settings.PAGE_SIZE,
+                'total_data': [],
+                'total_duration': 0,
+                'total_calls': 0,
+                'total_avg_duration': 0,
+                'max_duration': 0,
                 'user': request.user,
                 'search_tag': search_tag,
-                'col_name_with_order': col_name_with_order,
+                'col_name_with_order': [],
                 'menu': menu,
                 'start_date': start_date,
                 'end_date': end_date,
                 'action': action,
                 'result': result,
                 'notice_count': notice_count(request),
+                'CDR_COLUMN_NAME': CDR_COLUMN_NAME,
             }
             logging.debug('CDR View End')
             return render_to_response(template_name, template_data,
@@ -419,15 +445,14 @@ def cdr_view(request):
         request.session['session_country_id'] = ''
         request.session['session_cdr_view_daily_data'] = {}
 
-    start_date = datetime(int(from_date[0:4]), int(from_date[5:7]),
-                          int(from_date[8:10]), 0, 0, 0, 0)
-    end_date = datetime(int(to_date[0:4]), int(to_date[5:7]),
-                        int(to_date[8:10]), 23, 59, 59, 999999)
+    start_date = ceil_strdate(from_date, 'start')
+    end_date = ceil_strdate(to_date, 'end')
+
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
-    # Mapreduce query variable
-    mr_query_var = {}
-    mr_query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+    # aggregate query variable
+    daily_report_query_var = {}
+    daily_report_query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     dst = mongodb_str_filter(destination, destination_type)
     if dst:
@@ -437,7 +462,7 @@ def cdr_view(request):
         # superuser can see everything
         acc = mongodb_str_filter(accountcode, accountcode_type)
         if acc:
-            mr_query_var['metadata.accountcode'] = acc
+            daily_report_query_var['metadata.accountcode'] = acc
             query_var['accountcode'] = acc
 
     if not request.user.is_superuser:
@@ -445,8 +470,8 @@ def cdr_view(request):
         if not chk_account_code(request):
             return HttpResponseRedirect('/?acc_code_error=true')
         else:
-            mr_query_var['metadata.accountcode'] = chk_account_code(request)
-            query_var['accountcode'] = mr_query_var['metadata.accountcode']
+            daily_report_query_var['metadata.accountcode'] = chk_account_code(request)
+            query_var['accountcode'] = daily_report_query_var['metadata.accountcode']
 
     cli = mongodb_str_filter(caller, caller_type)
     if cli:
@@ -454,28 +479,22 @@ def cdr_view(request):
 
     due = mongodb_int_filter(duration, duration_type)
     if due:
-        query_var['duration'] = mr_query_var['duration_daily'] = due
+        query_var['duration'] = daily_report_query_var['duration_daily'] = due
 
     if switch_id and int(switch_id) != 0:
-        mr_query_var['metadata.switch_id'] = int(switch_id)
+        daily_report_query_var['metadata.switch_id'] = int(switch_id)
         query_var['switch_id'] = int(switch_id)
 
     if hangup_cause_id and int(hangup_cause_id) != 0:
+        daily_report_query_var['metadata.hangup_cause_id'] = int(hangup_cause_id)
         query_var['hangup_cause_id'] = int(hangup_cause_id)
 
     if direction and direction != 'all':
         query_var['direction'] = str(direction)
 
     if len(country_id) >= 1 and country_id[0] != 0:
-        mr_query_var['metadata.country_id'] = {'$in': country_id}
+        daily_report_query_var['metadata.country_id'] = {'$in': country_id}
         query_var['country_id'] = {'$in': country_id}
-
-    # Define no of records per page
-    PAGE_SIZE = int(records_per_page)
-    try:
-        PAGE_NUMBER = int(request.GET['page'])
-    except:
-        PAGE_NUMBER = 1
 
     final_result = cdr_data.find(query_var,
         {
@@ -513,34 +532,26 @@ def cdr_view(request):
 
     request.session['query_var'] = query_var
 
-    col_name_with_order = {}
-    sort_field = variable_value(request, 'sort_by')
-    if not sort_field:
-        sort_field = 'start_uepoch'  # default sort field
-        default_order = -1  # desc
-    else:
-        if '-' in sort_field:
-            default_order = -1
-            sort_field = sort_field[1:]
-            col_name_with_order[sort_field] = sort_field
-        else:
-            default_order = 1
-            col_name_with_order[sort_field] = '-' + sort_field
+    # Define no of records per page
+    PAGE_SIZE = int(records_per_page)
+    pagination_data = get_pagination_vars(request)
 
-    col_name_with_order['sort_field'] = sort_field
+    PAGE_NUMBER = pagination_data['PAGE_NUMBER']
+    col_name_with_order = pagination_data['col_name_with_order']
+    sort_field = pagination_data['sort_field']
+    default_order = pagination_data['default_order']
 
     logging.debug('Create cdr result')
-
-    rows = final_result.skip(PAGE_SIZE * (PAGE_NUMBER - 1))\
-        .limit(PAGE_SIZE)\
+    SKIP_NO = PAGE_SIZE * (PAGE_NUMBER - 1)
+    rows = final_result.skip(SKIP_NO).limit(PAGE_SIZE)\
         .sort([(sort_field, default_order)])
 
     # Get daily report from session while using pagination & sorting
     if request.GET.get('page') or request.GET.get('sort_by'):
         cdr_view_daily_data = request.session['session_cdr_view_daily_data']
     else:
-        # pass mapreduce query to cdr_view_daily_report
-        cdr_view_daily_data = cdr_view_daily_report(mr_query_var)
+        # pass aggregate query to cdr_view_daily_report
+        cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
         request.session['session_cdr_view_daily_data'] = cdr_view_daily_data
 
     template_data = {
@@ -562,6 +573,7 @@ def cdr_view(request):
         'action': action,
         'result': int(result),
         'notice_count': notice_count(request),
+        'CDR_COLUMN_NAME': CDR_COLUMN_NAME,
     }
     logging.debug('CDR View End')
     return render_to_response(template_name, template_data,
@@ -615,6 +627,7 @@ def cdr_export_to_csv(request):
     return response
 
 
+@permission_required('user_profile.allow_cdr_detail', login_url='/')
 @login_required
 def cdr_detail(request, id, switch_id):
     """Detail of Call
@@ -666,11 +679,10 @@ def cdr_detail(request, id, switch_id):
         except:
             raise Http404
 
-        #TODO: SQL for different DBMS
         cursor.execute(
-            "SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel, "
-            "duration, billsec, disposition, accountcode, "
-            "uniqueid, %s FROM %s WHERE %s=%s" %
+            "SELECT dst, calldate, clid, src, dst, dcontext, channel, dstchannel "
+            "lastapp, duration, billsec, disposition, amaflags, accountcode, "
+            "uniqueid, userfield, %s FROM %s WHERE %s=%s" %
             (settings.ASTERISK_PRIMARY_KEY, table_name,
             settings.ASTERISK_PRIMARY_KEY, id))
         row = cursor.fetchone()
@@ -711,6 +723,7 @@ def calculate_act_and_acd(total_calls, total_duration):
     return {'ACT': ACT, 'ACD': ACD}
 
 
+@permission_required('user_profile.allow_cdr_dashboard', login_url='/')
 @check_cdr_exists
 @login_required
 def cdr_dashboard(request):
@@ -864,6 +877,7 @@ def cdr_dashboard(request):
            context_instance=RequestContext(request))
 
 
+@permission_required('user_profile.allow_cdr_concurrent_calls', login_url='/')
 @check_cdr_exists
 @login_required
 def cdr_concurrent_calls(request):
@@ -934,6 +948,7 @@ def cdr_concurrent_calls(request):
            context_instance=RequestContext(request))
 
 
+@permission_required('user_profile.allow_cdr_realtime', login_url='/')
 @login_required
 def cdr_realtime(request):
     """Call realtime view
@@ -1093,6 +1108,7 @@ def get_cdr_mail_report():
     return mail_data
 
 
+@permission_required('user_profile.allow_mail_report', login_url='/')
 @check_cdr_exists
 @login_required
 def mail_report(request):
@@ -1189,6 +1205,7 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
     return variables
 
 
+@permission_required('user_profile.allow_hourly_report', login_url='/')
 @check_cdr_exists
 @login_required
 def cdr_report_by_hour(request):
@@ -1340,6 +1357,7 @@ def cdr_report_by_hour(request):
                                 context_instance=RequestContext(request))
 
 
+@permission_required('user_profile.allow_cdr_overview', login_url='/')
 @check_cdr_exists
 @login_required
 def cdr_overview(request):
@@ -1496,22 +1514,21 @@ def cdr_overview(request):
                     for key, value in dict_in_list.iteritems():
                         day_hours[int(key)]['duration__sum'] += int(value)
 
-                        # To avoid duplicate entry in total_hour_record
-                        if not day_hours[int(key)] in total_hour_record:
-                            total_hour_record.append(day_hours[int(key)])
+                for hr in day_hours:
+                    total_hour_record.append(day_hours[hr])
 
-                            # All switches hourly data
-                            temp_dt = day_hours[int(key)]['dt']
-                            temp_call_count = int(day_hours[int(key)]['calldate__count'])
-                            temp_duration_sum = day_hours[int(key)]['duration__sum']
-                            if temp_dt in hour_data:
-                                hour_data[temp_dt]['call_count'] += temp_call_count
-                                hour_data[temp_dt]['duration_sum'] += temp_duration_sum
-                            else:
-                                hour_data[temp_dt] = {
-                                    'call_count': temp_call_count,
-                                    'duration_sum': temp_duration_sum
-                                }
+                    # All switches hourly data
+                    temp_dt = day_hours[hr]['dt']
+                    temp_call_count = int(day_hours[hr]['calldate__count'])
+                    temp_duration_sum = day_hours[hr]['duration__sum']
+                    if temp_dt in hour_data:
+                        hour_data[temp_dt]['call_count'] += temp_call_count
+                        hour_data[temp_dt]['duration_sum'] += temp_duration_sum
+                    else:
+                        hour_data[temp_dt] = {
+                            'call_count': temp_call_count,
+                            'duration_sum': temp_duration_sum
+                        }
 
         total_hour_record = sorted(total_hour_record, key=lambda k: k['dt'])
 
@@ -1626,6 +1643,7 @@ def cdr_overview(request):
             context_instance=RequestContext(request))
 
 
+@permission_required('user_profile.allow_country_report', login_url='/')
 @check_cdr_exists
 @login_required
 def cdr_country_report(request):
@@ -1728,6 +1746,7 @@ def cdr_country_report(request):
                                        settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
                                        pipeline=pipeline)
     total_record_final = []
+
     if list_data:
         for doc in list_data['result']:
             a_Year = int(doc['_id']['date'][0:4])
@@ -1735,25 +1754,31 @@ def cdr_country_report(request):
             c_Day = int(doc['_id']['date'][8:10])
 
             day_hours = dict()
-            for hr in range(0, 24):
-                graph_day = datetime(a_Year, b_Month, c_Day, int(hr))
-                dt = int(1000 * time.mktime(graph_day.timetuple()))
-                day_hours[hr] = {
-                    'dt': dt,
-                    'calldate__count': 0,
-                    'duration__sum': 0,
-                    'country_id': doc['_id']['country_id']
-                }
 
             for dict_in_list in doc['call_per_hour']:
                 for key, value in dict_in_list.iteritems():
-                    day_hours[int(key)]['calldate__count'] += int(value)
+                    key = int(key)
+                    graph_day = datetime(a_Year, b_Month, c_Day, key)
+                    dt = int(1000 * time.mktime(graph_day.timetuple()))
+
+                    if key in day_hours:
+                        day_hours[key]['calldate__count'] += int(value)
+                    else:
+                        day_hours[key] = {
+                            'dt': dt,
+                            'calldate__count': int(value),
+                            'duration__sum': 0,
+                            'country_id': doc['_id']['country_id']
+                        }
 
             for dict_in_list in doc['duration_per_hour']:
                 for key, value in dict_in_list.iteritems():
-                    day_hours[int(key)]['duration__sum'] += int(value)
+                    key = int(key)
+                    if key in day_hours:
+                        day_hours[key]['duration__sum'] += int(value)
 
-                    total_record_final.append(day_hours[int(key)])
+            for hr in day_hours:
+                total_record_final.append(day_hours[hr])
 
         total_record_final = sorted(total_record_final, key=lambda k: k['dt'])
 
@@ -1796,6 +1821,7 @@ def cdr_country_report(request):
         context_instance=RequestContext(request))
 
 
+@permission_required('user_profile.allow_world_map', login_url='/')
 @check_cdr_exists
 def world_map_view(request):
     """CDR world report

@@ -18,20 +18,38 @@
       <div class="nav-collapse">
           {% if user.is_authenticated %}
             <ul class="nav">
-                <li {% ifequal module 'cdr_dashboard' %}class="active"{% endifequal %}><a href="/dashboard/">{% trans "Dashboard" %}</a></li>
-                <li {% ifequal module 'cdr_view' %}class="active"{% endifequal %}><a href="/cdr_view/">{% trans "Search" %}</a></li>
-                <li {% ifequal module 'cdr_overview' %}class="active"{% endifequal %}><a href="/cdr_overview/">{% trans "Analytics" %}</a></li>
-                <li {% ifequal module 'cdr_report_by_hour' %}class="active"{% endifequal %}><a href="/hourly_report/">{% trans "Compare" %}</a></li>
-                <li {% ifequal module 'cdr_realtime' %}class="active"{% endifequal %}><a href="/cdr_realtime/">{% trans "Realtime" %}</a></li>
-                <li {% ifequal module 'cdr_concurrent_calls' %}class="active"{% endifequal %}><a href="/cdr_concurrent_calls/">{% trans "Concurrent" %}</a></li>
+                {% if perms.user_profile.allow_cdr_dashboard %}
+                    <li {% ifequal module 'cdr_dashboard' %}class="active"{% endifequal %}><a href="/dashboard/">{% trans "Dashboard" %}</a></li>
+                {% endif %}
+                {% if perms.user_profile.allow_cdr_view %}
+                    <li {% ifequal module 'cdr_view' %}class="active"{% endifequal %}><a href="/cdr_view/">{% trans "Search" %}</a></li>
+                {% endif %}
+                {% if perms.user_profile.allow_cdr_overview %}
+                    <li {% ifequal module 'cdr_overview' %}class="active"{% endifequal %}><a href="/cdr_overview/">{% trans "Analytics" %}</a></li>
+                {% endif %}
+                {% if perms.user_profile.allow_hourly_report %}
+                    <li {% ifequal module 'cdr_report_by_hour' %}class="active"{% endifequal %}><a href="/hourly_report/">{% trans "Compare" %}</a></li>
+                {% endif %}
+                {% if perms.user_profile.allow_cdr_realtime %}
+                    <li {% ifequal module 'cdr_realtime' %}class="active"{% endifequal %}><a href="/cdr_realtime/">{% trans "Realtime" %}</a></li>
+                {% endif %}
+                {% if perms.user_profile.allow_cdr_concurrent_calls %}
+                    <li {% ifequal module 'cdr_concurrent_calls' %}class="active"{% endifequal %}><a href="/cdr_concurrent_calls/">{% trans "Concurrent" %}</a></li>
+                {% endif %}
             </ul>
             <ul class="nav pull-left">
                 <li id="fat-menu-I" class="dropdown">
                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Report" %}<b class="caret"></b></a>
                    <ul class="dropdown-menu">
-                      <li {% ifequal module 'cdr_country_report' %}class="active"{% endifequal %}><a href="/country_report/">{% trans "Country Report" %}</a></li>
-                      <li {% ifequal module 'world_map_view' %}class="active"{% endifequal %}><a href="/world_map/">{% trans "World Map Report" %}</a></li>
-                      <li {% ifequal module 'cdr_mail_report' %}class="active"{% endifequal %}><a href="/mail_report/">{% trans "Mail Report" %}</a></li>
+                       {% if perms.user_profile.allow_country_report %}
+                           <li {% ifequal module 'cdr_country_report' %}class="active"{% endifequal %}><a href="/country_report/">{% trans "Country Report" %}</a></li>
+                       {% endif %}
+                       {% if perms.user_profile.allow_world_map %}
+                           <li {% ifequal module 'world_map_view' %}class="active"{% endifequal %}><a href="/world_map/">{% trans "World Map Report" %}</a></li>
+                       {% endif %}
+                       {% if perms.user_profile.allow_mail_report %}
+                           <li {% ifequal module 'cdr_mail_report' %}class="active"{% endifequal %}><a href="/mail_report/">{% trans "Mail Report" %}</a></li>
+                       {% endif %}
                    </ul>
                 </li>
             </ul>

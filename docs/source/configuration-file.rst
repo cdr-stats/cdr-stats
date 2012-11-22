@@ -45,7 +45,7 @@ Sets up the options required for Django to connect to your database engine::
 
 Sets up the options to connect to MongoDB Server, this server and Database will be used to store the analytic data.
 You should normally have no need to change those settings, except if your MongoDB server is on a distant machine
-or if you want to have a different name for your collections.
+or if you want to have a different name for your collections::
 
     #MONGODB
     #=======
@@ -74,7 +74,7 @@ Tells Django to start finding URL matches at in the ``urls.py`` module in the ``
       TEMPLATE_DIRS = ( os.path.join(APPLICATION_DIR, 'templates'), )
 
 
-Tells Django where to find your HTML template files. ::
+Tells Django where to find your HTML template files::
 
     INSTALLED_APPS = (
         'django.contrib.auth',
@@ -154,7 +154,7 @@ Import configuration for Asterisk
 
 The asterisk settings may be as follows::
 
-#list of CDR Backends to import
+    #list of CDR Backends to import
     CDR_BACKEND = {
         '127.0.0.1': {
             'db_engine': 'mysql',
