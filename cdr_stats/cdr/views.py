@@ -1739,6 +1739,7 @@ def cdr_country_report(request):
                                        settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
                                        pipeline=pipeline)
     total_record_final = []
+
     if list_data:
         for doc in list_data['result']:
             a_Year = int(doc['_id']['date'][0:4])
