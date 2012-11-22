@@ -7,6 +7,17 @@
 
 {% block extra_header %}
     {% include "frontend/common_datepicker.html" %}
+    <script type="text/javascript">
+        $(function() {
+            {% if search_tag == 1 %}
+                $(".collapse").collapse();
+            {% endif %}
+
+            {% if search_tag == 0 %}
+                $(".collapse").collapse('hide');
+            {% endif %}
+        });
+    </script>
 {% endblock %}
 
 
