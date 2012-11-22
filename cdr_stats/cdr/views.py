@@ -1760,20 +1760,28 @@ def cdr_country_report(request):
 
             for dict_in_list in doc['call_per_hour']:
                 for key, value in dict_in_list.iteritems():
-                    graph_day = datetime(a_Year, b_Month, c_Day, int(key))
+                    key = int(key)
+                    graph_day = datetime(a_Year, b_Month, c_Day, key)
                     dt = int(1000 * time.mktime(graph_day.timetuple()))
-                    day_hours[int(key)] = {
-                        'dt': dt,
-                        'calldate__count': int(value),
-                        'duration__sum': 0,
-                        'country_id': doc['_id']['country_id']
-                    }
+
+                    if key in day_hours:
+                        day_hours[key]['calldate__count'] += int(value)
+                    else:
+                        day_hours[key] = {
+                            'dt': dt,
+                            'calldate__count': int(value),
+                            'duration__sum': 0,
+                            'country_id': doc['_id']['country_id']
+                        }
 
             for dict_in_list in doc['duration_per_hour']:
                 for key, value in dict_in_list.iteritems():
-                    day_hours[int(key)]['duration__sum'] += int(value)
+                    key = int(key)
+                    if key in day_hours:
+                        day_hours[key]['duration__sum'] += int(value)
 
-                    total_record_final.append(day_hours[int(key)])
+            for hr in day_hours:
+                total_record_final.append(day_hours[hr])
 
         total_record_final = sorted(total_record_final, key=lambda k: k['dt'])
 
