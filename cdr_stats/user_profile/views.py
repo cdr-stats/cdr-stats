@@ -21,7 +21,6 @@ from django.template.context import RequestContext
 from django.utils.translation import ugettext_lazy as _
 from cdr.functions_def import chk_account_code
 from user_profile.models import UserProfile
-from user_profile.constants import NOTICE_COLUMN_NAME
 from user_profile.forms import UserChangeDetailForm, \
     UserChangeDetailExtendForm
 from common_notification.views import notice_count
