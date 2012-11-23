@@ -193,6 +193,7 @@ INSTALLED_APPS = (
     #'geordi',
     'gunicorn',
     'apiplayground',
+    'common_notification',
 )
 
 # Debug Toolbar

@@ -19,24 +19,13 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.template.context import RequestContext
 from django.utils.translation import ugettext_lazy as _
-from django.db.models import Q
-from django.conf import settings
-from notification import models as notification
-from common.common_functions import current_view, get_pagination_vars
 from cdr.functions_def import chk_account_code
 from user_profile.models import UserProfile
 from user_profile.constants import NOTICE_COLUMN_NAME
 from user_profile.forms import UserChangeDetailForm, \
     UserChangeDetailExtendForm
-
-
-@login_required
-def notice_count(request):
-    """Get count of logged in user's notifications"""
-    notice_count = notification.Notice.objects\
-        .filter(recipient=request.user, unseen=1)\
-        .count()
-    return notice_count
+from common_notification.views import notice_count
+from common.common_functions import current_view
 
 
 @login_required
@@ -71,44 +60,14 @@ def customer_detail_change(request):
 
     user_password_form = PasswordChangeForm(user=request.user)
 
-    sort_col_field_list = ['message', 'notice_type', 'sender', 'added']
-    default_sort_field = 'message'
-    pagination_data =\
-        get_pagination_vars(request, sort_col_field_list, default_sort_field)
-
-    PAGE_SIZE = pagination_data['PAGE_SIZE']
-    sort_order = pagination_data['sort_order']
-    col_name_with_order = pagination_data['col_name_with_order']
-
-    user_notification =\
-        notification.Notice.objects.filter(recipient=request.user)
-    # Search on sender name
-    q = (Q(sender=request.user))
-    if q:
-        user_notification = user_notification.filter(q)
-
-    user_notification = user_notification.order_by(sort_order)
-
     msg_detail = ''
     msg_pass = ''
-    msg_note = ''
     error_detail = ''
     error_pass = ''
     action = ''
 
     if 'action' in request.GET:
         action = request.GET['action']
-
-    if request.GET.get('msg_note') == 'true':
-        msg_note = request.session['msg_note']
-
-    # Mark all notification as read
-    if request.GET.get('notification') == 'mark_read_all':
-        notification_list = \
-            notification.Notice.objects.filter(unseen=1,
-                                               recipient=request.user)
-        notification_list.update(unseen=0)
-        msg_note = _('All notifications are marked as read.')
 
     if request.method == 'POST':
         if request.POST['form-type'] == "change-detail":
@@ -140,93 +99,12 @@ def customer_detail_change(request):
         'user_detail_form': user_detail_form,
         'user_detail_extened_form': user_detail_extened_form,
         'user_password_form': user_password_form,
-        'user_notification': user_notification,
-        'PAGE_SIZE': PAGE_SIZE,
         'msg_detail': msg_detail,
         'msg_pass': msg_pass,
-        'msg_note': msg_note,
         'error_detail': error_detail,
         'error_pass': error_pass,
         'notice_count': notice_count(request),
         'action': action,
-        'col_name_with_order': col_name_with_order,
-        'NOTICE_COLUMN_NAME': NOTICE_COLUMN_NAME,
     }
     return render_to_response(template, data,
            context_instance=RequestContext(request))
-
-
-@login_required
-def notification_del_read(request, object_id):
-    """Delete notification for the logged in user
-
-    **Attributes**:
-
-        * ``object_id`` - Selected notification object
-        * ``object_list`` - Selected notification objects
-
-    **Logic Description**:
-
-        * Delete/Mark as Read the selected notification from the notification list
-    """
-    try:
-        # When object_id is not 0
-        notification_obj = notification.Notice.objects.get(pk=object_id)
-        # Delete/Read notification
-        if object_id:
-            if request.POST.get('mark_read') == 'false':
-                request.session["msg_note"] = _('"%(name)s" is deleted.') \
-                    % {'name': notification_obj.notice_type}
-                notification_obj.delete()
-            else:
-                request.session["msg_note"] = _('"%(name)s" is marked as read.') \
-                    % {'name': notification_obj.notice_type}
-                notification_obj.update(unseen=0)
-
-            return HttpResponseRedirect('/user_detail_change/?action=tabs-3&msg_note=true')
-    except:
-        # When object_id is 0 (Multiple records delete/mark as read)
-        values = request.POST.getlist('select')
-        values = ", ".join(["%s" % el for el in values])
-        notification_list = \
-            notification.Notice.objects.extra(where=['id IN (%s)' % values])
-        if request.POST.get('mark_read') == 'false':
-            request.session["msg_note"] = _('%(count)s notification(s) are deleted.')\
-                % {'count': notification_list.count()}
-            notification_list.delete()
-        else:
-            request.session["msg_note"] = \
-                _('%(count)s notification(s) are marked as read.')\
-                % {'count': notification_list.count()}
-            notification_list.update(unseen=0)
-        return HttpResponseRedirect('/user_detail_change/?action=tabs-3&msg_note=true')
-
-
-def common_notification_status(request, id):
-    """Notification Status (e.g. seen/unseen) need to be change.
-    It is a common function for admin and customer UI
-
-    **Attributes**:
-
-        * ``pk`` - primary key of notice record
-
-    **Logic Description**:
-
-        * Selected Notification's status need to be changed.
-          Changed status can be seen or unseen.
-    """
-    notice = notification.Notice.objects.get(pk=id)
-    if notice.unseen == 1:
-        notice.unseen = 0
-    else:
-        notice.unseen = 1
-    notice.save()
-    return True
-
-
-@login_required
-def update_notice_status_cust(request, id):
-    """Notification Status (e.g. seen/unseen) can be changed from
-    customer interface"""
-    common_notification_status(request, id)
-    return HttpResponseRedirect('/user_detail_change/?action=tabs-3')

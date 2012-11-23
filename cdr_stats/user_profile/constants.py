@@ -22,9 +22,3 @@ class NOTICE_TYPE(Choice):
     blacklist_prefix = 3, _('blacklist prefix')
     whitelist_prefix = 4, _('whitelist prefix')
 
-
-class NOTICE_COLUMN_NAME(Choice):
-    message = _('Message')
-    notice_type = _('Notice type')
-    sender = _('Sender')
-    date_field = _('Date')

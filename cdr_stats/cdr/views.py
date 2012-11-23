@@ -39,6 +39,7 @@ from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_hourly_report, pipeline_country_hourly_report,\
     pipeline_mail_report
 from cdr.constants import CDR_COLUMN_NAME
+from common_notification.views import notice_count
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -83,16 +84,6 @@ def index(request):
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))
-
-
-@login_required
-def notice_count(request):
-    """Get count of logged in user's notifications"""
-    notice_count = notification.Notice.objects\
-        .filter(recipient=request.user,
-                unseen=1)\
-        .count()
-    return notice_count
 
 
 def common_send_notification(request, status, recipient=None):

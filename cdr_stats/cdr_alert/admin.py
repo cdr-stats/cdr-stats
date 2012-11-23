@@ -15,7 +15,7 @@
 from django.contrib import admin
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
-from django.conf.urls.defaults import patterns
+from django.conf.urls import patterns
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse

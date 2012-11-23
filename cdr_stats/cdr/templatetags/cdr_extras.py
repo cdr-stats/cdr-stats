@@ -15,45 +15,10 @@ from django import template
 from django.utils.translation import gettext as _
 from cdr.models import Switch
 from cdr.functions_def import get_hangupcause_name
-from cdr.views import notice_count
+from common_notification.views import notice_count
 import re
 
 register = template.Library()
-
-
-@register.filter(name='seen_unseen')
-def seen_unseen(value):
-    """Tag is for icon which is
-    used on user notification list
-
-    >>> seen_unseen('1')
-    'icon-star'
-
-    >>> seen_unseen('')
-    'icon-ok'
-    """
-    if value:
-        return "icon-star"
-    else:
-        return "icon-ok"
-
-
-@register.filter(name='seen_unseen_word')
-def seen_unseen_word(value):
-    """Tag is for notification status which is
-    used on user notification list
-
-    >>> seen_unseen_word('1')
-    'New'
-
-    >>> seen_unseen_word('')
-    'Read'
-    """
-    if value:
-        return _("New")
-    else:
-        return _("Read")
-
 
 @register.filter(name='get_switch_ip')
 def get_switch_ip(id):

@@ -67,29 +67,31 @@
                     <b class="caret"></b>
                 </a>
                 <ul class="dropdown-menu">
-                  <li {% ifequal module 'detail_change' %}class="active"{% endifequal %}><a href="/user_detail_change/?action=tabs-1">
-                          {% trans "Account settings" %}</a></li>
-                  <li {% ifequal module 'detail_change' %}class="active"{% endifequal %}><a href="/user_detail_change/?action=tabs-3">
-                        {% trans "Notifications" %}
-                        {% if notice_count %}
-                            <span class="label label-warning">{{ notice_count }}</span>
-                        {% elif "/api-explorer/" in request.get_full_path %}
-                            <span class="label label-warning">{% get_notice_count request %}</span>
-                        {% endif %}
+                    <li {% ifequal module 'detail_change' %}class="active"{% endifequal %}><a href="/user_detail_change/?action=tabs-1">
+                          {% trans "Account settings" %}</a>
+                    </li>
+                    <li>
+                        <a href="/user_notification/">{% trans "Notifications" %}
+                            {% if notice_count or notice_count == 0 %}
+                                <span class="label label-warning">{{ notice_count }}</span>
+                            {% elif "/api-explorer/" in request.get_full_path %}
+                                <span class="label label-warning">{% get_notice_count request %}</span>
+                            {% endif %}
                         </a>
                     </li>
-                  <li {% ifequal module 'detail_change' %}class="active"{% endifequal %}><a href="/user_detail_change/?action=tabs-4">
-                          {% trans "Change Language" %}</a></li>
-                  <li class="divider"></li>
-                  {% if perms.user_profile.view_api_explorer %}
-                      <li><a href="/api-explorer/"> {% trans "API Explorer" %}</a></li>
-                  {% endif %}
-                  <li class="divider"></li>
-                  {% if user.is_superuser %}
-                  <li><a href="/admin/"> {% trans "Administration" %}</a></li>
-                  <li class="divider"></li>
-                  {% endif %}
-                  <li><a href="/logout/">{% trans "Log out" %}</a></li>
+                    <li {% ifequal module 'detail_change' %}class="active"{% endifequal %}><a href="/user_detail_change/?action=tabs-3">
+                          {% trans "Change Language" %}</a>
+                    </li>
+                    <li class="divider"></li>
+                    {% if perms.user_profile.view_api_explorer %}
+                        <li><a href="/api-explorer/"> {% trans "API Explorer" %}</a></li>
+                    {% endif %}
+                    <li class="divider"></li>
+                    {% if user.is_superuser %}
+                    <li><a href="/admin/"> {% trans "Administration" %}</a></li>
+                    <li class="divider"></li>
+                    {% endif %}
+                    <li><a href="/logout/">{% trans "Log out" %}</a></li>
                 </ul>
               </li>
             </ul>

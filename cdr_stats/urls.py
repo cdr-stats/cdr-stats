@@ -25,6 +25,7 @@ from cdr.urls import urlpatterns as urlpatterns_cdr
 from user_profile.urls import urlpatterns as urlpatterns_user_profile
 from frontend.urls import urlpatterns as urlpatterns_frontend
 from api.api_playgrounds.urls import urlpatterns as urlpatterns_api_playgrounds
+from common_notification.urls import urlpatterns as urlpatterns_common_notification
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -67,6 +68,7 @@ urlpatterns += urlpatterns_cdr
 urlpatterns += urlpatterns_user_profile
 urlpatterns += urlpatterns_frontend
 urlpatterns += urlpatterns_api_playgrounds
+urlpatterns += urlpatterns_common_notification
 
 urlpatterns += patterns('',
     url("", include('django_socketio.urls')),
