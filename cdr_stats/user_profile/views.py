@@ -22,7 +22,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
 from django.conf import settings
 from notification import models as notification
-from common.common_functions import variable_value, current_view
+from common.common_functions import current_view, get_pagination_vars
 from cdr.functions_def import chk_account_code
 from user_profile.models import UserProfile
 from user_profile.constants import NOTICE_COLUMN_NAME
@@ -71,34 +71,16 @@ def customer_detail_change(request):
 
     user_password_form = PasswordChangeForm(user=request.user)
 
-    # Define no of records per page
-    PAGE_SIZE = settings.PAGE_SIZE
-    #TODO: PAGE_NUMBER is never used ?
-    try:
-        PAGE_NUMBER = int(request.GET['page'])
-    except:
-        PAGE_NUMBER = 1
+    sort_col_field_list = ['message', 'notice_type', 'sender', 'added']
+    default_sort_field = 'message'
+    pagination_data =\
+        get_pagination_vars(request, sort_col_field_list, default_sort_field)
 
-    col_name_with_order = {}
-    # default
-    col_name_with_order['message'] = '-message'
-    col_name_with_order['notice_type'] = '-notice_type'
-    col_name_with_order['sender'] = '-sender'
-    col_name_with_order['added'] = '-added'
+    PAGE_SIZE = pagination_data['PAGE_SIZE']
+    sort_order = pagination_data['sort_order']
+    col_name_with_order = pagination_data['col_name_with_order']
 
-    sort_field = variable_value(request, 'sort_by')
-    if not sort_field:
-        sort_field = 'message'  # default sort field
-        sort_order = '-' + sort_field  # desc
-    else:
-        if "-" in sort_field:
-            sort_order = sort_field
-            col_name_with_order[sort_field] = sort_field[1:]
-        else:
-            sort_order = sort_field
-            col_name_with_order[sort_field] = '-' + sort_field
-
-    user_notification = \
+    user_notification =\
         notification.Notice.objects.filter(recipient=request.user)
     # Search on sender name
     q = (Q(sender=request.user))

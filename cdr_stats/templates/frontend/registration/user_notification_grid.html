@@ -7,7 +7,7 @@
 {% endif %}
 
 <div class="btn-group">
-    <button class="btn btn-small">Action</button>
+    <button class="btn btn-small">{% trans "Action" %}</button>
     <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">
         <span class="caret"></span>
     </button>
@@ -53,11 +53,6 @@
                     </td>
                 </tr>
             {% endfor %}
-            <tr>
-                <td colspan="9">
-                    {% paginate %}
-                </td>
-            </tr>
         {% else %}
             <tr>
                 <td colspan="8" align="center">
@@ -66,6 +61,9 @@
             </tr>
         {% endif %}
     </table>
+    {% if user_notification %}
+        {% paginate %}
+    {% endif %}
 </form>
 <script type="text/javascript">
     function make_read_button()
