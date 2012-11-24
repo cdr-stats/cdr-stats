@@ -23,8 +23,7 @@ Testing console of APIs:
 .. image:: /_static/images/api-playground/list_of_api.png
 
 
-To test individual api, click on one api from above api list and you will get like
-following screen.
+To test individual api, click on one api from the api list and you will get a similar screen as follows:
 
 
     **URL** : http://127.0.0.1:8000/api-explorer/switch/

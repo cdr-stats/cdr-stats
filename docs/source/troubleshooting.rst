@@ -34,7 +34,7 @@ All the logs are centralized into one single directory **/var/log/cdrstats/**
 Run in debug mode
 =================
 
-Make sure you stop the services first::
+Make sure services are stopped first::
 
     $ /etc/init.d/cdrstats-celeryd stop
 
@@ -69,20 +69,20 @@ Run the monitor server::
     $ python manage.py celerymon
     
     
-However, in production you probably want to run the monitor in the background, as a daemon::
+However, in production the monitor is best run in the background as a daemon::
 
     $ workon cdr-stats
     $ cd /usr/share/cdrstats/
     $ python manage.py celerymon --detach
     
     
-For a complete listing of the command line arguments available, with a short description, you can use the help command::
+For a complete listing of the command line arguments available, with a short description, use the help command::
 
     $ workon cdr-stats
     $ cd /usr/share/cdrstats/
     $ python manage.py help celerymon
 
 
-Now you can visit the webserver celerymon starts by going to: http://localhost:8989
+Visit the webserver celerymon stats by going to: http://localhost:8989
 
 

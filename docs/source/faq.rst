@@ -45,15 +45,14 @@ First drop your current mongoDB, you can do this with this command::
 
     $ mongo cdr-stats --eval 'db.dropDatabase();'
 
-The next step will be to update all your CDRs to be reimported as we flag them after import.
-This step will depend of your original CDR backend, if you are using Mysql with Asterisk for instance,
-you can run this command on your Database::
+Update all your CDRs to be reimported as we flag them after import. This step is dependant on your CDR store, 
+if you are using Mysql with Asterisk for instance, run this command on the CDR Database::
 
     $ UPDATE  cdr SET  import_cdr =  '0';
 
 
-How to test mail settings are well configured ?
------------------------------------------------
+How to debug mail connectivity?
+------------------------------
 
 **Answer:** .
 

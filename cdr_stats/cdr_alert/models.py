@@ -21,9 +21,9 @@ from cdr_alert.constants import PERIOD, STATUS, ALARM_TYPE, \
 
 class AlertRemovePrefix(models.Model):
     """This defines the Alert Remove Prefix
-    Here you can define the list of prefixes that need to be removed from the
-    dialed digits, imagine all your phone numbers are in the format 5559004432
-    You will need to remove the prefix 555 to analyze the phone numbers
+    Define the list of prefixes that need to be removed from the dialed digits, 
+    assuming the phone numbers are in the format 5559004432, with the signifcant digits
+    9004432, the prefix 555 needs to be removed to analyse the phone numbers.
 
     **Attributes**:
 

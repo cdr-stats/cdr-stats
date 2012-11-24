@@ -38,7 +38,7 @@ def customer_detail_change(request):
 
     **Logic Description**:
 
-        * User is able to change his/her detail.
+        * User is able to change their details.
     """
     if not request.user.is_superuser:  # not superuser
         if not chk_account_code(request):

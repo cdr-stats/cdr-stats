@@ -9,10 +9,10 @@ Overview
 Install requirements
 ====================
 
-A Requirements file gives you a way to create an environment where you can put
-all optional dependencies which are needed for the Project/Application.
+A Requirements file provides a way to create an environment where all 
+the optional dependencies needed for the Project/Application are installed.
 
-To get started with CDR-Stats you must have the following installed:
+To get started with CDR-Stats the following must be installed:
 
 - python >= 2.5 (programming language)
 - Apache / http server with WSGI modules
@@ -32,15 +32,15 @@ To get started with CDR-Stats you must have the following installed:
 - wsgiref >= 0.1.2 (Validation support for WSGI )
 - django-tastypie (Creating delicious APIs for Django)
 - django-notification >= 0.1.3 (User notification management for the Django web framework)
-- switch2bill-common - Common libs reused in different project
+- switch2bill-common - Common libs reused in different projects
 - django-country-dialcode - Django reusable application to manage Dial code of Countries
 - django-countries - List of world countries
 - django-socketio - A Django app providing the features required to use websockets with Django via Socket.IO
 
-We advice you to install those requirements into a virtual environement, a virtual environement will allow you to not mix dependencies of an application with an other installed application on your server. You can find more information about virtualenv here : http://pypi.python.org/pypi/virtualenv
+The requirements are installed into a virtual environement so that the dependencies of the application do not interfere with othe applications on the server. More information can be found about virtualenv at : http://pypi.python.org/pypi/virtualenv
 
-PIP is a tool for installing and managing Python packages, more information about PIP here http://www.pip-installer.org/en/latest/index.html.
-With PIP you can easily install all the requirements for CDR-Stats.
+PIP is a tool for installing and managing Python packages, more information about PIP t : http://www.pip-installer.org/en/latest/index.html.
+PIP easily installs all the requirements for CDR-Stats.
 
 Use PIP to install all the requirements,::
 
@@ -66,10 +66,9 @@ Inside CDR-Stats directory you should run, the following::
 
 
 ``syncdb`` will create a database named test.db in ``database`` folder of the
-CDR-Stats directory. We have configured CDR-Stats to do this, but you
-can change this simply by modifying settings.py where DATABASES dictionary is
-constructed. You can find more information about this in the
-Django documentation.
+CDR-Stats directory. CDR-Stats is configured to do this, but can be changed 
+by modifying settings.py where the DATABASES dictionary is constructed. there
+is  more information about this in the Django documentation.
 
 ``collectstatic`` will fetch all necessary media files and put them into
 ``static`` folder defined in the settings module.
@@ -78,6 +77,6 @@ Django documentation.
 
 ``createsuperuser`` will create a super user, to access to the admin section of CDR-Stats.
 
-``runserver`` runs an embedded webserver to test your site.
+``runserver`` runs an embedded webserver to test the site.
 By default it will run on http://localhost:8000. This is configurable and more
-information can be found on ``runserver`` in Django documentation.
+information about ``runserver`` is in Django documentation.

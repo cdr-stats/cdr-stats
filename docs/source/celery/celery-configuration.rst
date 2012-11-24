@@ -48,7 +48,7 @@ This is a configuration example for Rabbitmq.
 Launch celery/celerybeat in debug mode
 --------------------------------------
 
-If you don't want to run celeryd and celerybeat as a daemon then
+If it is not required to run celeryd and celerybeat as a daemon then
 
 To run celeryd ::
 
@@ -66,9 +66,7 @@ To run both ::
 Running celeryd/celerybeat as a daemon (Debian/Ubuntu)
 ------------------------------------------------------
 
-To configure celeryd you will need to tell it where to change directory
-to, when it starts in order to find your celeryconfig.
-::
+To configure celeryd as a daemon, it is necessary to configure the location of celeryconfig ::
 
 $ cd install/celery-init/etc/default/
 
@@ -144,7 +142,7 @@ $ cd install/celery-init/etc/default/
 Troubleshooting
 ---------------
 
-If you can't get the celeryd as a daemon to work, you should try running them in verbose mode::
+If celeryd will not start as a daemon, try running it in verbose mode::
 
     $ sh -x /etc/init.d/celeryd start
 

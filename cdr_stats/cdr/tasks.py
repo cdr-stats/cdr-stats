@@ -33,7 +33,7 @@ LOCK_EXPIRE = 60 * 60 * 1  # Lock expires in 1 hours
 
 class sync_cdr_pending(PeriodicTask):
     """
-    A periodic task that checks for pending calls to import
+    A periodic task that checks for pending CDR to import
     """
     run_every = timedelta(seconds=10)  # every 10 secs
 

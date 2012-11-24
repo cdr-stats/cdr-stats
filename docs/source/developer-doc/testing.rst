@@ -19,9 +19,9 @@ or::
 
     $ /etc/init.d/redis-server start
 
----------------
-How to run test
----------------
+----------------
+How to Run Tests
+----------------
 
 **1. Run Full Test Suit**::
 
