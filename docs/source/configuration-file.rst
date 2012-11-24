@@ -44,7 +44,7 @@ Sets up the options required for Django to connect to your database engine::
 
 
 Sets up the options to connect to MongoDB Server, this server and database will be used to store the analytic data.
-There is usually no need to change these settings, unless if your MongoDB server is on a remote server, or if 
+There is usually no need to change these settings, unless if your MongoDB server is on a remote server, or if
 different names are required for the collections::
 
     #MONGODB
@@ -146,37 +146,54 @@ In Spain, where there is no "0" trunk code, and the length of all numbers is 9, 
 
 NB: After changing this file, then both celery and apache should be restarted.
 
-Resetting Data
-~~~~~~~~~~~~~~
 
-The procedure is valid for Asterisk systems using CDR stored in MySQL.
+.. _resetting-data:
+
+Resetting Data
+--------------
 
 Sometimes, some experimentation is required to get the optimum settings for country reporting, to achieve this the data is removed
-from MongoDB and re-imported from the Asterisk MySQL database. 
+from MongoDB and re-imported from the Asterisk MySQL database.
 
 1. Stop Celery
-2. Type mongo to enter the MongoDB database then apply the following commands:
 
-use cdr-stats;
-db.monthly_analytic.remove({});
-db.daily_analytic.remove({});
-db.aggregate_world_report.remove({});
-db.aggregate_result_cdr_view.remove({});
-db.aggregate_hourly_country_report.remove({});
-db.cdr_common.remove({});
+2. Type mongo to enter the MongoDB database then apply the following commands::
 
-CTRL-D exits the console.
+    mongo
+    use cdr-stats;
+    db.monthly_analytic.remove({});
+    db.daily_analytic.remove({});
+    db.aggregate_world_report.remove({});
+    db.aggregate_result_cdr_view.remove({});
+    db.aggregate_hourly_country_report.remove({});
+    db.cdr_common.remove({});
 
-3. Go to the CDR database in Asterisk and change the field 'import_cdr' to 0:
+    CTRL-D exits the console.
 
-Enter the MySQL console with the following command, changing the credentials and database name
-to suit your installation:		
-mysql -uasteriskuser -pamp109 asteriskcdrdb
+3. Flag the CDR records for reimport
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-update cdr SET import_cdr = 0;
+3a. With Asterisk and Mysql ::
 
-CTRL-C exits the MySQL 
-		
+    Go to the CDR database in Asterisk and change the field 'import_cdr' to 0:
+
+    Enter the MySQL console with the following command, changing the credentials and database name
+    to suit your installation:
+    mysql -uasteriskuser -pamp109 asteriskcdrdb
+
+    update cdr SET import_cdr = 0;
+
+    CTRL-C exits the MySQL
+
+
+3b. With FreeSWITCH and MongoDB::
+
+    Go to the CDR FreeSWITCH MongoDB backend, update all the record with the field 'import_cdr' to 0.
+
+    mongo
+    use freeswitch_cdr;
+    db.cdr.update({"import_cdr" : 1}, { $set : {"import_cdr" : 0}}, { multi: true });
+
 4. Now start Celery.
 5. Wait while the CDR are re-imported.
 
@@ -265,8 +282,8 @@ Freeswitch settings are under the CDR_BACKEND section, and should look as follow
     }
 
 
-To connect a new Freeswitch system to CDR-Stats, ensure that port 27017 TCP is ONLY open to  
-the CDR-Stats server on the remote system, then uncomment the settings by removing the #, 
-and configure the IP address and db_name to match those in the mod_cdr_mongodb configuration 
+To connect a new Freeswitch system to CDR-Stats, ensure that port 27017 TCP is ONLY open to
+the CDR-Stats server on the remote system, then uncomment the settings by removing the #,
+and configure the IP address and db_name to match those in the mod_cdr_mongodb configuration
 as described at :
 http://www.cdr-stats.org/documentation/beginners-guide/howto-installing-on-freeswitch/
