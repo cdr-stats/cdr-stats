@@ -41,14 +41,22 @@ How to start over, delete CDRs and relaunch the import ?
 
 **Answer:** .
 
-First drop your current mongoDB, you can do this with this command::
+First, stop celery and drop your current mongoDB, you can do this with this command::
 
     $ mongo cdr-stats --eval 'db.dropDatabase();'
 
-Update all your CDRs to be reimported as we flag them after import. This step is dependant on your CDR store, 
-if you are using Mysql with Asterisk for instance, run this command on the CDR Database::
+Update all your CDRs to be reimported as we flag them after import. This next step is dependant on your CDR store, 
+
+Mysql with Asterisk: run this command on the CDR Database::
 
     $ UPDATE  cdr SET  import_cdr =  '0';
+
+MongoDB with Freeswitch: Run this command in MongoDB
+
+    $ use freeswitch_cdr;
+    db.cdr.update({"import_cdr" : 1}, { $set : {"import_cdr" : 0}}, { multi: true });
+
+Start Celery, and check CDR are being imported correctly.
 
 
 How to debug mail connectivity?

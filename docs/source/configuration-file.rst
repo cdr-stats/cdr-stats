@@ -188,7 +188,7 @@ from MongoDB and re-imported from the Asterisk MySQL database.
 
 3b. With FreeSWITCH and MongoDB::
 
-    Go to the CDR FreeSWITCH MongoDB backend, update all the record with the field 'import_cdr' to 0.
+    Go to the CDR FreeSWITCH MongoDB database, update all the records by setting the 'import_cdr' field to 0.
 
     mongo
     use freeswitch_cdr;
