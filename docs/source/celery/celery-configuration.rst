@@ -16,11 +16,11 @@ This is a configuration example for Redis.
 
     # Redis Settings
     CARROT_BACKEND = "ghettoq.taproot.Redis"
-    
+
     BROKER_HOST = "localhost"  # Maps to redis host.
     BROKER_PORT = 6379         # Maps to redis port.
     BROKER_VHOST = "0"         # Maps to database number.
-    
+
     CELERY_RESULT_BACKEND = "redis"
     REDIS_HOST = "localhost"
     REDIS_PORT = 6379
@@ -40,15 +40,13 @@ This is a configuration example for Rabbitmq.
     BROKER_USER = "root"
     BROKER_PASSWORD = "root"
     BROKER_VHOST = "localhost"
-    
+
     CELERY_RESULT_BACKEND = "amqp"
 
 
 --------------------------------------
 Launch celery/celerybeat in debug mode
 --------------------------------------
-
-If it is not required to run celeryd and celerybeat as a daemon then
 
 To run celeryd ::
 
