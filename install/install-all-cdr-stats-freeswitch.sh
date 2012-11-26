@@ -18,7 +18,7 @@
 # cd /usr/src/ ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-all-cdr-stats-freeswitch.sh -O install-all-cdr-stats-freeswitch.sh; bash install-all-cdr-stats-freeswitch.sh
 #
 
-BRANCH='develop'
+BRANCH='master'
 
 #INSTALL TYPE (ASTERISK or FREESWITCH)
 INSTALL_TYPE='FREESWITCH'

@@ -22,7 +22,7 @@
 # cd /usr/src/ ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/develop/install/install-cdr-stats.sh -O install-cdr-stats.sh ; sed -i "s/cdr-stats\/master/cdr-stats\/develop/g" install-cdr-stats.sh ; bash install-cdr-stats.sh
 #
 
-BRANCH='develop'
+BRANCH='master'
 INSTALLMODE='FULL' # Set to FULL to update Selinux / Firewall / etc...
 
 

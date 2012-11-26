@@ -29,7 +29,7 @@ CELERYD_GROUP="celery"
 CDRSTATS_ENV="cdr-stats"
 HTTP_PORT="8008"
 SOUTH_SOURCE='hg+http://bitbucket.org/andrewgodwin/south/@ecaafda23e600e510e252734d67bf8f9f2362dc9#egg=South-dev'
-BRANCH='develop'
+BRANCH='master'
 DB_BACKEND="POSTGRESQL"
 
 
@@ -428,8 +428,8 @@ func_install_frontend(){
 
     #Load Countries Dialcode
     python manage.py load_country_dialcode
-    
-    #Permission on database folder if we use SQLite    
+
+    #Permission on database folder if we use SQLite
     chown -R $APACHE_USER:$APACHE_USER $INSTALL_DIR/database/
 
     #Configure for Asterisk / Freeswitch etc...
