@@ -165,14 +165,6 @@
         {{ extra_head }}
     {% endblock %}
 
-    {% block header %}
-        <div class="page-header">
-            {% block content_header %}
-                <h1>CDR-Stats <small>{% trans "reporting solution" %}</small></h1>
-            {% endblock %}
-        </div>
-    {% endblock %}
-
     <!--Success Message of view-->
     {% if msg %}
         <div class="alert alert-success">

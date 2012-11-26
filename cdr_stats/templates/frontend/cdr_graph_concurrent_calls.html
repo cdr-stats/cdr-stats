@@ -1,9 +1,6 @@
 {% extends "frontend/master.html" %}
 {% load i18n cdr_extras %}
 
-{% block header %}
-{% endblock %}
-
 {% block extra_header %}
 <script type="text/javascript">
 $(function() {
@@ -14,8 +11,6 @@ $(function() {
 
 
 {% block content %}
-
-
 <form class="well form-search" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
 <div class="row">
     <div class="span12">
