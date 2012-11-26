@@ -15,7 +15,6 @@ from django import template
 from django.utils.translation import gettext as _
 from cdr.models import Switch
 from cdr.functions_def import get_hangupcause_name
-from common_notification.views import notice_count
 import re
 
 register = template.Library()
@@ -64,9 +63,3 @@ def mongo_id(value, sub_val):
         else:
             value = value['_id']
     return value
-
-
-@register.simple_tag(name='get_notice_count')
-def get_notice_count(request):
-    """tag to display notice count"""
-    return notice_count(request)

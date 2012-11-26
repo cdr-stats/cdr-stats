@@ -151,6 +151,9 @@ def get_country_name(id, type=''):
 
     >>>  get_country_name(198)
     'Spain'
+
+     >>>  get_country_name(198, 'iso2')
+    'Spain'
     """
     if id == 999:
         return _('Internal Calls')

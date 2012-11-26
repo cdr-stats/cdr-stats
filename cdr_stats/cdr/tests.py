@@ -487,7 +487,6 @@ class CdrModelTestCase(BaseAuthenticatedClient):
         get_hc_list()
         get_country_id(['44', '442'])
 
-
     def test_cdr_search_form(self):
         data = {'switch_id': 1,
                 'from_date': datetime.now().strftime("%Y-%m-%d"),
