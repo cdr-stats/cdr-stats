@@ -13,6 +13,7 @@
 #
 
 from django.db import models
+from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from country_dialcode.models import Country
 from cdr_alert.constants import PERIOD, STATUS, ALARM_TYPE, \
@@ -64,6 +65,7 @@ class Alarm(models.Model):
 
     **Name of DB table**: alert
     """
+    user = models.ForeignKey('auth.User', related_name='Alarm_owner')
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     period = models.PositiveIntegerField(choices=list(PERIOD), default=1,
                                 verbose_name=_('Period'),
@@ -92,6 +94,9 @@ class Alarm(models.Model):
         return '%s' % (self.name)
 
     class Meta:
+        permissions = (
+            ("view_alarm", _('Can see alarms')),
+        )
         verbose_name = _("Alarm")
         verbose_name_plural = _("Alarms")
         db_table = "alert"

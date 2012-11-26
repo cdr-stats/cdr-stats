@@ -34,7 +34,7 @@ class AlertRemovePrefixAdmin(admin.ModelAdmin):
 
 # Alarm
 class AlarmAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'period', 'type', 'alert_value',
+    list_display = ('id', 'name', 'user', 'period', 'type', 'alert_value',
                     'status', 'alert_condition')
     search_fields = ('name', 'type')
 

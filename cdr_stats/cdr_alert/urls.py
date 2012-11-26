@@ -12,9 +12,9 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-# from django.conf.urls import patterns
+from django.conf.urls import patterns
 
-# urlpatterns = patterns('',
-#     # User detail change for Customer UI
-#     #(r'^alert/$', 'cdr_alert.views.alert'),
-# )
+urlpatterns = patterns('cdr_alert.views',
+     # User detail change for Customer UI
+     (r'^alert/$', 'alert_list'),
+)

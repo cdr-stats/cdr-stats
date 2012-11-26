@@ -15,6 +15,7 @@ from django import template
 from django.utils.translation import gettext as _
 from cdr.models import Switch
 from cdr.functions_def import get_hangupcause_name
+from cdr_alert.constants import PERIOD, ALARM_TYPE
 import re
 
 register = template.Library()
@@ -63,3 +64,39 @@ def mongo_id(value, sub_val):
         else:
             value = value['_id']
     return value
+
+
+@register.filter(name='alarm_period')
+def alarm_period(value):
+    """alarm period
+
+    >>> alarm_period(1)
+    'START'
+    """
+    if not value:
+        return ''
+    STATUS = dict(PERIOD)
+    try:
+        status = STATUS[value]
+    except:
+        status = ''
+
+    return str(status)
+
+
+@register.filter(name='alarm_type')
+def alarm_type(value):
+    """alarm type
+
+    >>> alarm_type(1)
+    'START'
+    """
+    if not value:
+        return ''
+    STATUS = dict(ALARM_TYPE)
+    try:
+        status = STATUS[value]
+    except:
+        status = ''
+
+    return str(status)
