@@ -165,6 +165,28 @@
         {{ extra_head }}
     {% endblock %}
 
+    {% block header %}
+        <div class="page-header">
+            {% block content_header %}
+                <h1>CDR-Stats <small>{% trans "reporting solution" %}</small></h1>
+            {% endblock %}
+        </div>
+    {% endblock %}
+
+    <!--Success Message of view-->
+    {% if msg %}
+        <div class="alert alert-success">
+            <strong>{% trans "Alert" %} : </strong>  {{ msg }}
+        </div>
+    {% endif %}
+
+    <!--Error Message of view-->
+    {% if error_msg %}
+        <div class="alert alert-error">
+            <strong>{% trans "Error" %} : </strong>  {{ error_msg }}
+        </div>
+    {% endif %}
+
     {% block content %}
         {{ content }}
     {% endblock %}

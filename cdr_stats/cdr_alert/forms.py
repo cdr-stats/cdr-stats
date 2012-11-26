@@ -12,7 +12,9 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django import forms
+from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
+from cdr_alert.models import Alarm
 from cdr.functions_def import get_country_list
 
 
@@ -24,3 +26,15 @@ class BWCountryForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(BWCountryForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['country']
+
+
+class AlarmForm(ModelForm):
+    """Alarm ModelForm"""
+
+    class Meta:
+        model = Alarm
+        fields = ['name', 'period', 'type', 'alert_condition',
+                  'alert_value', 'alert_condition_add_on', 'status',
+                  'email_to_send_alarm']
+        exclude = ('user',)
+

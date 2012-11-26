@@ -3,9 +3,13 @@
 
 {% block title %}{% trans "Alert" %}{% endblock %}
 
-{% block extra_header %}
+{% block extra_head %}
+    {% include "frontend/custom_jquery_select_all.html" %}
 {% endblock %}
 
+{% block content_header %}
+    <h1>{% trans "alerts"|title %} <small>{% trans "list of alerts" %}</small></h1>
+{% endblock %}
 
 {% block content %}
 <script type="text/javascript">
@@ -19,10 +23,26 @@
         $('#ListForm').submit();
     }
 </script>
-<div class="graph_header">
-    {% trans "alerts"|title %}
+
+<div class="span12">
+    <div class="row">
+        <div class="btn-group">
+            <button class="btn">{% trans "Action" %}</button>
+            <button class="btn dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                {% if perms.dialer_contact.delete_phonebook %}
+                    <li><a href="#" onclick="delete_button()">{% trans "Delete selected" %}</a></li>
+                {% endif %}
+            </ul>
+        </div>
+        {% if perms.dialer_contact.add_phonebook %}
+            <a class="btn btn-info" href="#" onclick="add_button()">{% trans "Add" %}</a>
+        {% endif %}
+    </div>
 </div>
-<p>&nbsp;</p>
+<br/><br/>
 <div class="row">
     <div class="span12">
         <form method="POST" action="del/0/" enctype="multipart/form-data" id="ListForm">{% csrf_token %}

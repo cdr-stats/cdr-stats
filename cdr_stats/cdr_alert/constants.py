@@ -54,7 +54,7 @@ class ALARM_REPROT_STATUS(Choice):
 
 
 class ALARM_COLUMN_NAME(Choice):
-    id = _('ID')
+    id = _('Id')
     name = _('Name')
     period = _('Period')
     type = _('Type')

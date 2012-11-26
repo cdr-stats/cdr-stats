@@ -16,5 +16,8 @@ from django.conf.urls import patterns
 
 urlpatterns = patterns('cdr_alert.views',
      # User detail change for Customer UI
-     (r'^alert/$', 'alert_list'),
+     (r'^alert/$', 'alarm_list'),
+     (r'^alert/add/$', 'alarm_add'),
+     (r'^alert/del/(.+)/$', 'alarm_del'),
+     (r'^alert/(.+)/$', 'alarm_change'),
 )
