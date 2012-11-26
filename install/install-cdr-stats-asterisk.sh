@@ -18,7 +18,7 @@
 # cd /usr/src/ ; rm install-cdr-stats-asterisk.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats-asterisk.sh -O install-cdr-stats-asterisk.sh; bash install-cdr-stats-asterisk.sh
 #
 
-BRANCH='develop'
+BRANCH='master'
 INSTALL_DIR='/usr/share/cdr_stats'
 
 #INSTALL TYPE (ASTERISK or FREESWITCH)
