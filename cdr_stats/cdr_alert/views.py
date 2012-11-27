@@ -19,7 +19,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.utils.translation import gettext as _
 from django.conf import settings
-from cdr_alert.models import Alarm
+from cdr_alert.models import Alarm, Blacklist, Whitelist
 from cdr_alert.constants import ALARM_COLUMN_NAME
 from cdr_alert.forms import AlarmForm
 from common_notification.views import notice_count
@@ -193,10 +193,14 @@ def alarm_change(request, object_id):
 @permission_required('cdr_alert.view_whitelist', login_url='/')
 @login_required
 def trust_control(request):
+    #Blacklist, Whitelist
+    blacklist = Blacklist.objects.filter(user=request.user)
+    whitelist = Whitelist.objects.filter(user=request.user)
     template = 'frontend/cdr_alert/common_black_white_list.html'
     data = {
         'module': current_view(request),
-        #'form': form,
+        'blacklist': blacklist,
+        'whitelist': whitelist,
         'notice_count': notice_count(request),
     }
     return render_to_response(template, data,
