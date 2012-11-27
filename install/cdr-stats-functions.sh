@@ -162,6 +162,11 @@ func_install_frontend(){
     echo "We will now install CDR-Stats on your server"
 	echo "============================================"
     echo ""
+                
+    #Create CDRStats User
+    echo ""
+    echo "Create CDRStats User/Group : $CDRSTATS_USER"
+    useradd $CDRSTATS_USER --user-group --system --no-create-home
 
     #python setup tools
     echo "Install Dependencies and python modules..."
@@ -182,10 +187,7 @@ func_install_frontend(){
             #Start PostgreSQL
             /etc/init.d/postgresql start
 
-            #Create CDRStats User
-            echo ""
-            echo "Create CDRStats User/Group : $CDRSTATS_USER"
-            useradd $CDRSTATS_USER --user-group --system --no-create-home
+
         ;;
         'CENTOS')
             if [ "$INSTALLMODE" = "FULL" ]; then
