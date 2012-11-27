@@ -90,7 +90,8 @@ class BlacklistAdmin(admin.ModelAdmin):
                     # blacklist whole country
                     Blacklist.objects.create(
                         phonenumber_prefix=int(prefix_list[0]['prefix']),
-                        country=Country.objects.get(pk=country))
+                        country=Country.objects.get(pk=country),
+                        user=request.user)
 
                     messages.info(request, msg)
                     return HttpResponseRedirect(
@@ -103,7 +104,8 @@ class BlacklistAdmin(admin.ModelAdmin):
                         for i in values:
                             Blacklist.objects.create(
                                 phonenumber_prefix=int(i),
-                                country=Country.objects.get(pk=country))
+                                country=Country.objects.get(pk=country),
+                                user=request.user)
 
                         messages.info(request, msg)
                         return HttpResponseRedirect(
@@ -154,7 +156,7 @@ class WhitelistAdmin(admin.ModelAdmin):
 
         **Important variable**:
         """
-        opts = Blacklist._meta
+        opts = Whitelist._meta
         form = BWCountryForm()
         prefix_list = []
 
@@ -170,7 +172,8 @@ class WhitelistAdmin(admin.ModelAdmin):
                     # whitelist whole country
                     Whitelist.objects.create(
                         phonenumber_prefix=int(prefix_list[0]['prefix']),
-                        country=Country.objects.get(pk=country))
+                        country=Country.objects.get(pk=country),
+                        user=request.user)
 
                     messages.info(request, msg)
                     return HttpResponseRedirect(
@@ -183,7 +186,8 @@ class WhitelistAdmin(admin.ModelAdmin):
                         for i in values:
                             Whitelist.objects.create(
                                 phonenumber_prefix=int(i),
-                                country=Country.objects.get(pk=country))
+                                country=Country.objects.get(pk=country),
+                                user=request.user)
 
                         messages.info(request, msg)
                         return HttpResponseRedirect(
