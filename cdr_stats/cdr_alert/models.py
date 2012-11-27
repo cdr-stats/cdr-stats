@@ -142,6 +142,7 @@ class Blacklist(models.Model):
 
     **Name of DB table**: alert_blacklist
     """
+    user = models.ForeignKey('auth.User', related_name='Blacklist_owner')
     phonenumber_prefix = models.PositiveIntegerField(blank=False, null=False)
     country = models.ForeignKey(Country, null=True, blank=True,
                                 verbose_name=_("Country"),
@@ -151,6 +152,9 @@ class Blacklist(models.Model):
         return '[%s] %s' % (self.id, self.phonenumber_prefix)
 
     class Meta:
+        permissions = (
+            ("view_blacklist", _('Can see blacklist country/prefix')),
+        )
         verbose_name = _("Blacklist")
         verbose_name_plural = _("Blacklist")
         db_table = "alert_blacklist"
@@ -166,6 +170,7 @@ class Whitelist(models.Model):
 
     **Name of DB table**: alert_whitelist
     """
+    user = models.ForeignKey('auth.User', related_name='whitelist_owner')
     phonenumber_prefix = models.PositiveIntegerField(blank=False, null=False)
     country = models.ForeignKey(Country, null=True, blank=True,
                                 verbose_name=_("Country"),
@@ -175,6 +180,9 @@ class Whitelist(models.Model):
         return '[%s] %s' % (self.id, self.phonenumber_prefix)
 
     class Meta:
+        permissions = (
+            ("view_whitelist", _('Can see whitelist country/prefix')),
+        )
         verbose_name = _("Whitelist")
         verbose_name_plural = _("Whitelist")
         db_table = "alert_whitelist"

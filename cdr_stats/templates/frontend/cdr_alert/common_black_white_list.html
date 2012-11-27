@@ -1,0 +1,50 @@
+{% extends "frontend/master.html" %}
+{% load i18n pagination_tags cdr_extras common_tags icons %}
+
+{% block title %}{% trans "Black & white country prefix list" %}{% endblock %}
+
+{% block extra_head %}
+    {% include "frontend/custom_jquery_select_all.html" %}
+    <center>
+        <h3>{% trans "black & white list"|title %} <small>{% trans "list of country prefixies" %}</small></h3>
+    </center>
+{% endblock %}
+
+{% block content %}
+<script type="text/javascript">
+    function add_button()
+    {
+        window.location = 'add/';
+    }
+
+    function delete_button()
+    {
+        $('#ListForm').submit();
+    }
+</script>
+
+<div class="span12">
+    <div class="row">
+        <div class="btn-group">
+            <button class="btn">{% trans "Action" %}</button>
+            <button class="btn dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                {% if perms.dialer_contact.delete_phonebook %}
+                    <li><a href="#" onclick="delete_button()">{% trans "Delete selected" %}</a></li>
+                {% endif %}
+            </ul>
+        </div>
+        {% if perms.dialer_contact.add_phonebook %}
+            <a class="btn btn-info" href="#" onclick="add_button()">{% trans "Add" %}</a>
+        {% endif %}
+    </div>
+</div>
+<br/><br/>
+<div class="row">
+    <div class="span12">
+        
+    </div>
+</div>
+{% endblock %}

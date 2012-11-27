@@ -14,7 +14,7 @@
 from django import forms
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
-from cdr_alert.models import Alarm
+from cdr_alert.models import Alarm, Blacklist, Whitelist
 from cdr.functions_def import get_country_list
 
 
@@ -37,4 +37,5 @@ class AlarmForm(ModelForm):
                   'alert_value', 'alert_condition_add_on', 'status',
                   'email_to_send_alarm']
         exclude = ('user',)
+
 

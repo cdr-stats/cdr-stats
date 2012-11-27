@@ -59,7 +59,7 @@
                     <ul class="dropdown-menu">
                         {% if perms.cdr_alert.view_alert %}
                             <li {% ifequal module 'alert' %}class="active"{% endifequal %}><a href="/alert/">{% trans "Alert" %}</a></li>
-                            <!--<li {% ifequal module 'trust_control' %}class="active"{% endifequal %}><a href="/trust_control/">{% trans "Trust control" %}</a></li>-->
+                            <li {% ifequal module 'trust_control' %}class="active"{% endifequal %}><a href="/trust_control/">{% trans "Trust control" %}</a></li>
                         {% endif %}
                     </ul>
                 </li>

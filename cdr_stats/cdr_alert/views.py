@@ -188,3 +188,16 @@ def alarm_change(request, object_id):
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))
+
+
+@permission_required('cdr_alert.view_whitelist', login_url='/')
+@login_required
+def trust_control(request):
+    template = 'frontend/cdr_alert/common_black_white_list.html'
+    data = {
+        'module': current_view(request),
+        #'form': form,
+        'notice_count': notice_count(request),
+    }
+    return render_to_response(template, data,
+        context_instance=RequestContext(request))
