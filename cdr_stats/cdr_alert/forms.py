@@ -28,6 +28,15 @@ class BWCountryForm(forms.Form):
         self.fields.keyOrder = ['country']
 
 
+class BWPrefixForm(forms.Form):
+    """Blacklist/Whitelist by prefix form"""
+    prefix = forms.CharField(label=_('Prefix'), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(BWPrefixForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['prefix']
+
+
 class AlarmForm(ModelForm):
     """Alarm ModelForm"""
 
