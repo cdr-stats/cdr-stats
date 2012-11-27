@@ -30,8 +30,15 @@ from common_notification.urls import urlpatterns as urlpatterns_common_notificat
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
-admin.autodiscover()
+from dajaxice.core import dajaxice_autodiscover
+dajaxice_autodiscover()
 
+try:
+    admin.autodiscover()
+except admin.sites.AlreadyRegistered:
+    # nose imports the admin.py files during tests, so
+    # the models have already been registered.
+    pass
 # tastypie api
 tastypie_api = Api(api_name='v1')
 tastypie_api.register(UserResource())
@@ -62,6 +69,7 @@ urlpatterns = patterns('',
 
     (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', \
                             {'url': 'static/cdr_stats/images/favicon.ico'}),
+    (r'^%s/' % settings.DAJAXICE_MEDIA_PREFIX, include('dajaxice.urls')),
 )
 
 
