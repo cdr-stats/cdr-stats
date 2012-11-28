@@ -36,7 +36,6 @@ class BWPrefixForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(BWPrefixForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['prefix']
-        self.fields['prefix'].widget.attrs['data-provide'] = "typeahead"
 
 
 class AlarmForm(ModelForm):

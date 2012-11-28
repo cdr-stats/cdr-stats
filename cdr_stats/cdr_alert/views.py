@@ -194,8 +194,8 @@ def alarm_change(request, object_id):
 @login_required
 def trust_control(request):
     #Blacklist, Whitelist
-    prefix_list = map(str, Prefix.objects.values_list("prefix", flat=True).all().order_by('prefix'))
-
+    prefix_list = \
+        map(str, Prefix.objects.values_list("prefix", flat=True).all().order_by('prefix'))
     prefix_list = (','.join('"' + item + '"' for item in prefix_list))
     prefix_list = "[" + str(prefix_list) + "]"
 
