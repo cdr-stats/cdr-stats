@@ -39,7 +39,7 @@ from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_hourly_report, pipeline_country_hourly_report,\
     pipeline_mail_report
 from cdr.constants import CDR_COLUMN_NAME
-from common_notification.views import notice_count
+from frontend_notification.views import notice_count
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta

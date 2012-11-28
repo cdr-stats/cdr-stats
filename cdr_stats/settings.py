@@ -197,7 +197,7 @@ INSTALLED_APPS = (
     #'geordi',
     'gunicorn',
     'apiplayground',
-    'common_notification',
+    'frontend_notification',
     'dajaxice',
     'dajax',
 )

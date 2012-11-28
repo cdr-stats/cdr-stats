@@ -22,7 +22,7 @@ from django.conf import settings
 from cdr_alert.models import Alarm, Blacklist, Whitelist
 from cdr_alert.constants import ALARM_COLUMN_NAME
 from cdr_alert.forms import AlarmForm, BWCountryForm, BWPrefixForm
-from common_notification.views import notice_count
+from frontend_notification.views import notice_count
 from common.common_functions import current_view, get_pagination_vars,\
     variable_value, ceil_strdate
 

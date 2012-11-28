@@ -1,4 +1,4 @@
-{% load i18n cdr_extras common_notification_tags %}
+{% load i18n cdr_extras frontend_notification_tags %}
 
 <div class="navbar navbar-fixed-top">
   <div class="navbar-inner">
@@ -70,7 +70,7 @@
             <ul class="nav pull-right">
               <li id="fat-menu-II" class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username|capfirst }}
-                    {% if notice_count %}
+                    {% if notice_count or notice_count == 0 %}
                         <span class="label label-warning">{{ notice_count }}</span>
                     {% elif "/api-explorer/" in request.get_full_path %}
                         <span class="label label-warning">{% get_notice_count request %}</span>

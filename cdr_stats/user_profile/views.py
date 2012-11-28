@@ -23,7 +23,7 @@ from cdr.functions_def import chk_account_code
 from user_profile.models import UserProfile
 from user_profile.forms import UserChangeDetailForm, \
     UserChangeDetailExtendForm
-from common_notification.views import notice_count
+from frontend_notification.views import notice_count
 from common.common_functions import current_view
 
 
