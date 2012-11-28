@@ -25,33 +25,78 @@ from cdr.functions_def import remove_prefix,\
 from country_dialcode.models import Country, Prefix
 
 
+def get_table_string(request, default_name='blacklist'):
+    col = 3 # group by columns
+
+    if default_name == 'blacklist':
+        prefix_list = Blacklist.objects.filter(user=request.user).order_by('id')
+        prefix_list_count = prefix_list.count()
+
+    if default_name == 'whitelist':
+        prefix_list = Whitelist.objects.filter(user=request.user).order_by('id')
+        prefix_list_count = prefix_list.count()
+
+    result_table = '<table class="table table-striped table-bordered table-condensed">'
+
+    # same logic of groupby_columns template tag
+    rows = (prefix_list_count // col) + 1
+
+    table = [prefix_list[i::rows] for i in range(rows)]
+
+    n = len(table[0])
+    new_prefix_list = [row + [None for x in range(n - len(row))] for row in table]
+    for obj_list in new_prefix_list:
+        result_table += '<tr>'
+        for obj in obj_list:
+            if obj:
+                obj_string = str(obj.phonenumber_prefix) + ' | ' + str(obj.country.countryname)
+                result_table += '<td>' + str(obj_string) + '</td>'
+            else:
+                result_table += '<td>&nbsp;</td>'
+
+        result_table += '</tr>'
+
+    result_table += '</table>'
+
+    return result_table
+
+
 @login_required
 @dajaxice_register
 def add_blacklist_country(request, country_id):
     dajax = Dajax()
-
     try:
         country = Country.objects.get(id=int(country_id))
+
         country_id = country.id
         prefix_list =\
-            Prefix.objects.values('prefix').filter(country_id=country_id)
+            Prefix.objects.values_list('prefix', flat=True).filter(country_id=country_id)
+
+        add_flag = False
+
         for prefix in prefix_list:
+            rec_count = Blacklist.objects.filter(user=request.user,
+                                                 phonenumber_prefix=int(prefix),
+                                                 country_id=country_id).count()
 
-            for key, value in prefix.iteritems():
-                rec_count = Blacklist.objects.filter(user=request.user,
-                                                     phonenumber_prefix=int(value),
-                                                     country_id=country_id).count()
+            # No duplicate record, so insert
+            if rec_count == 0:
+                blacklist = Blacklist.objects.create(
+                    user=request.user,
+                    phonenumber_prefix=int(prefix),
+                    country_id=country_id,
+                )
+                add_flag = True
+        if add_flag:
+            result = '<div class="alert alert-success">Alert : (%s) has been successfully added in blacklist !!</div>' % (country.countryname)
+        else:
+            result = '<div class="alert alert-error">Alert : (%s) already added in blacklist !!</div>' % (country.countryname)
 
-                # No duplicate record, so insert
-                if rec_count == 0:
-                    blacklist = Blacklist.objects.create(
-                        user=request.user,
-                        phonenumber_prefix=int(value),
-                        country_id=country_id,
-                    )
+        result_table = get_table_string(request, 'blacklist')
 
-        result = '<div class="alert alert-success">Alert : (%s) has been successfully added in blacklist !!</div>' % (country.countryname)
-        dajax.assign('#id_alert_success', 'innerHTML', str(result))
+        dajax.assign('#id_alert_message', 'innerHTML', str(result))
+        dajax.assign('#id_blacklist_table', 'innerHTML', str(result_table))
+
     except:
         pass
         #dajax.alert("%s is not exist !!" % (id))
@@ -89,9 +134,104 @@ def add_blacklist_prefix(request, prefix):
              result = '<div class="alert alert-success">Alert : (%s) has been successfully added in blacklist !!</div>' \
                  % (str(prefix))
         else:
-            result = '<div class="alert alert-error">Alert : (%s) has not been added in blacklist !!</div>'\
+            result = '<div class="alert alert-error">Alert : (%s) already added in blacklist !!</div>'\
                      % (str(prefix))
-        dajax.assign('#id_alert_success', 'innerHTML', str(result))
+
+        result_table = get_table_string(request, 'blacklist')
+        dajax.assign('#id_alert_message', 'innerHTML', str(result))
+        dajax.assign('#id_blacklist_table', 'innerHTML', str(result_table))
+    except:
+        pass
+        #dajax.alert("%s is not exist !!" % (id))
+        #for error in form.errors:
+        #    dajax.add_css_class('#id_%s' % error, 'error')
+    return dajax.json()
+
+
+## whitelist
+whitelist_success = '<div class="alert alert-success">Alert : (%s) has been successfully added in whitelist !!</div>'
+whitelist_error = '<div class="alert alert-error">Alert : (%s) already added in whitelist !!</div>'
+
+@login_required
+@dajaxice_register
+def add_whitelist_country(request, country_id):
+    dajax = Dajax()
+    try:
+        country = Country.objects.get(id=int(country_id))
+
+        country_id = country.id
+        prefix_list =\
+            Prefix.objects.values_list('prefix', flat=True).filter(country_id=country_id)
+
+        add_flag = False
+
+        for prefix in prefix_list:
+            rec_count = Whitelist.objects.filter(user=request.user,
+                                                 phonenumber_prefix=int(prefix),
+                                                 country_id=country_id).count()
+
+            # No duplicate record, so insert
+            if rec_count == 0:
+                whitelist = Whitelist.objects.create(
+                    user=request.user,
+                    phonenumber_prefix=int(prefix),
+                    country_id=country_id,
+                )
+                add_flag = True
+        if add_flag:
+            result = whitelist_success % (country.countryname)
+        else:
+            result = whitelist_error % (country.countryname)
+
+        result_table = get_table_string(request, 'whitelist')
+
+        dajax.assign('#id_alert_message', 'innerHTML', str(result))
+        dajax.assign('#id_whitelist_table', 'innerHTML', str(result_table))
+
+    except:
+        pass
+        #dajax.alert("%s is not exist !!" % (id))
+        #for error in form.errors:
+        #    dajax.add_css_class('#id_%s' % error, 'error')
+    return dajax.json()
+
+
+@login_required
+@dajaxice_register
+def add_whitelist_prefix(request, prefix):
+    dajax = Dajax()
+
+    try:
+        #prfix_obj = Prefix.objects.get(prefix=int(prefix))
+        #print prfix_obj.country_id
+        #print prfix_obj
+        prefix_list =\
+            list(Prefix.objects.values_list('prefix', flat=True).filter(prefix=int(prefix)))
+
+        country_id = get_country_id(str(prefix_list))
+
+        rec_count = Whitelist.objects.filter(user=request.user,
+                                             phonenumber_prefix=int(prefix),
+                                             country_id=country_id).count()
+
+        add_flag = False
+        # No duplicate record, so insert
+        if rec_count == 0:
+            whitelist = Whitelist.objects.create(
+                user=request.user,
+                phonenumber_prefix=int(prefix),
+                country_id=country_id,
+            )
+            add_flag = True
+
+        if add_flag:
+            result = whitelist_success % (str(prefix))
+        else:
+            result = whitelist_error % (str(prefix))
+
+        result_table = get_table_string(request, 'whitelist')
+        dajax.assign('#id_alert_message', 'innerHTML', str(result))
+        dajax.assign('#id_whitelist_table', 'innerHTML', str(result_table))
     except:
         pass
         #dajax.alert("%s is not exist !!" % (id))
