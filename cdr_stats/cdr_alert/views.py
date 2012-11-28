@@ -202,14 +202,23 @@ def trust_control(request):
 
     blacklist = Blacklist.objects.filter(user=request.user).order_by('id')
     whitelist = Whitelist.objects.filter(user=request.user).order_by('id')
+
+    # blacklist form
     bl_country_form = BWCountryForm()
     bl_prefix_form = BWPrefixForm()
+
+    # whitelist form
+    wl_country_form = BWCountryForm()
+    wl_prefix_form = BWPrefixForm()
+
     template = 'frontend/cdr_alert/common_black_white_list.html'
     data = {
         'module': current_view(request),
         'prefix_list': prefix_list,
         'bl_country_form': bl_country_form,
         'bl_prefix_form': bl_prefix_form,
+        'wl_country_form': wl_country_form,
+        'wl_prefix_form': wl_prefix_form,
         'blacklist': blacklist,
         'whitelist': whitelist,
         'notice_count': notice_count(request),
