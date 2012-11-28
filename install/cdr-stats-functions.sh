@@ -28,7 +28,6 @@ CELERYD_USER="celery"
 CELERYD_GROUP="celery"
 CDRSTATS_ENV="cdr-stats"
 HTTP_PORT="8008"
-SOUTH_SOURCE='hg+http://bitbucket.org/andrewgodwin/south/@ecaafda23e600e510e252734d67bf8f9f2362dc9#egg=South-dev'
 BRANCH='master'
 DB_BACKEND="POSTGRESQL"
 
