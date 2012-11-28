@@ -40,7 +40,7 @@ django-extensions==1.0.1
 git+git://github.com/Star2Billing/django-notification
 git+git://github.com/jschrewe/django-genericadmin.git
 git+git://github.com/areski/Django-API-Playground.git
-git+git://github.com/Star2Billing/common_notification.git
+git+git://github.com/areski/django-frontend-notification.git
 
 #Dev
 Sphinx==1.1.3

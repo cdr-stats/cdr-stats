@@ -25,7 +25,7 @@ from cdr_alert.forms import AlarmForm, BWCountryForm, BWPrefixForm
 from frontend_notification.views import notice_count
 from common.common_functions import current_view, get_pagination_vars,\
     variable_value, ceil_strdate
-
+from country_dialcode.models import Country, Prefix
 
 @permission_required('cdr_alert.view_alarm', login_url='/')
 @login_required
@@ -194,6 +194,12 @@ def alarm_change(request, object_id):
 @login_required
 def trust_control(request):
     #Blacklist, Whitelist
+    prefix_list = map(str, Prefix.objects.values_list("prefix", flat=True).all().order_by('prefix'))
+
+    prefix_list = (','.join('"' + item + '"' for item in prefix_list))
+    prefix_list = "[" + str(prefix_list) + "]"
+
+
     blacklist = Blacklist.objects.filter(user=request.user)
     whitelist = Whitelist.objects.filter(user=request.user)
     bl_country_form = BWCountryForm()
@@ -201,6 +207,7 @@ def trust_control(request):
     template = 'frontend/cdr_alert/common_black_white_list.html'
     data = {
         'module': current_view(request),
+        'prefix_list': prefix_list,
         'bl_country_form': bl_country_form,
         'bl_prefix_form': bl_prefix_form,
         'blacklist': blacklist,

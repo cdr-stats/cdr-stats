@@ -67,29 +67,30 @@ def add_blacklist_prefix(request, prefix):
 
     try:
         prefix_list =\
-            Prefix.objects.values('prefix').filter(prefix__in=[eval(prefix)])
+            list(Prefix.objects.values_list('prefix', flat=True).filter(prefix=int(prefix)))
 
-        country_id = get_country_id('['+prefix+']')
+        country_id = get_country_id(str(prefix_list))
 
-        added_prefix = []
-        for prefix in prefix_list:
+        rec_count = Blacklist.objects.filter(user=request.user,
+            phonenumber_prefix=int(prefix),
+            country_id=country_id).count()
 
-            for key, value in prefix.iteritems():
-                rec_count = Blacklist.objects.filter(user=request.user,
-                    phonenumber_prefix=int(value),
-                    country_id=country_id).count()
+        add_flag = False
+        # No duplicate record, so insert
+        if rec_count == 0:
+            blacklist = Blacklist.objects.create(
+                user=request.user,
+                phonenumber_prefix=int(prefix),
+                country_id=country_id,
+            )
+            add_flag = True
 
-                # No duplicate record, so insert
-                if rec_count == 0:
-                    blacklist = Blacklist.objects.create(
-                        user=request.user,
-                        phonenumber_prefix=int(value),
-                        country_id=country_id,
-                    )
-                    added_prefix.append(value)
-
-        result = '<div class="alert alert-success">Alert : (%s) has been successfully added in blacklist !!</div>' \
-                 % (str(added_prefix))
+        if add_flag:
+             result = '<div class="alert alert-success">Alert : (%s) has been successfully added in blacklist !!</div>' \
+                 % (str(prefix))
+        else:
+            result = '<div class="alert alert-error">Alert : (%s) has not been added in blacklist !!</div>'\
+                     % (str(prefix))
         dajax.assign('#id_alert_success', 'innerHTML', str(result))
     except:
         pass

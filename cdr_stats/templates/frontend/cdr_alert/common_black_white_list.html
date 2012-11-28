@@ -34,6 +34,9 @@
             });
         });
 
+        $(function() {
+            $('.typeahead').typeahead();
+        });
 
     </script>
 
@@ -42,7 +45,6 @@
 {% endblock %}
 
 {% block content %}
-
 <div id="id_alert_success"></div>
 
 <div class="row">
@@ -85,13 +87,13 @@
         <!--blacklist prefix form-->
         <form action="." id="id_bl_prefix" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            {% for field in bl_prefix_form %}
-                <div class="row{% if field.errors %} control-group error{% endif %}">
-                    <div class="span5">
-                        {{ field }}&nbsp;<input id="add_bl_country" type="submit" class="btn btn-primary" value="{% trans "Black list this dialcode" %}" />
-                    </div>
+            <div class="row">
+                <div class="span5">
+                    <input id="id_prefix" name="prefix"  type="text" data-provide="typeahead" data-items="10" data-source='{{ prefix_list }}'>
+                    &nbsp;
+                    <input id="add_bl_prefix" type="submit" class="btn btn-primary" value="{% trans "Black list this dialcode" %}" />
                 </div>
-            {% endfor %}
+            </div>
         </form>
     </div>
 </div>

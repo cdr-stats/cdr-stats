@@ -16,6 +16,7 @@ from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 from cdr_alert.models import Alarm, Blacklist, Whitelist
 from cdr.functions_def import get_country_list
+from country_dialcode.models import Prefix
 
 
 class BWCountryForm(forms.Form):
@@ -35,6 +36,7 @@ class BWPrefixForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(BWPrefixForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['prefix']
+        self.fields['prefix'].widget.attrs['data-provide'] = "typeahead"
 
 
 class AlarmForm(ModelForm):
