@@ -20,6 +20,7 @@
 BRANCH='master'
 
 #Get Scripts dependencies
+cd /usr/src/
 wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/bash-common-functions.sh -O bash-common-functions.sh
 
 #Include general functions
