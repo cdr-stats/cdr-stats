@@ -9,7 +9,7 @@ Overview
 Install requirements
 ====================
 
-A Requirements file provides a way to create an environment where all 
+A Requirements file provides a way to create an environment where all
 the optional dependencies needed for the Project/Application are installed.
 
 To get started with CDR-Stats the following must be installed:
@@ -37,12 +37,12 @@ To get started with CDR-Stats the following must be installed:
 - django-countries - List of world countries
 - django-socketio - A Django app providing the features required to use websockets with Django via Socket.IO
 
-The requirements are installed into a virtual environement so that the dependencies of the application do not interfere with othe applications on the server. More information can be found about virtualenv at : http://pypi.python.org/pypi/virtualenv
+
+The requirements are installed into a virtual environement so that the dependencies of the application do not interfere with other applications on the server. More information can be found about virtualenv at : http://pypi.python.org/pypi/virtualenv
 
 PIP is a tool for installing and managing Python packages, more information about PIP t : http://www.pip-installer.org/en/latest/index.html.
-PIP easily installs all the requirements for CDR-Stats.
 
-Use PIP to install all the requirements,::
+With PIP you can easily install all the requirements::
 
     $ pip install -r install/requirements/all-requirements.txt
 
@@ -66,7 +66,7 @@ Inside CDR-Stats directory you should run, the following::
 
 
 ``syncdb`` will create a database named test.db in ``database`` folder of the
-CDR-Stats directory. CDR-Stats is configured to do this, but can be changed 
+CDR-Stats directory. CDR-Stats is configured to do this, but can be changed
 by modifying settings.py where the DATABASES dictionary is constructed. there
 is  more information about this in the Django documentation.
 
