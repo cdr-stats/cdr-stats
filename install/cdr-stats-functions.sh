@@ -162,7 +162,7 @@ func_install_frontend(){
     echo "We will now install CDR-Stats on your server"
 	echo "============================================"
     echo ""
-                
+
     #Create CDRStats User
     echo ""
     echo "Create CDRStats User/Group : $CDRSTATS_USER"
@@ -444,6 +444,7 @@ func_install_frontend(){
             MYHOSTPORT='3306'
 
             echo "Install Mysql..."
+            #TODO: This should be done for CentOS only, need to add similar for Ubuntu
             yum -y install mysql-server mysql-devel
 
             echo ""
