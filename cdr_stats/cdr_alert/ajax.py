@@ -26,35 +26,36 @@ from country_dialcode.models import Country, Prefix
 
 def get_table_string(request, default_name='blacklist'):
     col = 3
-    row = 1
 
     if default_name == 'blacklist':
-        prefix_list = Blacklist.objects.filter(user=request.user)
+        prefix_list = Blacklist.objects.filter(user=request.user).order_by('id')
         prefix_list_count = prefix_list.count()
 
     if default_name == 'whitelist':
-        prefix_list = Whitelist.objects.filter(user=request.user)
+        prefix_list = Whitelist.objects.filter(user=request.user).order_by('id')
         prefix_list_count = prefix_list.count()
 
-    result_table = '<table class="table table-striped table-bordered table-condensed"><tr>'
-    total_row = 1
-    for obj in prefix_list:
-        obj_string = str(obj.phonenumber_prefix) + ' | ' + str(obj.country.countryname)
-        if row % col == 0:
-            result_table += '<td>' + str(obj_string) + '</td></tr><tr>'
-            row = 1
-            total_row += 1
-        else:
-            result_table += '<td>' + str(obj_string)  + '</td>'
-            row += 1
+    result_table = '<table class="table table-striped table-bordered table-condensed">'
 
+    # same logic of groupby_columns template tag
+    rows = (prefix_list_count // col) + 1
 
-    remaining_rows = prefix_list_count % (total_row-1)
-    if remaining_rows != 0:
-        for i in range(0, remaining_rows):
-            result_table += '<td>&nbsp;</td>'
+    table = [prefix_list[i::rows] for i in range(rows)]
 
-    result_table += '</tr></table>'
+    n = len(table[0])
+    new_prefix_list = [row + [None for x in range(n - len(row))] for row in table]
+    for obj_list in new_prefix_list:
+        result_table += '<tr>'
+        for obj in obj_list:
+            if obj:
+                obj_string = str(obj.phonenumber_prefix) + ' | ' + str(obj.country.countryname)
+                result_table += '<td>' + str(obj_string) + '</td>'
+            else:
+                result_table += '<td>&nbsp;</td>'
+
+        result_table += '</tr>'
+
+    result_table += '</table>'
 
     return result_table
 

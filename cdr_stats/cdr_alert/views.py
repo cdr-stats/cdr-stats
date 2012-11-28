@@ -200,8 +200,8 @@ def trust_control(request):
     prefix_list = "[" + str(prefix_list) + "]"
 
 
-    blacklist = Blacklist.objects.filter(user=request.user)
-    whitelist = Whitelist.objects.filter(user=request.user)
+    blacklist = Blacklist.objects.filter(user=request.user).order_by('id')
+    whitelist = Whitelist.objects.filter(user=request.user).order_by('id')
     bl_country_form = BWCountryForm()
     bl_prefix_form = BWPrefixForm()
     template = 'frontend/cdr_alert/common_black_white_list.html'
