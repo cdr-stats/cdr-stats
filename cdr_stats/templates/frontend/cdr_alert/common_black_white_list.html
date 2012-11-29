@@ -22,7 +22,7 @@
             $('#add_bl_country').click(function(e) {
 
                 e.preventDefault();
-                var country_id = $('#id_country :selected').val();
+                var country_id = $('#id_bl_country_from #id_country :selected').val();
                 add_bl_country(country_id);
             });
 
@@ -54,7 +54,7 @@
             $('#add_wl_country').click(function(e) {
 
                 e.preventDefault();
-                var country_id = $('#id_country :selected').val();
+                var country_id = $('#id_wl_country_from #id_country :selected').val();
                 add_wl_country(country_id);
             });
 
