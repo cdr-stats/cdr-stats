@@ -11,6 +11,7 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
+from django.contrib.auth.models import User
 from django.test import TestCase
 from common.utils import BaseAuthenticatedClient
 from cdr_alert.models import AlertRemovePrefix, \
@@ -151,7 +152,6 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         request.user = self.user
         request.session = {}
         response = alarm_add(request)
-        self.assertEqual(response['Location'], '/alert/')
         self.assertEqual(response.status_code, 302)
 
         resp = self.client.post('/alert/add/', data={
@@ -178,20 +178,20 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 302)
 
         # delete alarm through alarm_change
-        request = self.factory.post('/alert/1/',
+        request = self.factory.post('/alert/2/',
             data={'delete': True}, follow=True)
         request.user = self.user
         request.session = {}
-        response = alarm_change(request, 1)
+        response = alarm_change(request, 2)
         self.assertEqual(response['Location'], '/alert/')
         self.assertEqual(response.status_code, 302)
 
     def test_alarm_view_delete(self):
         """Test Function to check delete alarm"""
-        request = self.factory.post('/alert/del/1/')
+        request = self.factory.post('/alert/del/3/')
         request.user = self.user
         request.session = {}
-        response = alarm_del(request, 1)
+        response = alarm_del(request, 3)
         self.assertEqual(response['Location'], '/alert/')
         self.assertEqual(response.status_code, 302)
 
@@ -199,7 +199,6 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         request.user = self.user
         request.session = {}
         response = alarm_del(request, 0)
-        self.assertEqual(response['Location'], '/alert/')
         self.assertEqual(response.status_code, 302)
 
     def test_trust_control_view(self):
@@ -209,7 +208,7 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         request.session = {}
         response = trust_control(request)
         self.assertEqual(response.status_code, 200)
-        
+
 
 class CdrAlertModelTestCase(TestCase):
     """Test AlertRemovePrefix, Alarm, AlarmReport,
@@ -220,6 +219,8 @@ class CdrAlertModelTestCase(TestCase):
 
     def setUp(self):
         """Create model object"""
+        self.user = User.objects.get(username='admin')
+
         # AlertRemovePrefix model
         self.alert_remove_prefix = AlertRemovePrefix(
             label='test',
@@ -230,6 +231,7 @@ class CdrAlertModelTestCase(TestCase):
 
         # Alarm model
         self.alarm = Alarm(
+            user=self.user,
             name='Alarm name',
             period=1,
             type=1,
@@ -243,6 +245,7 @@ class CdrAlertModelTestCase(TestCase):
         self.assertEquals(self.alarm.__unicode__(), 'Alarm name')
 
         self.alarm_new = Alarm(
+            user=self.user,
             name='Alarm name new',
             period=1,
             type=1,
@@ -255,6 +258,7 @@ class CdrAlertModelTestCase(TestCase):
         self.alarm_new.save()
 
         self.alarm_new = Alarm(
+            user=self.user,
             name='Alarm name new',
             period=1,
             type=1,
@@ -267,6 +271,7 @@ class CdrAlertModelTestCase(TestCase):
         self.alarm_new.save()
 
         self.alarm_new = Alarm(
+            user=self.user,
             name='Alarm name new',
             period=1,
             type=1,
@@ -279,6 +284,7 @@ class CdrAlertModelTestCase(TestCase):
         self.alarm_new.save()
 
         self.alarm_new = Alarm(
+            user=self.user,
             name='Alarm name new',
             period=1,
             type=1,
@@ -291,6 +297,7 @@ class CdrAlertModelTestCase(TestCase):
         self.alarm_new.save()
 
         self.alarm_new = Alarm(
+            user=self.user,
             name='Alarm name new',
             period=1,
             type=1,
@@ -303,6 +310,7 @@ class CdrAlertModelTestCase(TestCase):
         self.alarm_new.save()
 
         self.alarm_new = Alarm(
+            user=self.user,
             name='Alarm name new',
             period=2,
             type=1,
@@ -315,6 +323,7 @@ class CdrAlertModelTestCase(TestCase):
         self.alarm_new.save()
 
         self.alarm_new = Alarm(
+            user=self.user,
             name='Alarm name new',
             period=2,
             type=1,
@@ -327,6 +336,7 @@ class CdrAlertModelTestCase(TestCase):
         self.alarm_new.save()
 
         self.alarm_new = Alarm(
+            user=self.user,
             name='Alarm name new',
             period=3,
             type=1,
@@ -339,6 +349,7 @@ class CdrAlertModelTestCase(TestCase):
         self.alarm_new.save()
 
         self.alarm_new = Alarm(
+            user=self.user,
             name='Alarm name new',
             period=3,
             type=1,
@@ -362,6 +373,7 @@ class CdrAlertModelTestCase(TestCase):
         self.country = Country.objects.get(pk=198)
         # Blacklist model
         self.blacklist = Blacklist(
+            user=self.user,
             phonenumber_prefix=32,
             country=self.country
         )
@@ -370,6 +382,7 @@ class CdrAlertModelTestCase(TestCase):
 
         # Whitelist model
         self.whitelist = Whitelist(
+            user=self.user,
             phonenumber_prefix=32,
             country=self.country
         )
