@@ -204,7 +204,7 @@ func_install_frontend(){
         	fi
 
         	yum -y --enablerepo=rpmforge install git-core
-            yum -y install mysql mysql-devel mysql-server
+            yum -y install mysql mysql-devel mysql-server 
 
             #Install epel repo for pip and mod_python
             if [ $KERNELARCH = "x86_64" ]; then
@@ -360,6 +360,9 @@ func_install_frontend(){
         sed -i "s/DB_PASSWORD/$DB_PASSWORD/" $INSTALL_DIR/settings_local.py
         sed -i "s/DB_HOSTNAME/$DB_HOSTNAME/" $INSTALL_DIR/settings_local.py
         sed -i "s/DB_PORT/$DB_PORT/" $INSTALL_DIR/settings_local.py
+
+        #Make sure sudo is installed.
+        yum -y install sudo
 
         # Create the Database
         echo "Remove Existing Database if exists..."
