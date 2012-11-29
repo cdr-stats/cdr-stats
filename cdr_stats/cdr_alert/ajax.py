@@ -32,50 +32,71 @@ blacklist_word = _('blacklist')
 whitelist_word = _('whitelist')
 
 success_msg = _('has been successfully added in')
+delete_success_msg = _('has been successfully deleted from')
+delete_all_success_msg = _('All dialcode are successfully deleted from')
 info_msg = _('is already added in')
 error_msg = _('has not been added in')
+delete_error_msg = _('has not been deleted from')
 
 blacklist_success = '<div class="alert alert-success">' + alert +' : (%s) ' + success_msg + ' ' + blacklist_word + '</div>'
+blacklist_delete_success = '<div class="alert alert-success">' + alert +' : (%s) ' + delete_success_msg + ' ' + blacklist_word + '</div>'
+blacklist_delete_all_success = '<div class="alert alert-success">' + alert +' :  ' + delete_all_success_msg + ' ' + blacklist_word + '</div>'
 blacklist_info = '<div class="alert alert-info">' + alert + ' : (%s) ' + info_msg + ' ' + blacklist_word + '</div>'
 blacklist_error = '<div class="alert alert-error">' + alert + ' : (%s) ' + error_msg + ' ' + blacklist_word + '</div>'
+blacklist_delete_error = '<div class="alert alert-error">' + alert + ' : (%s) ' + delete_error_msg + ' ' + blacklist_word + '</div>'
+
 
 whitelist_success = '<div class="alert alert-success">' + alert + ' : (%s) ' + success_msg + ' ' + whitelist_word + '</div>'
+whitelist_delete_success = '<div class="alert alert-success">' + alert +' : (%s) ' + delete_success_msg + ' ' + whitelist_word + '</div>'
+whitelist_delete_all_success = '<div class="alert alert-success">' + alert +' :  ' + delete_all_success_msg + ' ' + whitelist_word + '</div>'
 whitelist_info = '<div class="alert alert-info">' + alert + ' : (%s) ' + info_msg + ' ' + whitelist_word + '</div>'
 whitelist_error = '<div class="alert alert-error">' + alert + ' : (%s) ' + error_msg + ' ' + whitelist_word + '</div>'
+whitelist_delete_error = '<div class="alert alert-error">' + alert + ' : (%s) ' + delete_error_msg + ' ' + whitelist_word + '</div>'
 
 
 def get_table_string(request, default_name='blacklist'):
     col = 5 # group by columns
-
+    result_table = '<table class="table table-striped table-bordered table-condensed">'
     if default_name == 'blacklist':
         prefix_list = Blacklist.objects.filter(user=request.user).order_by('id')
         prefix_list_count = prefix_list.count()
+        result_table += '<tr><td>\
+            <input type="checkbox" onclick="toggleChecked_blacklist(this.checked);"></td></tr>'
 
     if default_name == 'whitelist':
         prefix_list = Whitelist.objects.filter(user=request.user).order_by('id')
         prefix_list_count = prefix_list.count()
+        result_table += '<tr><td>\
+            <input type="checkbox" onclick="toggleChecked_whitelist(this.checked);"></td></tr>'
 
-    result_table = '<table class="table table-striped table-bordered table-condensed">'
+    if prefix_list_count != 0:
+        # same logic of groupby_columns template tag
+        rows = (prefix_list_count // col) + 1
 
-    # same logic of groupby_columns template tag
-    rows = (prefix_list_count // col) + 1
+        table = [prefix_list[i::rows] for i in range(rows)]
 
-    table = [prefix_list[i::rows] for i in range(rows)]
+        n = len(table[0])
+        new_prefix_list = [row + [None for x in range(n - len(row))] for row in table]
 
-    n = len(table[0])
-    new_prefix_list = [row + [None for x in range(n - len(row))] for row in table]
-    for obj_list in new_prefix_list:
-        result_table += '<tr>'
-        for obj in obj_list:
-            if obj:
-                obj_string = str(obj.phonenumber_prefix) + ' | ' + str(obj.country.countryname)
-                result_table += '<td>' + str(obj_string) + '</td>'
-            else:
-                result_table += '<td>&nbsp;</td>'
+        for obj_list in new_prefix_list:
+            result_table += '<tr>'
+            for obj in obj_list:
+                if obj:
+                    if default_name == 'blacklist':
+                        obj_string = '<input type="checkbox" name="select_blacklist" class="checkbox" value="'+str(obj.id)+'" />&nbsp;'
+                    if default_name == 'whitelist':
+                        obj_string = '<input type="checkbox" name="select_whitelist" class="checkbox" value="'+str(obj.id)+'" />&nbsp;'
 
-        result_table += '</tr>'
+                    obj_string += str(obj.phonenumber_prefix) + ' | ' + str(obj.country.countryname)
+                    result_table += '<td>' + str(obj_string) + '</td>'
+                else:
+                    result_table += '<td>&nbsp;</td>'
 
-    result_table += '</table>'
+            result_table += '</tr>'
+
+        result_table += '</table>'
+    else:
+        result_table = ''
 
     return result_table
 
@@ -157,6 +178,33 @@ def add_blacklist_prefix(request, prefix):
     return dajax.json()
 
 
+@login_required
+@dajaxice_register
+def delete_blacklist(request, id_list):
+    dajax = Dajax()
+    try:
+        # delete selected
+        if str(id_list) != '0':
+            id_list = map(int, id_list)
+            objs = Blacklist.objects.filter(id__in=id_list)
+            del_dialcodes = ''
+            for i in objs:
+                del_dialcodes += str(i.phonenumber_prefix) + ', '
+            objs.delete()
+            result = blacklist_delete_success % (str(del_dialcodes[:-1]))
+        else:
+            # delete all
+            objs = Blacklist.objects.filter(user=request.user)
+            result = blacklist_delete_all_success
+            objs.delete()
+
+        result_table = get_table_string(request, 'blacklist')
+        dajax.assign('#id_blacklist_table', 'innerHTML', str(result_table))
+    except:
+        result = blacklist_delete_error % (str(id_list))
+    dajax.assign('#id_alert_message', 'innerHTML', str(result))
+    return dajax.json()
+
 ## whitelist
 
 @login_required
@@ -229,5 +277,33 @@ def add_whitelist_prefix(request, prefix):
         dajax.assign('#id_whitelist_table', 'innerHTML', str(result_table))
     except:
         result = whitelist_error % (str(prefix))
+    dajax.assign('#id_alert_message', 'innerHTML', str(result))
+    return dajax.json()
+
+
+@login_required
+@dajaxice_register
+def delete_whitelist(request, id_list):
+    dajax = Dajax()
+    try:
+        # delete selected
+        if str(id_list) != '0':
+            id_list = map(int, id_list)
+            objs = Whitelist.objects.filter(id__in=id_list)
+            del_dialcodes = ''
+            for i in objs:
+                del_dialcodes += str(i.phonenumber_prefix) + ', '
+            objs.delete()
+            result = whitelist_delete_success % (str(del_dialcodes[:-1]))
+        else:
+            # delete all
+            objs = Whitelist.objects.filter(user=request.user)
+            result = whitelist_delete_all_success
+            objs.delete()
+
+        result_table = get_table_string(request, 'whitelist')
+        dajax.assign('#id_whitelist_table', 'innerHTML', str(result_table))
+    except:
+        result = blacklist_delete_error % (str(id_list))
     dajax.assign('#id_alert_message', 'innerHTML', str(result))
     return dajax.json()
