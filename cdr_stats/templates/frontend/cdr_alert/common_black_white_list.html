@@ -30,7 +30,15 @@
 
                 e.preventDefault();
                 var prefix = $('#id_bl_prefix').val();
-                add_bl_prefix(prefix);
+                if(prefix == '')
+                {
+                    msg = '{% trans "You must enter dialcode" %}';
+                    bootbox.alert(msg);
+                }
+                else{
+                    add_bl_prefix(prefix);
+                }
+
             });
         });
 
@@ -54,7 +62,15 @@
 
                 e.preventDefault();
                 var prefix = $('#id_wl_prefix').val();
-                add_wl_prefix(prefix);
+                if(prefix == '')
+                {
+                    msg = '{% trans "You must enter dialcode" %}';
+                    bootbox.alert(msg);
+                }
+                else{
+                    add_wl_prefix(prefix);
+                }
+
             });
         });
 

@@ -15,6 +15,7 @@
 
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.utils.translation import gettext as _
 
 from dajaxice.decorators import dajaxice_register
 from dajax.core import Dajax
@@ -23,6 +24,16 @@ from cdr_alert.models import Whitelist, Blacklist
 from cdr.functions_def import remove_prefix,\
     prefix_list_string, get_country_id
 from country_dialcode.models import Country, Prefix
+
+
+blacklist_success = '<div class="alert alert-success">Alert : (%s) has been successfully added in blacklist !!</div>'
+blacklist_info = '<div class="alert alert-info">Alert : (%s) is already added in blacklist !!</div>'
+blacklist_error = '<div class="alert alert-error">Alert : (%s) has not been added in blacklist !!</div>'
+
+
+whitelist_success = '<div class="alert alert-success">Alert : (%s) has been successfully added in whitelist !!</div>'
+whitelist_info = '<div class="alert alert-info">Alert : (%s) already added in whitelist !!</div>'
+whitelist_error = '<div class="alert alert-error">Alert : (%s) has not been added in whitelist !!</div>'
 
 
 def get_table_string(request, default_name='blacklist'):
@@ -61,6 +72,9 @@ def get_table_string(request, default_name='blacklist'):
     return result_table
 
 
+
+
+
 @login_required
 @dajaxice_register
 def add_blacklist_country(request, country_id):
@@ -88,20 +102,16 @@ def add_blacklist_country(request, country_id):
                 )
                 add_flag = True
         if add_flag:
-            result = '<div class="alert alert-success">Alert : (%s) has been successfully added in blacklist !!</div>' % (country.countryname)
+            result = blacklist_success % (country.countryname)
         else:
-            result = '<div class="alert alert-error">Alert : (%s) already added in blacklist !!</div>' % (country.countryname)
+            result = blacklist_info % (country.countryname)
 
         result_table = get_table_string(request, 'blacklist')
-
-        dajax.assign('#id_alert_message', 'innerHTML', str(result))
         dajax.assign('#id_blacklist_table', 'innerHTML', str(result_table))
-
     except:
-        pass
-        #dajax.alert("%s is not exist !!" % (id))
-        #for error in form.errors:
-        #    dajax.add_css_class('#id_%s' % error, 'error')
+        result = blacklist_error % (country.countryname)
+
+    dajax.assign('#id_alert_message', 'innerHTML', str(result))
     return dajax.json()
 
 
@@ -111,10 +121,8 @@ def add_blacklist_prefix(request, prefix):
     dajax = Dajax()
 
     try:
-        prefix_list =\
-            list(Prefix.objects.values_list('prefix', flat=True).filter(prefix=int(prefix)))
-
-        country_id = get_country_id(str(prefix_list))
+        prfix_obj = Prefix.objects.get(prefix=int(prefix))
+        country_id = prfix_obj.country_id
 
         rec_count = Blacklist.objects.filter(user=request.user,
             phonenumber_prefix=int(prefix),
@@ -131,26 +139,20 @@ def add_blacklist_prefix(request, prefix):
             add_flag = True
 
         if add_flag:
-             result = '<div class="alert alert-success">Alert : (%s) has been successfully added in blacklist !!</div>' \
-                 % (str(prefix))
+            result = blacklist_success % (str(prefix))
         else:
-            result = '<div class="alert alert-error">Alert : (%s) already added in blacklist !!</div>'\
-                     % (str(prefix))
+            result = blacklist_info % (str(prefix))
 
         result_table = get_table_string(request, 'blacklist')
-        dajax.assign('#id_alert_message', 'innerHTML', str(result))
+
         dajax.assign('#id_blacklist_table', 'innerHTML', str(result_table))
     except:
-        pass
-        #dajax.alert("%s is not exist !!" % (id))
-        #for error in form.errors:
-        #    dajax.add_css_class('#id_%s' % error, 'error')
+        result = blacklist_error % (prefix)
+    dajax.assign('#id_alert_message', 'innerHTML', str(result))
     return dajax.json()
 
 
 ## whitelist
-whitelist_success = '<div class="alert alert-success">Alert : (%s) has been successfully added in whitelist !!</div>'
-whitelist_error = '<div class="alert alert-error">Alert : (%s) already added in whitelist !!</div>'
 
 @login_required
 @dajaxice_register
@@ -181,18 +183,13 @@ def add_whitelist_country(request, country_id):
         if add_flag:
             result = whitelist_success % (country.countryname)
         else:
-            result = whitelist_error % (country.countryname)
+            result = whitelist_info % (country.countryname)
 
         result_table = get_table_string(request, 'whitelist')
-
-        dajax.assign('#id_alert_message', 'innerHTML', str(result))
         dajax.assign('#id_whitelist_table', 'innerHTML', str(result_table))
-
     except:
-        pass
-        #dajax.alert("%s is not exist !!" % (id))
-        #for error in form.errors:
-        #    dajax.add_css_class('#id_%s' % error, 'error')
+        result = whitelist_error % (str(prefix))
+    dajax.assign('#id_alert_message', 'innerHTML', str(result))
     return dajax.json()
 
 
@@ -202,13 +199,8 @@ def add_whitelist_prefix(request, prefix):
     dajax = Dajax()
 
     try:
-        #prfix_obj = Prefix.objects.get(prefix=int(prefix))
-        #print prfix_obj.country_id
-        #print prfix_obj
-        prefix_list =\
-            list(Prefix.objects.values_list('prefix', flat=True).filter(prefix=int(prefix)))
-
-        country_id = get_country_id(str(prefix_list))
+        prfix_obj = Prefix.objects.get(prefix=int(prefix))
+        country_id = prfix_obj.country_id
 
         rec_count = Whitelist.objects.filter(user=request.user,
                                              phonenumber_prefix=int(prefix),
@@ -227,14 +219,11 @@ def add_whitelist_prefix(request, prefix):
         if add_flag:
             result = whitelist_success % (str(prefix))
         else:
-            result = whitelist_error % (str(prefix))
+            result = whitelist_info % (str(prefix))
 
         result_table = get_table_string(request, 'whitelist')
-        dajax.assign('#id_alert_message', 'innerHTML', str(result))
         dajax.assign('#id_whitelist_table', 'innerHTML', str(result_table))
     except:
-        pass
-        #dajax.alert("%s is not exist !!" % (id))
-        #for error in form.errors:
-        #    dajax.add_css_class('#id_%s' % error, 'error')
+        result = whitelist_error % (str(prefix))
+    dajax.assign('#id_alert_message', 'innerHTML', str(result))
     return dajax.json()
