@@ -16,6 +16,7 @@ install:
 before_script:
   - cp install/conf/settings_local.py cdr_stats/settings_local.py
   - cp install/conf/settings_travis.py cdr_stats/settings_travis.py
+  #TODO: Now we should use postgresql
   - "mysql -e 'create database cdrstats;'"
   - "mysql -e 'create database cdrstats_test;'"
   # - "pep8 --exclude=migrations --ignore=E501,E225 cdr_stats"
