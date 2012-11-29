@@ -26,14 +26,22 @@ from cdr.functions_def import remove_prefix,\
 from country_dialcode.models import Country, Prefix
 
 
-blacklist_success = '<div class="alert alert-success">Alert : (%s) has been successfully added in blacklist !!</div>'
-blacklist_info = '<div class="alert alert-info">Alert : (%s) is already added in blacklist !!</div>'
-blacklist_error = '<div class="alert alert-error">Alert : (%s) has not been added in blacklist !!</div>'
+alert = _('Alert')
 
+blacklist_word = _('blacklist')
+whitelist_word = _('whitelist')
 
-whitelist_success = '<div class="alert alert-success">Alert : (%s) has been successfully added in whitelist !!</div>'
-whitelist_info = '<div class="alert alert-info">Alert : (%s) already added in whitelist !!</div>'
-whitelist_error = '<div class="alert alert-error">Alert : (%s) has not been added in whitelist !!</div>'
+success_msg = _('has been successfully added in')
+info_msg = _('is already added in')
+error_msg = _('has not been added in')
+
+blacklist_success = '<div class="alert alert-success">' + alert +' : (%s) ' + success_msg + ' ' + blacklist_word + '</div>'
+blacklist_info = '<div class="alert alert-info">' + alert + ' : (%s) ' + info_msg + ' ' + blacklist_word + '</div>'
+blacklist_error = '<div class="alert alert-error">' + alert + ' : (%s) ' + error_msg + ' ' + blacklist_word + '</div>'
+
+whitelist_success = '<div class="alert alert-success">' + alert + ' : (%s) ' + success_msg + ' ' + whitelist_word + '</div>'
+whitelist_info = '<div class="alert alert-info">' + alert + ' : (%s) ' + info_msg + ' ' + whitelist_word + '</div>'
+whitelist_error = '<div class="alert alert-error">' + alert + ' : (%s) ' + error_msg + ' ' + whitelist_word + '</div>'
 
 
 def get_table_string(request, default_name='blacklist'):
@@ -70,9 +78,6 @@ def get_table_string(request, default_name='blacklist'):
     result_table += '</table>'
 
     return result_table
-
-
-
 
 
 @login_required
