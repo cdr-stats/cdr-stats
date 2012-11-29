@@ -127,12 +127,11 @@ def add_blacklist_prefix(request, prefix):
 
     try:
         prfix_obj = Prefix.objects.get(prefix=int(prefix))
-        country_id = prfix_obj.country_id
+        country_id = prfix_obj.country_id.id
 
         rec_count = Blacklist.objects.filter(user=request.user,
-            phonenumber_prefix=int(prefix),
-            country_id=country_id).count()
-
+                                             phonenumber_prefix=int(prefix),
+                                             country_id=country_id).count()
         add_flag = False
         # No duplicate record, so insert
         if rec_count == 0:
@@ -141,6 +140,7 @@ def add_blacklist_prefix(request, prefix):
                 phonenumber_prefix=int(prefix),
                 country_id=country_id,
             )
+
             add_flag = True
 
         if add_flag:
@@ -205,12 +205,11 @@ def add_whitelist_prefix(request, prefix):
 
     try:
         prfix_obj = Prefix.objects.get(prefix=int(prefix))
-        country_id = prfix_obj.country_id
+        country_id = prfix_obj.country_id.id
 
         rec_count = Whitelist.objects.filter(user=request.user,
                                              phonenumber_prefix=int(prefix),
                                              country_id=country_id).count()
-
         add_flag = False
         # No duplicate record, so insert
         if rec_count == 0:
