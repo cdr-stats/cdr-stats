@@ -19,6 +19,7 @@ from cdr_alert.tasks import send_cdr_report, \
     blacklist_whitelist_notification, chk_alarm
 from cdr_alert.forms import BWCountryForm
 from cdr_alert.functions_blacklist import chk_destination
+from cdr_alert.views import alarm_list, alarm_add, alarm_del, alarm_change, trust_control
 from user_profile.constants import NOTICE_TYPE
 from country_dialcode.models import Country
 
@@ -120,6 +121,95 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
              'select': [34]})
         self.failUnlessEqual(response.status_code, 200)
 
+
+class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
+    """Test cases for Cdr-Stats Admin Interface."""
+
+    fixtures = [
+        'auth_user.json', 'country_dialcode.json',
+        'blacklist_prefix.json', 'whitelist_prefix.json'
+    ]
+
+    def test_alarm_list(self):
+        """Test Function to check alarm list"""
+        response = self.client.get('/alert/')
+        self.failUnlessEqual(response.status_code, 200)
+
+        request = self.factory.get('/alert/')
+        request.user = self.user
+        request.session = {}
+        response = alarm_list(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_alarm_add(self):
+        """Test Function to check add alarm"""
+        request = self.factory.post('/alert/add/', data={
+            'name': 'My alarm',
+            'value': '10',
+            'email_to_send_alarm': 'admin@localhost.com'
+            }, follow=True)
+        request.user = self.user
+        request.session = {}
+        response = alarm_add(request)
+        self.assertEqual(response['Location'], '/alert/')
+        self.assertEqual(response.status_code, 302)
+
+        resp = self.client.post('/alert/add/', data={
+                'name': '',
+                'email_to_send_alarm': '',
+                })
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.context['form']['name'].errors,
+            [u'This field is required.'])
+
+    def test_alarm_view_update(self):
+        """Test Function to check update alarm"""
+        response = self.client.get('/alert/1/')
+        self.assertEqual(response.context['action'], 'update')
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.post('/alert/1/', data={
+            'name': 'test',
+            }, follow=True)
+        request.user = self.user
+        request.session = {}
+        response = alarm_change(request, 1)
+        self.assertEqual(response['Location'], '/alert/')
+        self.assertEqual(response.status_code, 302)
+
+        # delete alarm through alarm_change
+        request = self.factory.post('/alert/1/',
+            data={'delete': True}, follow=True)
+        request.user = self.user
+        request.session = {}
+        response = alarm_change(request, 1)
+        self.assertEqual(response['Location'], '/alert/')
+        self.assertEqual(response.status_code, 302)
+
+    def test_alarm_view_delete(self):
+        """Test Function to check delete alarm"""
+        request = self.factory.post('/alert/del/1/')
+        request.user = self.user
+        request.session = {}
+        response = alarm_del(request, 1)
+        self.assertEqual(response['Location'], '/alert/')
+        self.assertEqual(response.status_code, 302)
+
+        request = self.factory.post('/alert/del/', {'select': '1'})
+        request.user = self.user
+        request.session = {}
+        response = alarm_del(request, 0)
+        self.assertEqual(response['Location'], '/alert/')
+        self.assertEqual(response.status_code, 302)
+
+    def test_trust_control_view(self):
+        """Test Function to check trust_control"""
+        request = self.factory.get('/trust_control/')
+        request.user = self.user
+        request.session = {}
+        response = trust_control(request)
+        self.assertEqual(response.status_code, 200)
+        
 
 class CdrAlertModelTestCase(TestCase):
     """Test AlertRemovePrefix, Alarm, AlarmReport,
