@@ -120,7 +120,7 @@
             {% csrf_token %}
             {% for field in bl_country_form %}
                 {{ field }}
-                <input id="add_bl_country" type="button" class="btn btn-primary" value="{% trans "Black list this country" %}" />
+                <input id="add_bl_country" type="button" class="btn btn-info" value="{% trans "Blacklist this country" %}" />
             {% endfor %}
         </form>
 
@@ -128,7 +128,7 @@
         <form class="form-search" action="." id="id_bl_prefix_from" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <input id="id_bl_prefix" name="prefix"  type="text" data-provide="typeahead" data-items="10" data-source='{{ prefix_list }}'>
-            <input id="add_bl_prefix" type="button" class="btn btn-primary" value="{% trans "Black list this dialcode" %}" />
+            <input id="add_bl_prefix" type="button" class="btn btn-info" value="{% trans "Blacklist this dialcode" %}" />
         </form>
     </div>
 </div>
@@ -166,7 +166,7 @@
             {% csrf_token %}
             {% for field in wl_country_form %}
                 {{ field }}
-                <input id="add_wl_country" type="button" class="btn btn-primary" value="{% trans "White list this country" %}" />
+                <input id="add_wl_country" type="button" class="btn btn-info" value="{% trans "Whitelist this country" %}" />
             {% endfor %}
         </form>
 
@@ -174,7 +174,7 @@
         <form class="form-search" action="." id="id_wl_prefix_from" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <input id="id_wl_prefix" name="prefix"  type="text" data-provide="typeahead" data-items="10" data-source='{{ prefix_list }}'>
-            <input id="add_wl_prefix" type="button" class="btn btn-primary" value="{% trans "White list this dialcode" %}" />
+            <input id="add_wl_prefix" type="button" class="btn btn-info" value="{% trans "Whitelist this dialcode" %}" />
         </form>
     </div>
 </div>
