@@ -9,6 +9,7 @@ django-countries==1.4
 django-tastypie==0.9.11
 linaro-django-pagination==2.0.2
 django-admin-tools==0.4.1
+django-dajax==0.9.2
 django-country-dialcode==0.4.7
 django-admin-tools-stats==0.4.0
 switch2bill-common==2.2.3
