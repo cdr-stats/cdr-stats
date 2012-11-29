@@ -23,6 +23,8 @@ from cdr_alert.functions_blacklist import chk_destination
 from cdr_alert.views import alarm_list, alarm_add, alarm_del, alarm_change, trust_control
 from user_profile.constants import NOTICE_TYPE
 from country_dialcode.models import Country
+from cdr_alert.ajax import add_whitelist_country, add_whitelist_prefix, \
+    add_blacklist_country, add_blacklist_prefix
 
 
 class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
@@ -174,7 +176,7 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         request.user = self.user
         request.session = {}
         response = alarm_change(request, 1)
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
 
         # delete alarm through alarm_change
         request = self.factory.post('/alert/2/',
@@ -207,6 +209,31 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         request.session = {}
         response = trust_control(request)
         self.assertEqual(response.status_code, 200)
+
+    def test_trust_control_ajax(self):
+        request = self.factory.get('/trust_control/')
+        request.user = self.user
+        request.session = {}
+        response = add_whitelist_country(request, '198')
+        self.assertTrue(response)
+
+        request = self.factory.get('/trust_control/')
+        request.user = self.user
+        request.session = {}
+        response = add_whitelist_prefix(request, '44')
+        self.assertTrue(response)
+
+        request = self.factory.get('/trust_control/')
+        request.user = self.user
+        request.session = {}
+        response = add_blacklist_country(request, '199')
+        self.assertTrue(response)
+
+        request = self.factory.get('/trust_control/')
+        request.user = self.user
+        request.session = {}
+        response = add_blacklist_prefix(request, '447')
+        self.assertTrue(response)
 
 
 class CdrAlertModelTestCase(TestCase):
