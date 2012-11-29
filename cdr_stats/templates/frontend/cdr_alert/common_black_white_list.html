@@ -96,7 +96,7 @@
         {% if blacklist %}
             <div id="id_blacklist_table">
                 <table class="table table-striped table-bordered table-condensed">
-                    {% for row in blacklist|groupby_columns:3 %}
+                    {% for row in blacklist|groupby_columns:5 %}
                         <tr>
                             {% for obj in row %}
                                 {% if obj %}

@@ -45,7 +45,7 @@ whitelist_error = '<div class="alert alert-error">' + alert + ' : (%s) ' + error
 
 
 def get_table_string(request, default_name='blacklist'):
-    col = 3 # group by columns
+    col = 5 # group by columns
 
     if default_name == 'blacklist':
         prefix_list = Blacklist.objects.filter(user=request.user).order_by('id')
