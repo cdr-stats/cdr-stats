@@ -204,6 +204,7 @@ func_install_frontend(){
         	fi
 
         	yum -y --enablerepo=rpmforge install git-core
+            yum -y install mysql mysql-devel mysql-server
 
             #Install epel repo for pip and mod_python
             if [ $KERNELARCH = "x86_64" ]; then
