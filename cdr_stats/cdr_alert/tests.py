@@ -127,7 +127,7 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Admin Interface."""
 
     fixtures = [
-        'auth_user.json', 'country_dialcode.json',
+        'auth_user.json', 'country_dialcode.json', 'alarm.json',
         'blacklist_prefix.json', 'whitelist_prefix.json'
     ]
 
@@ -152,7 +152,7 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         request.user = self.user
         request.session = {}
         response = alarm_add(request)
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
 
         resp = self.client.post('/alert/add/', data={
                 'name': '',
@@ -174,7 +174,6 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         request.user = self.user
         request.session = {}
         response = alarm_change(request, 1)
-        self.assertEqual(response['Location'], '/alert/')
         self.assertEqual(response.status_code, 302)
 
         # delete alarm through alarm_change
@@ -188,10 +187,10 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
     def test_alarm_view_delete(self):
         """Test Function to check delete alarm"""
-        request = self.factory.post('/alert/del/3/')
+        request = self.factory.post('/alert/del/1/')
         request.user = self.user
         request.session = {}
-        response = alarm_del(request, 3)
+        response = alarm_del(request, 1)
         self.assertEqual(response['Location'], '/alert/')
         self.assertEqual(response.status_code, 302)
 
