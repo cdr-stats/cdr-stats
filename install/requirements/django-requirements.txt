@@ -12,7 +12,7 @@ django-admin-tools==0.4.1
 django-dajax==0.9.2
 django-country-dialcode==0.4.7
 django-admin-tools-stats==0.4.0
-switch2bill-common==2.2.3
+switch2bill-common==2.4.0
 django-socketio==0.3.5
 django-cache-machine==0.6
 django-redis-cache==0.9.5
