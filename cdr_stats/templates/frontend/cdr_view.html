@@ -154,6 +154,7 @@
 
     <div class="tab-content">
     <div id="tabs-1" class="tab-pane {% if action == "tabs-1" or action == "" %}active{% endif %}">
+
         <div class="graph_header">
             {% trans "calls detail records"|title %} -
             <b>
@@ -165,7 +166,19 @@
             {% endif %}
             </b>
         </div>
-        <p>&nbsp;</p>
+
+        <div class="btn-group">
+            <button class="btn">{% trans "Action" %}</button>
+            <button class="btn dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                {% if perms.cdr.allow_cdr_view  %}
+                    <li><a href="/cdr_export_csv/">{% trans "Export CSV file" %}</a></li>
+                {% endif %}
+            </ul>
+        </div>
+        <div>&nbsp;</div>
         <table class="table table-striped table-bordered table-condensed">
             <thead>
             <tr>
@@ -342,12 +355,6 @@
             {% paginate %}
         {% endif %}
 
-        <p>&nbsp;</p>
-
-        <div class="show_export_file" id='export-container'>
-            {% trans "Export CSV file"  %} <br/>
-            <a href="/cdr_export_csv/"><img src='{{ STATIC_URL }}cdr-stats/icons/x-office-spreadsheet.png' width="75"/></a>
-        </div>
     </div>
 
     <div id="tabs-2" class="tab-pane {% if action == "tabs-2" %}active{% endif %}">
@@ -401,7 +408,5 @@
         </table>
     </div>
     </div>
-
-
 </div>
 {% endblock %}
