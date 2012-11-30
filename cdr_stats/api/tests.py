@@ -48,37 +48,15 @@ class ApiTestCase(BaseAuthenticatedClient):
 
     def test_cdr_daily_api(self):
         """Test Function cdr daily api"""
-        data = simplejson.dumps({"start_uepoch": "2012-02-15",
-                "switch_id": 1,
-                "destination_number": 3000,
-                "accountcode": 123
+        data = simplejson.dumps({
+            "start_uepoch": "2012-02-15",
+            "switch_id": 1,
+            "destination_number": 3000,
+            "accountcode": 123
         })
         response = self.client.post('/api/v1/cdr_daily_report/', data,
             content_type='application/json', **self.extra)
         self.assertEqual(response.status_code, 200)
-
-    def test_hangupcause(self):
-        """Test Function to create a hangup_cause"""
-        # Create
-        data = simplejson.dumps({"code": "700", "enumeration": "NORMAL_CLEARING"})
-        response = self.client.post('/api/v1/hangup_cause/', data,
-            content_type='application/json', **self.extra)
-        self.assertEqual(response.status_code, 201)
-
-        # Read
-        response = self.client.get('/api/v1/hangup_cause/?format=json', **self.extra)
-        self.assertEqual(response.status_code, 200)
-
-        # Update
-        data = simplejson.dumps({"code": "705"})
-        response = self.client.put('/api/v1/hangup_cause/1/',
-            data, content_type='application/json', **self.extra)
-        self.assertEqual(response.status_code, 204)
-
-        # Delete
-        response =\
-            self.client.delete('/api/v1/hangup_cause/', **self.extra)
-        self.assertEqual(response.status_code, 204)
 
     def test_switch(self):
         """Test Function to create a switch"""
