@@ -20,14 +20,19 @@ from django.template.context import RequestContext
 from django.utils.translation import gettext as _
 from django.utils.encoding import smart_str, smart_unicode
 from django.conf import settings
+from django.db.models import Count
 from cdr_alert.models import Alarm, Blacklist, Whitelist, AlarmReport
 from cdr_alert.constants import ALARM_COLUMN_NAME, ALARM_REPORT_COLUMN_NAME
 from cdr_alert.forms import AlarmForm, BWCountryForm, BWPrefixForm,\
     AlarmReportForm
 from frontend_notification.views import notice_count
 from common.common_functions import current_view, get_pagination_vars,\
-    variable_value, ceil_strdate
+    variable_value, ceil_strdate, validate_days
 from country_dialcode.models import Country, Prefix
+from datetime import datetime, date, timedelta
+from dateutil.relativedelta import relativedelta
+import time
+
 
 @permission_required('cdr_alert.view_alarm', login_url='/')
 @login_required
@@ -193,6 +198,50 @@ def alarm_change(request, object_id):
         context_instance=RequestContext(request))
 
 
+def last_seven_days_report(request, kwargs):
+    comp_days = 7
+    from_date = datetime.today()
+    from_day = validate_days(from_date.year,
+        from_date.month,
+        from_date.day)
+    from_year = from_date.year
+    from_month = from_date.month
+    end_date = datetime(from_year, from_month, from_day)
+    start_date = end_date + relativedelta(days=-comp_days)
+    start_date = datetime(start_date.year, start_date.month,
+                          start_date.day, 0, 0, 0, 0)
+    end_date = datetime(end_date.year, end_date.month,
+                        end_date.day, 23, 59, 59, 999999)
+
+
+    if start_date and end_date:
+        kwargs['daterun__range'] = (start_date, end_date)
+
+    select_data = {"daterun": "SUBSTR(CAST(daterun as CHAR(30)),1,10)"}
+
+
+    total_data = AlarmReport.objects.extra(select=select_data)\
+        .values('daterun')\
+        .filter(**kwargs)\
+        .annotate(Count('daterun'))\
+        .order_by('-daterun')
+    total_day_record = []
+    for doc in total_data:
+        daterun = str(doc['daterun'])
+
+        graph_day = datetime(int(daterun[0:4]),
+                             int(daterun[5:7]),
+                             int(daterun[8:10]),
+                             0, 0, 0, 0)
+        dt = int(1000 * time.mktime(graph_day.timetuple()))
+
+        total_day_record.append({
+            'dt': dt,
+            'alert__count': int(doc['daterun__count']),
+        })
+    return total_day_record
+
+
 @permission_required('cdr_alert.view_alarm_report', login_url='/')
 @login_required
 def alert_report(request):
@@ -214,7 +263,7 @@ def alert_report(request):
     sort_order = pagination_data['sort_order']
     search_tag = 1
     alert_id = ''
-    alarm_report_list = AlarmReport.objects.filter(alarm__user=request.user)
+    action = 'tabs-1'
 
     if request.method == 'POST':
         form = AlarmReportForm(request.user, request.POST)
@@ -246,13 +295,17 @@ def alert_report(request):
     kwargs = {}
     if alert_id and alert_id != 0:
         kwargs['alarm_id'] = alert_id
+    kwargs['alarm__user'] = request.user
 
-    alarm_report_list = alarm_report_list.filter(**kwargs).order_by(sort_order)
-
+    alarm_report_list = AlarmReport.objects.filter(**kwargs).order_by(sort_order)
+    seven_days_report = last_seven_days_report(request, kwargs)
+    
     template = 'frontend/cdr_alert/alarm_report.html'
     data = {
         'module': current_view(request),
         'form': form,
+        'action': action,
+        'seven_days_report': seven_days_report,
         'rows': alarm_report_list,
         'total_count': alarm_report_list.count(),
         'PAGE_SIZE': PAGE_SIZE,
