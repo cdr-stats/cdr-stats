@@ -19,8 +19,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.utils.translation import gettext as _
 from django.conf import settings
-from cdr_alert.models import Alarm, Blacklist, Whitelist
-from cdr_alert.constants import ALARM_COLUMN_NAME
+from cdr_alert.models import Alarm, Blacklist, Whitelist, AlarmReport
+from cdr_alert.constants import ALARM_COLUMN_NAME, ALARM_REPORT_COLUMN_NAME
 from cdr_alert.forms import AlarmForm, BWCountryForm, BWPrefixForm
 from frontend_notification.views import notice_count
 from common.common_functions import current_view, get_pagination_vars,\
@@ -184,6 +184,34 @@ def alarm_change(request, object_id):
         'module': current_view(request),
         'form': form,
         'action': 'update',
+        'notice_count': notice_count(request),
+    }
+    return render_to_response(template, data,
+        context_instance=RequestContext(request))
+
+
+@permission_required('cdr_alert.view_alarm_report', login_url='/')
+@login_required
+def alert_report(request):
+    sort_col_field_list = ['id', 'alarm', 'calculatedvalue', 'status','daterun']
+    default_sort_field = 'id'
+    pagination_data =\
+        get_pagination_vars(request, sort_col_field_list, default_sort_field)
+
+    PAGE_SIZE = pagination_data['PAGE_SIZE']
+    sort_order = pagination_data['sort_order']
+
+    alarm_report_list = AlarmReport.objects\
+        .filter(alarm__user=request.user).order_by(sort_order)
+
+    template = 'frontend/cdr_alert/alarm_report.html'
+    data = {
+        'module': current_view(request),
+        'rows': alarm_report_list,
+        'total_count': alarm_report_list.count(),
+        'PAGE_SIZE': PAGE_SIZE,
+        'ALARM_REPORT_COLUMN_NAME': ALARM_REPORT_COLUMN_NAME,
+        'col_name_with_order': pagination_data['col_name_with_order'],
         'notice_count': notice_count(request),
     }
     return render_to_response(template, data,

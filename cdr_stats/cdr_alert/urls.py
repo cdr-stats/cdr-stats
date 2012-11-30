@@ -22,4 +22,5 @@ urlpatterns = patterns('cdr_alert.views',
      (r'^alert/(.+)/$', 'alarm_change'),
 
      (r'^trust_control/$', 'trust_control'),
+     (r'^alert_report/$', 'alert_report'),
 )

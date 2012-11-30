@@ -60,3 +60,11 @@ class ALARM_COLUMN_NAME(Choice):
     type = _('Type')
     email_to_send_alarm = _('Email send to')
     updated_date = _('Date')
+
+
+class ALARM_REPORT_COLUMN_NAME(Choice):
+    id = _('Id')
+    alarm = _('Alarm')
+    calculatedvalue = _('Calculated value')
+    status = _('Status')
+    date = _('Date run')

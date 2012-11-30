@@ -127,6 +127,9 @@ class AlarmReport(models.Model):
         return '%s' % (self.alarm)
 
     class Meta:
+        permissions = (
+            ("view_alarm_report", _('Can see alarm report')),
+        )
         verbose_name = _("Alarm Report")
         verbose_name_plural = _("Alarms Report")
         db_table = "alert_report"

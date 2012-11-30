@@ -20,11 +20,12 @@ from cdr_alert.tasks import send_cdr_report, \
     blacklist_whitelist_notification, chk_alarm
 from cdr_alert.forms import BWCountryForm
 from cdr_alert.functions_blacklist import chk_destination
-from cdr_alert.views import alarm_list, alarm_add, alarm_del, alarm_change, trust_control
+from cdr_alert.views import alarm_list, alarm_add, alarm_del, alarm_change,\
+    trust_control, alert_report
 from user_profile.constants import NOTICE_TYPE
 from country_dialcode.models import Country
 from cdr_alert.ajax import add_whitelist_country, add_whitelist_prefix, \
-    add_blacklist_country, add_blacklist_prefix
+    add_blacklist_country, add_blacklist_prefix, delete_blacklist, delete_whitelist
 
 
 class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
@@ -234,6 +235,26 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         request.session = {}
         response = add_blacklist_prefix(request, '447')
         self.assertTrue(response)
+
+        request = self.factory.get('/trust_control/')
+        request.user = self.user
+        request.session = {}
+        response = delete_blacklist(request, '447')
+        self.assertTrue(response)
+
+        request = self.factory.get('/trust_control/')
+        request.user = self.user
+        request.session = {}
+        response = delete_whitelist(request, '44')
+        self.assertTrue(response)
+
+    def test_alert_report(self):
+        """To test alarm report"""
+        request = self.factory.get('/alert_report/')
+        request.user = self.user
+        request.session = {}
+        response = alert_report(request)
+        self.assertEqual(response.status_code, 200)
 
 
 class CdrAlertModelTestCase(TestCase):

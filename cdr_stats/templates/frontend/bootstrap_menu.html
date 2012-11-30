@@ -61,6 +61,9 @@
                             <li {% ifequal module 'alert' %}class="active"{% endifequal %}><a href="/alert/">{% trans "Alert" %}</a></li>
                             <li {% ifequal module 'trust_control' %}class="active"{% endifequal %}><a href="/trust_control/">{% trans "Trust control" %}</a></li>
                         {% endif %}
+                        {% if perms.cdr_alert.view_alarm_report %}
+                            <li {% ifequal module 'alert_report' %}class="active"{% endifequal %}><a href="/alert_report/">{% trans "Alert Report" %}</a></li>
+                        {% endif %}
                     </ul>
                 </li>
               </ul>
