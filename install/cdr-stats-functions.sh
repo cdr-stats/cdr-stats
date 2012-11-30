@@ -582,6 +582,10 @@ func_install_frontend(){
                 #Allowing Apache to access Redis and MongoDB port
                 semanage port -a -t http_port_t -p tcp 6379
                 semanage port -a -t http_port_t -p tcp 27017
+                setsebool httpd_can_network_connect 1
+				setsebool httpd_can_network_connect_db 1
+				service httpd restart
+				service mongod restart
             ;;
         esac
     fi
