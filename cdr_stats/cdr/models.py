@@ -24,7 +24,6 @@ CDR_TYPE = {
     "kamailio": 5
 }
 
-
 DISPOSITION = (
     (1, _('ANSWER')),
     (2, _('BUSY')),
@@ -101,52 +100,3 @@ class HangupCause(caching.base.CachingMixin, models.Model):
         verbose_name = _("Hangupcause")
         verbose_name_plural = _("Hangupcauses")
         db_table = "hangup_cause"
-
-
-"""
-class AsteriskCDR(models.Model):
-    #This defines the cdr of Asterisk
-
-    calldate = models.DateTimeField(default=(lambda:datetime.now()),
-               verbose_name=_('calldate'), db_index=True,
-               help_text =_("Date Format: YYYY-mm-DD HH:MM:SS"))
-    src = models.CharField(max_length=80, blank=True, null=True,
-                            verbose_name=_('Source'))
-    dst = models.CharField(max_length=80, blank=True, null=True,
-                           verbose_name=_('Destination'), db_index=True,)
-    clid = models.CharField(max_length=80, blank=True, null=True,
-                            verbose_name=_('Caller Id'))
-    dcontext = models.CharField(max_length=80, blank=True, null=True,
-                                verbose_name=_('Destination context'))
-    channel = models.CharField(max_length=80, blank=True, null=True,
-                               verbose_name=_('channel'))
-    dstchannel = models.CharField(max_length=80, blank=True, null=True,
-                                  verbose_name=_('destination channel'))
-    lastapp = models.CharField(max_length=80, blank=True, null=True,
-                            verbose_name=_('Last app'))
-    lastdata = models.CharField(max_length=80, blank=True, null=True)
-    duration = models.IntegerField(default=0, null=True,
-                            verbose_name=_('Duration'))
-    billsec = models.IntegerField(default=0, null=True,
-                            verbose_name=_('Bill sec'))
-    disposition = models.PositiveIntegerField(choices=DISPOSITION, default=1,
-                                              verbose_name=_('Disposition'))
-    amaflags = models.IntegerField(default=0, null=True)
-    accountcode = models.charField(max_length=80, null=True, db_index=True,
-                                verbose_name=_('Accountcode'))
-    uniqueid = models.CharField(max_length=32, blank=True,
-                                null=True, unique=True,)
-    userfield = models.CharField(max_length=255, blank=True, null=True)
-    cost = models.CharField(max_length=20, blank=True, null=True)
-    vendor = models.CharField(max_length=20, blank=True, null=True)
-    switch_id = models.ForeignKey(Switch, null=True, blank=True,
-                                  verbose_name=_("Switch"))
-
-    def __unicode__(self):
-        return '[%s]' %(self.id)
-
-    class Meta:
-        verbose_name = _("Asterisk_CDR")
-        verbose_name_plural = _("Asterisk_CDR")
-        db_table = "asterisk_cdr"
-"""
