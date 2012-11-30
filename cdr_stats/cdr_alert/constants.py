@@ -58,7 +58,9 @@ class ALARM_COLUMN_NAME(Choice):
     name = _('Name')
     period = _('Period')
     type = _('Type')
-    email_to_send_alarm = _('Email send to')
+    alert_condition = _('Condition')
+    alert_value = _('Value')
+    status = _('Status')
     updated_date = _('Date')
 
 
