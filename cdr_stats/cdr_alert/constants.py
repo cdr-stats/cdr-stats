@@ -69,4 +69,4 @@ class ALARM_REPORT_COLUMN_NAME(Choice):
     alarm = _('Alarm')
     calculatedvalue = _('Calculated value')
     status = _('Status')
-    date = _('Date run')
+    date = _('Date')
