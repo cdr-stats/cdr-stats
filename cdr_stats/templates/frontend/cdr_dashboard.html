@@ -26,17 +26,14 @@
 <script id="source" language="javascript" type="text/javascript">
 $(function () {
     var data = [
-            {% for data in total_record %}
-                [{{ data.0 }}, {{ data.1.count_call }}, {{ data.1.duration_sum }}],
-            {% endfor %}
-        ];
-
-    //for (var i = 0; i < data.length; ++i)
-    //    data[i][0] += 60 * 60 * 1000;
+        {% for data in total_record %}
+            [{{ data.0 }}, {{ data.1.count_call }}, {{ data.1.duration_sum }}],
+        {% endfor %}
+    ];
 
     function Info(time,info){
         for(var i in data){
-            if(data[i][0] == parseInt(time)){
+            if (data[i][0] == parseInt(time)){
                 switch(info){
                     case 0:
                         return data[i][0];

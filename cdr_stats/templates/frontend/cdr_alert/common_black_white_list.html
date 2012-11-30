@@ -8,7 +8,6 @@
     <script src="{{ STATIC_URL }}cdr-stats/js/jquery.dajax.core.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}cdr-stats/js/jquery.ba-serializeobject.js" type="text/javascript"></script>
     <script type="text/javascript">
-
         // toggle Checkbox blacklist
         function toggleChecked_blacklist(status) {
             $("#id_blacklist_table .checkbox").each( function() {
@@ -26,21 +25,16 @@
 
             // add dialcode to blacklist
             $('#add_bl_prefix').click(function(e) {
-
                 e.preventDefault();
                 var prefix = $('#id_bl_prefix').val();
-                if(prefix == '')
-                {
+                if (prefix == '') {
                     msg = '{% trans "You must enter dialcode" %}';
                     bootbox.alert(msg);
-                }
-                else{
+                } else{
                     Dajaxice.cdr_alert.add_blacklist_prefix(Dajax.process, {'prefix': prefix});
                 }
-
             });
         });
-
 
         // toggle Checkbox whitelist
         function toggleChecked_whitelist(status) {
@@ -57,13 +51,12 @@
                 var country_id = $('#id_wl_country_from #id_country :selected').val();
                 Dajaxice.cdr_alert.add_whitelist_country(Dajax.process, {'country_id': country_id});
             });
-
             // add dialcode to whitelist
             $('#add_wl_prefix').click(function(e) {
 
                 e.preventDefault();
                 var prefix = $('#id_wl_prefix').val();
-                if(prefix == '')
+                if (prefix == '')
                 {
                     msg = '{% trans "You must enter dialcode" %}';
                     bootbox.alert(msg);
@@ -76,12 +69,10 @@
 
         function delete_button(list_name)
         {
-            if(list_name == 'blacklist')
-            {
+            if (list_name == 'blacklist') {
                 var $fields = $('#id_blacklist_table').find('input[name="select_blacklist"]:checked');
             }
-            if(list_name == 'whitelist')
-            {
+            if (list_name == 'whitelist') {
                 var $fields = $('#id_whitelist_table').find('input[name="select_whitelist"]:checked');
             }
 
@@ -89,18 +80,15 @@
                 msg = '{% trans "You must check at least one box!" %}';
                 bootbox.alert(msg);
                 return false; // The form will *not* submit
-            }
-            else
-            {
+            } else {
                 var allVals = [];
                 $fields.each(function() {
                     allVals.push($(this).val());
                 });
-                if(list_name == 'blacklist')
-                {
+                if (list_name == 'blacklist') {
                     Dajaxice.cdr_alert.delete_blacklist(Dajax.process, {'id_list': allVals});
                 }
-                if(list_name == 'whitelist')
+                if (list_name == 'whitelist')
                 {
                     Dajaxice.cdr_alert.delete_whitelist(Dajax.process, {'id_list': allVals});
                 }
@@ -110,11 +98,11 @@
 
         function delete_all_button(list_name)
         {
-            if(list_name == 'blacklist')
+            if (list_name == 'blacklist')
             {
                 Dajaxice.cdr_alert.delete_blacklist(Dajax.process, {'id_list': '0'});
             }
-            if(list_name == 'whitelist')
+            if (list_name == 'whitelist')
             {
                 Dajaxice.cdr_alert.delete_whitelist(Dajax.process, {'id_list': '0'});
             }
