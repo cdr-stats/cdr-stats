@@ -16,7 +16,6 @@ from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 from cdr_alert.models import Alarm, Blacklist, Whitelist
 from cdr.functions_def import get_country_list
-from country_dialcode.models import Prefix
 
 
 class BWCountryForm(forms.Form):
@@ -49,3 +48,19 @@ class AlarmForm(ModelForm):
         exclude = ('user',)
 
 
+class AlarmReportForm(forms.Form):
+    """alarm list form"""
+    alarm = forms.ChoiceField(label=_("Alert"), required=False)
+
+    def __init__(self, user, *args, **kwargs):
+        super(AlarmReportForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['alarm']
+
+        alarm_list_user = []
+        alarm_list_user.append((0, '---'))
+        alarm_list = Alarm.objects.values_list('id', 'name')\
+            .filter(user=user).order_by('id')
+        for i in alarm_list:
+            alarm_list_user.append((i[0], i[1]))
+
+        self.fields['alarm'].choices = alarm_list_user

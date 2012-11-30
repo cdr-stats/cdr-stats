@@ -22,7 +22,8 @@ from django.utils.encoding import smart_str, smart_unicode
 from django.conf import settings
 from cdr_alert.models import Alarm, Blacklist, Whitelist, AlarmReport
 from cdr_alert.constants import ALARM_COLUMN_NAME, ALARM_REPORT_COLUMN_NAME
-from cdr_alert.forms import AlarmForm, BWCountryForm, BWPrefixForm
+from cdr_alert.forms import AlarmForm, BWCountryForm, BWPrefixForm,\
+    AlarmReportForm
 from frontend_notification.views import notice_count
 from common.common_functions import current_view, get_pagination_vars,\
     variable_value, ceil_strdate
@@ -195,6 +196,15 @@ def alarm_change(request, object_id):
 @permission_required('cdr_alert.view_alarm_report', login_url='/')
 @login_required
 def alert_report(request):
+    """
+    To get alarm report for logged in user
+
+    **Attributes**:
+
+        * ``form`` - AlarmReportForm
+        * ``template`` - frontend/cdr_alert/alarm_report.html
+    """
+    form = AlarmReportForm(request.user, initial={'alarm': 0})
     sort_col_field_list = ['id', 'alarm', 'calculatedvalue', 'status','daterun']
     default_sort_field = 'id'
     pagination_data =\
@@ -202,13 +212,47 @@ def alert_report(request):
 
     PAGE_SIZE = pagination_data['PAGE_SIZE']
     sort_order = pagination_data['sort_order']
+    search_tag = 1
+    alert_id = ''
+    alarm_report_list = AlarmReport.objects.filter(alarm__user=request.user)
 
-    alarm_report_list = AlarmReport.objects\
-        .filter(alarm__user=request.user).order_by(sort_order)
+    if request.method == 'POST':
+        form = AlarmReportForm(request.user, request.POST)
+        if form.is_valid():
+            request.session['session_alarm'] = ''
+
+            if request.POST.get('alarm'):
+                alert_id = request.POST.get('alarm')
+                request.session['session_alarm'] = alert_id
+
+    post_var_with_page = 0
+    try:
+        if request.GET.get('page') or request.GET.get('sort_by'):
+            post_var_with_page = 1
+            alert_id = request.session.get('session_alarm')
+            form = AlarmReportForm(request.user, initial={'alarm': alert_id})
+        else:
+            post_var_with_page = 1
+            if request.method == 'GET':
+                post_var_with_page = 0
+    except:
+        pass
+
+    if post_var_with_page == 0:
+        # default
+        # unset session var
+        request.session['session_alarm'] = ''
+
+    kwargs = {}
+    if alert_id and alert_id != 0:
+        kwargs['alarm_id'] = alert_id
+
+    alarm_report_list = alarm_report_list.filter(**kwargs).order_by(sort_order)
 
     template = 'frontend/cdr_alert/alarm_report.html'
     data = {
         'module': current_view(request),
+        'form': form,
         'rows': alarm_report_list,
         'total_count': alarm_report_list.count(),
         'PAGE_SIZE': PAGE_SIZE,

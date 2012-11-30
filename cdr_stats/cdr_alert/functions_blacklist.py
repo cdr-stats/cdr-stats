@@ -14,7 +14,7 @@
 from django.conf import settings
 from cdr.functions_def import remove_prefix, \
     prefix_list_string, get_country_id
-from cdr_alert.models import Blacklist, Whitelist
+from cdr_alert.models import Blacklist, Whitelist, Alarm
 from cdr_alert.tasks import blacklist_whitelist_notification
 
 
