@@ -220,26 +220,37 @@ def last_seven_days_report(request, kwargs):
     select_data = {"daterun": "SUBSTR(CAST(daterun as CHAR(30)),1,10)"}
 
 
-    total_data = AlarmReport.objects.extra(select=select_data)\
+    alarm_data = AlarmReport.objects.extra(select=select_data)\
         .values('daterun')\
         .filter(**kwargs)\
         .annotate(Count('daterun'))\
         .order_by('-daterun')
-    total_day_record = []
-    for doc in total_data:
+
+    total_data = []
+    total_alert = 0
+    for doc in alarm_data:
         daterun = str(doc['daterun'])
 
-        graph_day = datetime(int(daterun[0:4]),
-                             int(daterun[5:7]),
-                             int(daterun[8:10]),
-                             0, 0, 0, 0)
-        dt = int(1000 * time.mktime(graph_day.timetuple()))
+        total_data.append(
+            {
+                'daterun': datetime(int(daterun[0:4]), int(daterun[5:7]), int(daterun[8:10])),
+                'alert__count': int(int(doc['daterun__count'])),
+            })
+        total_alert += int(doc['daterun__count'])
 
-        total_day_record.append({
-            'dt': dt,
-            'alert__count': int(doc['daterun__count']),
-        })
-    return total_day_record
+    if alarm_data != 0:
+        max_alert_count = max([int(x['alert__count']) for x in total_data])
+    else:
+        max_alert_count = 0
+
+    data = {
+        'start_date': start_date,
+        'end_date': end_date,
+        'total_data': total_data,
+        'total_alert': total_alert,
+        'max_alert_count': max_alert_count
+    }
+    return data
 
 
 @permission_required('cdr_alert.view_alarm_report', login_url='/')
@@ -298,14 +309,23 @@ def alert_report(request):
     kwargs['alarm__user'] = request.user
 
     alarm_report_list = AlarmReport.objects.filter(**kwargs).order_by(sort_order)
-    seven_days_report = last_seven_days_report(request, kwargs)
-    
+    days_report = last_seven_days_report(request, kwargs)
+
+    total_data = days_report['total_data']
+    total_alert = days_report['total_alert']
+    max_alert_count = days_report['max_alert_count']
+    start_date = days_report['start_date']
+    end_date = days_report['end_date']
+
     template = 'frontend/cdr_alert/alarm_report.html'
     data = {
         'module': current_view(request),
         'form': form,
         'action': action,
-        'seven_days_report': seven_days_report,
+        'total_data': total_data,
+        'max_alert_count': max_alert_count,
+        'start_date': start_date,
+        'end_date': end_date,
         'rows': alarm_report_list,
         'total_count': alarm_report_list.count(),
         'PAGE_SIZE': PAGE_SIZE,
