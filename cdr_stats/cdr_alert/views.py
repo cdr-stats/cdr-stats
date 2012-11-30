@@ -18,6 +18,7 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.utils.translation import gettext as _
+from django.utils.encoding import smart_str, smart_unicode
 from django.conf import settings
 from cdr_alert.models import Alarm, Blacklist, Whitelist, AlarmReport
 from cdr_alert.constants import ALARM_COLUMN_NAME, ALARM_REPORT_COLUMN_NAME
@@ -40,7 +41,8 @@ def alarm_list(request):
 
         * List all alarms which belong to the logged in user.
     """
-    sort_col_field_list = ['id', 'name', 'period', 'type','updated_date']
+    sort_col_field_list = ['id', 'name', 'period', 'type', 'alert_condition',
+                           'alert_value', 'status', 'updated_date']
     default_sort_field = 'id'
     pagination_data =\
         get_pagination_vars(request, sort_col_field_list, default_sort_field)
@@ -222,6 +224,13 @@ def alert_report(request):
 @login_required
 def trust_control(request):
     #Blacklist, Whitelist
+    prefix_list = Prefix.objects.all().order_by('prefix')
+    #for i in prefix_list:
+    #    if i.country_id is not None:
+    #        print str(i.prefix) + ' - ' +  smart_str(i.country_id.countryname)
+    #prefix_list = (','.join('"' + item + '"' for item in prefix_list))
+    #prefix_list = "[" + str(prefix_list) + "]"
+
     prefix_list = \
         map(str, Prefix.objects.values_list("prefix", flat=True).all().order_by('prefix'))
     prefix_list = (','.join('"' + item + '"' for item in prefix_list))

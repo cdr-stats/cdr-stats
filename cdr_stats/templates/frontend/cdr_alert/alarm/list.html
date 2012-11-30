@@ -53,7 +53,9 @@
                 <th>{% sort_link ALARM_COLUMN_NAME.name col_name_with_order.name  %}</th>
                 <th>{% sort_link ALARM_COLUMN_NAME.period col_name_with_order.period  %}</th>
                 <th>{% sort_link ALARM_COLUMN_NAME.type col_name_with_order.type  %}</th>
-                <th>{{ ALARM_COLUMN_NAME.email_to_send_alarm }}</th>
+                <th>{% sort_link ALARM_COLUMN_NAME.alert_condition col_name_with_order.alert_condition  %}</th>
+                <th>{% sort_link ALARM_COLUMN_NAME.alert_value col_name_with_order.alert_value  %}</th>
+                <th>{% sort_link ALARM_COLUMN_NAME.status col_name_with_order.status  %}</th>
                 <th>{% sort_link ALARM_COLUMN_NAME.updated_date col_name_with_order.updated_date  %}</th>
                 <th>{% trans "Action" %}</th>
             </tr>
@@ -68,7 +70,9 @@
                 <td>{{ row.name }}</td>
                 <td>{{ row.period|alarm_period }}</td>
                 <td>{{ row.type|alarm_type }}</td>
-                <td>{{ row.email_to_send_alarm }}</td>
+                <td>{{ row.alert_condition|alarm_condition }}</td>
+                <td>{{ row.alert_value }}</td>
+                <td>{{ row.status|alarm_status }}</td>
                 <td>{{ row.updated_date }}</td>
                 <td>
                     {% if perms.cdr_alert.change_alarm %}
@@ -83,7 +87,7 @@
 
             {% else %}
             <tr>
-                <td colspan="8" align="center">
+                <td colspan="10" align="center">
                     {% trans "no records found"|title %}
                 </td>
             </tr>

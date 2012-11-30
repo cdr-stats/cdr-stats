@@ -15,7 +15,8 @@ from django import template
 from django.utils.translation import gettext as _
 from cdr.models import Switch
 from cdr.functions_def import get_hangupcause_name
-from cdr_alert.constants import PERIOD, ALARM_TYPE, ALARM_REPROT_STATUS
+from cdr_alert.constants import PERIOD, ALARM_TYPE, STATUS,\
+    ALARM_REPROT_STATUS, ALERT_CONDITION
 import re
 
 register = template.Library()
@@ -94,6 +95,35 @@ def alarm_type(value):
     if not value:
         return ''
     STATUS = dict(ALARM_TYPE)
+    try:
+        status = STATUS[value]
+    except:
+        status = ''
+
+    return str(status)
+
+@register.filter(name='alarm_status')
+def alarm_status(value):
+    """alarm status
+    """
+    if not value:
+        return ''
+    status = dict(STATUS)
+    try:
+        status = status[value]
+    except:
+        status = ''
+
+    return str(status)
+
+
+@register.filter(name='alarm_condition')
+def alarm_condition(value):
+    """alarm report status
+    """
+    if not value:
+        return ''
+    STATUS = dict(ALERT_CONDITION)
     try:
         status = STATUS[value]
     except:
