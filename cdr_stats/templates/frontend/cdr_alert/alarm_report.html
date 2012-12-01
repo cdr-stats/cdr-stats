@@ -137,6 +137,10 @@
                 }
 
                 var options = {
+                    series: {
+                        lines: { show: true},
+                        points: { show: true }
+                    },
                     xaxis: { mode: "time",
                         tickLength: 5,
                         tickFormatter: function(val) { return formTicks(val) }
