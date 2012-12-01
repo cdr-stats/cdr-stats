@@ -219,15 +219,13 @@ def last_seven_days_report(request, kwargs):
 
     select_data = {"daterun": "SUBSTR(CAST(daterun as CHAR(30)),1,10)"}
 
-
     alarm_data = AlarmReport.objects.extra(select=select_data)\
         .values('daterun')\
         .filter(**kwargs)\
         .annotate(Count('daterun'))\
         .order_by('-daterun')
 
-    total_day_record = []
-    total_data = []
+    total_data = {}
     total_alert = 0
     for doc in alarm_data:
         daterun = str(doc['daterun'])
@@ -238,29 +236,24 @@ def last_seven_days_report(request, kwargs):
                              0, 0, 0, 0)
         dt = int(1000 * time.mktime(graph_day.timetuple()))
 
-        total_day_record.append({
-            'dt': dt,
-            'alert__count': int(doc['daterun__count']),
-        })
-        total_data.append(
-            {
-                'daterun': datetime(int(daterun[0:4]), int(daterun[5:7]), int(daterun[8:10])),
-                'alert__count': int(int(doc['daterun__count'])),
-            })
+        if dt in total_data:
+            total_data[dt]['alert_count'] += int(doc['daterun__count'])
+        else:
+            total_data[dt] = {
+                'alert_count': int(doc['daterun__count'])
+            }
+
         total_alert += int(doc['daterun__count'])
 
-    if alarm_data != 0:
-        max_alert_count = max([int(x['alert__count']) for x in total_data])
-    else:
-        max_alert_count = 0
+    # sorting on date col
+    total_data = total_data.items()
+    total_data = sorted(total_data, key=lambda k: k[0])
 
     data = {
         'start_date': start_date,
         'end_date': end_date,
-        'total_day_record': total_day_record,
         'total_data': total_data,
         'total_alert': total_alert,
-        'max_alert_count': max_alert_count
     }
     return data
 
@@ -325,7 +318,6 @@ def alert_report(request):
 
     total_data = days_report['total_data']
     total_alert = days_report['total_alert']
-    max_alert_count = days_report['max_alert_count']
     start_date = days_report['start_date']
     end_date = days_report['end_date']
 
@@ -335,7 +327,6 @@ def alert_report(request):
         'form': form,
         'action': action,
         'total_data': total_data,
-        'max_alert_count': max_alert_count,
         'start_date': start_date,
         'end_date': end_date,
         'rows': alarm_report_list,

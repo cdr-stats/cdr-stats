@@ -5,6 +5,11 @@
 
 {% block extra_head %}
     {% include "frontend/custom_jquery_select_all.html" %}
+    <style type="text/css">
+        .tab-content {
+            overflow: inherit;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
@@ -90,42 +95,138 @@
     </div>
     <div id="tabs-2" class="tab-pane {% if action == "tabs-2" or action == "" %}active{% endif %}">
 
-        <table class="table table-striped table-bordered table-condensed">
-            <caption class="graph_header">
-                {% trans "daily report"|title  %} -
-                <b>
-                    {% if start_date  %}
-                        {{ start_date|date:"jS N Y" }}
-                    {% endif %}
-                    {% if end_date  %}
-                        {% trans "to" %} {{ end_date|date:"jS N Y" }}
-                    {% endif %}
-                </b>
-            </caption>
-            <thead>
-            <tr>
-                <th>{% trans "Date"  %}</th>
-                <th>{% trans "Graphic"  %}</th>
-                <th>{% trans "Alerts"  %}</th>
-            </tr>
-            </thead>
-            {% for td in total_data %}
-                <tr>
-                    <td>{{ td.daterun|date:"D d M Y" }}</td>
-                    <td>{% if max_alert_count > 0 %}
-                        <img src="{{ STATIC_URL }}cdr-stats/images/spacer.png" width="{{ td.alert__count|cal_width:max_alert_count }}" style="vertical-align:center; height:10px"/>
-                    {% endif %}
-                    </td>
-                    <td>{{ td.alert__count }}</td>
-                </tr>
-            {% endfor %}
+        <script id="source" language="javascript" type="text/javascript">
+            $(function () {
+                var data = [
+                    {% for data in total_data %}
+                        [{{ data.0 }}, {{ data.1.alert_count }}],
+                    {% endfor %}
+                ];
 
-            <tr>
-                <th scope="row">{% trans "Total"  %}</th>
-                <td></td>
-                <td>{{ total_alert }}</td>
-            </tr>
-        </table>
+                function Info(time,info){
+                    for(var i in data){
+                        if (data[i][0] == parseInt(time)){
+                            switch(info){
+                                case 0:
+                                    return data[i][0];
+                                    break;
+                                case 1:
+                                    return data[i][1];
+                                    break;
+                                //case 2:
+                                //    return data[i][2];
+                                //    break;
+                                default:
+                                    return data[i][0];
+                            }
+                        }
+                    }
+                }
+
+                function formTicks(val) {
+
+                    var dt = new Date(parseInt(val));
+                    var hour = dt.getHours();
+                    var minute = dt.getMinutes();
+                    var ampm = hour >= 12 ? 'pm' : 'am';
+                    var hour = hour % 12;
+                    hour = hour ? hour : 12; // the hour '0' should be '12'
+                    minute = minute < 10 ? '0' + minute : minute;
+                    strTime = hour + ':' + minute + ' ' + ampm;
+                    return strTime
+                }
+
+                var options = {
+                    xaxis: { mode: "time",
+                        tickLength: 5,
+                        tickFormatter: function(val) { return formTicks(val) }
+                    },
+                    yaxis: { min: 0, tickDecimals: false },
+                    selection: { mode: "x" },
+                    grid: {
+                        hoverable: true,
+                        xaxis: false
+                    }
+                };
+
+                var plot = $.plot($("#graph_responsive"), [data], options);
+
+                var overview = $.plot($("#overview"), [data], {
+                    legend: {show: false},
+                    series: {
+                        lines: { show: true, lineWidth: 1 },
+                        shadowSize: 0
+                    },
+                    xaxis: { ticks: [], mode: "time" },
+                    yaxis: { ticks: [], min: 0, autoscaleMargin: 0.1 },
+                    selection: { mode: "x" }
+                });
+
+                // now connect the two
+                $("#graph_responsive").bind("plotselected", function (event, ranges) {
+                    // do the zooming
+                    plot = $.plot($("#graph_responsive"), [data],
+                            $.extend(true, {}, options, {
+                                xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to }
+                            }));
+
+                    // don't fire event on the overview to prevent eternal loop
+                    overview.setSelection(ranges, true);
+                });
+
+                $("#overview").bind("plotselected", function (event, ranges) {
+                    plot.setSelection(ranges);
+                });
+
+                $("#graph_responsive").bind("plothover", function (event, pos, item) {
+                    if (item) {
+                        if (previousPoint != item.dataIndex) {
+                            previousPoint = item.dataIndex;
+
+                            $("#tooltip").remove();
+                            var x = item.datapoint[0].toFixed(2),
+                                    y = item.datapoint[1].toFixed(2);
+
+                            var time = x;
+                            var dt = new Date(parseInt(time));
+                            var hour = dt.getHours();//(time.toString().split("."))[0];
+                            var minute = dt.getMinutes();//Math.round(time * 60 - (hour * 60));
+                            var output = '';
+                            output += '<div class="graph_tooltip_header">';
+
+                            var ampm = hour >= 12 ? 'pm' : 'am';
+                            var hour = hour % 12;
+                            hour = hour ? hour : 12; // the hour '0' should be '12'
+                            minute = minute < 10 ? '0'+minute : minute;
+                            strTime = hour + ':' + minute + ' ' + ampm;
+
+                            output += strTime + '</div><div class="graph_tooltip_info">{% trans "Alerts" %}: ' + Info(time,1) + '</div>';
+
+                            showTooltip(item.pageX, item.pageY, output);
+                        }
+                    }
+                    else {
+                        $("#tooltip").remove();
+                        previousPoint = null;
+                    }
+                });
+            });
+        </script>
+        <div class="graph_header">
+            {% trans "daily report"|title  %} -
+            <b>
+                {% if start_date  %}
+                    {{ start_date|date:"jS N Y" }}
+                {% endif %}
+                {% if end_date  %}
+                    {% trans "to" %} {{ end_date|date:"jS N Y" }}
+                {% endif %}
+            </b>
+        </div>
+
+        <div id="graph_responsive" style="margin:auto;"></div>
+
+        <div id="overview" style="margin:auto;margin-bottom:20px;margin-top:20px;width:400px;height:50px"></div>
 
     </div>
 </div>
