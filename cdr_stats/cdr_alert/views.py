@@ -226,11 +226,22 @@ def last_seven_days_report(request, kwargs):
         .annotate(Count('daterun'))\
         .order_by('-daterun')
 
+    total_day_record = []
     total_data = []
     total_alert = 0
     for doc in alarm_data:
         daterun = str(doc['daterun'])
 
+        graph_day = datetime(int(daterun[0:4]),
+                             int(daterun[5:7]),
+                             int(daterun[8:10]),
+                             0, 0, 0, 0)
+        dt = int(1000 * time.mktime(graph_day.timetuple()))
+
+        total_day_record.append({
+            'dt': dt,
+            'alert__count': int(doc['daterun__count']),
+        })
         total_data.append(
             {
                 'daterun': datetime(int(daterun[0:4]), int(daterun[5:7]), int(daterun[8:10])),
@@ -246,6 +257,7 @@ def last_seven_days_report(request, kwargs):
     data = {
         'start_date': start_date,
         'end_date': end_date,
+        'total_day_record': total_day_record,
         'total_data': total_data,
         'total_alert': total_alert,
         'max_alert_count': max_alert_count
