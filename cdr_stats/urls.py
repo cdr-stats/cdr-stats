@@ -18,7 +18,6 @@ from django.conf import settings
 from tastypie.api import Api
 from api.user_api import UserResource
 from api.switch_api import SwitchResource
-from api.hangup_cause_api import HangupCauseResource
 from api.cdr_daily_api import CdrDailyResource
 from api.cdr_api import CdrResource
 from cdr.urls import urlpatterns as urlpatterns_cdr
@@ -43,7 +42,6 @@ except admin.sites.AlreadyRegistered:
 tastypie_api = Api(api_name='v1')
 tastypie_api.register(UserResource())
 tastypie_api.register(SwitchResource())
-tastypie_api.register(HangupCauseResource())
 tastypie_api.register(CdrDailyResource())
 tastypie_api.register(CdrResource())
 

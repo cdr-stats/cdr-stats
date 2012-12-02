@@ -11,7 +11,6 @@ Contents:
 
 
     ./api-doc/switch_resource
-    ./api-doc/hangupcause_resource
     ./api-doc/cdr_daily_resource
     ./api-doc/cdr_resource
 
