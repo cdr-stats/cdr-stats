@@ -223,40 +223,10 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
     def test_trust_control_ajax(self):
-        request = self.factory.get('/trust_control/')
+        request = self.factory.post('/trust_control/')
         request.user = self.user
         request.session = {}
         response = add_whitelist_country(request, 198)
-        self.assertTrue(response)
-
-        request = self.factory.get('/trust_control/')
-        request.user = self.user
-        request.session = {}
-        response = add_whitelist_prefix(request, '44')
-        self.assertTrue(response)
-
-        request = self.factory.get('/trust_control/')
-        request.user = self.user
-        request.session = {}
-        response = add_blacklist_country(request, '199')
-        self.assertTrue(response)
-
-        request = self.factory.get('/trust_control/')
-        request.user = self.user
-        request.session = {}
-        response = add_blacklist_prefix(request, '447')
-        self.assertTrue(response)
-
-        request = self.factory.get('/trust_control/')
-        request.user = self.user
-        request.session = {}
-        response = delete_blacklist(request, '447')
-        self.assertTrue(response)
-
-        request = self.factory.get('/trust_control/')
-        request.user = self.user
-        request.session = {}
-        response = delete_whitelist(request, '44')
         self.assertTrue(response)
 
     def test_alert_report(self):
@@ -279,7 +249,7 @@ class CdrAlertModelTestCase(TestCase):
     Blacklist, Whitelist models
     """
     # initial_data.json is taken from country_dialcode
-    fixtures = ['auth_user.json', 'country_dialcode.json']
+    fixtures = ['auth_user.json', 'country_dialcode.json', 'notice_type.json']
 
     def setUp(self):
         """Create model object"""
@@ -479,10 +449,10 @@ class CdrAlertModelTestCase(TestCase):
     def test_blacklist_whitelist_notification(self):
         """Test task : blacklist_whitelist_notification"""
         # notice_type = 3 blacklist
-        result = blacklist_whitelist_notification.delay(3)
+        result = blacklist_whitelist_notification.delay(NOTICE_TYPE.blacklist_prefix)
         self.assertEquals(result.get(), True)
 
-        result = blacklist_whitelist_notification.delay(int(NOTICE_TYPE.whitelist_prefix))
+        result = blacklist_whitelist_notification.delay(NOTICE_TYPE.whitelist_prefix)
         self.assertEquals(result.get(), True)
 
     def test_chk_alarm(self):
