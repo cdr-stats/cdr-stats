@@ -135,6 +135,10 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         'blacklist_prefix.json', 'whitelist_prefix.json'
     ]
 
+    def test_mgt_command(self):
+        # Test mgt command
+        call_command('send_daily_report')
+
     def test_alarm_list(self):
         """Test Function to check alarm list"""
         response = self.client.get('/alert/')
