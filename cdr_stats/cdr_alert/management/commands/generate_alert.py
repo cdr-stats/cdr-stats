@@ -35,9 +35,6 @@ class Command(BaseCommand):
             default=None,
             dest='delta-day',
             help=help),
-    )
-
-    option_list = BaseCommand.option_list + (
         make_option('--alert-no', '-a',
             default=None,
             dest='alert-no',
@@ -47,6 +44,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Note that alert created this way are only for devel purposes"""
         day_delta_int = 7  # default
+        print options
+        print "*************"
         if options.get('delta-day'):
             try:
                 day_delta_int = int(options.get('delta-day'))
@@ -73,7 +72,7 @@ class Command(BaseCommand):
         # To get random alarm object
         alarm = Alarm.objects.order_by('?')[:1]
 
-        numbercall = 10
+        calculatedvalue = 10
 
         for i in range(0, int(alert_no)):
             delta_days = random.randint(0, day_delta_int)
@@ -83,11 +82,14 @@ class Command(BaseCommand):
                 - datetime.timedelta(days=delta_days)
 
             delta_call = random.randint(-2, 2)
-            numbercall = numbercall + delta_call
+            calculatedvalue = calculatedvalue + delta_call
 
-            AlarmReport.objects.create(alarm=alarm[0],
-                calculatedvalue=numbercall,
+            AlarmReport.objects.create(
+                alarm=alarm[0],
+                calculatedvalue=calculatedvalue,
                 status=random.randint(1, 2),
                 daterun=daterun)
+            print "alarm_report -> alarm:%s, daterun=%s, calculatedvalue=%d" % \
+                (alarm[0], daterun, calculatedvalue)
 
-        print "\nDone..."
+        print "\nDone"
