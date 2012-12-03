@@ -135,11 +135,6 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         'blacklist_prefix.json', 'whitelist_prefix.json'
     ]
 
-    def test_mgt_command(self):
-        # Test mgt command
-        call_command('generate_alert', '--alert-no=10', '--delta-day=1')
-        call_command('generate_alert', '--alert-no=10')
-
     def test_alarm_list(self):
         """Test Function to check alarm list"""
         response = self.client.get('/alert/')
@@ -231,6 +226,8 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
     def test_alert_report(self):
         """To test alarm report"""
+        call_command('generate_alert', '--alert-no=10', '--delta-day=1')
+        call_command('generate_alert', '--alert-no=10')
         request = self.factory.get('/alert_report/')
         request.user = self.user
         request.session = {}
