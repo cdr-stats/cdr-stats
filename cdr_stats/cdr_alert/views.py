@@ -344,18 +344,10 @@ def alert_report(request):
 @login_required
 def trust_control(request):
     #Blacklist, Whitelist
-    prefix_list = Prefix.objects.all().order_by('prefix')
-    #for i in prefix_list:
-    #    if i.country_id is not None:
-    #        print str(i.prefix) + ' - ' +  smart_str(i.country_id.countryname)
-    #prefix_list = (','.join('"' + item + '"' for item in prefix_list))
-    #prefix_list = "[" + str(prefix_list) + "]"
-
     prefix_list = \
         map(str, Prefix.objects.values_list("prefix", flat=True).all().order_by('prefix'))
     prefix_list = (','.join('"' + item + '"' for item in prefix_list))
     prefix_list = "[" + str(prefix_list) + "]"
-
 
     blacklist = Blacklist.objects.filter(user=request.user).order_by('id')
     whitelist = Whitelist.objects.filter(user=request.user).order_by('id')

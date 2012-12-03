@@ -12,6 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.contrib.auth.models import User
+from django.core.management import call_command
 from django.test import TestCase
 from common.utils import BaseAuthenticatedClient
 from cdr_alert.models import AlertRemovePrefix, \
@@ -134,6 +135,11 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         'blacklist_prefix.json', 'whitelist_prefix.json'
     ]
 
+    def test_mgt_command(self):
+        # Test mgt command
+        call_command('generate_alert', '--alert-no=10', '--delta-day=1')
+        call_command('generate_cdr', '--alert-no=10')
+
     def test_alarm_list(self):
         """Test Function to check alarm list"""
         response = self.client.get('/alert/')
@@ -251,6 +257,12 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
     def test_alert_report(self):
         """To test alarm report"""
         request = self.factory.get('/alert_report/')
+        request.user = self.user
+        request.session = {}
+        response = alert_report(request)
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.post('/alert_report/', {'alarm': 1})
         request.user = self.user
         request.session = {}
         response = alert_report(request)

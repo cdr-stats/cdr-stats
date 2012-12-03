@@ -54,7 +54,7 @@ class Alarm(models.Model):
 
     **Attributes**:
 
-        * ``user`` - 
+        * ``user`` -
         * ``name`` - Alarm name
         * ``period`` - Day | Week | Month
         * ``type`` - ALOC (average length of call) ; ASR (answer seize ratio)
