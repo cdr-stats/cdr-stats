@@ -138,7 +138,7 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
     def test_mgt_command(self):
         # Test mgt command
         call_command('generate_alert', '--alert-no=10', '--delta-day=1')
-        call_command('generate_cdr', '--alert-no=10')
+        call_command('generate_alert', '--alert-no=10')
 
     def test_alarm_list(self):
         """Test Function to check alarm list"""
@@ -153,20 +153,24 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
     def test_alarm_add(self):
         """Test Function to check add alarm"""
-        request = self.factory.post('/alert/add/', data={
-            'name': 'My alarm',
-            'value': '10',
-            'email_to_send_alarm': 'admin@localhost.com'
+        request = self.factory.post(
+            '/alert/add/',
+            data={
+                'name': 'My alarm',
+                'value': '10',
+                'email_to_send_alarm': 'admin@localhost.com'
             }, follow=True)
         request.user = self.user
         request.session = {}
         response = alarm_add(request)
         self.assertEqual(response.status_code, 200)
 
-        resp = self.client.post('/alert/add/', data={
+        resp = self.client.post(
+            '/alert/add/',
+            data={
                 'name': '',
                 'email_to_send_alarm': '',
-                })
+            })
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.context['form']['name'].errors,
             [u'This field is required.'])
@@ -177,8 +181,9 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.context['action'], 'update')
         self.assertEqual(response.status_code, 200)
 
-        request = self.factory.post('/alert/1/', data={
-            'name': 'test',
+        request = self.factory.post('/alert/1/',
+            data={
+                'name': 'test',
             }, follow=True)
         request.user = self.user
         request.session = {}
