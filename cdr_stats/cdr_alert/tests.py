@@ -226,7 +226,7 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         request = self.factory.get('/trust_control/')
         request.user = self.user
         request.session = {}
-        response = add_whitelist_country(request, '198')
+        response = add_whitelist_country(request, 198)
         self.assertTrue(response)
 
         request = self.factory.get('/trust_control/')
@@ -479,10 +479,10 @@ class CdrAlertModelTestCase(TestCase):
     def test_blacklist_whitelist_notification(self):
         """Test task : blacklist_whitelist_notification"""
         # notice_type = 3 blacklist
-        result = blacklist_whitelist_notification.delay(NOTICE_TYPE.blacklist_prefix)
+        result = blacklist_whitelist_notification.delay(3)
         self.assertEquals(result.get(), True)
 
-        result = blacklist_whitelist_notification.delay(NOTICE_TYPE.whitelist_prefix)
+        result = blacklist_whitelist_notification.delay(int(NOTICE_TYPE.whitelist_prefix))
         self.assertEquals(result.get(), True)
 
     def test_chk_alarm(self):
