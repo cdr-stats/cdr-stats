@@ -54,6 +54,7 @@ class Alarm(models.Model):
 
     **Attributes**:
 
+        * ``user`` - 
         * ``name`` - Alarm name
         * ``period`` - Day | Week | Month
         * ``type`` - ALOC (average length of call) ; ASR (answer seize ratio)
@@ -140,6 +141,7 @@ class Blacklist(models.Model):
 
     **Attributes**:
 
+        * ``user`` -
         * ``phonenumber_prefix`` -
         * ``country`` -
 
@@ -168,6 +170,7 @@ class Whitelist(models.Model):
 
     **Attributes**:
 
+        * ``user`` -
         * ``phonenumber_prefix`` -
         * ``country`` -
 

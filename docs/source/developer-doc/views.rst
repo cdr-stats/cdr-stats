@@ -85,3 +85,46 @@ CDR-Stats Views
 -------------------------------
 
   .. autofunction:: customer_detail_change
+
+
+.. automodule:: cdr_alert.views
+
+.. _alarm-list:
+
+:class:`alarm_list`
+-------------------
+
+  .. autofunction:: alarm_list
+
+
+.. _alarm-add:
+
+:class:`alarm_add`
+------------------
+
+  .. autofunction:: alarm_add
+
+
+.. _alarm-del:
+
+:class:`alarm_del`
+------------------
+
+  .. autofunction:: alarm_del
+
+
+.. _alarm-change:
+
+:class:`alarm_change`
+---------------------
+
+  .. autofunction:: alarm_change
+
+
+.. _alert-report:
+
+:class:`alert_report`
+---------------------
+
+  .. autofunction:: alert_report
+
