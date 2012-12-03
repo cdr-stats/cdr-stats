@@ -42,10 +42,10 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        """Note that alert created this way are only for devel purposes"""
+        """
+        Note that alert created this way are only for devel purposes
+        """
         day_delta_int = 7  # default
-        print options
-        print "*************"
         if options.get('delta-day'):
             try:
                 day_delta_int = int(options.get('delta-day'))
