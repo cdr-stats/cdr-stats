@@ -35,18 +35,22 @@ class Command(BaseCommand):
            "---------------------------------\n"\
            "python manage.py send_daily_report\n"\
 
+
     def handle(self, *args, **options):
         """to send daily mail report via command line"""
 
         list_users = User.objects.filter(is_staff=True, is_active=True)
         for c_user in list_users:
+            if not c_user.email:
+                print "User (%s) -> This user doesn't have an email." % c_user.username
+                continue
             from_email = c_user.email
             try:
                 user_profile_obj = UserProfile.objects.get(user=c_user)
                 to = user_profile_obj.multiple_email
             except UserProfile.DoesNotExist:
-                to = ''
-                print 'Error : UserProfile not found (user_id:' + str(c_user.id) +')'
+                print 'Error: UserProfile not found (user_id:' + str(c_user.id) + ')'
+                continue
 
             mail_data = get_cdr_mail_report()
 
@@ -65,13 +69,10 @@ class Command(BaseCommand):
                 }))
 
             if to:
-                msg = EmailMultiAlternatives(
-                    subject, html_content, from_email, [to])
-
-                print 'Email sent to ' + str(to)
+                msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
+                print '\nEmail sent to ' + str(to)
+                print '-' * 80
                 msg.content_subtype = 'html'
                 msg.send()
             else:
                 print "Error: email not sent"
-
-        print "\nDone..."
