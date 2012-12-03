@@ -16,7 +16,6 @@
 
 from django.core.management.base import BaseCommand
 from cdr_alert.models import Alarm, AlarmReport
-from random import choice
 from optparse import make_option
 import random
 import datetime
@@ -43,7 +42,7 @@ class Command(BaseCommand):
             default=None,
             dest='alert-no',
             help=help),
-        )
+    )
 
     def handle(self, *args, **options):
         """Note that alert created this way are only for devel purposes"""
@@ -80,15 +79,15 @@ class Command(BaseCommand):
             delta_days = random.randint(0, day_delta_int)
             delta_minutes = random.randint(1, 1440)
             daterun = datetime.datetime.now()\
-                           - datetime.timedelta(minutes=delta_minutes)\
-                           - datetime.timedelta(days=delta_days)
+                - datetime.timedelta(minutes=delta_minutes)\
+                - datetime.timedelta(days=delta_days)
 
             delta_call = random.randint(-2, 2)
             numbercall = numbercall + delta_call
 
             AlarmReport.objects.create(alarm=alarm[0],
                 calculatedvalue=numbercall,
-                status= random.randint(1, 2),
+                status=random.randint(1, 2),
                 daterun=daterun)
 
         print "\nDone..."
