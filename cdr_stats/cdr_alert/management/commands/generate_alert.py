@@ -64,10 +64,16 @@ class Command(BaseCommand):
         else:
             alert_no = 1
 
-        alarm = Alarm.objects.create(user_id=1,
-                                     name='test_alert',
-                                     alert_value=10,
-                                     email_to_send_alarm='admin@localhost.com')
+        alarm_count = Alarm.objects.all().count()
+        if alarm_count == 0:
+            alarm = Alarm.objects.create(user_id=1,
+                                         name='test_alert',
+                                         alert_value=10,
+                                         email_to_send_alarm='admin@localhost.com')
+
+        # To get random alarm object
+        alarm = Alarm.objects.order_by('?')[:1]
+
         numbercall = 10
 
         for i in range(0, int(alert_no)):
@@ -80,7 +86,7 @@ class Command(BaseCommand):
             delta_call = random.randint(-2, 2)
             numbercall = numbercall + delta_call
 
-            AlarmReport.objects.create(alarm=alarm,
+            AlarmReport.objects.create(alarm=alarm[0],
                 calculatedvalue=numbercall,
                 status= random.randint(1, 2),
                 daterun=daterun)
