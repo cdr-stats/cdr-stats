@@ -30,10 +30,10 @@
                     <li {% ifequal module 'cdr_overview' %}class="active"{% endifequal %}><a href="/cdr_overview/">{% trans "overview"|title %}</a></li>
                   {% endif %}
                   {% if perms.user_profile.allow_cdr_view %}
-                    <li {% ifequal module 'cdr_view' %}class="active"{% endifequal %}><a href="/cdr_view/">{% trans "call search"|title %}</a></li>
+                    <li {% ifequal module 'cdr_view' %}class="active"{% endifequal %}><a href="/cdr_view/">{% trans "search"|title %}</a></li>
                   {% endif %}
                   {% if perms.user_profile.allow_hourly_report %}
-                    <li {% ifequal module 'cdr_report_by_hour' %}class="active"{% endifequal %}><a href="/hourly_report/">{% trans "daily compare"|title %}</a></li>
+                    <li {% ifequal module 'cdr_report_by_hour' %}class="active"{% endifequal %}><a href="/hourly_report/">{% trans "daily comparison"|title %}</a></li>
                   {% endif %}
                  </ul>
               </li>
@@ -43,42 +43,42 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Real-Time" %}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   {% if perms.user_profile.allow_cdr_realtime %}
-                    <li {% ifequal module 'cdr_realtime' %}class="active"{% endifequal %}><a href="/cdr_realtime/">{% trans "switch real-time"|title %}</a></li>
+                    <li {% ifequal module 'cdr_realtime' %}class="active"{% endifequal %}><a href="/cdr_realtime/">{% trans "real-time calls"|title %}</a></li>
                   {% endif %}
                   {% if perms.user_profile.allow_cdr_concurrent_calls %}
-                    <li {% ifequal module 'cdr_concurrent_calls' %}class="active"{% endifequal %}><a href="/cdr_concurrent_calls/">{% trans "concurrency reporting"|title %}</a></li>
+                    <li {% ifequal module 'cdr_concurrent_calls' %}class="active"{% endifequal %}><a href="/cdr_concurrent_calls/">{% trans "concurrent calls"|title %}</a></li>
                   {% endif %}
                  </ul>
               </li>
             </ul>
             <ul class="nav pull-left">
               <li id="fat-menu-I" class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Report" %}<b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "reports"|title %}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   {% if perms.user_profile.allow_country_report %}
-                    <li {% ifequal module 'cdr_country_report' %}class="active"{% endifequal %}><a href="/country_report/">{% trans "Country Report" %}</a></li>
+                    <li {% ifequal module 'cdr_country_report' %}class="active"{% endifequal %}><a href="/country_report/">{% trans "by country"|title %}</a></li>
                   {% endif %}
                   {% if perms.user_profile.allow_world_map %}
-                    <li {% ifequal module 'world_map_view' %}class="active"{% endifequal %}><a href="/world_map/">{% trans "World Map Report" %}</a></li>
+                    <li {% ifequal module 'world_map_view' %}class="active"{% endifequal %}><a href="/world_map/">{% trans "world map"|title %}</a></li>
                   {% endif %}
                   {% if perms.user_profile.allow_mail_report %}
-                    <li {% ifequal module 'cdr_mail_report' %}class="active"{% endifequal %}><a href="/mail_report/">{% trans "Mail Report" %}</a></li>
+                    <li {% ifequal module 'cdr_mail_report' %}class="active"{% endifequal %}><a href="/mail_report/">{% trans "mail report"|title %}</a></li>
                   {% endif %}
                 </ul>
               </li>
             </ul>
             <ul class="nav pull-left">
               <li id="fat-menu-III" class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Threat control" %}<b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "threat control"|title %}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   {% if perms.cdr_alert.view_alert %}
-                    <li {% ifequal module 'alert' %}class="active"{% endifequal %}><a href="/alert/">{% trans "Alert" %}</a></li>
+                    <li {% ifequal module 'alert' %}class="active"{% endifequal %}><a href="/alert/">{% trans "alert settings"|title %}</a></li>
                   {% endif %}
                   {% if perms.cdr_alert.view_alarm_report %}
-                    <li {% ifequal module 'alert_report' %}class="active"{% endifequal %}><a href="/alert_report/">{% trans "Alert Report" %}</a></li>
+                    <li {% ifequal module 'alert_report' %}class="active"{% endifequal %}><a href="/alert_report/">{% trans "Alert Report"|title %}</a></li>
                   {% endif %}
                   {% if perms.cdr_alert.view_alert %}
-                    <li {% ifequal module 'trust_control' %}class="active"{% endifequal %}><a href="/trust_control/">{% trans "Trust control" %}</a></li>
+                    <li {% ifequal module 'trust_control' %}class="active"{% endifequal %}><a href="/trust_control/">{% trans "destination control"|title %}</a></li>
                   {% endif %}
                 </ul>
               </li>
