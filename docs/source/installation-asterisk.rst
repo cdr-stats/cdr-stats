@@ -26,3 +26,6 @@ Run the following commands at the console::
 
 
 The install routine will ask a number of questions, all of which are self explanatory.
+
+Note that CDR-Stats can be installed on the same server as Asterisk, or on a separate server
+connecting remotely to the Asterisk CDR database.

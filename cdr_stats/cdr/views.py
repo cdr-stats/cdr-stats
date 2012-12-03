@@ -39,6 +39,7 @@ from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_hourly_report, pipeline_country_hourly_report,\
     pipeline_mail_report
 from cdr.constants import CDR_COLUMN_NAME
+from frontend_notification.views import notice_count
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -83,49 +84,6 @@ def index(request):
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))
-
-
-@login_required
-def notice_count(request):
-    """Get count of logged in user's notifications"""
-    notice_count = notification.Notice.objects\
-        .filter(recipient=request.user,
-                unseen=1)\
-        .count()
-    return notice_count
-
-
-def common_send_notification(request, status, recipient=None):
-    """User Notification (e.g. limit) needs to be saved.
-    It is a common function for the admin and customer UI's
-
-    **Attributes**:
-
-        * ``request`` - primary key of the record
-        * ``status`` - get label for notifications
-        * ``recipient`` - receiver of notification
-
-    **Logic Description**:
-
-        get the notice label from stauts & send notification with
-        recipient, from_user & sender detail
-    """
-    if not recipient:
-        recipient = request.user
-        sender = User.objects.get(username=recipient)
-    else:
-        if request.user.is_anonymous():
-            sender = User.objects.get(is_superuser=1, username=recipient)
-        else:
-            sender = request.user
-
-    if notification:
-        note_label = notification.NoticeType.objects.get(default=status)
-        notification.send([recipient],
-                          note_label.label,
-                          {"from_user": request.user},
-                          sender=sender)
-    return True
 
 
 def check_cdr_exists(function=None):

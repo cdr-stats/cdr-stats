@@ -13,6 +13,7 @@
 #
 
 from django.db import models
+from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from country_dialcode.models import Country
 from cdr_alert.constants import PERIOD, STATUS, ALARM_TYPE, \
@@ -21,9 +22,9 @@ from cdr_alert.constants import PERIOD, STATUS, ALARM_TYPE, \
 
 class AlertRemovePrefix(models.Model):
     """This defines the Alert Remove Prefix
-    Here you can define the list of prefixes that need to be removed from the
-    dialed digits, imagine all your phone numbers are in the format 5559004432
-    You will need to remove the prefix 555 to analyze the phone numbers
+    Define the list of prefixes that need to be removed from the dialed digits, 
+    assuming the phone numbers are in the format 5559004432, with the signifcant digits
+    9004432, the prefix 555 needs to be removed to analyse the phone numbers.
 
     **Attributes**:
 
@@ -53,6 +54,7 @@ class Alarm(models.Model):
 
     **Attributes**:
 
+        * ``user`` -
         * ``name`` - Alarm name
         * ``period`` - Day | Week | Month
         * ``type`` - ALOC (average length of call) ; ASR (answer seize ratio)
@@ -64,6 +66,7 @@ class Alarm(models.Model):
 
     **Name of DB table**: alert
     """
+    user = models.ForeignKey('auth.User', related_name='Alarm_owner')
     name = models.CharField(max_length=100, verbose_name=_('Name'))
     period = models.PositiveIntegerField(choices=list(PERIOD), default=1,
                                 verbose_name=_('Period'),
@@ -92,6 +95,9 @@ class Alarm(models.Model):
         return '%s' % (self.name)
 
     class Meta:
+        permissions = (
+            ("view_alarm", _('Can see alarms')),
+        )
         verbose_name = _("Alarm")
         verbose_name_plural = _("Alarms")
         db_table = "alert"
@@ -122,6 +128,9 @@ class AlarmReport(models.Model):
         return '%s' % (self.alarm)
 
     class Meta:
+        permissions = (
+            ("view_alarm_report", _('Can see alarm report')),
+        )
         verbose_name = _("Alarm Report")
         verbose_name_plural = _("Alarms Report")
         db_table = "alert_report"
@@ -132,11 +141,13 @@ class Blacklist(models.Model):
 
     **Attributes**:
 
+        * ``user`` -
         * ``phonenumber_prefix`` -
         * ``country`` -
 
     **Name of DB table**: alert_blacklist
     """
+    user = models.ForeignKey('auth.User', related_name='Blacklist_owner')
     phonenumber_prefix = models.PositiveIntegerField(blank=False, null=False)
     country = models.ForeignKey(Country, null=True, blank=True,
                                 verbose_name=_("Country"),
@@ -146,6 +157,9 @@ class Blacklist(models.Model):
         return '[%s] %s' % (self.id, self.phonenumber_prefix)
 
     class Meta:
+        permissions = (
+            ("view_blacklist", _('Can see blacklist country/prefix')),
+        )
         verbose_name = _("Blacklist")
         verbose_name_plural = _("Blacklist")
         db_table = "alert_blacklist"
@@ -156,11 +170,13 @@ class Whitelist(models.Model):
 
     **Attributes**:
 
+        * ``user`` -
         * ``phonenumber_prefix`` -
         * ``country`` -
 
     **Name of DB table**: alert_whitelist
     """
+    user = models.ForeignKey('auth.User', related_name='whitelist_owner')
     phonenumber_prefix = models.PositiveIntegerField(blank=False, null=False)
     country = models.ForeignKey(Country, null=True, blank=True,
                                 verbose_name=_("Country"),
@@ -170,6 +186,9 @@ class Whitelist(models.Model):
         return '[%s] %s' % (self.id, self.phonenumber_prefix)
 
     class Meta:
+        permissions = (
+            ("view_whitelist", _('Can see whitelist country/prefix')),
+        )
         verbose_name = _("Whitelist")
         verbose_name_plural = _("Whitelist")
         db_table = "alert_whitelist"

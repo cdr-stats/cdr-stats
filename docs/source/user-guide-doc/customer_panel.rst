@@ -66,8 +66,7 @@ The Report by Day shows a graphical illustration of the calls, minutes and avera
 CDR-Overview
 ~~~~~~~~~~~~
 
-In this view, you can get pictorial view of calls with call-count or call-duration
-from any date or date-range
+A pictorial view of calls with call-count or call-duration from any date or date-range
 
 **URL**:
 
@@ -81,7 +80,7 @@ from any date or date-range
 CDR-Hourly-Report
 ~~~~~~~~~~~~~~~~~
 
-In this view, you can get hourly pictorial view of calls with call-count & call-duration.
+An hourly pictorial view of calls with call-count & call-duration.
 You can compare different dates
 
 **URL**:
@@ -95,7 +94,7 @@ You can compare different dates
 CDR-Global-Report
 ~~~~~~~~~~~~~~~~~
 
-In this view, you can get pictorial view of all calls
+A pictorial view of all calls
 
 **URL**:
 
@@ -108,8 +107,7 @@ In this view, you can get pictorial view of all calls
 CDR-Country-Report
 ~~~~~~~~~~~~~~~~~~
 
-In this view, you can get pictorial view of all calls by country. Also
-you can have 10 most called countries name with pie chart
+A pictorial view of all calls by country with the 10 most called countries in a pie chart.
 
 **URL**:
 
@@ -122,8 +120,12 @@ you can have 10 most called countries name with pie chart
 Mail-Report
 ~~~~~~~~~~~
 
-In this view, there is a list of the last 10 calls of the previous day, along with total calls, a
+A list of the last 10 calls of the previous day, along with total calls, a
 breakdown of the call status, and the top 5 countries called.
+
+This report is emailed automatically, email recipients can be set up in the 
+admin section or by adding an email address in the "Email to send a report" field
+in the Mail Report section.
 
 **URL**:
 
@@ -135,7 +137,8 @@ breakdown of the call status, and the top 5 countries called.
 Concurrent-call-report
 ~~~~~~~~~~~~~~~~~~~~~~
 
-In this view, you can get report of concurrent calls
+A report of concurrent calls. The statistics are collated from the realtime
+report, not from the CDR.
 
 **URL**:
 
@@ -148,8 +151,8 @@ In this view, you can get report of concurrent calls
 Realtime-Report
 ~~~~~~~~~~~~~~~
 
-This view provides realtime monitoring of the traffic on the connected telecoms servers. 
-Currently, only Freeswitch is supported.
+Realtime monitoring of the traffic on the connected telecoms servers, 
+Freeswitch and Asterisk are supported.
 
 **URL**:
 
@@ -162,7 +165,7 @@ Currently, only Freeswitch is supported.
 World Map Report
 ~~~~~~~~~~~~~~~~
 
-This view provides a mapping view of all calls / durations by country. You can select date criteria
+A distriibution map of all calls / durations by country. You can select date criteria
 and on mouse over on the world map you can get information about each country.
 
 

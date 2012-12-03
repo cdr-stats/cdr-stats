@@ -18,23 +18,30 @@ from django.conf import settings
 from tastypie.api import Api
 from api.user_api import UserResource
 from api.switch_api import SwitchResource
-from api.hangup_cause_api import HangupCauseResource
 from api.cdr_daily_api import CdrDailyResource
 from api.cdr_api import CdrResource
 from cdr.urls import urlpatterns as urlpatterns_cdr
+from cdr_alert.urls import urlpatterns as urlpatterns_cdr_alert
 from user_profile.urls import urlpatterns as urlpatterns_user_profile
 from frontend.urls import urlpatterns as urlpatterns_frontend
 from api.api_playgrounds.urls import urlpatterns as urlpatterns_api_playgrounds
+from frontend_notification.urls import urlpatterns as urlpatterns_frontend_notification
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
-admin.autodiscover()
+from dajaxice.core import dajaxice_autodiscover
+dajaxice_autodiscover()
 
+try:
+    admin.autodiscover()
+except admin.sites.AlreadyRegistered:
+    # nose imports the admin.py files during tests, so
+    # the models have already been registered.
+    pass
 # tastypie api
 tastypie_api = Api(api_name='v1')
 tastypie_api.register(UserResource())
 tastypie_api.register(SwitchResource())
-tastypie_api.register(HangupCauseResource())
 tastypie_api.register(CdrDailyResource())
 tastypie_api.register(CdrResource())
 
@@ -60,13 +67,16 @@ urlpatterns = patterns('',
 
     (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', \
                             {'url': 'static/cdr_stats/images/favicon.ico'}),
+    (r'^%s/' % settings.DAJAXICE_MEDIA_PREFIX, include('dajaxice.urls')),
 )
 
 
 urlpatterns += urlpatterns_cdr
+urlpatterns += urlpatterns_cdr_alert
 urlpatterns += urlpatterns_user_profile
 urlpatterns += urlpatterns_frontend
 urlpatterns += urlpatterns_api_playgrounds
+urlpatterns += urlpatterns_frontend_notification
 
 urlpatterns += patterns('',
     url("", include('django_socketio.urls')),

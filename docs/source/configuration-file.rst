@@ -6,8 +6,8 @@ Configuration
 Some of the more important parts of the configuration module for the cdr_stats,
 ``settings.py``, are explained below.
 
-``APPLICATION_DIR`` now contains the full path of your project folder and can be used elsewhere
-in the ``settings.py`` module so that your project may be moved around the system without you having to
+``APPLICATION_DIR`` now contains the full path of the project folder and can be used elsewhere
+in the ``settings.py`` module so that the project may be moved around the system without having to
 worry about changing any hard-coded paths. ::
 
     import os.path
@@ -43,9 +43,9 @@ Sets up the options required for Django to connect to your database engine::
     }
 
 
-Sets up the options to connect to MongoDB Server, this server and Database will be used to store the analytic data.
-You should normally have no need to change those settings, except if your MongoDB server is on a distant machine
-or if you want to have a different name for your collections::
+Sets up the options to connect to MongoDB Server, this server and database will be used to store the analytic data.
+There is usually no need to change these settings, unless if your MongoDB server is on a remote server, or if
+different names are required for the collections::
 
     #MONGODB
     #=======
@@ -74,7 +74,7 @@ Tells Django to start finding URL matches at in the ``urls.py`` module in the ``
       TEMPLATE_DIRS = ( os.path.join(APPLICATION_DIR, 'templates'), )
 
 
-Tells Django where to find your HTML template files::
+Tells Django where to find the HTML template files::
 
     INSTALLED_APPS = (
         'django.contrib.auth',
@@ -88,7 +88,7 @@ Tells Django where to find your HTML template files::
         ...
     )
 
-Tells Django which applications (custom and external) to use in your project.
+Tells Django which applications (custom and external) to use in the project.
 The custom applications, ``cdr`` etc. are stored in the project folder along with
 these custom applications.
 
@@ -131,7 +131,8 @@ Set the dialcode of your country (44 for UK, 1 for US)
 
 * **PREFIX_TO_IGNORE = "+,0,00,000,0000,00000,011,55555,99999"**
 
-List of prefixes to ignore, these prefixes are removed from the phone number prior to analysis.
+List of prefixes to ignore, these prefixes are removed from the phone number prior to analysis. In cases where
+customers dial 9 for an outside line, 9, 90 or 900 may need to be removed as well to ensure accurate reporting.
 
 
 Examples
@@ -144,6 +145,57 @@ In the UK, the number of significant digits is either 9 or 10 after the "0" trun
 In Spain, where there is no "0" trunk code, and the length of all numbers is 9, then the PN_MAX_DIGITS  would be set to 9, and the LOCAL_DIALCODE set to 34.
 
 NB: After changing this file, then both celery and apache should be restarted.
+
+
+.. _resetting-data:
+
+Resetting Data
+--------------
+
+Sometimes, some experimentation is required to get the optimum settings for country reporting, to achieve this the data is removed
+from MongoDB and re-imported from the Asterisk MySQL database.
+
+1. Stop Celery
+
+2. Type mongo to enter the MongoDB database then apply the following commands::
+
+    mongo
+    use cdr-stats;
+    db.monthly_analytic.remove({});
+    db.daily_analytic.remove({});
+    db.aggregate_world_report.remove({});
+    db.aggregate_result_cdr_view.remove({});
+    db.aggregate_hourly_country_report.remove({});
+    db.cdr_common.remove({});
+
+    CTRL-D exits the console.
+
+3. Flag the CDR records for reimport
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+3a. With Asterisk and Mysql ::
+
+    Go to the CDR database in Asterisk and change the field 'import_cdr' to 0:
+
+    Enter the MySQL console with the following command, changing the credentials and database name
+    to suit your installation:
+    mysql -uasteriskuser -pamp109 asteriskcdrdb
+
+    update cdr SET import_cdr = 0;
+
+    CTRL-C exits the MySQL
+
+
+3b. With FreeSWITCH and MongoDB::
+
+    Go to the CDR FreeSWITCH MongoDB database, update all the records by setting the 'import_cdr' field to 0.
+
+    mongo
+    use freeswitch_cdr;
+    db.cdr.update({"import_cdr" : 1}, { $set : {"import_cdr" : 0}}, { multi: true });
+
+4. Now start Celery.
+5. Wait while the CDR are re-imported.
 
 
 .. _configuration-asterisk:
@@ -178,7 +230,7 @@ The asterisk settings may be as follows::
         #},
     }
 
-To add a new remote Asterisk MySQL CDR store, you would ensure connection to the remote MySQL database, then uncomment the new server settings by removing the # and configuring the credentials to connect to the remote Asterisk CDR store.
+To add a new remote Asterisk MySQL CDR store,  ensure that there is a connection to the remote MySQL database, then uncomment the new server settings by removing the # and configuring the credentials to connect to the remote Asterisk CDR store.
 
 
 
@@ -187,7 +239,7 @@ To add a new remote Asterisk MySQL CDR store, you would ensure connection to the
 Realtime configuration for Asterisk
 ------------------------------------
 
-You will find some extra settings, that will allow you to configure CDR-Stats to retrieve Realtime information.
+The Asterisk Manager settings allow CDR-Stats to retrieve Realtime information.
 
 The settings to configure are::
 
@@ -197,9 +249,7 @@ The settings to configure are::
     ASTERISK_MANAGER_SECRET = 'cdrstats_secret'
 
 
-You will need to configure your Asterisk manager API, add a new user for CDR-Stats, further information about Asterisk Manager can be found here : http://www.voip-info.org/wiki/view/Asterisk+config+manager.conf
-
-
+In Asterisk, add a new user in manager.conf, or one of its #include's for CDR-Stats. Further information about Asterisk Manager can be found here : http://www.voip-info.org/wiki/view/Asterisk+config+manager.conf
 
 .. _configuration-freeswitch:
 
@@ -232,8 +282,8 @@ Freeswitch settings are under the CDR_BACKEND section, and should look as follow
     }
 
 
-To connect a new Freeswitch system to CDR-Stats, you would ensure that port 27017 TCP
-was open to ONLY the CDR-Stats server on the remote system, uncomment the settings
-by removing the #, and then configure the IP address and db_name to match those in
-the mod_cdr_mongodb configuration as described at
+To connect a new Freeswitch system to CDR-Stats, ensure that port 27017 TCP is ONLY open to
+the CDR-Stats server on the remote system, then uncomment the settings by removing the #,
+and configure the IP address and db_name to match those in the mod_cdr_mongodb configuration
+as described at :
 http://www.cdr-stats.org/documentation/beginners-guide/howto-installing-on-freeswitch/

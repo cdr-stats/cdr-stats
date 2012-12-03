@@ -3,6 +3,7 @@
         "pk":1,
         "model":"cdr_alert.blacklist",
         "fields":{
+            "user":1,
             "country":1,
             "phonenumber_prefix":93
         }

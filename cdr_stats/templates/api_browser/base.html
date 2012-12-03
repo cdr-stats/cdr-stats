@@ -4,11 +4,13 @@
 <head>
     <title>{% trans "API Browser" %}</title>
     <link rel="shortcut icon" type="image/x-icon" href="{{STATIC_URL}}cdr-stats/images/favicon.ico">
+    <link rel="stylesheet" href="{{ STATIC_URL }}api_browser/css/h5bp.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}api_browser/css/screen.css">
     <!-- Le styles -->
     <link href="{{STATIC_URL}}cdr-stats/bootstrap/css/bootstrap.css" rel="stylesheet">
     <style type="text/css">
         body {
-            padding-top: 60px;
+            padding-top: 65px;
             padding-bottom: 40px;
     }
     </style>
@@ -16,18 +18,15 @@
     <!--Override bootstrap-->
     <link href="{{STATIC_URL}}cdr-stats/css/override_bootstrap.css" rel="stylesheet">
 
-    <!-- jquery UI css -->
-    <link type="text/css" href="{{STATIC_URL}}cdr-stats/css/jquery-ui-bootstrap/jquery-ui-1.8.16.custom.css" rel="stylesheet">
     <!-- Le javascript -->
-    <script type="text/javascript" src="{{STATIC_URL}}cdr-stats/js/jquery-ui-1.8.16.custom.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}cdr-stats/js/jquery-1.8.2.min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}cdr-stats/js/jquery-ui-1.9.1.custom.min.js"></script>
+
     <script src="{{STATIC_URL}}cdr-stats/bootstrap/js/bootstrap.js"></script>
 
     <!-- CDR-stats custom css -->
     <link type="text/css" media="screen" href="{{STATIC_URL}}cdr-stats/css/cdr_stats.css" rel="stylesheet"/>
 
-    <link rel="stylesheet" href="{{ STATIC_URL }}api_browser/css/h5bp.css">
-    <link rel="stylesheet" href="{{ STATIC_URL }}api_browser/css/screen.css">
     <style type="text/css">
     body {
         color: black;
@@ -35,28 +34,25 @@
         font-size: 14px;
         line-height: 20px;
     }
-    .container {
-        width: 940px;
+    .container_custom{
+        margin-right: auto;
+        margin-left: auto;
+        width: 100%;
     }
     </style>
-
 </head>
 <body>
     {% block menu %}
         {% include "frontend/bootstrap_menu.html" %}
     {% endblock %}
 
-    <ul class="breadcrumb">
-        <li><a href="/api-explorer/"> {% trans "API Explorer" %}</a> /</li>
-        <li class="active">{{ schema.title }}</li>
-    </ul>
-
     {% block container %}
-        <div class="container">
+        <div class="container_custom">
 
-            <!--<div class="page-header">
-                <h1>{{ schema.title }}</h1>
-            </div>-->
+            <ul class="breadcrumb">
+                <li><a href="/api-explorer/"> {% trans "API Explorer" %}</a> /</li>
+                <li class="active">{{ schema.title }}</li>
+            </ul>
 
             {% block content %}
             {% endblock %}
@@ -64,14 +60,12 @@
             {% block footer %}{% endblock %}
         </div>
     {% endblock %}
-</body>
 
+    <script src="{{ STATIC_URL }}api_browser/js/jquery.class.min.js"></script>
+    <script src="{{ STATIC_URL }}api_browser/js/jquery.rest-form.js"></script>
+    <script src="{{ STATIC_URL }}api_browser/js/jquery.form2json.js"></script>
+    <script src="{{ STATIC_URL }}api_browser/js/app.js"></script>
+    {% block javascripts %}{% endblock %}
 
-<script>window.jQuery || document.write('<script src="{{ STATIC_URL }}' +
-        'api_browser/js/jquery-1.7.1.min.js"><\/script>')</script>
-<script src="{{ STATIC_URL }}api_browser/js/jquery.class.min.js"></script>
-<script src="{{ STATIC_URL }}api_browser/js/jquery.rest-form.js"></script>
-<script src="{{ STATIC_URL }}api_browser/js/jquery.form2json.js"></script>
-<script src="{{ STATIC_URL }}api_browser/js/app.js"></script>
-{% block javascripts %}{% endblock %}
+    </body>
 </html>

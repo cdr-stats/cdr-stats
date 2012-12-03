@@ -15,45 +15,11 @@ from django import template
 from django.utils.translation import gettext as _
 from cdr.models import Switch
 from cdr.functions_def import get_hangupcause_name
-from cdr.views import notice_count
+from cdr_alert.constants import PERIOD, ALARM_TYPE, STATUS,\
+    ALARM_REPROT_STATUS, ALERT_CONDITION
 import re
 
 register = template.Library()
-
-
-@register.filter(name='seen_unseen')
-def seen_unseen(value):
-    """Tag is for icon which is
-    used on user notification list
-
-    >>> seen_unseen('1')
-    'icon-star'
-
-    >>> seen_unseen('')
-    'icon-ok'
-    """
-    if value:
-        return "icon-star"
-    else:
-        return "icon-ok"
-
-
-@register.filter(name='seen_unseen_word')
-def seen_unseen_word(value):
-    """Tag is for notification status which is
-    used on user notification list
-
-    >>> seen_unseen_word('1')
-    'New'
-
-    >>> seen_unseen_word('')
-    'Read'
-    """
-    if value:
-        return _("New")
-    else:
-        return _("Read")
-
 
 @register.filter(name='get_switch_ip')
 def get_switch_ip(id):
@@ -101,7 +67,81 @@ def mongo_id(value, sub_val):
     return value
 
 
-@register.simple_tag(name='get_notice_count')
-def get_notice_count(request):
-    """tag to display notice count"""
-    return notice_count(request)
+@register.filter(name='alarm_period')
+def alarm_period(value):
+    """alarm period
+
+    >>> alarm_period(1)
+    'START'
+    """
+    if not value:
+        return ''
+    STATUS = dict(PERIOD)
+    try:
+        status = STATUS[value]
+    except:
+        status = ''
+
+    return str(status)
+
+
+@register.filter(name='alarm_type')
+def alarm_type(value):
+    """alarm type
+
+    >>> alarm_type(1)
+    'START'
+    """
+    if not value:
+        return ''
+    STATUS = dict(ALARM_TYPE)
+    try:
+        status = STATUS[value]
+    except:
+        status = ''
+
+    return str(status)
+
+@register.filter(name='alarm_status')
+def alarm_status(value):
+    """alarm status
+    """
+    if not value:
+        return ''
+    status = dict(STATUS)
+    try:
+        status = status[value]
+    except:
+        status = ''
+
+    return str(status)
+
+
+@register.filter(name='alarm_condition')
+def alarm_condition(value):
+    """alarm report status
+    """
+    if not value:
+        return ''
+    STATUS = dict(ALERT_CONDITION)
+    try:
+        status = STATUS[value]
+    except:
+        status = ''
+
+    return str(status)
+
+
+@register.filter(name='alarm_report_status')
+def alarm_report_status(value):
+    """alarm report status
+    """
+    if not value:
+        return ''
+    STATUS = dict(ALARM_REPROT_STATUS)
+    try:
+        status = STATUS[value]
+    except:
+        status = ''
+
+    return str(status)

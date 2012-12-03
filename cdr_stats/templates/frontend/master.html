@@ -42,6 +42,7 @@
     {% endblock %}
     <script src="{{STATIC_URL}}cdr-stats/bootstrap/js/bootstrap.js" type="text/javascript"></script>
     <script src="{{STATIC_URL}}cdr-stats/js/bootstrap-datepicker.js" type="text/javascript"></script>
+    <script src="{{STATIC_URL}}cdr-stats/js/bootbox.min.js"></script>
 
     <!-- stylesheets -->
     <link href="{{STATIC_URL}}cdr-stats/bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -163,6 +164,20 @@
     {% block extra_head %}
         {{ extra_head }}
     {% endblock %}
+
+    <!--Success Message of view-->
+    {% if msg %}
+        <div class="alert alert-success">
+            <strong>{% trans "Alert" %} : </strong>  {{ msg }}
+        </div>
+    {% endif %}
+
+    <!--Error Message of view-->
+    {% if error_msg %}
+        <div class="alert alert-error">
+            <strong>{% trans "Error" %} : </strong>  {{ error_msg }}
+        </div>
+    {% endif %}
 
     {% block content %}
         {{ content }}

@@ -82,8 +82,7 @@ Architecture
 CDR-Stats uses MongoDB as the underlying CDR store. MongoDB allows querying and analysis of many
 millions of records without noticeable loss of performance, and can easily be scaled as demand increases.
 
-One of the three popular databases (MySQL / Postgresql / SQLite) is used for managing CDR-Stats, 
-such as users and managing the web framework, Django.
+Postgresql is used for managing CDR-Stats in terms of users and managing the web framework, Django.
 
 Celery, a task manager runs in the background, and monitors the CDR coming into the system, and alerts
 the systems administrator when unusual behaviour is discovered. What is determined as unusual 
@@ -145,7 +144,8 @@ view, and comparing call traffic with previous days.
     +-----------------------+----------------------------------------------------+
     | Geographic alerts     | Set alert if calls go to disallowed countries      |
     +-----------------------+----------------------------------------------------+
-
+    | Concurrent calls      | Realtime reporting of concurrent calls             |
+    +-----------------------+----------------------------------------------------+
 
 
 .. _utility:

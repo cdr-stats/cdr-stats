@@ -1,0 +1,42 @@
+[
+    {
+        "pk":1,
+        "model":"notification.noticetype",
+        "fields":{
+            "label":"average_length_of_call",
+            "display":"ALOC (Average Length of Call)",
+            "description":"",
+            "default":1
+        }
+    },
+    {
+        "pk":2,
+        "model":"notification.noticetype",
+        "fields":{
+            "label":"answer_seize_ratio",
+            "display":"ASR (Answer Seize Ratio)",
+            "description":"",
+            "default":2
+        }
+    },
+    {
+        "pk":3,
+        "model":"notification.noticetype",
+        "fields":{
+            "label":"blacklist_prefix",
+            "display":"blacklist_prefix",
+            "description":"",
+            "default":3
+        }
+    },
+    {
+        "pk":4,
+        "model":"notification.noticetype",
+        "fields":{
+            "label":"whitelist_prefix",
+            "display":"whitelist_prefix",
+            "description":"",
+            "default":4
+        }
+    }
+]

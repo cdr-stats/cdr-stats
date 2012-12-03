@@ -56,7 +56,7 @@ Installation on New Server
 ==========================
 
 Another script is available to install Freeswitch along with CDR-Stats. 
-This script is intended to be run on a fresh Ubuntu 12.04 LTS or CentOS 6.2 installation::
+This script is intended to be run on a fresh Ubuntu 12.04 LTS or CentOS 6.X installation::
 
     $ wget –no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-all-cdr-stats-freeswitch.sh -O install-all-cdr-stats-freeswitch.sh
     $

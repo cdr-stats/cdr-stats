@@ -11,6 +11,8 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
+from django.contrib.auth.models import User
+from django.core.management import call_command
 from django.test import TestCase
 from common.utils import BaseAuthenticatedClient
 from cdr_alert.models import AlertRemovePrefix, \
@@ -19,8 +21,12 @@ from cdr_alert.tasks import send_cdr_report, \
     blacklist_whitelist_notification, chk_alarm
 from cdr_alert.forms import BWCountryForm
 from cdr_alert.functions_blacklist import chk_destination
+from cdr_alert.views import alarm_list, alarm_add, alarm_del, alarm_change,\
+    trust_control, alert_report
 from user_profile.constants import NOTICE_TYPE
 from country_dialcode.models import Country
+from cdr_alert.ajax import add_whitelist_country, add_whitelist_prefix, \
+    add_blacklist_country, add_blacklist_prefix, delete_blacklist, delete_whitelist
 
 
 class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
@@ -121,15 +127,135 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
         self.failUnlessEqual(response.status_code, 200)
 
 
+class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
+    """Test cases for Cdr-Stats Admin Interface."""
+
+    fixtures = [
+        'auth_user.json', 'country_dialcode.json', 'alarm.json',
+        'blacklist_prefix.json', 'whitelist_prefix.json'
+    ]
+
+    def test_mgt_command(self):
+        # Test mgt command
+        call_command('send_daily_report')
+
+    def test_alarm_list(self):
+        """Test Function to check alarm list"""
+        response = self.client.get('/alert/')
+        self.failUnlessEqual(response.status_code, 200)
+
+        request = self.factory.get('/alert/')
+        request.user = self.user
+        request.session = {}
+        response = alarm_list(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_alarm_add(self):
+        """Test Function to check add alarm"""
+        request = self.factory.post(
+            '/alert/add/',
+            data={
+                'name': 'My alarm',
+                'value': '10',
+                'email_to_send_alarm': 'admin@localhost.com'
+            }, follow=True)
+        request.user = self.user
+        request.session = {}
+        response = alarm_add(request)
+        self.assertEqual(response.status_code, 200)
+
+        resp = self.client.post(
+            '/alert/add/',
+            data={
+                'name': '',
+                'email_to_send_alarm': '',
+            })
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.context['form']['name'].errors,
+            [u'This field is required.'])
+
+    def test_alarm_view_update(self):
+        """Test Function to check update alarm"""
+        response = self.client.get('/alert/1/')
+        self.assertEqual(response.context['action'], 'update')
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.post('/alert/1/',
+            data={
+                'name': 'test',
+            }, follow=True)
+        request.user = self.user
+        request.session = {}
+        response = alarm_change(request, 1)
+        self.assertEqual(response.status_code, 200)
+
+        # delete alarm through alarm_change
+        request = self.factory.post('/alert/2/',
+            data={'delete': True}, follow=True)
+        request.user = self.user
+        request.session = {}
+        response = alarm_change(request, 2)
+        self.assertEqual(response['Location'], '/alert/')
+        self.assertEqual(response.status_code, 302)
+
+    def test_alarm_view_delete(self):
+        """Test Function to check delete alarm"""
+        request = self.factory.post('/alert/del/1/')
+        request.user = self.user
+        request.session = {}
+        response = alarm_del(request, 1)
+        self.assertEqual(response['Location'], '/alert/')
+        self.assertEqual(response.status_code, 302)
+
+        request = self.factory.post('/alert/del/', {'select': '1'})
+        request.user = self.user
+        request.session = {}
+        response = alarm_del(request, 0)
+        self.assertEqual(response.status_code, 302)
+
+    def test_trust_control_view(self):
+        """Test Function to check trust_control"""
+        request = self.factory.get('/trust_control/')
+        request.user = self.user
+        request.session = {}
+        response = trust_control(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_trust_control_ajax(self):
+        request = self.factory.post('/trust_control/')
+        request.user = self.user
+        request.session = {}
+        response = add_whitelist_country(request, 198)
+        self.assertTrue(response)
+
+    def test_alert_report(self):
+        """To test alarm report"""
+        call_command('generate_alert', '--alert-no=10', '--delta-day=1')
+        call_command('generate_alert', '--alert-no=10')
+        request = self.factory.get('/alert_report/')
+        request.user = self.user
+        request.session = {}
+        response = alert_report(request)
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.post('/alert_report/', {'alarm': 1})
+        request.user = self.user
+        request.session = {}
+        response = alert_report(request)
+        self.assertEqual(response.status_code, 200)
+
+
 class CdrAlertModelTestCase(TestCase):
     """Test AlertRemovePrefix, Alarm, AlarmReport,
     Blacklist, Whitelist models
     """
     # initial_data.json is taken from country_dialcode
-    fixtures = ['auth_user.json', 'country_dialcode.json']
+    fixtures = ['auth_user.json', 'country_dialcode.json', 'notice_type.json']
 
     def setUp(self):
         """Create model object"""
+        self.user = User.objects.get(username='admin')
+
         # AlertRemovePrefix model
         self.alert_remove_prefix = AlertRemovePrefix(
             label='test',
@@ -140,6 +266,7 @@ class CdrAlertModelTestCase(TestCase):
 
         # Alarm model
         self.alarm = Alarm(
+            user=self.user,
             name='Alarm name',
             period=1,
             type=1,
@@ -153,6 +280,7 @@ class CdrAlertModelTestCase(TestCase):
         self.assertEquals(self.alarm.__unicode__(), 'Alarm name')
 
         self.alarm_new = Alarm(
+            user=self.user,
             name='Alarm name new',
             period=1,
             type=1,
@@ -165,6 +293,7 @@ class CdrAlertModelTestCase(TestCase):
         self.alarm_new.save()
 
         self.alarm_new = Alarm(
+            user=self.user,
             name='Alarm name new',
             period=1,
             type=1,
@@ -177,6 +306,7 @@ class CdrAlertModelTestCase(TestCase):
         self.alarm_new.save()
 
         self.alarm_new = Alarm(
+            user=self.user,
             name='Alarm name new',
             period=1,
             type=1,
@@ -189,6 +319,7 @@ class CdrAlertModelTestCase(TestCase):
         self.alarm_new.save()
 
         self.alarm_new = Alarm(
+            user=self.user,
             name='Alarm name new',
             period=1,
             type=1,
@@ -201,6 +332,7 @@ class CdrAlertModelTestCase(TestCase):
         self.alarm_new.save()
 
         self.alarm_new = Alarm(
+            user=self.user,
             name='Alarm name new',
             period=1,
             type=1,
@@ -213,6 +345,7 @@ class CdrAlertModelTestCase(TestCase):
         self.alarm_new.save()
 
         self.alarm_new = Alarm(
+            user=self.user,
             name='Alarm name new',
             period=2,
             type=1,
@@ -225,6 +358,7 @@ class CdrAlertModelTestCase(TestCase):
         self.alarm_new.save()
 
         self.alarm_new = Alarm(
+            user=self.user,
             name='Alarm name new',
             period=2,
             type=1,
@@ -237,6 +371,7 @@ class CdrAlertModelTestCase(TestCase):
         self.alarm_new.save()
 
         self.alarm_new = Alarm(
+            user=self.user,
             name='Alarm name new',
             period=3,
             type=1,
@@ -249,6 +384,7 @@ class CdrAlertModelTestCase(TestCase):
         self.alarm_new.save()
 
         self.alarm_new = Alarm(
+            user=self.user,
             name='Alarm name new',
             period=3,
             type=1,
@@ -272,6 +408,7 @@ class CdrAlertModelTestCase(TestCase):
         self.country = Country.objects.get(pk=198)
         # Blacklist model
         self.blacklist = Blacklist(
+            user=self.user,
             phonenumber_prefix=32,
             country=self.country
         )
@@ -280,6 +417,7 @@ class CdrAlertModelTestCase(TestCase):
 
         # Whitelist model
         self.whitelist = Whitelist(
+            user=self.user,
             phonenumber_prefix=32,
             country=self.country
         )

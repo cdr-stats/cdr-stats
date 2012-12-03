@@ -1,4 +1,4 @@
-{% load i18n cdr_extras %}
+{% load i18n cdr_extras frontend_notification_tags %}
 
 <div class="navbar navbar-fixed-top">
   <div class="navbar-inner">
@@ -11,47 +11,77 @@
       </a>
 
       <a class="brand" href="/">
-          <img src="{{STATIC_URL}}cdr-stats/images/cdr-stats.png" />
-          <span class="menu-label">CDR-Stats</span>
+        <img src="{{STATIC_URL}}cdr-stats/images/cdr-stats.png" />
+        <span class="menu-label">CDR-Stats</span>
       </a>
 
       <div class="nav-collapse">
           {% if user.is_authenticated %}
             <ul class="nav">
-                {% if perms.user_profile.allow_cdr_dashboard %}
-                    <li {% ifequal module 'cdr_dashboard' %}class="active"{% endifequal %}><a href="/dashboard/">{% trans "Dashboard" %}</a></li>
-                {% endif %}
-                {% if perms.user_profile.allow_cdr_view %}
-                    <li {% ifequal module 'cdr_view' %}class="active"{% endifequal %}><a href="/cdr_view/">{% trans "Search" %}</a></li>
-                {% endif %}
-                {% if perms.user_profile.allow_cdr_overview %}
-                    <li {% ifequal module 'cdr_overview' %}class="active"{% endifequal %}><a href="/cdr_overview/">{% trans "Analytics" %}</a></li>
-                {% endif %}
-                {% if perms.user_profile.allow_hourly_report %}
-                    <li {% ifequal module 'cdr_report_by_hour' %}class="active"{% endifequal %}><a href="/hourly_report/">{% trans "Compare" %}</a></li>
-                {% endif %}
-                {% if perms.user_profile.allow_cdr_realtime %}
-                    <li {% ifequal module 'cdr_realtime' %}class="active"{% endifequal %}><a href="/cdr_realtime/">{% trans "Realtime" %}</a></li>
-                {% endif %}
-                {% if perms.user_profile.allow_cdr_concurrent_calls %}
-                    <li {% ifequal module 'cdr_concurrent_calls' %}class="active"{% endifequal %}><a href="/cdr_concurrent_calls/">{% trans "Concurrent" %}</a></li>
-                {% endif %}
+              {% if perms.user_profile.allow_cdr_dashboard %}
+                <li {% ifequal module 'cdr_dashboard' %}class="active"{% endifequal %}><a href="/dashboard/">{% trans "Dashboard" %}</a></li>
+              {% endif %}
             </ul>
             <ul class="nav pull-left">
-                <li id="fat-menu-I" class="dropdown">
-                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Report" %}<b class="caret"></b></a>
-                   <ul class="dropdown-menu">
-                       {% if perms.user_profile.allow_country_report %}
-                           <li {% ifequal module 'cdr_country_report' %}class="active"{% endifequal %}><a href="/country_report/">{% trans "Country Report" %}</a></li>
-                       {% endif %}
-                       {% if perms.user_profile.allow_world_map %}
-                           <li {% ifequal module 'world_map_view' %}class="active"{% endifequal %}><a href="/world_map/">{% trans "World Map Report" %}</a></li>
-                       {% endif %}
-                       {% if perms.user_profile.allow_mail_report %}
-                           <li {% ifequal module 'cdr_mail_report' %}class="active"{% endifequal %}><a href="/mail_report/">{% trans "Mail Report" %}</a></li>
-                       {% endif %}
-                   </ul>
-                </li>
+              <li id="fat-menu-I" class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Analytics" %}<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  {% if perms.user_profile.allow_cdr_overview %}
+                    <li {% ifequal module 'cdr_overview' %}class="active"{% endifequal %}><a href="/cdr_overview/">{% trans "overview"|title %}</a></li>
+                  {% endif %}
+                  {% if perms.user_profile.allow_cdr_view %}
+                    <li {% ifequal module 'cdr_view' %}class="active"{% endifequal %}><a href="/cdr_view/">{% trans "search"|title %}</a></li>
+                  {% endif %}
+                  {% if perms.user_profile.allow_hourly_report %}
+                    <li {% ifequal module 'cdr_report_by_hour' %}class="active"{% endifequal %}><a href="/hourly_report/">{% trans "daily comparison"|title %}</a></li>
+                  {% endif %}
+                 </ul>
+              </li>
+            </ul>
+            <ul class="nav pull-left">
+              <li id="fat-menu-I" class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Real-Time" %}<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  {% if perms.user_profile.allow_cdr_realtime %}
+                    <li {% ifequal module 'cdr_realtime' %}class="active"{% endifequal %}><a href="/cdr_realtime/">{% trans "real-time calls"|title %}</a></li>
+                  {% endif %}
+                  {% if perms.user_profile.allow_cdr_concurrent_calls %}
+                    <li {% ifequal module 'cdr_concurrent_calls' %}class="active"{% endifequal %}><a href="/cdr_concurrent_calls/">{% trans "concurrent calls"|title %}</a></li>
+                  {% endif %}
+                 </ul>
+              </li>
+            </ul>
+            <ul class="nav pull-left">
+              <li id="fat-menu-I" class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "reports"|title %}<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  {% if perms.user_profile.allow_country_report %}
+                    <li {% ifequal module 'cdr_country_report' %}class="active"{% endifequal %}><a href="/country_report/">{% trans "by country"|title %}</a></li>
+                  {% endif %}
+                  {% if perms.user_profile.allow_world_map %}
+                    <li {% ifequal module 'world_map_view' %}class="active"{% endifequal %}><a href="/world_map/">{% trans "world map"|title %}</a></li>
+                  {% endif %}
+                  {% if perms.user_profile.allow_mail_report %}
+                    <li {% ifequal module 'cdr_mail_report' %}class="active"{% endifequal %}><a href="/mail_report/">{% trans "mail report"|title %}</a></li>
+                  {% endif %}
+                </ul>
+              </li>
+            </ul>
+            <ul class="nav pull-left">
+              <li id="fat-menu-III" class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "threat control"|title %}<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  {% if perms.cdr_alert.view_alert %}
+                    <li {% ifequal module 'alert' %}class="active"{% endifequal %}><a href="/alert/">{% trans "alert settings"|title %}</a></li>
+                  {% endif %}
+                  {% if perms.cdr_alert.view_alarm_report %}
+                    <li {% ifequal module 'alert_report' %}class="active"{% endifequal %}><a href="/alert_report/">{% trans "Alert Report"|title %}</a></li>
+                  {% endif %}
+                  {% if perms.cdr_alert.view_alert %}
+                    <li {% ifequal module 'trust_control' %}class="active"{% endifequal %}><a href="/trust_control/">{% trans "destination control"|title %}</a></li>
+                  {% endif %}
+                </ul>
+              </li>
             </ul>
           {% endif %}
 
@@ -59,35 +89,37 @@
             <ul class="nav pull-right">
               <li id="fat-menu-II" class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username|capfirst }}
-                    {% if notice_count %}
-                        <span class="label label-warning">{{ notice_count }}</span>
-                    {% elif "/api-explorer/" in request.get_full_path %}
-                        <span class="label label-warning">{% get_notice_count request %}</span>
-                    {% endif %}
-                    <b class="caret"></b>
+                  {% if notice_count or notice_count == 0 %}
+                    <span class="label label-warning">{{ notice_count }}</span>
+                  {% elif "/api-explorer/" in request.get_full_path %}
+                    <span class="label label-warning">{% get_notice_count request %}</span>
+                  {% endif %}
+                  <b class="caret"></b>
                 </a>
                 <ul class="dropdown-menu">
                   <li {% ifequal module 'detail_change' %}class="active"{% endifequal %}><a href="/user_detail_change/?action=tabs-1">
-                          {% trans "Account settings" %}</a></li>
+                        {% trans "Account settings" %}</a>
+                  </li>
+                  <li>
+                    <a href="/user_notification/">{% trans "Notifications" %}
+                      {% if notice_count or notice_count == 0 %}
+                        <span class="label label-warning">{{ notice_count }}</span>
+                      {% elif "/api-explorer/" in request.get_full_path %}
+                        <span class="label label-warning">{% get_notice_count request %}</span>
+                      {% endif %}
+                    </a>
+                  </li>
                   <li {% ifequal module 'detail_change' %}class="active"{% endifequal %}><a href="/user_detail_change/?action=tabs-3">
-                        {% trans "Notifications" %}
-                        {% if notice_count %}
-                            <span class="label label-warning">{{ notice_count }}</span>
-                        {% elif "/api-explorer/" in request.get_full_path %}
-                            <span class="label label-warning">{% get_notice_count request %}</span>
-                        {% endif %}
-                        </a>
-                    </li>
-                  <li {% ifequal module 'detail_change' %}class="active"{% endifequal %}><a href="/user_detail_change/?action=tabs-4">
-                          {% trans "Change Language" %}</a></li>
+                    {% trans "Change Language" %}</a>
+                  </li>
                   <li class="divider"></li>
                   {% if perms.user_profile.view_api_explorer %}
-                      <li><a href="/api-explorer/"> {% trans "API Explorer" %}</a></li>
+                    <li><a href="/api-explorer/"> {% trans "API Explorer" %}</a></li>
                   {% endif %}
                   <li class="divider"></li>
                   {% if user.is_superuser %}
-                  <li><a href="/admin/"> {% trans "Administration" %}</a></li>
-                  <li class="divider"></li>
+                    <li><a href="/admin/"> {% trans "Administration" %}</a></li>
+                    <li class="divider"></li>
                   {% endif %}
                   <li><a href="/logout/">{% trans "Log out" %}</a></li>
                 </ul>

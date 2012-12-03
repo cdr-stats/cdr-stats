@@ -12,7 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext as _
 from common.utils import Choice
 
 
@@ -51,3 +51,22 @@ class ALERT_CONDITION_ADD_ON(Choice):
 class ALARM_REPROT_STATUS(Choice):
     NO_ALARM_SENT = 1, _('No alarm sent')
     ALARM_SENT = 2, _('Alarm Sent')
+
+
+class ALARM_COLUMN_NAME(Choice):
+    id = _('Id')
+    name = _('Name')
+    period = _('Period')
+    type = _('Type')
+    alert_condition = _('Condition')
+    alert_value = _('Value')
+    status = _('Status')
+    updated_date = _('Date')
+
+
+class ALARM_REPORT_COLUMN_NAME(Choice):
+    id = _('Id')
+    alarm = _('Alarm')
+    calculatedvalue = _('Calculated value')
+    status = _('Status')
+    date = _('Date')

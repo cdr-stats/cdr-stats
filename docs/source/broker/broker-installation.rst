@@ -5,7 +5,8 @@ Broker Installation
 ===================
 
 This document describes the installation of two different Brokers. One is ``Redis``
-and second is ``Rabbitmq``. You can install either to work with CDR-Stats.
+and second is ``Rabbitmq``. You can install either to work with CDR-Stats, although 
+CDR-Stats automated install script installs Redis.
 
 .. _broker-redis:
 

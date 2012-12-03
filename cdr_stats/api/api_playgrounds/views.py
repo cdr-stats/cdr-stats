@@ -16,7 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.conf import settings
-from cdr.views import notice_count
+from frontend_notification.views import notice_count
 from common.common_functions import current_view
 import os
 

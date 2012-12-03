@@ -3,6 +3,7 @@
         "pk":1,
         "model":"cdr_alert.alarm",
         "fields":{
+            "user":1,
             "status":1,
             "updated_date":"2012-06-21T01:26:51.337",
             "alert_condition":1,
@@ -19,6 +20,7 @@
         "pk":2,
         "model":"cdr_alert.alarm",
         "fields":{
+            "user":1,
             "status":1,
             "updated_date":"2012-06-21T01:26:51.337",
             "alert_condition":2,
@@ -35,6 +37,7 @@
         "pk":3,
         "model":"cdr_alert.alarm",
         "fields":{
+            "user":1,
             "status":1,
             "updated_date":"2012-06-21T01:26:51.337",
             "alert_condition":3,
@@ -51,6 +54,7 @@
         "pk":4,
         "model":"cdr_alert.alarm",
         "fields":{
+            "user":1,
             "status":1,
             "updated_date":"2012-06-21T01:26:51.337",
             "alert_condition":4,
@@ -67,6 +71,7 @@
         "pk":5,
         "model":"cdr_alert.alarm",
         "fields":{
+            "user":1,
             "status":1,
             "updated_date":"2012-06-21T01:26:51.337",
             "alert_condition":5,
@@ -83,6 +88,7 @@
         "pk":6,
         "model":"cdr_alert.alarm",
         "fields":{
+            "user":1,
             "status":1,
             "updated_date":"2012-06-21T01:26:51.337",
             "alert_condition":6,

@@ -265,11 +265,9 @@ def run_alarm(alarm_obj, logger):
 
 class chk_alarm(PeriodicTask):
 
-    """A periodic task to determine strange behavior in CDR
+    """A periodic task to determine unusual call patterns.
 
-       Which will get all alarm from system and checked with
-       alert condition value & if it is matched, user will be notified
-       via mail
+       Sends an email if an alert condition is matched.
 
     **Usage**:
 
@@ -332,8 +330,8 @@ def notify_admin_without_mail(notice_id, email_id):
 @task
 def blacklist_whitelist_notification(notice_type):
     """
-    Send notification to user while destination number matched with
-    blacklist or whitelist
+    Send email notification whne destination number matched with
+    blacklist or whitelist.
 
     **Usage**:
 
@@ -368,7 +366,7 @@ def blacklist_whitelist_notification(notice_type):
     return True
 
 
-# Send previous day's CDR Report as mail
+# Email previous day's CDR Report
 
 class send_cdr_report(PeriodicTask):
 

@@ -22,12 +22,12 @@ class SwitchAPIPlayground(APIPlayground):
         "resources": [
             {
                 "name": "/switch/",
-                "description": "This resource allows you to manage switchs.",
+                "description": "Resource to manage switches.",
                 "endpoints": [
                     {
                         "method": "GET",
                         "url": "/api/v1/switch/",
-                        "description": "Returns all switchs"
+                        "description": "Returns all switches"
                     },
                     {
                         "method": "GET",

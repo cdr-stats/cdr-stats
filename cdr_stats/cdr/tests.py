@@ -28,9 +28,9 @@ from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
     world_map_view, index, cdr_detail, common_send_notification,\
     cdr_export_to_csv
 from cdr.functions_def import get_switch_list, get_hangupcause_name,\
-    get_hangupcause_id
+    get_hangupcause_id, get_hc_list, get_country_id, chk_account_code
 from cdr.templatetags.cdr_extras import hangupcause_name_with_title,\
-    mongo_id, seen_unseen, seen_unseen_word
+    mongo_id
 
 from bson.objectid import ObjectId
 from datetime import datetime
@@ -430,6 +430,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
         common_send_notification(request, 1, request.user)
+        chk_account_code(request)
 
 
 class CdrStatsTaskTestCase(TestCase):
@@ -483,11 +484,8 @@ class CdrModelTestCase(BaseAuthenticatedClient):
         value = {'_id': {'val': 1}}
         mongo_id(value, 'val')
 
-        seen_unseen(value)
-        seen_unseen('')
-        seen_unseen_word(value)
-
-        seen_unseen_word('')
+        get_hc_list()
+        get_country_id(['44', '442'])
 
     def test_cdr_search_form(self):
         data = {'switch_id': 1,

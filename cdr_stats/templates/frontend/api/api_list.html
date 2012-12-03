@@ -1,20 +1,19 @@
 {% extends "frontend/master.html" %}
 {% load i18n %}
 
-{% block extra_files %}
-{% endblock %}
-
-
-{% block content %}
-
-    {% block content_header %}
-        <center>
+{% block extra_head %}
+    <center>
         <h3>
             {% trans "CDR-Stats APIs" %}
             <small>{% trans "Browser playground" %}</small>
         </h3>
-        </center>
-    {% endblock %}
+    </center>
+{% endblock %}
+
+{% block extra_files %}
+{% endblock %}
+
+{% block content %}
 
     <div class="row">
         <div class="span4">&nbsp;</div>
@@ -43,5 +42,3 @@
 
 {% block footer %}
 {% endblock %}
-
-

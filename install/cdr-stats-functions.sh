@@ -162,6 +162,11 @@ func_install_frontend(){
 	echo "============================================"
     echo ""
 
+    #Create CDRStats User
+    echo ""
+    echo "Create CDRStats User/Group : $CDRSTATS_USER"
+    useradd $CDRSTATS_USER --user-group --system --no-create-home
+
     #python setup tools
     echo "Install Dependencies and python modules..."
     case $DIST in
@@ -181,10 +186,7 @@ func_install_frontend(){
             #Start PostgreSQL
             /etc/init.d/postgresql start
 
-            #Create CDRStats User
-            echo ""
-            echo "Create CDRStats User/Group : $CDRSTATS_USER"
-            useradd $CDRSTATS_USER --user-group --system --no-create-home
+
         ;;
         'CENTOS')
             if [ "$INSTALLMODE" = "FULL" ]; then
@@ -202,6 +204,7 @@ func_install_frontend(){
         	fi
 
         	yum -y --enablerepo=rpmforge install git-core
+            yum -y install mysql mysql-devel mysql-server 
 
             #Install epel repo for pip and mod_python
             if [ $KERNELARCH = "x86_64" ]; then
@@ -358,6 +361,9 @@ func_install_frontend(){
         sed -i "s/DB_HOSTNAME/$DB_HOSTNAME/" $INSTALL_DIR/settings_local.py
         sed -i "s/DB_PORT/$DB_PORT/" $INSTALL_DIR/settings_local.py
 
+        #Make sure sudo is installed.
+        yum -y install sudo
+
         # Create the Database
         echo "Remove Existing Database if exists..."
         if [ `sudo -u postgres psql -qAt --list | egrep '^$DATABASENAME\|' | wc -l` -eq 1 ]; then
@@ -440,8 +446,6 @@ func_install_frontend(){
             MYHOST='127.0.0.1'
             MYHOSTPORT='3306'
 
-            echo "Install Mysql..."
-            yum -y install mysql-server mysql-devel
 
             echo ""
             echo "Enter database settings for Asterisk..."
@@ -578,6 +582,10 @@ func_install_frontend(){
                 #Allowing Apache to access Redis and MongoDB port
                 semanage port -a -t http_port_t -p tcp 6379
                 semanage port -a -t http_port_t -p tcp 27017
+                setsebool -P httpd_can_network_connect 1
+                setsebool -P httpd_can_network_connect_db 1
+                service httpd restart
+                service mongod restart
             ;;
         esac
     fi

@@ -14,21 +14,17 @@
 from django.contrib import admin
 from django.conf.urls.defaults import patterns
 from django.utils.translation import ugettext as _
-
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.conf import settings
 from common.common_functions import striplist
-
 from cdr.models import Switch, HangupCause
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.functions_def import get_hangupcause_id
 from cdr.import_cdr_freeswitch_mongodb import apply_index,\
     CDR_COMMON, DAILY_ANALYTIC, \
     create_daily_analytic, create_monthly_analytic
-
 from cdr_alert.functions_blacklist import chk_destination
-
 import datetime
 import csv
 
@@ -92,10 +88,7 @@ class SwitchAdmin(admin.ModelAdmin):
         type_error_import_list = []
 
         #TODO : Too many indentation in the code, refact, less if, for
-
         #TODO : respect DRY principale, some of the code is duplicate
-        #from import tasks
-
         if request.method == 'POST':
             form = CDR_FileImport(request.user, request.POST, request.FILES)
             if form.is_valid():

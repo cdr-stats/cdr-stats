@@ -3,6 +3,7 @@
         "pk":1,
         "model":"cdr_alert.whitelist",
         "fields":{
+            "user":1,
             "country":198,
             "phonenumber_prefix":34
         }
@@ -11,6 +12,7 @@
         "pk":2,
         "model":"cdr_alert.whitelist",
         "fields":{
+            "user":1,
             "country":198,
             "phonenumber_prefix":34609
         }

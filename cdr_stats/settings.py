@@ -112,6 +112,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'dajaxice.finders.DajaxiceFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -161,6 +162,9 @@ DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
 }
 
+DAJAXICE_MEDIA_PREFIX = "dajaxice"
+#DAJAXICE_MEDIA_PREFIX = "dajax"  # http://domain.com/dajax/
+#DAJAXICE_CACHE_CONTROL = 10 * 24 * 60 * 60
 
 INSTALLED_APPS = (
     #admin tool apps
@@ -193,6 +197,9 @@ INSTALLED_APPS = (
     #'geordi',
     'gunicorn',
     'apiplayground',
+    'frontend_notification',
+    'dajaxice',
+    'dajax',
 )
 
 # Debug Toolbar
@@ -425,8 +432,17 @@ API_ALLOWED_IP = ['127.0.0.1', 'localhost']
 
 #EMAIL BACKEND
 #=============
+# Email configuration
+DEFAULT_FROM_EMAIL = 'CDR-Stats <cdr-stats@localhost.com>'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'username@gmail.com'
+EMAIL_HOST_PASSWORD = 'password'
+EMAIL_SUBJECT_PREFIX = '[CDR-Stats] '
 # Use only in Debug mode. Not in production
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 
 #Define the delay in minute between mail notification
