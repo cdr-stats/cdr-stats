@@ -192,7 +192,7 @@ def get_pagination_vars(request, default_sort_field='start_uepoch'):
     return data
 
 
-def unrest_session_var(request, field_list):
+def unset_session_var(request, field_list):
     for field in field_list:
         request.session['session_' + field] = ''
     return True
@@ -249,7 +249,7 @@ def cdr_view(request):
                           'accountcode_type', 'caller', 'caller_type', 'duration',
                           'duration_type', 'hangup_cause_id', 'switch_id', 'direction',
                           'country_id']
-            unrest_session_var(request, field_list)
+            unset_session_var(request, field_list)
 
             request.session['session_cdr_view_daily_data'] = {}
 
@@ -391,7 +391,7 @@ def cdr_view(request):
                       'accountcode_type', 'caller', 'caller_type', 'duration',
                       'duration_type', 'hangup_cause_id', 'switch_id', 'direction',
                       'country_id']
-        unrest_session_var(request, field_list)
+        unset_session_var(request, field_list)
 
         request.session['session_search_tag'] = search_tag
         request.session['session_records_per_page'] = records_per_page
