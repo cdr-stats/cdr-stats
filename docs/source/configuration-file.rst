@@ -287,3 +287,30 @@ the CDR-Stats server on the remote system, then uncomment the settings by removi
 and configure the IP address and db_name to match those in the mod_cdr_mongodb configuration
 as described at :
 http://www.cdr-stats.org/documentation/beginners-guide/howto-installing-on-freeswitch/
+
+Configuring Email
+-----------------
+
+To configure the SMTP client so that reports and alerts are sent via email, edit 
+/usr/share/cdr-stats/settings_local.py, and identify the email section.
+
+#EMAIL BACKEND
+#=============
+# Email configuration
+DEFAULT_FROM_EMAIL = 'CDR-Stats <cdr-...@localhost.com>'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'user...@gmail.com'
+EMAIL_HOST_PASSWORD = 'password'
+EMAIL_SUBJECT_PREFIX = '[CDR-Stats] '
+
+Fill in the details to match your SMTP server. The above example is for Gmail. When done, restart Celery and Apache.
+
+To test that the email is working, from the command line type:
+
+$workon cdr-stats
+$python manage.py send_daily_report
+
+
