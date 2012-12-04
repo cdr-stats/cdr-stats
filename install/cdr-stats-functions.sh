@@ -204,7 +204,7 @@ func_install_frontend(){
         	fi
 
         	yum -y --enablerepo=rpmforge install git-core
-            yum -y install mysql mysql-devel mysql-server 
+            yum -y install mysql mysql-devel mysql-server
 
             #Install epel repo for pip and mod_python
             if [ $KERNELARCH = "x86_64" ]; then
@@ -429,7 +429,7 @@ func_install_frontend(){
     python manage.py createsuperuser
 
     #Collect static files from apps and other locations in a single location.
-    python manage.py collectstatic -l --noinput
+    python manage.py collectstatic --noinput
 
     #Load Countries Dialcode
     python manage.py load_country_dialcode
