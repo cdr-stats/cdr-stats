@@ -81,16 +81,16 @@ class UserProfile(models.Model):
     class Meta:
         permissions = (
             ("view_api_explorer", _('Can view API-Explorer')),
-            ("allow_cdr_dashboard", _('Can view CDR dashboard')),
-            ("allow_cdr_view", _('Can view CDR')),
+            ("dashboard", _('Can view CDR dashboard')),
+            ("search", _('Can view CDR')),
             ("allow_cdr_detail", _('Can view CDR detail')),
-            ("allow_hourly_report", _('Can view CDR hourly report')),
-            ("allow_cdr_overview", _('Can view CDR overview')),
-            ("allow_cdr_concurrent_calls", _('Can view CDR concurrent calls')),
-            ("allow_cdr_realtime", _('Can view CDR realtime')),
-            ("allow_mail_report", _('Can view CDR mail report')),
-            ("allow_country_report", _('Can view CDR country report')),
-            ("allow_world_map", _('Can view CDR world map')),
+            ("daily_comparison", _('Can view CDR hourly report')),
+            ("overview", _('Can view CDR overview')),
+            ("concurrent_calls", _('Can view CDR concurrent calls')),
+            ("real_time_calls", _('Can view CDR realtime')),
+            ("mail_report", _('Can view CDR mail report')),
+            ("by_country", _('Can view CDR country report')),
+            ("world_map", _('Can view CDR world map')),
         )
         db_table = 'user_profile'
         verbose_name = _("User Profile")

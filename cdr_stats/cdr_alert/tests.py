@@ -222,7 +222,9 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
     def test_trust_control_ajax(self):
-        request = self.factory.post('/trust_control/')
+        from django.test.client import RequestFactory
+        self.factory = RequestFactory(HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        request = self.factory.get('/trust_control/')
         request.user = self.user
         request.session = {}
         response = add_whitelist_country(request, 198)

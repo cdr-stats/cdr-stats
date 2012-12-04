@@ -96,7 +96,7 @@ class Alarm(models.Model):
 
     class Meta:
         permissions = (
-            ("view_alarm", _('Can see alarms')),
+            ("alert_settings", _('Can see alarms')),
         )
         verbose_name = _("Alarm")
         verbose_name_plural = _("Alarms")
@@ -129,7 +129,7 @@ class AlarmReport(models.Model):
 
     class Meta:
         permissions = (
-            ("view_alarm_report", _('Can see alarm report')),
+            ("alarm_report", _('Can see alarm report')),
         )
         verbose_name = _("Alarm Report")
         verbose_name_plural = _("Alarms Report")
