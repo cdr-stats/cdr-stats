@@ -21,6 +21,20 @@ from django.utils.translation import gettext as _
 import re
 
 
+def chk_account_code(request):
+    """Get account code from  request"""
+    acc_code = ''
+    try:
+        if (not request.user.is_superuser
+           and request.user.get_profile().accountcode is not None):
+            acc_code = request.user.get_profile().accountcode
+            return '%s' % str(acc_code)
+        else:
+            return '%s' % str(acc_code)
+    except:
+        return acc_code
+
+
 def get_switch_list():
     """Switch list used in form"""
     list = Switch.objects.all()
@@ -165,18 +179,3 @@ def get_country_name(id, type=''):
             return obj.countryname
     except:
         return _('Unknown')
-
-
-@cached(3600)
-def chk_account_code(request):
-    """Get account code from  request"""
-    acc_code = ''
-    try:
-        if (not request.user.is_superuser
-           and request.user.get_profile().accountcode is not None):
-            acc_code = request.user.get_profile().accountcode
-            return '%s' % str(acc_code)
-        else:
-            return '%s' % str(acc_code)
-    except:
-        return acc_code
