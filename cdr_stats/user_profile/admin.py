@@ -51,7 +51,7 @@ class CustomerAdmin(StaffAdmin):
             'fields': ('first_name', 'last_name', 'email', )
         }),
         (_('Permission'), {
-            'fields': ('is_active', )
+            'fields': ('is_active', 'groups', 'user_permissions',)
         }),
         (_('Important dates'), {
             'fields': ('last_login', 'date_joined', )
@@ -69,11 +69,9 @@ class CustomerAdmin(StaffAdmin):
         qs = qs.exclude(Q(is_staff=True) | Q(is_superuser=True))
         return qs
 
-
 admin.site.unregister(User)
 admin.site.register(Staff, StaffAdmin)
 admin.site.register(Customer, CustomerAdmin)
-#admin.site.register(Alarm, AlarmAdmin)
 
 
 def make_read(self, request, queryset):
@@ -90,7 +88,6 @@ class NoticeAdmin(NoticeAdmin):
     list_display = ('message', 'recipient', 'sender', 'notice_type',
                     'added', 'unseen')
     actions = [make_read]
-
 
 admin.site.unregister(Notice)
 admin.site.register(Notice, NoticeAdmin)
