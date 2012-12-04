@@ -192,6 +192,12 @@ def get_pagination_vars(request, default_sort_field='start_uepoch'):
     return data
 
 
+def unset_session_var(request, field_list):
+    for field in field_list:
+        request.session['session_' + field] = ''
+    return True
+
+
 @permission_required('user_profile.allow_cdr_view', login_url='/')
 @check_cdr_exists
 @login_required
@@ -239,19 +245,12 @@ def cdr_view(request):
         form = CdrSearchForm(request.POST)
         if form.is_valid():
             # set session var value
-            request.session['session_destination'] = ''
-            request.session['session_result'] = ''
-            request.session['session_destination_type'] = ''
-            request.session['session_accountcode'] = ''
-            request.session['session_accountcode_type'] = ''
-            request.session['session_caller'] = ''
-            request.session['session_caller_type'] = ''
-            request.session['session_duration'] = ''
-            request.session['session_duration_type'] = ''
-            request.session['session_hangup_cause_id'] = ''
-            request.session['session_switch_id'] = ''
-            request.session['session_direction'] = ''
-            request.session['session_country_id'] = ''
+            field_list = ['destination', 'result', 'destination_type', 'accountcode',
+                          'accountcode_type', 'caller', 'caller_type', 'duration',
+                          'duration_type', 'hangup_cause_id', 'switch_id', 'direction',
+                          'country_id']
+            unset_session_var(request, field_list)
+
             request.session['session_cdr_view_daily_data'] = {}
 
             if "from_date" in request.POST:
@@ -387,17 +386,13 @@ def cdr_view(request):
         request.session['session_result'] = 1
         request.session['session_from_date'] = from_date
         request.session['session_to_date'] = to_date
-        request.session['session_destination'] = ''
-        request.session['session_destination_type'] = ''
-        request.session['session_accountcode'] = ''
-        request.session['session_accountcode_type'] = ''
-        request.session['session_caller'] = ''
-        request.session['session_caller_type'] = ''
-        request.session['session_duration'] = ''
-        request.session['session_duration_type'] = ''
-        request.session['session_hangup_cause_id'] = ''
-        request.session['session_switch_id'] = ''
-        request.session['session_direction'] = ''
+
+        field_list = ['destination', 'destination_type', 'accountcode',
+                      'accountcode_type', 'caller', 'caller_type', 'duration',
+                      'duration_type', 'hangup_cause_id', 'switch_id', 'direction',
+                      'country_id']
+        unset_session_var(request, field_list)
+
         request.session['session_search_tag'] = search_tag
         request.session['session_records_per_page'] = records_per_page
         request.session['session_country_id'] = ''
