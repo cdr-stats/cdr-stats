@@ -257,7 +257,8 @@ class CdrAlertModelTestCase(TestCase):
     Blacklist, Whitelist models
     """
     # initial_data.json is taken from country_dialcode
-    fixtures = ['auth_user.json', 'country_dialcode.json', 'notice_type.json']
+    fixtures = ['auth_user.json', 'country_dialcode.json', 'notice_type.json',
+                'notification.json']
 
     def setUp(self):
         """Create model object"""

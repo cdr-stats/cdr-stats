@@ -67,7 +67,7 @@ class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
     def test_admin_switch_import_cdr(self):
         """Test Function to check admin cdr import"""
         response = self.client.post('/admin/cdr/switch/import_cdr/',
-                {'switch_id': 1,
+                {'switch': 1,
                  'csv_file': csv_file,
                  'accountcode_csv': '12345',
                  'caller_id_number': 1,
