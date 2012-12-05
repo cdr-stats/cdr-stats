@@ -250,7 +250,7 @@
                 <th></th>
             </tr>
             </thead>
-            {% if rows %}
+            {% if total_calls %}
             {% autopaginate rows PAGE_SIZE %}
             {% for row in rows %}
             <tr>
