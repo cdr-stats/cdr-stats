@@ -339,22 +339,24 @@ def cdr_view(request):
             # form is not valid
             logging.debug('Error : CDR search form')
             tday = datetime.today()
-            start_date = tday.strftime('%Y-%m-01')
+            start_date = datetime(tday.year, tday.month, 1)
             last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999)
                 + relativedelta(months=1))
                 - relativedelta(days=1)).strftime('%d')
-            end_date = tday.strftime('%Y-%m-' + last_day)
-            template_data = {
-                'module': current_view(request),
-                'rows': [],
-                'form': form,
-                'PAGE_SIZE': settings.PAGE_SIZE,
+            end_date = datetime(tday.year, tday.month, int(last_day))
+            cdr_view_daily_data = {
                 'total_data': [],
                 'total_duration': 0,
                 'total_calls': 0,
                 'total_avg_duration': 0,
                 'max_duration': 0,
-                'user': request.user,
+            }
+            template_data = {
+                'module': current_view(request),
+                'rows': [],
+                'form': form,
+                'PAGE_SIZE': settings.PAGE_SIZE,
+                'cdr_daily_data': cdr_view_daily_data,
                 'search_tag': search_tag,
                 'col_name_with_order': [],
                 'menu': menu,
@@ -529,12 +531,7 @@ def cdr_view(request):
         'rows': rows,
         'form': form,
         'PAGE_SIZE': PAGE_SIZE,
-        'total_data': cdr_view_daily_data['total_data'],
-        'total_duration': cdr_view_daily_data['total_duration'],
-        'total_calls': cdr_view_daily_data['total_calls'],
-        'total_avg_duration': cdr_view_daily_data['total_avg_duration'],
-        'max_duration': cdr_view_daily_data['max_duration'],
-        'user': request.user,
+        'cdr_daily_data': cdr_view_daily_data,
         'search_tag': search_tag,
         'col_name_with_order': col_name_with_order,
         'menu': menu,
