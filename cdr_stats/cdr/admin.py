@@ -250,16 +250,13 @@ class SwitchAdmin(admin.ModelAdmin):
                                 except:
                                     msg = _("Error : invalid value for import")
                                     type_error_import_list.append(row)
-
                             except:
                                 msg = _("Error : invalid value for import")
                                 type_error_import_list.append(row)
 
                     if cdr_record_count > 0:
-                        apply_index()
                         # Apply index
-                        DAILY_ANALYTIC.ensure_index([("metadata.date", -1)])
-                        CDR_COMMON.ensure_index([("start_uepoch", -1)])
+                        apply_index()
                 else:
                     msg = _("Error : importing several times the same column")
         else:

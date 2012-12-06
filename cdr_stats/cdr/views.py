@@ -1072,6 +1072,21 @@ def get_cdr_mail_report():
     return mail_data
 
 
+def get_userprofile(request):
+    """
+    Get user profile instance of logged in user if not available
+    create new user profile instance
+    """
+    user_obj = User.objects.get(username=request.user)
+    try:
+        user_profile = UserProfile.objects.get(user=user_obj)
+    except UserProfile.DoesNotExist:
+        #create UserProfile
+        user_profile = UserProfile(user=user_obj)
+        user_profile.save()
+    return user_profile
+
+
 @permission_required('user_profile.allow_mail_report', login_url='/')
 @check_cdr_exists
 @login_required
@@ -1092,19 +1107,13 @@ def mail_report(request):
     logging.debug('CDR mail report view start')
     template = 'frontend/cdr_mail_report.html'
     msg = ''
-    #TODO : Refactor get_userprofile
-    user_obj = User.objects.get(username=request.user)
-    try:
-        user_profile_obj = UserProfile.objects.get(user=user_obj)
-    except UserProfile.DoesNotExist:
-        #create UserProfile
-        user_profile_obj = UserProfile(user=user_obj)
-        user_profile_obj.save()
 
-    form = EmailReportForm(request.user, instance=user_profile_obj)
+    user_profile = get_userprofile(request)
+
+    form = EmailReportForm(request.user, instance=user_profile)
     if request.method == 'POST':
         form = EmailReportForm(request.user, request.POST,
-                               instance=user_profile_obj)
+                               instance=user_profile)
         if form.is_valid():
             form.save()
             msg = _('Email ids are saved successfully.')
@@ -1287,6 +1296,7 @@ def cdr_report_by_hour(request):
         query_var['metadata.accountcode'] = chk_account_code(request)
 
     if query_var:
+        # Previous days
         if check_days == 2:
             for i in compare_date_list:
                 s_date = datetime(i.year, i.month, i.day, 0, 0, 0, 0)
@@ -1297,6 +1307,7 @@ def cdr_report_by_hour(request):
                                                query_var, graph_view)
                 total_record.append((result_data['total_record']))
 
+        # Same day of the week
         if check_days == 1:
             result_data = \
                 get_hourly_report_for_date(start_date, end_date,
@@ -1597,7 +1608,6 @@ def cdr_overview(request):
             'TOTAL_GRAPH_COLOR': settings.TOTAL_GRAPH_COLOR,
             'notice_count': notice_count(request),
         }
-
         return render_to_response(template_name, variables,
             context_instance=RequestContext(request))
 
@@ -1634,7 +1644,6 @@ def cdr_country_report(request):
     to_date = end_date.strftime("%Y-%m-%d")
     form = CountryReportForm(initial={'from_date': from_date,
                                       'to_date': to_date})
-
     total_calls = 0
     total_duration = 0
     total_record_final = []
