@@ -1080,8 +1080,9 @@ def mail_report(request):
     """
     logging.debug('CDR mail report view start')
     template = 'frontend/cdr_mail_report.html'
-    user_obj = User.objects.get(username=request.user)
     msg = ''
+    #TODO : Refactor get_userprofile
+    user_obj = User.objects.get(username=request.user)
     try:
         user_profile_obj = UserProfile.objects.get(user=user_obj)
     except UserProfile.DoesNotExist:
@@ -1489,7 +1490,6 @@ def cdr_overview(request):
         total_hour_data = sorted(total_hour_data, key=lambda k: k[0])
 
         # Collect daily data
-        ####################
         logging.debug('Aggregate cdr daily analytic')
         pipeline = pipeline_daily_overview(query_var)
 
@@ -1530,7 +1530,6 @@ def cdr_overview(request):
             total_day_data = sorted(total_day_data, key=lambda k: k[0])
 
         # Collect monthly data
-        ######################
         logging.debug('Aggregate cdr monthly analytic')
         query_var['metadata.date'] = {
             '$gte': month_start_date,
