@@ -316,7 +316,6 @@ ACCOUNTCODE_FIELD_LIST_NUM = sorted(ACCOUNTCODE_FIELD_LIST_NUM,
 
 
 class CDR_FileImport(FileImport):
-
     """Admin Form : Import CSV file with phonebook CDR_FIELD_LIST"""
 
     switch = forms.ChoiceField(label=_('Switch'), choices=get_switch_list(),
