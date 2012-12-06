@@ -107,7 +107,7 @@ class get_channels_info(PeriodicTask):
                     }
                     settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].insert(call_json)
 
-                    #Save to Redis cache
+                    #Save to cache
                     key = "%s-%d-%s" % (key_date, switch_id, str(accountcode))
                     cache.set(key, numbercall, 1800)  # 30 minutes
                     #Create collection for Analytics
@@ -173,7 +173,7 @@ class get_channels_info(PeriodicTask):
                     'accountcode': accountcode,
                 }
                 settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].insert(call_json)
-                #Save to Redis cache
+                #Save to cache
                 key = "%s-%d-%s" % (key_date, switch_id, str(accountcode))
                 cache.set(key, numbercall, 1800)  # 30 minutes
                 #Create collection for Analytics
