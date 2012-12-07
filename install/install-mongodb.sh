@@ -68,8 +68,8 @@ baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/i686
 gpgcheck=0' > /etc/yum.repos.d/10gen-mongodb.repo
             	fi
                 yum -y install mongo-10gen mongo-10gen-server
-                chkconfig --add mongodb
-                chkconfig --levels 235 mongodb on
+                chkconfig --add mongod
+                chkconfig --levels 235 mongod on
 
                 sed -i "s/#port = 27017/port = 27017/g" /etc/mongod.conf
                 /etc/init.d/mongod start
