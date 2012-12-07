@@ -250,7 +250,7 @@
                 <th></th>
             </tr>
             </thead>
-            {% if total_calls %}
+            {% if cdr_daily_data.total_calls %}
             {% autopaginate rows PAGE_SIZE %}
             {% for row in rows %}
             <tr>
@@ -347,7 +347,7 @@
         <div align="right" class="show-rows">
             {% trans "show rows"|title %} :
             {{ form.records_per_page }}
-            {% trans "total calls"|title %} : {{ total_calls }}
+            {% trans "total calls"|title %} : {{ cdr_daily_data.total_calls }}
         </div>
         </form>
 
@@ -379,7 +379,7 @@
                 <th><acronym title="{% trans "Average Connection Time"  %}">{% trans "ACT"  %}</acronym></th>
             </tr>
             </thead>
-            {% for td in total_data %}
+            {% for td in cdr_daily_data.total_data %}
             <tr>
                 <td>{{ td.calldate|date:"D d M Y" }}</td>
                 <td>
@@ -389,8 +389,8 @@
                         {{ td.duration__sum }}
                     {% endif %}
                 </td>
-                <td>{% if max_duration > 0 %}
-                    <img src="{{ STATIC_URL }}cdr-stats/images/spacer.png" width="{{ td.duration__sum|cal_width:max_duration }}" style="vertical-align:center; height:10px"/>
+                <td>{% if cdr_daily_data.max_duration > 0 %}
+                    <img src="{{ STATIC_URL }}cdr-stats/images/spacer.png" width="{{ td.duration__sum|cal_width:cdr_daily_data.max_duration }}" style="vertical-align:center; height:10px"/>
                     {% endif %}
                 </td>
                 <td>{{ td.calldate__count }}</td>
@@ -400,10 +400,10 @@
 
             <tr>
                 <th scope="row">{% trans "Total"  %}</th>
-                <td>{{ total_duration|conv_min }}</td>
+                <td>{{ cdr_daily_data.total_duration|conv_min }}</td>
                 <td></td>
-                <td>{{ total_calls }}</td>
-                <td>{{ total_avg_duration|conv_min }}</td>
+                <td>{{ cdr_daily_data.total_calls }}</td>
+                <td>{{ cdr_daily_data.total_avg_duration|conv_min }}</td>
             </tr>
         </table>
     </div>

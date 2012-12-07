@@ -9,8 +9,8 @@ Contents:
 .. toctree::
     :maxdepth: 2
 
-    installation-overview
-    installation-asterisk
-    installation-freeswitch
+    ./installation/installation-overview
+    ./installation/installation-asterisk
+    ./installation/installation-freeswitch
     ./broker/broker-installation
     ./celery/celery-installation

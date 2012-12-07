@@ -60,7 +60,7 @@ Start Celery, and check CDR are being imported correctly.
 
 
 How to debug mail connectivity?
-------------------------------
+-------------------------------
 
 **Answer:** .
 

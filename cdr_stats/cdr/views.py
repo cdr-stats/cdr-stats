@@ -105,6 +105,26 @@ def check_cdr_exists(function=None):
     return _dec(function) if function is not None else _dec
 
 
+def check_user_accountcode(function=None):
+    """
+    decorator check if account code exists for user
+    if not go to error page
+    """
+    def _dec(run_func):
+        """Decorator"""
+        def _caller(request, *args, **kwargs):
+            """Caller."""
+            if not request.user.is_superuser:
+                if not chk_account_code(request):
+                    return HttpResponseRedirect('/?acc_code_error=true')
+                else:
+                    return run_func(request, *args, **kwargs)
+            else:
+                return run_func(request, *args, **kwargs)
+        return _caller
+    return _dec(function) if function is not None else _dec
+
+
 def show_menu(request):
     """Check if we suppose to show menu"""
     try:
@@ -200,6 +220,7 @@ def unset_session_var(request, field_list):
 
 @permission_required('user_profile.allow_cdr_view', login_url='/')
 @check_cdr_exists
+@check_user_accountcode
 @login_required
 def cdr_view(request):
     """List of CDRs
@@ -318,22 +339,24 @@ def cdr_view(request):
             # form is not valid
             logging.debug('Error : CDR search form')
             tday = datetime.today()
-            start_date = tday.strftime('%Y-%m-01')
+            start_date = datetime(tday.year, tday.month, 1)
             last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999)
                 + relativedelta(months=1))
                 - relativedelta(days=1)).strftime('%d')
-            end_date = tday.strftime('%Y-%m-' + last_day)
-            template_data = {
-                'module': current_view(request),
-                'rows': [],
-                'form': form,
-                'PAGE_SIZE': settings.PAGE_SIZE,
+            end_date = datetime(tday.year, tday.month, int(last_day))
+            cdr_view_daily_data = {
                 'total_data': [],
                 'total_duration': 0,
                 'total_calls': 0,
                 'total_avg_duration': 0,
                 'max_duration': 0,
-                'user': request.user,
+            }
+            template_data = {
+                'module': current_view(request),
+                'rows': [],
+                'form': form,
+                'PAGE_SIZE': settings.PAGE_SIZE,
+                'cdr_daily_data': cdr_view_daily_data,
                 'search_tag': search_tag,
                 'col_name_with_order': [],
                 'menu': menu,
@@ -419,12 +442,8 @@ def cdr_view(request):
             query_var['accountcode'] = acc
 
     if not request.user.is_superuser:
-        # not superuser can only see his own data
-        if not chk_account_code(request):
-            return HttpResponseRedirect('/?acc_code_error=true')
-        else:
-            daily_report_query_var['metadata.accountcode'] = chk_account_code(request)
-            query_var['accountcode'] = daily_report_query_var['metadata.accountcode']
+        daily_report_query_var['metadata.accountcode'] = chk_account_code(request)
+        query_var['accountcode'] = daily_report_query_var['metadata.accountcode']
 
     cli = mongodb_str_filter(caller, caller_type)
     if cli:
@@ -512,12 +531,7 @@ def cdr_view(request):
         'rows': rows,
         'form': form,
         'PAGE_SIZE': PAGE_SIZE,
-        'total_data': cdr_view_daily_data['total_data'],
-        'total_duration': cdr_view_daily_data['total_duration'],
-        'total_calls': cdr_view_daily_data['total_calls'],
-        'total_avg_duration': cdr_view_daily_data['total_avg_duration'],
-        'max_duration': cdr_view_daily_data['max_duration'],
-        'user': request.user,
+        'cdr_daily_data': cdr_view_daily_data,
         'search_tag': search_tag,
         'col_name_with_order': col_name_with_order,
         'menu': menu,
@@ -678,6 +692,7 @@ def calculate_act_and_acd(total_calls, total_duration):
 
 @permission_required('user_profile.allow_cdr_dashboard', login_url='/')
 @check_cdr_exists
+@check_user_accountcode
 @login_required
 def cdr_dashboard(request):
     """CDR dashboard for a current day
@@ -716,10 +731,7 @@ def cdr_dashboard(request):
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        if chk_account_code(request):
-            query_var['metadata.accountcode'] = chk_account_code(request)
-        else:
-            return HttpResponseRedirect('/?acc_code_error=true')
+        query_var['metadata.accountcode'] = chk_account_code(request)
 
     logging.debug('cdr dashboard analytic')
 
@@ -832,6 +844,7 @@ def cdr_dashboard(request):
 
 @permission_required('user_profile.allow_cdr_concurrent_calls', login_url='/')
 @check_cdr_exists
+@check_user_accountcode
 @login_required
 def cdr_concurrent_calls(request):
     """CDR view of concurrent calls
@@ -872,10 +885,7 @@ def cdr_concurrent_calls(request):
     query_var['date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        if chk_account_code(request):
-            query_var['accountcode'] = chk_account_code(request)
-        else:
-            return HttpResponseRedirect('/?acc_code_error=true')
+        query_var['accountcode'] = chk_account_code(request)
 
     final_data = []
     if query_var:
@@ -902,6 +912,7 @@ def cdr_concurrent_calls(request):
 
 
 @permission_required('user_profile.allow_cdr_realtime', login_url='/')
+@check_user_accountcode
 @login_required
 def cdr_realtime(request):
     """Call realtime view
@@ -936,10 +947,7 @@ def cdr_realtime(request):
     query_var['value.call_date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        if chk_account_code(request):
-            query_var['value.accountcode'] = chk_account_code(request)
-        else:
-            return HttpResponseRedirect('/?acc_code_error=true')
+        query_var['value.accountcode'] = chk_account_code(request)
 
     if query_var:
         calls_in_day = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL_AGG']]
@@ -1061,6 +1069,21 @@ def get_cdr_mail_report():
     return mail_data
 
 
+def get_userprofile(request):
+    """
+    Get user profile instance of logged in user if not available
+    create new user profile instance
+    """
+    user_obj = User.objects.get(username=request.user)
+    try:
+        user_profile = UserProfile.objects.get(user=user_obj)
+    except UserProfile.DoesNotExist:
+        #create UserProfile
+        user_profile = UserProfile(user=user_obj)
+        user_profile.save()
+    return user_profile
+
+
 @permission_required('user_profile.allow_mail_report', login_url='/')
 @check_cdr_exists
 @login_required
@@ -1081,19 +1104,13 @@ def mail_report(request):
     logging.debug('CDR mail report view start')
     template = 'frontend/cdr_mail_report.html'
     msg = ''
-    #TODO : Refactor get_userprofile
-    user_obj = User.objects.get(username=request.user)
-    try:
-        user_profile_obj = UserProfile.objects.get(user=user_obj)
-    except UserProfile.DoesNotExist:
-        #create UserProfile
-        user_profile_obj = UserProfile(user=user_obj)
-        user_profile_obj.save()
 
-    form = EmailReportForm(request.user, instance=user_profile_obj)
+    user_profile = get_userprofile(request)
+
+    form = EmailReportForm(request.user, instance=user_profile)
     if request.method == 'POST':
         form = EmailReportForm(request.user, request.POST,
-                               instance=user_profile_obj)
+                               instance=user_profile)
         if form.is_valid():
             form.save()
             msg = _('Email ids are saved successfully.')
@@ -1161,6 +1178,7 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
 
 @permission_required('user_profile.allow_hourly_report', login_url='/')
 @check_cdr_exists
+@check_user_accountcode
 @login_required
 def cdr_report_by_hour(request):
     """CDR graph by hourly basis
@@ -1272,12 +1290,10 @@ def cdr_report_by_hour(request):
         query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        if chk_account_code(request):
-            query_var['metadata.accountcode'] = chk_account_code(request)
-        else:
-            return HttpResponseRedirect('/?acc_code_error=true')
+        query_var['metadata.accountcode'] = chk_account_code(request)
 
     if query_var:
+        # Previous days
         if check_days == 2:
             for i in compare_date_list:
                 s_date = datetime(i.year, i.month, i.day, 0, 0, 0, 0)
@@ -1288,6 +1304,7 @@ def cdr_report_by_hour(request):
                                                query_var, graph_view)
                 total_record.append((result_data['total_record']))
 
+        # Same day of the week
         if check_days == 1:
             result_data = \
                 get_hourly_report_for_date(start_date, end_date,
@@ -1313,6 +1330,7 @@ def cdr_report_by_hour(request):
 
 @permission_required('user_profile.allow_cdr_overview', login_url='/')
 @check_cdr_exists
+@check_user_accountcode
 @login_required
 def cdr_overview(request):
     """CDR graph by hourly/daily/monthly basis
@@ -1421,10 +1439,7 @@ def cdr_overview(request):
         query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        if chk_account_code(request):
-            query_var['metadata.accountcode'] = chk_account_code(request)
-        else:
-            return HttpResponseRedirect('/?acc_code_error=true')
+        query_var['metadata.accountcode'] = chk_account_code(request)
 
     if query_var:
         logging.debug('Map-reduce cdr overview analytic')
@@ -1590,13 +1605,13 @@ def cdr_overview(request):
             'TOTAL_GRAPH_COLOR': settings.TOTAL_GRAPH_COLOR,
             'notice_count': notice_count(request),
         }
-
         return render_to_response(template_name, variables,
             context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.allow_country_report', login_url='/')
 @check_cdr_exists
+@check_user_accountcode
 @login_required
 def cdr_country_report(request):
     """CDR country report
@@ -1626,7 +1641,6 @@ def cdr_country_report(request):
     to_date = end_date.strftime("%Y-%m-%d")
     form = CountryReportForm(initial={'from_date': from_date,
                                       'to_date': to_date})
-
     total_calls = 0
     total_duration = 0
     total_record_final = []
@@ -1685,10 +1699,7 @@ def cdr_country_report(request):
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        if chk_account_code(request):
-            query_var['metadata.accountcode'] = chk_account_code(request)
-        else:
-            return HttpResponseRedirect('/?acc_code_error=true')
+        query_var['metadata.accountcode'] = chk_account_code(request)
 
     # Country daily data
     pipeline = pipeline_country_hourly_report(query_var)
@@ -1775,6 +1786,8 @@ def cdr_country_report(request):
 
 @permission_required('user_profile.allow_world_map', login_url='/')
 @check_cdr_exists
+@check_user_accountcode
+@login_required
 def world_map_view(request):
     """CDR world report
 
@@ -1842,10 +1855,7 @@ def world_map_view(request):
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        if chk_account_code(request):
-            query_var['metadata.accountcode'] = chk_account_code(request)
-        else:
-            return HttpResponseRedirect('/?acc_code_error=true')
+        query_var['metadata.accountcode'] = chk_account_code(request)
 
     logging.debug('Aggregate world report')
     pipeline = pipeline_country_report(query_var)
