@@ -4,7 +4,7 @@ Configuration
 =============
 
 Some of the more important parts of the configuration module for the cdr_stats,
-``settings.py``, are explained below.
+``settings_local.py``, are explained below.
 
 ``APPLICATION_DIR`` now contains the full path of the project folder and can be used elsewhere
 in the ``settings.py`` module so that the project may be moved around the system without having to
@@ -113,23 +113,23 @@ There is a facility for manipulating the dialled digits reported in the call
 detail records, as well as identifying calls as internal calls. This is done
 in the "general" section of /usr/share/cdr-stats/settings_local.py.
 
-PREFIX_LIMIT_MIN & PREFIX_LIMIT_MAX are used to determine how many digits are used to match against the dialcode prefix database, e.g
+PREFIX_LIMIT_MIN & PREFIX_LIMIT_MAX are used to determine how many digits are used to match against the dialcode prefix database, e.g::
 
-* **PREFIX_LIMIT_MIN = 2**
-* **PREFIX_LIMIT_MAX = 5**
+    PREFIX_LIMIT_MIN = 2
+    PREFIX_LIMIT_MAX = 5
 
 If a phone number has less digits  than PN_MIN_DIGITS it will be considered an extension::
 
-* **PN_MIN_DIGITS = 6**
-* **PN_MAX_DIGITS = 9**
+    PN_MIN_DIGITS = 6
+    PN_MAX_DIGITS = 9
 
-If a phone number has more digits than PHONENUMBER_DIGITS_MIN but less than PHONE_DIGITS_MAX then the phone number will be considered as local or national call and the LOCAL_DIALCODE will be added.
+If a phone number has more digits than PHONENUMBER_DIGITS_MIN but less than PHONE_DIGITS_MAX then the phone number will be considered as local or national call and the LOCAL_DIALCODE will be added::
 
-* **LOCAL_DIALCODE = 1**
+    LOCAL_DIALCODE = 1
 
-Set the dialcode of your country (44 for UK, 1 for US)
+Set the dialcode of your country (44 for UK, 1 for US)::
 
-* **PREFIX_TO_IGNORE = "+,0,00,000,0000,00000,011,55555,99999"**
+    PREFIX_TO_IGNORE = "+,0,00,000,0000,00000,011,55555,99999"
 
 List of prefixes to ignore, these prefixes are removed from the phone number prior to analysis. In cases where
 customers dial 9 for an outside line, 9, 90 or 900 may need to be removed as well to ensure accurate reporting.
@@ -292,25 +292,26 @@ Configuring Email
 -----------------
 
 To configure the SMTP client so that reports and alerts are sent via email, edit 
-/usr/share/cdr-stats/settings_local.py, and identify the email section.
+/usr/share/cdr-stats/settings_local.py, and identify the email section::
 
-#EMAIL BACKEND
-#=============
-# Email configuration
-DEFAULT_FROM_EMAIL = 'CDR-Stats <cdr-...@localhost.com>'
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'user...@gmail.com'
-EMAIL_HOST_PASSWORD = 'password'
-EMAIL_SUBJECT_PREFIX = '[CDR-Stats] '
+    #EMAIL BACKEND
+    #=============
+    # Email configuration
+    DEFAULT_FROM_EMAIL = 'CDR-Stats <cdr-...@localhost.com>'
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_USE_TLS = True
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_HOST_USER = 'user...@gmail.com'
+    EMAIL_HOST_PASSWORD = 'password'
+    EMAIL_SUBJECT_PREFIX = '[CDR-Stats] '
 
 Fill in the details to match your SMTP server. The above example is for Gmail. When done, restart Celery and Apache.
 
-To test that the email is working, from the command line type:
+To test that the email is working, from the command line type::
 
-$workon cdr-stats
-$python manage.py send_daily_report
+    $ cd /usr/src/cdr-stats/
+    $ workon cdr-stats
+    $ python manage.py send_daily_report
 
 

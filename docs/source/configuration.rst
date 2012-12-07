@@ -1,4 +1,4 @@
-.. _configuration-and-default:
+.. _configuration:
 
 ==========================
 Configuration and Defaults
@@ -9,5 +9,5 @@ Contents:
 .. toctree::
     :maxdepth: 2
 
-    configuration-file
+    ./configuration/configuration-file
     ./celery/celery-configuration
