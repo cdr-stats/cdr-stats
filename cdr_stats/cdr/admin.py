@@ -22,8 +22,7 @@ from cdr.models import Switch, HangupCause
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.functions_def import get_hangupcause_id
 from cdr.import_cdr_freeswitch_mongodb import apply_index,\
-    CDR_COMMON, DAILY_ANALYTIC, \
-    create_daily_analytic, create_monthly_analytic
+    CDR_COMMON, create_daily_analytic, create_monthly_analytic
 from cdr_alert.functions_blacklist import chk_destination
 import datetime
 import csv

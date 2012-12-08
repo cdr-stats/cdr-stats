@@ -28,12 +28,14 @@ class Command(BaseCommand):
            "USAGE : python manage.py sync_cdr_asterisk --apply-index\n"
 
     option_list = BaseCommand.option_list + (
-        make_option('--apply-index',
+        make_option(
+            '--apply-index',
             action='store_true',
             dest='apply-index',
             default=False,
-            help=help),
+            help=help
         )
+    )
 
     def handle(self, *args, **options):
 
