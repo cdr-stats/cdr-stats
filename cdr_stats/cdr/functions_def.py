@@ -150,11 +150,16 @@ def prefix_list_string(phone_number):
 @cached(3600)
 def get_country_id(prefix_list):
     """Get country id from prefix_list else return 0"""
+    country_id = 0
     try:
-        prefix_obj = Prefix.objects.filter(prefix__in=eval(prefix_list))
-        country_id = prefix_obj[0].country_id.id
+        # get a list in numeric order (which is also length order)
+        prefix_obj = Prefix.objects.filter(prefix__in=eval(prefix_list)).order_by('prefix')
     except:
-        country_id = 0
+        return country_id
+    # find the longest prefix with a non-zero country_id
+    for i in xrange(0,len(prefix_obj)):
+        if prefix_obj[i].country_id:
+            country_id = prefix_obj[i].country_id.id
     return country_id
 
 
