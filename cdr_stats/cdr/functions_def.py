@@ -94,6 +94,22 @@ def get_hangupcause_id(hangupcause_code):
         return 0
 
 
+def get_hangupcause_id_from_name(hangupcause_name):
+    """Get hangupcause id from its code
+
+    >>> get_hangupcause_id_from_name('UNSPECIFIEDD')
+    0
+
+    >>> get_hangupcause_id_from_name('NORMAL_CLEARING')
+    7
+    """
+    try:
+        obj = HangupCause.objects.get(enumeration=hangupcause_name)
+        return obj.id
+    except:
+        return 0
+
+
 def remove_prefix(phonenumber, removeprefix_list):
     # remove the prefix from phone number
     # @ removeprefix_list "+,0,00,000,0000,00000,011,55555,99999"

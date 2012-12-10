@@ -79,7 +79,7 @@
 
 <form method="post" action="" enctype="multipart/form-data">{% csrf_token %}
     <table border=0>
-    {% get_fieldset switch,accountcode_csv,csv_file as file_fields from form %}
+    {% get_fieldset switch,accountcode_csv,csv_file,import_asterisk as file_fields from form %}
     {% for field in file_fields %}
         <tr>
             <td>{{ field.label }}</td>

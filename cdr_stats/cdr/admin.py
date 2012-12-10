@@ -20,7 +20,7 @@ from django.conf import settings
 from common.common_functions import striplist
 from cdr.models import Switch, HangupCause
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
-from cdr.functions_def import get_hangupcause_id
+from cdr.functions_def import get_hangupcause_id, get_hangupcause_id_from_name
 from cdr.import_cdr_freeswitch_mongodb import apply_index,\
     CDR_COMMON, common_function_to_create_analytic
 from cdr_alert.functions_blacklist import chk_destination
@@ -45,6 +45,18 @@ def get_value_from_uni(j, row, field_name):
     else:
         return ''
 
+"""
+Asterisk cdr col
+
+accountcode - 1
+caller_id_number - 2
+destination_number - 3
+duration - 13
+billsec - 14
+hangup_cause_id - 15
+uuid - 4
+start_uepoch - 17
+"""
 
 # Switch
 class SwitchAdmin(admin.ModelAdmin):
@@ -129,6 +141,7 @@ class SwitchAdmin(admin.ModelAdmin):
                     for row in rdr:
                         if (row and str(row[0]) > 0):
                             row = striplist(row)
+
                             try:
                                 accountcode = ''
                                 # extra fields to import
@@ -172,16 +185,26 @@ class SwitchAdmin(admin.ModelAdmin):
                                 caller_id_number = get_cdr_from_row['caller_id_number']
                                 duration = int(get_cdr_from_row['duration'])
                                 billsec = int(get_cdr_from_row['billsec'])
-                                hangup_cause_id = \
-                                    get_hangupcause_id(int(get_cdr_from_row['hangup_cause_id']))
+
+                                if request.POST.get('import_asterisk') \
+                                    and request.POST['import_asterisk'] == 'on':
+                                    hangup_cause_name = "_".join(get_cdr_from_row['hangup_cause_id'].upper().split(' '))
+                                    hangup_cause_id =\
+                                        get_hangupcause_id_from_name(hangup_cause_name)
+                                else:
+                                    hangup_cause_id =\
+                                        get_hangupcause_id(int(get_cdr_from_row['hangup_cause_id']))
+
                                 start_uepoch = \
-                                    datetime.datetime.fromtimestamp(int(get_cdr_from_row['start_uepoch']))
+                                    datetime.datetime.fromtimestamp(int(float(get_cdr_from_row['start_uepoch'])))
+
                                 destination_number = get_cdr_from_row['destination_number']
                                 uuid = get_cdr_from_row['uuid']
 
                                 destination_data = chk_destination(destination_number)
                                 authorized = destination_data['authorized']
                                 country_id = destination_data['country_id']
+
 
                                 # Extra fields to import
                                 if answer_uepoch:
@@ -259,8 +282,7 @@ class SwitchAdmin(admin.ModelAdmin):
 
                     if cdr_record_count > 0:
                         # Apply index
-                        apply_index()
-                    #"""
+                        apply_index(shell=True)
                 else:
                     msg = _("Error : importing several times the same column")
         else:
