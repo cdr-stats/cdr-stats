@@ -202,6 +202,22 @@ def create_monthly_analytic(daily_date, start_uepoch, switch_id,
     return True
 
 
+def common_function_to_create_analytic(date_start_uepoch, start_uepoch, switch_id,
+                                       country_id, accountcode, hangup_cause_id, duration):
+    # DAILY_ANALYTIC
+    daily_date = datetime.datetime.fromtimestamp(int(date_start_uepoch[:10]))
+
+    # insert daily analytic record
+    create_daily_analytic(daily_date, switch_id, country_id, accountcode,
+        hangup_cause_id, duration)
+
+    # MONTHLY_ANALYTIC
+    # insert monthly analytic record
+    create_monthly_analytic(daily_date, start_uepoch, switch_id, country_id,
+        accountcode, duration)
+
+    return True
+
 def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
     """
     function go through the current mongodb, then will
@@ -320,13 +336,15 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         #             authorized,
         #             count_import))
 
+        date_start_uepoch = cdr['variables']['start_uepoch'][:10]
+        common_function_to_create_analytic(date_start_uepoch, start_uepoch, switch.id,
+            country_id, accountcode, hangup_cause_id, duration)
+
+        """
         # DAILY_ANALYTIC
         daily_date = datetime.datetime.fromtimestamp(
             int(cdr['variables']['start_uepoch'][:10]))
 
-        # DAILY_ANALYTIC
-        daily_date = datetime.datetime.fromtimestamp(
-            int(cdr['variables']['start_uepoch'][:10]))
         # insert daily analytic record
         create_daily_analytic(daily_date, switch.id, country_id, accountcode,
                               hangup_cause_id, duration)
@@ -335,6 +353,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         # insert monthly analytic record
         create_monthly_analytic(daily_date, start_uepoch, switch.id,
                                 country_id, accountcode, duration)
+        """
 
         # Flag the CDR as imported
         importcdr_handler.update(

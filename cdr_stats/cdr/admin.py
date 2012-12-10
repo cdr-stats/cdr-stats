@@ -22,7 +22,7 @@ from cdr.models import Switch, HangupCause
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.functions_def import get_hangupcause_id
 from cdr.import_cdr_freeswitch_mongodb import apply_index,\
-    CDR_COMMON, create_daily_analytic, create_monthly_analytic
+    CDR_COMMON, common_function_to_create_analytic
 from cdr_alert.functions_blacklist import chk_destination
 import datetime
 import csv
@@ -120,6 +120,11 @@ class SwitchAdmin(admin.ModelAdmin):
                         request.FILES['csv_file'], delimiter=',', quotechar='"')
                     cdr_record_count = 0
 
+                    #Store cdr in list to insert by bulk
+                    cdr_bulk_record = []
+                    local_count_import = 0
+                    PAGE_SIZE = 1000
+
                     # Read each Row
                     for row in rdr:
                         if (row and str(row[0]) > 0):
@@ -138,6 +143,7 @@ class SwitchAdmin(admin.ModelAdmin):
                                 read_codec = ''
                                 get_cdr_from_row = {}
                                 row_counter = 0
+
                                 for j in uni:
                                     get_cdr_from_row[j[0]] = row[j[1] - 1]
                                     #get_cdr_from_row[j[0]] = row[row_counter]
@@ -223,28 +229,26 @@ class SwitchAdmin(admin.ModelAdmin):
                                     else:
                                         # if not, insert record
                                         # record global CDR
-                                        CDR_COMMON.insert(cdr_record)
 
-                                        # start_uepoch = get_cdr_from_row['start_uepoch']
-                                        daily_date = datetime.datetime.\
-                                            fromtimestamp(int(get_cdr_from_row['start_uepoch'][:10]))
+                                        # Append cdr to bulk_cdr list
+                                        cdr_bulk_record.append(cdr_record)
 
-                                        # insert daily analytic record
-                                        create_daily_analytic(daily_date, switch_id, country_id,
-                                                              accountcode, hangup_cause_id,
-                                                              duration)
+                                        local_count_import = local_count_import + 1
+                                        if local_count_import == PAGE_SIZE:
+                                            CDR_COMMON.insert(cdr_record)
+                                            local_count_import = 0
+                                            cdr_bulk_record = []
 
-                                        # MONTHLY_ANALYTIC
-                                        # insert monthly analytic record
-                                        create_monthly_analytic(daily_date, start_uepoch, switch_id,
-                                                                country_id, accountcode, duration)
+                                        date_start_uepoch = get_cdr_from_row['start_uepoch']
+                                        common_function_to_create_analytic(date_start_uepoch, start_uepoch,
+                                            switch_id, country_id, accountcode, hangup_cause_id, duration)
 
                                         cdr_record_count = cdr_record_count + 1
 
                                         msg =\
                                             _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
-                                            % {'cdr_record_count': cdr_record_count,
-                                            'total_rows': total_rows}
+                                                % {'cdr_record_count': cdr_record_count,
+                                                   'total_rows': total_rows}
                                         success_import_list.append(row)
                                 except:
                                     msg = _("Error : invalid value for import")
@@ -256,6 +260,7 @@ class SwitchAdmin(admin.ModelAdmin):
                     if cdr_record_count > 0:
                         # Apply index
                         apply_index()
+                    #"""
                 else:
                     msg = _("Error : importing several times the same column")
         else:
