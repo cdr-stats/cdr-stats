@@ -110,6 +110,8 @@ class SwitchAdmin(admin.ModelAdmin):
             except ConnectionFailure, e:
                 messages.error(request,
                     "Please review the 'CDR_BACKEND' Settings in your file /usr/share/cdr-stats/settings_local.py make sure the settings, username, password are correct. Check also that the backend authorize a connection from your server")
+                messages.info(request,
+                    "After changes in your 'CDR_BACKEND' settings, you will need to restart celery: $ /etc/init.d/newfies-celeryd restart")
 
         ctx = RequestContext(request, {
             'title': _('Diagnose CDR-Stats'),
