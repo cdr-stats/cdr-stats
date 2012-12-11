@@ -12,7 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.contrib import admin
-from django.conf.urls.defaults import patterns
+from django.conf.urls import patterns
 from django.utils.translation import ugettext as _
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -22,7 +22,7 @@ from cdr.models import Switch, HangupCause
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.functions_def import get_hangupcause_id, get_hangupcause_id_from_name
 from cdr.import_cdr_freeswitch_mongodb import apply_index,\
-    CDR_COMMON, common_function_to_create_analytic
+    CDR_COMMON, common_function_to_create_analytic, generate_global_cdr_record
 from cdr_alert.functions_blacklist import chk_destination
 import datetime
 import csv
@@ -213,30 +213,11 @@ class SwitchAdmin(admin.ModelAdmin):
                                         datetime.datetime.fromtimestamp(int(end_uepoch[:10]))
 
                                 # Prepare global CDR
-                                cdr_record = {
-                                    'switch_id': int(request.POST['switch']),
-                                    'caller_id_number': caller_id_number,
-                                    'caller_id_name': caller_id_name,
-                                    'destination_number': destination_number,
-                                    'duration': duration,
-                                    'billsec': billsec,
-                                    'hangup_cause_id': hangup_cause_id,
-                                    'accountcode': accountcode,
-                                    'direction': direction,
-                                    'uuid': uuid,
-                                    'remote_media_ip': remote_media_ip,
-                                    'start_uepoch': start_uepoch,
-                                    'answer_uepoch': answer_uepoch,
-                                    'end_uepoch': end_uepoch,
-                                    'mduration': mduration,
-                                    'billmsec': billmsec,
-                                    'read_codec': read_codec,
-                                    'write_codec': write_codec,
-                                    'cdr_type': 'CSV_IMPORT',
-                                    'cdr_object_id': '',
-                                    'country_id': country_id,
-                                    'authorized': authorized,
-                                }
+                                cdr_record = generate_global_cdr_record(switch_id, caller_id_number,
+                                    caller_id_name, destination_number, duration, billsec, hangup_cause_id,
+                                    accountcode, direction, uuid, remote_media_ip, start_uepoch, answer_uepoch,
+                                    end_uepoch, mduration, billmsec, read_codec, write_codec,
+                                    'CSV_IMPORT', '', country_id, authorized)
 
                                 # check if cdr is already existing in cdr_common
                                 cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
