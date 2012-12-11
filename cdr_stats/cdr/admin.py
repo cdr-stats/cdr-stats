@@ -17,15 +17,21 @@ from django.utils.translation import ugettext as _
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.conf import settings
+from django.contrib import messages
 from common.common_functions import striplist
-from cdr.models import Switch, HangupCause
+from cdr.models import Switch, HangupCause, CDR_TYPE
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.functions_def import get_hangupcause_id, get_hangupcause_id_from_name
-from cdr.import_cdr_freeswitch_mongodb import apply_index,\
+from cdr.import_cdr_freeswitch_mongodb import apply_index, chk_ipaddress,\
     CDR_COMMON, common_function_to_create_analytic, generate_global_cdr_record
 from cdr_alert.functions_blacklist import chk_destination
+
+from pymongo.connection import Connection
+from pymongo.errors import ConnectionFailure
+
 import datetime
 import csv
+import sys
 
 
 def get_value_from_uni(j, row, field_name):
@@ -77,6 +83,34 @@ class SwitchAdmin(admin.ModelAdmin):
     def diagnose(self, request):
         opts = Switch._meta
         app_label = opts.app_label
+
+        #loop within the Mongo CDR Import List
+        for ipaddress in settings.CDR_BACKEND:
+
+            #Connect to Database
+            db_name = settings.CDR_BACKEND[ipaddress]['db_name']
+            table_name = settings.CDR_BACKEND[ipaddress]['table_name']
+            db_engine = settings.CDR_BACKEND[ipaddress]['db_engine']
+            cdr_type = settings.CDR_BACKEND[ipaddress]['cdr_type']
+            host = settings.CDR_BACKEND[ipaddress]['host']
+            port = settings.CDR_BACKEND[ipaddress]['port']
+
+            if db_engine != 'mongodb' or cdr_type != 'freeswitch':
+                messages.error(request, "This function is intended for mongodb and freeswitch")
+
+            data = chk_ipaddress(ipaddress)
+            ipaddress = data['ipaddress']
+            switch = data['switch']
+
+            #Connect on MongoDB Database
+            try:
+                connection = Connection(host, port)
+                DBCON = connection[db_name]
+                messages.success(request, "Connected to MongoDB: %s" % (ipaddress))
+            except ConnectionFailure, e:
+                messages.error(request,
+                    "Please review the 'CDR_BACKEND' Settings in your file /usr/share/cdr-stats/settings_local.py make sure the settings, username, password are correct. Check also that the backend authorize a connection from your server")
+
         ctx = RequestContext(request, {
             'title': _('Diagnose CDR-Stats'),
             'opts': opts,
