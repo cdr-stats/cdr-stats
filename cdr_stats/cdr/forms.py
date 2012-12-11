@@ -365,15 +365,3 @@ class CDR_FileImport(FileImport):
 
     def __init__(self, user, *args, **kwargs):
         super(CDR_FileImport, self).__init__(*args, **kwargs)
-
-    def clean_accountcode_csv(self):
-        accountcode_csv = self.cleaned_data['accountcode_csv']
-        return accountcode_csv
-
-    def clean_accountcode(self):
-        accountcode = self.cleaned_data['accountcode']
-        accountcode_csv = self.cleaned_data['accountcode_csv']
-        if not accountcode_csv and accountcode == 0:
-            raise forms.ValidationError(
-                'select accountcode column no else enter accountcode')
-        return accountcode
