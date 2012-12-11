@@ -141,7 +141,6 @@ class SwitchAdmin(admin.ModelAdmin):
                     for row in rdr:
                         if (row and str(row[0]) > 0):
                             row = striplist(row)
-
                             try:
                                 accountcode = ''
                                 # extra fields to import
@@ -205,7 +204,6 @@ class SwitchAdmin(admin.ModelAdmin):
                                 authorized = destination_data['authorized']
                                 country_id = destination_data['country_id']
 
-
                                 # Extra fields to import
                                 if answer_uepoch:
                                     answer_uepoch = \
@@ -246,6 +244,7 @@ class SwitchAdmin(admin.ModelAdmin):
                                     query_var = {}
                                     query_var['uuid'] = uuid
                                     record_count = cdr_data.find(query_var).count()
+
                                     if record_count >= 1:
                                         msg = _('CDR already exists !!')
                                         error_import_list.append(row)
@@ -258,7 +257,7 @@ class SwitchAdmin(admin.ModelAdmin):
 
                                         local_count_import = local_count_import + 1
                                         if local_count_import == PAGE_SIZE:
-                                            CDR_COMMON.insert(cdr_record)
+                                            CDR_COMMON.insert(cdr_bulk_record)
                                             local_count_import = 0
                                             cdr_bulk_record = []
 
@@ -279,6 +278,12 @@ class SwitchAdmin(admin.ModelAdmin):
                             except:
                                 msg = _("Error : invalid value for import")
                                 type_error_import_list.append(row)
+
+                    # remaining record
+                    if cdr_bulk_record:
+                        CDR_COMMON.insert(cdr_bulk_record)
+                        local_count_import = 0
+                        cdr_bulk_record = []
 
                     if cdr_record_count > 0:
                         # Apply index
