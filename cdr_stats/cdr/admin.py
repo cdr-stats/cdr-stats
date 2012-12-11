@@ -240,10 +240,10 @@ class SwitchAdmin(admin.ModelAdmin):
 
                                 if len(field_notin_list) != 0:
                                     for i in field_notin_list:
-                                        if i == 'accountcode':
-                                            accountcode = request.POST[i + "_csv"]
+                                        if i == 'accountcode' and request.POST.get("accountcode_csv"):
+                                            accountcode = request.POST["accountcode_csv"]
 
-                                if not accountcode:
+                                if not accountcode and request.POST.get("accountcode") != '0':
                                     accountcode = get_cdr_from_row['accountcode']
 
                                 # Mandatory fields to import
