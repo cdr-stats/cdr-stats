@@ -360,8 +360,8 @@ class CDR_FileImport(FileImport):
                                     choices=ACCOUNTCODE_FIELD_LIST_NUM)
     accountcode = forms.ChoiceField(label=_('accountcode'), required=True,
                                     choices=ACCOUNTCODE_FIELD_LIST_NUM)
-    import_asterisk = forms.BooleanField(label=_('Import Asterisk CDRs format'),
-        required=False)
+    import_asterisk = forms.BooleanField(label=_('Asterisk Hangup format'),
+        required=False, help_text='With this option on, the field hangup_cause_id will expect Asterisk Hangup Cause in the format : ANSWER, CANCEL, BUSY, CONGESTION, CHANUNAVAIL, etc..')
 
     def __init__(self, user, *args, **kwargs):
         super(CDR_FileImport, self).__init__(*args, **kwargs)
