@@ -13,17 +13,32 @@
 
 <div id="content-main">
 
-    {% for i, values in settings.DATABASES.items %}
-        <h4>{{ i }}</h4>
-        <table>
-            {% for j, value in values.items %}
-                <tr>
-                <td>{{ j }} </td>
-                <td>{{ value }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-    {% endfor %}
+                <div class="module aligned ">
+                    {% for i, values in settings.CDR_BACKEND.items %}
+                    <h4>{{ i }}</h4>
+                    <table>
+                        {% for j, value in values.items %}
+                            <tr>
+                            <td>{{ j }} </td>
+                            <td>{{ value }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    {% endfor %}
+                </div>
+
+
+                <div class="module aligned ">
+                    <h4>{% trans "MONGO_CDRSTATS" %}</h4>
+                    {% for i, values in settings.MONGO_CDRSTATS.items %}
+                    <table>
+                        <tr>
+                            <td>{{ i }}</td>
+                            <td>{{ values }}</td>
+                        </tr>
+                    </table>
+                    {% endfor %}
+                </div>
 
 </div>
 
