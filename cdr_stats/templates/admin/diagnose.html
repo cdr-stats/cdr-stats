@@ -1,0 +1,30 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_modify adminmedia common_tags %}
+
+{% block breadcrumbs %}
+    {% if not is_popup %}
+    <div class="breadcrumbs">
+         <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div id="content-main">
+
+    {% for i, values in settings.DATABASES.items %}
+        <h4>{{ i }}</h4>
+        <table>
+            {% for j, value in values.items %}
+                <tr>
+                <td>{{ j }} </td>
+                <td>{{ value }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

@@ -69,8 +69,23 @@ class SwitchAdmin(admin.ModelAdmin):
         my_urls = patterns('',
             (r'^import_cdr/$',
              self.admin_site.admin_view(self.import_cdr)),
+            (r'^diagnose/$',
+             self.admin_site.admin_view(self.diagnose)),
         )
         return my_urls + urls
+
+    def diagnose(self, request):
+        opts = Switch._meta
+        app_label = opts.app_label
+        ctx = RequestContext(request, {
+            'title': _('Diagnose CDR-Stats'),
+            'opts': opts,
+            'model_name': opts.object_name.lower(),
+            'app_label': app_label,
+            'settings': settings,
+        })
+        template = 'admin/diagnose.html'
+        return render_to_response(template, context_instance=ctx)
 
     def import_cdr(self, request):
         """Add custom method in django admin view to import CSV file of
@@ -97,10 +112,6 @@ class SwitchAdmin(admin.ModelAdmin):
         success_import_list = []
         error_import_list = []
         type_error_import_list = []
-
-        #TODO : Too many indentation in the code, refact, less if, for
-        #respect DRY principale, some of the code is duplicate
-        #TODO : Improve this part, refactor
 
         if request.method == 'POST':
             form = CDR_FileImport(request.user, request.POST, request.FILES)
