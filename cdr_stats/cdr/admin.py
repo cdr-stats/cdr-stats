@@ -101,12 +101,31 @@ class SwitchAdmin(admin.ModelAdmin):
             data = chk_ipaddress(ipaddress)
             ipaddress = data['ipaddress']
             switch = data['switch']
+            collection_data = {}
 
             #Connect on MongoDB Database
             try:
                 connection = Connection(host, port)
                 DBCON = connection[db_name]
                 messages.success(request, "Connected to MongoDB: %s" % (ipaddress))
+
+                CDR = DBCON[table_name]
+
+                CDR_COMMON = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
+                DAILY_ANALYTIC = settings.DBCON[settings.MONGO_CDRSTATS['DAILY_ANALYTIC']]
+                MONTHLY_ANALYTIC = settings.DBCON[settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC']]
+                CONC_CALL = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']]
+                CONC_CALL_AGG = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL_AGG']]
+
+                collection_data = {
+                    'cdr': CDR.find().count(),
+                    'CDR_COMMON': CDR_COMMON.find().count(),
+                    'DAILY_ANALYTIC': DAILY_ANALYTIC.find().count(),
+                    'MONTHLY_ANALYTIC': MONTHLY_ANALYTIC.find().count(),
+                    'CONC_CALL': CONC_CALL.find().count(),
+                    'CONC_CALL_AGG': CONC_CALL_AGG.find().count()
+                }
+
             except ConnectionFailure, e:
                 messages.error(request,
                     "Please review the 'CDR_BACKEND' Settings in your file /usr/share/cdr-stats/settings_local.py make sure the settings, username, password are correct. Check also that the backend authorize a connection from your server")
@@ -117,6 +136,7 @@ class SwitchAdmin(admin.ModelAdmin):
             'title': _('Diagnose CDR-Stats'),
             'opts': opts,
             'model_name': opts.object_name.lower(),
+            'collection_data': collection_data,
             'app_label': app_label,
             'settings': settings,
         })

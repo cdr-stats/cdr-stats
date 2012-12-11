@@ -21,6 +21,11 @@
                             <tr>
                             <td>{{ j }} </td>
                             <td>{{ value }}</td>
+                            <td>
+                                {% if value == 'cdr' %}
+                                    {{ collection_data.cdr }}
+                                {% endif %}
+                            </td>
                             </tr>
                         {% endfor %}
                     </table>
@@ -35,11 +40,23 @@
                         <tr>
                             <td>{{ i }}</td>
                             <td>{{ values }}</td>
+                            <td>
+                                {% if i == 'CDR_COMMON' %}
+                                    {{ collection_data.CDR_COMMON }}
+                                {% elif i == 'DAILY_ANALYTIC'  %}
+                                    {{ collection_data.DAILY_ANALYTIC }}
+                                {% elif i == 'MONTHLY_ANALYTIC'  %}
+                                    {{ collection_data.MONTHLY_ANALYTIC }}
+                                {% elif i == 'CONC_CALL'  %}
+                                    {{ collection_data.CONC_CALL }}
+                                {% elif i == 'CONC_CALL_AGG'  %}
+                                    {{ collection_data.CONC_CALL_AGG }}
+                                {% endif %}
+                            </td>
                         </tr>
                     </table>
                     {% endfor %}
                 </div>
-
 </div>
 
 {% endblock %}
