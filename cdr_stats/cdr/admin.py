@@ -238,43 +238,39 @@ class SwitchAdmin(admin.ModelAdmin):
                                     'authorized': authorized,
                                 }
 
-                                try:
-                                    # check if cdr is already existing in cdr_common
-                                    cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
-                                    query_var = {}
-                                    query_var['uuid'] = uuid
-                                    record_count = cdr_data.find(query_var).count()
+                                # check if cdr is already existing in cdr_common
+                                cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
+                                query_var = {}
+                                query_var['uuid'] = uuid
+                                record_count = cdr_data.find(query_var).count()
 
-                                    if record_count >= 1:
-                                        msg = _('CDR already exists !!')
-                                        error_import_list.append(row)
-                                    else:
-                                        # if not, insert record
-                                        # record global CDR
+                                if record_count >= 1:
+                                    msg = _('CDR already exists !!')
+                                    error_import_list.append(row)
+                                else:
+                                    # if not, insert record
+                                    # record global CDR
 
-                                        # Append cdr to bulk_cdr list
-                                        cdr_bulk_record.append(cdr_record)
+                                    # Append cdr to bulk_cdr list
+                                    cdr_bulk_record.append(cdr_record)
 
-                                        local_count_import = local_count_import + 1
-                                        if local_count_import == PAGE_SIZE:
-                                            CDR_COMMON.insert(cdr_bulk_record)
-                                            local_count_import = 0
-                                            cdr_bulk_record = []
+                                    local_count_import = local_count_import + 1
+                                    if local_count_import == PAGE_SIZE:
+                                        CDR_COMMON.insert(cdr_bulk_record)
+                                        local_count_import = 0
+                                        cdr_bulk_record = []
 
-                                        date_start_uepoch = get_cdr_from_row['start_uepoch']
-                                        common_function_to_create_analytic(date_start_uepoch, start_uepoch,
-                                            switch_id, country_id, accountcode, hangup_cause_id, duration)
+                                    date_start_uepoch = get_cdr_from_row['start_uepoch']
+                                    common_function_to_create_analytic(date_start_uepoch, start_uepoch,
+                                        switch_id, country_id, accountcode, hangup_cause_id, duration)
 
-                                        cdr_record_count = cdr_record_count + 1
+                                    cdr_record_count = cdr_record_count + 1
 
-                                        msg =\
-                                            _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
-                                                % {'cdr_record_count': cdr_record_count,
-                                                   'total_rows': total_rows}
-                                        success_import_list.append(row)
-                                except:
-                                    msg = _("Error : invalid value for import")
-                                    type_error_import_list.append(row)
+                                    msg =\
+                                        _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
+                                            % {'cdr_record_count': cdr_record_count,
+                                               'total_rows': total_rows}
+                                    success_import_list.append(row)
                             except:
                                 msg = _("Error : invalid value for import")
                                 type_error_import_list.append(row)
