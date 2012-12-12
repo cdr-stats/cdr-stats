@@ -18,6 +18,21 @@ Contents:
 
     getting-started
 
+.. toctree::
+    :maxdepth: 2
+
+    installation
+
+.. toctree::
+    :maxdepth: 1
+
+    configuration-defaults
+
+.. toctree::
+    :maxdepth: 2
+
+    troubleshooting
+    user-guide
 
 .. toctree::
     :maxdepth: 3
@@ -25,45 +40,22 @@ Contents:
     mongodb-architecture
 
 .. toctree::
-    :maxdepth: 2
-
-    installation    
-
-.. toctree::
-    :maxdepth: 2
-    
-
-    user-guide
-    
-.. toctree::
-    :maxdepth: 1
-    
-    configuration-defaults
-    
-
-.. toctree::
     :maxdepth: 1
 
     developer-doc
 
-
-.. toctree::
-    :maxdepth: 1
-    
-    api-reference
-        
 .. toctree::
     :maxdepth: 2
 
+    api-reference
     contributing
-    troubleshooting
     resources
 
 .. toctree::
     :maxdepth: 1
-    
+
     faq
-    
+
 
 Indices and tables
 ==================
