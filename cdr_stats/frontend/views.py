@@ -57,12 +57,11 @@ def diagnose(request):
         host = settings.CDR_BACKEND[ipaddress]['host']
         port = settings.CDR_BACKEND[ipaddress]['port']
 
-        if db_engine != 'mongodb' or cdr_type != 'freeswitch':
-            type_error_msg = _("This function is intended for mongodb and freeswitch")
+        if cdr_type == 'freeswitch' or db_engine != 'mongodb':
+            type_error_msg = _("With FreeSWITCH only mongodb backend is supported : ") + ipaddress
 
         data = chk_ipaddress(ipaddress)
         ipaddress = data['ipaddress']
-        switch = data['switch']
         collection_data = {}
 
         #Connect on MongoDB Database
@@ -87,8 +86,7 @@ def diagnose(request):
                 'CONC_CALL': CONC_CALL.find().count(),
                 'CONC_CALL_AGG': CONC_CALL_AGG.find().count()
             }
-
-        except ConnectionFailure, e:
+        except ConnectionFailure:
             error_ip.append(ipaddress)
 
     if success_ip:

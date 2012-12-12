@@ -24,7 +24,7 @@
                 {% for ip, values in settings.CDR_BACKEND.items %}
                     {% if ip in error_ip %}
                         <caption class="alert alert-error">
-                                {% trans "Can not connect to" %} {{ ip }}
+                                {% trans "Connection error with" %} {{ ip }}
                         </caption>
                     {% endif %}
                     {% for key, value in values.items %}
