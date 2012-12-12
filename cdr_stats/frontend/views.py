@@ -32,13 +32,13 @@ news_url = settings.NEWS_URL
 
 
 @login_required
-def diagnose(request):
+def diagnostic(request):
     """
-    To run diagnose test
+    To run diagnostic test
 
     **Attributes**:
 
-        * ``template`` - frontend/diagnose.html
+        * ``template`` - frontend/diagnostic.html
     """
     error_msg = ''
     msg = ''
@@ -106,7 +106,7 @@ def diagnose(request):
         'error_ip': error_ip,
         'type_error_msg': type_error_msg,
     }
-    template = 'frontend/diagnose.html'
+    template = 'frontend/diagnostic.html'
     return render_to_response(template, data,
            context_instance=RequestContext(request))
 
