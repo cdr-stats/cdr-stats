@@ -14,7 +14,7 @@
 
 from django.test import TestCase
 from common.utils import BaseAuthenticatedClient
-from frontend.views import login_view, logout_view
+from frontend.views import login_view, logout_view, diagnose
 
 
 class FrontendView(BaseAuthenticatedClient):
@@ -82,6 +82,18 @@ class FrontendCustomerView(BaseAuthenticatedClient):
         """Test Function to check pleaselog view"""
         response = self.client.get('/pleaselog/')
         self.assertTemplateUsed(response, 'frontend/index.html')
+        self.assertEqual(response.status_code, 200)
+
+    def test_diagnose(self):
+        """Test Function to check diagnose view"""
+        response = self.client.get('/diagnose/')
+        self.assertTemplateUsed(response, 'frontend/diagnose.html')
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.get('/diagnose/')
+        request.user = self.user
+        request.session = {}
+        response = diagnose(request)
         self.assertEqual(response.status_code, 200)
 
     def test_index(self):
