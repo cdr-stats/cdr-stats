@@ -13,8 +13,7 @@
 #
 
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required,\
-    permission_required
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import password_reset, password_reset_done,\
     password_reset_confirm, password_reset_complete
 from django.http import HttpResponseRedirect
@@ -44,7 +43,8 @@ def diagnose(request):
     error_msg = ''
     msg = ''
     info_msg = ''
-
+    success_ip = []
+    error_ip = []
     #loop within the Mongo CDR Import List
     for ipaddress in settings.CDR_BACKEND:
 
@@ -68,7 +68,7 @@ def diagnose(request):
         try:
             connection = Connection(host, port)
             DBCON = connection[db_name]
-            msg = _("Connected to MongoDB: %s" % (ipaddress))
+            success_ip.append(ipaddress)
 
             CDR = DBCON[table_name]
 
@@ -88,8 +88,12 @@ def diagnose(request):
             }
 
         except ConnectionFailure, e:
+            error_ip.append(ipaddress)
             error_msg = _("Please review the 'CDR_BACKEND' Settings in your file /usr/share/cdr-stats/settings_local.py make sure the settings, username, password are correct. Check also that the backend authorize a connection from your server")
             info_msg = _("After changes in your 'CDR_BACKEND' settings, you will need to restart celery: $ /etc/init.d/newfies-celeryd restart")
+
+    if success_ip:
+        msg = _("Connected to MongoDB : %s" % (str(success_ip)))
 
     data = {
         'collection_data': collection_data,
@@ -97,6 +101,8 @@ def diagnose(request):
         'msg': msg,
         'error_msg': error_msg,
         'info_msg': info_msg,
+        'success_ip': success_ip,
+        'error_ip': error_ip,
     }
     template = 'frontend/diagnose.html'
     return render_to_response(template, data,
