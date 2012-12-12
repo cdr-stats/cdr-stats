@@ -179,6 +179,13 @@
         </div>
     {% endif %}
 
+    <!--Info Message of view-->
+    {% if info_msg %}
+        <div class="alert alert-info">
+            <strong>{% trans "Info" %} : </strong>  {{ info_msg }}
+        </div>
+    {% endif %}
+
     {% block content %}
         {{ content }}
     {% endblock %}

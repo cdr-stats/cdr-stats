@@ -34,7 +34,6 @@ class CustomMenu(Menu):
                 _('Administration'),
                 models=('django.contrib.*', )
             ),
-            items.MenuItem(_('Diagnost'), reverse('admin:index') + '../admin/cdr/switch/diagnose/'),
             items.MenuItem(_('API Explorer'), reverse('admin:index') + '../api-explorer/'),
             items.MenuItem(_('Customer Panel'), reverse('admin:index') + '../'),
         ]

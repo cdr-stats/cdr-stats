@@ -15,6 +15,7 @@ from django.conf.urls import patterns
 
 
 urlpatterns = patterns('frontend.views',
+    (r'^diagnose/$', 'diagnose'),
     (r'^login/$', 'login_view'),
     (r'^logout/$', 'logout_view'),
     (r'^pleaselog/$', 'pleaselog'),

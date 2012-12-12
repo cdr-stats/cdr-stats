@@ -17,21 +17,16 @@ from django.utils.translation import ugettext as _
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.conf import settings
-from django.contrib import messages
 from common.common_functions import striplist
 from cdr.models import Switch, HangupCause, CDR_TYPE
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.functions_def import get_hangupcause_id, get_hangupcause_id_from_name
-from cdr.import_cdr_freeswitch_mongodb import apply_index, chk_ipaddress,\
+from cdr.import_cdr_freeswitch_mongodb import apply_index, \
     CDR_COMMON, common_function_to_create_analytic, generate_global_cdr_record
 from cdr_alert.functions_blacklist import chk_destination
 
-from pymongo.connection import Connection
-from pymongo.errors import ConnectionFailure
-
 import datetime
 import csv
-import sys
 
 
 def get_value_from_uni(j, row, field_name):
@@ -75,73 +70,8 @@ class SwitchAdmin(admin.ModelAdmin):
         my_urls = patterns('',
             (r'^import_cdr/$',
              self.admin_site.admin_view(self.import_cdr)),
-            (r'^diagnose/$',
-             self.admin_site.admin_view(self.diagnose)),
         )
         return my_urls + urls
-
-    def diagnose(self, request):
-        opts = Switch._meta
-        app_label = opts.app_label
-
-        #loop within the Mongo CDR Import List
-        for ipaddress in settings.CDR_BACKEND:
-
-            #Connect to Database
-            db_name = settings.CDR_BACKEND[ipaddress]['db_name']
-            table_name = settings.CDR_BACKEND[ipaddress]['table_name']
-            db_engine = settings.CDR_BACKEND[ipaddress]['db_engine']
-            cdr_type = settings.CDR_BACKEND[ipaddress]['cdr_type']
-            host = settings.CDR_BACKEND[ipaddress]['host']
-            port = settings.CDR_BACKEND[ipaddress]['port']
-
-            if db_engine != 'mongodb' or cdr_type != 'freeswitch':
-                messages.error(request, "This function is intended for mongodb and freeswitch")
-
-            data = chk_ipaddress(ipaddress)
-            ipaddress = data['ipaddress']
-            switch = data['switch']
-            collection_data = {}
-
-            #Connect on MongoDB Database
-            try:
-                connection = Connection(host, port)
-                DBCON = connection[db_name]
-                messages.success(request, "Connected to MongoDB: %s" % (ipaddress))
-
-                CDR = DBCON[table_name]
-
-                CDR_COMMON = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
-                DAILY_ANALYTIC = settings.DBCON[settings.MONGO_CDRSTATS['DAILY_ANALYTIC']]
-                MONTHLY_ANALYTIC = settings.DBCON[settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC']]
-                CONC_CALL = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']]
-                CONC_CALL_AGG = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL_AGG']]
-
-                collection_data = {
-                    'cdr': CDR.find().count(),
-                    'CDR_COMMON': CDR_COMMON.find().count(),
-                    'DAILY_ANALYTIC': DAILY_ANALYTIC.find().count(),
-                    'MONTHLY_ANALYTIC': MONTHLY_ANALYTIC.find().count(),
-                    'CONC_CALL': CONC_CALL.find().count(),
-                    'CONC_CALL_AGG': CONC_CALL_AGG.find().count()
-                }
-
-            except ConnectionFailure, e:
-                messages.error(request,
-                    "Please review the 'CDR_BACKEND' Settings in your file /usr/share/cdr-stats/settings_local.py make sure the settings, username, password are correct. Check also that the backend authorize a connection from your server")
-                messages.info(request,
-                    "After changes in your 'CDR_BACKEND' settings, you will need to restart celery: $ /etc/init.d/newfies-celeryd restart")
-
-        ctx = RequestContext(request, {
-            'title': _('Diagnose CDR-Stats'),
-            'opts': opts,
-            'model_name': opts.object_name.lower(),
-            'collection_data': collection_data,
-            'app_label': app_label,
-            'settings': settings,
-        })
-        template = 'admin/diagnose.html'
-        return render_to_response(template, context_instance=ctx)
 
     def import_cdr(self, request):
         """Add custom method in django admin view to import CSV file of
