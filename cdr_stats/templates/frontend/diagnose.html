@@ -5,17 +5,22 @@
 {% endblock %}
 
 {% block content %}
-
+<div class="graph_header">
+    {% trans "diagnose"|title %} CDR-Stats
+</div>
 <div class="row">
     <div class="span12">
         <div class="row">
             <div class="span6">
+                <h4>{% trans "CDR BACKEND" %}</h4>
                 {% for i, values in settings.CDR_BACKEND.items %}
-                <h4>{{ i }}</h4>
                 <table class="table table-striped table-bordered table-condensed">
                     {% for j, value in values.items %}
                         <tr>
-                        <td>{{ j }} </td>
+                        {% if forloop.first %}
+                            <td rowspan="8">{{ i }}</td>
+                        {% endif %}
+                        <td>{{ j }}</td>
                         <td>
                             {% if j == 'password' %}
                                 XXXXXX
