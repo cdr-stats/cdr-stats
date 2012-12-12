@@ -41,7 +41,6 @@ def diagnostic(request):
         * ``template`` - frontend/diagnostic.html
     """
     error_msg = ''
-    msg = ''
     info_msg = ''
     type_error_msg = ''
     success_ip = []
@@ -55,7 +54,7 @@ def diagnostic(request):
         db_name = settings.CDR_BACKEND[ipaddress]['db_name']
         table_name = settings.CDR_BACKEND[ipaddress]['table_name']
         db_engine = settings.CDR_BACKEND[ipaddress]['db_engine']
-        cdr_type = settings.CDR_BACKEND[ipaddress]['cdr_type']
+        #cdr_type = settings.CDR_BACKEND[ipaddress]['cdr_type']
         host = settings.CDR_BACKEND[ipaddress]['host']
         port = settings.CDR_BACKEND[ipaddress]['port']
         user = settings.CDR_BACKEND[ipaddress]['user']
@@ -66,7 +65,6 @@ def diagnostic(request):
 
         data = chk_ipaddress(ipaddress)
         ipaddress = data['ipaddress']
-        switch = data['switch']
         collection_data = {}
 
         #Connect on MongoDB Database
@@ -116,7 +114,7 @@ def diagnostic(request):
             error_ip.append(ipaddress)
 
     if success_ip:
-        msg = _("Connected to MongoDB : %s" % (str(success_ip)))
+        info_msg = _("CDR Backend %s connected successfully." % (str(success_ip)))
 
     if error_ip:
         error_msg = _("Please review the 'CDR_BACKEND' Settings in your file /usr/share/cdr-stats/settings_local.py make sure the settings, username, password are correct. Check also that the backend authorize a connection from your server")
@@ -125,7 +123,7 @@ def diagnostic(request):
     data = {
         'collection_data': collection_data,
         'settings': settings,
-        'msg': msg,
+        'info_msg': info_msg,
         'error_msg': error_msg,
         'info_msg': info_msg,
         'success_ip': success_ip,
