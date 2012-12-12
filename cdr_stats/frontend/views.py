@@ -43,6 +43,7 @@ def diagnose(request):
     error_msg = ''
     msg = ''
     info_msg = ''
+    type_error_msg = ''
     success_ip = []
     error_ip = []
     #loop within the Mongo CDR Import List
@@ -57,7 +58,7 @@ def diagnose(request):
         port = settings.CDR_BACKEND[ipaddress]['port']
 
         if db_engine != 'mongodb' or cdr_type != 'freeswitch':
-            error_msg = _("This function is intended for mongodb and freeswitch")
+            type_error_msg = _("This function is intended for mongodb and freeswitch")
 
         data = chk_ipaddress(ipaddress)
         ipaddress = data['ipaddress']
@@ -89,11 +90,13 @@ def diagnose(request):
 
         except ConnectionFailure, e:
             error_ip.append(ipaddress)
-            error_msg = _("Please review the 'CDR_BACKEND' Settings in your file /usr/share/cdr-stats/settings_local.py make sure the settings, username, password are correct. Check also that the backend authorize a connection from your server")
-            info_msg = _("After changes in your 'CDR_BACKEND' settings, you will need to restart celery: $ /etc/init.d/newfies-celeryd restart")
 
     if success_ip:
         msg = _("Connected to MongoDB : %s" % (str(success_ip)))
+
+    if error_ip:
+        error_msg = _("Please review the 'CDR_BACKEND' Settings in your file /usr/share/cdr-stats/settings_local.py make sure the settings, username, password are correct. Check also that the backend authorize a connection from your server")
+        info_msg = _("After changes in your 'CDR_BACKEND' settings, you will need to restart celery: $ /etc/init.d/newfies-celeryd restart")
 
     data = {
         'collection_data': collection_data,
@@ -103,6 +106,7 @@ def diagnose(request):
         'info_msg': info_msg,
         'success_ip': success_ip,
         'error_ip': error_ip,
+        'type_error_msg': type_error_msg,
     }
     template = 'frontend/diagnose.html'
     return render_to_response(template, data,

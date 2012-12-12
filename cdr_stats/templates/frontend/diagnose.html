@@ -5,9 +5,16 @@
 {% endblock %}
 
 {% block content %}
+{% if type_error_msg %}
+    <div class="alert alert-error">
+        <strong>{% trans "Error" %} : </strong>  {{ type_error_msg }}
+    </div>
+{% endif %}
+
 <div class="graph_header">
     {% trans "diagnose"|title %} CDR-Stats
 </div>
+
 <div class="row">
     <div class="span12">
         <div class="row">
