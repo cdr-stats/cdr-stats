@@ -13,16 +13,16 @@
         <div class="row">
             <div class="span6">
                 <h4>{% trans "CDR BACKEND" %}</h4>
-                {% for i, values in settings.CDR_BACKEND.items %}
                 <table class="table table-striped table-bordered table-condensed">
-                    {% for j, value in values.items %}
+                {% for ip, values in settings.CDR_BACKEND.items %}
+                    {% for key, value in values.items %}
                         <tr>
                         {% if forloop.first %}
-                            <td rowspan="8">{{ i }}</td>
+                            <td rowspan="8">{{ ip }}</td>
                         {% endif %}
-                        <td>{{ j }}</td>
+                        <td>{{ key }}</td>
                         <td>
-                            {% if j == 'password' %}
+                            {% if key == 'password' %}
                                 XXXXXX
                             {% else %}
                                 {{ value }}
@@ -35,26 +35,26 @@
                         </td>
                         </tr>
                     {% endfor %}
-                </table>
                 {% endfor %}
+                </table>
             </div>
             <div class="span6">
                 <h4>{% trans "MONGO_CDRSTATS" %}</h4>
                 <table class="table table-striped table-bordered table-condensed">
-                {% for i, values in settings.MONGO_CDRSTATS.items %}
+                {% for key, value in settings.MONGO_CDRSTATS.items %}
                     <tr>
-                        <td>{{ i }}</td>
-                        <td>{{ values }}</td>
+                        <td>{{ key }}</td>
+                        <td>{{ value }}</td>
                         <td>
-                            {% if i == 'CDR_COMMON' %}
+                            {% if key == 'CDR_COMMON' %}
                                 {{ collection_data.CDR_COMMON }}
-                            {% elif i == 'DAILY_ANALYTIC'  %}
+                            {% elif key == 'DAILY_ANALYTIC'  %}
                                 {{ collection_data.DAILY_ANALYTIC }}
-                            {% elif i == 'MONTHLY_ANALYTIC'  %}
+                            {% elif key == 'MONTHLY_ANALYTIC'  %}
                                 {{ collection_data.MONTHLY_ANALYTIC }}
-                            {% elif i == 'CONC_CALL'  %}
+                            {% elif key == 'CONC_CALL'  %}
                                 {{ collection_data.CONC_CALL }}
-                            {% elif i == 'CONC_CALL_AGG'  %}
+                            {% elif key == 'CONC_CALL_AGG'  %}
                                 {{ collection_data.CONC_CALL_AGG }}
                             {% endif %}
                         </td>
