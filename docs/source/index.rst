@@ -22,11 +22,7 @@ Contents:
     :maxdepth: 2
 
     installation
-
-.. toctree::
-    :maxdepth: 1
-
-    configuration-defaults
+    configuration
 
 .. toctree::
     :maxdepth: 2

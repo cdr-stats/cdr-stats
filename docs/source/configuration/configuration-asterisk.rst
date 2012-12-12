@@ -1,10 +1,10 @@
 .. _configuration-asterisk:
 
-Asterisk Configuration.
-=======================
+Configuration for Asterisk
+==========================
 
-Import configuration for Asterisk.
-----------------------------------
+Import configuration for Asterisk
+---------------------------------
 
 
 The asterisk settings may be as follows::
@@ -39,8 +39,8 @@ To add a new remote Asterisk MySQL CDR store,  ensure that there is a connection
 
 .. _realtime-configuration-asterisk:
 
-Realtime configuration for Asterisk.
-====================================
+Realtime configuration for Asterisk
+===================================
 
 The Asterisk Manager settings allow CDR-Stats to retrieve Realtime information to show the number of concurrent calls both in realtime and historically.
 
@@ -53,4 +53,3 @@ The settings to configure are::
 
 
 In Asterisk, add a new user in manager.conf, or one of its #include's for CDR-Stats. Further information about Asterisk Manager can be found here : http://www.voip-info.org/wiki/view/Asterisk+config+manager.conf
-

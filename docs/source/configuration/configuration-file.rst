@@ -1,7 +1,7 @@
-.. _configuration:
+.. _general-configuration:
 
-Configuration
-=============
+General Configuration
+=====================
 
 Some of the more important parts of the configuration module for the cdr_stats,
 ``settings_local.py``, are explained below.
@@ -92,10 +92,11 @@ Tells Django which applications (custom and external) to use in the project.
 The custom applications, ``cdr`` etc. are stored in the project folder along with
 these custom applications.
 
-Configuring Email
------------------
 
-To configure the SMTP client so that reports and alerts are sent via email, edit 
+Mail server
+-----------
+
+To configure the SMTP client so that reports and alerts are sent via email, edit
 /usr/share/cdr-stats/settings_local.py, and identify the email section::
 
     #EMAIL BACKEND
@@ -117,5 +118,3 @@ To test that the email is working, from the command line type::
     $ cd /usr/src/cdr-stats/
     $ workon cdr-stats
     $ python manage.py send_daily_report
-
-
