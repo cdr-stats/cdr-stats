@@ -46,6 +46,8 @@ def diagnostic(request):
     type_error_msg = ''
     success_ip = []
     error_ip = []
+    CDR_COUNT_mysql_pgsql = 0
+    CDR_COUNT_mongodb = 0
     #loop within the Mongo CDR Import List
     for ipaddress in settings.CDR_BACKEND:
 
@@ -56,21 +58,44 @@ def diagnostic(request):
         cdr_type = settings.CDR_BACKEND[ipaddress]['cdr_type']
         host = settings.CDR_BACKEND[ipaddress]['host']
         port = settings.CDR_BACKEND[ipaddress]['port']
+        user = settings.CDR_BACKEND[ipaddress]['user']
+        password = settings.CDR_BACKEND[ipaddress]['password']
 
-        if cdr_type == 'freeswitch' or db_engine != 'mongodb':
-            type_error_msg = _("With FreeSWITCH only mongodb backend is supported : ") + ipaddress
+        #if cdr_type == 'freeswitch' or db_engine != 'mongodb':
+        #    type_error_msg = _("With FreeSWITCH only mongodb backend is supported : ") + ipaddress
 
         data = chk_ipaddress(ipaddress)
         ipaddress = data['ipaddress']
+        switch = data['switch']
         collection_data = {}
 
         #Connect on MongoDB Database
         try:
-            connection = Connection(host, port)
-            DBCON = connection[db_name]
-            success_ip.append(ipaddress)
+            if db_engine == 'mysql':
+                import MySQLdb as Database
+                connection = Database.connect(user=user, passwd=password,
+                    db=db_name, host=host, port=port)
+                connection.autocommit(True)
+                cursor = connection.cursor()
+            elif db_engine == 'pgsql':
+                import psycopg2 as Database
+                connection = Database.connect(user=user, passwd=password,
+                    db=db_name, host=host, port=port)
+                connection.autocommit(True)
+                cursor = connection.cursor()
+            elif db_engine == 'mongodb':
+                import psycopg2 as Database
+                connection = Connection(host, port)
+                DBCON = connection[db_name]
+                CDR = DBCON[table_name]
+                CDR_COUNT_mongodb = CDR.find().count()
 
-            CDR = DBCON[table_name]
+            if db_engine == 'mysql' or db_engine == 'pgsql':
+                cursor.execute("SELECT count(*) FROM %s" % (table_name))
+                row = cursor.fetchone()
+                CDR_COUNT_mysql_pgsql = row[0]
+
+            success_ip.append(ipaddress)
 
             CDR_COMMON = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
             DAILY_ANALYTIC = settings.DBCON[settings.MONGO_CDRSTATS['DAILY_ANALYTIC']]
@@ -79,7 +104,8 @@ def diagnostic(request):
             CONC_CALL_AGG = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL_AGG']]
 
             collection_data = {
-                'cdr': CDR.find().count(),
+                'cdr_mongodb': CDR_COUNT_mongodb,
+                'cdr_mysql_pgsql': CDR_COUNT_mysql_pgsql,
                 'CDR_COMMON': CDR_COMMON.find().count(),
                 'DAILY_ANALYTIC': DAILY_ANALYTIC.find().count(),
                 'MONTHLY_ANALYTIC': MONTHLY_ANALYTIC.find().count(),

@@ -41,8 +41,14 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% if value == 'cdr' %}
-                                {{ collection_data.cdr }}
+                            {% if values.db_engine == 'mongodb' and key == 'table_name' %}
+                                {{ collection_data.cdr_mongodb }}
+                            {% endif %}
+                            {% if values.db_engine == 'mysql' and key == 'table_name' %}
+                                {{ collection_data.cdr_mysql_pgsql }}
+                            {% endif %}
+                            {% if values.db_engine == 'psql' and key == 'table_name' %}
+                                {{ collection_data.cdr_mysql_pgsql }}
                             {% endif %}
                         </td>
                         </tr>
