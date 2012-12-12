@@ -21,6 +21,20 @@ from django.utils.translation import gettext as _
 import re
 
 
+def chk_account_code(request):
+    """Get account code from  request"""
+    acc_code = ''
+    try:
+        if (not request.user.is_superuser
+           and request.user.get_profile().accountcode is not None):
+            acc_code = request.user.get_profile().accountcode
+            return '%s' % str(acc_code)
+        else:
+            return '%s' % str(acc_code)
+    except:
+        return acc_code
+
+
 def get_switch_list():
     """Switch list used in form"""
     list = Switch.objects.all()
@@ -75,6 +89,22 @@ def get_hangupcause_id(hangupcause_code):
     """
     try:
         obj = HangupCause.objects.get(code=hangupcause_code)
+        return obj.id
+    except:
+        return 0
+
+
+def get_hangupcause_id_from_name(hangupcause_name):
+    """Get hangupcause id from its code
+
+    >>> get_hangupcause_id_from_name('UNSPECIFIEDD')
+    0
+
+    >>> get_hangupcause_id_from_name('NORMAL_CLEARING')
+    7
+    """
+    try:
+        obj = HangupCause.objects.get(enumeration=hangupcause_name)
         return obj.id
     except:
         return 0
@@ -136,11 +166,16 @@ def prefix_list_string(phone_number):
 @cached(3600)
 def get_country_id(prefix_list):
     """Get country id from prefix_list else return 0"""
+    country_id = 0
     try:
-        prefix_obj = Prefix.objects.filter(prefix__in=eval(prefix_list))
-        country_id = prefix_obj[0].country_id.id
+        # get a list in numeric order (which is also length order)
+        prefix_obj = Prefix.objects.filter(prefix__in=eval(prefix_list)).order_by('prefix')
     except:
-        country_id = 0
+        return country_id
+    # find the longest prefix with a non-zero country_id
+    for i in xrange(0,len(prefix_obj)):
+        if prefix_obj[i].country_id:
+            country_id = prefix_obj[i].country_id.id
     return country_id
 
 
@@ -165,18 +200,3 @@ def get_country_name(id, type=''):
             return obj.countryname
     except:
         return _('Unknown')
-
-
-@cached(3600)
-def chk_account_code(request):
-    """Get account code from  request"""
-    acc_code = ''
-    try:
-        if (not request.user.is_superuser
-           and request.user.get_profile().accountcode is not None):
-            acc_code = request.user.get_profile().accountcode
-            return '%s' % str(acc_code)
-        else:
-            return '%s' % str(acc_code)
-    except:
-        return acc_code

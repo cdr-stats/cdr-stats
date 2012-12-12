@@ -13,6 +13,7 @@
 #
 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import password_reset, password_reset_done,\
     password_reset_confirm, password_reset_complete
 from django.http import HttpResponseRedirect
@@ -20,10 +21,118 @@ from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
+from pymongo.connection import Connection
+from pymongo.errors import ConnectionFailure
 from common.common_functions import current_view, get_news
 from frontend.forms import LoginForm
+from cdr.import_cdr_freeswitch_mongodb import chk_ipaddress
+
 
 news_url = settings.NEWS_URL
+
+
+@login_required
+def diagnostic(request):
+    """
+    To run diagnostic test
+
+    **Attributes**:
+
+        * ``template`` - frontend/diagnostic.html
+    """
+    error_msg = ''
+    info_msg = ''
+    type_error_msg = ''
+    success_ip = []
+    error_ip = []
+    CDR_COUNT_mysql_pgsql = 0
+    CDR_COUNT_mongodb = 0
+    #loop within the Mongo CDR Import List
+    for ipaddress in settings.CDR_BACKEND:
+
+        #Connect to Database
+        db_name = settings.CDR_BACKEND[ipaddress]['db_name']
+        table_name = settings.CDR_BACKEND[ipaddress]['table_name']
+        db_engine = settings.CDR_BACKEND[ipaddress]['db_engine']
+        #cdr_type = settings.CDR_BACKEND[ipaddress]['cdr_type']
+        host = settings.CDR_BACKEND[ipaddress]['host']
+        port = settings.CDR_BACKEND[ipaddress]['port']
+        user = settings.CDR_BACKEND[ipaddress]['user']
+        password = settings.CDR_BACKEND[ipaddress]['password']
+
+        #if cdr_type == 'freeswitch' or db_engine != 'mongodb':
+        #    type_error_msg = _("With FreeSWITCH only mongodb backend is supported : ") + ipaddress
+
+        data = chk_ipaddress(ipaddress)
+        ipaddress = data['ipaddress']
+        collection_data = {}
+
+        #Connect on MongoDB Database
+        try:
+            if db_engine == 'mysql':
+                import MySQLdb as Database
+                connection = Database.connect(user=user, passwd=password,
+                    db=db_name, host=host, port=port)
+                connection.autocommit(True)
+                cursor = connection.cursor()
+            elif db_engine == 'pgsql':
+                import psycopg2 as Database
+                connection = Database.connect(user=user, passwd=password,
+                    db=db_name, host=host, port=port)
+                connection.autocommit(True)
+                cursor = connection.cursor()
+            elif db_engine == 'mongodb':
+                import psycopg2 as Database
+                connection = Connection(host, port)
+                DBCON = connection[db_name]
+                CDR = DBCON[table_name]
+                CDR_COUNT_mongodb = CDR.find().count()
+
+            if db_engine == 'mysql' or db_engine == 'pgsql':
+                cursor.execute("SELECT count(*) FROM %s" % (table_name))
+                row = cursor.fetchone()
+                CDR_COUNT_mysql_pgsql = row[0]
+
+            success_ip.append(ipaddress)
+
+            CDR_COMMON = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
+            DAILY_ANALYTIC = settings.DBCON[settings.MONGO_CDRSTATS['DAILY_ANALYTIC']]
+            MONTHLY_ANALYTIC = settings.DBCON[settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC']]
+            CONC_CALL = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']]
+            CONC_CALL_AGG = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL_AGG']]
+
+            collection_data = {
+                'cdr_mongodb': CDR_COUNT_mongodb,
+                'cdr_mysql_pgsql': CDR_COUNT_mysql_pgsql,
+                'CDR_COMMON': CDR_COMMON.find().count(),
+                'DAILY_ANALYTIC': DAILY_ANALYTIC.find().count(),
+                'MONTHLY_ANALYTIC': MONTHLY_ANALYTIC.find().count(),
+                'CONC_CALL': CONC_CALL.find().count(),
+                'CONC_CALL_AGG': CONC_CALL_AGG.find().count()
+            }
+        except ConnectionFailure:
+            error_ip.append(ipaddress)
+
+    if success_ip:
+        info_msg = _("CDR Backend %s connected successfully." % (str(success_ip)))
+
+    if error_ip:
+        error_msg = _("Please review the 'CDR_BACKEND' Settings in your file /usr/share/cdr-stats/settings_local.py make sure the settings, username, password are correct. Check also that the backend authorize a connection from your server")
+        info_msg = _("After changes in your 'CDR_BACKEND' settings, you will need to restart celery: $ /etc/init.d/newfies-celeryd restart")
+
+    data = {
+        'collection_data': collection_data,
+        'settings': settings,
+        'info_msg': info_msg,
+        'error_msg': error_msg,
+        'info_msg': info_msg,
+        'success_ip': success_ip,
+        'error_ip': error_ip,
+        'type_error_msg': type_error_msg,
+    }
+    template = 'frontend/diagnostic.html'
+    return render_to_response(template, data,
+           context_instance=RequestContext(request))
 
 
 def logout_view(request):

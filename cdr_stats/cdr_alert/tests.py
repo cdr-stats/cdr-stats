@@ -26,7 +26,8 @@ from cdr_alert.views import alarm_list, alarm_add, alarm_del, alarm_change,\
 from user_profile.constants import NOTICE_TYPE
 from country_dialcode.models import Country
 from cdr_alert.ajax import add_whitelist_country, add_whitelist_prefix, \
-    add_blacklist_country, add_blacklist_prefix, delete_blacklist, delete_whitelist
+    add_blacklist_country, add_blacklist_prefix, delete_blacklist, delete_whitelist,\
+    get_html_table
 
 
 class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
@@ -229,6 +230,10 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         request.session = {}
         response = add_whitelist_country(request, 198)
         self.assertTrue(response)
+        response = get_html_table(request)
+        self.assertTrue(response)
+        response = get_html_table(request, 'whitelist')
+        self.assertTrue(response)
 
     def test_alert_report(self):
         """To test alarm report"""
@@ -252,7 +257,8 @@ class CdrAlertModelTestCase(TestCase):
     Blacklist, Whitelist models
     """
     # initial_data.json is taken from country_dialcode
-    fixtures = ['auth_user.json', 'country_dialcode.json', 'notice_type.json']
+    fixtures = ['auth_user.json', 'country_dialcode.json', 'notice_type.json',
+                'notification.json']
 
     def setUp(self):
         """Create model object"""

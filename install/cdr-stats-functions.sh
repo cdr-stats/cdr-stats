@@ -378,7 +378,7 @@ func_install_frontend(){
         echo "Create Postgresql user $DB_USERNAME"
         #echo "sudo -u postgres createuser --no-createdb --no-createrole --no-superuser $DB_USERNAME"
         #sudo -u postgres createuser --no-createdb --no-createrole --no-superuser $DB_USERNAME
-        echo "sudo -u postgres psql --command=\"create user $DB_USERNAME with password '$DB_PASSWORD';\""
+        echo "sudo -u postgres psql --command=\"create user $DB_USERNAME with password 'XXXXXXXXXX';\""
         sudo -u postgres psql --command="CREATE USER $DB_USERNAME with password '$DB_PASSWORD';"
 
         echo "Grant all privileges to user..."

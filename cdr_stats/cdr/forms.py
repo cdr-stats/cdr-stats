@@ -131,7 +131,6 @@ class CdrSearchForm(SearchForm):
     """
     Form used to search calls in the Customer UI.
     """
-
     from_date = forms.CharField(label=_('From'),
                                 required=True, max_length=10)
     to_date = forms.CharField(label=_('To'),
@@ -316,7 +315,6 @@ ACCOUNTCODE_FIELD_LIST_NUM = sorted(ACCOUNTCODE_FIELD_LIST_NUM,
 
 
 class CDR_FileImport(FileImport):
-
     """Admin Form : Import CSV file with phonebook CDR_FIELD_LIST"""
 
     switch = forms.ChoiceField(label=_('Switch'), choices=get_switch_list(),
@@ -362,18 +360,8 @@ class CDR_FileImport(FileImport):
                                     choices=ACCOUNTCODE_FIELD_LIST_NUM)
     accountcode = forms.ChoiceField(label=_('accountcode'), required=True,
                                     choices=ACCOUNTCODE_FIELD_LIST_NUM)
+    import_asterisk = forms.BooleanField(label=_('Asterisk Hangup format'),
+        required=False, help_text='With this option on, the field hangup_cause_id will expect Asterisk Hangup Cause in the format : ANSWER, CANCEL, BUSY, CONGESTION, CHANUNAVAIL, etc..')
 
     def __init__(self, user, *args, **kwargs):
         super(CDR_FileImport, self).__init__(*args, **kwargs)
-
-    def clean_accountcode_csv(self):
-        accountcode_csv = self.cleaned_data['accountcode_csv']
-        return accountcode_csv
-
-    def clean_accountcode(self):
-        accountcode = self.cleaned_data['accountcode']
-        accountcode_csv = self.cleaned_data['accountcode_csv']
-        if not accountcode_csv and accountcode == 0:
-            raise forms.ValidationError(
-                'select accountcode column no else enter accountcode')
-        return accountcode

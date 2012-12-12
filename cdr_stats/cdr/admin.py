@@ -12,19 +12,19 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.contrib import admin
-from django.conf.urls.defaults import patterns
+from django.conf.urls import patterns
 from django.utils.translation import ugettext as _
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.conf import settings
 from common.common_functions import striplist
-from cdr.models import Switch, HangupCause
+from cdr.models import Switch, HangupCause, CDR_TYPE
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
-from cdr.functions_def import get_hangupcause_id
-from cdr.import_cdr_freeswitch_mongodb import apply_index,\
-    CDR_COMMON, DAILY_ANALYTIC, \
-    create_daily_analytic, create_monthly_analytic
+from cdr.functions_def import get_hangupcause_id, get_hangupcause_id_from_name
+from cdr.import_cdr_freeswitch_mongodb import apply_index, \
+    CDR_COMMON, common_function_to_create_analytic, generate_global_cdr_record
 from cdr_alert.functions_blacklist import chk_destination
+
 import datetime
 import csv
 
@@ -46,6 +46,18 @@ def get_value_from_uni(j, row, field_name):
     else:
         return ''
 
+"""
+Asterisk cdr col
+
+accountcode - 1
+caller_id_number - 2
+destination_number - 3
+duration - 13
+billsec - 14
+hangup_cause_id - 15
+uuid - 4
+start_uepoch - 17
+"""
 
 # Switch
 class SwitchAdmin(admin.ModelAdmin):
@@ -87,8 +99,6 @@ class SwitchAdmin(admin.ModelAdmin):
         error_import_list = []
         type_error_import_list = []
 
-        #TODO : Too many indentation in the code, refact, less if, for
-        #TODO : respect DRY principale, some of the code is duplicate
         if request.method == 'POST':
             form = CDR_FileImport(request.user, request.POST, request.FILES)
             if form.is_valid():
@@ -119,6 +129,11 @@ class SwitchAdmin(admin.ModelAdmin):
                         request.FILES['csv_file'], delimiter=',', quotechar='"')
                     cdr_record_count = 0
 
+                    #Store cdr in list to insert by bulk
+                    cdr_bulk_record = []
+                    local_count_import = 0
+                    PAGE_SIZE = 1000
+
                     # Read each Row
                     for row in rdr:
                         if (row and str(row[0]) > 0):
@@ -137,6 +152,7 @@ class SwitchAdmin(admin.ModelAdmin):
                                 read_codec = ''
                                 get_cdr_from_row = {}
                                 row_counter = 0
+
                                 for j in uni:
                                     get_cdr_from_row[j[0]] = row[j[1] - 1]
                                     #get_cdr_from_row[j[0]] = row[row_counter]
@@ -154,10 +170,10 @@ class SwitchAdmin(admin.ModelAdmin):
 
                                 if len(field_notin_list) != 0:
                                     for i in field_notin_list:
-                                        if i == 'accountcode':
-                                            accountcode = request.POST[i + "_csv"]
+                                        if i == 'accountcode' and request.POST.get("accountcode_csv"):
+                                            accountcode = request.POST["accountcode_csv"]
 
-                                if not accountcode:
+                                if not accountcode and request.POST.get("accountcode") != '0':
                                     accountcode = get_cdr_from_row['accountcode']
 
                                 # Mandatory fields to import
@@ -165,10 +181,19 @@ class SwitchAdmin(admin.ModelAdmin):
                                 caller_id_number = get_cdr_from_row['caller_id_number']
                                 duration = int(get_cdr_from_row['duration'])
                                 billsec = int(get_cdr_from_row['billsec'])
-                                hangup_cause_id = \
-                                    get_hangupcause_id(int(get_cdr_from_row['hangup_cause_id']))
+
+                                if request.POST.get('import_asterisk') \
+                                    and request.POST['import_asterisk'] == 'on':
+                                    hangup_cause_name = "_".join(get_cdr_from_row['hangup_cause_id'].upper().split(' '))
+                                    hangup_cause_id =\
+                                        get_hangupcause_id_from_name(hangup_cause_name)
+                                else:
+                                    hangup_cause_id =\
+                                        get_hangupcause_id(int(get_cdr_from_row['hangup_cause_id']))
+
                                 start_uepoch = \
-                                    datetime.datetime.fromtimestamp(int(get_cdr_from_row['start_uepoch']))
+                                    datetime.datetime.fromtimestamp(int(float(get_cdr_from_row['start_uepoch'])))
+
                                 destination_number = get_cdr_from_row['destination_number']
                                 uuid = get_cdr_from_row['uuid']
 
@@ -185,79 +210,58 @@ class SwitchAdmin(admin.ModelAdmin):
                                         datetime.datetime.fromtimestamp(int(end_uepoch[:10]))
 
                                 # Prepare global CDR
-                                cdr_record = {
-                                    'switch_id': int(request.POST['switch']),
-                                    'caller_id_number': caller_id_number,
-                                    'caller_id_name': caller_id_name,
-                                    'destination_number': destination_number,
-                                    'duration': duration,
-                                    'billsec': billsec,
-                                    'hangup_cause_id': hangup_cause_id,
-                                    'accountcode': accountcode,
-                                    'direction': direction,
-                                    'uuid': uuid,
-                                    'remote_media_ip': remote_media_ip,
-                                    'start_uepoch': start_uepoch,
-                                    'answer_uepoch': answer_uepoch,
-                                    'end_uepoch': end_uepoch,
-                                    'mduration': mduration,
-                                    'billmsec': billmsec,
-                                    'read_codec': read_codec,
-                                    'write_codec': write_codec,
-                                    'cdr_type': 'CSV_IMPORT',
-                                    'cdr_object_id': '',
-                                    'country_id': country_id,
-                                    'authorized': authorized,
-                                }
+                                cdr_record = generate_global_cdr_record(switch_id, caller_id_number,
+                                    caller_id_name, destination_number, duration, billsec, hangup_cause_id,
+                                    accountcode, direction, uuid, remote_media_ip, start_uepoch, answer_uepoch,
+                                    end_uepoch, mduration, billmsec, read_codec, write_codec,
+                                    'CSV_IMPORT', '', country_id, authorized)
 
-                                try:
-                                    # check if cdr is already existing in cdr_common
-                                    cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
-                                    query_var = {}
-                                    query_var['uuid'] = uuid
-                                    record_count = cdr_data.find(query_var).count()
-                                    if record_count >= 1:
-                                        msg = _('CDR already exists !!')
-                                        error_import_list.append(row)
-                                    else:
-                                        # if not, insert record
-                                        # record global CDR
-                                        CDR_COMMON.insert(cdr_record)
+                                # check if cdr is already existing in cdr_common
+                                cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
+                                query_var = {}
+                                query_var['uuid'] = uuid
+                                record_count = cdr_data.find(query_var).count()
 
-                                        # start_uepoch = get_cdr_from_row['start_uepoch']
-                                        daily_date = datetime.datetime.\
-                                            fromtimestamp(int(get_cdr_from_row['start_uepoch'][:10]))
+                                if record_count >= 1:
+                                    msg = _('CDR already exists !!')
+                                    error_import_list.append(row)
+                                else:
+                                    # if not, insert record
+                                    # record global CDR
 
-                                        # insert daily analytic record
-                                        create_daily_analytic(daily_date, switch_id, country_id,
-                                                              accountcode, hangup_cause_id,
-                                                              duration)
+                                    # Append cdr to bulk_cdr list
+                                    cdr_bulk_record.append(cdr_record)
 
-                                        # MONTHLY_ANALYTIC
-                                        # insert monthly analytic record
-                                        create_monthly_analytic(daily_date, start_uepoch, switch_id,
-                                                                country_id, accountcode, duration)
+                                    local_count_import = local_count_import + 1
+                                    if local_count_import == PAGE_SIZE:
+                                        CDR_COMMON.insert(cdr_bulk_record)
+                                        local_count_import = 0
+                                        cdr_bulk_record = []
 
-                                        cdr_record_count = cdr_record_count + 1
+                                    date_start_uepoch = get_cdr_from_row['start_uepoch']
+                                    common_function_to_create_analytic(date_start_uepoch, start_uepoch,
+                                        switch_id, country_id, accountcode, hangup_cause_id, duration)
 
-                                        msg =\
-                                            _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
+                                    cdr_record_count = cdr_record_count + 1
+
+                                    msg =\
+                                        _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
                                             % {'cdr_record_count': cdr_record_count,
-                                            'total_rows': total_rows}
-                                        success_import_list.append(row)
-                                except:
-                                    msg = _("Error : invalid value for import")
-                                    type_error_import_list.append(row)
-
+                                               'total_rows': total_rows}
+                                    success_import_list.append(row)
                             except:
                                 msg = _("Error : invalid value for import")
                                 type_error_import_list.append(row)
 
+                    # remaining record
+                    if cdr_bulk_record:
+                        CDR_COMMON.insert(cdr_bulk_record)
+                        local_count_import = 0
+                        cdr_bulk_record = []
+
                     if cdr_record_count > 0:
-                        apply_index()
                         # Apply index
-                        DAILY_ANALYTIC.ensure_index([("metadata.date", -1)])
-                        CDR_COMMON.ensure_index([("start_uepoch", -1)])
+                        apply_index(shell=True)
                 else:
                     msg = _("Error : importing several times the same column")
         else:

@@ -25,8 +25,8 @@ from cdr.tasks import sync_cdr_pending, get_channels_info
 from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
     cdr_report_by_hour, cdr_concurrent_calls,\
     cdr_realtime, cdr_country_report, mail_report,\
-    world_map_view, index, cdr_detail, common_send_notification,\
-    cdr_export_to_csv
+    world_map_view, index, cdr_detail, cdr_export_to_csv
+
 from cdr.functions_def import get_switch_list, get_hangupcause_name,\
     get_hangupcause_id, get_hc_list, get_country_id, chk_account_code
 from cdr.templatetags.cdr_extras import hangupcause_name_with_title,\
@@ -67,7 +67,7 @@ class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
     def test_admin_switch_import_cdr(self):
         """Test Function to check admin cdr import"""
         response = self.client.post('/admin/cdr/switch/import_cdr/',
-                {'switch_id': 1,
+                {'switch': 1,
                  'csv_file': csv_file,
                  'accountcode_csv': '12345',
                  'caller_id_number': 1,
@@ -428,8 +428,6 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         request.session = {}
         response = world_map_view(request)
         self.assertEqual(response.status_code, 200)
-
-        common_send_notification(request, 1, request.user)
         chk_account_code(request)
 
 

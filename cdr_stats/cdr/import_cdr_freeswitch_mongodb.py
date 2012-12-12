@@ -99,6 +99,26 @@ def get_element(cdr):
         caller_id_name = cdr['callflow']['caller_profile']['caller_id_name']
     else:
         caller_id_name = ''
+    # Get mduration
+    if 'variables' in cdr and 'mduration' in cdr['variables']:
+        mduration = cdr['variables']['mduration']
+    else:
+        mduration = ''
+    # Get billmsec
+    if 'variables' in cdr and 'billmsec' in cdr['variables']:
+        billmsec = cdr['variables']['billmsec']
+    else:
+        billmsec = ''
+    # Get read_codec
+    if 'variables' in cdr and 'read_codec' in cdr['variables']:
+        read_codec = cdr['variables']['read_codec']
+    else:
+        read_codec = ''
+    # Get write_codec
+    if 'variables' in cdr and 'write_codec' in cdr['variables']:
+        write_codec = cdr['variables']['write_codec']
+    else:
+        write_codec = ''
 
     data_element = {
         'accountcode': accountcode,
@@ -108,7 +128,11 @@ def get_element(cdr):
         'duration': duration,
         'billsec': billsec,
         'direction': direction,
-        'uuid': uuid
+        'uuid': uuid,
+        'mduration': mduration,
+        'billmsec': billmsec,
+        'read_codec': read_codec,
+        'write_codec': write_codec,
     }
 
     return data_element
@@ -202,6 +226,61 @@ def create_monthly_analytic(daily_date, start_uepoch, switch_id,
     return True
 
 
+def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, destination_number,
+                               duration, billsec, hangup_cause_id, accountcode, direction,
+                               uuid, remote_media_ip, start_uepoch, answer_uepoch, end_uepoch,
+                               mduration, billmsec, read_codec, write_codec, cdr_type,
+                               cdr_object_id, country_id, authorized):
+    """
+    Common function to create global cdr record
+    """
+    cdr_record = {
+        'switch_id': switch_id,
+        'caller_id_number': caller_id_number,
+        'caller_id_name': caller_id_name,
+        'destination_number': destination_number,
+        'duration': duration,
+        'billsec': billsec,
+        'hangup_cause_id': hangup_cause_id,
+        'accountcode': accountcode,
+        'direction': direction,
+        'uuid': uuid,
+        'remote_media_ip': remote_media_ip,
+        'start_uepoch': start_uepoch,
+        'answer_uepoch': answer_uepoch,
+        'end_uepoch': end_uepoch,
+        'mduration': mduration,
+        'billmsec': billmsec,
+        'read_codec': read_codec,
+        'write_codec': write_codec,
+        'cdr_type': cdr_type,
+        'cdr_object_id': cdr_object_id,
+        'country_id': country_id,
+        'authorized': authorized,
+    }
+    return cdr_record
+
+
+def common_function_to_create_analytic(date_start_uepoch, start_uepoch, switch_id,
+                                       country_id, accountcode, hangup_cause_id, duration):
+    """
+    Common function to create DAILY_ANALYTIC, MONTHLY_ANALYTIC
+    """
+    # DAILY_ANALYTIC
+    daily_date = datetime.datetime.fromtimestamp(int(date_start_uepoch[:10]))
+
+    # insert daily analytic record
+    create_daily_analytic(daily_date, switch_id, country_id, accountcode,
+        hangup_cause_id, duration)
+
+    # MONTHLY_ANALYTIC
+    # insert monthly analytic record
+    create_monthly_analytic(daily_date, start_uepoch, switch_id, country_id,
+        accountcode, duration)
+
+    return True
+
+
 def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
     """
     function go through the current mongodb, then will
@@ -237,12 +316,12 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             "variables.uuid": 1,
             "variables.remote_media_ip": 1,
             "variables.start_uepoch": 1,
-            #"variables.answer_uepoch": 1,
-            #"variables.end_uepoch": 1,
-            #"variables.mduration": 1,
-            #"variables.billmsec": 1,
-            #"variables.read_codec": 1,
-            #"variables.write_codec": 1,
+            "variables.answer_uepoch": 1,
+            "variables.end_uepoch": 1,
+            "variables.mduration": 1,
+            "variables.billmsec": 1,
+            "variables.read_codec": 1,
+            "variables.write_codec": 1,
             "import_cdr_monthly": 1,
             "import_cdr_daily": 1,
             "import_cdr_hourly": 1,
@@ -253,6 +332,17 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         #find result so let's look later for more records
         start_uepoch = datetime.datetime.fromtimestamp(
             int(cdr['variables']['start_uepoch'][:10]))
+
+        answer_uepoch = ''
+        if cdr['variables']['answer_uepoch']:
+            answer_uepoch = datetime.datetime.fromtimestamp(
+                int(cdr['variables']['answer_uepoch'][:10]))
+
+        end_uepoch = ''
+        if cdr['variables']['end_uepoch']:
+            end_uepoch = datetime.datetime.fromtimestamp(
+                int(cdr['variables']['end_uepoch'][:10]))
+
         # Check Destination number
         destination_number = cdr['callflow']['caller_profile']['destination_number']
 
@@ -277,31 +367,17 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         direction = data_element['direction']
         uuid = data_element['uuid']
 
+        mduration = data_element['mduration']
+        billmsec = data_element['billmsec']
+        read_codec = data_element['read_codec']
+        write_codec = data_element['write_codec']
+
         # Prepare global CDR
-        cdr_record = {
-            'switch_id': switch.id,
-            'caller_id_number': caller_id_number,
-            'caller_id_name': caller_id_name,
-            'destination_number': destination_number,
-            'duration': duration,
-            'billsec': billsec,
-            'hangup_cause_id': hangup_cause_id,
-            'accountcode': accountcode,
-            'direction': direction,
-            'uuid': uuid,
-            'remote_media_ip': remote_media_ip,
-            'start_uepoch': start_uepoch,
-            #'answer_uepoch': answer_uepoch,
-            #'end_uepoch': end_uepoch,
-            #'mduration': cdr['variables']['mduration'],
-            #'billmsec': cdr['variables']['billmsec'],
-            #'read_codec': cdr['variables']['read_codec'],
-            #'write_codec': cdr['variables']['write_codec'],
-            'cdr_type': CDR_TYPE["freeswitch"],
-            'cdr_object_id': cdr['_id'],
-            'country_id': country_id,
-            'authorized': authorized,
-        }
+        cdr_record = generate_global_cdr_record(switch.id, caller_id_number,
+            caller_id_name, destination_number, duration, billsec, hangup_cause_id,
+            accountcode, direction, uuid, remote_media_ip, start_uepoch, answer_uepoch,
+            end_uepoch, mduration, billmsec, read_codec, write_codec,
+            CDR_TYPE["freeswitch"], cdr['_id'], country_id, authorized)
 
         # Append cdr to bulk_cdr list
         cdr_bulk_record.append(cdr_record)
@@ -320,21 +396,9 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         #             authorized,
         #             count_import))
 
-        # DAILY_ANALYTIC
-        daily_date = datetime.datetime.fromtimestamp(
-            int(cdr['variables']['start_uepoch'][:10]))
-
-        # DAILY_ANALYTIC
-        daily_date = datetime.datetime.fromtimestamp(
-            int(cdr['variables']['start_uepoch'][:10]))
-        # insert daily analytic record
-        create_daily_analytic(daily_date, switch.id, country_id, accountcode,
-                              hangup_cause_id, duration)
-
-        # MONTHLY_ANALYTIC
-        # insert monthly analytic record
-        create_monthly_analytic(daily_date, start_uepoch, switch.id,
-                                country_id, accountcode, duration)
+        date_start_uepoch = cdr['variables']['start_uepoch'][:10]
+        common_function_to_create_analytic(date_start_uepoch, start_uepoch, switch.id,
+            country_id, accountcode, hangup_cause_id, duration)
 
         # Flag the CDR as imported
         importcdr_handler.update(
