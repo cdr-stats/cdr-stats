@@ -91,19 +91,6 @@ You can compare different dates
     :width: 1000
 
 
-CDR-Global-Report
-~~~~~~~~~~~~~~~~~
-
-A pictorial view of all calls
-
-**URL**:
-
-    * http://localhost:8000/global_report/
-
-.. image:: ../_static/images/customer/global_report.png
-    :width: 1000
-
-
 CDR-Country-Report
 ~~~~~~~~~~~~~~~~~~
 

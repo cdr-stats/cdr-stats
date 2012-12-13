@@ -40,7 +40,7 @@ To get started with CDR-Stats the following must be installed:
 
 The requirements are installed into a virtual environement so that the dependencies of the application do not interfere with other applications on the server. More information can be found about virtualenv at : http://pypi.python.org/pypi/virtualenv
 
-PIP is a tool for installing and managing Python packages, more information about PIP t : http://www.pip-installer.org/en/latest/index.html.
+PIP is a tool for installing and managing Python packages, more information about PIP : http://www.pip-installer.org/en/latest/index.html.
 
 With PIP you can easily install all the requirements::
 
