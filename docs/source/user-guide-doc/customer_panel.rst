@@ -202,3 +202,15 @@ Destination Control
 
 .. image:: ../_static/images/customer/destination_control.png
     :width: 700
+
+
+Diagnostic CDR-Stats
+~~~~~~~~~~~~~~~~~~~~
+
+
+**URL**:
+
+    * http://localhost:8000/diagnostic/
+
+.. image:: ../_static/images/customer/diagnostic.png
+    :width: 700
