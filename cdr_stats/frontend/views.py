@@ -42,7 +42,6 @@ def diagnostic(request):
     """
     error_msg = ''
     info_msg = ''
-    type_error_msg = ''
     success_ip = []
     error_ip = []
     CDR_COUNT_mysql_pgsql = 0
@@ -59,9 +58,6 @@ def diagnostic(request):
         port = settings.CDR_BACKEND[ipaddress]['port']
         user = settings.CDR_BACKEND[ipaddress]['user']
         password = settings.CDR_BACKEND[ipaddress]['password']
-
-        #if cdr_type == 'freeswitch' or db_engine != 'mongodb':
-        #    type_error_msg = _("With FreeSWITCH only mongodb backend is supported : ") + ipaddress
 
         data = chk_ipaddress(ipaddress)
         ipaddress = data['ipaddress']
@@ -125,10 +121,8 @@ def diagnostic(request):
         'settings': settings,
         'info_msg': info_msg,
         'error_msg': error_msg,
-        'info_msg': info_msg,
         'success_ip': success_ip,
         'error_ip': error_ip,
-        'type_error_msg': type_error_msg,
     }
     template = 'frontend/diagnostic.html'
     return render_to_response(template, data,

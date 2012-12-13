@@ -5,11 +5,6 @@
 {% endblock %}
 
 {% block content %}
-{% if type_error_msg %}
-    <div class="alert alert-error">
-        <strong>{% trans "Error" %} : </strong>  {{ type_error_msg }}
-    </div>
-{% endif %}
 
 <div class="graph_header">
     {% trans "diagnostic"|title %} CDR-Stats
