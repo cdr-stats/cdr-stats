@@ -18,9 +18,16 @@ The CDR-Stats directory::
     
 
     |-- api                - The code for APIs
+    |   `-- api_playground
     |-- cdr                - The code for CDR
+    |   |-- management
+    |   |-- templatetags
     |   `-- fixtures
-    |-- cdr_alert
+    |-- cdr_alert          - The code for alarm, blacklist, whitelist
+    |   |-- management
+    |   `-- fixtures
+    |-- frontend           - The code for login, logout user
+    |-- user_profile       - The code for user detail of system
     |-- static
     |   |-- cdr
     |   |    |-- css
@@ -30,4 +37,6 @@ The CDR-Stats directory::
     |-- resources          - This area is used to hold media files
     `-- templates          - This area is used to override templates
         |-- admin
-        `-- cdr
+        |-- admin_tools
+        |-- api_browser
+        `-- frontend
