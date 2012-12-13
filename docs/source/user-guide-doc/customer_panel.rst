@@ -166,3 +166,39 @@ and on mouse over on the world map you can get information about each country.
 
 .. image:: ../_static/images/customer/world_map_II.png
     :width: 700
+
+
+Alert Settings
+~~~~~~~~~~~~~~
+
+
+**URL**:
+
+    * http://localhost:8000/alert/
+
+.. image:: ../_static/images/customer/alert_setting.png
+    :width: 700
+
+
+Alert Report
+~~~~~~~~~~~~
+
+
+**URL**:
+
+    * http://localhost:8000/alert_report/
+
+.. image:: ../_static/images/customer/alert_report.png
+    :width: 700
+
+
+Destination Control
+~~~~~~~~~~~~~~~~~~~
+
+
+**URL**:
+
+    * http://localhost:8000/trust_control/
+
+.. image:: ../_static/images/customer/destination_control.png
+    :width: 700
