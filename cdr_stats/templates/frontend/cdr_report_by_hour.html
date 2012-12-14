@@ -19,14 +19,14 @@
             <div class="span12">
                 <div class="row">
                     <div class="span6">
-                        <label class="control-label" for="id_{{ form.from_date.name }}">{{ form.from_date.label }}</label>
+                        <label class="control-label" for="{{ form.from_date.auto_id }}">{{ form.from_date.label }}</label>
                         <div class="input">
                             {{ form.from_date }}&nbsp;&nbsp;{{ form.comp_days }}
                             <span class="help-block">{{ form.from_date.help_text|safe }} </span>
                         </div>
                     </div>
                     <div class="span4">
-                        <label class="control-label" for="id_{{ form.check_days.name }}">{{ form.check_days.label }}</label>
+                        <label class="control-label" for="{{ form.check_days.auto_id }}">{{ form.check_days.label }}</label>
                         <div class="input">
                             {{ form.check_days|removetags:"ul li label"|safe }}
                             <span class="help-block">{{ form.check_days.help_text|safe }}</span>
@@ -39,13 +39,13 @@
             <div class="span12">
                 <div class="row">
                     <div class="span6">
-                        <label class="control-label" for="id_{{ form.graph_view.name }}">{{ form.graph_view.label }}</label>
+                        <label class="control-label" for="{{ form.graph_view.auto_id }}">{{ form.graph_view.label }}</label>
                         <div class="input">
                             {{ form.graph_view }}
                         </div>
                     </div>
                     <div class="span4">
-                        <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }}</label>
+                        <label class="control-label" for="{{ form.switch.auto_id }}">{{ form.switch.label }}</label>
                         <div class="input">
                             {{ form.switch }}
                         </div>

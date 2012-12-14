@@ -22,7 +22,7 @@
     {% for field in form %}
     <div class="row{% if field.errors %} control-group error{% endif %}">
         <div class="span2">
-            <label class="control-label" for="id_{{ field.name }}">
+            <label class="control-label" for="{{ field.auto_id }}">
                 {{ field.label }}
             </label>
         </div>
