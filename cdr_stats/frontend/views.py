@@ -42,11 +42,10 @@ def diagnostic(request):
     """
     error_msg = ''
     info_msg = ''
-    type_error_msg = ''
     success_ip = []
     error_ip = []
-    CDR_COUNT_mysql_pgsql = 0
-    CDR_COUNT_mongodb = 0
+    CDR_COUNT = 0
+    backend_cdr_data = []
     #loop within the Mongo CDR Import List
     for ipaddress in settings.CDR_BACKEND:
 
@@ -60,9 +59,6 @@ def diagnostic(request):
         user = settings.CDR_BACKEND[ipaddress]['user']
         password = settings.CDR_BACKEND[ipaddress]['password']
 
-        #if cdr_type == 'freeswitch' or db_engine != 'mongodb':
-        #    type_error_msg = _("With FreeSWITCH only mongodb backend is supported : ") + ipaddress
-
         data = chk_ipaddress(ipaddress)
         ipaddress = data['ipaddress']
         collection_data = {}
@@ -72,7 +68,7 @@ def diagnostic(request):
             if db_engine == 'mysql':
                 import MySQLdb as Database
                 connection = Database.connect(user=user, passwd=password,
-                    db=db_name, host=host, port=port)
+                    db=db_name, host=host, port=port, connect_timeout=4)
                 connection.autocommit(True)
                 cursor = connection.cursor()
             elif db_engine == 'pgsql':
@@ -82,16 +78,15 @@ def diagnostic(request):
                 connection.autocommit(True)
                 cursor = connection.cursor()
             elif db_engine == 'mongodb':
-                import psycopg2 as Database
                 connection = Connection(host, port)
                 DBCON = connection[db_name]
                 CDR = DBCON[table_name]
-                CDR_COUNT_mongodb = CDR.find().count()
+                CDR_COUNT = CDR.find().count()
 
             if db_engine == 'mysql' or db_engine == 'pgsql':
                 cursor.execute("SELECT count(*) FROM %s" % (table_name))
                 row = cursor.fetchone()
-                CDR_COUNT_mysql_pgsql = row[0]
+                CDR_COUNT = row[0]
 
             success_ip.append(ipaddress)
 
@@ -102,16 +97,20 @@ def diagnostic(request):
             CONC_CALL_AGG = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL_AGG']]
 
             collection_data = {
-                'cdr_mongodb': CDR_COUNT_mongodb,
-                'cdr_mysql_pgsql': CDR_COUNT_mysql_pgsql,
                 'CDR_COMMON': CDR_COMMON.find().count(),
                 'DAILY_ANALYTIC': DAILY_ANALYTIC.find().count(),
                 'MONTHLY_ANALYTIC': MONTHLY_ANALYTIC.find().count(),
                 'CONC_CALL': CONC_CALL.find().count(),
                 'CONC_CALL_AGG': CONC_CALL_AGG.find().count()
             }
-        except ConnectionFailure:
+        except:
+            CDR_COUNT = _('Error')
             error_ip.append(ipaddress)
+
+        backend_cdr_data.append({
+            'ip': ipaddress,
+            'cdr_count': CDR_COUNT,
+        })
 
     if success_ip:
         info_msg = _("CDR Backend %s connected successfully." % (str(success_ip)))
@@ -121,14 +120,13 @@ def diagnostic(request):
         info_msg = _("After changes in your 'CDR_BACKEND' settings, you will need to restart celery: $ /etc/init.d/newfies-celeryd restart")
 
     data = {
+        'backend_cdr_data': backend_cdr_data,
         'collection_data': collection_data,
         'settings': settings,
         'info_msg': info_msg,
         'error_msg': error_msg,
-        'info_msg': info_msg,
         'success_ip': success_ip,
         'error_ip': error_ip,
-        'type_error_msg': type_error_msg,
     }
     template = 'frontend/diagnostic.html'
     return render_to_response(template, data,

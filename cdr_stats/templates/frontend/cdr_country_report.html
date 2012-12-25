@@ -19,7 +19,7 @@
         <div class="span12">
             <div class="row">
                 <div class="span4">
-                    <label class="control-label" for="id_{{ form.from_date.name }}">{{ form.from_date.label }}</label>
+                    <label class="control-label" for="{{ form.from_date.auto_id }}">{{ form.from_date.label }}</label>
                     <div class="input">
                         {{ form.from_date }}
                         <span class="help-block">{{ form.from_date.help_text|safe }} </span>
@@ -33,7 +33,7 @@
                     </div>
                 </div>
                 <div class="span4">
-                    <label class="control-label" for="id_{{ form.duration.name }}">{{ form.duration.label }}</label>
+                    <label class="control-label" for="{{ form.duration.auto_id }}">{{ form.duration.label }}</label>
                     <div class="input">
                         {{ form.duration }}&nbsp;{{ form.duration_type }}
                     </div>
@@ -48,14 +48,14 @@
         <div class="span12">
             <div class="row">
                 <div class="span4">
-                    <label class="control-label" for="id_{{ form.country_id.name }}">{{ form.country_id.label }}</label>
+                    <label class="control-label" for="{{ form.country_id.auto_id }}">{{ form.country_id.label }}</label>
                     <div class="input">
                         {{ form.country_id }}
                         <span class="help-block">{{ form.country_id.help_text|safe }} </span>
                     </div>
                 </div>
                 <div class="span4">
-                    <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }}</label>
+                    <label class="control-label" for="{{ form.switch.auto_id }}">{{ form.switch.label }}</label>
                     <div class="input">
                         {{ form.switch }}
                         <span class="help-block">{{ form.switch.help_text|safe }} </span>

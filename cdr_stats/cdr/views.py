@@ -515,6 +515,7 @@ def cdr_view(request):
 
     logging.debug('Create cdr result')
     SKIP_NO = PAGE_SIZE * (PAGE_NUMBER - 1)
+    record_count = final_result.count()
     rows = final_result.skip(SKIP_NO).limit(PAGE_SIZE)\
         .sort([(sort_field, default_order)])
 
@@ -530,6 +531,7 @@ def cdr_view(request):
         'module': current_view(request),
         'rows': rows,
         'form': form,
+        'record_count': record_count,
         'PAGE_SIZE': PAGE_SIZE,
         'cdr_daily_data': cdr_view_daily_data,
         'search_tag': search_tag,

@@ -16,11 +16,11 @@ $(function() {
     <div class="span12">
         <div class="row">
             <div class="span4">
-                <label class="control-label" for="id_{{ form.from_date.name }}">{{ form.from_date.label }}</label>
+                <label class="control-label" for="{{ form.from_date.auto_id }}">{{ form.from_date.label }}</label>
                 {{ form.from_date }}
             </div>
             <div class="span4">
-                <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }}</label>
+                <label class="control-label" for="{{ form.switch.auto_id }}">{{ form.switch.label }}</label>
                 {{ form.switch }}
             </div>
             <div class="span4">

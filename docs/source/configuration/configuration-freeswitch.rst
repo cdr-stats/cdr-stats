@@ -1,7 +1,7 @@
 .. _configuration-freeswitch:
 
-Import configuration for FreeSWITCH.
-====================================
+Configuration for FreeSWITCH
+============================
 
 Freeswitch settings are under the CDR_BACKEND section, and should look as follows::
 

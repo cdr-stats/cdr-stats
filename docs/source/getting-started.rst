@@ -37,10 +37,17 @@ CDR-Stats is an application that allows browsing and analysing CDR (Call Detail 
 
 Different reporting tools are provided:
 
-- Search CDR: Search, filter, display and export CDR.
-- Monthly Report: Summarise and compare call traffic history month on month.
-- Analyse CDR : Analyse and compare call volumes with the previous day’s traffic.
-- Daily Traffic : Graph and filter traffic loads by hour during the day.
+- Dashboard: Overview of call activity
+- Search CDR: Search, filter, display and export CDR
+- Overview: Analyse call traffic by hour, day and month
+- Daily Comparison: Compare call traffic day on day
+- Real-Time Statistics: Show concurrent calls in realtime by switch
+- Concurrent Calls: Concurrent Calls through the day updated in real-time
+- Country Report: Call statistics by country
+- World Map: Call statistics overlaid on a world map
+- Mail daily aggregated reports
+- Threat Control: Detect abnormal call patterns
+- Destination Alerts: Unexpected destination alerts
 
 CDR Stats uses MongoDB, a scalable, high performance database system used to analyse 
 large quantities of CDR data. MongoDB is an open source, document-oriented database 
@@ -70,7 +77,7 @@ The Admin Panel allows the administrators to configure the entire reporting plat
 import CDR in csv format, configure users, switch connections and automatic alarms. 
 
 .. image:: ./_static/images/admin/admin_dashboard.png
-    :width: 950
+    :width: 750
 
 
 

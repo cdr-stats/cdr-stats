@@ -9,19 +9,27 @@
 	<br/><br/>
 	<a href="http://www.cdr-stats.org/" target="_blank" >CDR-Stats</a> {% trans "is a multi-tenant application to browse, analyse and graph CDR (Call Detail Records) with automated threat alerts for multiple switches and PBX systems." %}<br/><br/>
 	{% trans "Call traffic analysis and threat alert tools include :" %}
-	<ul>
-	    <li>{% trans "Dashboard: Overview of call activity" %}</li>
-	    <li>{% trans "Search CDR: Search, filter, display and export CDR" %}</li>
-	    <li>{% trans "Overview: Analyse call traffic by hour, day and month" %}</li>
-	    <li>{% trans "Daily Comparison: Compare call traffic day on day" %}</li>
-        <li>{% trans "Real-Time Statistics: Show concurrent calls in realtime by switch" %}</li>
-        <li>{% trans "Concurrent Calls: Concurrent Calls through the day updated in real-time" %}</li>
+  <div class="row">
+    <div class="span5">
+      <ul>
+        <li>{% trans "Dashboard: Overview of call activity" %}</li>
+        <li>{% trans "Search CDR: Search, filter, display and export CDR" %}</li>
+        <li>{% trans "Overview: Analyse call traffic by hour, day and month" %}</li>
+        <li>{% trans "Daily Comparison: Compare call traffic day on day" %}</li>
+        <li>{% trans "Real-Time Statistics: Show concurrent calls in realtime" %}</li>
+        <li>{% trans "Concurrent Calls: Concurrent Calls through the day" %}</li>
+      </ul>
+    </div>
+    <div class="span5">
+      <ul>
         <li>{% trans "Country Report: Call statistics by country" %}</li>
         <li>{% trans "World Map: Call statistics overlaid on a world map" %}</li>
         <li>{% trans "Mail daily aggregated reports" %}</li>
         <li>{% trans "Threat Control: Detect abnormal call patterns" %}</li>
         <li>{% trans "Destination Alerts: Unexpected destination alerts" %}</li>
-	</ul>
+      </ul>
+    </div>
+  </div>
 	<p><a class="btn primary large" href="http://www.cdr-stats.org/">{% trans "Learn more" %} &raquo;</a></p>
 </div>
 

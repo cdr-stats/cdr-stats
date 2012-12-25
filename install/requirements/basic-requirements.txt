@@ -12,7 +12,7 @@ celery==3.0.12
 redis==2.7.1
 kombu==2.4.8
 pymongo==2.3
-Django==1.4.2
+Django==1.4.3
 gunicorn==0.15.0
 South==0.7.6
 pyst2==0.4

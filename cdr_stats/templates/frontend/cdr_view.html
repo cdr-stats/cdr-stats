@@ -34,21 +34,21 @@
         <div class="span12">
             <div class="row">
                 <div class="span4">
-                    <label class="control-label" for="id_{{ form.from_date.name }}">{{ form.from_date.label }}</label>
+                    <label class="control-label" for="{{ form.from_date.auto_id }}">{{ form.from_date.label }}</label>
                     <div class="input">
                         {{ form.from_date }}
                         <span class="help-block">{{ form.from_date.help_text|safe }} </span>
                     </div>
                 </div>
                 <div class="span4">
-                    <label class="control-label" for="id_{{ form.to_date.name }}">{{ form.to_date.label }}</label>
+                    <label class="control-label" for="{{ form.to_date.auto_id }}">{{ form.to_date.label }}</label>
                     <div class="input">
                         {{ form.to_date }}
                         <span class="help-block">{{ form.to_date.help_text|safe }} </span>
                     </div>
                 </div>
                 <div class="span4">
-                    <label class="control-label" for="id_{{ form.switch.name }}">{{ form.switch.label }}</label>
+                    <label class="control-label" for="{{ form.switch.auto_id }}">{{ form.switch.label }}</label>
                     <div class="input">
                         {{ form.switch }}
                         <span class="help-block">{{ form.switch.help_text|safe }} </span>
@@ -62,7 +62,7 @@
     <div class="span12">
       <div class="row">
           <div class="span4">
-            <label class="control-label" for="id_{{ form.destination.name }}">{{ form.destination.label }}</label>
+            <label class="control-label" for="{{ form.destination.auto_id }}">{{ form.destination.label }}</label>
             <div class="input">
                 {{ form.destination }}&nbsp;&nbsp;{{ form.destination_type }}
             </div>
@@ -72,7 +72,7 @@
           </div>
           {% if user.is_superuser %}
           <div class="span4">
-            <label class="control-label" for="id_{{ form.accountcode.name }}">{{ form.accountcode.label }}</label>
+            <label class="control-label" for="{{ form.accountcode.auto_id }}">{{ form.accountcode.label }}</label>
             <div class="input">
                 {{ form.accountcode }}&nbsp;&nbsp;{{ form.accountcode_type }}
             </div>
@@ -82,7 +82,7 @@
           </div>
           {% endif %}
           <div class="span4">
-            <label class="control-label" for="id_{{ form.caller.name }}">{{ form.caller.label }}</label>
+            <label class="control-label" for="{{ form.caller.auto_id }}">{{ form.caller.label }}</label>
             <div class="input">
               {{ form.caller }}&nbsp;&nbsp;{{ form.caller_type }}
             </div>
@@ -98,19 +98,19 @@
     <div class="span12">
         <div class="row">
             <div class="span4">
-                <label class="control-label" for="id_{{ form.direction.name }}">{{ form.direction.label }}</label>
+                <label class="control-label" for="{{ form.direction.auto_id }}">{{ form.direction.label }}</label>
                 <div class="input">
                     {{ form.direction }}
                 </div>
             </div>
             <div class="span4">
-                <label class="control-label" for="id_{{ form.hangup_cause.name }}">{{ form.hangup_cause.label }}</label>
+                <label class="control-label" for="{{ form.hangup_cause.auto_id }}">{{ form.hangup_cause.label }}</label>
                 <div class="input">
                   {{ form.hangup_cause }}
                 </div>
             </div>
             <div class="span4">
-                <label class="control-label" for="id_{{ form.duration.name }}">{{ form.duration.label }}</label>
+                <label class="control-label" for="{{ form.duration.auto_id }}">{{ form.duration.label }}</label>
                 <div class="input">
                     {{ form.duration }}&nbsp;&nbsp;{{ form.duration_type }}
                 </div>
@@ -125,14 +125,14 @@
      <div class="span12">
          <div class="row">
              <div class="span4">
-                 <label class="control-label" for="id_{{ form.country_id.name }}">{{ form.country_id.label }}</label>
+                 <label class="control-label" for="{{ form.country_id.auto_id }}">{{ form.country_id.label }}</label>
                  <div class="input">
                      {{ form.country_id }}
                      <span class="help-block">{{ form.country_id.help_text|safe }} </span>
                  </div>
              </div>
              <div class="span4">
-                 <label class="control-label" for="id_{{ form.result.name }}">{{ form.result.label }}</label>
+                 <label class="control-label" for="{{ form.result.auto_id }}">{{ form.result.label }}</label>
                  <div class="input">
                      {{ form.result|removetags:"ul li label"|safe }}
                  </div>
@@ -347,7 +347,7 @@
         <div align="right" class="show-rows">
             {% trans "show rows"|title %} :
             {{ form.records_per_page }}
-            {% trans "total calls"|title %} : {{ cdr_daily_data.total_calls }}
+            {% trans "total calls"|title %} : {{ record_count }}
         </div>
         </form>
 

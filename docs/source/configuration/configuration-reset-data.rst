@@ -7,11 +7,16 @@ Sometimes, some experimentation is required to get the optimum settings for coun
 from MongoDB on CDR-Stats and re-imported from either the Asterisk MySQL CDR store, or the Freeswitch MongoDB CDR-Store.
 
 
-1. Stop Celery.
----------------
+1. Stop Celery
+--------------
 
-2. Empty the CDR-Stats MonoDB data store.
------------------------------------------
+Stop CDR-Stats celery::
+
+    /etc/init.d/cdr-stats-celeryd stop
+
+
+2. Empty the CDR-Stats MonoDB data store
+----------------------------------------
 
 Type mongo to enter the MongoDB database then apply the following commands::
 
@@ -26,8 +31,8 @@ Type mongo to enter the MongoDB database then apply the following commands::
 
 CTRL-D exits the console.
 
-3. Flag the CDR records for reimport.
--------------------------------------
+3. Flag the CDR records for reimport
+------------------------------------
 
     a) With Asterisk and Mysql.
 
@@ -38,7 +43,7 @@ CTRL-D exits the console.
 
             mysql -uasteriskuser -pamp109 asteriskcdrdb
             update cdr SET import_cdr = 0;
-    
+
         CTRL-C exits the MySQL
 
 
@@ -49,13 +54,18 @@ CTRL-D exits the console.
             mongo
             use freeswitch_cdr;
             db.cdr.update({"import_cdr" : 1}, { $set : {"import_cdr" : 0}}, { multi: true });
-        
+
      CTRL-D exits
 
-4. Start Celery.
-----------------
+4. Start Celery
+---------------
 
-5. Wait while the CDR are re-imported.
---------------------------------------
+Start CDR-Stats celery::
+
+    /etc/init.d/cdr-stats-celeryd start
 
 
+5. Wait while the CDR are re-imported
+-------------------------------------
+
+Go to the diagnostic page to check if the CDR-Backend are correctly configured and if data are being imported.
