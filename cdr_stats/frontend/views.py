@@ -86,8 +86,6 @@ def diagnostic(request):
             if db_engine == 'mysql' or db_engine == 'pgsql':
                 cursor.execute("SELECT count(*) FROM %s" % (table_name))
                 row = cursor.fetchone()
-                #TODO: This should be an array, we might have more than 1 mysql / pgsql backend
-                #image situation where we have 5 Mysql backend, we need to count cdr for each of them
                 CDR_COUNT = row[0]
 
             success_ip.append(ipaddress)
@@ -106,6 +104,7 @@ def diagnostic(request):
                 'CONC_CALL_AGG': CONC_CALL_AGG.find().count()
             }
         except:
+            CDR_COUNT = 0
             error_ip.append(ipaddress)
 
         backend_cdr_data.append({
