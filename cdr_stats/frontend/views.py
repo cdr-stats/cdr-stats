@@ -44,8 +44,7 @@ def diagnostic(request):
     info_msg = ''
     success_ip = []
     error_ip = []
-    CDR_COUNT_mysql_pgsql = 0
-    CDR_COUNT_mongodb = 0
+    CDR_COUNT = 0
     backend_cdr_data = []
     #loop within the Mongo CDR Import List
     for ipaddress in settings.CDR_BACKEND:
@@ -106,12 +105,13 @@ def diagnostic(request):
                 'CONC_CALL': CONC_CALL.find().count(),
                 'CONC_CALL_AGG': CONC_CALL_AGG.find().count()
             }
-            backend_cdr_data.append({
-                'ip': ipaddress,
-                'cdr_count': CDR_COUNT,
-            })
         except:
             error_ip.append(ipaddress)
+
+        backend_cdr_data.append({
+            'ip': ipaddress,
+            'cdr_count': CDR_COUNT,
+        })
 
     if success_ip:
         info_msg = _("CDR Backend %s connected successfully." % (str(success_ip)))
