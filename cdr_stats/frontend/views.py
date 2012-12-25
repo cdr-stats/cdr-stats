@@ -104,7 +104,7 @@ def diagnostic(request):
                 'CONC_CALL_AGG': CONC_CALL_AGG.find().count()
             }
         except:
-            CDR_COUNT = 0
+            CDR_COUNT = _('Error')
             error_ip.append(ipaddress)
 
         backend_cdr_data.append({
