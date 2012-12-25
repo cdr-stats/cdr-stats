@@ -68,7 +68,7 @@ def diagnostic(request):
             if db_engine == 'mysql':
                 import MySQLdb as Database
                 connection = Database.connect(user=user, passwd=password,
-                    db=db_name, host=host, port=port)
+                    db=db_name, host=host, port=port, connect_timeout=4)
                 connection.autocommit(True)
                 cursor = connection.cursor()
             elif db_engine == 'pgsql':
@@ -78,7 +78,6 @@ def diagnostic(request):
                 connection.autocommit(True)
                 cursor = connection.cursor()
             elif db_engine == 'mongodb':
-                import psycopg2 as Database
                 connection = Connection(host, port)
                 DBCON = connection[db_name]
                 CDR = DBCON[table_name]
@@ -87,6 +86,8 @@ def diagnostic(request):
             if db_engine == 'mysql' or db_engine == 'pgsql':
                 cursor.execute("SELECT count(*) FROM %s" % (table_name))
                 row = cursor.fetchone()
+                #TODO: This should be an array, we might have more than 1 mysql / pgsql backend
+                #image situation where we have 5 Mysql backend, we need to count cdr for each of them
                 CDR_COUNT_mysql_pgsql = row[0]
 
             success_ip.append(ipaddress)
@@ -106,7 +107,7 @@ def diagnostic(request):
                 'CONC_CALL': CONC_CALL.find().count(),
                 'CONC_CALL_AGG': CONC_CALL_AGG.find().count()
             }
-        except ConnectionFailure:
+        except:
             error_ip.append(ipaddress)
 
     if success_ip:

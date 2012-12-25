@@ -15,17 +15,29 @@
         <div class="row">
             <div class="span6">
                 <h4>{% trans "CDR BACKEND" %}</h4>
-                <table class="table table-striped table-bordered table-condensed">
                 {% for ip, values in settings.CDR_BACKEND.items %}
+                    <table class="table table-striped table-bordered table-condensed">
                     {% if ip in error_ip %}
-                        <caption class="alert alert-error">
-                                {% trans "Connection error with" %} {{ ip }}
-                        </caption>
+                        <tr class="error">
+                            <td colspan="4">
+                                <center>
+                                <h5 class="text-error">{% trans "Connection error with" %} {{ ip }}</h5>
+                                </center>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr class="success">
+                            <td colspan="4">
+                                <center>
+                                <h5 class="text-success">{% trans "Connection successful with" %} {{ ip }}</h5>
+                                </center>
+                            </td>
+                        </tr>
                     {% endif %}
                     {% for key, value in values.items %}
                         <tr>
                         {% if forloop.first %}
-                            <td rowspan="8">{{ ip }}</td>
+                            <td rowspan="8"><span class="label label-inverse">{{ ip }}</span></td>
                         {% endif %}
                         <td>{{ key }}</td>
                         <td>
@@ -48,11 +60,12 @@
                         </td>
                         </tr>
                     {% endfor %}
-                {% endfor %}
                 </table>
+                {% endfor %}
             </div>
             <div class="span6">
-                <h4>{% trans "MONGO_CDRSTATS" %}</h4>
+                <h4>{% trans "MONGODB - CDRSTATS" %}</h4>
+                {% trans "MongoDB server used to store and centralize your CDRs and your reporting" %}
                 <table class="table table-striped table-bordered table-condensed">
                 {% for key, value in settings.MONGO_CDRSTATS.items %}
                     <tr>
