@@ -46,6 +46,7 @@ def diagnostic(request):
     error_ip = []
     CDR_COUNT_mysql_pgsql = 0
     CDR_COUNT_mongodb = 0
+    backend_cdr_data = []
     #loop within the Mongo CDR Import List
     for ipaddress in settings.CDR_BACKEND:
 
@@ -81,14 +82,14 @@ def diagnostic(request):
                 connection = Connection(host, port)
                 DBCON = connection[db_name]
                 CDR = DBCON[table_name]
-                CDR_COUNT_mongodb = CDR.find().count()
+                CDR_COUNT = CDR.find().count()
 
             if db_engine == 'mysql' or db_engine == 'pgsql':
                 cursor.execute("SELECT count(*) FROM %s" % (table_name))
                 row = cursor.fetchone()
                 #TODO: This should be an array, we might have more than 1 mysql / pgsql backend
                 #image situation where we have 5 Mysql backend, we need to count cdr for each of them
-                CDR_COUNT_mysql_pgsql = row[0]
+                CDR_COUNT = row[0]
 
             success_ip.append(ipaddress)
 
@@ -99,14 +100,16 @@ def diagnostic(request):
             CONC_CALL_AGG = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL_AGG']]
 
             collection_data = {
-                'cdr_mongodb': CDR_COUNT_mongodb,
-                'cdr_mysql_pgsql': CDR_COUNT_mysql_pgsql,
                 'CDR_COMMON': CDR_COMMON.find().count(),
                 'DAILY_ANALYTIC': DAILY_ANALYTIC.find().count(),
                 'MONTHLY_ANALYTIC': MONTHLY_ANALYTIC.find().count(),
                 'CONC_CALL': CONC_CALL.find().count(),
                 'CONC_CALL_AGG': CONC_CALL_AGG.find().count()
             }
+            backend_cdr_data.append({
+                'ip': ipaddress,
+                'cdr_count': CDR_COUNT,
+            })
         except:
             error_ip.append(ipaddress)
 
@@ -118,6 +121,7 @@ def diagnostic(request):
         info_msg = _("After changes in your 'CDR_BACKEND' settings, you will need to restart celery: $ /etc/init.d/newfies-celeryd restart")
 
     data = {
+        'backend_cdr_data': backend_cdr_data,
         'collection_data': collection_data,
         'settings': settings,
         'info_msg': info_msg,
