@@ -436,7 +436,7 @@ class CdrStatsTaskTestCase(TestCase):
     def test_get_channels_info(self):
         """Test task : get_channels_info"""
         result = get_channels_info().run()
-        self.assertEqual(result, True)
+        self.assertEqual(result, False)
 
     def test_sync_cdr_pending(self):
         """Test task : sync_cdr_pending"""
