@@ -438,10 +438,10 @@ class CdrStatsTaskTestCase(TestCase):
         result = get_channels_info().run()
         #self.assertEqual(result, True)
 
-    def test_sync_cdr_pending(self):
-        """Test task : sync_cdr_pending"""
-        result = sync_cdr_pending().run()
-        #self.assertEqual(result, True)
+    #def test_sync_cdr_pending(self):
+    #    """Test task : sync_cdr_pending"""
+    #    result = sync_cdr_pending().run()
+    #    self.assertEqual(result, True)
 
 
 class CdrModelTestCase(BaseAuthenticatedClient):
