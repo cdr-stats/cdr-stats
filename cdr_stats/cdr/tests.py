@@ -431,7 +431,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
 class CdrStatsTaskTestCase(TestCase):
 
-    fixtures = ['auth_user.json']
+    fixtures = ['auth_user.json', 'switch.json']
 
     def test_get_channels_info(self):
         """Test task : get_channels_info"""
