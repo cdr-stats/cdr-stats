@@ -10,7 +10,6 @@ services:
 #  - memcache # will start memcached
 install:
   # - pip install -q Django==$DJANGO --use-mirrors
-  - sudo apt-get install postgresql
   - bash install/requirements/install-requirements.sh
   # - pip install pep8 --use-mirrors
   # - pip install https://github.com/dcramer/pyflakes/tarball/master
