@@ -105,6 +105,19 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
     fixtures = ['auth_user.json', 'switch.json']
 
+    #def test_mgt_command(self):
+    #    # Test mgt command
+    #    call_command('generate_cdr',
+    #        '--number-cdr=10', '--delta-day=1', '--duration=10')
+    #    call_command('generate_cdr',
+    #        '--number-cdr=10', '--delta-day=0', '--duration=0')
+    #    call_command('generate_cdr', '--number-cdr=10', '--delta-day=0')
+    #    call_command('generate_cdr', '--number-cdr=10')
+    #    call_command('sync_cdr_freeswitch', '--apply-index')
+    #    call_command('sync_cdr_freeswitch')
+    #    #call_command('sync_cdr_asterisk', '--apply-index')
+    #    #call_command('sync_cdr_asterisk')
+
     def test_index(self):
         """Test Function to check customer index page"""
         response = self.client.get('/')
@@ -504,19 +517,6 @@ class CdrModelTestCase(BaseAuthenticatedClient):
         """Create model object value"""
         self.assertEquals(self.switch.name, 'localhost')
         self.assertEquals(self.hangupcause.enumeration, 'UNALLOCATED_NUMBER')
-
-    def test_mgt_command(self):
-        # Test mgt command
-        call_command('generate_cdr',
-            '--number-cdr=10', '--delta-day=1', '--duration=10')
-        call_command('generate_cdr',
-            '--number-cdr=10', '--delta-day=0', '--duration=0')
-        call_command('generate_cdr', '--number-cdr=10', '--delta-day=0')
-        call_command('generate_cdr', '--number-cdr=10')
-        call_command('sync_cdr_freeswitch', '--apply-index')
-        call_command('sync_cdr_freeswitch')
-        #call_command('sync_cdr_asterisk', '--apply-index')
-        #call_command('sync_cdr_asterisk')
 
     def tearDown(self):
         """Delete created object"""
