@@ -227,7 +227,7 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.factory = RequestFactory(HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         request = self.factory.get('/trust_control/')
         request.user = self.user
-        request.session = {}
+        #request.session = {}
         #response = add_whitelist_country(request, 198)
         #self.assertTrue(response)
         #response = get_html_table(request)
