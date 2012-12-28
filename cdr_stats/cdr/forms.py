@@ -61,6 +61,7 @@ def country_list_with_all():
     """Country list"""
     list_ct = []
     list_ct.append((0, _('All')))
+    list_ct.append((999, _('Internal Call')))
     ct_list = get_country_list()
     for i in ct_list:
         list_ct.append((i[0], i[1]))
