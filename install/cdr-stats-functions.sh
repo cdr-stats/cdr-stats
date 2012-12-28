@@ -30,6 +30,7 @@ CDRSTATS_ENV="cdr-stats"
 HTTP_PORT="8008"
 BRANCH='master'
 DB_BACKEND="POSTGRESQL"
+DATETIME=$(date +"%Y%m%d%H%M%S")
 
 
 #Django bug https://code.djangoproject.com/ticket/16017
@@ -153,69 +154,62 @@ func_setup_virtualenv() {
     echo "Virtualenv $CDRSTATS_ENV created and activated"
 }
 
-#Function to install Frontend
-func_install_frontend(){
-
-    echo ""
-    echo ""
-    echo "We will now install CDR-Stats on your server"
-	echo "============================================"
-    echo ""
-
+func_prepare_system_common(){
     #Create CDRStats User
-    echo ""
     echo "Create CDRStats User/Group : $CDRSTATS_USER"
     useradd $CDRSTATS_USER --user-group --system --no-create-home
 
-    #python setup tools
-    echo "Install Dependencies and python modules..."
     case $DIST in
         'DEBIAN')
-            apt-get -y install python-setuptools python-dev build-essential libevent-dev libapache2-mod-python libapache2-mod-wsgi
+            apt-get -y install python-setuptools python-dev build-essential libevent-dev python-pip
             #We need both Postgresql and Mysql for the Connectors
-            apt-get -y install postgresql-client-9.1
-            apt-get -y install libmysqlclient-dev
+            apt-get -y install postgresql-client-9.1 libmysqlclient-dev
             apt-get -y install git-core mercurial gawk
-            apt-get -y install python-pip
             #for audiofile convertion
             apt-get -y install libsox-fmt-mp3 libsox-fmt-all mpg321 ffmpeg
-
             #PostgreSQL
-            apt-get -y install postgresql
             apt-get -y install libpq-dev
-            #Start PostgreSQL
-            /etc/init.d/postgresql start
-
-
         ;;
         'CENTOS')
             if [ "$INSTALLMODE" = "FULL" ]; then
                 yum -y update
             fi
-            yum -y install autoconf automake bzip2 cpio curl curl-devel curl-devel expat-devel fileutils gcc-c++ gettext-devel gnutls-devel libjpeg-devel libogg-devel libtiff-devel libtool libvorbis-devel make ncurses-devel nmap openssl openssl-devel openssl-devel perl patch unzip wget zip zlib zlib-devel policycoreutils-python
+            yum -y install autoconf automake bzip2 cpio curl curl-devel curl-devel expat-devel fileutils gcc-c++ gettext-devel gnutls-devel libjpeg-devel libogg-devel libtiff-devel libtool libvorbis-devel make ncurses-devel nmap openssl openssl-devel openssl-devel perl patch unzip wget zip zlib zlib-devel policycoreutils-python sudo
 
             if [ ! -f /etc/yum.repos.d/rpmforge.repo ]; then
-            	# Install RPMFORGE Repo
-    			if [ $KERNELARCH = "x86_64" ]; then
-					rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm
-				else
-					rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
-				fi
-        	fi
-
-        	yum -y --enablerepo=rpmforge install git-core
-            yum -y install mysql mysql-devel mysql-server
+                # Install RPMFORGE Repo
+                rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.$KERNELARCH.rpm
+            fi
+            yum -y --enablerepo=rpmforge install git-core
 
             #Install epel repo for pip and mod_python
-            if [ $KERNELARCH = "x86_64" ]; then
-				rpm -ivh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-7.noarch.rpm
-			else
-				rpm -ivh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm
-			fi
-
+            rpm -ivh http://dl.fedoraproject.org/pub/epel/6/$KERNELARCH/epel-release-6-7.noarch.rpm
             # disable epel repository since by default it is enabled.
             sed -i "s/enabled=1/enable=0/" /etc/yum.repos.d/epel.repo
-            yum -y --enablerepo=epel install python-pip mod_python python-setuptools python-tools python-devel mercurial mod_wsgi libevent libevent-devel
+
+            yum -y --enablerepo=epel install python-pip mod_python python-setuptools python-tools python-devel mercurial libevent libevent-devel
+        ;;
+    esac
+
+}
+
+#Function to prepare the system, add user, install dependencies, etc...
+func_prepare_system_frontend(){
+
+    func_prepare_system_common
+
+    case $DIST in
+        'DEBIAN')
+            apt-get -y install libapache2-mod-python libapache2-mod-wsgi
+            #PostgreSQL
+            apt-get -y install postgresql
+            #Start PostgreSQL
+            /etc/init.d/postgresql start
+        ;;
+        'CENTOS')
+            yum -y install mysql mysql-devel mysql-server
+            yum -y --enablerepo=epel install mod_wsgi
+
             #start http after reboot
             chkconfig --levels 235 httpd on
 
@@ -251,14 +245,59 @@ func_install_frontend(){
                 if [ "$INSTALLMODE" = "FULL" ]; then
                     /usr/bin/mysql_secure_installation
                 fi
-				until mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST -e ";" ; do
-					clear
-                	echo "Enter your database settings"
-                	func_get_mysql_database_setting
+                until mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST -e ";" ; do
+                    clear
+                    echo "Enter your database settings"
+                    func_get_mysql_database_setting
                 done
             fi
         ;;
     esac
+
+    #Prepare Database
+    echo "Prepare Database"
+    if echo $DB_BACKEND | grep -i "^SQLITE" > /dev/null ; then
+        #Permission on database folder if we use SQLite
+        mkdir $INSTALL_DIR/database
+        chown -R $APACHE_USER:$APACHE_USER $INSTALL_DIR/database/
+
+    elif echo $DB_BACKEND | grep -i "^POSTGRESQL" > /dev/null ; then
+        # Create the Database
+        echo "Remove Existing Database if exists..."
+        if [ `sudo -u postgres psql -qAt --list | egrep '^$DATABASENAME\|' | wc -l` -eq 1 ]; then
+            echo "sudo -u postgres dropdb $DATABASENAME"
+            sudo -u postgres dropdb $DATABASENAME
+        fi
+        echo "Create Database..."
+        echo "sudo -u postgres createdb $DATABASENAME"
+        sudo -u postgres createdb $DATABASENAME
+
+        #CREATE ROLE / USER
+        echo "Create Postgresql user $DB_USERNAME"
+        #echo "sudo -u postgres createuser --no-createdb --no-createrole --no-superuser $DB_USERNAME"
+        #sudo -u postgres createuser --no-createdb --no-createrole --no-superuser $DB_USERNAME
+        echo "sudo -u postgres psql --command=\"create user $DB_USERNAME with password 'XXXXXXXXXX';\""
+        sudo -u postgres psql --command="CREATE USER $DB_USERNAME with password '$DB_PASSWORD';"
+
+        echo "Grant all privileges to user..."
+        echo "sudo -u postgres psql --command=\"GRANT ALL PRIVILEGES on database $DATABASENAME to $DB_USERNAME;\""
+        sudo -u postgres psql --command="GRANT ALL PRIVILEGES on database $DATABASENAME to $DB_USERNAME;"
+    else
+        # Create the Database
+        echo "Remove Existing Database if exists..."
+        if [ -d "/var/lib/mysql/$DATABASENAME" ]; then
+            echo "mysql --user=$DB_USERNAME --password=$DB_PASSWORD -e 'DROP DATABASE $DATABASENAME;'"
+            mysql --user=$DB_USERNAME --password=$DB_PASSWORD -e "DROP DATABASE $DATABASENAME;"
+        fi
+        echo "Create Database..."
+        echo "mysql --user=$DB_USERNAME --password=$DB_PASSWORD -e 'CREATE DATABASE $DATABASENAME CHARACTER SET UTF8;'"
+        mysql --user=$DB_USERNAME --password=$DB_PASSWORD -e "CREATE DATABASE $DATABASENAME CHARACTER SET UTF8;"
+    fi
+}
+
+
+#Function to backup the data from the previous installation
+func_backup_prev_install(){
 
     if [ -d "$INSTALL_DIR" ]; then
         # CDR-Stats is already installed
@@ -289,9 +328,10 @@ func_install_frontend(){
             read TEMP
         fi
     fi
+}
 
-    #Create and enable virtualenv
-    func_setup_virtualenv
+#Function to install the code source
+func_install_source(){
 
     #get CDR-Stats
     echo "Install CDR-Stats..."
@@ -313,6 +353,10 @@ func_install_frontend(){
 
     # Copy files
     cp -r /usr/src/cdr-stats/cdr_stats $INSTALL_DIR
+}
+
+#Function to install Python dependencies
+func_install_pip_deps(){
 
     #Install CDR-Stats depencencies
     easy_install -U distribute
@@ -334,8 +378,10 @@ func_install_frontend(){
     echo "PIP Freeze"
     echo "**********"
     pip freeze
+}
 
-
+#Function to prepare settings_local.py
+func_prepare_settings(){
     #Copy settings_local.py into cdr-stats dir
     cp /usr/src/cdr-stats/install/conf/settings_local.py $INSTALL_DIR
 
@@ -352,7 +398,6 @@ func_install_frontend(){
     if echo $DB_BACKEND | grep -i "^SQLITE" > /dev/null ; then
         # Setup settings_local.py for SQLite
         sed -i "s/'init_command/#'init_command/g"  $INSTALL_DIR/settings_local.py
-
     elif echo $DB_BACKEND | grep -i "^POSTGRESQL" > /dev/null ; then
         #Setup settings_local.py for POSTGRESQL
         sed -i "s/DATABASENAME/$DATABASENAME/"  $INSTALL_DIR/settings_local.py
@@ -360,31 +405,6 @@ func_install_frontend(){
         sed -i "s/DB_PASSWORD/$DB_PASSWORD/" $INSTALL_DIR/settings_local.py
         sed -i "s/DB_HOSTNAME/$DB_HOSTNAME/" $INSTALL_DIR/settings_local.py
         sed -i "s/DB_PORT/$DB_PORT/" $INSTALL_DIR/settings_local.py
-
-        #Make sure sudo is installed.
-        yum -y install sudo
-
-        # Create the Database
-        echo "Remove Existing Database if exists..."
-        if [ `sudo -u postgres psql -qAt --list | egrep '^$DATABASENAME\|' | wc -l` -eq 1 ]; then
-            echo "sudo -u postgres dropdb $DATABASENAME"
-            sudo -u postgres dropdb $DATABASENAME
-        fi
-        echo "Create Database..."
-        echo "sudo -u postgres createdb $DATABASENAME"
-        sudo -u postgres createdb $DATABASENAME
-
-        #CREATE ROLE / USER
-        echo "Create Postgresql user $DB_USERNAME"
-        #echo "sudo -u postgres createuser --no-createdb --no-createrole --no-superuser $DB_USERNAME"
-        #sudo -u postgres createuser --no-createdb --no-createrole --no-superuser $DB_USERNAME
-        echo "sudo -u postgres psql --command=\"create user $DB_USERNAME with password 'XXXXXXXXXX';\""
-        sudo -u postgres psql --command="CREATE USER $DB_USERNAME with password '$DB_PASSWORD';"
-
-        echo "Grant all privileges to user..."
-        echo "sudo -u postgres psql --command=\"GRANT ALL PRIVILEGES on database $DATABASENAME to $DB_USERNAME;\""
-        sudo -u postgres psql --command="GRANT ALL PRIVILEGES on database $DATABASENAME to $DB_USERNAME;"
-
     else
         # Setup settings_local.py for MySQL
         sed -i "s/'django.db.backends.postgresql_psycopg2'/'django.db.backends.mysql'/"  $INSTALL_DIR/settings_local.py
@@ -393,51 +413,41 @@ func_install_frontend(){
         sed -i "s/DB_PASSWORD/$DB_PASSWORD/" $INSTALL_DIR/settings_local.py
         sed -i "s/DB_HOSTNAME/$DB_HOSTNAME/" $INSTALL_DIR/settings_local.py
         sed -i "s/DB_PORT/$DB_PORT/" $INSTALL_DIR/settings_local.py
-
-        # Create the Database
-        echo "Remove Existing Database if exists..."
-  		if [ -d "/var/lib/mysql/$DATABASENAME" ]; then
-	        echo "mysql --user=$DB_USERNAME --password=$DB_PASSWORD -e 'DROP DATABASE $DATABASENAME;'"
-    	    mysql --user=$DB_USERNAME --password=$DB_PASSWORD -e "DROP DATABASE $DATABASENAME;"
-		fi
-        echo "Create Database..."
-        echo "mysql --user=$DB_USERNAME --password=$DB_PASSWORD -e 'CREATE DATABASE $DATABASENAME CHARACTER SET UTF8;'"
-        mysql --user=$DB_USERNAME --password=$DB_PASSWORD -e "CREATE DATABASE $DATABASENAME CHARACTER SET UTF8;"
     fi
 
-    cd $INSTALL_DIR/
+    #Setup Timezone
+    case $DIST in
+        'DEBIAN')
+            #Get TZ
+            ZONE=$(head -1 /etc/timezone)
+        ;;
+        'CENTOS')
+            #Get TZ
+            . /etc/sysconfig/clock
+        ;;
+    esac
 
-    #Fix permission on python-egg
-    mkdir $INSTALL_DIR/.python-eggs
-    chown $APACHE_USER:$APACHE_USER $INSTALL_DIR/.python-eggs
-    mkdir database
+    #Set Timezone in settings_local.py
+    sed -i "s@Europe/Madrid@$ZONE@g" $INSTALL_DIR/settings_local.py
+    sed -i "s@Europe/Madrid@$ZONE@g" $INSTALL_DIR/celeryconfig.py
 
-    #upload audio files
-    mkdir -p $INSTALL_DIR/usermedia/upload/audiofiles
-    chown -R $APACHE_USER:$APACHE_USER $INSTALL_DIR/usermedia
+    IFCONFIG=`which ifconfig 2>/dev/null||echo /sbin/ifconfig`
+    IPADDR=`$IFCONFIG eth0|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'`
+    if [ -z "$IPADDR" ]; then
+        clear
+        echo "we have not detected your IP address automatically, please enter it manually"
+        read IPADDR
+    fi
+    #Update Authorize local IP
+    sed -i "s/SERVER_IP_PORT/$IPADDR:$HTTP_PORT/g" $INSTALL_DIR/settings_local.py
+    sed -i "s/#'SERVER_IP',/'$IPADDR',/g" $INSTALL_DIR/settings_local.py
+    sed -i "s/SERVER_IP/$IPADDR/g" $INSTALL_DIR/settings_local.py
+}
 
-    #following lines is for apache logs
-    touch /var/log/cdr-stats/cdr-stats.log
-    touch /var/log/cdr-stats/cdr-stats-db.log
-    touch /var/log/cdr-stats/err-apache-cdr-stats.log
-    chown -R $APACHE_USER:$APACHE_USER /var/log/cdr-stats
+#Function Prepare Settings for the CDR backend
+func_prepare_backend_settings(){
 
-    python manage.py syncdb --noinput
-    python manage.py migrate
-    echo ""
-    echo "Create a super admin user..."
-    python manage.py createsuperuser
-
-    #Collect static files from apps and other locations in a single location.
-    python manage.py collectstatic --noinput
-
-    #Load Countries Dialcode
-    python manage.py load_country_dialcode
-
-    #Permission on database folder if we use SQLite
-    chown -R $APACHE_USER:$APACHE_USER $INSTALL_DIR/database/
-
-    #Configure for Asterisk / Freeswitch etc...
+    #Configure Backend Asterisk / Freeswitch etc...
     case $INSTALL_TYPE in
         'ASTERISK')
             DATABASENAME='asteriskcdr'
@@ -445,7 +455,6 @@ func_install_frontend(){
             MYSQLPASSWORD='password'
             MYHOST='127.0.0.1'
             MYHOSTPORT='3306'
-
 
             echo ""
             echo "Enter database settings for Asterisk..."
@@ -474,7 +483,43 @@ func_install_frontend(){
             echo "Defaut settings are fine with FreeSwitch..."
         ;;
     esac
+}
 
+#function to configure SELinux
+func_configure_selinux(){
+    if [ "$INSTALLMODE" = "FULL" ]; then
+        #Setup Firewall / SELINUX
+        case $DIST in
+            'CENTOS')
+                echo ""
+                echo "We will now add port $HTTP_PORT  and port 80 to your Firewall"
+                echo "Press Enter to continue or CTRL-C to exit"
+                read TEMP
+
+                #add HTTP port
+                iptables -I INPUT 2 -p tcp -m state --state NEW -m tcp --dport $HTTP_PORT -j ACCEPT
+                iptables -I INPUT 3 -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
+                #Add port for websocket
+                iptables -I INPUT 4 -p tcp -m state --state NEW -m tcp --dport 9000 -j ACCEPT
+                service iptables save
+
+                #Selinux to allow apache to access this directory
+                chcon -Rv --type=httpd_sys_content_t /usr/share/virtualenvs/cdr-stats/
+                chcon -Rv --type=httpd_sys_content_t $INSTALL_DIR/usermedia
+                semanage port -a -t http_port_t -p tcp $HTTP_PORT
+                semanage port -a -t http_port_t -p tcp 9000
+                #Allowing Apache to access Redis and MongoDB port
+                semanage port -a -t http_port_t -p tcp 6379
+                semanage port -a -t http_port_t -p tcp 27017
+                setsebool -P httpd_can_network_connect 1
+                setsebool -P httpd_can_network_connect_db 1
+            ;;
+        esac
+    fi
+}
+
+#Function to configure Apache
+func_configure_http_server(){
     # prepare Apache
     echo "Prepare Apache configuration..."
     echo '
@@ -510,19 +555,12 @@ func_install_frontend(){
     #correct the above file
     sed -i "s/@/'/g"  $APACHE_CONF_DIR/cdr-stats.conf
 
-    IFCONFIG=`which ifconfig 2>/dev/null||echo /sbin/ifconfig`
-    IPADDR=`$IFCONFIG eth0|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'`
-    if [ -z "$IPADDR" ]; then
-        clear
-        echo "we have not detected your IP address automatically, please enter it manually"
-        read IPADDR
-	fi
+    #Restart HTTP Server
+    service $APACHE_SERVICE restart
+}
 
-    #Update Authorize local IP
-    sed -i "s/SERVER_IP_PORT/$IPADDR:$HTTP_PORT/g" $INSTALL_DIR/settings_local.py
-    sed -i "s/#'SERVER_IP',/'$IPADDR',/g" $INSTALL_DIR/settings_local.py
-    sed -i "s/SERVER_IP/$IPADDR/g" $INSTALL_DIR/settings_local.py
-
+#Install SocketIO Service
+func_install_socketio(){
     #add service for socketio server
     echo "Add service for socketio server..."
     cp /usr/src/cdr-stats/install/cdr-stats-socketio /etc/init.d/cdr-stats-socketio
@@ -540,60 +578,77 @@ func_install_frontend(){
             /etc/init.d/cdr-stats-socketio start
         ;;
     esac
+}
 
-    #Setup Timezone
-    case $DIST in
-        'DEBIAN')
-            service apache2 restart
-            #Get TZ
-			ZONE=$(head -1 /etc/timezone)
-        ;;
-        'CENTOS')
-        	#Get TZ
-			. /etc/sysconfig/clock
-        ;;
-    esac
+#Install Django Newfies
+func_django_newfies_install(){
+    cd $INSTALL_DIR/
+    #Fix permission on python-egg
+    mkdir $INSTALL_DIR/.python-eggs
+    chown $APACHE_USER:$APACHE_USER $INSTALL_DIR/.python-eggs
 
-    #Set Timezone in settings_local.py
-    sed -i "s@Europe/Madrid@$ZONE@g" $INSTALL_DIR/settings_local.py
-    sed -i "s@Europe/Madrid@$ZONE@g" $INSTALL_DIR/celeryconfig.py
+    #upload audio files
+    mkdir -p $INSTALL_DIR/usermedia/upload/audiofiles
+    chown -R $APACHE_USER:$APACHE_USER $INSTALL_DIR/usermedia
 
-    if [ "$INSTALLMODE" = "FULL" ]; then
-        #Setup Firewall / SELINUX
-        case $DIST in
-            'CENTOS')
-                echo ""
-                echo "We will now add port $HTTP_PORT  and port 80 to your Firewall"
-                echo "Press Enter to continue or CTRL-C to exit"
-                read TEMP
+    python manage.py syncdb --noinput
+    python manage.py migrate
+    echo "Create a super admin user..."
+    python manage.py createsuperuser
 
-                #add HTTP port
-                iptables -I INPUT 2 -p tcp -m state --state NEW -m tcp --dport $HTTP_PORT -j ACCEPT
-                iptables -I INPUT 3 -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
-                #Add port for websocket
-                iptables -I INPUT 4 -p tcp -m state --state NEW -m tcp --dport 9000 -j ACCEPT
-                service iptables save
+    #Collect static files from apps and other locations in a single location.
+    python manage.py collectstatic --noinput
 
-                #Selinux to allow apache to access this directory
-                chcon -Rv --type=httpd_sys_content_t /usr/share/virtualenvs/cdr-stats/
-                chcon -Rv --type=httpd_sys_content_t $INSTALL_DIR/usermedia
-                semanage port -a -t http_port_t -p tcp $HTTP_PORT
-                semanage port -a -t http_port_t -p tcp 9000
-                #Allowing Apache to access Redis and MongoDB port
-                semanage port -a -t http_port_t -p tcp 6379
-                semanage port -a -t http_port_t -p tcp 27017
-                setsebool -P httpd_can_network_connect 1
-                setsebool -P httpd_can_network_connect_db 1
-                service httpd restart
-                service mongod restart
-            ;;
-        esac
-    fi
+    #Load Countries Dialcode
+    python manage.py load_country_dialcode
+}
 
-    #Restart HTTP Server
-    service $APACHE_SERVICE restart
+#Function to install Frontend
+func_install_frontend(){
 
     echo ""
+    echo ""
+    echo "We will now install CDR-Stats on your server"
+	echo "============================================"
+    echo ""
+
+    #Prepare
+    func_prepare_system_frontend
+
+    #Backup
+    func_backup_prev_install
+
+    #Create and enable virtualenv
+    func_setup_virtualenv
+
+    #Install Code Source
+    func_install_source
+
+    #Install Pip Dependencies
+    func_install_pip_deps
+
+    #Prepare Settings
+    func_prepare_settings
+
+    #Prepare Backend Settings
+    func_prepare_backend_settings
+
+    #Configure Logs files and logrotate
+    func_prepare_logger
+
+    #Install Django Newfies
+    func_django_newfies_install
+
+    #Configure SELinux
+    func_configure_selinux
+
+    #Configure Apache
+    func_configure_http_server
+
+    #Install SocketIO Service
+    func_install_socketio
+
+
     echo ""
     echo "**************************************************************"
     echo "Congratulations, CDR-Stats Web Application is now installed!"
@@ -604,7 +659,7 @@ func_install_frontend(){
     echo "the username and password are the ones you entered during this installation."
     echo ""
     echo "Thank you for installing CDR-Stats"
-    echo "Yours"
+    echo "Yours,"
     echo "The Star2Billing Team"
     echo "http://www.star2billing.com and http://www.cdr-stats.org/"
     echo ""
@@ -615,20 +670,12 @@ func_install_frontend(){
 #Function to install backend
 func_install_backend() {
     echo ""
-    echo ""
     echo "This will install CDR-Stats Backend, Celery & Redis on your server"
     echo "Press Enter to continue or CTRL-C to exit"
     read TEMP
 
-    #TODO Add install of dependencies...
-
-    IFCONFIG=`which ifconfig 2>/dev/null||echo /sbin/ifconfig`
-    IPADDR=`$IFCONFIG eth0|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'`
-    if [ -z "$IPADDR" ]; then
-        clear
-        echo "we have not detected your IP address automatically, please enter it manually"
-        read IPADDR
-	fi
+    #Configure Logs files and logrotate
+    func_prepare_logger
 
     #Create directory for pid file
     mkdir -p /var/run/celery
@@ -636,12 +683,6 @@ func_install_backend() {
     #Install Celery & redis-server
     echo "Install Redis-server ..."
     func_install_redis_server
-
-    #Memcache installation
-    #pip install python-memcached
-
-    echo ""
-    echo "Configure Celery..."
 
     case $DIST in
         'DEBIAN')
@@ -660,9 +701,8 @@ func_install_backend() {
 			DIR="/dev/shm"
 			echo "Checking the permissions for $dir"
 			stat $DIR
-			echo "##############################################"
 			if [ `stat -c "%a" $DIR` -ge 777 ] ; then
-     			echo "$DIR has Read Write permissions."
+     			echo "$DIR has read write permissions."
 			else
      			echo "$DIR has no read write permissions."
         		chmod -R 777 /dev/shm
@@ -686,20 +726,49 @@ func_install_backend() {
         ;;
     esac
 
-    #Active logrotate
-    func_logrotate
-
     echo ""
     echo ""
     echo "**************************************************************"
     echo "Congratulations, CDR-Stats Backend is now installed"
     echo "**************************************************************"
     echo ""
-    echo "Yours"
+    echo "Yours,"
     echo "The Star2Billing Team"
     echo "http://www.star2billing.com and http://www.cdr-stats.org/"
     echo ""
     echo ""
+}
+
+#Function to install Standalone Backend
+func_install_standalone_backend(){
+
+    echo ""
+    echo "This will install the CDR-backend without configuring Apache, SocketIO Services, etc..."
+    read TEMP
+
+    func_prepare_system_common
+
+    #Create and enable virtualenv
+    func_setup_virtualenv
+
+    #Install Code Source
+    func_install_source
+
+    #Install Pip Dependencies
+    func_install_pip_deps
+
+    #Prepare Settings
+    #TODO: Ask distant DATABASE Settings
+    func_prepare_settings
+
+    #Prepare Backend Settings
+    func_prepare_backend_settings
+
+    #Configure Logs files and logrotate
+    func_prepare_logger
+
+    #Install CDR-Stats Backend
+    func_install_backend
 }
 
 
@@ -748,8 +817,13 @@ func_install_redis_server() {
     esac
 }
 
-#Add Logrotate
-func_logrotate() {
+#Configure Logs files and logrotate
+func_prepare_logger() {
+    touch /var/log/cdr-stats/cdr-stats.log
+    touch /var/log/cdr-stats/cdr-stats-db.log
+    touch /var/log/cdr-stats/err-apache-cdr-stats.log
+    chown -R $APACHE_USER:$APACHE_USER /var/log/cdr-stats
+
     touch /etc/logrotate.d/cdr_stats
     echo '
 /var/log/cdr-stats/*.log {
