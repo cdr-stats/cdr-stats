@@ -175,12 +175,7 @@ func_prepare_system_common(){
                 yum -y update
             fi
             yum -y install autoconf automake bzip2 cpio curl curl-devel curl-devel expat-devel fileutils gcc-c++ gettext-devel gnutls-devel libjpeg-devel libogg-devel libtiff-devel libtool libvorbis-devel make ncurses-devel nmap openssl openssl-devel openssl-devel perl patch unzip wget zip zlib zlib-devel policycoreutils-python sudo
-
-            if [ ! -f /etc/yum.repos.d/rpmforge.repo ]; then
-                # Install RPMFORGE Repo
-                rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.$KERNELARCH.rpm
-            fi
-            yum -y --enablerepo=rpmforge install git-core
+            yum -y install git
 
             #Install epel repo for pip and mod_python
             rpm -ivh http://dl.fedoraproject.org/pub/epel/6/$KERNELARCH/epel-release-6-7.noarch.rpm
@@ -190,7 +185,6 @@ func_prepare_system_common(){
             yum -y --enablerepo=epel install python-pip mod_python python-setuptools python-tools python-devel mercurial libevent libevent-devel
         ;;
     esac
-
 }
 
 #Function to prepare the system, add user, install dependencies, etc...
