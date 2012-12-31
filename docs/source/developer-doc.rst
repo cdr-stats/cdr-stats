@@ -15,4 +15,5 @@ Contents:
     ./developer-doc/views
     ./developer-doc/tasks
     ./developer-doc/testing
+    ./developer-doc/javasctipt_files
 
