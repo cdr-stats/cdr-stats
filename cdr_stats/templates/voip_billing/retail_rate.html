@@ -1,0 +1,114 @@
+{% extends "voip_billing/master.html" %}
+{% load i18n %}
+{% load cache %}
+{% load pagination_tags %}
+
+{% block extra_head %}
+   
+    <script language="javascript" type="text/javascript">
+           
+       $(document).ready(function() {
+       $("#search_prefix").click(function() {
+          
+          if(document.getElementById('id_prefix').value.length == 0)
+          {
+            alert('Please Enter Prefix: field');
+            document.getElementById('id_prefix').focus();
+            return false;
+          }
+    
+          $.getJSON("http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/voip_billing/api/voiprate/" + document.getElementById('id_prefix').value,
+               function(json) {                 
+                 data_into_table(json);
+               });
+        });
+     });
+
+     $(document).ready(function() {
+       $("#clear_search_prefix").click(function() {
+          $.getJSON("http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/voip_billing/api/voiprate/",
+               function(json) {                 
+                 data_into_table(json);
+               });
+      });
+     });
+    
+     $(document).ready(function() {
+       $("#id_prefix").keydown(function(event) {
+            numeric(event);
+        });
+     });
+
+     $.getJSON("http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/voip_billing/api/voiprate/",
+           function(json) {
+             data_into_table(json);
+     });
+
+     function isEmpty(obj) {
+        for(var prop in obj) {
+            if(obj.hasOwnProperty(prop))
+                return false;
+        }
+        return true;
+     }
+
+     function data_into_table(json)
+     {
+         var html = '<table align="center" border=1><thead><tr>';
+         html += '<th>Prefix</sup></th>';
+         html += '<th>Destination</sup></th>';
+         html += '<th>Rate</th>';
+         html += '</tr></thead>';
+         html += '<tbody>';
+         if(isEmpty(json))
+         {
+            html += '<tr><td colspan=3><center>No Record Found !!</center></td></tr>';
+         }
+         $('#rate_list').empty();
+         $.each(json, function (i, obj) {
+
+         html += '<tr><td>' + obj.prefix + '</td>';
+         html += '<td>' + obj.prefix__destination + '</td>';
+         html += '<td>' + obj.retail_rate + '</td></tr>';
+
+         });
+         html += '</tbody>'
+         $('#rate_list').append(html).append('</table>');
+     }
+    </script>
+
+
+{% endblock %}
+
+{% block page_heading %}
+<center>Call Retail Rate</center>
+{% endblock %}
+
+{% block content %}
+
+<form method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
+    <table align=center>
+        <caption>Search Option</caption>
+        <tr>
+            <td colspan=2 align=center>{{ error }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.prefix.label }}</td>
+            <td>{{ form.prefix }}</td>
+        </tr>        
+        <tr>
+            <td ></td>
+            <td align=left><!--<input type="submit" value="{% trans "Search" %}" />&nbsp;-->
+                        <input type=button name=search id=search_prefix value={% trans "Search" %} />&nbsp;
+                        <input type="reset" id=clear_search_prefix value="{% trans "Clear" %}"><td>
+        </tr>
+    </table>
+</form>
+<br/>
+<br/>
+{% cache 500 sidebar %}
+<div id="rate_list">
+</div>
+{% endcache %}
+
+{% endblock %}

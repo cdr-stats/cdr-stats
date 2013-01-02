@@ -1,0 +1,24 @@
+[
+   {
+      "pk":2,
+      "model":"auth.user",
+      "fields":{
+         "username":"userapi",
+         "first_name":"user",
+         "last_name":"api",
+         "is_active":true,
+         "is_superuser":false,
+         "is_staff":false,
+         "last_login":"2011-01-26 04:05:42",
+         "groups":[
+
+         ],
+         "user_permissions":[
+
+         ],
+         "password":"sha1$81b9e$f06b1551b933615ec1b9f191f104e5607d4e0443",
+         "email":"user@api.com",
+         "date_joined":"2011-01-26 04:05:42"
+      }
+   }
+]

@@ -200,6 +200,11 @@ INSTALLED_APPS = (
     'frontend_notification',
     'dajaxice',
     'dajax',
+    'voip2bill.voip_gateway',
+    'voip2bill.voip_billing',
+    'voip2bill.voip_report',
+    'voip2bill.voip_billing.api',
+    'voip2bill.user_profile',
 )
 
 # Debug Toolbar

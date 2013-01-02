@@ -1,0 +1,136 @@
+{% extends "admin/change_list.html" %}
+{% load adminmedia admin_list i18n %}
+{% load sms_billing_extras %}
+
+{% block content %}
+  <div id="content-main">
+    
+    {% if cl.formset.errors %}
+        <p class="errornote">
+        {% blocktrans count cl.formset.errors|length as counter %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+        </p>
+        {{ cl.formset.non_form_errors }}
+    {% endif %}
+
+    {% block custom-search %}
+    <form method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
+    <table >
+        <caption>{% trans "Search Option" %}</caption>
+        <tr>
+            <td>{{ form.fromday_chk.label }}</td>
+            <td>{{ form.fromday_chk }}
+                &nbsp;{{ form.from_day.label }}&nbsp;{{ form.from_day }}&nbsp;{{ form.from_month_year }}&nbsp;&nbsp;{{ form.today_chk.label }}
+                &nbsp;{{ form.today_chk }}&nbsp;{{ form.to_day }}&nbsp;{{ form.to_month_year }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.status.label }}</td>
+            <td>{{ form.status }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.billed.label }}</td>
+            <td>{{ form.billed }}</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td><input type="submit" value="{% trans "Search" %}" class="l-1" />&nbsp;
+			<input type="reset" class="j-2" name="reset" value="{% trans "Reset" %}"><td>
+        </tr>
+    </table>
+    </form>
+    {% endblock %}
+
+    {% block object-tools %}
+        <ul class="object-tools">
+          <li><a href="import_mt_report/" class="addlink">{% trans "Import Report" %}</a></li>
+          {% if has_add_permission %}
+          <li>
+            <a href="add/{% if is_popup %}?_popup=1{% endif %}" class="addlink">
+              {% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+    {% endblock %}
+
+    <div class="module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
+      {% block search %}{% search_form cl %}{% endblock %}
+      {% block date_hierarchy %}{% date_hierarchy cl %}{% endblock %}
+
+      {% block filters %}
+        {% if cl.has_filters %}
+          <div id="changelist-filter">
+            <h2>{% trans 'Filter' %}</h2>
+            {% for spec in cl.filter_specs %}{% admin_list_filter cl spec %}{% endfor %}
+          </div>
+        {% endif %}
+      {% endblock %}
+      
+      <form id="changelist-form" action="" method="post"{% if cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %}>{% csrf_token %}
+      {% if cl.formset %}
+        {{ cl.formset.management_form }}
+      {% endif %}      
+      {% block result_list %}
+          {% if action_form and actions_on_top and cl.full_result_count %}{% admin_actions %}{% endif %}
+          {% result_list cl %}
+          {% if action_form and actions_on_bottom and cl.full_result_count %}{% admin_actions %}{% endif %}
+      {% endblock %}
+      {% block pagination %}{% pagination cl %}{% endblock %}
+      </form>
+    </div>
+
+    <br/>
+
+    {% block extra_data %}
+    <table class="" align=center>
+        <caption>{% trans "Daily SMS Report" %}</caption>
+        <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">{% trans "Day Date" %}</th>
+                <th scope="col">{% trans "Number message send" %}</th>
+                <th scope="col">{% trans "Number Message Delivered" %}</th>
+                <th scope="col">{% trans "Carrier Cost" %}</th>
+                <th scope="col">{% trans "Retail Cost" %}</th>
+                <th scope="col">{% trans "Profit" %}</th>
+                <th scope="col"><acronym title="Profit Image">{% trans "PI" %}</acronym></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for td in total_data %}
+            <tr>
+                <th scope="row"></th>
+                <td>{{ td.updated_date }}</td>                
+                <td>{{ td.send_date__count }}</td>
+                <td>{{ td.delivery_date__count }}</td>
+                <td>{{ td.carrier_cost__sum }}</td>
+                <td>{{ td.retail_cost__sum }}</td>
+                <td>{{ td.retail_cost__sum|subtract:td.carrier_cost__sum }}</td>
+                <td>{{ td.retail_cost__sum|profit_in_percentage:td.carrier_cost__sum }}                    
+                    
+                    {% if td.retail_cost__sum|profit_amount:td.carrier_cost__sum > 0 %}
+                        <img src="{{STATIC_URL}}simu_sms/images/arrow-up.png" width=" " style="vertical-align:center;" height="10"/>
+                    {% else %}
+                        <img src="{{STATIC_URL}}simu_sms/images/arrow-down.png" width=" " style="vertical-align:center;" height="10"/>
+                    {% endif %}
+
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th scope="row">{% trans "Total" %}</th>
+                <td>{{ total_sms }}</td>
+                <td>{{ total_sent }}</td>
+                <td>{{ total_delivered }}</td>
+                <td>{{ total_carrier_cost }}</td>
+                <td>{{ total_retail_cost }}</td>
+                <td>{{ total_profit }}</td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+    {% endblock %}
+
+  </div>
+{% endblock %}

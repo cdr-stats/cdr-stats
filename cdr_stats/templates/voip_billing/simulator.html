@@ -1,0 +1,80 @@
+{% extends "voip_billing/master.html" %}
+{% load i18n %}
+{% load pagination_tags %}
+
+{% block extra_head %}
+   
+    <script language="javascript" type="text/javascript">
+           
+       $(document).ready(function() {
+       $("#simulator").click(function() {
+          
+          if(document.getElementById('id_destination_no').value.length == 0)
+          {
+            alert('Please Enter Destination: field');
+            document.getElementById('id_destination_no').focus();
+            return false;
+          }      
+          
+        });
+     });
+
+    
+     $(document).ready(function() {
+       $("#id_destination_no").keydown(function(event) {
+            numeric(event);
+        });
+     });
+
+     
+    </script>
+
+
+    
+{% endblock %}
+
+{% block page_heading %}
+<center>VoIP Billing Simulator</center>
+{% endblock %}
+
+{% block content %}
+
+<form method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
+    <table align=center border=0>
+        {{ form.as_table }}
+        <tr>
+            <td >&nbsp;</td>
+            <td align=left><input id="simulator" type="submit" value="{% trans "Submit" %}" />&nbsp;&nbsp;
+                          <input type="reset" name="reset" value="{% trans "Clear" %}"></td>
+        </tr>
+    </table>
+</form>
+
+<br/>
+<br/>
+<p>&nbsp;</p>
+ 
+<table class="" style="width:500px;" align=center border=1>
+<caption></caption>
+  <tr>
+        <th align=left>{% trans "Call Cost" %}</th>
+        <th align=left>{% trans "RetailPlan" %}</th>
+        <th align=left>{% trans "Retail Rate" %}</th>
+  </tr>
+{% if data %}
+  {% autopaginate data 5 %}
+  {% for d in data %}
+  <tr>
+       <td align=left>{{ d.0 }}</td>       
+       <td align=left>{{ d.1 }}</td>
+       <td align=left>{{ d.2 }}</td>
+   </tr>
+    {% endfor %}
+   <!--<tr><th scope="col" colspan=3>  {% paginate %}  </th></tr>-->
+{% else %}
+  <tr><td scope="row" colspan=3 align=center>{% trans "No Record(s) found." %}</td></tr>
+{% endif %}
+</table>
+
+
+{% endblock %}

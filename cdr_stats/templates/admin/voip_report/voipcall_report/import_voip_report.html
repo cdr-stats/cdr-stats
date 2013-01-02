@@ -1,0 +1,133 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_modify adminmedia %}
+
+{% block breadcrumbs %}{% if not is_popup %}
+<div class="breadcrumbs">
+     <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+     <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
+     <a href="/admin/{{ opts.app_label }}/{{ model_name }}">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
+     Import {{ opts.verbose_name }}
+</div>
+{% endif %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+<br/>
+<table border=1>
+<caption>Sample CSV File</caption>
+<tr>
+    <th>{% trans "Recipient Phone No" %}</th>
+    <th>{% trans "Sender Phone No" %}</th>
+    <th>{% trans "Disposition" %}</th>
+    <th>{% trans "Sessiontime" %}</th>
+    <th>{% trans "Sessiontime_real" %}</th>
+    <th>{% trans "Customer_id" %}</th>
+    <th>{% trans "Call date" %}</th>
+</tr>
+<tr>
+    <td>0044650355212</td>
+    <td>0032650781232</td>
+    <td>ANSWER</td>
+    <td>23</td>
+    <td>10</td>
+    <td>1</td>
+    <td>2011-02-02 11:11:11</td>
+</tr>
+<tr>
+    <td>44650781232</td>
+    <td>32664393242</td>
+    <td>NOANSWER</td>
+    <td>35</td>
+    <td>20</td>
+    <td>1</td>
+    <td>2011-02-02 11:11:11</td>
+</tr>
+<tr>
+    <td>44650781232</td>
+    <td>32650781225</td>
+    <td>CANCEL</td>
+    <td>184</td>
+    <td>150</td>
+    <td>1</td>
+    <td>2011-02-02 11:11:11</td>
+</tr>
+<tr>
+    <td>44650352223</td>
+    <td>32650781124</td>
+    <td>CONGESTION</td>
+    <td>123</td>
+    <td>121</td>
+    <td>1</td>
+    <td>2011-02-02 11:11:11</td>
+</tr>
+<tr>
+    <td>44650345268</td>
+    <td>32653481235</td>
+    <td>ANSWER</td>
+    <td>78</td>
+    <td>50</td>
+    <td>1</td>
+    <td>2011-02-02 11:11:11</td>
+</tr>
+</table>
+<p>
+<b>{% trans "Status = (ANSWER, BUSY, NOANSWER, CANCEL, CONGESTION, CHANUNAVAIL, DONTCALL, TORTURE, INVALIDARGS, NOROUTE, FORBIDDEN)" %}</b>
+</p>
+<br/>
+
+<br/>
+
+<form method="post" action="" enctype="multipart/form-data" >{% csrf_token %}
+<table border=1>
+{{ form.as_table }}
+<tr><td colspan=2 align=right><input type="submit" class="l-1" name="submit" value="{% trans "Submit" %}" />&nbsp;
+<input type="reset" class="j-2" name="reset" value="{% trans "Reset" %}" /></td></tr>
+</table>
+</form>
+
+<br/>
+<br/>
+
+{% block msg %}
+    {% if msg %}
+        {{ msg }}
+    {% endif %}
+{% endblock %}
+
+<br/>
+<br/>
+
+
+{% if success_import_list %}
+<table border=1>
+    <tr>
+        <th>{% trans "Record(s) Successfully Imported" %} :</th>
+    </tr>
+{% for row in success_import_list %}    
+    <tr class="{% cycle 'row1' 'row2' %}">
+        <td>
+            {{ row }}
+        </td>
+    </tr>
+{% endfor %}
+</table>
+{% endif %}
+
+
+{% if error_import_list %}
+<br>
+<table border=1>
+    <tr>
+        <th>{% trans "Record(s) not Imported" %} :</th>
+    </tr>
+{% for row in error_import_list %}    
+    <tr class="{% cycle 'row1' 'row2' %}">
+        <td>
+            {{ row }}
+        </td>
+    </tr>
+{% endfor %}
+</table>
+{% endif %}
+
+{% endblock %}

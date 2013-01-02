@@ -60,6 +60,9 @@ urlpatterns = patterns('',
     (r'^admin_tools/', include('admin_tools.urls')),
 
     (r'^api/', include(tastypie_api.urls)),
+    
+    #Add VoIP Billing
+    (r'^voip_billing/', include('voip_billing.urls')),
 
     # Serve static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',

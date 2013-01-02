@@ -1,0 +1,34 @@
+[
+   {
+      "pk":1,
+      "model":"voip_gateway.gateway",
+      "fields":{
+         "updated_date":"2011-03-31 03:35:12",
+         "status":0,
+         "protocol":"IAX",
+         "name":"Gateway Default",
+         "count_using":null,
+         "count_call":null,
+         "hostname":"localhost",
+         "maximum_call":null,
+         "removeprefix":"",
+         "addparameter":"",
+         "secondused":null,
+         "created_date":"2011-03-31 03:35:12",
+         "addprefix":"",
+         "description":"Gateway Default"
+      }
+   },
+   {
+      "pk":1,
+      "model":"voip_gateway.provider",
+      "fields":{
+         "updated_date":"2010-12-10 10:34:08",
+         "created_date":"2010-12-10 06:58:45",
+         "metric":10,
+         "gateway":1,
+         "name":"Provider Default",
+         "description":"Provider Default"
+      }
+   }
+]

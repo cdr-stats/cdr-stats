@@ -1,0 +1,25 @@
+{% extends "voip_billing/master.html" %}
+{% load i18n %}
+
+
+{% block page_heading %}
+<center>VoIP Billing Index Page</center>
+{% endblock %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+    <div>
+	    {% if user.is_authenticated %}
+            {% trans "Welcome" %}, {{ user.username }}
+	    {% endif %}		
+	</div>
+{% else %}    
+    {% include "voip_billing/login.html" %}
+{% endif %}
+
+
+
+
+{% endblock %}
+

@@ -1,0 +1,62 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_modify adminmedia %}
+
+{% block breadcrumbs %}{% if not is_popup %}
+<div class="breadcrumbs">
+     <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+     <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
+     <a href="/admin/{{ opts.app_label }}/{{ model_name }}">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
+     {% trans "VoIP Simulator" %}
+</div>
+{% endif %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+<div>
+<form method="post" action="" enctype="multipart/form-data" >{% csrf_token %}
+<table border=0>
+{{ form.as_table }}
+<tr><td colspan=2 align=right><input type="submit" name="submit" class="l-1" value="{% trans "Submit" %}" />&nbsp;
+    <input type="reset" class="j-2" name="reset" value="{% trans "Reset" %}" /></td></tr>
+</table>
+</form>
+</div>
+
+<p>&nbsp;</p>
+
+<table class="" style="width:500px;" border=1>
+<caption></caption>
+  <tr>
+        <th align=left>{% trans "Call Cost" %}</th>
+        <th align=left>{% trans "Carrier Plan ID" %}</th>
+        <th align=left>{% trans "Carrier Plan" %}</th>
+        <th align=left>{% trans "Retail Plan ID" %}</th>
+        <th align=left>{% trans "Retail Plan" %}</th>
+        <th align=left>{% trans "Carrier Rate ID" %}</th>
+        <th align=left>{% trans "Carrier Rate" %}</th>
+        <th align=left>{% trans "Retail Rate ID" %}</th>
+        <th align=left>{% trans "Retail Rate" %}</th>
+        <th align=left>{% trans "Prefix" %}</th>
+  </tr>
+{% if data %}  
+  {% for d in data %}
+  <tr>
+       <td align=left>{{ d.0 }}</td>
+       <td align=left><a href="/admin/voip_billing/voipcarrierplan/{{ d.1 }}">{{ d.1 }}</a></td>
+       <td align=left>{{ d.2 }}</td>
+       <td align=left><a href="/admin/voip_billing/voipretailplan/{{ d.3 }}">{{ d.3 }}</a></td>
+       <td align=left>{{ d.4 }}</td>
+       <td align=left><a href="/admin/voip_billing/voipcarrierrate/{{ d.5 }}">{{ d.5 }}</a></td>
+       <td align=left>{{ d.6 }}</td>
+       <td align=left><a href="/admin/voip_billing/voipretailrate/{{ d.7 }}">{{ d.7 }}</a></td>
+       <td align=left>{{ d.8 }}</td>
+       <td align=left>{{ d.9 }}</td>
+   </tr>
+    {% endfor %}
+   
+{% else %}
+  <tr><td scope="row" colspan=10 align=center>{% trans "No Record(s) found." %}</td></tr>
+{% endif %}
+</table>
+
+{% endblock %}
