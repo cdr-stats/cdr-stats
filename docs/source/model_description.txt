@@ -1,0 +1,82 @@
+==============================================
+Description of the Object used in VoIP Billing
+==============================================
+
+
+------
+Prefix
+------
+These are the prefixes and destinations
+For instance : 44 ; United Kingdom
+
+
+---------
+Provider
+---------
+This defines the VoIP Provider you want to use to deliver your VoIP calls.
+Each provider will be associated to a Gateway which will link to the API of the Service Provider.
+
+
+--------
+VoIPPlan
+--------
+VoIPPlans are associated to your clients, this defines the rate at which the VoIP calls are sold to your clients.
+An VoIPPlan is a collection of VoIPRetailPlans, you can have 1 or more VoIPRetailPlans associated to the VoIPPlan
+
+A client has a single VoIPPlan
+An VoIPPlan has many VoIPRetailPlans.
+An VoIPRetailPlan has VoIPRetailRates
+
+The LCR system will route the VoIP via the lowest cost carrier.
+
+
+--------------
+VoIPRetailPlan
+--------------
+This contains the VoIPRetailRates to retail to the customer. these plans are associated to the VoIPPlan with a ManyToMany relation.
+It defines the costs at which we sell the VoIP calls to clients.
+VoIPRetailPlan will then contain a set of VoIPRetailRates which will define the cost of sending an VoIP to each destination
+The system can have several VoIPRetailPlans, but only the ones associated to the VoIPplan will be used by the client.
+
+
+----------------------
+VoIPPlan_VoIPRetailPlan
+----------------------
+ManytoMany relationship between VoIPPlan & VoIPRetailPlan
+
+
+--------------
+VoIPRetailRate
+--------------
+A single VoIPRetailRate consist of a retail rate and prefix at which you want to use to sell an VoIP to a particular destination.
+VoIPRetailRates are grouped by VoIPRetailPlan, which will be then in turn be associated to an VoIPPlan
+
+
+---------------
+VoIPCarrierPlan
+---------------
+Once the retail price is defined by the VoIPPlan, VoIPRetailPlans and VoIPRetailRates, we also need to know which is the best route to send the VoIP
+how much it will cost, and which VoIPC (Small Message Service Centre) to use.
+VoIPCarrierPlan is linked to the VoIPRetailPlan, so once we found how to sell the service to the client
+we need to look at which carrier (Provider) we want to use, The VoIPCarrierPlan defines this.
+The system can have several VoIPCarrierPlans, but only the one associated to the VoIPRetailPlan-VoIPPlan
+will be used to connect the VoIP of the client.
+
+
+---------------
+VoIPCarrierRate
+---------------
+The VoIPCarrierRates are a set of all the carrier rate and prefix that will be used to purchase the VoIP from your carrier,
+VoIPCarrierRates are grouped by VoIPCarrierPlan, which will be then associated to a VoIPRetailPlan
+
+
+-----------------------
+VoIPPlan_VoIPCarrierPlan
+-----------------------
+ManytoMany relationship between VoIPPlan & VoIPCarrierPlan
+
+
+----------------
+VoIP Call Report
+----------------
+This gives information of all the call delivered with the carrier charges and revenue of each message.

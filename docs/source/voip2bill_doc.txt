@@ -1,0 +1,112 @@
+===============
+About VoIP2Bill
+===============
+
+
+What is VoIP2Bill
+-----------------
+
+
+How to use it
+-------------
+
+
+Requirements
+------------
+
+- Django (Python based web-framework):
+  
+  .. warning::
+    You must use Django version 1.3 VoIP2Bill.
+
+- For django extensions:
+
+  - `Django-extensions`_
+
+
+    2. Sqlite3 / Mysql
+    3. Apache
+    4. Python 2.6
+
+
+-----------
+Admin Panel
+-----------
+
+~~~~~~~~~~~
+Auth System
+~~~~~~~~~~~
+Admin users & customer users
+
+~~~~~~~~~~~~~~~~~~~~~
+Country & Prefix List
+~~~~~~~~~~~~~~~~~~~~~
+Countries & their respective destination prefixes.
+
+~~~~~~~~~~~~
+VoIP Gateway
+~~~~~~~~~~~~
+A Gateway is a sending endpoint, and associated authentication info that can be
+used to make a call.
+
+~~~~~~~~
+Provider
+~~~~~~~~
+This defines the VoIP Provider you want to use to deliver your VoIP Call.
+Each provider will be associated to a Gateway which will link to the API of
+the Service Provider.
+
+
+--------------
+Billing Engine
+--------------
+
+~~~~~~~~
+Provider
+~~~~~~~~
+
+A provider is the company/person that provides you the SMS Gateway facility.
+
+~~~~~~~~
+VoIP Plan
+~~~~~~~~
+
+A Plan which you are going to offer to your customer. This defines the rate at which the VoIP Calls
+are sold to your clients. A VoIP Plan has many rate plans – A rate plan has many rates.
+
+~~~~~~~~~
+Rate Plan
+~~~~~~~~~
+
+VoIp Plan is assciated with Rate Plans. Mainly two type of Rate Plans
+
+    1. Carrier Plan : This contains the Carrier Rates to cost to us.
+    2. Retail Plan : This contains the Retail Rates to sell to the customer.
+
+~~~~
+Rate
+~~~~
+
+Rate is most basic entity in the billing engine. Rates are associated with
+with every Rate Plan(s) & destination prefiexes (e.g. 34, 346, 32 etc).
+If the destination digits do not match an entry in the rate attached to the customer,
+then the VoIP Call cannot be made.
+
+    1. Carrier rate : your purchase cost that you need to pay to your VoIP-Gateway-provider
+       to let your platform make VoIP call to destination.
+    2. Retail Rate  : your selling rate which is how to bill the user/customer for making
+       VoIP call to destination through your platform.
+
+~~~~~~~~
+Ban Plan
+~~~~~~~~
+
+Ban Plan contains banned destinations/prefixes where user's VoIP Call should not be made
+& Ban Plans are associated with VoIP Plan(s).
+
+
+----------------
+VoIP Call Report
+----------------
+The VoIP Call reports screen shows the VoIP data records filtering criteria to analyse traffic
+on the platform, and to analyse the usage on individual dates, billed, call status.
