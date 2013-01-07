@@ -1,14 +1,12 @@
-from django.conf.urls.defaults import *
-from django.conf import settings
-from voip2bill.voip_billing.views import *
+from django.conf.urls import patterns
 
 
-urlpatterns = patterns('',
-    (r'^$', 'voip2bill.voip_billing.views.index'),
-    (r'^login/$', 'voip2bill.voip_billing.views.login_view'),
-    (r'^logout/$', 'voip2bill.voip_billing.views.logout_view'),
-    (r'^index/$', 'voip2bill.voip_billing.views.index'),
-    (r'^retail_rate/$', 'voip2bill.voip_billing.views.retail_rate_view'),
-    (r'^simulator/$', 'voip2bill.voip_billing.views.simulator'),
-    (r'^api/', include('voip2bill.voip_billing.api.urls')),
+urlpatterns = patterns('voip_billing.views',
+    (r'^$', 'index'),
+    (r'^login/$', 'login_view'),
+    (r'^logout/$', 'logout_view'),
+    (r'^index/$', 'index'),
+    (r'^retail_rate/$', 'retail_rate_view'),
+    (r'^simulator/$', 'simulator'),
+    #(r'^api/', include('voip2bill.voip_billing.api.urls')),
 )

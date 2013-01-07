@@ -1,11 +1,11 @@
 from piston.handler import BaseHandler
 from piston.emitters import *
 from piston.utils import rc, require_mime, require_extended, throttle
-from voip2bill.voip_billing.models import *
-from voip2bill.voip_report.models import *
-from voip2bill.voip_billing.tasks import *
-from voip2bill.voip_billing.function_def import *
-from voip2bill.user_profile.models import *
+from voip_billing.models import VoIPRetailRate
+from voip_report.models import VoIPCall, VoIPCall_Report
+from voip_billing.tasks import VoIPbilling
+from voip_billing.function_def import prefix_allowed_to_voip_call, prefix_list_string
+from user_profile.models import UserProfile
 from datetime import *
 
 
@@ -26,11 +26,11 @@ class VoIPRateHandler(BaseHandler):
         [ ]
 
         CURL Testing :
-        curl -u username:password -i -H "Accept: application/json" \
-        -X GET http://127.0.0.1:8000/voip_billing/api/voiprate/
-        or with prefix
-        curl -u username:password -i -H "Accept: application/json" \
-        -X GET http://127.0.0.1:8000/voip_billing/api/voiprate/XXX/
+            curl -u username:password -i -H "Accept: application/json" -X GET http://127.0.0.1:8000/voip_billing/api/voiprate/
+
+            or with prefix
+
+            curl -u username:password -i -H "Accept: application/json" -X GET http://127.0.0.1:8000/voip_billing/api/voiprate/XXX/
         """
         user_voip_plan = UserProfile.objects.get(user=request.user)
         voipplan_id = user_voip_plan.voipplan_id #  1
@@ -107,14 +107,14 @@ class VoIPRateHandler(BaseHandler):
         if allowed:
             # Get Destination prefix list e.g (34,346,3465,34657)
             destination_prefix_list = \
-            prefix_list_string(str(recipient_phone_no))
+                prefix_list_string(str(recipient_phone_no))
 
             # Split Destination prefix list
             list = destination_prefix_list.split(",")
 
             # Get Rate List
             rate_list = VoipRetailRate.objects.values('prefix', 'retail_rate',
-            'prefix__destination').filter(prefix__in=[int(s) for s in list])
+                'prefix__destination').filter(prefix__in=[int(s) for s in list])
 
             try:
                 return rate_list

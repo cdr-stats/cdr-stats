@@ -1,12 +1,12 @@
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
-from voip2bill.voip_gateway.models import *
-from voip2bill.voip_billing.models import *
-from voip2bill.voip_billing.forms import *
-from voip2bill.voip_billing.function_def import *
-from voip2bill.voip_billing.test_utils import *
-from voip2bill.voip_report.models import *
-from voip2bill.user_profile.models import *
+from voip_gateway.models import *
+from voip_billing.models import *
+from voip_billing.forms import *
+from voip_billing.function_def import *
+from voip_billing.test_utils import *
+from voip_report.models import *
+from user_profile.models import *
 import base64
 
 class BaseAuthenticatedClient(TestCase):

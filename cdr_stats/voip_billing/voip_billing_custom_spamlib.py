@@ -1,4 +1,4 @@
-from voip2bill.voip_billing.models import *
+from voip_billing.models import *
 from dilla import spam
 import string
 import random

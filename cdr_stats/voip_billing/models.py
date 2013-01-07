@@ -1,10 +1,10 @@
 from django.db import models
 from django.utils.translation import ugettext as _
-from prefix_country.models import *
-from voip2bill.voip_gateway.models import *
+from country_dialcode.models import Country, Prefix
+from voip_gateway.models import *
 from datetime import *
 from common.intermediate_model_base_class import Model
-from django.contrib.auth.models import User
+
 
 lcr_list = ((0, _("LCR")),
             (1, _("LCD")))

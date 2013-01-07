@@ -5,13 +5,13 @@ from django.template import RequestContext
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.db.models import *
-from voip2bill.voip_billing.models import *
-from voip2bill.voip_report.models import *
-from voip2bill.voip_billing.tasks import *
-from voip2bill.voip_billing.forms import *
-from voip2bill.voip_report.forms import *
-from voip2bill.voip_report.function_def import *
-from voip2bill.user_profile.models import *
+from voip_billing.models import *
+from voip_billing.tasks import *
+from voip_billing.forms import *
+from voip_report.models import *
+from voip_report.forms import *
+from voip_report.function_def import *
+from user_profile.models import *
 from datetime import *
 import csv
 import os

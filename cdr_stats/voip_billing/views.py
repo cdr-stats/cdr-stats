@@ -8,12 +8,11 @@ from django.shortcuts import render_to_response
 from django.db.models import *
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
-from voip2bill.voip_billing.models import *
-from voip2bill.voip_billing.forms import *
-from voip2bill.voip_billing.function_def import *
-from voip2bill.voip_billing.tasks import *
-from voip2bill.user_profile.models import *
-from helpers import json_encode
+from voip_billing.models import *
+from voip_billing.forms import *
+from voip_billing.function_def import *
+from voip_billing.tasks import *
+from user_profile.models import *
 from inspect import stack, getmodule
 from datetime import *
 from random import *

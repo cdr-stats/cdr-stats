@@ -1,6 +1,6 @@
-from voip2bill.voip_gateway.models import *
-from voip2bill.voip_billing.models import *
-from voip2bill.voip_report.models import *
+from voip_gateway.models import *
+from voip_billing.models import *
+from voip_report.models import *
 from settings import PHONE_NO_PREFIX_LIMIT_MAX, PHONE_NO_PREFIX_LIMIT_MIN
 from django.core.cache import cache
 from datetime import *

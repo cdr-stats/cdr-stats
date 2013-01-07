@@ -1,6 +1,6 @@
-from voip2bill.voip_billing.models import *
-from voip2bill.voip_billing.function_def import *
-from voip2bill.voip_report.models import *
+from voip_billing.models import *
+from voip_billing.function_def import *
+from voip_report.models import *
 from datetime import *
 from random import *
 import os

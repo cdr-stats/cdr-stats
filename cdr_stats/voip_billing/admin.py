@@ -7,9 +7,11 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.db.models import *
 from prefix_country.models import *
-from voip2bill.voip_billing.models import *
-from voip2bill.voip_billing.forms import *
-from voip2bill.voip_billing.widgets import *
+from voip_billing.models import VoIPRetailRate, VoIPPlan, BanPlan,\
+    VoIPPlan_BanPlan, BanPrefix, VoIPRetailPlan, VoIPPlan_VoIPRetailPlan,\
+    VoIPCarrierPlan, VoIPCarrierRate, VoIPPlan_VoIPCarrierPlan
+from voip_billing.forms import RetailRate_fileImport, CarrierRate_fileImport
+from voip_billing.widgets import *
 from settings import DATABASES
 from datetime import *
 import csv

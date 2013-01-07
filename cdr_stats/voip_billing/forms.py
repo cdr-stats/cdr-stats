@@ -1,11 +1,7 @@
 from django import forms
-from django.forms import *
-from django.contrib import *
-from django.contrib.admin.widgets import *
 from django.utils.translation import ugettext_lazy as _
-from voip2bill.voip_billing.models import *
-from voip2bill.voip_billing.function_def import *
-from datetime import *
+from voip_billing.models import *
+from voip_billing.function_def import *
 
 
 class SearchForm(forms.Form):

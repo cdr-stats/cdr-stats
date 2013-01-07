@@ -1,2 +1,2 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 # place app url patterns here

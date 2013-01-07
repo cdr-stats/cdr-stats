@@ -1,8 +1,8 @@
 from django.db import models
 from django.utils.translation import ugettext as _
-from voip2bill.voip_gateway.models import *
-from voip2bill.voip_billing.models import *
-from prefix_country.models import *
+from voip_gateway.models import *
+from voip_billing.models import *
+from country_dialcode.models import Country, Prefix
 import uuidfield.fields
 from datetime import *
 
