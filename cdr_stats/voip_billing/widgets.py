@@ -7,8 +7,7 @@ from django.contrib import admin
 from django.db import models
 
 import operator
-import settings
-from django.contrib.auth.models import Message
+from django.conf import settings
 from django.http import HttpResponse, HttpResponseNotFound, \
 HttpResponseRedirect
 from django.db.models.query import QuerySet
