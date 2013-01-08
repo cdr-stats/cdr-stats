@@ -1,10 +1,10 @@
 from django.db import models
 from django.utils.translation import ugettext as _
-from voip_gateway.models import *
-from voip_billing.models import *
-from country_dialcode.models import Country, Prefix
+from voip_gateway.models import Gateway
+from voip_billing.models import VoIPPlan, VoIPRetailRate, VoIPCarrierRate
+from country_dialcode.models import Prefix
 import uuidfield.fields
-from datetime import *
+
 
 
 VOIPCALL_DISPOSITION = (
@@ -130,6 +130,6 @@ class VoIPCall_Report(VoIPCall):
         """
         Billing of VoIP Call
         """
-        from voip2bill.voip_billing.rate_engine import rate_engine        
+        from voip_billing.rate_engine import rate_engine
         result_data = rate_engine(voipcall_id, voipplan_id)
         return result_data

@@ -1,23 +1,14 @@
+from django.contrib import admin
 from django import forms
+from django.db import models
 from django.conf import settings
 from django.utils.safestring import mark_safe
-from django.utils.text import truncate_words
-
-from django.contrib import admin
-from django.db import models
-
-import operator
-from django.conf import settings
 from django.http import HttpResponse, HttpResponseNotFound, \
 HttpResponseRedirect
-from django.db.models.query import QuerySet
-from django.utils.encoding import smart_str
-
 from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_unicode
 from django.utils.html import escape
-from django.utils.safestring import mark_safe
 from django.utils.datastructures import MultiValueDict, MergeDict
 from django.core.urlresolvers import reverse, NoReverseMatch
 

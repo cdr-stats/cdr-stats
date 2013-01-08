@@ -1,10 +1,11 @@
-from voip_gateway.models import *
-from voip_billing.models import *
-from voip_report.models import *
+
+from voip_billing.models import VoIPPlan, VoIPRetailPlan, VoIPRetailRate,\
+    VoIPCarrierPlan, VoIPCarrierRate
 from django.conf import settings
 from django.core.cache import cache
-from datetime import *
-from random import *
+from country_dialcode.models import Prefix
+from datetime import datetime
+from random import choice
 import calendar
 import os
 
@@ -31,18 +32,6 @@ def get_unique_id():
     chars = "abcdefghijklmnopqrstuvwxyz1234567890"
     return ''.join([choice(chars) for i in range(length)])
 
-
-def pass_gen():
-    """
-    Unique password generator
-    """
-    char_length = 2
-    digit_length = 6
-    chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    digit = "1234567890"
-    pass_str_char = ''.join([choice(chars) for i in range(char_length)])
-    pass_str_digit = ''.join([choice(digit) for i in range(digit_length)])
-    return pass_str_char + pass_str_digit
 
 
 def day_range():
@@ -228,7 +217,7 @@ def simulator_function(request, view=None):
         try:
             is_int_no(destination_no)
             
-            from voip2bill.voip_billing.rate_engine import rate_engine
+            from voip_billing.rate_engine import rate_engine
 
             if destination_no != '':
                 query = rate_engine(destination_no=destination_no,
@@ -277,10 +266,10 @@ def banned_prefix_qs(voipplan_id):
     from django.db import connection, transaction
     cursor = connection.cursor()
     sql_statement = ('SELECT voipbilling_ban_prefix.prefix_id FROM '\
-    'voipbilling_ban_prefix,voipbilling_banplan,voipbilling_voipplan_banplan '\
-    'WHERE voipbilling_ban_prefix.ban_plan_id = voipbilling_banplan.id '\
-    'AND voipbilling_banplan.id = voipbilling_voipplan_banplan.banplan_id '\
-    'AND voipbilling_voipplan_banplan.voipplan_id = %s')
+        'voipbilling_ban_prefix,voipbilling_banplan,voipbilling_voipplan_banplan '\
+        'WHERE voipbilling_ban_prefix.ban_plan_id = voipbilling_banplan.id '\
+        'AND voipbilling_banplan.id = voipbilling_voipplan_banplan.banplan_id '\
+        'AND voipbilling_voipplan_banplan.voipplan_id = %s')
     cursor.execute(sql_statement, [str(voipplan_id)])
     row = cursor.fetchall()
     result = []
@@ -314,6 +303,7 @@ def prefix_allowed_to_voip_call(destination_number, voipplan_id):
             return False
     # VoIP call is allowed
     return True
+
 
 def check_celeryd_process():
     """
