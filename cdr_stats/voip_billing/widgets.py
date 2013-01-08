@@ -18,12 +18,12 @@ class ForeignKeySearchInput(forms.HiddenInput):
     #  instead in a <select> box.
     class Media:
         css = {
-            'all': ('%svoip2bill/css/jquery.autocomplete.css' % settings.STATIC_URL,)
+            'all': ('%scdr-stats/css/jquery.autocomplete.css' % settings.STATIC_URL,)
         }
         js = (
-            '%svoip2bill/js/jquery-1.4.4.js' % settings.STATIC_URL,
-            '%svoip2bill/js/jquery.autocomplete.js' % settings.STATIC_URL,
-            '%svoip2bill/js/AutocompleteObjectLookups.js ' % settings.STATIC_URL
+            '%scdr-stats/js/jquery-1.8.2.min.js' % settings.STATIC_URL,
+            '%scdr-stats/js/jquery.autocomplete.js' % settings.STATIC_URL,
+            '%scdr-stats/js/AutocompleteObjectLookups.js ' % settings.STATIC_URL
         )
 
     def label_for_value(self, value):
@@ -107,12 +107,12 @@ class ManyToManySearchInput(forms.MultipleHiddenInput):
     """
     class Media:
         css = {
-            'all': ('%svoip2bill/css/jquery.autocomplete.css' % settings.STATIC_URL,)
+            'all': ('%scdr-stats/css/jquery.autocomplete.css' % settings.STATIC_URL,)
         }
         js = (
-            '%svoip2bill/js/jquery-1.4.4.js' % settings.STATIC_URL,
-            '%svoip2bill/js/jquery.autocomplete.js' % settings.STATIC_URL,
-            '%svoip2bill/js/AutocompleteObjectLookups.js ' % settings.STATIC_URL
+            '%scdr-stats/js/jquery-1.8.2.min.js' % settings.STATIC_URL,
+            '%scdr-stats/js/jquery.autocomplete.js' % settings.STATIC_URL,
+            '%scdr-stats/js/AutocompleteObjectLookups.js ' % settings.STATIC_URL
         )
 
     def __init__(self, rel, search_fields, attrs=None):
