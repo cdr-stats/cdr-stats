@@ -1,10 +1,13 @@
 from django.contrib import admin
 from django.conf.urls import patterns
 from django.utils.translation import ugettext as _
+from django.utils.translation import ungettext
 from django.template import RequestContext
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.db.models import Sum, Avg, Count
+from django.contrib.admin.options import IncorrectLookupParameters
+from django.contrib.admin.views.main import ERROR_FLAG
 
 from voip_billing.tasks import VoIPbilling
 from voip_billing.forms import FileImport
@@ -14,8 +17,65 @@ from voip_report.forms import VoipSearchForm
 from voip_report.function_def import voipcall_record_common_fun, get_disposition_id,\
     get_disposition_name
 from user_profile.models import UserProfile
+from common.common_functions import variable_value
 from datetime import datetime
 import csv
+
+
+def return_query_string(query_string, para):
+    """
+    Function is used in voipcall_search_admin_form_fun
+
+    >>> return_query_string('key=1', 'key_val=apple')
+    'key=1&key_val=apple'
+    >>> return_query_string(False, 'key_val=apple')
+    'key_val=apple'
+    """
+    if query_string:
+        query_string += '&%s' % (para)
+    else:
+        query_string = para
+    return query_string
+
+
+def voipcall_search_admin_form_fun(request):
+    """Return query string for Voipcall_Report Changelist_view"""
+    start_date = ''
+    end_date = ''
+    if request.POST.get('from_date'):
+        start_date = request.POST.get('from_date')
+
+    if request.POST.get('to_date'):
+        end_date = request.POST.get('to_date')
+
+    # Assign form field value to local variable
+    disposition = variable_value(request, 'status')
+    billed = variable_value(request, 'billed')
+    query_string = ''
+
+    if start_date and end_date:
+        date_string = 'updated_date__gte=' + start_date +\
+                      '&updated_date__lte=' + end_date + '+23%3A59%3A59'
+        query_string = return_query_string(query_string, date_string)
+
+    if start_date and end_date == '':
+        date_string = 'updated_date__gte=' + start_date
+        query_string = return_query_string(query_string, date_string)
+
+    if start_date == '' and end_date:
+        date_string = 'updated_date__lte=' + end_date
+        query_string = return_query_string(query_string, date_string)
+
+    if disposition and disposition != 'all':
+        disposition_string = 'disposition__exact=' + disposition
+        query_string = return_query_string(query_string,
+            disposition_string)
+
+    if billed and billed != 'ALL':
+        billed_string = 'billed__exact=' + billed
+        query_string = return_query_string(query_string, billed_string)
+
+    return query_string
 
 
 class VoIPCall_ReportAdmin(admin.ModelAdmin):
@@ -44,67 +104,85 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
              self.admin_site.admin_view(self.export_voip_report)),
         )
         return my_urls + urls
-    
-    def queryset(self, request):
-        """
-        Queryset will be changed as per the search parameter selection
-        on changelist_view
-        """
-        kwargs = {}
-        if request.method == 'POST':
-            kwargs = voipcall_record_common_fun(request, form_require="no")
-        else:
-            tday = datetime.today()
-            kwargs['updated_date__gte'] = datetime(tday.year,
-                                                   tday.month,
-                                                   tday.day, 0, 0, 0, 0)
 
-        qs = super(VoIPCall_ReportAdmin, self).queryset(request)
-        return qs.filter(**kwargs).order_by('-updated_date')
 
     def changelist_view(self, request, extra_context=None):
         """
-        VoIP Report Record Listing with Search Option & Daily Call Report
-        Search Parameters: By date, By status, By billed
+        Override changelist_view method of django-admin for search parameters
+
+        **Attributes**:
+
+            * ``form`` - VoipSearchForm
+            * ``template`` - admin/dialer_cdr/voipcall/change_list.html
+
+        **Logic Description**:
+
+            * VoIP report Record Listing with search option & Daily Call Report
+              search Parameters: by date, by status and by billed.
         """
         opts = VoIPCall_Report._meta
-        app_label = opts.app_label
-        kwargs = {}
-        form = VoipSearchForm()        
+        query_string = ''
+        form = VoipSearchForm()
         if request.method == 'POST':
-            form = voipcall_record_common_fun(request, form_require="yes")
-            kwargs = voipcall_record_common_fun(request, form_require="no")                                   
+            query_string = voipcall_search_admin_form_fun(request)
+            return HttpResponseRedirect("/admin/%s/%s/?%s"
+                                        % (opts.app_label, opts.object_name.lower(), query_string))
         else:
+            status = ''
+            from_date = ''
+            to_date = ''
+            if request.GET.get('updated_date__gte'):
+                from_date = variable_value(request, 'starting_date__gte')
+            if request.GET.get('updated_date__lte'):
+                to_date = variable_value(request, 'starting_date__lte')[0:10]
+            if request.GET.get('disposition__exact'):
+                status = variable_value(request, 'disposition__exact')
+            if request.GET.get('billed__exact'):
+                billed = variable_value(request, 'billed')
+            form = VoipSearchForm(initial={'status': status,
+                                           'from_date': from_date,
+                                           'to_date': to_date})
+
+        ChangeList = self.get_changelist(request)
+        try:
+            cl = ChangeList(request, self.model, self.list_display,
+                self.list_display_links, self.list_filter, self.date_hierarchy,
+                self.search_fields, self.list_select_related,
+                self.list_per_page, self.list_max_show_all, self.list_editable,
+                self)
+        except IncorrectLookupParameters:
+            if ERROR_FLAG in request.GET.keys():
+                return render_to_response('admin/invalid_setup.html',
+                    {'title': _('Database error')})
+            return HttpResponseRedirect('%s?%s=1' % (request.path, ERROR_FLAG))
+
+        kwargs = {}
+        if request.META['QUERY_STRING'] == '':
             tday = datetime.today()
             kwargs['updated_date__gte'] = datetime(tday.year,
-                                                   tday.month,
-                                                   tday.day, 0, 0, 0, 0)
+                tday.month,
+                tday.day, 0, 0, 0, 0)
+            cl.root_query_set.filter(**kwargs)
 
-        # Session variable is used to get recrod set with searched option
-        # into export file
-        request.session['voipcall_record_qs'] = \
-        super(VoIPCall_ReportAdmin, self).queryset(request).filter(**kwargs)\
-        .order_by('-updated_date')        
-        
+        cl.formset = None
+        # Session variable get record set with searched option into export file
+        request.session['admin_voipcall_record_qs'] = cl.root_query_set
+
+        selection_note_all = ungettext('%(total_count)s selected',
+            'All %(total_count)s selected', cl.result_count)
+
         select_data =  {"updated_date": "SUBSTR(CAST(updated_date as CHAR(30)),1,10)"}
         total_data = ''
-        """
-        
-        total_data = \
-        VoIPCall_Report.objects.extra(select=select_data).values('updated_date')\
-        .filter(**kwargs).annotate(Count('updated_date'))\        
-        .annotate(Sum('carrier_cost')).annotate(Sum('retail_cost'))\
-        .order_by('-updated_date')
-        """
+
         # Get Total Rrecords from VoIPCall Report table for Daily Call Report
         kwargs['billed'] = True
         total_data = VoIPCall_Report.objects.extra(select=select_data)\
-                     .values('starting_date')\
-                     .filter(**kwargs).annotate(Count('starting_date'))\
-                     .annotate(Sum('sessiontime_real'))\
-                     .annotate(Avg('sessiontime_real'))\
-                     .annotate(Sum('carrier_cost'))\
-                     .annotate(Sum('retail_cost')).order_by('-starting_date')
+            .values('updated_date')\
+            .filter(**kwargs).annotate(Count('updated_date'))\
+            .annotate(Sum('sessiontime_real'))\
+            .annotate(Avg('sessiontime_real'))\
+            .annotate(Sum('carrier_cost'))\
+            .annotate(Sum('retail_cost')).order_by('-updated_date')
 
         # Calcualte Profit
         profit = []
@@ -119,7 +197,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
         if total_data.count() != 0:
             max_duration = max([x['sessiontime_real__sum'] for x in total_data])
             total_duration = sum([x['sessiontime_real__sum'] for x in total_data])
-            total_calls = sum([x['starting_date__count'] for x in total_data])
+            total_calls = sum([x['updated_date__count'] for x in total_data])
             total_avg_duration = (sum([x['sessiontime_real__avg'] for x in total_data]))/total_data.count()
             total_carrier_cost = sum([x['carrier_cost__sum'] for x in total_data])
             total_retail_cost = sum([x['retail_cost__sum'] for x in total_data])
@@ -134,9 +212,14 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
             total_profit = 0
 
         ctx = {
+            'selection_note': _('0 of %(cnt)s selected') % {'cnt': len(cl.result_list)},
+            'selection_note_all': selection_note_all % {'total_count': cl.result_count},
+            'cl': cl,
             'form': form,
-            'total_data':  total_data.reverse(),
-            'profit': profit,
+            'opts': opts,
+            'model_name': opts.object_name.lower(),
+            'app_label': _('VoIP Report'),
+            'title': _('VoIP Call Report'),
             'total_duration':total_duration,
             'total_calls':total_calls,
             'total_avg_duration':total_avg_duration,
@@ -144,13 +227,9 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
             'total_retail_cost': total_retail_cost,
             'total_profit': total_profit,
             'max_duration':max_duration,
-            'opts': opts,
-            'model_name': opts.object_name.lower(),
-            'app_label': _('VoIP Report'),
-            'title': _('VoIP Call Report'),
         }
-        return super(VoIPCall_ReportAdmin, self)\
-               .changelist_view(request, extra_context=ctx)
+        return super(VoIPCall_ReportAdmin, self).changelist_view(request, extra_context=ctx)
+
 
     def import_voip_report(self, request):
         """

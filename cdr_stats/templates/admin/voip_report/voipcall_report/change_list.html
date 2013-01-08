@@ -42,6 +42,7 @@
 
     {% block object-tools %}
         <ul class="object-tools">
+            <li><a href="export_voip_report/" class="addlink">{% trans "Export Report" %}</a></li>
           <li><a href="import_voip_report/" class="addlink">{% trans "Import Report" %}</a></li>
           {% if has_add_permission %}
           <li>
@@ -100,40 +101,33 @@
         <tbody>
             {% for td in total_data %}
             <tr class="{% cycle 'row1' 'row2' %}">
-                <td>{{td.starting_date}}</td>
-                <td>{{td.sessiontime_real__sum|conv_min}}</td>
+                <td>{{ td.starting_date }}</td>
+                <td>{{ td.sessiontime_real__sum|conv_min }}</td>
                 <td>{% if max_duration > 0 %}
-                    <img src="{{STATIC_URL}}voip2bill/images/spacer.png" width="{{td.sessiontime_real__sum|cal_width:max_duration}}" style="vertical-align:center;" height="10"/>
+                    <img src="{{STATIC_URL}}voip2bill/images/spacer.png" width="{{ td.sessiontime_real__sum|cal_width:max_duration }}" style="vertical-align:center;" height="10"/>
                     {% endif %}
                 </td>
-                <td>{{td.starting_date__count}}</td>
+                <td>{{ td.starting_date__count }}</td>
                 <td>{{ td.carrier_cost__sum }}</td>
                 <td>{{ td.retail_cost__sum }}</td>
                 <td>{{ td.retail_cost__sum|subtract:td.carrier_cost__sum }}</td>
-                <td>{{td.sessiontime_real__avg|conv_min}}</td>
+                <td>{{ td.sessiontime_real__avg|conv_min }}</td>
             </tr>
             {% endfor %}
         </tbody>
         <tfoot>
             <tr>
                 <td>{% trans "Total"  %}</td>
-                <td>{{total_duration|conv_min}}</td>
+                <td>{{ total_duration|conv_min }}</td>
                 <td></td>
-                <td>{{total_calls}}</td>
+                <td>{{ total_calls }}</td>
                 <td>{{ total_carrier_cost }}</td>
                 <td>{{ total_retail_cost }}</td>
                 <td>{{ total_profit }}</td>
-                <td>{{total_avg_duration|conv_min}}</td>
+                <td>{{ total_avg_duration|conv_min }}</td>
             </tr>
         </tfoot>
     </table>
-    </div>
-
-    <br/>
-    
-    <div align=center>
-        {% trans "Export CSV file"  %} <br/>
-        <a href="export_voip_report/"><img src='{{STATIC_URL}}voip2bill/icons/x-office-spreadsheet.png' width="75"/></a>
     </div>
     {% endblock %}
 
