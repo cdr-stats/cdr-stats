@@ -6,7 +6,19 @@
             {% if child.title == "Cdr_Alert" %}
                 {% trans "CDR Alert" %}
             {% else %}
-                {{ child.title }}
+                {% if child.title == "Voip_Gateway" %}
+                    {% trans "Voip gateway" %}
+                {% else %}
+                    {% if child.title == "Voip_Billing" %}
+                        {% trans "Voip billing" %}
+                    {% else %}
+                        {% if child.title == "Voip_Report" %}
+                            {% trans "Voip report" %}
+                        {% else %}
+                            {{ child.title }}
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
             {% endif %}
 
             </a></h3>

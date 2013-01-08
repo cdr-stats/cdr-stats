@@ -6,7 +6,19 @@
             {% if module.title == "Cdr_Alert" %}
                 {% trans "CDR Alert" %}
             {% else %}
-                {{ module.title }}
+                {% if module.title == "Voip_Gateway" %}
+                    {% trans "Voip gateway" %}
+                {% else %}
+                    {% if module.title == "Voip_Billing" %}
+                        {% trans "Voip billing" %}
+                    {% else %}
+                        {% if module.title == "Voip_Report" %}
+                            {% trans "Voip report" %}
+                        {% else %}
+                            {{ module.title }}
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
             {% endif %}
 
             </h2>{% endif %}

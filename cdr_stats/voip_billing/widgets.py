@@ -126,7 +126,7 @@ class ManyToManySearchInput(forms.MultipleHiddenInput):
             res = data.getlist(name)
         else:
             res = data.get(name, None)
-        print name, res
+
         for id in res:
             print self.rel.to.objects.get(pk=id)
         return res
