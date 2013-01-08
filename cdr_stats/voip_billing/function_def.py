@@ -4,9 +4,7 @@ from voip_billing.models import VoIPPlan, VoIPRetailPlan, VoIPRetailRate,\
 from django.conf import settings
 from django.core.cache import cache
 from country_dialcode.models import Prefix
-from datetime import datetime
-from random import choice
-import calendar
+from common.common_functions import variable_value, isint
 import os
 
 
@@ -22,100 +20,6 @@ def plan_list(name):
     if name == "voip":
         list = VoIPPlan.objects.all()
     return ((l.id, l.name) for l in list)
-
-
-def get_unique_id():
-    """
-    get unique id
-    """
-    length = 8
-    chars = "abcdefghijklmnopqrstuvwxyz1234567890"
-    return ''.join([choice(chars) for i in range(length)])
-
-
-
-def day_range():
-    """
-    List of days
-    """
-    DAYS = range(1, 32)
-    days = map(lambda x: (x, x), DAYS)
-    return days
-
-
-def validate_days(year, month, day):
-    """
-    Validate no of days in a month
-    """
-    total_days = calendar.monthrange(year, month)
-    if day > total_days[1]:
-        return total_days[1]
-    else:
-        return day
-
-
-def month_year_range():
-    """
-    List of months
-    """
-    tday = datetime.today()
-    year_actual = tday.year
-    YEARS = range(year_actual - 1, year_actual + 1)
-    YEARS.reverse()
-    m_list = []
-    for n in YEARS:
-        if year_actual == n:
-            month_no = tday.month + 1
-        else:
-            month_no = 13
-        months_list = range(1, month_no)
-        months_list.reverse()
-        for m in months_list:
-            name = datetime(n, m, 1).strftime("%B")
-            str_year = datetime(n, m, 1).strftime("%Y")
-            str_month = datetime(n, m, 1).strftime("%m")
-            sample_str = str_year + "-" + str_month
-            sample_name_str = name + "-" + str_year
-            m_list.append((sample_str, sample_name_str))
-    return m_list
-
-
-def variable_value(request, field_name):
-    """
-    Variables are checked with request &
-    return field value
-    """
-    if request.method == 'GET':
-        if field_name in request.GET:
-            field_name = request.GET[field_name]
-        else:
-            field_name = ''
-
-    if request.method == 'POST':
-        if field_name in request.POST:
-            field_name = request.POST[field_name]
-        else:
-            field_name = ''
-
-    return field_name
-
-
-def type_field_chk(base_field, base_field_type, field_name):
-    """
-    Type fileds (e.g. equal to, begins with, ends with, contains)
-    are checked.
-    """
-    kwargs = {}
-    if base_field != '':
-        if base_field_type == '1':
-            kwargs[field_name + '__exact'] = base_field
-        if base_field_type == '2':
-            kwargs[field_name + '__startswith'] = base_field
-        if base_field_type == '3':
-            kwargs[field_name + '__contains'] = base_field
-        if base_field_type == '4':
-            kwargs[field_name + '__endswith'] = base_field
-    return kwargs
 
 
 def rate_filter_range_field_chk(rate, rate_range, field_name):
@@ -136,41 +40,6 @@ def rate_filter_range_field_chk(rate, rate_range, field_name):
         if rate_range == 'lte':
             kwargs[field_name + '__lte'] = rate
     return kwargs
-
-
-def is_number(s):
-    """
-    Check digit is int or float
-    """
-    try:
-        if float(s):
-            return True
-        elif int(s):
-            return True
-        else:
-            return False
-    except ValueError:
-        return False
-
-
-def is_int_no(no):
-    """
-    Check digit is int
-    """
-    if int(no):
-        return True
-    else:
-        return False
-
-
-def is_float_no(no):
-    """
-    Check Float Value
-    """
-    if float(no):
-        return True
-    else:
-        return False
 
 
 def prfix_list():
@@ -215,7 +84,7 @@ def simulator_function(request, view=None):
         destination_no = variable_value(request, "destination_no")
         voipplan_id = variable_value(request, "plan_id")
         try:
-            is_int_no(destination_no)
+            isint(destination_no)
             
             from voip_billing.rate_engine import rate_engine
 

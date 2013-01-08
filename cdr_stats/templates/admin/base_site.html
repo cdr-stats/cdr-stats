@@ -5,7 +5,29 @@
 
 {% block extrahead %}
 <link rel="shortcut icon" type="image/x-icon" href="{{STATIC_URL}}cdr-stats/images/favicon.ico">
+<!-- Javascript -->
+<script type="text/javascript" src="{{STATIC_URL}}cdr-stats/js/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}cdr-stats/js/jquery-ui-1.9.1.custom.min.js"></script>
 
+<!-- jquery UI css -->
+<link type="text/css" href="{{STATIC_URL}}cdr-stats/css/jquery-ui-bootstrap/jquery-ui-1.8.16.custom.css" rel="stylesheet">
+
+<link href="{{STATIC_URL}}cdr-stats/css/datepicker.css" rel="stylesheet">
+<script type="text/javascript">
+    $(function() {
+        var dates = $('#id_from_date, #id_to_date').datepicker({
+            defaultDate: "+1w",
+            changeMonth: true,
+            dateFormat: 'yy-mm-dd',
+            onSelect: function(selectedDate) {
+                var option = this.id == "id_from_date" ? "minDate" : "maxDate";
+                var instance = $(this).data("datepicker");
+                var date = $.datepicker.parseDate(instance.settings.dateFormat || $.datepicker._defaults.dateFormat, selectedDate, instance.settings);
+                dates.not(this).datepicker("option", option, date);
+            }
+        });
+    });
+</script>
 <style>
 
 #header #bookmark-button {

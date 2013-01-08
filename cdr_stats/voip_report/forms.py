@@ -1,8 +1,8 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from voip_billing.forms import SearchForm
+from cdr.forms import CdrSearchForm
 from voip_report.models import VOIPCALL_DISPOSITION
-from voip_report.function_def import billed_list
+from voip_report.constants import BILLED_STATUS_LIST
 
 
 voip_call_disposition_list = []
@@ -11,13 +11,17 @@ for i in VOIPCALL_DISPOSITION:
     voip_call_disposition_list.append((i[0], i[1]))
 
 
-class VoipSearchForm(SearchForm):
+class VoipSearchForm(CdrSearchForm):
     """
     VoIP call Report Search Parameters
     """
-    billed = forms.ChoiceField(label=_('Billed :'),
-                               choices=billed_list(),
+    billed = forms.ChoiceField(label=_('Billed'),
+                               choices=list(BILLED_STATUS_LIST),
                                required=False,)
-    status = forms.ChoiceField(label=_('Disposition :'),
+    status = forms.ChoiceField(label=_('Disposition'),
                                choices=voip_call_disposition_list,
                                required=False,)
+
+    def __init__(self, *args, **kwargs):
+        super(VoipSearchForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['from_date', 'to_date', 'billed', 'status']

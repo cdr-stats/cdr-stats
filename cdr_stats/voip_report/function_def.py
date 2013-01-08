@@ -1,15 +1,5 @@
-from voip_billing.function_def import validate_days, variable_value
+from common.common_functions import variable_value, validate_days, ceil_strdate
 from datetime import datetime
-
-
-def billed_list():
-    """
-    VoIP Bill Status List
-    """
-    LIST = (('all', 'ALL'),
-            ('yes', 'YES'),
-            ('no', 'NO'), )
-    return LIST
 
 
 def voipcall_record_common_fun(request, form_require="no"):
@@ -17,6 +7,18 @@ def voipcall_record_common_fun(request, form_require="no"):
     Return Form with Initial data or Array (kwargs) for Voipcall_Report
     Changelist_view
     """
+    if "from_date" in request.POST:
+        # From
+        from_date = request.POST['from_date']
+        start_date = ceil_strdate(from_date, 'start')
+        request.session['session_from_date'] = from_date
+
+    if "to_date" in request.POST:
+        # To
+        to_date = request.POST['to_date']
+        end_date = ceil_strdate(to_date, 'end')
+        request.session['session_to_date'] = to_date
+
     if "fromday_chk" in request.POST:
         fromday_chk = 'on'
         from_day = int(request.POST['from_day'])

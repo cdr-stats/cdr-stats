@@ -1,24 +1,7 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from voip_billing.function_def import is_number, month_year_range, day_range,\
-    plan_list, rate_range
-
-
-class SearchForm(forms.Form):
-    """
-    General Search Form with From & To date para.
-    """
-    fromday_chk = forms.BooleanField(label=_("From :"), required=False, )
-    from_day = forms.ChoiceField(label=_(" "), choices=day_range(),
-                                 required=False)
-    from_month_year = forms.ChoiceField(label=_(" "),
-                                        choices=month_year_range(),
-                                        required=False)
-    today_chk = forms.BooleanField(label=_("To :"), required=False)
-    to_day = forms.ChoiceField(label=_(" "), choices=day_range(),
-                               required=False)
-    to_month_year = forms.ChoiceField(label=_(" "), choices=month_year_range(),
-                                      required=False, )
+from common.common_functions import isint
+from voip_billing.function_def import plan_list, rate_range
 
 
 class FileImport(forms.Form):
@@ -75,7 +58,7 @@ class CarrierRate_fileImport(FileImport):
         chk = self.cleaned_data["chk"]
         p_p = self.cleaned_data["profit_percentage"]
         if chk == True:
-            if is_number(p_p) == False:
+            if isint(p_p) == False:
                 raise forms.ValidationError(_("Please enter int/float value"))
             else:
                 return p_p
@@ -131,7 +114,7 @@ class SendVoIPForm(forms.Form):
         Form Validation :  destination_no Check
         """
         destination_no = self.cleaned_data['destination_no']
-        if is_number(destination_no) == False:
+        if isint(destination_no) == False:
             raise forms.ValidationError("Enter Digit only!")
         return destination_no
 

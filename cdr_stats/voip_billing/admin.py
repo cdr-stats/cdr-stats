@@ -5,16 +5,18 @@ from django.utils.translation import ugettext as _
 from django.template import RequestContext
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
+from django.conf import settings
 from country_dialcode.models import Prefix
 from voip_billing.models import VoIPRetailRate, VoIPPlan, BanPlan,\
     VoIPPlan_BanPlan, BanPrefix, VoIPRetailPlan, VoIPPlan_VoIPRetailPlan,\
     VoIPCarrierPlan, VoIPCarrierRate, VoIPPlan_VoIPCarrierPlan
 from voip_billing.forms import RetailRate_fileImport, CarrierRate_fileImport,\
-    Carrier_Rate_fileExport, SimulatorForm, VoIPPlan_fileExport, CustomRateFilterForm
-from voip_billing.function_def import variable_value, simulator_function
+    Carrier_Rate_fileExport, SimulatorForm, VoIPPlan_fileExport, CustomRateFilterForm,\
+    Retail_Rate_fileExport
+from voip_billing.function_def import simulator_function
 from voip_billing.widgets import AutocompleteModelAdmin
 from voip_billing.function_def import rate_filter_range_field_chk
-from django.conf import settings
+from common.common_functions import variable_value
 import csv
 
 
