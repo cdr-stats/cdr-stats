@@ -1,9 +1,5 @@
-from voip_billing.models import *
-from voip_billing.function_def import *
-from voip_report.models import *
-from datetime import *
-from random import *
-import os
+from voip_billing.function_def import validate_days, variable_value
+from datetime import datetime
 
 
 def billed_list():
@@ -59,7 +55,7 @@ def voipcall_record_common_fun(request, form_require="no"):
     billed = variable_value(request, 'billed')
     disposition = variable_value(request, 'status')
 
-    from voip2bill.voip_report.forms import VoipSearchForm
+    from voip_report.forms import VoipSearchForm
     if form_require == "yes":
         form = VoipSearchForm(initial={'fromday_chk': fromday_chk,
                                        'from_day': from_day,
@@ -99,7 +95,7 @@ def get_disposition_id(name):
     """
     To get id from voip_call_disposition_list
     """
-    from voip2bill.voip_report.forms import voip_call_disposition_list    
+    from voip_report.forms import voip_call_disposition_list
     for i in voip_call_disposition_list:        
         if i[1] == name:
             return i[0]        
@@ -109,7 +105,7 @@ def get_disposition_name(id):
     """
     To get name from voip_call_disposition_list
     """
-    from voip2bill.voip_report.forms import voip_call_disposition_list
+    from voip_report.forms import voip_call_disposition_list
     for i in voip_call_disposition_list:
         if i[0] == id:
             return i[1]

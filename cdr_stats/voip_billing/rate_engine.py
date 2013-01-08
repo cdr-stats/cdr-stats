@@ -1,5 +1,4 @@
-from country_dialcode.models import Country, Prefix
-from voip_gateway.models import *
+from country_dialcode.models import Prefix
 from voip_billing.models import *
 from voip_report.models import *
 from voip_billing.function_def import *

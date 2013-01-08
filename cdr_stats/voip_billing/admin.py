@@ -1,19 +1,20 @@
 from django.contrib import admin
 from django.contrib.sites.models import Site
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns
 from django.utils.translation import ugettext as _
 from django.template import RequestContext
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
-from django.db.models import *
-from prefix_country.models import *
+from country_dialcode.models import Prefix
 from voip_billing.models import VoIPRetailRate, VoIPPlan, BanPlan,\
     VoIPPlan_BanPlan, BanPrefix, VoIPRetailPlan, VoIPPlan_VoIPRetailPlan,\
     VoIPCarrierPlan, VoIPCarrierRate, VoIPPlan_VoIPCarrierPlan
-from voip_billing.forms import RetailRate_fileImport, CarrierRate_fileImport
-from voip_billing.widgets import *
-from settings import DATABASES
-from datetime import *
+from voip_billing.forms import RetailRate_fileImport, CarrierRate_fileImport,\
+    Carrier_Rate_fileExport, SimulatorForm, VoIPPlan_fileExport, CustomRateFilterForm
+from voip_billing.function_def import variable_value, simulator_function
+from voip_billing.widgets import AutocompleteModelAdmin
+from voip_billing.function_def import rate_filter_range_field_chk
+from django.conf import settings
 import csv
 
 
@@ -47,8 +48,7 @@ def export_as_csv_action(description="Export selected objects as CSV file",
         if header:
             writer.writerow(field_names)
         for obj in queryset:
-            writer\
-            .writerow([unicode(getattr(obj, field)) for field in field_names])
+            writer.writerow([unicode(getattr(obj, field)) for field in field_names])
         return response
     export_as_csv.short_description = description
     return export_as_csv
@@ -58,7 +58,7 @@ def prefix_qs():
     """
     Function To get Prefix Query Set with ASCII Order
     """
-    if DATABASES['default']['ENGINE'] == 'mysql':
+    if settings.DATABASES['default']['ENGINE'] == 'mysql':
         q = Prefix.objects.extra(select={'prefix': 'prefix',
                                          'destination': 'destination',
                                          'ascii_prefix': 'ASCII(prefix)',

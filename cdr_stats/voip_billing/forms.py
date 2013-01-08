@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from voip_billing.models import *
-from voip_billing.function_def import *
+from voip_billing.function_def import is_number, month_year_range, day_range,\
+    plan_list, rate_range
 
 
 class SearchForm(forms.Form):
@@ -157,8 +157,7 @@ class SimulatorForm(SendVoIPForm):
         super(SimulatorForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['plan_id', 'destination_no', ]
         if not user.is_superuser:
-            self.fields['plan_id'] = \
-            forms.ChoiceField(widget=forms.HiddenInput())
+            self.fields['plan_id'] = forms.ChoiceField(widget=forms.HiddenInput())
 
     def clean_plan_id(self):
         """

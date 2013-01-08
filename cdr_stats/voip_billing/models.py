@@ -1,8 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext as _
-from country_dialcode.models import Country, Prefix
-from voip_gateway.models import *
-from datetime import *
+from country_dialcode.models import Prefix
+from voip_gateway.models import Provider
 from common.intermediate_model_base_class import Model
 
 
