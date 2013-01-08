@@ -1,6 +1,5 @@
 from celery.task import Task
-from voip_billing.models import *
-from voip_report.models import *
+from voip_report.models import VoIPCall_Report
 import logging
 
 

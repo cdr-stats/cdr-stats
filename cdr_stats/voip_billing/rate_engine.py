@@ -1,8 +1,8 @@
 from country_dialcode.models import Prefix
-from voip_billing.models import *
-from voip_report.models import *
-from voip_billing.function_def import *
-from datetime import *
+from voip_billing.models import VoIPRetailPlan
+from voip_report.models import VoIPCall, VoIPCall_Report
+from voip_billing.function_def import prefix_list_string
+from datetime import datetime
 
 
 def rate_engine(voipcall_id=None, voipplan_id=None, destination_no=None):
@@ -71,8 +71,7 @@ def rate_engine(voipcall_id=None, voipplan_id=None, destination_no=None):
         ) AS bothrates \
         ORDER BY length(cr_prefix) DESC, length(rt_prefix) DESC, \
         sum_metric ASC, carrier_rate ASC, retail_rate ASC LIMIT 0, 1' % \
-        (destination_prefix_list, str(voipplan_id), str(voipplan_id),
-        destination_prefix_list))
+            (destination_prefix_list, str(voipplan_id), str(voipplan_id), destination_prefix_list))
 
     # This return is used by rate simulator
     # (admin + client)

@@ -1,21 +1,17 @@
 # Create your views here.
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.views.decorators.cache import cache_page
 from django.shortcuts import render_to_response
-from django.db.models import *
+
 from django.template.context import RequestContext
-from django.utils.translation import ugettext as _
-from voip_billing.models import *
-from voip_billing.forms import *
-from voip_billing.function_def import *
-from voip_billing.tasks import *
-from user_profile.models import *
+
+from voip_billing.forms import PrefixRetailRrateForm, SimulatorForm
+from voip_billing.function_def import variable_value, prefix_allowed_to_voip_call,\
+    simulator_function
+from user_profile.models import UserProfile
 from inspect import stack, getmodule
-from datetime import *
-from random import *
 
 
 @login_required
@@ -76,64 +72,3 @@ def simulator(request):
                                 context_instance=RequestContext(request))
 
 
-def index(request):
-    """
-    Index page
-    """
-    template = 'voip_billing/index.html'
-    errorlogin = ''
-    loginform = LoginForm()
-
-    data = {'module': current_view(request),
-            'loginform' : loginform,
-            'errorlogin' : errorlogin,
-    }
-    return render_to_response(template, data,
-           context_instance=RequestContext(request))
-
-
-def login_view(request):
-    template = 'voip_billing/index.html'
-    errorlogin = ''
-    if request.method == 'POST':
-        try:
-            action = request.POST['action']
-        except (KeyError):
-            action = "login"
-
-        if action=="logout":
-            logout(request)            
-        else:
-            loginform = LoginForm(request.POST)            
-            if loginform.is_valid():                
-                cd = loginform.cleaned_data
-                user = authenticate(username=cd['user'],
-                                    password=cd['password'])
-                if user is not None:
-                    if user.is_active:
-                        login(request, user)
-                        # Redirect to a success page.                        
-                    else:
-                        # Return a 'disabled account' error message
-                        errorlogin = _('Disabled Account') #True
-                else:
-                    # Return an 'invalid login' error message.
-                    errorlogin = _('Invalid Login.') #True
-            else:
-                # Return an 'Valid User Credentials' error message.
-                errorlogin = _('Enter Valid User Credentials.') #True                
-    else:
-        loginform = LoginForm()
-
-    data = {
-        'loginform' : loginform,
-        'errorlogin' : errorlogin,
-        'is_authenticated' : request.user.is_authenticated()
-    }
-    return render_to_response(template, data,
-           context_instance = RequestContext(request))
-
-
-def logout_view(request):
-	logout(request)
-	return HttpResponseRedirect('/')

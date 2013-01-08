@@ -1,9 +1,9 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from voip_billing.forms import *
+from voip_billing.forms import SearchForm
 from voip_report.models import VOIPCALL_DISPOSITION
-from voip_report.function_def import *
-from datetime import *
+from voip_report.function_def import billed_list
+
 
 voip_call_disposition_list = []
 voip_call_disposition_list.append(('all', 'ALL'))

@@ -1,4 +1,4 @@
-from voip_gateway.models import *
+
 from dilla import spam
 import string
 import random

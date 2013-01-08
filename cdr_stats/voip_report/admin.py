@@ -1,20 +1,20 @@
 from django.contrib import admin
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns
 from django.utils.translation import ugettext as _
 from django.template import RequestContext
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
-from django.db.models import *
-from voip_billing.models import *
-from voip_billing.tasks import *
-from voip_billing.forms import *
-from voip_report.models import *
-from voip_report.forms import *
-from voip_report.function_def import *
-from user_profile.models import *
-from datetime import *
+from django.db.models import Sum, Avg, Count
+
+from voip_billing.tasks import VoIPbilling
+from voip_billing.function_def import check_celeryd_process
+from voip_report.models import VoIPCall_Report, VoIPCall
+from voip_report.forms import VoipSearchForm, FileImport
+from voip_report.function_def import voipcall_record_common_fun, get_disposition_id,\
+    get_disposition_name
+from user_profile.models import UserProfile
+from datetime import datetime
 import csv
-import os
 
 
 class VoIPCall_ReportAdmin(admin.ModelAdmin):
@@ -85,8 +85,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
         super(VoIPCall_ReportAdmin, self).queryset(request).filter(**kwargs)\
         .order_by('-updated_date')        
         
-        select_data = \
-        {"updated_date": "SUBSTR(CAST(updated_date as CHAR(30)),1,10)"}
+        select_data =  {"updated_date": "SUBSTR(CAST(updated_date as CHAR(30)),1,10)"}
         total_data = ''
         """
         
@@ -117,18 +116,12 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
         # Following code will count total voip calls, duration
         # carrier_cost, retail_cost Max profit
         if total_data.count() != 0:
-            max_duration = \
-            max([x['sessiontime_real__sum'] for x in total_data])
-            total_duration = \
-            sum([x['sessiontime_real__sum'] for x in total_data])
+            max_duration = max([x['sessiontime_real__sum'] for x in total_data])
+            total_duration = sum([x['sessiontime_real__sum'] for x in total_data])
             total_calls = sum([x['starting_date__count'] for x in total_data])
-            total_avg_duration = \
-            (sum([x['sessiontime_real__avg']\
-            for x in total_data]))/total_data.count()
-            total_carrier_cost = \
-            sum([x['carrier_cost__sum'] for x in total_data])
-            total_retail_cost = \
-            sum([x['retail_cost__sum'] for x in total_data])
+            total_avg_duration = (sum([x['sessiontime_real__avg'] for x in total_data]))/total_data.count()
+            total_carrier_cost = sum([x['carrier_cost__sum'] for x in total_data])
+            total_retail_cost = sum([x['retail_cost__sum'] for x in total_data])
             total_profit = sum([x[1] for x in profit])
         else:
             max_duration = 0
@@ -203,7 +196,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
                                 starting_date = datetime.now()
                             
                             user_voip_plan = \
-                            UserProfile.objects.get(user=request.user)
+                                UserProfile.objects.get(user=request.user)
                             voipplan_id = user_voip_plan.voipplan_id #  1
                             try:                        
                                 # Create VoIP call record
@@ -221,8 +214,8 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
                                          )                                
                                 
                                 response = \
-                                VoIPbilling.delay(voipcall_id=voipcall.id,
-                                                  voipplan_id=voipplan_id)
+                                    VoIPbilling.delay(voipcall_id=voipcall.id,
+                                                      voipplan_id=voipplan_id)
 
                                 # Due to task voipcall_id is disconnected/blank
                                 # So need to get back voipcall id
@@ -239,8 +232,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
                                 response = voipcall._update_voip_call_status(
                                                             res['voipcall_id'])
 
-                                voipcall_record_count = \
-                                voipcall_record_count + 1
+                                voipcall_record_count = voipcall_record_count + 1
                                 msg = '%d Record(s) are uploaded successfully\
                                       out of %d Record(s)!' % \
                                       (voipcall_record_count, total_rows)

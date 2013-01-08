@@ -1,9 +1,7 @@
 from django.contrib import admin
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns
 from django.utils.translation import ugettext as _
-from django.db.models import *
-from voip_gateway.models import *
-from voip_gateway.forms import *
+from voip_gateway.models import Gateway, Provider
 
 
 class GatewayAdmin(admin.ModelAdmin):

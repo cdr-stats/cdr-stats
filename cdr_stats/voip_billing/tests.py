@@ -1,12 +1,10 @@
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
-from voip_gateway.models import *
-from voip_billing.models import *
-from voip_billing.forms import *
-from voip_billing.function_def import *
-from voip_billing.test_utils import *
-from voip_report.models import *
-from user_profile.models import *
+from voip_gateway.models import Gateway, Provider
+from voip_billing.models import VoIPPlan
+from voip_billing.test_utils import build_test_suite_from
+from voip_report.models import VoIPCall, VoIPCall_Report
+from user_profile.models import UserProfile
 import base64
 
 class BaseAuthenticatedClient(TestCase):
@@ -62,6 +60,7 @@ class VoipBillingApiTestCase(BaseAuthenticatedClient):
                     "send_date": "2011-03-11 01:01:01"}, **self.extra)
         self.assertEqual(response.status_code, 200)
 
+
 class VoipBillingAdminInterfaceTestCase(TestCase):
     """
     Test cases for voip_billing Admin Interface.
@@ -72,7 +71,7 @@ class VoipBillingAdminInterfaceTestCase(TestCase):
         """
         self.client = Client()
         self.user = \
-        User.objects.create_user('admin', 'admin@world.com', 'admin')
+            User.objects.create_user('admin', 'admin@world.com', 'admin')
         self.user.is_staff = True
         self.user.is_superuser = True
         self.user.is_active = True

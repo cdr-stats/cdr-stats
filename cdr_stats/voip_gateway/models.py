@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils.translation import ugettext as _
-from datetime import *
 from common.intermediate_model_base_class import Model
 
 GATEWAY_STATUS = (
