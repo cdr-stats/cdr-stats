@@ -223,16 +223,16 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                     
                     voipplan_id = request.POST['plan_id']
                     sql_statement = ( \
-                    'SELECT voipbilling_voip_retail_rate.prefix, '\
-                    'Min(retail_rate) as minrate, simu_prefix.destination'\
-                    ' FROM voipbilling_voip_retail_rate '\
-                    'INNER JOIN voipbilling_voipplan_voipretailplan '\
-                    'ON voipbilling_voipplan_voipretailplan.voipretailplan_id = '\
-                    'voipbilling_voip_retail_rate.voip_retail_plan_id '\
-                    'LEFT JOIN simu_prefix ON simu_prefix.prefix =  '\
-                    'voipbilling_voip_retail_rate.prefix '\
-                    'WHERE voipplan_id=%s '\
-                    'GROUP BY voipbilling_voip_retail_rate.prefix')
+                        'SELECT voipbilling_voip_retail_rate.prefix, '\
+                        'Min(retail_rate) as minrate, simu_prefix.destination'\
+                        ' FROM voipbilling_voip_retail_rate '\
+                        'INNER JOIN voipbilling_voipplan_voipretailplan '\
+                        'ON voipbilling_voipplan_voipretailplan.voipretailplan_id = '\
+                        'voipbilling_voip_retail_rate.voip_retail_plan_id '\
+                        'LEFT JOIN simu_prefix ON simu_prefix.prefix =  '\
+                        'voipbilling_voip_retail_rate.prefix '\
+                        'WHERE voipplan_id=%s '\
+                        'GROUP BY voipbilling_voip_retail_rate.prefix')
                     
                     from django.db import connection, transaction
                     cursor = connection.cursor()
@@ -621,8 +621,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
                                     rr = VoIPRetailRate.objects.get(
                                          voip_retail_plan_id=voip_retail_plan,
                                          prefix=pfix)
-                                    msg = \
-                                    _('Retail Rate(s) are already exist !!')
+                                    msg = _('Retail Rate(s) are already exist !!')
                                     error_import_list.append(row)
                                 except:
                                     # if not, insert record
@@ -630,16 +629,13 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
                                           voip_retail_plan_id=voip_retail_plan,
                                           prefix=pfix,
                                           retail_rate=row[1])                                    
-                                    retail_record_count = \
-                                        retail_record_count + 1
-                                    msg = \
-                                    '%d Retail Rate(s) are uploaded  \
-                                     successfully out of %d row(s) !!'\
-                                     % (retail_record_count, total_rows)
+                                    retail_record_count = retail_record_count + 1
+                                    msg = '%d Retail Rate(s) are uploaded  \
+                                          successfully out of %d row(s) !!'\
+                                          % (retail_record_count, total_rows)
                                     success_import_list.append(row)
                             else:
-                                msg = \
-                                _('Error: Prefix is not in the Prfix table')
+                                msg = _('Error: Prefix is not in the Prfix table')
                         except:
                             msg = _("Error : invalid value for import! \
                                    Please look at the import samples.")
@@ -931,9 +927,8 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
 
                             pfix = Prefix.objects.get(prefix=row[0])
                             if pfix is not None:
-                                voip_carrier_plan = \
-                                VoIPCarrierPlan.objects.get(
-                                pk=request.POST['plan_id'])
+                                voip_carrier_plan = VoIPCarrierPlan.objects.get(
+                                    pk=request.POST['plan_id'])
                                 try:
                                     # check if prefix is alredy exist with
                                     # retail plan or not
@@ -941,8 +936,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                                          voip_carrier_plan_id=voip_carrier_plan,
                                          prefix=pfix)
 
-                                    msg = \
-                                    _('Carrier Rates are already exist !!')
+                                    msg = _('Carrier Rates are already exist !!')
                                     cr_error_import_list.append(row)
 
                                     # Checked form field - "chk"\
@@ -950,18 +944,16 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                                     if "chk" in request.POST:
                                         if request.POST['chk'] == "on":
                                             rr = VoIPRetailRate.objects.get(
-                                            voip_retail_plan_id=voip_retail_plan,
-                                            prefix=pfix)
-                                            msg = _('Carrier/Retail Rates are\
-                                            already exist !!')
+                                                voip_retail_plan_id=voip_retail_plan,
+                                                prefix=pfix)
+                                            msg = _('Carrier/Retail Rates are already exist !!')
                                             rr_error_import_list.append(row)
                                 except:
                                     # if not, insert record
                                     scr = VoIPCarrierRate.objects.create(
                                           voip_carrier_plan_id=voip_carrier_plan,
                                           prefix=pfix, carrier_rate=row[1])                                    
-                                    carrier_record_count = \
-                                                    carrier_record_count + 1
+                                    carrier_record_count = carrier_record_count + 1
 
                                     msg = '%d Carrier Rate(s) are uploaded \
                                            successfully out of %d row(s)!!' \
@@ -983,8 +975,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                                             prefix=pfix,
                                             retail_rate=str(new_rate))                                            
 
-                                            retail_record_count = \
-                                                retail_record_count + 1
+                                            retail_record_count = retail_record_count + 1
                                             msg = '%d Carrier Rate(s) are \
                                                   uploaded successfully with  \
                                                   %d Retail Rate(s) \
@@ -996,8 +987,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                                                           (row[0],
                                                            str(new_rate)))
                             else:
-                                msg = \
-                                _('Error: Prefix is not in the Prfix table')
+                                msg = _('Error: Prefix is not in the Prfix table')
                         except:
                             msg = _("Error : invalid value for import! \
                                    Please look at the import samples.")
