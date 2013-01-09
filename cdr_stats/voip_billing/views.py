@@ -6,11 +6,12 @@ from django.views.decorators.cache import cache_page
 from django.shortcuts import render_to_response
 
 from django.template.context import RequestContext
-
+from voip_billing.models import VoIPRetailRate
 from voip_billing.forms import PrefixRetailRrateForm, SimulatorForm
-from voip_billing.function_def import variable_value, prefix_allowed_to_voip_call,\
-    simulator_function
+from voip_billing.function_def import variable_value, prefix_allowed_to_voip_call
+from voip_billing.rate_engine import rate_engine
 from user_profile.models import UserProfile
+
 from inspect import stack, getmodule
 
 
@@ -50,25 +51,35 @@ def simulator(request):
     dt = UserProfile.objects.get(user=request.user)
     voipplan_id = dt.voipplan_id #  variable_value(request, "plan_id")
     error = ""
-    data = ""
+    data = []
+
+    form = SimulatorForm(request.user)
 
     if request.method == 'POST':
-        # IS recipient_phone_no/destination no is valid prefix
-        # (Not banned Prefix) ?
-        allowed = prefix_allowed_to_voip_call(destination_no, voipplan_id)
+        form = SimulatorForm(request.user, request.POST)
+        if form.is_valid():
+            # IS recipient_phone_no/destination no is valid prefix
+            # (Not banned Prefix) ?
+            destination_no = request.POST.get("destination_no")
 
-        if allowed:
-            data = simulator_function(request, "client")
+            allowed = prefix_allowed_to_voip_call(destination_no, voipplan_id)
 
-    form = SimulatorForm(request.user,
-                         initial={'destination_no': destination_no,
-                                  'plan_id': voipplan_id})
-    variables = RequestContext(request, {'module': current_view(request),
-                                         'form': form,
-                                         'data': data,
-                                         'error': error,
-                                        })
-    return render_to_response(template, variables,
+            if allowed:
+                query = rate_engine(destination_no=destination_no, voipplan_id=voipplan_id)
+                for i in query:
+                    r_r_plan = VoIPRetailRate.objects.get(id=i.rrid)
+                    data.append((voipplan_id,
+                                 r_r_plan.voip_retail_plan_id.name,
+                                 i.retail_rate))
+
+    data = {
+        'module': current_view(request),
+        'form': form,
+        'data': data,
+        'error': error,
+    }
+    return render_to_response(template, data,
                                 context_instance=RequestContext(request))
+
 
 

@@ -106,8 +106,7 @@ class VoIPRateHandler(BaseHandler):
 
         if allowed:
             # Get Destination prefix list e.g (34,346,3465,34657)
-            destination_prefix_list = \
-                prefix_list_string(str(recipient_phone_no))
+            destination_prefix_list = prefix_list_string(str(recipient_phone_no))
 
             # Split Destination prefix list
             list = destination_prefix_list.split(",")

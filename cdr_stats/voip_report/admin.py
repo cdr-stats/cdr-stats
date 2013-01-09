@@ -14,8 +14,7 @@ from voip_billing.forms import FileImport
 from voip_billing.function_def import check_celeryd_process
 from voip_report.models import VoIPCall_Report, VoIPCall
 from voip_report.forms import VoipSearchForm
-from voip_report.function_def import voipcall_record_common_fun, get_disposition_id,\
-    get_disposition_name
+from voip_report.function_def import get_disposition_id, get_disposition_name
 from user_profile.models import UserProfile
 from common.common_functions import variable_value
 from datetime import datetime

@@ -73,52 +73,6 @@ def prefix_list_string(phone_number):
     return str(destination_prefix_list)
 
 
-def simulator_function(request, view=None):
-    """
-    Common Simulator function for admin as well as client
-    """
-    destination_no = ''
-    voipplan_id = ''
-    error = ''
-    if request.method == 'POST':
-        destination_no = variable_value(request, "destination_no")
-        voipplan_id = variable_value(request, "plan_id")
-        try:
-            isint(destination_no)
-            
-            from voip_billing.rate_engine import rate_engine
-
-            if destination_no != '':
-                query = rate_engine(destination_no=destination_no,
-                                    voipplan_id=voipplan_id)
-                data = []                
-                if view == "admin":
-                    for i in query:
-                        c_r_plan = VoIPCarrierRate.objects.get(id=i.crid)
-                        r_r_plan = VoIPRetailRate.objects.get(id=i.rrid)
-                        data.append((voipplan_id,
-                                     c_r_plan.voip_carrier_plan_id.id,
-                                     c_r_plan.voip_carrier_plan_id.name,
-                                     r_r_plan.voip_retail_plan_id.id,
-                                     r_r_plan.voip_retail_plan_id.name,
-                                     i.crid, i.carrier_rate,
-                                     i.rrid, i.retail_rate, i.rt_prefix))
-                else:  # view = "client"
-                    for i in query:
-                        r_r_plan = VoIPRetailRate.objects.get(id=i.rrid)
-                        data.append((voipplan_id,
-                                     r_r_plan.voip_retail_plan_id.name,
-                                     i.retail_rate))
-        except:
-            error = _("Enter destination no !!")
-
-    ctx = {
-        'data': data,
-        'error': error
-    }
-    return ctx
-
-
 def rate_range():
     """
     Filter range symbol

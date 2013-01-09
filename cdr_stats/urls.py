@@ -26,6 +26,7 @@ from user_profile.urls import urlpatterns as urlpatterns_user_profile
 from frontend.urls import urlpatterns as urlpatterns_frontend
 from api.api_playgrounds.urls import urlpatterns as urlpatterns_api_playgrounds
 from frontend_notification.urls import urlpatterns as urlpatterns_frontend_notification
+#from voip_billing.urls import urlpatterns as urlpatterns_voip_billing
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -80,6 +81,8 @@ urlpatterns += urlpatterns_user_profile
 urlpatterns += urlpatterns_frontend
 urlpatterns += urlpatterns_api_playgrounds
 urlpatterns += urlpatterns_frontend_notification
+#urlpatterns += urlpatterns_voip_billing
+
 
 urlpatterns += patterns('',
     url("", include('django_socketio.urls')),

@@ -120,6 +120,11 @@
                     <li><a href="/diagnostic/"> {% trans "Diagnostic" %}</a></li>
                   {% endif %}
                   <li class="divider"></li>
+
+                  <li><a href="/voip_billing/retail_rate/"> {% trans "Retail Rate" %}</a></li>
+                  <li><a href="/voip_billing/simulator/"> {% trans "Rate simulator" %}</a></li>
+
+                  <li class="divider"></li>
                   {% if user.is_superuser %}
                     <li><a href="/admin/"> {% trans "Administration" %}</a></li>
                     <li class="divider"></li>

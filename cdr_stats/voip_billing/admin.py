@@ -13,7 +13,6 @@ from voip_billing.models import VoIPRetailRate, VoIPPlan, BanPlan,\
 from voip_billing.forms import RetailRate_fileImport, CarrierRate_fileImport,\
     Carrier_Rate_fileExport, SimulatorForm, VoIPPlan_fileExport, CustomRateFilterForm,\
     Retail_Rate_fileExport
-from voip_billing.function_def import simulator_function
 from voip_billing.widgets import AutocompleteModelAdmin
 from voip_billing.function_def import rate_filter_range_field_chk
 from voip_billing.rate_engine import rate_engine
