@@ -20,6 +20,7 @@ from api.user_api import UserResource
 from api.switch_api import SwitchResource
 from api.cdr_daily_api import CdrDailyResource
 from api.cdr_api import CdrResource
+from api.voip_rate_api import VoipRateResource
 from cdr.urls import urlpatterns as urlpatterns_cdr
 from cdr_alert.urls import urlpatterns as urlpatterns_cdr_alert
 from user_profile.urls import urlpatterns as urlpatterns_user_profile
@@ -45,6 +46,8 @@ tastypie_api.register(UserResource())
 tastypie_api.register(SwitchResource())
 tastypie_api.register(CdrDailyResource())
 tastypie_api.register(CdrResource())
+tastypie_api.register(VoipRateResource())
+
 
 
 urlpatterns = patterns('',
