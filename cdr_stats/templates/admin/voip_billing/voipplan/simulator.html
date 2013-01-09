@@ -38,7 +38,7 @@
         <th align=left>{% trans "Retail Rate" %}</th>
         <th align=left>{% trans "Prefix" %}</th>
   </tr>
-{% if data %}  
+{% if data %}
   {% for d in data %}
   <tr>
        <td align=left>{{ d.0 }}</td>
@@ -51,9 +51,8 @@
        <td align=left><a href="/admin/voip_billing/voipretailrate/{{ d.7 }}">{{ d.7 }}</a></td>
        <td align=left>{{ d.8 }}</td>
        <td align=left>{{ d.9 }}</td>
-   </tr>
-    {% endfor %}
-   
+  </tr>
+  {% endfor %}
 {% else %}
   <tr><td scope="row" colspan=10 align=center>{% trans "No Record(s) found." %}</td></tr>
 {% endif %}

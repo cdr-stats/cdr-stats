@@ -100,11 +100,9 @@ class SendVoIPForm(forms.Form):
     """
     Client Form : To Send VoIP
     """
-    destination_no = forms.CharField(label=_("To :"),
-                                    widget=forms.TextInput(attrs={'size': 15}),
-                                    required=True,
-                                    help_text=_('Enter Digit Only'))
-    txt_msg = forms.CharField(label=_("Message :"),
+    destination_no = forms.CharField(label=_("Destination"), required=True,
+                                     help_text=_('Enter Digit Only'))
+    txt_msg = forms.CharField(label=_("Message"),
                               widget=forms.Textarea,
                               help_text=_('Not more than 120 characters'),
                               required=True)
@@ -146,8 +144,8 @@ class SimulatorForm(SendVoIPForm):
         """
         Form Validation :  Check Plan id
         """
-        plan_id = self.cleaned_data['plan_id']
-        if plan_id > 0:
+        plan_id = int(self.cleaned_data['plan_id'])
+        if plan_id == 0:
             raise forms.ValidationError("Select VoIP Plan !!")
         return plan_id
 

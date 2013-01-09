@@ -16,6 +16,7 @@ from voip_billing.forms import RetailRate_fileImport, CarrierRate_fileImport,\
 from voip_billing.function_def import simulator_function
 from voip_billing.widgets import AutocompleteModelAdmin
 from voip_billing.function_def import rate_filter_range_field_chk
+from voip_billing.rate_engine import rate_engine
 from common.common_functions import variable_value
 import csv
 
@@ -174,14 +175,27 @@ class VoIPPlanAdmin(admin.ModelAdmin):
         destination_no = variable_value(request, "destination_no")
         voipplan_id = variable_value(request, "plan_id")
 
-        data = ""
+        data = []
+        form = SimulatorForm(request.user)
         if request.method == 'POST':
-            # Get Rate list from simulator function
-            data = simulator_function(request, "admin")
+            form = SimulatorForm(request.user, request.POST)
+            if form.is_valid():
+                destination_no = request.POST.get("destination_no")
+                voipplan_id = request.POST.get("plan_id")
+                query = rate_engine(destination_no=destination_no, voipplan_id=voipplan_id)
 
-        form = SimulatorForm(request.user,
-                             initial={'destination_no': destination_no,
-                                      'plan_id': voipplan_id})
+                for i in query:
+                    #print i
+                    c_r_plan = VoIPCarrierRate.objects.get(id=i.crid)
+                    r_r_plan = VoIPRetailRate.objects.get(id=i.rrid)
+                    data.append((voipplan_id,
+                                 c_r_plan.voip_carrier_plan_id.id,
+                                 c_r_plan.voip_carrier_plan_id.name,
+                                 r_r_plan.voip_retail_plan_id.id,
+                                 r_r_plan.voip_retail_plan_id.name,
+                                 i.crid, i.carrier_rate,
+                                 i.rrid, i.retail_rate, i.rt_prefix))
+
 
         ctx = RequestContext(request, {'title': _('VoIP Simulator'),
                                        'form': form,
@@ -190,8 +204,8 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                                        'app_label': _('VoIP Billing'),
                                        'data': data,
                                       })
-        return render_to_response('admin/voip_billing/voipplan/simulator.html',
-               context_instance=ctx)
+        template = 'admin/voip_billing/voipplan/simulator.html'
+        return render_to_response(template, context_instance=ctx)
 
     def export(self, request):
         """

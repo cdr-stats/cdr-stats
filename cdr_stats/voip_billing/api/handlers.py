@@ -6,7 +6,7 @@ from voip_report.models import VoIPCall, VoIPCall_Report
 from voip_billing.tasks import VoIPbilling
 from voip_billing.function_def import prefix_allowed_to_voip_call, prefix_list_string
 from user_profile.models import UserProfile
-from datetime import *
+from datetime import datetime
 
 
 class VoIPRateHandler(BaseHandler):

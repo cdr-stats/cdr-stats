@@ -15,6 +15,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from voip_billing.models import VoIPPlan
 from common.language_field import LanguageField
 from django_countries import CountryField
 
@@ -49,6 +50,8 @@ class UserProfile(models.Model):
     **Name of DB table**: user_profile
     """
     user = models.OneToOneField(User)
+    voipplan = models.ForeignKey(VoIPPlan, verbose_name=_('VoIP Plan'),
+        help_text=_("Select VoIP Plan"))
     address = models.CharField(blank=True, null=True,
             max_length=200, verbose_name=_('Address'))
     city = models.CharField(max_length=120, blank=True, null=True,

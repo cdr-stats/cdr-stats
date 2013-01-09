@@ -1,10 +1,10 @@
-
-from voip_billing.models import VoIPPlan, VoIPRetailPlan, VoIPRetailRate,\
-    VoIPCarrierPlan, VoIPCarrierRate
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 from django.core.cache import cache
 from country_dialcode.models import Prefix
 from common.common_functions import variable_value, isint
+from voip_billing.models import VoIPPlan, VoIPRetailPlan, VoIPRetailRate,\
+    VoIPCarrierPlan, VoIPCarrierRate
 import os
 
 
@@ -92,17 +92,17 @@ def simulator_function(request, view=None):
                 query = rate_engine(destination_no=destination_no,
                                     voipplan_id=voipplan_id)
                 data = []                
-                if view == "admin":                    
-                    for i in query:                        
+                if view == "admin":
+                    for i in query:
                         c_r_plan = VoIPCarrierRate.objects.get(id=i.crid)
                         r_r_plan = VoIPRetailRate.objects.get(id=i.rrid)
                         data.append((voipplan_id,
-                        c_r_plan.voip_carrier_plan_id.id,
-                        c_r_plan.voip_carrier_plan_id.name,
-                        r_r_plan.voip_retail_plan_id.id,
-                        r_r_plan.voip_retail_plan_id.name,
-                        i.crid, i.carrier_rate,
-                        i.rrid, i.retail_rate, i.rt_prefix))
+                                     c_r_plan.voip_carrier_plan_id.id,
+                                     c_r_plan.voip_carrier_plan_id.name,
+                                     r_r_plan.voip_retail_plan_id.id,
+                                     r_r_plan.voip_retail_plan_id.name,
+                                     i.crid, i.carrier_rate,
+                                     i.rrid, i.retail_rate, i.rt_prefix))
                 else:  # view = "client"
                     for i in query:
                         r_r_plan = VoIPRetailRate.objects.get(id=i.rrid)
@@ -110,9 +110,13 @@ def simulator_function(request, view=None):
                                      r_r_plan.voip_retail_plan_id.name,
                                      i.retail_rate))
         except:
-            error = "Enter destination no !!"
-            return error
-    return data
+            error = _("Enter destination no !!")
+
+    ctx = {
+        'data': data,
+        'error': error
+    }
+    return ctx
 
 
 def rate_range():
