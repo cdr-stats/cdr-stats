@@ -59,12 +59,12 @@ def prefix_list_string(phone_number):
     prefix_string = (34650, 3465, 346, 34)
     """
     phone_number = str(phone_number)
-    prefix_range = range(settings.PN_MIN_DIGITS,
-                         settings.PN_MAX_DIGITS + 1)
+    prefix_range = range(settings.PHONENUMBER_PREFIX_LIMIT_MIN,
+                         settings.PHONENUMBER_PREFIX_LIMIT_MAX + 1)
     prefix_range.reverse()
     destination_prefix_list = ''
     for i in prefix_range:
-        if i == settings.PN_MIN_DIGITS:
+        if i == settings.PHONENUMBER_PREFIX_LIMIT_MIN:
             destination_prefix_list = destination_prefix_list + \
             phone_number[0:i]
         else:

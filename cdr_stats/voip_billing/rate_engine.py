@@ -76,7 +76,7 @@ def rate_engine(voipcall_id=None, voipplan_id=None, destination_no=None):
     """
 
     # updated query For mysql
-    """
+    #"""
     query = VoIPRetailPlan.objects.raw(
         'SELECT rpid as id, cpid, cr_prefix, prefix as rt_prefix, rrid, \
         carrier_rate, retail_rate, crid, provider_id, gateway_id, sum_metric \
@@ -128,9 +128,9 @@ def rate_engine(voipcall_id=None, voipplan_id=None, destination_no=None):
         ORDER BY length(cr_prefix) DESC, length(rt_prefix) DESC, \
         sum_metric ASC, carrier_rate ASC, retail_rate ASC LIMIT 0, 1' %\
         (str(destination_prefix_list), str(voipplan_id), str(voipplan_id), str(destination_prefix_list)))
-    """
-    # updated query For postgresql
     #"""
+    # updated query For postgresql
+    """
     query = VoIPRetailPlan.objects.raw(
         'SELECT rpid as id, cpid, cr_prefix, prefix as rt_prefix, rrid, \
         carrier_rate, retail_rate, crid, provider_id, gateway_id, sum_metric \
@@ -182,7 +182,7 @@ def rate_engine(voipcall_id=None, voipplan_id=None, destination_no=None):
         ORDER BY cr_prefix DESC, rt_prefix DESC, \
         sum_metric ASC, carrier_rate ASC, retail_rate ASC LIMIT 0 OFFSET 1' %\
         (str(destination_prefix_list), str(voipplan_id), str(voipplan_id), str(destination_prefix_list)))
-    #"""
+    """
     # This return is used by rate simulator
     # (admin + client)
     if destination_no is not None:

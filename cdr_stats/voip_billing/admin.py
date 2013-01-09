@@ -185,7 +185,6 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                 query = rate_engine(destination_no=destination_no, voipplan_id=voipplan_id)
 
                 for i in query:
-                    #print i
                     c_r_plan = VoIPCarrierRate.objects.get(id=i.crid)
                     r_r_plan = VoIPRetailRate.objects.get(id=i.rrid)
                     data.append((voipplan_id,
