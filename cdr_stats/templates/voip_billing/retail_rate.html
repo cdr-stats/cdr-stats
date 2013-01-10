@@ -17,7 +17,7 @@
             return false;
           }
     
-          $.getJSON("http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/voip_billing/api/voiprate/" + document.getElementById('id_prefix').value,
+          $.getJSON("http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/api/v1/voip_rate/" + document.getElementById('id_prefix').value,
                function(json) {                 
                  data_into_table(json);
                });
@@ -26,7 +26,7 @@
 
      $(document).ready(function() {
        $("#clear_search_prefix").click(function() {
-          $.getJSON("http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/voip_billing/api/voiprate/",
+          $.getJSON("http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/api/v1/voip_rate/",
                function(json) {                 
                  data_into_table(json);
                });
