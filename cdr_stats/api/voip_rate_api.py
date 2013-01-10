@@ -41,9 +41,6 @@ class VoipRateResource(ModelResource):
         * ``answer_uepoch`` -
         * ``billmsec`` -
 
-    **Validation**:
-
-        * CdrValidation()
 
     **Read**:
 
@@ -57,26 +54,28 @@ class VoipRateResource(ModelResource):
 
          Response::
 
-             [
-                {
-                   "contact_id":1,
-                   "count_attempt":1,
-                   "completion_count_attempt":1,
-                   "last_attempt":"2012-01-17T15:28:37",
-                   "status":2,
-                   "subscriber_id": 1,
-                   "contact": "640234123"
-                },
-                {
-                   "contact_id":2,
-                   "count_attempt":1,
-                   "completion_count_attempt":1,
-                   "last_attempt":"2012-02-06T17:00:38",
-                   "status":1,
-                   "subscriber_id": 2,
-                   "contact": "640234000"
-                }
-             ]
+            [
+               {
+                  "prefix":34,
+                  "prefix__destination":"Spain",
+                  "retail_rate":"0.0350"
+               },
+               {
+                  "prefix":33,
+                  "prefix__destination":"France",
+                  "retail_rate":"0.0984"
+               },
+               {
+                  "prefix":32,
+                  "prefix__destination":"Belgium",
+                  "retail_rate":"0.0744"
+               },
+               {
+                  "prefix":39,
+                  "prefix__destination":"Italy",
+                  "retail_rate":"0.0720"
+               }
+            ]
 
 
     """
@@ -92,7 +91,7 @@ class VoipRateResource(ModelResource):
     def override_urls(self):
         """Override urls"""
         return [
-            url(r'^(?P<resource_name>%s)/(.+)/$' %\
+            url(r'^(?P<resource_name>%s)/$' %\
                 self._meta.resource_name, self.wrap_view('read')),
             ]
 
@@ -106,16 +105,17 @@ class VoipRateResource(ModelResource):
 
     def read(self, request=None, **kwargs):
         """GET method of Subscriber API"""
-        #user_voip_plan = UserProfile.objects.get(user=request.user)
-        voipplan_id = 1 # user_voip_plan.voipplan_id #  1
-
-        logger.debug('GET API get called')
+        logger.debug('Voip Rate GET API get called')
         auth_result = self._meta.authentication.is_authenticated(request)
         if not auth_result is True:
             raise ImmediateHttpResponse(response=http.HttpUnauthorized())
 
-        logger.debug('GET API authorization called!')
+        logger.debug('Voip Rate GET API authorization called!')
         auth_result = self._meta.authorization.is_authorized(request, object)
+
+
+        user_voip_plan = UserProfile.objects.get(user=request.user)
+        voipplan_id = user_voip_plan.voipplan_id #  1
 
         temp_url = request.META['PATH_INFO']
         temp_id = temp_url.split('/api/v1/voip_rate/')[1]
@@ -130,7 +130,8 @@ class VoipRateResource(ModelResource):
                 error_msg = "Wrong value for code !"
                 logger.error(error_msg)
                 raise BadRequest(error_msg)
-
+            """
+            # for mysql
             q =  str(code) + '%'
             sql_statement = ('SELECT voipbilling_voip_retail_rate.prefix, '\
                              'Min(retail_rate) as minrate, dialcode_prefix.destination '\
@@ -144,10 +145,23 @@ class VoipRateResource(ModelResource):
                              'AND voipbilling_voip_retail_rate.prefix LIKE "%s" '\
                              'GROUP BY voipbilling_voip_retail_rate.prefix' \
                              % (voipplan_id, q))
+            """
+            # for postgre-sql
+            q =  str(code) + '%'
+            sql_statement = ("SELECT voipbilling_voip_retail_rate.prefix, "\
+                             "Min(retail_rate) as minrate, dialcode_prefix.destination "\
+                             "FROM voipbilling_voip_retail_rate "\
+                             "INNER JOIN voipbilling_voipplan_voipretailplan "\
+                             "ON voipbilling_voipplan_voipretailplan.voipretailplan_id = "\
+                             "voipbilling_voip_retail_rate.voip_retail_plan_id "\
+                             "LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix =  "\
+                             "voipbilling_voip_retail_rate.prefix "\
+                             "WHERE voipplan_id=%s "\
+                             "AND CAST(voipbilling_voip_retail_rate.prefix AS TEXT) LIKE %s "\
+                             "GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination;")
 
-            print sql_statement
-            cursor.execute(sql_statement)
-        else :
+            cursor.execute(sql_statement, [voipplan_id, q])
+        else:
             sql_statement = ('SELECT voipbilling_voip_retail_rate.prefix, '\
                              'Min(retail_rate) as minrate, dialcode_prefix.destination '\
                              'FROM voipbilling_voip_retail_rate '\
@@ -157,9 +171,9 @@ class VoipRateResource(ModelResource):
                              'LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix =  '\
                              'voipbilling_voip_retail_rate.prefix '\
                              'WHERE voipplan_id=%s '\
-                             'GROUP BY voipbilling_voip_retail_rate.prefix' % (voipplan_id))
-            print sql_statement
-            cursor.execute(sql_statement)
+                             'GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination')
+
+            cursor.execute(sql_statement, [voipplan_id])
 
         row = cursor.fetchall()
 
@@ -175,5 +189,5 @@ class VoipRateResource(ModelResource):
                 modrecord['prefix__destination'] = record[2]
                 result.append(modrecord)
 
-        logger.debug('API : result ok 200')
+        logger.debug('Voip Rate API : result ok 200')
         return self.read_response(request, result)
