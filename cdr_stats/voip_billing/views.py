@@ -15,6 +15,11 @@ from user_profile.models import UserProfile
 from inspect import stack, getmodule
 
 
+def current_view(request):
+    name = getmodule(stack()[1][0]).__name__
+    return stack()[1][3]
+
+
 @login_required
 @cache_page(60 * 5)
 def retail_rate_view(request):
@@ -30,11 +35,6 @@ def retail_rate_view(request):
 
     return render_to_response(template, variables,
            context_instance=RequestContext(request))
-
-
-def current_view(request):
-    name = getmodule(stack()[1][0]).__name__
-    return stack()[1][3]
 
 
 @login_required

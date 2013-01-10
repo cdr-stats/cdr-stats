@@ -24,6 +24,7 @@ from tastypie.authorization import Authorization
 from tastypie.throttle import BaseThrottle
 from tastypie.exceptions import BadRequest, ImmediateHttpResponse
 from tastypie import http
+from api.resources import IpAddressAuthorization, IpAddressAuthentication
 from voip_billing.models import VoIPRetailRate
 from voip_billing.function_def import prefix_allowed_to_voip_call, prefix_list_string
 from user_profile.models import UserProfile
@@ -97,8 +98,8 @@ class VoipRateResource(ModelResource):
     """
     class Meta:
         resource_name = 'voip_rate'
-        authorization = Authorization()
-        authentication = BasicAuthentication()
+        authorization = IpAddressAuthorization()
+        authentication = IpAddressAuthentication()
         allowed_methods = ['post']
         detail_allowed_methods = ['post']
         throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour

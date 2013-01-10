@@ -1,114 +1,110 @@
 {% extends "frontend/master.html" %}
-{% load i18n %}
-{% load cache %}
-{% load pagination_tags %}
+{% load i18n pagination_tags cache %}
 
 {% block extra_head %}
    
     <script language="javascript" type="text/javascript">
-           
-       $(document).ready(function() {
+    function data_into_table(json)
+    {
+        var html = '<table class="table table-striped table-bordered table-condensed"><thead><tr>';
+        html += '<th>Prefix</th>';
+        html += '<th>Destination</th>';
+        html += '<th>Rate</th>';
+        html += '</tr></thead>';
+        html += '<tbody>';
+        if(isEmpty(json))
+        {
+            html += '<tr><td colspan=3><center>No Record Found</center></td></tr>';
+        }
+        $('#rate_list').empty();
+        $.each(json, function (i, obj) {
+
+            html += '<tr><td>' + obj.prefix + '</td>';
+            html += '<td>' + obj.prefix__destination + '</td>';
+            html += '<td>' + obj.retail_rate + '</td></tr>';
+
+        });
+        html += '</tbody>'
+        $('#rate_list').append(html).append('</table>');
+    }
+
+    $(document).ready(function() {
        $("#search_prefix").click(function() {
-          
+
           if(document.getElementById('id_prefix').value.length == 0)
           {
             alert('Please Enter Prefix: field');
             document.getElementById('id_prefix').focus();
             return false;
           }
+          $.ajax({
+               url: "http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/api/v1/voip_rate/code/" + String(document.getElementById('id_prefix').value) + "/?format=json",
+               type: "GET",
+               dataType: "json",
+               //timeout: 30000,
+               //data: "?format=json",
+               success: function(data) {
+                   //alert(data);
+                   data_into_table(data);
+               },
+               error: function(data) {
+                   //alert(data);
+                   //data_into_table(data);
+                   alert("Request failed");
+               }
+           });
     
-          $.getJSON("http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/api/v1/voip_rate/" + document.getElementById('id_prefix').value,
-               function(json) {                 
-                 data_into_table(json);
-               });
-        });
-     });
 
-     $(document).ready(function() {
+       });
+
        $("#clear_search_prefix").click(function() {
-          $.getJSON("http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/api/v1/voip_rate/",
-               function(json) {                 
-                 data_into_table(json);
-               });
-      });
-     });
-    
-     $(document).ready(function() {
-       $("#id_prefix").keydown(function(event) {
-            numeric(event);
-        });
-     });
+            $.getJSON("http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/api/v1/voip_rate/?format=json",
+                function(json) {
+                    data_into_table(json);
+            });
+       });
+    });
 
-     $.getJSON("http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/voip_billing/api/voiprate/",
-           function(json) {
-             data_into_table(json);
-     });
+    //$.getJSON("http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/api/v1/voip_rate/?format=json",
+    //       function(json) {
+    //         data_into_table(json);
+    //});
 
-     function isEmpty(obj) {
+    function isEmpty(obj) {
         for(var prop in obj) {
             if(obj.hasOwnProperty(prop))
                 return false;
         }
         return true;
-     }
-
-     function data_into_table(json)
-     {
-         var html = '<table align="center" border=1><thead><tr>';
-         html += '<th>Prefix</sup></th>';
-         html += '<th>Destination</sup></th>';
-         html += '<th>Rate</th>';
-         html += '</tr></thead>';
-         html += '<tbody>';
-         if(isEmpty(json))
-         {
-            html += '<tr><td colspan=3><center>No Record Found !!</center></td></tr>';
-         }
-         $('#rate_list').empty();
-         $.each(json, function (i, obj) {
-
-         html += '<tr><td>' + obj.prefix + '</td>';
-         html += '<td>' + obj.prefix__destination + '</td>';
-         html += '<td>' + obj.retail_rate + '</td></tr>';
-
-         });
-         html += '</tbody>'
-         $('#rate_list').append(html).append('</table>');
-     }
+    }
     </script>
-
-
 {% endblock %}
 
-{% block page_heading %}
-<center>Call Retail Rate</center>
-{% endblock %}
 
 {% block content %}
 
-<form method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
-    <table align=center>
-        <caption>Search Option</caption>
-        <tr>
-            <td colspan=2 align=center>{{ error }}</td>
-        </tr>
-        <tr>
-            <td>{{ form.prefix.label }}</td>
-            <td>{{ form.prefix }}</td>
-        </tr>        
-        <tr>
-            <td ></td>
-            <td align=left><!--<input type="submit" value="{% trans "Search" %}" />&nbsp;-->
-                        <input type=button name=search id=search_prefix value={% trans "Search" %} />&nbsp;
-                        <input type="reset" id=clear_search_prefix value="{% trans "Clear" %}"><td>
-        </tr>
-    </table>
+<form class="well" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
+    {% for field in form %}
+        <div class="row">
+            <div class="span4">
+                <label class="control-label" for="{{ field.auto_id }}">{{ field.label }}</label>
+                <div class="input">
+                    {{ field }}
+                    <span class="help-block">{{ field.help_text|safe }} </span>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    <label></label>
+    <div class="actions">
+        <input class="btn btn-primary" id="search_prefix" type="button" value="{% trans "Search" %}" />
+    </div>
 </form>
-<br/>
-<br/>
+<p>&nbsp;</p>
+
 {% cache 500 sidebar %}
-<div id="rate_list">
-</div>
+    <div id="rate_list"></div>
 {% endcache %}
+
 
 {% endblock %}
