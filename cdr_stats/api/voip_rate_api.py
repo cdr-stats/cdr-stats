@@ -25,10 +25,11 @@ from tastypie.throttle import BaseThrottle
 from tastypie.exceptions import BadRequest, ImmediateHttpResponse
 from tastypie import http
 from voip_billing.models import VoIPRetailRate
-from voip_billing.function_def import prefix_allowed_to_voip_call
+from voip_billing.function_def import prefix_allowed_to_voip_call, prefix_list_string
 from user_profile.models import UserProfile
 
 import logging
+import ast
 logger = logging.getLogger('cdr-stats.filelog')
 
 
@@ -77,6 +78,22 @@ class VoipRateResource(ModelResource):
                }
             ]
 
+    **Create**:
+
+        CURL::
+
+            curl -u username:password -H 'Accept: application/json' -X POST --data '{"recipient_phone_no": "34650784355"}' http://localhost:8000/api/v1/voip_rate/get_phone_rate/?format=json
+
+        Response::
+
+            [
+               {
+                  "prefix":34,
+                  "prefix__destination":"Spain",
+                  "retail_rate":"0.0350"
+               }
+            ]
+
 
     """
     class Meta:
@@ -91,8 +108,10 @@ class VoipRateResource(ModelResource):
     def override_urls(self):
         """Override urls"""
         return [
-            url(r'^(?P<resource_name>%s)/$' %\
-                self._meta.resource_name, self.wrap_view('read')),
+            url(r'^(?P<resource_name>%s)/$' % self._meta.resource_name,
+                self.wrap_view('read')),
+            url(r'^(?P<resource_name>%s)/get_phone_rate/$' % self._meta.resource_name,
+                self.wrap_view('create')),
             ]
 
     def read_response(self, request, data,
@@ -191,3 +210,55 @@ class VoipRateResource(ModelResource):
 
         logger.debug('Voip Rate API : result ok 200')
         return self.read_response(request, result)
+
+
+    def create_response(self, request, data, response_class=HttpResponse,
+                        **response_kwargs):
+        desired_format = self.determine_format(request)
+        serialized = self.serialize(request, data, desired_format)
+        return response_class(content=serialized, content_type=desired_format,
+            **response_kwargs)
+
+    def create(self, request=None, **kwargs):
+        logger.debug('Voip Rate GET API get called')
+        auth_result = self._meta.authentication.is_authenticated(request)
+        if not auth_result is True:
+            raise ImmediateHttpResponse(response=http.HttpUnauthorized())
+
+        logger.debug('Voip Rate GET API authorization called!')
+        auth_result = self._meta.authorization.is_authorized(request, object)
+
+        j = 0
+        post_var = {}
+
+        for i in request.POST:
+            if j == 0:
+                post_var = i
+                j = j + 1
+
+        post_var = ast.literal_eval(post_var)
+        recipient_phone_no = int(post_var.get('recipient_phone_no'))
+
+        user_voip_plan = UserProfile.objects.get(user=request.user)
+        voipplan_id = user_voip_plan.voipplan_id #  1
+
+        # Should Not banned recipient_phone_no
+        allowed = prefix_allowed_to_voip_call(recipient_phone_no, voipplan_id)
+        if allowed:
+            # Get Destination prefix list e.g (34,346,3465,34657)
+            destination_prefix_list = prefix_list_string(str(recipient_phone_no))
+
+            # Split Destination prefix list
+            list = destination_prefix_list.split(",")
+
+            # Get Rate List
+            rate_list = VoIPRetailRate.objects.values('prefix', 'retail_rate', 'prefix__destination').filter(prefix__in=[int(s) for s in list])
+
+            logger.debug('Voip Rate API : result ok 200')
+            return self.create_response(request, rate_list)
+        else:
+            error_msg = "Not allowed : %s" % recipient_phone_no
+            logger.error(error_msg)
+            raise BadRequest(error_msg)
+
+
