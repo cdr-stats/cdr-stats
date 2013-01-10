@@ -4,123 +4,11 @@ from piston.utils import rc, require_mime, require_extended, throttle
 from voip_billing.models import VoIPRetailRate
 from voip_report.models import VoIPCall, VoIPCall_Report
 from voip_billing.tasks import VoIPbilling
-from voip_billing.function_def import prefix_allowed_to_voip_call, prefix_list_string
+from voip_billing.function_def import prefix_allowed_to_voip_call, prefix_list_string,\
+    check_celeryd_process
 from user_profile.models import UserProfile
 from datetime import datetime
 
-
-class VoIPRateHandler(BaseHandler):
-    """
-    Handler to get rate for sending SMS
-    """
-    #model = SmsRetailRate
-    fields = ('prefix', 'retail_rate', 'prefix__destination')
-    allowed_methods = ('GET', 'POST')
-
-    @throttle(30, 1*60) # Throttle if more that 30 times within 1 minute
-    def read(self, request, code=None):
-        """
-        Get All Rate to make VoIP Call
-
-        Parameters :
-        [ ]
-
-        CURL Testing :
-            curl -u username:password -i -H "Accept: application/json" -X GET http://127.0.0.1:8000/voip_billing/api/voiprate/
-
-            or with prefix
-
-            curl -u username:password -i -H "Accept: application/json" -X GET http://127.0.0.1:8000/voip_billing/api/voiprate/XXX/
-        """
-        user_voip_plan = UserProfile.objects.get(user=request.user)
-        voipplan_id = user_voip_plan.voipplan_id #  1
-
-        from django.db import connection, transaction
-        cursor = connection.cursor()
-        if code :
-            try:
-                code = int(code)
-            except ValueError:
-                resp = rc.BAD_REQUEST
-                resp.write("\nError on the code parameter!")
-                return resp
-            sql_statement = ('SELECT voipbilling_voip_retail_rate.prefix, '\
-                'Min(retail_rate) as minrate, simu_prefix.destination '\
-                'FROM voipbilling_voip_retail_rate '\
-                'INNER JOIN voipbilling_voipplan_voipretailplan '\
-                'ON voipbilling_voipplan_vopiretailplan.voipretailplan_id = '\
-                'voipbilling_voip_retail_rate.voip_retail_plan_id '\
-                'LEFT JOIN simu_prefix ON simu_prefix.prefix =  '\
-                'voipbilling_voip_retail_rate.prefix '\
-                'WHERE voipplan_id=%s '\
-                'AND voipbilling_voip_retail_rate.prefix LIKE %s '\
-                'GROUP BY voipbilling_voip_retail_rate.prefix')
-            q = str(code) + '%'
-            cursor.execute(sql_statement, [voipplan_id, q])
-        else :
-            sql_statement = ('SELECT voipbilling_voip_retail_rate.prefix, '\
-                'Min(retail_rate) as minrate, simu_prefix.destination '\
-                'FROM voipbilling_voip_retail_rate '\
-                'INNER JOIN voipbilling_voipplan_voipretailplan '\
-                'ON voipbilling_voipplan_voipretailplan.voipretailplan_id = '\
-                'voipbilling_voip_retail_rate.voip_retail_plan_id '\
-                'LEFT JOIN simu_prefix ON simu_prefix.prefix =  '\
-                'voipbilling_voip_retail_rate.prefix '\
-                'WHERE voipplan_id=%s '\
-                'GROUP BY voipbilling_voip_retail_rate.prefix')
-            cursor.execute(sql_statement, [voipplan_id,])
-        row = cursor.fetchall()
-        result = []
-        for record in row:            
-            # Not banned Prefix
-            allowed = prefix_allowed_to_voip_call(record[0], voipplan_id)
-
-            if allowed:
-                modrecord = {}
-                modrecord['prefix'] = record[0]
-                modrecord['retail_rate'] = record[1]
-                modrecord['prefix__destination'] = record[2]
-                result.append(modrecord)
-        return result
-        
-    def create(self, request):
-        """
-        Get Rate to VoIP Call
-
-        Parameters :
-        [ Prefix ]
-
-        CURL Testing :
-        curl -u username:password -i -H "Accept: application/json" \
-        -X POST http://127.0.0.1:8000/voip_billing/api/voiprate/ \
-        -d "recipient_phone_no=xxxxxxxxxxxx"
-        """
-        attrs = self.flatten_dict(request.POST)
-        recipient_phone_no = attrs['recipient_phone_no']
-
-        user_voip_plan = UserProfile.objects.get(user=request.user)
-        voipplan_id = user_voip_plan.voipplan_id #  1
-
-        # Should Not banned recipient_phone_no
-        allowed = prefix_allowed_to_voip_call(recipient_phone_no, voipplan_id)
-
-        if allowed:
-            # Get Destination prefix list e.g (34,346,3465,34657)
-            destination_prefix_list = prefix_list_string(str(recipient_phone_no))
-
-            # Split Destination prefix list
-            list = destination_prefix_list.split(",")
-
-            # Get Rate List
-            rate_list = VoipRetailRate.objects.values('prefix', 'retail_rate',
-                'prefix__destination').filter(prefix__in=[int(s) for s in list])
-
-            try:
-                return rate_list
-            except:
-                return rc.BAD_REQUEST
-        else:
-            return rc.BAD_REQUEST
 
 
 class BillVoIPCallHandler(BaseHandler):
@@ -183,8 +71,7 @@ class BillVoIPCallHandler(BaseHandler):
                 obj.save()
 
                 # Call status get changed according to status filed
-                response = \
-                voipcall._update_voip_call_status(res['voipcall_id'])
+                response = voipcall._update_voip_call_status(res['voipcall_id'])
                 
                 resp = rc.CREATED
                 resp.write("Call Record saved!")

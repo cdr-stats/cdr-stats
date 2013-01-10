@@ -53,7 +53,7 @@ def rate_engine(voipcall_id=None, voipplan_id=None, destination_no=None):
                         = voipbilling_voip_retail_plan.id \
                     ORDER BY length(prefix) DESC, retail_rate ASC\
                     )  AS allsellrates, \
-                    voipbilling_voip_carrier_rate, simu_prefix, \
+                    voipbilling_voip_carrier_rate, dialcode_prefix, \
                     voipbilling_voipplan_voipcarrierplan, \
                     voipbilling_voip_carrier_plan, voip_provider \
             WHERE voipbilling_voipplan_voipcarrierplan.voipplan_id = %s \
@@ -107,7 +107,7 @@ def rate_engine(voipcall_id=None, voipplan_id=None, destination_no=None):
                     AND voipbilling_voipplan_voipretailplan.voipretailplan_id \
                         = voipbilling_voip_retail_plan.id \
                     ORDER BY length(prefix) DESC, retail_rate ASC\
-                    )  AS allsellrates, \
+                    )  AS allsellrates, dialcode_prefix, \
                     voipbilling_voip_carrier_rate, \
                     voipbilling_voipplan_voipcarrierplan, \
                     voipbilling_voip_carrier_plan, voip_provider \
@@ -161,7 +161,7 @@ def rate_engine(voipcall_id=None, voipplan_id=None, destination_no=None):
                     AND voipbilling_voipplan_voipretailplan.voipretailplan_id \
                         = voipbilling_voip_retail_plan.id \
                     ORDER BY prefix DESC, retail_rate ASC\
-                    )  AS allsellrates, \
+                    )  AS allsellrates, dialcode_prefix,\
                     voipbilling_voip_carrier_rate, \
                     voipbilling_voipplan_voipcarrierplan, \
                     voipbilling_voip_carrier_plan, voip_provider \
