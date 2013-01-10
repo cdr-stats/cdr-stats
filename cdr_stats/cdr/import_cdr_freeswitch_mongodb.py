@@ -226,6 +226,41 @@ def create_monthly_analytic(daily_date, start_uepoch, switch_id,
     return True
 
 
+def calculate_call_cost(voipplan_id, destination_number, billsec):
+    from voip_billing.rate_engine import rate_engine
+    from voip_billing.models import VoIPRetailRate
+
+    query = rate_engine(voipplan_id=voipplan_id, destination_no=destination_number)
+    carrier_rate = 0
+    carrier_cost = 0
+    retail_rate = 0
+    retail_cost = 0
+
+    billsec = int(str(billsec))
+
+    for i in query:
+        carrier_rate = i.carrier_rate
+        retail_rate = i.retail_rate
+        if billsec > 0:
+            r_r_plan = VoIPRetailRate.objects.get(id=i.rrid)
+
+            #print 'carrier_rate : ' + str(i.carrier_rate)
+            carrier_cost = (i.carrier_rate * (billsec / 60))
+            #print 'carrier_cost : ' + str(carrier_cost)
+
+            #print 'retail_rate : ' + str(i.retail_rate)
+            retail_cost = (i.retail_rate * (billsec / 60))
+            #print 'retail_cost : ' + str(retail_cost)
+
+    data = {
+        'carrier_rate': carrier_rate,
+        'carrier_cost': carrier_cost,
+        'retail_rate': retail_rate,
+        'retail_cost': retail_cost,
+    }
+    return data
+
+
 def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, destination_number,
                                duration, billsec, hangup_cause_id, accountcode, direction,
                                uuid, remote_media_ip, start_uepoch, answer_uepoch, end_uepoch,
@@ -234,6 +269,9 @@ def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest
     """
     Common function to create global cdr record
     """
+    #voipplan_id = 1
+    #call_cost = calculate_call_cost(voipplan_id, destination_number, billsec)
+    #print call_cost
     cdr_record = {
         'switch_id': switch_id,
         'caller_id_number': caller_id_number,
@@ -257,6 +295,12 @@ def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest
         'cdr_object_id': cdr_object_id,
         'country_id': country_id,
         'authorized': authorized,
+
+        # For call billing
+        #'carrier_rate': call_cost['carrier_rate'],
+        #'carrier_cost': call_cost['carrier_cost'],
+        #'retail_rate': call_cost['retail_rate'],
+        #'retail_cost': call_cost['retail_cost'],
     }
     return cdr_record
 

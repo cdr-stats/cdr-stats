@@ -221,7 +221,6 @@ def rate_engine(voipcall_id=None, voipplan_id=None, destination_no=None):
     obj.save()
     voipcall.save()
 
-    result_data = {}
     result_data = {'voipcall_id': voipcall.id}
 
     # This return is used by voip call task
