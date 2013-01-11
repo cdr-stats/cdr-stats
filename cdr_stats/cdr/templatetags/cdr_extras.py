@@ -148,9 +148,9 @@ def alarm_report_status(value):
 
 
 @register.filter(name='get_cost')
-def get_cost(rate, bill_sec):
+def get_cost(rate, billsec):
     try:
-        cost = (float(rate) * float(float(bill_sec)/60))
+        cost = (float(rate) * float(float(billsec)/60))
     except:
         cost = 0.0
     return str(round(cost, 4))

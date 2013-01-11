@@ -226,13 +226,16 @@ def create_monthly_analytic(daily_date, start_uepoch, switch_id,
     return True
 
 
-def calculate_call_cost(voipplan_id, destination_number):
+def calculate_call_cost(voipplan_id, destination_number, billsec):
     from voip_billing.rate_engine import rate_engine
     from voip_billing.models import VoIPRetailRate
 
     query = rate_engine(voipplan_id=voipplan_id, destination_no=destination_number)
-    buy_rate = 0
-    sell_rate = 0
+    buy_rate = 0.0
+    buy_cost = 0.0
+    sell_rate = 0.0
+    sell_cost = 0.0
+
     retail_paln_id = ''
 
     for i in query:
@@ -240,9 +243,21 @@ def calculate_call_cost(voipplan_id, destination_number):
         sell_rate = float(i.retail_rate)
         retail_paln_id = i.rrid
 
+        try:
+            buy_cost = (float(buy_rate) * float(float(billsec)/60))
+        except:
+            buy_cost = 0.0
+
+        try:
+            sell_cost = (float(sell_rate) * float(float(billsec)/60))
+        except:
+            sell_cost = 0.0
+
     data = {
         'buy_rate': buy_rate,
+        'buy_cost': round(buy_cost, 4),
         'sell_rate': sell_rate,
+        'sell_cost': round(sell_cost, 4),
         'retail_paln_id': retail_paln_id,
     }
     return data
@@ -257,7 +272,7 @@ def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest
     Common function to create global cdr record
     """
     voipplan_id = 1
-    call_rate = calculate_call_cost(voipplan_id, destination_number)
+    call_rate = calculate_call_cost(voipplan_id, destination_number, billsec)
 
     #print call_cost
     cdr_record = {
@@ -286,7 +301,9 @@ def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest
 
         # For call billing
         'buy_rate': call_rate['buy_rate'],
+        'buy_cost': call_rate['buy_cost'],
         'sell_rate': call_rate['sell_rate'],
+        'sell_cost': call_rate['sell_cost'],
         'retail_paln_id': call_rate['retail_paln_id'],
     }
     return cdr_record

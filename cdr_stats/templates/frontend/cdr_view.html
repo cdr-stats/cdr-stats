@@ -286,9 +286,9 @@
                 </td>
                 <td>{{ row.accountcode }}</td>
                 <td>{{ row.buy_rate }}</td>
-                <td>{{ row.buy_rate|get_cost:row.billsec }}</td>
+                <td>{{ row.buy_cost }}</td>
                 <td>{{ row.sell_rate }}</td>
-                <td>{{ row.sell_rate|get_cost:row.billsec }}</td>
+                <td>{{ row.sell_cost }}</td>
                 <td>
                     <div class="flag_icon">
                         {% if row.country_id %}
