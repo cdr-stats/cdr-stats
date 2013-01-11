@@ -3,7 +3,7 @@ from django.utils.translation import ugettext as _
 from voip_gateway.models import Gateway
 from voip_billing.models import VoIPPlan, VoIPRetailRate, VoIPCarrierRate
 from country_dialcode.models import Prefix
-import uuidfield.fields
+from uuid import uuid1
 
 
 
@@ -20,6 +20,8 @@ VOIPCALL_DISPOSITION = (
     (20, _('NOROUTE')),
     (30, _('FORBIDDEN')),
 )
+def str_uuid1():
+    return str(uuid1())
 
 class VoIPCall(models.Model):
     """
@@ -34,8 +36,9 @@ class VoIPCall(models.Model):
                                help_text=_("VoIP Call-ID"))
     #uniqueid = models.CharField(max_length=90,
     #                           help_text=_("UniqueID from VoIP server"))
-    uniqueid = uuidfield.fields.UUIDField(auto=True, max_length=8,
-                        help_text=_("UniqueID from VoIP server"))
+    uniqueid = models.CharField(default=str_uuid1(), db_index=True,
+        max_length=120, null=True, blank=True,
+        help_text=_("UniqueID from VoIP server"))
     callerid = models.CharField(max_length=120, verbose_name='CallerID')
     dnid = models.CharField(max_length=120, verbose_name='DNID')
     recipient_number = models.CharField(max_length=32,

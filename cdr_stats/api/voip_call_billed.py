@@ -18,8 +18,8 @@ from django.contrib.auth.models import User
 from django.db import connection
 
 from tastypie.resources import ModelResource
-#from tastypie.authentication import BasicAuthentication
-#from tastypie.authorization import Authorization
+from tastypie.authentication import BasicAuthentication
+from tastypie.authorization import Authorization
 from tastypie.throttle import BaseThrottle
 from tastypie.exceptions import BadRequest, ImmediateHttpResponse
 from tastypie.validation import Validation
@@ -34,24 +34,6 @@ from user_profile.models import UserProfile
 from datetime import datetime
 import logging
 logger = logging.getLogger('cdr-stats.filelog')
-
-
-class VoipCallValidation(Validation):
-    """
-    Voip call Validation Class
-    """
-    def is_valid(self, bundle, request=None):
-        errors = {}
-
-        if not bundle.data:
-            errors['Data'] = ['Data set is empty']
-
-        try:
-            user_id = User.objects.get(username=request.user).id
-        except:
-            errors['chk_user'] = ["The User doesn't exist!"]
-
-        return errors
 
 
 class VoipCallBilledResource(ModelResource):
@@ -74,9 +56,8 @@ class VoipCallBilledResource(ModelResource):
     """
     class Meta:
         resource_name = 'voip_call_billed'
-        validation = VoipCallValidation()
-        authorization = IpAddressAuthorization()
-        authentication = IpAddressAuthentication()
+        authorization = Authorization()
+        authentication = BasicAuthentication()
         allowed_methods = ['post']
         detail_allowed_methods = ['post']
         throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
@@ -98,61 +79,63 @@ class VoipCallBilledResource(ModelResource):
         logger.debug('Voip call billed API authorization called!')
         auth_result = self._meta.authorization.is_authorized(request, object)
 
-        errors = self._meta.validation.is_valid(request)
-        logger.debug('CDR API get called from IP %s' % request.META.get('REMOTE_ADDR'))
+        user_voip_plan = UserProfile.objects.get(user=request.user)
+        voipplan_id = user_voip_plan.voipplan_id #  1
 
-        result = []
-        if not errors:
 
-            user_voip_plan = UserProfile.objects.get(user=request.user)
-            voipplan_id = user_voip_plan.voipplan_id #  1
+        recipient_phone_no = request.POST.get('recipient_phone_no')
+        sender_phone_no = request.POST.get('sender_phone_no')
+        disposition_status = request.POST.get('disposition')
+        call_date = datetime.strptime(request.POST.get('call_date'),
+            '%Y-%m-%d %H:%M:%S')
 
-            recipient_phone_no = request.POST.get('recipient_phone_no')
-            sender_phone_no = request.POST.get('sender_phone_no')
-            disposition_status = request.POST.get('disposition')
-            call_date = datetime.strptime(request.POST.get('call_date'),
-                '%Y-%m-%d %H:%M:%S')
-            user_voip_plan = UserProfile.objects.get(user=request.user)
-            voipplan_id = user_voip_plan.voipplan_id #  1
+        try:
+            if check_celeryd_process():
+                # Create message record
+                voipcall = VoIPCall.objects.create(
+                    user=request.user,
+                    recipient_number=recipient_phone_no,
+                    callid=1,
+                    callerid=sender_phone_no,
+                    dnid=1,
+                    nasipaddress='0.0.0.0',
+                    sessiontime=1,
+                    sessiontime_real=1,
+                    disposition=disposition_status,)
 
-            try:
-                if check_celeryd_process():
-                    # Create message record
-                    voipcall = VoIPCall.objects.create(
-                        user=request.user,
-                        recipient_number=recipient_phone_no,
-                        callid=1,
-                        callerid=sender_phone_no,
-                        dnid=1,
-                        nasipaddress='0.0.0.0',
-                        sessiontime=1,
-                        sessiontime_real=1,
-                        disposition=disposition_status,)
+                # Created task to bill VoIP Call
+                response = VoIPbilling.delay(voipcall_id=voipcall.id,
+                    voipplan_id=voipplan_id)
 
-                    # Created task to bill VoIP Call
-                    response = VoIPbilling.delay(voipcall_id=voipcall.id,
-                        voipplan_id=voipplan_id)
+                # Due to task, message_id is disconnected/blank
+                # So need to get back voipcall_id
+                res = response.get()
 
-                    # Due to task, message_id is disconnected/blank
-                    # So need to get back voipcall_id
-                    res = response.get()
+                # Created VoIPCall Report record gets created date
+                obj = VoIPCall_Report.objects.get(pk=res['voipcall_id'])
+                obj.created_date = call_date
+                obj.save()
 
-                    # Created VoIPCall Report record gets created date
-                    obj = VoIPCall_Report.objects.get(pk=res['voipcall_id'])
-                    obj.created_date = call_date
-                    obj.save()
+                # Call status get changed according to status filed
+                obj = voipcall._update_voip_call_status(res['voipcall_id'])
+                logger.debug('Voip Rate API : result ok 200')
 
-                    # Call status get changed according to status filed
-                    response = voipcall._update_voip_call_status(res['voipcall_id'])
 
-                else:
-                    error_msg = "Error : Please Start Celeryd Service"
-                    logger.error(error_msg)
-                    raise BadRequest(error_msg)
-            except:
-                error_msg = "Error"
+                result = []
+                modrecord = {}
+                modrecord['recipient_number'] = obj.recipient_number
+                modrecord['disposition'] = obj.disposition
+                modrecord['id'] = obj.id
+                result.append(modrecord)
+                return self.create_response(request, result)
+
+            else:
+                error_msg = "Error : Please Start Celeryd Service"
                 logger.error(error_msg)
                 raise BadRequest(error_msg)
+        except:
+            error_msg = "Error"
+            logger.error(error_msg)
+            raise BadRequest(error_msg)
 
-        logger.debug('Voip Rate API : result ok 200')
-        return self.create_response(request, obj)
+
