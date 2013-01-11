@@ -21,7 +21,7 @@ from api.switch_api import SwitchResource
 from api.cdr_daily_api import CdrDailyResource
 from api.cdr_api import CdrResource
 from api.voip_rate_api import VoipRateResource
-from api.voip_call_billed_api import VoipCallBilledResource
+from api.voip_call_billed import VoipCallBilledResource
 from cdr.urls import urlpatterns as urlpatterns_cdr
 from cdr_alert.urls import urlpatterns as urlpatterns_cdr_alert
 from user_profile.urls import urlpatterns as urlpatterns_user_profile

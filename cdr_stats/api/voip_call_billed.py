@@ -155,4 +155,4 @@ class VoipCallBilledResource(ModelResource):
                 raise BadRequest(error_msg)
 
         logger.debug('Voip Rate API : result ok 200')
-        return self.create_response(request, result)
+        return self.create_response(request, obj)
