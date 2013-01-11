@@ -226,37 +226,24 @@ def create_monthly_analytic(daily_date, start_uepoch, switch_id,
     return True
 
 
-def calculate_call_cost(voipplan_id, destination_number, billsec):
+def calculate_call_cost(voipplan_id, destination_number):
     from voip_billing.rate_engine import rate_engine
     from voip_billing.models import VoIPRetailRate
 
     query = rate_engine(voipplan_id=voipplan_id, destination_no=destination_number)
-    carrier_rate = 0
-    carrier_cost = 0
-    retail_rate = 0
-    retail_cost = 0
-
-    billsec = int(str(billsec))
+    buy_rate = 0
+    sell_rate = 0
+    retail_paln_id = ''
 
     for i in query:
-        carrier_rate = i.carrier_rate
-        retail_rate = i.retail_rate
-        if billsec > 0:
-            r_r_plan = VoIPRetailRate.objects.get(id=i.rrid)
-
-            #print 'carrier_rate : ' + str(i.carrier_rate)
-            carrier_cost = (i.carrier_rate * (billsec / 60))
-            #print 'carrier_cost : ' + str(carrier_cost)
-
-            #print 'retail_rate : ' + str(i.retail_rate)
-            retail_cost = (i.retail_rate * (billsec / 60))
-            #print 'retail_cost : ' + str(retail_cost)
+        buy_rate = float(i.carrier_rate)
+        sell_rate = float(i.retail_rate)
+        retail_paln_id = i.rrid
 
     data = {
-        'carrier_rate': carrier_rate,
-        'carrier_cost': carrier_cost,
-        'retail_rate': retail_rate,
-        'retail_cost': retail_cost,
+        'buy_rate': buy_rate,
+        'sell_rate': sell_rate,
+        'retail_paln_id': retail_paln_id,
     }
     return data
 
@@ -269,8 +256,9 @@ def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest
     """
     Common function to create global cdr record
     """
-    #voipplan_id = 1
-    #call_cost = calculate_call_cost(voipplan_id, destination_number, billsec)
+    voipplan_id = 1
+    call_rate = calculate_call_cost(voipplan_id, destination_number)
+
     #print call_cost
     cdr_record = {
         'switch_id': switch_id,
@@ -297,10 +285,9 @@ def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest
         'authorized': authorized,
 
         # For call billing
-        #'carrier_rate': call_cost['carrier_rate'],
-        #'carrier_cost': call_cost['carrier_cost'],
-        #'retail_rate': call_cost['retail_rate'],
-        #'retail_cost': call_cost['retail_cost'],
+        'buy_rate': call_rate['buy_rate'],
+        'sell_rate': call_rate['sell_rate'],
+        'retail_paln_id': call_rate['retail_paln_id'],
     }
     return cdr_record
 

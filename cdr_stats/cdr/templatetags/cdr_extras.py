@@ -145,3 +145,12 @@ def alarm_report_status(value):
         status = ''
 
     return str(status)
+
+
+@register.filter(name='get_cost')
+def get_cost(rate, bill_sec):
+    try:
+        cost = (float(rate) * float(float(bill_sec)/60))
+    except:
+        cost = 0.0
+    return str(round(cost, 4))

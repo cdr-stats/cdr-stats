@@ -247,6 +247,10 @@
                       {% sort_link CDR_COLUMN_NAME.account "-accountcode"  %}
                     {% endifequal %}
                 </th>
+                <th>{{ CDR_COLUMN_NAME.buy_rate }}</th>
+                <th>{{ CDR_COLUMN_NAME.buy_cost }}</th>
+                <th>{{ CDR_COLUMN_NAME.sell_rate }}</th>
+                <th>{{ CDR_COLUMN_NAME.sell_cost }}</th>
                 <th></th>
             </tr>
             </thead>
@@ -281,6 +285,10 @@
                   {% endcache %}
                 </td>
                 <td>{{ row.accountcode }}</td>
+                <td>{{ row.buy_rate }}</td>
+                <td>{{ row.buy_rate|get_cost:row.billsec }}</td>
+                <td>{{ row.sell_rate }}</td>
+                <td>{{ row.sell_rate|get_cost:row.billsec }}</td>
                 <td>
                     <div class="flag_icon">
                         {% if row.country_id %}

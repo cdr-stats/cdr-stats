@@ -31,3 +31,7 @@ class CDR_COLUMN_NAME(Choice):
     bill = _('Bill')
     hangup_cause = _('Hangup cause')
     account = _('Account')
+    buy_rate = _('Buy rate')
+    buy_cost = _('Buy cost')
+    sell_rate = _('Sell rate')
+    sell_cost = _('Sell cost')
