@@ -163,7 +163,8 @@ def apply_index(shell):
 
 
 def create_daily_analytic(daily_date, switch_id, country_id,
-                          accountcode, hangup_cause_id, duration):
+                          accountcode, hangup_cause_id, duration,
+                          buy_cost, sell_cost):
     """Create DAILY_ANALYTIC"""
     id_daily = daily_date.strftime('%Y%m%d') + "/%d/%s/%d/%d" % \
         (switch_id, accountcode, country_id, hangup_cause_id)
@@ -191,6 +192,15 @@ def create_daily_analytic(daily_date, switch_id, country_id,
                 "duration_daily": int(duration),
                 "duration_hourly.%d" % (hour,): int(duration),
                 "duration_minute.%d.%d" % (hour, minute,): int(duration),
+
+                # for billing
+                "buy_cost_daily": float(buy_cost),
+                "buy_cost_hourly.%d" % (hour,): float(buy_cost),
+                "buy_cost_minute.%d.%d" % (hour, minute,): float(buy_cost),
+
+                "sell_cost_daily": float(sell_cost),
+                "sell_cost_hourly.%d" % (hour,): float(sell_cost),
+                "sell_cost_minute.%d.%d" % (hour, minute,): float(sell_cost),
             }
         }, upsert=True)
 
@@ -198,7 +208,8 @@ def create_daily_analytic(daily_date, switch_id, country_id,
 
 
 def create_monthly_analytic(daily_date, start_uepoch, switch_id,
-                            country_id, accountcode, duration):
+                            country_id, accountcode, duration,
+                            buy_cost, sell_cost):
     """Create DAILY_ANALYTIC"""
     # Get a datetime that only include year-month info
     d = datetime.datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
@@ -220,6 +231,10 @@ def create_monthly_analytic(daily_date, start_uepoch, switch_id,
             "$inc": {
                 "call_monthly": 1,
                 "duration_monthly": int(duration),
+
+                # for billing
+                "buy_cost_monthly": float(buy_cost),
+                "sell_cost_monthly": float(sell_cost),
             }
         }, upsert=True)
 
@@ -267,13 +282,11 @@ def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest
                                duration, billsec, hangup_cause_id, accountcode, direction,
                                uuid, remote_media_ip, start_uepoch, answer_uepoch, end_uepoch,
                                mduration, billmsec, read_codec, write_codec, cdr_type,
-                               cdr_object_id, country_id, authorized):
+                               cdr_object_id, country_id, authorized,
+                               buy_rate, buy_cost, sell_rate, sell_cost, retail_paln_id):
     """
     Common function to create global cdr record
     """
-    voipplan_id = 1
-    call_rate = calculate_call_cost(voipplan_id, destination_number, billsec)
-
     #print call_cost
     cdr_record = {
         'switch_id': switch_id,
@@ -299,18 +312,19 @@ def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest
         'country_id': country_id,
         'authorized': authorized,
 
-        # For call billing
-        'buy_rate': call_rate['buy_rate'],
-        'buy_cost': call_rate['buy_cost'],
-        'sell_rate': call_rate['sell_rate'],
-        'sell_cost': call_rate['sell_cost'],
-        'retail_paln_id': call_rate['retail_paln_id'],
+        # For billing
+        'buy_rate': buy_rate,
+        'buy_cost': buy_cost,
+        'sell_rate': sell_rate,
+        'sell_cost': sell_cost,
+        'retail_paln_id': retail_paln_id,
     }
     return cdr_record
 
 
 def common_function_to_create_analytic(date_start_uepoch, start_uepoch, switch_id,
-                                       country_id, accountcode, hangup_cause_id, duration):
+                                       country_id, accountcode, hangup_cause_id, duration,
+                                       buy_cost, sell_cost, retail_paln_id):
     """
     Common function to create DAILY_ANALYTIC, MONTHLY_ANALYTIC
     """
@@ -319,12 +333,12 @@ def common_function_to_create_analytic(date_start_uepoch, start_uepoch, switch_i
 
     # insert daily analytic record
     create_daily_analytic(daily_date, switch_id, country_id, accountcode,
-        hangup_cause_id, duration)
+        hangup_cause_id, duration, buy_cost, sell_cost)
 
     # MONTHLY_ANALYTIC
     # insert monthly analytic record
     create_monthly_analytic(daily_date, start_uepoch, switch_id, country_id,
-        accountcode, duration)
+        accountcode, duration, buy_cost, sell_cost)
 
     return True
 
@@ -420,12 +434,22 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         read_codec = data_element['read_codec']
         write_codec = data_element['write_codec']
 
+        voipplan_id = 1
+        call_rate = calculate_call_cost(voipplan_id, destination_number, billsec)
+        buy_rate = call_rate['buy_rate']
+        buy_cost = call_rate['buy_cost']
+        sell_rate = call_rate['sell_rate']
+        sell_cost = call_rate['sell_cost']
+        retail_paln_id = call_rate['retail_paln_id']
+
+
         # Prepare global CDR
         cdr_record = generate_global_cdr_record(switch.id, caller_id_number,
             caller_id_name, destination_number, duration, billsec, hangup_cause_id,
             accountcode, direction, uuid, remote_media_ip, start_uepoch, answer_uepoch,
             end_uepoch, mduration, billmsec, read_codec, write_codec,
-            CDR_TYPE["freeswitch"], cdr['_id'], country_id, authorized)
+            CDR_TYPE["freeswitch"], cdr['_id'], country_id, authorized,
+            buy_rate, buy_cost, sell_rate, sell_cost, retail_paln_id)
 
         # Append cdr to bulk_cdr list
         cdr_bulk_record.append(cdr_record)
@@ -446,7 +470,8 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
 
         date_start_uepoch = cdr['variables']['start_uepoch'][:10]
         common_function_to_create_analytic(date_start_uepoch, start_uepoch, switch.id,
-            country_id, accountcode, hangup_cause_id, duration)
+            country_id, accountcode, hangup_cause_id, duration,
+            buy_cost, sell_cost, retail_paln_id)
 
         # Flag the CDR as imported
         importcdr_handler.update(

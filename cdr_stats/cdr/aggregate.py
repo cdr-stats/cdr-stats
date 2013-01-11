@@ -73,7 +73,10 @@ def pipeline_cdr_view_daily_report(query_var):
             {
                 '_id': {'$substr': ["$_id", 0, 8]},
                 'call_per_day': {'$sum': '$call_daily'},
-                'duration_per_day': {'$sum': '$duration_daily'}
+                'duration_per_day': {'$sum': '$duration_daily'},
+
+                'buy_cost_per_day': {'$sum': '$buy_cost_daily'},
+                'sell_cost_per_day': {'$sum': '$sell_cost_daily'},
             }
         },
         {
@@ -81,7 +84,10 @@ def pipeline_cdr_view_daily_report(query_var):
             {
                 'call_per_day': 1,
                 'duration_per_day': 1,
-                'avg_duration_per_day': {'$divide': ["$duration_per_day", "$call_per_day"]}
+                'avg_duration_per_day': {'$divide': ["$duration_per_day", "$call_per_day"]},
+                
+                'buy_cost_per_day': 1,
+                'sell_cost_per_day': 1,
             }
         },
         {

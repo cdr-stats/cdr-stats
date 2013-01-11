@@ -148,6 +148,8 @@ def cdr_view_daily_report(query_var):
     total_calls = 0
     duration__avg = 0.0
     count_days = 0
+    total_buy_cost = 0.0
+    total_sell_cost = 0.0
     for doc in list_data['result']:
         count_days = count_days + 1
         total_data.append(
@@ -158,11 +160,15 @@ def cdr_view_daily_report(query_var):
                 'duration__sum': int(doc['duration_per_day']),
                 'calldate__count': int(doc['call_per_day']),
                 'duration__avg': doc['avg_duration_per_day'],
+                'buy_cost': float(doc['buy_cost_per_day']),
+                'sell_cost': float(doc['sell_cost_per_day']),
             })
 
         total_duration += int(doc['duration_per_day'])
         total_calls += int(doc['call_per_day'])
         duration__avg += float(doc['avg_duration_per_day'])
+        total_buy_cost += float(doc['buy_cost_per_day'])
+        total_sell_cost += float(doc['sell_cost_per_day'])
 
     if count_days != 0:
         max_duration = max([int(x['duration__sum']) for x in total_data])
@@ -177,6 +183,8 @@ def cdr_view_daily_report(query_var):
         'total_calls': total_calls,
         'total_avg_duration': total_avg_duration,
         'max_duration': max_duration,
+        'total_buy_cost': total_buy_cost,
+        'total_sell_cost': total_sell_cost,
     }
     return cdr_view_daily_data
 

@@ -18,6 +18,9 @@
             {% endif %}
         });
     </script>
+    <style type="text/css">
+        .tab-content{ width: 100%;}
+    </style>
 {% endblock %}
 
 
@@ -385,6 +388,8 @@
                 <th>{% trans "Graphic"  %}</th>
                 <th>{% trans "Calls"  %}</th>
                 <th><acronym title="{% trans "Average Connection Time"  %}">{% trans "ACT"  %}</acronym></th>
+                <th>{% trans "Buy cost" %}</th>
+                <th>{% trans "Sell cost" %}</th>
             </tr>
             </thead>
             {% for td in cdr_daily_data.total_data %}
@@ -403,6 +408,8 @@
                 </td>
                 <td>{{ td.calldate__count }}</td>
                 <td>{{ td.duration__avg|conv_min }}</td>
+                <td>{{ td.buy_cost }}</td>
+                <td>{{ td.sell_cost }}</td>
             </tr>
             {% endfor %}
 
@@ -412,6 +419,8 @@
                 <td></td>
                 <td>{{ cdr_daily_data.total_calls }}</td>
                 <td>{{ cdr_daily_data.total_avg_duration|conv_min }}</td>
+                <td>{{ cdr_daily_data.total_buy_cost }}</td>
+                <td>{{ cdr_daily_data.total_sell_cost }}</td>
             </tr>
         </table>
     </div>
