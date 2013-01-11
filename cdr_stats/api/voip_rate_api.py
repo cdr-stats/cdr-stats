@@ -15,12 +15,11 @@
 #
 
 from django.conf.urls import url
-from django.http import HttpResponse
 from django.db import connection
 
 from tastypie.resources import ModelResource
-from tastypie.authentication import BasicAuthentication
-from tastypie.authorization import Authorization
+#from tastypie.authentication import BasicAuthentication
+#from tastypie.authorization import Authorization
 from tastypie.throttle import BaseThrottle
 from tastypie.exceptions import BadRequest, ImmediateHttpResponse
 from tastypie import http
@@ -30,7 +29,6 @@ from voip_billing.function_def import prefix_allowed_to_voip_call, prefix_list_s
 from user_profile.models import UserProfile
 
 import logging
-import ast
 logger = logging.getLogger('cdr-stats.filelog')
 
 
