@@ -85,7 +85,7 @@ def pipeline_cdr_view_daily_report(query_var):
                 'call_per_day': 1,
                 'duration_per_day': 1,
                 'avg_duration_per_day': {'$divide': ["$duration_per_day", "$call_per_day"]},
-                
+
                 'buy_cost_per_day': 1,
                 'sell_cost_per_day': 1,
             }

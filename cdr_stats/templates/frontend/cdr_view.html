@@ -250,10 +250,42 @@
                       {% sort_link CDR_COLUMN_NAME.account "-accountcode"  %}
                     {% endifequal %}
                 </th>
-                <th>{{ CDR_COLUMN_NAME.buy_rate }}</th>
-                <th>{{ CDR_COLUMN_NAME.buy_cost }}</th>
-                <th>{{ CDR_COLUMN_NAME.sell_rate }}</th>
-                <th>{{ CDR_COLUMN_NAME.sell_cost }}</th>
+                <th>
+                    {% ifequal col_name_with_order.sort_field 'buy_rate' %}
+                        {% sort_link "<i class='icon-chevron-up'></i>" "buy_rate"  %}
+                        {{ CDR_COLUMN_NAME.buy_rate }}
+                        {% sort_link "<i class='icon-chevron-down'></i>" "-buy_rate"  %}
+                    {% else %}
+                        {% sort_link CDR_COLUMN_NAME.buy_rate "-buy_rate"  %}
+                    {% endifequal %}
+                </th>
+                <th>
+                    {% ifequal col_name_with_order.sort_field 'buy_cost' %}
+                        {% sort_link "<i class='icon-chevron-up'></i>" "buy_cost"  %}
+                        {{ CDR_COLUMN_NAME.buy_cost }}
+                        {% sort_link "<i class='icon-chevron-down'></i>" "-buy_cost"  %}
+                    {% else %}
+                        {% sort_link CDR_COLUMN_NAME.buy_rate "-buy_cost"  %}
+                    {% endifequal %}
+                </th>
+                <th>
+                    {% ifequal col_name_with_order.sort_field 'sell_rate' %}
+                        {% sort_link "<i class='icon-chevron-up'></i>" "sell_rate"  %}
+                        {{ CDR_COLUMN_NAME.sell_rate }}
+                        {% sort_link "<i class='icon-chevron-down'></i>" "-sell_rate"  %}
+                    {% else %}
+                        {% sort_link CDR_COLUMN_NAME.buy_rate "-sell_rate"  %}
+                    {% endifequal %}
+                </th>
+                <th>
+                    {% ifequal col_name_with_order.sort_field 'sell_cost' %}
+                        {% sort_link "<i class='icon-chevron-up'></i>" "sell_cost"  %}
+                        {{ CDR_COLUMN_NAME.sell_cost }}
+                        {% sort_link "<i class='icon-chevron-down'></i>" "-sell_cost"  %}
+                    {% else %}
+                        {% sort_link CDR_COLUMN_NAME.buy_rate "-sell_cost"  %}
+                    {% endifequal %}
+                </th>
                 <th></th>
             </tr>
             </thead>
