@@ -34,7 +34,7 @@ class Command(BaseCommand):
             dest='apply-index',
             default=False,
             help=help
-        )
+        ),
     )
 
     def handle(self, *args, **options):
