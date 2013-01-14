@@ -208,9 +208,9 @@ func_install_frontend(){
 
             #Install epel repo for pip and mod_python
             if [ $KERNELARCH = "x86_64" ]; then
-				rpm -ivh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-7.noarch.rpm
+				rpm -ivh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 			else
-				rpm -ivh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm
+				rpm -ivh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
 			fi
 
             # disable epel repository since by default it is enabled.
