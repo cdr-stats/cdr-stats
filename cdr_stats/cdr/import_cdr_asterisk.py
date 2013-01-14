@@ -15,7 +15,7 @@ from django.conf import settings
 from cdr.models import CDR_TYPE
 from cdr.import_cdr_freeswitch_mongodb import apply_index,\
     chk_ipaddress, CDR_COMMON, create_daily_analytic,\
-    create_monthly_analytic, set_int_default
+    create_monthly_analytic, set_int_default, calculate_call_cost
 from cdr.functions_def import get_hangupcause_id
 from cdr_alert.functions_blacklist import chk_destination
 from datetime import datetime
@@ -184,6 +184,14 @@ def import_cdr_asterisk(shell=False):
             #Option to get the direction from user_field
             direction = "unknown"
 
+            voipplan_id = 1
+            call_rate = calculate_call_cost(voipplan_id, destination_number, billsec)
+            buy_rate = call_rate['buy_rate']
+            buy_cost = call_rate['buy_cost']
+            sell_rate = call_rate['sell_rate']
+            sell_cost = call_rate['sell_cost']
+            retail_paln_id = call_rate['retail_paln_id']
+
             # Prepare global CDR
             cdr_record = {
                 'switch_id': switch.id,
@@ -209,6 +217,13 @@ def import_cdr_asterisk(shell=False):
                 'cdr_object_id': acctid,
                 'country_id': country_id,
                 'authorized': authorized,
+
+                # For billing
+                'buy_rate': buy_rate,
+                'buy_cost': buy_cost,
+                'sell_rate': sell_rate,
+                'sell_cost': sell_cost,
+                'retail_paln_id': retail_paln_id,
             }
 
             # record global CDR
@@ -231,11 +246,13 @@ def import_cdr_asterisk(shell=False):
             daily_date = datetime.fromtimestamp(int(row[1]))
             # insert daily analytic record
             create_daily_analytic(daily_date, switch.id, country_id,
-                                  accountcode, hangup_cause_id, duration)
+                                  accountcode, hangup_cause_id, duration,
+                                  buy_cost, sell_cost)
 
             # insert monthly analytic record
             create_monthly_analytic(daily_date, start_uepoch, switch.id,
-                                    country_id, accountcode, duration)
+                                    country_id, accountcode, duration,
+                                    buy_cost, sell_cost)
 
             #Flag the CDR
             try:
