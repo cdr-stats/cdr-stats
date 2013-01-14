@@ -1,18 +1,27 @@
 # Create your views here.
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.views.decorators.cache import cache_page
 from django.shortcuts import render_to_response
-
+from django.conf import settings
 from django.template.context import RequestContext
+from pymongo.connection import Connection
+from pymongo.errors import ConnectionFailure
+
+
 from voip_billing.models import VoIPRetailRate
 from voip_billing.forms import PrefixRetailRrateForm, SimulatorForm, BillingForm
 from voip_billing.function_def import variable_value, prefix_allowed_to_voip_call
 from voip_billing.rate_engine import rate_engine
 from user_profile.models import UserProfile
-from common.common_functions import current_view
-
+from cdr.views import check_user_accountcode, check_cdr_exists, chk_account_code
+from cdr.functions_def import chk_account_code
+from cdr.aggregate import pipeline_daily_billing_report
+from common.common_functions import current_view, ceil_strdate
+from datetime import datetime
+import logging
+import time
 
 
 @login_required
@@ -77,19 +86,68 @@ def simulator(request):
                                 context_instance=RequestContext(request))
 
 
+#@permission_required('voip_billing.allow_cdr_view', login_url='/')
+@check_cdr_exists
+@check_user_accountcode
 @login_required
 def billing_report(request):
     template = 'voip_billing/billing_report.html'
     action = 'tabs-1'
-
+    search_tag = 0
+    tday = datetime.today()
     form = BillingForm(request.user)
+    #plan_id = request.GET['plan_id']
     if request.method == 'POST':
+        search_tag = 1
         form = BillingForm(request.user, request.POST)
+        if "from_date" in request.POST:
+            from_date = request.POST['from_date']
+            start_date = ceil_strdate(from_date, 'start')
+        else:
+            from_date = tday.strftime('%Y-%m-%d')
+
+        if "to_date" in request.POST:
+            to_date = request.POST['to_date']
+            end_date = ceil_strdate(to_date, 'end')
+        else:
+            to_date = tday.strftime('%Y-%m-%d')
+
+        if "plan_id" in request.POST:
+            plan_id = request.POST['plan_id']
+    else:
+        start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
+        end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
+
+    query_var = {}
+    query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+    if not request.user.is_superuser:  # not superuser
+        query_var['metadata.accountcode'] = chk_account_code(request)
+
+    logging.debug('Aggregate cdr analytic')
+    pipeline = pipeline_daily_billing_report(query_var)
+
+    logging.debug('Before Aggregate')
+    list_data = settings.DBCON.command('aggregate',
+                                       settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+                                       pipeline=pipeline)
+
+    logging.debug('After Aggregate')
+
+    daily_data = dict()
+    if list_data:
+        for doc in list_data['result']:
+            a_Year = int(doc['_id'][0:4])
+            b_Month = int(doc['_id'][4:6])
+            c_Day = int(doc['_id'][6:8])
+            day_hours = dict()
+            #print doc['buy_cost_per_day']
+
+    #print daily_data
 
     data = {
         'module': current_view(request),
         'form': form,
-        #'data': data,
+        'search_tag': search_tag,
         'action': action,
     }
     return render_to_response(template, data, context_instance=RequestContext(request))

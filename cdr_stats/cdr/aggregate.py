@@ -374,3 +374,38 @@ def pipeline_cdr_alert_task(query_var):
         }
     ]
     return pipeline
+
+
+def pipeline_daily_billing_report(query_var):
+    """
+    To get the day vise analytic of billing
+
+    Attributes:
+
+        * ``query_var`` - filter variable for collection
+    """
+    pipeline = [
+        {'$match': query_var},
+        {
+            '$group':
+                {
+                    '_id': {'$substr': ["$_id", 0, 8]},
+                    'buy_cost_per_day': {'$sum': '$buy_cost_daily'},
+                    'sell_cost_per_day': {'$sum': '$sell_cost_daily'},
+                }
+        },
+        {
+            '$project':
+                {
+                    'buy_cost_per_day': 1,
+                    'sell_cost_per_day': 1,
+                }
+        },
+        {
+            '$sort':
+                {
+                    '_id': -1
+                }
+        }
+    ]
+    return pipeline
