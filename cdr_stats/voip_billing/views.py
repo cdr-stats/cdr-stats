@@ -7,17 +7,12 @@ from django.shortcuts import render_to_response
 
 from django.template.context import RequestContext
 from voip_billing.models import VoIPRetailRate
-from voip_billing.forms import PrefixRetailRrateForm, SimulatorForm
+from voip_billing.forms import PrefixRetailRrateForm, SimulatorForm, BillingForm
 from voip_billing.function_def import variable_value, prefix_allowed_to_voip_call
 from voip_billing.rate_engine import rate_engine
 from user_profile.models import UserProfile
+from common.common_functions import current_view
 
-from inspect import stack, getmodule
-
-
-def current_view(request):
-    name = getmodule(stack()[1][0]).__name__
-    return stack()[1][3]
 
 
 @login_required
@@ -82,4 +77,19 @@ def simulator(request):
                                 context_instance=RequestContext(request))
 
 
+@login_required
+def billing_report(request):
+    template = 'voip_billing/billing_report.html'
+    action = 'tabs-1'
 
+    form = BillingForm(request.user)
+    if request.method == 'POST':
+        form = BillingForm(request.user, request.POST)
+
+    data = {
+        'module': current_view(request),
+        'form': form,
+        #'data': data,
+        'action': action,
+    }
+    return render_to_response(template, data, context_instance=RequestContext(request))

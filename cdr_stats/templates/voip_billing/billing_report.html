@@ -1,0 +1,214 @@
+{% extends "frontend/master.html" %}
+{% load i18n common_tags icons %}
+
+{% block title %}{% trans "Billing Report" %}{% endblock %}
+
+{% block extra_head %}
+    {% include "frontend/common_datepicker.html" %}
+    <style type="text/css">
+        .tab-content {
+            overflow: inherit;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="tabbable">
+    <ul class="nav nav-tabs">
+        <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "Billing by day"|title %}</a></li>
+        <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "Billing by hour"|title %}</a></li>
+    </ul>
+
+    <div id="form_collapse" class="collapse">
+        <form class="well" method="POST" action="." enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="span12">
+                    <div class="row">
+                        <div class="span4">
+                            <label class="control-label" for="{{ form.from_date.auto_id }}">{{ form.from_date.label }}</label>
+                            <div class="input">
+                                {{ form.from_date }}
+                                <span class="help-block">{{ form.from_date.help_text|safe }} </span>
+                            </div>
+                        </div>
+                        <div class="span4">
+                            <label class="control-label" for="{{ form.to_date.auto_id }}">{{ form.to_date.label }}</label>
+                            <div class="input">
+                                {{ form.to_date }}
+                                <span class="help-block">{{ form.to_date.help_text|safe }} </span>
+                            </div>
+                        </div>
+                        {% if user.is_superuser %}
+                        <div class="span4">
+                            <label class="control-label" for="{{ form.plan_id.auto_id }}">{{ form.plan_id.label }}</label>
+                            <div class="input">
+                                {{ form.plan_id }}
+                                <span class="help-block">{{ form.plan_id.help_text|safe }} </span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <label>&nbsp;</label>
+            <div class="actions">
+                <input class="btn btn-primary" type=submit name=submit value={% trans "Search" %} />
+            </div>
+        </form>
+    </div>
+    <div>
+        <a class="btn btn-small" id="toggle_btn" href="#" data-toggle="collapse" data-target="#form_collapse">
+            <i class="icon-search"></i> <span>{% trans "advanced search"|title %}</span>
+        </a>
+    </div>
+    <div class="tab-content">
+        <div id="tabs-1" class="tab-pane {% if action == "tabs-1" or action == "" %}active{% endif %}">
+            <div class="graph_header">
+                <h3>{% trans "alert report"|title %} <small>{% trans "list of alerts" %}</small></h3>-
+            </div>
+
+
+        </div>
+        <div id="tabs-2" class="tab-pane {% if action == "tabs-2" or action == "" %}active{% endif %}">
+
+            <script id="source" language="javascript" type="text/javascript">
+                $(function () {
+                    var data = [
+                        {% for data in total_data %}
+                            [{{ data.0 }}, {{ data.1.alert_count }}],
+                        {% endfor %}
+                    ];
+
+                    function Info(time,info){
+                        for(var i in data){
+                            if (data[i][0] == parseInt(time)){
+                                switch(info){
+                                    case 0:
+                                        return data[i][0];
+                                        break;
+                                    case 1:
+                                        return data[i][1];
+                                        break;
+                                    //case 2:
+                                    //    return data[i][2];
+                                    //    break;
+                                    default:
+                                        return data[i][0];
+                                }
+                            }
+                        }
+                    }
+
+                    function formTicks(val) {
+
+                        var dt = new Date(parseInt(val));
+                        var hour = dt.getHours();
+                        var minute = dt.getMinutes();
+                        var ampm = hour >= 12 ? 'pm' : 'am';
+                        var hour = hour % 12;
+                        hour = hour ? hour : 12; // the hour '0' should be '12'
+                        minute = minute < 10 ? '0' + minute : minute;
+                        strTime = hour + ':' + minute + ' ' + ampm;
+                        return strTime
+                    }
+
+                    var options = {
+                        series: {
+                            lines: { show: true},
+                            points: { show: true }
+                        },
+                        xaxis: { mode: "time",
+                            tickLength: 5,
+                            tickFormatter: function(val) { return formTicks(val) }
+                        },
+                        yaxis: { min: 0, tickDecimals: false },
+                        selection: { mode: "x" },
+                        grid: {
+                            hoverable: true,
+                            xaxis: false
+                        }
+                    };
+
+                    var plot = $.plot($("#graph_responsive"), [data], options);
+
+                    var overview = $.plot($("#overview"), [data], {
+                        legend: {show: false},
+                        series: {
+                            lines: { show: true, lineWidth: 1 },
+                            shadowSize: 0
+                        },
+                        xaxis: { ticks: [], mode: "time" },
+                        yaxis: { ticks: [], min: 0, autoscaleMargin: 0.1 },
+                        selection: { mode: "x" }
+                    });
+
+                    // now connect the two
+                    $("#graph_responsive").bind("plotselected", function (event, ranges) {
+                        // do the zooming
+                        plot = $.plot($("#graph_responsive"), [data],
+                                $.extend(true, {}, options, {
+                                    xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to }
+                                }));
+
+                        // don't fire event on the overview to prevent eternal loop
+                        overview.setSelection(ranges, true);
+                    });
+
+                    $("#overview").bind("plotselected", function (event, ranges) {
+                        plot.setSelection(ranges);
+                    });
+
+                    $("#graph_responsive").bind("plothover", function (event, pos, item) {
+                        if (item) {
+                            if (previousPoint != item.dataIndex) {
+                                previousPoint = item.dataIndex;
+
+                                $("#tooltip").remove();
+                                var x = item.datapoint[0].toFixed(2),
+                                        y = item.datapoint[1].toFixed(2);
+
+                                var time = x;
+                                var dt = new Date(parseInt(time));
+                                var hour = dt.getHours();//(time.toString().split("."))[0];
+                                var minute = dt.getMinutes();//Math.round(time * 60 - (hour * 60));
+                                var output = '';
+                                output += '<div class="graph_tooltip_header">';
+
+                                var ampm = hour >= 12 ? 'pm' : 'am';
+                                var hour = hour % 12;
+                                hour = hour ? hour : 12; // the hour '0' should be '12'
+                                minute = minute < 10 ? '0'+minute : minute;
+                                strTime = hour + ':' + minute + ' ' + ampm;
+
+                                output += strTime + '</div><div class="graph_tooltip_info">{% trans "Alerts" %}: ' + Info(time,1) + '</div>';
+
+                                showTooltip(item.pageX, item.pageY, output);
+                            }
+                        }
+                        else {
+                            $("#tooltip").remove();
+                            previousPoint = null;
+                        }
+                    });
+                });
+            </script>
+            <div class="graph_header">
+                {% trans "daily report"|title  %} -
+                <b>
+                    {% if start_date  %}
+                        {{ start_date|date:"jS N Y" }}
+                    {% endif %}
+                    {% if end_date  %}
+                        {% trans "to" %} {{ end_date|date:"jS N Y" }}
+                    {% endif %}
+                </b>
+            </div>
+
+            <div id="graph_responsive" style="margin:auto;"></div>
+
+            <div id="overview" style="margin:auto;margin-bottom:20px;margin-top:20px;width:400px;height:50px"></div>
+
+        </div>
+    </div>
+{% endblock %}

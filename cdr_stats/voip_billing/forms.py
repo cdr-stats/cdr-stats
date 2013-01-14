@@ -161,10 +161,13 @@ class CustomRateFilterForm(forms.Form):
                            required=False)
 
 
-class LoginForm(forms.Form):
-    """
-    Client Login Form
-    """
-    user = forms.CharField(max_length=40, label=_('Login'), required=True)
-    password = forms.CharField(max_length=40, label=_('Password'),
-               required=True, widget=forms.PasswordInput())
+class BillingForm(SimulatorForm):
+
+    from_date = forms.CharField(label=_('From'), required=True, max_length=10)
+    to_date = forms.CharField(label=_('To'), required=True, max_length=10)
+
+    def __init__(self, user, *args, **kwargs):
+        super(BillingForm, self).__init__(user, *args, **kwargs)
+        self.fields.keyOrder = ['from_date', 'to_date', 'plan_id'] #, 'switch'
+        if not user.is_superuser:
+            self.fields['plan_id'] = forms.ChoiceField(widget=forms.HiddenInput())
