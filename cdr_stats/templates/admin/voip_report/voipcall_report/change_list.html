@@ -1,6 +1,6 @@
 {% extends "admin/change_list.html" %}
 {% load adminmedia admin_list i18n %}
-{% load voip_billing_extras %}
+{% load common_tags %}
 
 {% block content %}
   <div id="content-main">
@@ -80,55 +80,53 @@
       </form>
     </div>
 
-    <br/>
-
     {% block extra_data %}
-    <div >
+
         <table  class="module" align=center>
-        <caption>{% trans "Call Detail Report"  %}</caption>
-        <thead>
-            <tr>
-                <th scope="col">{% trans "Date"  %}</th>
-                <th scope="col">{% trans "Duration"  %}</th>
-                <th scope="col">{% trans "Graphic"  %}</th>
-                <th scope="col">{% trans "Calls"  %}</th>
-                <th scope="col">{% trans "Carrier Cost" %}</th>
-                <th scope="col">{% trans "Retail Cost" %}</th>
-                <th scope="col">{% trans "Profit" %}</th>
-                <th scope="col"><acronym title="{% trans "Average Connection Time"  %}">{% trans "ACT"  %}</acronym></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for td in total_data %}
-            <tr class="{% cycle 'row1' 'row2' %}">
-                <td>{{ td.starting_date }}</td>
-                <td>{{ td.sessiontime_real__sum|conv_min }}</td>
-                <td>{% if max_duration > 0 %}
-                    <img src="{{STATIC_URL}}voip2bill/images/spacer.png" width="{{ td.sessiontime_real__sum|cal_width:max_duration }}" style="vertical-align:center;" height="10"/>
-                    {% endif %}
-                </td>
-                <td>{{ td.starting_date__count }}</td>
-                <td>{{ td.carrier_cost__sum }}</td>
-                <td>{{ td.retail_cost__sum }}</td>
-                <td>{{ td.retail_cost__sum|subtract:td.carrier_cost__sum }}</td>
-                <td>{{ td.sessiontime_real__avg|conv_min }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr>
-                <td>{% trans "Total"  %}</td>
-                <td>{{ total_duration|conv_min }}</td>
-                <td></td>
-                <td>{{ total_calls }}</td>
-                <td>{{ total_carrier_cost }}</td>
-                <td>{{ total_retail_cost }}</td>
-                <td>{{ total_profit }}</td>
-                <td>{{ total_avg_duration|conv_min }}</td>
-            </tr>
-        </tfoot>
-    </table>
-    </div>
+            <caption>{% trans "Call Detail Report"  %}</caption>
+            <thead>
+                <tr>
+                    <th scope="col">{% trans "Date"  %}</th>
+                    <th scope="col">{% trans "Duration"  %}</th>
+                    <th scope="col">{% trans "Graphic"  %}</th>
+                    <th scope="col">{% trans "Calls"  %}</th>
+                    <th scope="col">{% trans "Carrier Cost" %}</th>
+                    <th scope="col">{% trans "Retail Cost" %}</th>
+                    <th scope="col">{% trans "Profit" %}</th>
+                    <th scope="col"><acronym title="{% trans "Average Connection Time"  %}">{% trans "ACT"  %}</acronym></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for td in total_data %}
+                <tr class="{% cycle 'row1' 'row2' %}">
+                    <td>{{ td.updated_date }}</td>
+                    <td>{{ td.sessiontime_real__sum|conv_min }}</td>
+                    <td>{% if max_duration > 0 %}
+                            <img src="{{ STATIC_URL }}cdr-stats/images/spacer.png" width="{{ td.sessiontime_real__sum|cal_width:max_duration }}" style="vertical-align:center;" height="10"/>
+                        {% endif %}
+                    </td>
+                    <td>{{ td.updated_date__count }}</td>
+                    <td>{{ td.carrier_cost__sum }}</td>
+                    <td>{{ td.retail_cost__sum }}</td>
+                    <td>{{ td.retail_cost__sum|subtract:td.carrier_cost__sum }}</td>
+                    <td>{{ td.sessiontime_real__avg|conv_min }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>{% trans "Total"  %}</td>
+                    <td>{{ total_duration|conv_min }}</td>
+                    <td></td>
+                    <td>{{ total_calls }}</td>
+                    <td>{{ total_carrier_cost }}</td>
+                    <td>{{ total_retail_cost }}</td>
+                    <td>{{ total_profit }}</td>
+                    <td>{{ total_avg_duration|conv_min }}</td>
+                </tr>
+            </tfoot>
+        </table>
+
     {% endblock %}
 
   </div>

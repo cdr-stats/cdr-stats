@@ -131,9 +131,9 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
             from_date = ''
             to_date = ''
             if request.GET.get('updated_date__gte'):
-                from_date = variable_value(request, 'starting_date__gte')
+                from_date = variable_value(request, 'updated_date__gte')
             if request.GET.get('updated_date__lte'):
-                to_date = variable_value(request, 'starting_date__lte')[0:10]
+                to_date = variable_value(request, 'updated_date__lte')[0:10]
             if request.GET.get('disposition__exact'):
                 status = variable_value(request, 'disposition__exact')
             if request.GET.get('billed__exact'):
@@ -187,8 +187,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
         profit = []
         key = 0
         for i in total_data:
-            profit.append((key,
-                           i['retail_cost__sum'] - i['carrier_cost__sum']))
+            profit.append((key, i['retail_cost__sum'] - i['carrier_cost__sum']))
             key = key + 1
 
         # Following code will count total voip calls, duration
@@ -219,6 +218,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
             'model_name': opts.object_name.lower(),
             'app_label': _('VoIP Report'),
             'title': _('VoIP Call Report'),
+            'total_data': total_data,
             'total_duration':total_duration,
             'total_calls':total_calls,
             'total_avg_duration':total_avg_duration,
@@ -348,7 +348,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
         writer = csv.writer(response)
 
         # super(VoIPCall_ReportAdmin, self).queryset(request)
-        qs = request.session['voipcall_record_qs']
+        qs = request.session['admin_voipcall_record_qs']
 
         writer.writerow(['user', 'callid', 'callerid', 'dnid',
                          'recipient_number', 'starting_date','sessiontime',
