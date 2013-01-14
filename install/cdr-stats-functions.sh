@@ -178,7 +178,7 @@ func_prepare_system_common(){
             yum -y install git
 
             #Install epel repo for pip and mod_python
-            rpm -ivh http://dl.fedoraproject.org/pub/epel/6/$KERNELARCH/epel-release-6-7.noarch.rpm
+            rpm -ivh http://dl.fedoraproject.org/pub/epel/6/$KERNELARCH/epel-release-6-8.noarch.rpm
             # disable epel repository since by default it is enabled.
             sed -i "s/enabled=1/enable=0/" /etc/yum.repos.d/epel.repo
 
