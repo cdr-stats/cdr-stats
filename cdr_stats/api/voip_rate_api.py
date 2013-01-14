@@ -96,8 +96,8 @@ class VoipRateResource(ModelResource):
     """
     class Meta:
         resource_name = 'voip_rate'
-        authorization = IpAddressAuthorization()
-        authentication = IpAddressAuthentication()
+        authentication = BasicAuthentication()#IpAddressAuthentication()
+        authorization = Authorization()#IpAddressAuthorization()
         allowed_methods = ['post']
         detail_allowed_methods = ['post']
         throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour

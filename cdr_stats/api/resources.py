@@ -16,7 +16,7 @@
 
 from django.contrib.auth.models import User
 from django.conf import settings
-from tastypie.authentication import Authentication
+from tastypie.authentication import Authentication, BasicAuthentication
 from tastypie.authorization import Authorization
 from tastypie.serializers import Serializer
 from tastypie.exceptions import ImmediateHttpResponse
@@ -66,6 +66,7 @@ def save_if_set(record, fproperty, value):
 class IpAddressAuthorization(Authorization):
 
     def is_authorized(self, request, object=None):
+
         if request.META['REMOTE_ADDR'] in settings.API_ALLOWED_IP:
             return True
         else:
@@ -76,6 +77,7 @@ class IpAddressAuthorization(Authorization):
 class IpAddressAuthentication(Authentication):
 
     def is_authorized(self, request, object=None):
+
         if request.META['REMOTE_ADDR'] in settings.API_ALLOWED_IP:
             return True
         else:
