@@ -16,7 +16,7 @@ from apiplayground import APIPlayground
 
 class CdrAPIPlayground(APIPlayground):
     """
-    To test CDR api in broswer
+    To test CDR api in browse
 
         ``URL`` : http://127.0.0.1:8000/api-explorer/cdr/
     """

@@ -51,7 +51,7 @@ class VoipCallBilledResource(ModelResource):
 
          CURL Usage::
 
-             curl -u username:password --dump-header - -H "Content-Type:application/json" -X POST --data "ALegRequestUUID=48092924-856d-11e0-a586-0147ddac9d3e&CallUUID=48092924-856d-11e0-a586-0147ddac9d3e" http://localhost:8000/api/v1/voip_call_billed/
+             curl -u username:password --dump-header - -H "Content-Type:application/json" -X POST --data "recipient_phone_no=34657077888&sender_phone_no=919427164510&disposition=1&call_date=2013-01-11 11:11:22" http://localhost:8000/api/v1/voip_call_billed/
 
          Response::
     """

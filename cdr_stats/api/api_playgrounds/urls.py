@@ -14,12 +14,15 @@
 from django.conf.urls import include, patterns
 from api.api_playgrounds.cdr_playground import CdrAPIPlayground
 from api.api_playgrounds.switch_playground import SwitchAPIPlayground
-
+from api.api_playgrounds.voip_rate_playground import VoipRateAPIPlayground
+from api.api_playgrounds.voip_call_billed_playground import VoipCallBilledAPIPlayground
 
 urlpatterns = patterns('',
 
     (r'api-explorer/cdr/', include(CdrAPIPlayground().urls)),
     (r'api-explorer/switch/', include(SwitchAPIPlayground().urls)),
+    (r'api-explorer/voip-rate/', include(VoipRateAPIPlayground().urls)),
+    (r'api-explorer/voip-call-billed/', include(VoipCallBilledAPIPlayground().urls)),
 
     # API list view
     (r'api-explorer/$', 'api.api_playgrounds.views.api_list_view'),
