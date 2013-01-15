@@ -134,20 +134,33 @@ def billing_report(request):
     logging.debug('After Aggregate')
 
     daily_data = dict()
+    total_data = []
     if list_data:
         for doc in list_data['result']:
-            a_Year = int(doc['_id'][0:4])
-            b_Month = int(doc['_id'][4:6])
-            c_Day = int(doc['_id'][6:8])
-            day_hours = dict()
-            #print doc['buy_cost_per_day']
+            graph_day = datetime(int(doc['_id'][0:4]),
+                                 int(doc['_id'][4:6]),
+                                 int(doc['_id'][6:8]),
+                                 0, 0, 0, 0)
+            dt = int(1000 * time.mktime(graph_day.timetuple()))
 
-    #print daily_data
+            if dt in daily_data:
+                daily_data[dt]['buy_cost_per_day'] += float(doc['buy_cost_per_day'])
+                daily_data[dt]['sell_cost_per_day'] += float(doc['sell_cost_per_day'])
+            else:
+                daily_data[dt] = {
+                    'buy_cost_per_day': float(doc['buy_cost_per_day']),
+                    'duration_sum': float(doc['sell_cost_per_day']),
+                }
+
+            total_data = daily_data.items()
+            total_data = sorted(total_data, key=lambda k: k[0])
+
 
     data = {
         'module': current_view(request),
         'form': form,
         'search_tag': search_tag,
         'action': action,
+        'total_data': total_data,
     }
     return render_to_response(template, data, context_instance=RequestContext(request))
