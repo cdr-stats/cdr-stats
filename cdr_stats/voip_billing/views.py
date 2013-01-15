@@ -11,13 +11,14 @@ from pymongo.errors import ConnectionFailure
 
 
 from voip_billing.models import VoIPRetailRate
-from voip_billing.forms import PrefixRetailRrateForm, SimulatorForm, BillingForm
+from voip_billing.forms import PrefixRetailRrateForm, SimulatorForm, BillingForm,\
+    HourlyBillingForm
 from voip_billing.function_def import variable_value, prefix_allowed_to_voip_call
 from voip_billing.rate_engine import rate_engine
 from user_profile.models import UserProfile
 from cdr.views import check_user_accountcode, check_cdr_exists, chk_account_code
 from cdr.functions_def import chk_account_code
-from cdr.aggregate import pipeline_daily_billing_report
+from cdr.aggregate import pipeline_daily_billing_report, pipeline_hourly_billing_report
 from common.common_functions import current_view, ceil_strdate
 from datetime import datetime
 import logging
@@ -90,8 +91,8 @@ def simulator(request):
 @check_cdr_exists
 @check_user_accountcode
 @login_required
-def billing_report(request):
-    template = 'voip_billing/billing_report.html'
+def daily_billing_report(request):
+    template = 'voip_billing/daily_billing_report.html'
     search_tag = 0
     tday = datetime.today()
     form = BillingForm(request.user, initial={'from_date': tday.strftime('%Y-%m-%d'),
@@ -166,4 +167,109 @@ def billing_report(request):
         'start_date': start_date,
         'end_date': end_date,
     }
+    return render_to_response(template, data, context_instance=RequestContext(request))
+
+
+#@permission_required('voip_billing.allow_cdr_view', login_url='/')
+@check_cdr_exists
+@check_user_accountcode
+@login_required
+def hourly_billing_report(request):
+    template = 'voip_billing/hourly_billing_report.html'
+    search_tag = 0
+    tday = datetime.today()
+    form = HourlyBillingForm(request.user, initial={'from_date': tday.strftime('%Y-%m-%d')})
+    #plan_id = request.GET['plan_id']
+    if request.method == 'POST':
+        search_tag = 1
+        form = HourlyBillingForm(request.user, request.POST)
+        if "from_date" in request.POST:
+            from_date = request.POST['from_date']
+            start_date = ceil_strdate(from_date, 'start')
+        else:
+            from_date = tday.strftime('%Y-%m-%d')
+
+        start_date = datetime(start_date.year, start_date.month,
+            start_date.day, 0, 0, 0, 0)
+        end_date = datetime(start_date.year, start_date.month,
+            start_date.day, 23, 59, 59, 999999)
+
+        if "plan_id" in request.POST:
+            plan_id = request.POST['plan_id']
+    else:
+        start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
+        end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
+
+    query_var = {}
+
+    query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+    if not request.user.is_superuser:  # not superuser
+        query_var['metadata.accountcode'] = chk_account_code(request)
+
+    logging.debug('Aggregate cdr analytic')
+    pipeline = pipeline_hourly_billing_report(query_var)
+
+    logging.debug('Before Aggregate')
+    list_data = settings.DBCON.command('aggregate',
+        settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+        pipeline=pipeline)
+
+    logging.debug('After Aggregate')
+
+    total_data = []
+    total_buy_record = {}
+    total_sell_record = {}
+    if list_data:
+        for doc in list_data['result']:
+            #print doc
+            called_time = datetime(int(doc['_id'][0:4]),
+                                   int(doc['_id'][4:6]),
+                                   int(doc['_id'][6:8]))
+            buy_hours = {}
+            sell_hours = {}
+            for hr in range(0, 24):
+                buy_hours[hr] = 0
+                sell_hours[hr] = 0
+
+            for dict_in_list in doc['buy_cost_per_hour']:
+                for key, value in dict_in_list.iteritems():
+                    buy_hours[int(key)] += float(value)
+
+            for dict_in_list in doc['sell_cost_per_hour']:
+                for key, value in dict_in_list.iteritems():
+                    sell_hours[int(key)] += float(value)
+
+            total_buy_record[str(called_time)[:10]] = buy_hours
+            total_sell_record[str(called_time)[:10]] = sell_hours
+            print total_buy_record
+            print total_sell_record
+            """
+            graph_day = datetime(int(doc['_id'][0:4]),
+                int(doc['_id'][4:6]),
+                int(doc['_id'][6:8]),
+                0, 0, 0, 0)
+            dt = int(1000 * time.mktime(graph_day.timetuple()))
+
+            if dt in daily_data:
+                daily_data[dt]['buy_cost_per_day'] += float(doc['buy_cost_per_day'])
+                daily_data[dt]['sell_cost_per_day'] += float(doc['sell_cost_per_day'])
+            else:
+                daily_data[dt] = {
+                    'buy_cost_per_day': float(doc['buy_cost_per_day']),
+                    'sell_cost_per_day': float(doc['sell_cost_per_day']),
+                    }
+
+            total_data = daily_data.items()
+            total_data = sorted(total_data, key=lambda k: k[0])
+            """
+
+
+    data = {
+        'module': current_view(request),
+        'form': form,
+        'search_tag': search_tag,
+        'total_data': total_data,
+        'start_date': start_date,
+        'end_date': end_date,
+        }
     return render_to_response(template, data, context_instance=RequestContext(request))

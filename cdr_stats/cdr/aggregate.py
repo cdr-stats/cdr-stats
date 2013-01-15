@@ -409,3 +409,35 @@ def pipeline_daily_billing_report(query_var):
         }
     ]
     return pipeline
+
+
+def pipeline_hourly_billing_report(query_var):
+    """
+    To get the day vise analytic of billing
+
+    Attributes:
+
+        * ``query_var`` - filter variable for collection
+    """
+    pipeline = [
+        {'$match': query_var},
+        {
+            '$group': {
+                '_id': {'$substr': ['$_id', 0, 8]},
+                'buy_cost_per_hour': {'$push': '$buy_cost_hourly'},
+                'sell_cost_per_hour': {'$push': '$sell_cost_hourly'},
+                }
+        },
+        {
+            '$project': {
+                'buy_cost_per_hour': 1,
+                'sell_cost_per_hour': 1,
+                }
+        },
+        {
+            '$sort': {
+                '_id': -1,
+                }
+        }
+    ]
+    return pipeline

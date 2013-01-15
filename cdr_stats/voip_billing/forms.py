@@ -171,3 +171,12 @@ class BillingForm(SimulatorForm):
         self.fields.keyOrder = ['from_date', 'to_date', 'plan_id'] #, 'switch'
         if not user.is_superuser:
             self.fields['plan_id'] = forms.ChoiceField(widget=forms.HiddenInput())
+
+
+class HourlyBillingForm(BillingForm):
+
+    def __init__(self, user, *args, **kwargs):
+        super(HourlyBillingForm, self).__init__(user, *args, **kwargs)
+        self.fields.keyOrder = ['from_date', 'plan_id'] #, 'switch'
+        if not user.is_superuser:
+            self.fields['plan_id'] = forms.ChoiceField(widget=forms.HiddenInput())
