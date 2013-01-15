@@ -1,9 +1,8 @@
 from django.contrib.auth.models import User
-from django.test import TestCase, Client
+from django.test import TestCase
 from common.utils import BaseAuthenticatedClient
 from voip_gateway.models import Gateway, Provider
 from voip_billing.models import VoIPPlan
-from voip_billing.test_utils import build_test_suite_from
 from voip_report.models import VoIPCall, VoIPCall_Report
 from user_profile.models import UserProfile
 
@@ -12,7 +11,12 @@ class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):
     """
     Test cases for voip_billing Admin Interface.
     """
-    fixtures = ['auth_user.json', 'switch.json']
+    fixtures = ['auth_user.json', 
+                'voip_gateway.json', 'voip_provider.json'
+                '2_example_voipplan.json', '3_example_voipcarrierplan.json',
+                '4_example_voipcarrier_rate.json', '5_example_voipretailplan.json',
+                '6_example_voipretailrate.json', '7_example_voipplan_voipretail_plan.json',
+                '8_example_voipplan_voipcarrierplan.json', 'country_dialcode.json',]
 
     def test_admin_voip_billing(self):
         """
@@ -86,7 +90,12 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
     """
     Test cases for voip_billing Customer Interface.
     """
-    fixtures = ['auth_user.json', 'switch.json']
+    fixtures = ['auth_user.json', 'user_profile.json',
+                'voip_gateway.json', 'voip_provider.json'
+                '2_example_voipplan.json', '3_example_voipcarrierplan.json',
+                '4_example_voipcarrier_rate.json', '5_example_voipretailplan.json',
+                '6_example_voipretailrate.json', '7_example_voipplan_voipretail_plan.json',
+                '8_example_voipplan_voipcarrierplan.json']
 
     def test_retail_rate_view(self):
         """
@@ -114,7 +123,12 @@ class VoipBillingCheckTestCase(BaseAuthenticatedClient):
     """
     Test cases for VoIP billing Calculation.
     """
-    fixtures = ['auth_user.json', 'switch.json']
+    fixtures = ['auth_user.json', 'user_profile.json',
+                'voip_gateway.json', 'voip_provider.json'
+                '2_example_voipplan.json', '3_example_voipcarrierplan.json',
+                '4_example_voipcarrier_rate.json', '5_example_voipretailplan.json',
+                '6_example_voipretailrate.json', '7_example_voipplan_voipretail_plan.json',
+                '8_example_voipplan_voipcarrierplan.json']
 
     def test_check_voip_bill(self):
         """
