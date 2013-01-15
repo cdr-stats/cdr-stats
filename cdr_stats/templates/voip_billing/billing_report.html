@@ -139,7 +139,7 @@
 
                         //strTime = hour + ':' + minute + ' ' + ampm;
                         //return strTime
-                        strTime = Day + ', ' + month_name + ' ' + Year + '<br/>' + hour + ':' + minute + ' ' + ampm;
+                        strTime = Day + ', ' + month_name + ' ' + Year ;//+ '<br/>' + hour + ':' + minute + ' ' + ampm;
                         return strTime
                     }
 
@@ -218,7 +218,7 @@
                                 hour = hour ? hour : 12; // the hour '0' should be '12'
                                 minute = minute < 10 ? '0'+minute : minute;
 
-                                strTime = Day + ', ' + month_name + ' ' + Year + ' ' + hour + ':' + minute + ' ' + ampm;
+                                strTime = Day + ', ' + month_name + ' ' + Year ;//+ ' ' + hour + ':' + minute + ' ' + ampm;
                                 output += strTime + '</div><div class="graph_tooltip_info">{% trans "Cost" %}: ' + y + '</div>';
 
                                 showTooltip(item.pageX, item.pageY, output);

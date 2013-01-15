@@ -149,7 +149,7 @@ def billing_report(request):
             else:
                 daily_data[dt] = {
                     'buy_cost_per_day': float(doc['buy_cost_per_day']),
-                    'duration_sum': float(doc['sell_cost_per_day']),
+                    'sell_cost_per_day': float(doc['sell_cost_per_day']),
                 }
 
             total_data = daily_data.items()
@@ -162,5 +162,7 @@ def billing_report(request):
         'search_tag': search_tag,
         'action': action,
         'total_data': total_data,
+        'start_date': start_date,
+        'end_date': end_date,
     }
     return render_to_response(template, data, context_instance=RequestContext(request))
