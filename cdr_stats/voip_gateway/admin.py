@@ -43,7 +43,7 @@ class GatewayAdmin(admin.ModelAdmin):
         Add VoIP Gateway
         """
         ctx = {
-            'app_label': _('VoIP Gateway'),            
+            'app_label': _('VoIP Gateway'),
         }
         return super(GatewayAdmin, self)\
                .add_view(request, extra_context=ctx)

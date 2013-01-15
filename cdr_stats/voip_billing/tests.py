@@ -1,3 +1,16 @@
+#
+# CDR-Stats License
+# http://www.cdr-stats.org
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this file,
+# You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (C) 2011-2012 Star2Billing S.L.
+#
+# The Initial Developer of the Original Code is
+# Arezqui Belaid <info@star2billing.com>
+#
 from django.contrib.auth.models import User
 from django.test import TestCase
 from common.utils import BaseAuthenticatedClient
@@ -11,25 +24,16 @@ class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):
     """
     Test cases for voip_billing Admin Interface.
     """
-    fixtures = ['auth_user.json', 
-                'voip_gateway.json', 'voip_provider.json'
+    fixtures = ['auth_user.json', 'country_dialcode.json',
                 '2_example_voipplan.json', '3_example_voipcarrierplan.json',
                 '4_example_voipcarrier_rate.json', '5_example_voipretailplan.json',
                 '6_example_voipretailrate.json', '7_example_voipplan_voipretail_plan.json',
-                '8_example_voipplan_voipcarrierplan.json', 'country_dialcode.json',]
+                '8_example_voipplan_voipcarrierplan.json', ]
 
     def test_admin_voip_billing(self):
         """
         Test Function to check voip_billing Admin pages
         """
-
-        # voip_gateway
-        response = self.client.get('/admin/voip_gateway/')
-        self.failUnlessEqual(response.status_code, 200)
-        response = self.client.get('/admin/voip_gateway/gateway/')
-        self.failUnlessEqual(response.status_code, 200)
-        response = self.client.get('/admin/voip_gateway/provider/')
-        self.failUnlessEqual(response.status_code, 200)
 
         # voip_billing
         response = self.client.get('/admin/voip_billing/')
@@ -77,20 +81,12 @@ class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):
             {'plan_id': 1}, **self.extra)
         self.assertEqual(response.status_code, 200)
         
-        # voip_report
-        response = self.client.get('/admin/voip_report/')
-        self.failUnlessEqual(response.status_code, 200)
-        response = self.client.get('/admin/voip_report/voipcall_report/')
-        self.failUnlessEqual(response.status_code, 200)
-        response = self.client.get('/admin/voip_report/voipcall_report/import_voip_report/')
-        self.failUnlessEqual(response.status_code, 200)
-        
 
 class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
     """
     Test cases for voip_billing Customer Interface.
     """
-    fixtures = ['auth_user.json', 'user_profile.json',
+    fixtures = ['auth_user.json', 'user_profile.json', 'country_dialcode.json',
                 'voip_gateway.json', 'voip_provider.json'
                 '2_example_voipplan.json', '3_example_voipcarrierplan.json',
                 '4_example_voipcarrier_rate.json', '5_example_voipretailplan.json',
@@ -123,7 +119,7 @@ class VoipBillingCheckTestCase(BaseAuthenticatedClient):
     """
     Test cases for VoIP billing Calculation.
     """
-    fixtures = ['auth_user.json', 'user_profile.json',
+    fixtures = ['auth_user.json', 'user_profile.json', 'country_dialcode.json',
                 'voip_gateway.json', 'voip_provider.json'
                 '2_example_voipplan.json', '3_example_voipcarrierplan.json',
                 '4_example_voipcarrier_rate.json', '5_example_voipretailplan.json',
