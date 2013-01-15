@@ -92,10 +92,10 @@ def simulator(request):
 @login_required
 def billing_report(request):
     template = 'voip_billing/billing_report.html'
-    action = 'tabs-1'
     search_tag = 0
     tday = datetime.today()
-    form = BillingForm(request.user)
+    form = BillingForm(request.user, initial={'from_date': tday.strftime('%Y-%m-%d'),
+                                              'to_date': tday.strftime('%Y-%m-%d')})
     #plan_id = request.GET['plan_id']
     if request.method == 'POST':
         search_tag = 1
@@ -119,6 +119,7 @@ def billing_report(request):
         end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
 
     query_var = {}
+
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
     if not request.user.is_superuser:  # not superuser
         query_var['metadata.accountcode'] = chk_account_code(request)
@@ -135,6 +136,7 @@ def billing_report(request):
 
     daily_data = dict()
     total_data = []
+
     if list_data:
         for doc in list_data['result']:
             graph_day = datetime(int(doc['_id'][0:4]),
@@ -160,7 +162,6 @@ def billing_report(request):
         'module': current_view(request),
         'form': form,
         'search_tag': search_tag,
-        'action': action,
         'total_data': total_data,
         'start_date': start_date,
         'end_date': end_date,

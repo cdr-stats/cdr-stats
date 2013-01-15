@@ -13,11 +13,6 @@
 {% endblock %}
 
 {% block content %}
-    <div class="tabbable">
-    <ul class="nav nav-tabs">
-        <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "Billing by day"|title %}</a></li>
-        <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "Billing by hour"|title %}</a></li>
-    </ul>
 
     <div id="form_collapse" class="collapse">
         <form class="well" method="POST" action="." enctype="multipart/form-data">
@@ -62,196 +57,188 @@
             <i class="icon-search"></i> <span>{% trans "advanced search"|title %}</span>
         </a>
     </div>
-    <div class="tab-content">
-        <div id="tabs-1" class="tab-pane {% if action == "tabs-1" or action == "" %}active{% endif %}">
-            <script id="source" language="javascript" type="text/javascript">
-                $(function () {
+    <script id="source" language="javascript" type="text/javascript">
+        $(function () {
 
-                    function MonthName(m, type){
-                        var short_month = new Array(
-                                "{% trans "Jan" %}",
-                                "{% trans "Feb" %}",
-                                "{% trans "Mar" %}",
-                                "{% trans "Apr" %}",
-                                "{% trans "May" %}",
-                                "{% trans "Jun" %}",
-                                "{% trans "Jul" %}",
-                                "{% trans "Aug" %}",
-                                "{% trans "Sep" %}",
-                                "{% trans "Oct" %}",
-                                "{% trans "Nov" %}",
-                                "{% trans "Dec" %}");
-                        var month = new Array(
-                                "{% trans "January" %}",
-                                "{% trans "February" %}",
-                                "{% trans "March" %}",
-                                "{% trans "April" %}",
-                                "{% trans "May" %}",
-                                "{% trans "June" %}",
-                                "{% trans "July" %}",
-                                "{% trans "August" %}",
-                                "{% trans "September" %}",
-                                "{% trans "October" %}",
-                                "{% trans "November" %}",
-                                "{% trans "December" %}");
-                        if (type == 0)
-                            return short_month[m-1];
-                        else
-                            return month[m-1];
-                    }
+            function MonthName(m, type){
+                var short_month = new Array(
+                        "{% trans "Jan" %}",
+                        "{% trans "Feb" %}",
+                        "{% trans "Mar" %}",
+                        "{% trans "Apr" %}",
+                        "{% trans "May" %}",
+                        "{% trans "Jun" %}",
+                        "{% trans "Jul" %}",
+                        "{% trans "Aug" %}",
+                        "{% trans "Sep" %}",
+                        "{% trans "Oct" %}",
+                        "{% trans "Nov" %}",
+                        "{% trans "Dec" %}");
+                var month = new Array(
+                        "{% trans "January" %}",
+                        "{% trans "February" %}",
+                        "{% trans "March" %}",
+                        "{% trans "April" %}",
+                        "{% trans "May" %}",
+                        "{% trans "June" %}",
+                        "{% trans "July" %}",
+                        "{% trans "August" %}",
+                        "{% trans "September" %}",
+                        "{% trans "October" %}",
+                        "{% trans "November" %}",
+                        "{% trans "December" %}");
+                if (type == 0)
+                    return short_month[m-1];
+                else
+                    return month[m-1];
+            }
 
-                    var data = [
+            var data = [
 
-                        {
-                            label: '{% trans "Buy cost" %}',
-                            data: [
-                                {% for data in total_data %}
-                                    [{{ data.0 }}, {{ data.1.buy_cost_per_day }}],
-                                {% endfor %}
-                            ]
-                        },
-                        {
-                            label: '{% trans "Sell cost" %}',
-                            data: [
-                                {% for data in total_data %}
-                                    [{{ data.0 }}, {{ data.1.sell_cost_per_day }}],
-                                {% endfor %}
-                            ]
-                        }
+                {
+                    label: '{% trans "Buy cost" %}',
+                    data: [
+                        {% for data in total_data %}
+                            [{{ data.0 }}, {{ data.1.buy_cost_per_day }}],
+                        {% endfor %}
+                    ]
+                },
+                {
+                    label: '{% trans "Sell cost" %}',
+                    data: [
+                        {% for data in total_data %}
+                            [{{ data.0 }}, {{ data.1.sell_cost_per_day }}],
+                        {% endfor %}
+                    ]
+                }
 
-                    ];
+            ];
 
-                    function formTicks(val) {
+            function formTicks(val) {
 
-                        var dt = new Date(parseInt(val));
+                var dt = new Date(parseInt(val));
+                var Year = dt.getFullYear();
+                var Month = dt.getMonth() + 1;
+                var Day = dt.getDate();
+                var hour = dt.getHours();
+                var minute = dt.getMinutes();
+                var ampm = hour >= 12 ? 'pm' : 'am';
+                var hour = hour % 12;
+                Month = Month < 10 ? '0' + Month : Month;
+                Day = Day < 10 ? '0' + Day : Day;
+                month_name = MonthName(Month, 0);
+                hour = hour ? hour : 12; // the hour '0' should be '12'
+                minute = minute < 10 ? '0' + minute : minute;
+
+                //strTime = hour + ':' + minute + ' ' + ampm;
+                //return strTime
+                strTime = Day + ', ' + month_name + ' ' + Year ;//+ '<br/>' + hour + ':' + minute + ' ' + ampm;
+                return strTime
+            }
+
+            var options = {
+                series: {
+                    lines: { show: true},
+                    points: { show: true }
+                },
+                xaxis: { mode: "time",
+                    tickLength: 5,
+                    tickFormatter: function(val) { return formTicks(val) }
+                },
+                yaxis: { min: 0, tickDecimals: false },
+                selection: { mode: "x" },
+                grid: {
+                    hoverable: true,
+                    xaxis: false
+                }
+            };
+
+            var plot = $.plot($("#graph_responsive"), data, options);
+
+            var overview = $.plot($("#overview"), data, {
+                legend: {show: false},
+                series: {
+                    lines: { show: true, lineWidth: 1 },
+                    shadowSize: 0
+                },
+                xaxis: { ticks: [], mode: "time" },
+                yaxis: { ticks: [], min: 0, autoscaleMargin: 0.1 },
+                selection: { mode: "x" }
+            });
+
+            // now connect the two
+            $("#graph_responsive").bind("plotselected", function (event, ranges) {
+                // do the zooming
+                plot = $.plot($("#graph_responsive"), data,
+                        $.extend(true, {}, options, {
+                            xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to }
+                        }));
+
+                // don't fire event on the overview to prevent eternal loop
+                overview.setSelection(ranges, true);
+            });
+
+            $("#overview").bind("plotselected", function (event, ranges) {
+                plot.setSelection(ranges);
+            });
+
+            $("#graph_responsive").bind("plothover", function (event, pos, item) {
+                if (item) {
+                    if (previousPoint != item.dataIndex) {
+                        previousPoint = item.dataIndex;
+
+                        $("#tooltip").remove();
+                        var x = item.datapoint[0].toFixed(2),
+                            y = item.datapoint[1].toFixed(2);
+
+                        var time = x;
+                        var dt = new Date(parseInt(time));
+
                         var Year = dt.getFullYear();
                         var Month = dt.getMonth() + 1;
                         var Day = dt.getDate();
-                        var hour = dt.getHours();
-                        var minute = dt.getMinutes();
-                        var ampm = hour >= 12 ? 'pm' : 'am';
-                        var hour = hour % 12;
                         Month = Month < 10 ? '0' + Month : Month;
                         Day = Day < 10 ? '0' + Day : Day;
                         month_name = MonthName(Month, 0);
+
+                        var hour = dt.getHours();//(time.toString().split("."))[0];
+                        var minute = dt.getMinutes();//Math.round(time * 60 - (hour * 60));
+                        var output = '';
+                        output += '<div class="graph_tooltip_header">';
+
+                        var ampm = hour >= 12 ? 'pm' : 'am';
+                        var hour = hour % 12;
                         hour = hour ? hour : 12; // the hour '0' should be '12'
-                        minute = minute < 10 ? '0' + minute : minute;
+                        minute = minute < 10 ? '0'+minute : minute;
 
-                        //strTime = hour + ':' + minute + ' ' + ampm;
-                        //return strTime
-                        strTime = Day + ', ' + month_name + ' ' + Year ;//+ '<br/>' + hour + ':' + minute + ' ' + ampm;
-                        return strTime
+                        strTime = Day + ', ' + month_name + ' ' + Year ;//+ ' ' + hour + ':' + minute + ' ' + ampm;
+                        output += strTime + '</div><div class="graph_tooltip_info">{% trans "Cost" %}: ' + y + '</div>';
+
+                        showTooltip(item.pageX, item.pageY, output);
                     }
-
-                    var options = {
-                        series: {
-                            lines: { show: true},
-                            points: { show: true }
-                        },
-                        xaxis: { mode: "time",
-                            tickLength: 5,
-                            tickFormatter: function(val) { return formTicks(val) }
-                        },
-                        yaxis: { min: 0, tickDecimals: false },
-                        selection: { mode: "x" },
-                        grid: {
-                            hoverable: true,
-                            xaxis: false
-                        }
-                    };
-
-                    var plot = $.plot($("#graph_responsive"), data, options);
-
-                    var overview = $.plot($("#overview"), data, {
-                        legend: {show: false},
-                        series: {
-                            lines: { show: true, lineWidth: 1 },
-                            shadowSize: 0
-                        },
-                        xaxis: { ticks: [], mode: "time" },
-                        yaxis: { ticks: [], min: 0, autoscaleMargin: 0.1 },
-                        selection: { mode: "x" }
-                    });
-
-                    // now connect the two
-                    $("#graph_responsive").bind("plotselected", function (event, ranges) {
-                        // do the zooming
-                        plot = $.plot($("#graph_responsive"), data,
-                                $.extend(true, {}, options, {
-                                    xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to }
-                                }));
-
-                        // don't fire event on the overview to prevent eternal loop
-                        overview.setSelection(ranges, true);
-                    });
-
-                    $("#overview").bind("plotselected", function (event, ranges) {
-                        plot.setSelection(ranges);
-                    });
-
-                    $("#graph_responsive").bind("plothover", function (event, pos, item) {
-                        if (item) {
-                            if (previousPoint != item.dataIndex) {
-                                previousPoint = item.dataIndex;
-
-                                $("#tooltip").remove();
-                                var x = item.datapoint[0].toFixed(2),
-                                    y = item.datapoint[1].toFixed(2);
-
-                                var time = x;
-                                var dt = new Date(parseInt(time));
-
-                                var Year = dt.getFullYear();
-                                var Month = dt.getMonth() + 1;
-                                var Day = dt.getDate();
-                                Month = Month < 10 ? '0' + Month : Month;
-                                Day = Day < 10 ? '0' + Day : Day;
-                                month_name = MonthName(Month, 0);
-
-                                var hour = dt.getHours();//(time.toString().split("."))[0];
-                                var minute = dt.getMinutes();//Math.round(time * 60 - (hour * 60));
-                                var output = '';
-                                output += '<div class="graph_tooltip_header">';
-
-                                var ampm = hour >= 12 ? 'pm' : 'am';
-                                var hour = hour % 12;
-                                hour = hour ? hour : 12; // the hour '0' should be '12'
-                                minute = minute < 10 ? '0'+minute : minute;
-
-                                strTime = Day + ', ' + month_name + ' ' + Year ;//+ ' ' + hour + ':' + minute + ' ' + ampm;
-                                output += strTime + '</div><div class="graph_tooltip_info">{% trans "Cost" %}: ' + y + '</div>';
-
-                                showTooltip(item.pageX, item.pageY, output);
-                            }
-                        }
-                        else {
-                            $("#tooltip").remove();
-                            previousPoint = null;
-                        }
-                    });
-                });
-            </script>
-            <div class="graph_header">
-                {% trans "daily report"|title  %} -
-                <b>
-                    {% if start_date  %}
-                        {{ start_date|date:"jS N Y" }}
-                    {% endif %}
-                    {% if end_date  %}
-                        {% trans "to" %} {{ end_date|date:"jS N Y" }}
-                    {% endif %}
-                </b>
-            </div>
-
-            <div id="graph_responsive" style="margin:auto;"></div>
-
-            <div id="overview" style="margin:auto;margin-bottom:20px;margin-top:20px;width:400px;height:50px"></div>
-
-        </div>
-        <div id="tabs-2" class="tab-pane {% if action == "tabs-2" or action == "" %}active{% endif %}">
-            <div class="graph_header">
-                <h3>{% trans "billing report"|title %} <small>{% trans "list of hourly" %}</small></h3>-
-            </div>
-        </div>
+                }
+                else {
+                    $("#tooltip").remove();
+                    previousPoint = null;
+                }
+            });
+        });
+    </script>
+    <div class="graph_header">
+        {% trans "daily report"|title  %} -
+        <b>
+            {% if start_date  %}
+                {{ start_date|date:"jS N Y" }}
+            {% endif %}
+            {% if end_date  %}
+                {% trans "to" %} {{ end_date|date:"jS N Y" }}
+            {% endif %}
+        </b>
     </div>
+
+    <div id="graph_responsive" style="margin:auto;"></div>
+
+    <div id="overview" style="margin:auto;margin-bottom:20px;margin-top:20px;width:400px;height:50px"></div>
+
+
 {% endblock %}
