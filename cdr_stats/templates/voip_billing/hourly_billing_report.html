@@ -5,11 +5,6 @@
 
 {% block extra_head %}
     {% include "frontend/common_datepicker.html" %}
-    <style type="text/css">
-        .tab-content {
-            overflow: inherit;
-        }
-    </style>
 {% endblock %}
 
 {% block content %}
@@ -50,132 +45,66 @@
             <i class="icon-search"></i> <span>{% trans "advanced search"|title %}</span>
         </a>
     </div>
+
     <script id="source" language="javascript" type="text/javascript">
         $(function () {
 
-            function MonthName(m, type){
-                var short_month = new Array(
-                        "{% trans "Jan" %}",
-                        "{% trans "Feb" %}",
-                        "{% trans "Mar" %}",
-                        "{% trans "Apr" %}",
-                        "{% trans "May" %}",
-                        "{% trans "Jun" %}",
-                        "{% trans "Jul" %}",
-                        "{% trans "Aug" %}",
-                        "{% trans "Sep" %}",
-                        "{% trans "Oct" %}",
-                        "{% trans "Nov" %}",
-                        "{% trans "Dec" %}");
-                var month = new Array(
-                        "{% trans "January" %}",
-                        "{% trans "February" %}",
-                        "{% trans "March" %}",
-                        "{% trans "April" %}",
-                        "{% trans "May" %}",
-                        "{% trans "June" %}",
-                        "{% trans "July" %}",
-                        "{% trans "August" %}",
-                        "{% trans "September" %}",
-                        "{% trans "October" %}",
-                        "{% trans "November" %}",
-                        "{% trans "December" %}");
-                if (type == 0)
-                    return short_month[m-1];
-                else
-                    return month[m-1];
-            }
-
             var data = [
 
-                {
-                    label: '{% trans "Buy cost" %}',
-                    data: [
-                        {% for data in total_data %}
-                            [{{ data.0 }}, {{ data.1.buy_cost_per_day }}],
-                        {% endfor %}
-                    ]
-                },
-                {
-                    label: '{% trans "Sell cost" %}',
-                    data: [
-                        {% for data in total_data %}
-                            [{{ data.0 }}, {{ data.1.sell_cost_per_day }}],
-                        {% endfor %}
-                    ]
-                }
+                {% for date, buy_cost in total_buy_record.items %}
+                    {
+                        label: '{% trans "Buy cost" %}',
+                        data: [
+                            {% for hour, cost in buy_cost.items %}
+                                [{{ hour }}, {{ cost }}],
+                            {% endfor %}
+                        ],
+                    },
+                {% endfor %}
+
+                {% for date, sell_cost in total_sell_record.items %}
+                    {
+                        label: '{% trans "Sell cost" %}',
+                        data: [
+                            {% for hour, cost in sell_cost.items %}
+                                [{{ hour }}, {{ cost }}],
+                            {% endfor %}
+                        ],
+                    },
+                {% endfor %}
 
             ];
 
-            function formTicks(val) {
-
-                var dt = new Date(parseInt(val));
-                var Year = dt.getFullYear();
-                var Month = dt.getMonth() + 1;
-                var Day = dt.getDate();
-                var hour = dt.getHours();
-                var minute = dt.getMinutes();
-                var ampm = hour >= 12 ? 'pm' : 'am';
-                var hour = hour % 12;
-                Month = Month < 10 ? '0' + Month : Month;
-                Day = Day < 10 ? '0' + Day : Day;
-                month_name = MonthName(Month, 0);
-                hour = hour ? hour : 12; // the hour '0' should be '12'
-                minute = minute < 10 ? '0' + minute : minute;
-
-                //strTime = hour + ':' + minute + ' ' + ampm;
-                //return strTime
-                strTime = Day + ', ' + month_name + ' ' + Year ;//+ '<br/>' + hour + ':' + minute + ' ' + ampm;
-                return strTime
-            }
 
             var options = {
+                legend: {
+                    position: "ne",
+                    margin: [-10, 0],
+                    backgroundOpacity: 0
+                },
                 series: {
-                    lines: { show: true},
+                    lines: { show: true },
                     points: { show: true }
                 },
-                xaxis: { mode: "time",
-                    tickLength: 5,
-                    tickFormatter: function(val) { return formTicks(val) }
+                yaxis: {
+                    min: 0,
+                    tickDecimals: false
                 },
-                yaxis: { min: 0, tickDecimals: false },
-                selection: { mode: "x" },
+                xaxis: {
+                    min: 0,
+                    max: 23,
+                    tickSize: 1,
+                    tickDecimals: false,
+                },
                 grid: {
                     hoverable: true,
                     xaxis: false
                 }
             };
-
             var plot = $.plot($("#graph_responsive"), data, options);
 
-            var overview = $.plot($("#overview"), data, {
-                legend: {show: false},
-                series: {
-                    lines: { show: true, lineWidth: 1 },
-                    shadowSize: 0
-                },
-                xaxis: { ticks: [], mode: "time" },
-                yaxis: { ticks: [], min: 0, autoscaleMargin: 0.1 },
-                selection: { mode: "x" }
-            });
-
-            // now connect the two
-            $("#graph_responsive").bind("plotselected", function (event, ranges) {
-                // do the zooming
-                plot = $.plot($("#graph_responsive"), data,
-                        $.extend(true, {}, options, {
-                            xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to }
-                        }));
-
-                // don't fire event on the overview to prevent eternal loop
-                overview.setSelection(ranges, true);
-            });
-
-            $("#overview").bind("plotselected", function (event, ranges) {
-                plot.setSelection(ranges);
-            });
-
             $("#graph_responsive").bind("plothover", function (event, pos, item) {
+
                 if (item) {
                     if (previousPoint != item.dataIndex) {
                         previousPoint = item.dataIndex;
@@ -184,28 +113,12 @@
                         var x = item.datapoint[0].toFixed(2),
                             y = item.datapoint[1].toFixed(2);
 
-                        var time = x;
-                        var dt = new Date(parseInt(time));
+                        var time = parseInt(x);
+                        var label = item.series.label;
+                        output = '<div class="graph_tooltip_header">' + label + '</div><div class="graph_tooltip_info">{% trans "Hour" %}: ' + String(time) + '<br>';
 
-                        var Year = dt.getFullYear();
-                        var Month = dt.getMonth() + 1;
-                        var Day = dt.getDate();
-                        Month = Month < 10 ? '0' + Month : Month;
-                        Day = Day < 10 ? '0' + Day : Day;
-                        month_name = MonthName(Month, 0);
+                        output += '{% trans "cost" %}: ' + y + ' </div>';
 
-                        var hour = dt.getHours();//(time.toString().split("."))[0];
-                        var minute = dt.getMinutes();//Math.round(time * 60 - (hour * 60));
-                        var output = '';
-                        output += '<div class="graph_tooltip_header">';
-
-                        var ampm = hour >= 12 ? 'pm' : 'am';
-                        var hour = hour % 12;
-                        hour = hour ? hour : 12; // the hour '0' should be '12'
-                        minute = minute < 10 ? '0'+minute : minute;
-
-                        strTime = Day + ', ' + month_name + ' ' + Year ;//+ ' ' + hour + ':' + minute + ' ' + ampm;
-                        output += strTime + '</div><div class="graph_tooltip_info">{% trans "Cost" %}: ' + y + '</div>';
 
                         showTooltip(item.pageX, item.pageY, output);
                     }
@@ -218,20 +131,14 @@
         });
     </script>
     <div class="graph_header">
-        {% trans "daily report"|title  %} -
+        {% trans "hourly billing report"|title  %} -
         <b>
             {% if start_date  %}
                 {{ start_date|date:"jS N Y" }}
             {% endif %}
-            {% if end_date  %}
-                {% trans "to" %} {{ end_date|date:"jS N Y" }}
-            {% endif %}
         </b>
     </div>
 
-    <div id="graph_responsive" style="margin:auto;"></div>
-
-    <div id="overview" style="margin:auto;margin-bottom:20px;margin-top:20px;width:400px;height:50px"></div>
-
+    <div id="graph_responsive"></div>
 
 {% endblock %}

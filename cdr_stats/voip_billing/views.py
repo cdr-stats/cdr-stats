@@ -87,11 +87,25 @@ def simulator(request):
                                 context_instance=RequestContext(request))
 
 
-#@permission_required('voip_billing.allow_cdr_view', login_url='/')
+@permission_required('voip_report.daily_billing_report', login_url='/')
 @check_cdr_exists
 @check_user_accountcode
 @login_required
 def daily_billing_report(request):
+    """CDR billing graph by daily basis
+
+    **Attributes**:
+
+        * ``template`` - voip_billing/daily_billing_report.html
+        * ``form`` - BillingForm
+        * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
+        * ``aggregate`` - pipeline_daily_billing_report()
+
+    **Logic Description**:
+
+        get all call records from mongodb collection for
+        daily billing analytics for given date
+    """
     template = 'voip_billing/daily_billing_report.html'
     search_tag = 0
     tday = datetime.today()
@@ -170,11 +184,25 @@ def daily_billing_report(request):
     return render_to_response(template, data, context_instance=RequestContext(request))
 
 
-#@permission_required('voip_billing.allow_cdr_view', login_url='/')
+@permission_required('voip_report.hourly_billing_report', login_url='/')
 @check_cdr_exists
 @check_user_accountcode
 @login_required
 def hourly_billing_report(request):
+    """CDR billing graph by hourly basis
+
+    **Attributes**:
+
+        * ``template`` - voip_billing/hourly_billing_report.html
+        * ``form`` - HourlyBillingForm
+        * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
+        * ``aggregate`` - pipeline_hourly_billing_report()
+
+    **Logic Description**:
+
+        get all call records from mongodb collection for
+        hourly billing analytics for given date
+    """
     template = 'voip_billing/hourly_billing_report.html'
     search_tag = 0
     tday = datetime.today()
@@ -211,17 +239,15 @@ def hourly_billing_report(request):
 
     logging.debug('Before Aggregate')
     list_data = settings.DBCON.command('aggregate',
-        settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-        pipeline=pipeline)
+                                       settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+                                       pipeline=pipeline)
 
     logging.debug('After Aggregate')
 
-    total_data = []
     total_buy_record = {}
     total_sell_record = {}
     if list_data:
         for doc in list_data['result']:
-            #print doc
             called_time = datetime(int(doc['_id'][0:4]),
                                    int(doc['_id'][4:6]),
                                    int(doc['_id'][6:8]))
@@ -241,35 +267,13 @@ def hourly_billing_report(request):
 
             total_buy_record[str(called_time)[:10]] = buy_hours
             total_sell_record[str(called_time)[:10]] = sell_hours
-            print total_buy_record
-            print total_sell_record
-            """
-            graph_day = datetime(int(doc['_id'][0:4]),
-                int(doc['_id'][4:6]),
-                int(doc['_id'][6:8]),
-                0, 0, 0, 0)
-            dt = int(1000 * time.mktime(graph_day.timetuple()))
-
-            if dt in daily_data:
-                daily_data[dt]['buy_cost_per_day'] += float(doc['buy_cost_per_day'])
-                daily_data[dt]['sell_cost_per_day'] += float(doc['sell_cost_per_day'])
-            else:
-                daily_data[dt] = {
-                    'buy_cost_per_day': float(doc['buy_cost_per_day']),
-                    'sell_cost_per_day': float(doc['sell_cost_per_day']),
-                    }
-
-            total_data = daily_data.items()
-            total_data = sorted(total_data, key=lambda k: k[0])
-            """
-
 
     data = {
         'module': current_view(request),
         'form': form,
         'search_tag': search_tag,
-        'total_data': total_data,
+        'total_buy_record': total_buy_record,
+        'total_sell_record': total_sell_record,
         'start_date': start_date,
-        'end_date': end_date,
-        }
+    }
     return render_to_response(template, data, context_instance=RequestContext(request))

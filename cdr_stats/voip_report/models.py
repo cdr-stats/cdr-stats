@@ -113,6 +113,10 @@ class VoIPCall_Report(VoIPCall):
         app_label = _('voip_report')
         verbose_name = _("VoIP Call Report")
         verbose_name_plural = _("VoIP Call Report")
+        permissions = (
+            ("daily_billing_report", _('Can view CDR daily billing report')),
+            ("hourly_billing_report", _('Can view CDR hourly billing report')),
+        )
 
     def __unicode__(self):
         return "%s [%d] " % (self.id, self.retail_cost)
