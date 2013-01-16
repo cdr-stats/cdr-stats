@@ -133,18 +133,14 @@ class VoipRateResource(ModelResource):
                 .split('/')[0]
 
         if recipient_phone_no:
-            # Should Not banned recipient_phone_no
+            #Check if recipient_phone_no is not banned
             allowed = prefix_allowed_to_call(recipient_phone_no, voipplan_id)
             if allowed:
-                # Get Destination prefix list e.g (34,346,3465,34657)
+                #Get Destination prefix list e.g (34,346,3465,34657)
                 destination_prefix_list = prefix_list_string(str(recipient_phone_no))
-
-                # Split Destination prefix list
-                list = destination_prefix_list.split(",")
-
-                # Get Rate List
-                rate_list = VoIPRetailRate.objects.values('prefix', 'retail_rate', 'prefix__destination').filter(prefix__in=[int(s) for s in list])
-
+                prefixlist = destination_prefix_list.split(",")
+                #Get Rate List
+                rate_list = VoIPRetailRate.objects.values('prefix', 'retail_rate', 'prefix__destination').filter(prefix__in=[int(s) for s in prefixlist])
                 logger.debug('Voip Rate API : result ok 200')
                 return self.create_response(request, rate_list)
             else:
@@ -157,27 +153,11 @@ class VoipRateResource(ModelResource):
             try:
                 code = int(code)
             except ValueError:
-                error_msg = "Wrong value for code !"
+                error_msg = "Wrong value for dialcode !"
                 logger.error(error_msg)
                 raise BadRequest(error_msg)
-            """
-            # for mysql
-            q =  str(code) + '%'
-            sql_statement = ('SELECT voipbilling_voip_retail_rate.prefix, '\
-                             'Min(retail_rate) as minrate, dialcode_prefix.destination '\
-                             'FROM voipbilling_voip_retail_rate '\
-                             'INNER JOIN voipbilling_voipplan_voipretailplan '\
-                             'ON voipbilling_voipplan_voipretailplan.voipretailplan_id = '\
-                             'voipbilling_voip_retail_rate.voip_retail_plan_id '\
-                             'LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix =  '\
-                             'voipbilling_voip_retail_rate.prefix '\
-                             'WHERE voipplan_id=%s '\
-                             'AND voipbilling_voip_retail_rate.prefix LIKE "%s" '\
-                             'GROUP BY voipbilling_voip_retail_rate.prefix' \
-                             % (voipplan_id, q))
-            """
-            # for postgre-sql
-            q = str(code) + '%'
+
+            sqldialcode = str(code) + '%'
             sql_statement = (
                 "SELECT voipbilling_voip_retail_rate.prefix, "
                 "Min(retail_rate) as minrate, dialcode_prefix.destination "
@@ -191,7 +171,7 @@ class VoipRateResource(ModelResource):
                 "AND CAST(voipbilling_voip_retail_rate.prefix AS TEXT) LIKE %s "
                 "GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination;")
 
-            cursor.execute(sql_statement, [voipplan_id, q])
+            cursor.execute(sql_statement, [voipplan_id, sqldialcode])
         else:
             sql_statement = (
                 'SELECT voipbilling_voip_retail_rate.prefix, '
