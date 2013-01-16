@@ -2,7 +2,7 @@ language: python
 python:
   - "2.7"
 env:
-  - DJANGO=1.4.2
+  - DJANGO=1.4.3
 services:
   - mongodb     # will start riak
   - redis-server

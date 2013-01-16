@@ -88,15 +88,15 @@ def get_element(cdr):
     else:
         uuid = ''
     #Get caller_id_number
-    if 'callflow' in cdr and 'caller_profile' in cdr['callflow'] \
-       and 'caller_id_number' in cdr['callflow']['caller_profile']:
-        caller_id_number = cdr['callflow']['caller_profile']['caller_id_number']
+    if 'callflow' in cdr and 'caller_profile' in cdr['callflow'][0] \
+       and 'caller_id_number' in cdr['callflow'][0]['caller_profile']:
+        caller_id_number = cdr['callflow'][0]['caller_profile']['caller_id_number']
     else:
         caller_id_number = ''
     #Get caller_id_name
-    if 'callflow' in cdr and 'caller_profile' in cdr['callflow'] \
-       and 'caller_id_name' in cdr['callflow']['caller_profile']:
-        caller_id_name = cdr['callflow']['caller_profile']['caller_id_name']
+    if 'callflow' in cdr and 'caller_profile' in cdr['callflow'][0] \
+       and 'caller_id_name' in cdr['callflow'][0]['caller_profile']:
+        caller_id_name = cdr['callflow'][0]['caller_profile']['caller_id_name']
     else:
         caller_id_name = ''
     # Get mduration
@@ -344,7 +344,8 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
                 int(cdr['variables']['end_uepoch'][:10]))
 
         # Check Destination number
-        destination_number = cdr['callflow']['caller_profile']['destination_number']
+        print(cdr)
+        destination_number = cdr['callflow'][0]['caller_profile']['destination_number']
 
         if len(destination_number) <= settings.INTERNAL_CALL:
             authorized = 1

@@ -18,7 +18,7 @@
       <div class="nav-collapse">
           {% if user.is_authenticated %}
             <ul class="nav">
-              {% if perms.user_profile.dashboard %}
+              {% if perms.user_profile.allow_cdr_dashboard %}
                 <li {% ifequal module 'cdr_dashboard' %}class="active"{% endifequal %}><a href="/dashboard/">{% trans "Dashboard" %}</a></li>
               {% endif %}
             </ul>
@@ -26,13 +26,13 @@
               <li id="fat-menu-I" class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Analytics" %}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  {% if perms.user_profile.overview %}
+                  {% if perms.user_profile.allow_cdr_overview %}
                     <li {% ifequal module 'cdr_overview' %}class="active"{% endifequal %}><a href="/cdr_overview/">{% trans "overview"|title %}</a></li>
                   {% endif %}
-                  {% if perms.user_profile.search %}
+                  {% if perms.user_profile.allow_cdr_view %}
                     <li {% ifequal module 'cdr_view' %}class="active"{% endifequal %}><a href="/cdr_view/">{% trans "search"|title %}</a></li>
                   {% endif %}
-                  {% if perms.user_profile.daily_comparison %}
+                  {% if perms.user_profile.allow_hourly_report %}
                     <li {% ifequal module 'cdr_report_by_hour' %}class="active"{% endifequal %}><a href="/hourly_report/">{% trans "daily comparison"|title %}</a></li>
                   {% endif %}
                  </ul>
@@ -42,10 +42,10 @@
               <li id="fat-menu-II" class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Real-Time" %}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  {% if perms.user_profile.real_time_calls %}
+                  {% if perms.user_profile.allow_cdr_realtime %}
                     <li {% ifequal module 'cdr_realtime' %}class="active"{% endifequal %}><a href="/cdr_realtime/">{% trans "real-time calls"|title %}</a></li>
                   {% endif %}
-                  {% if perms.user_profile.concurrent_calls %}
+                  {% if perms.user_profile.allow_cdr_concurrent_calls %}
                     <li {% ifequal module 'cdr_concurrent_calls' %}class="active"{% endifequal %}><a href="/cdr_concurrent_calls/">{% trans "concurrent calls"|title %}</a></li>
                   {% endif %}
                  </ul>
@@ -55,13 +55,13 @@
               <li id="fat-menu-III" class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "reports"|title %}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  {% if perms.user_profile.by_country %}
+                  {% if perms.user_profile.allow_country_report %}
                     <li {% ifequal module 'cdr_country_report' %}class="active"{% endifequal %}><a href="/country_report/">{% trans "by country"|title %}</a></li>
                   {% endif %}
-                  {% if perms.user_profile.world_map %}
+                  {% if perms.user_profile.allow_world_map %}
                     <li {% ifequal module 'world_map_view' %}class="active"{% endifequal %}><a href="/world_map/">{% trans "world map"|title %}</a></li>
                   {% endif %}
-                  {% if perms.user_profile.mail_report %}
+                  {% if perms.user_profile.allow_mail_report %}
                     <li {% ifequal module 'cdr_mail_report' %}class="active"{% endifequal %}><a href="/mail_report/">{% trans "mail report"|title %}</a></li>
                   {% endif %}
                 </ul>
