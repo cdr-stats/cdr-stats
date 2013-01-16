@@ -111,6 +111,7 @@ class VoipRateResource(ModelResource):
         ]
 
     def create(self, request=None, **kwargs):
+        #FIXME Comment is not correct
         """GET method of Subscriber API"""
         logger.debug('Voip Rate GET API get called')
         auth_result = self._meta.authentication.is_authenticated(request)
