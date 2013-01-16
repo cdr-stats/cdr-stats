@@ -1,12 +1,9 @@
 from django.db import models
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from country_dialcode.models import Prefix
 from voip_gateway.models import Provider
+from voip_billing.constants import LCR_TYPE
 from common.intermediate_model_base_class import Model
-
-
-lcr_list = ((0, _("LCR")),
-            (1, _("LCD")))
 
 
 class VoIPPlan(Model):
@@ -24,13 +21,13 @@ class VoIPPlan(Model):
 
     The LCR system will route the VoIP via the lowest cost carrier.
     """
-    name = models.CharField(unique=True, max_length=255, verbose_name='Name',
+    name = models.CharField(unique=True, max_length=255, verbose_name=_('Name'),
                             help_text=_("Enter Plan Name"))
-    pubname = models.CharField(max_length=255, verbose_name='Pub Name',
+    pubname = models.CharField(max_length=255, verbose_name=_('Pub Name'),
                                help_text=_("Enter Pub Name"))
-    lcrtype = models.IntegerField(choices=lcr_list, verbose_name='LCR Type',
+    lcrtype = models.IntegerField(choices=list(LCR_TYPE), verbose_name=_('LCR Type'),
                                   help_text=_("Select LCR type"))
-    created_date = models.DateTimeField(auto_now_add=True, verbose_name='Date')
+    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_('Date'))
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -49,7 +46,7 @@ class BanPlan(models.Model):
 
     List of Ban Plan which are linked to VoIP Plan
     """
-    name = models.CharField(unique=True, max_length=255, verbose_name='Name',
+    name = models.CharField(unique=True, max_length=255, verbose_name=_('Name'),
                             help_text=_("Enter Ban Plan Name"))
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
@@ -89,9 +86,9 @@ class BanPrefix(models.Model):
     Ban prefixes are linked to Ban plan & VoIP with these prefix
     will not be authorized to send.
     """    
-    ban_plan = models.ForeignKey(BanPlan, verbose_name='Ban Plan',
+    ban_plan = models.ForeignKey(BanPlan, verbose_name=_('Ban Plan'),
                                 help_text=_("Select Ban Plan"))
-    prefix = models.ForeignKey(Prefix, verbose_name='Prefix',
+    prefix = models.ForeignKey(Prefix, verbose_name=_('Prefix'),
                                help_text=_("Select Prefix"))
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
@@ -130,13 +127,13 @@ class VoIPRetailPlan(Model):
     The system can have several VoIPRetailPlans, but only the ones associated to
     the VoIPplan will be used by the client.
     """
-    name = models.CharField(max_length=255, verbose_name='Name',
+    name = models.CharField(max_length=255, verbose_name=_('Name'),
                             help_text=_("Enter Plan Name"))
-    description = models.TextField(verbose_name='Description',
+    description = models.TextField(verbose_name=_('Description'),
                                    help_text=_("Short description about Plan"))
-    metric = models.IntegerField(default=10, verbose_name='Metric',
+    metric = models.IntegerField(default=10, verbose_name=_('Metric'),
                                  help_text=_("Enter metric in digit"))
-    created_date = models.DateTimeField(auto_now_add=True, verbose_name='Date')
+    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_('Date'))
     updated_date = models.DateTimeField(auto_now=True)
     voip_plan = models.ManyToManyField(VoIPPlan, through='VoIPPlan_VoIPRetailPlan')
 
@@ -179,16 +176,16 @@ class VoIPRetailRate(models.Model):
     """
     voip_retail_plan_id = models.ForeignKey(VoIPRetailPlan,
                                            db_column="voip_retail_plan_id",
-                                           verbose_name="Retail Plan",
+                                           verbose_name=_("Retail Plan"),
                                            null=True, blank=True,
                                            help_text=_("Select Retail Plan"))
     prefix = models.ForeignKey(Prefix, db_column="prefix",
-                               verbose_name="Prefix", null=True, blank=True,
+                               verbose_name=_("Prefix"), null=True, blank=True,
                                help_text=_("Select Prefix"))
     retail_rate = models.DecimalField(max_digits=10, decimal_places=4,
-                                      default=0, verbose_name="Rate",
+                                      default=0, verbose_name=_("Rate"),
                                       help_text=_("Enter Rate"))
-    created_date = models.DateTimeField(auto_now_add=True, verbose_name="Date")
+    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_("Date"))
     updated_date = models.DateTimeField(auto_now=True)
 
 
@@ -237,19 +234,19 @@ class VoIPCarrierPlan(Model):
     the VoIPRetailPlan-VoIPPlan will be used to connect the VoIP of
     the client.
     """
-    name = models.CharField(max_length=255, verbose_name="Name",
+    name = models.CharField(max_length=255, verbose_name=_("Name"),
                             help_text=_("Enter Plan Name"))
-    description = models.TextField(blank=True, verbose_name="Description",
+    description = models.TextField(blank=True, verbose_name=_("Description"),
                                    help_text=_("Short description about Plan"))
-    metric = models.IntegerField(default=10, verbose_name="Metric",
+    metric = models.IntegerField(default=10, verbose_name=_("Metric"),
                                  help_text=_("Enter metric in digit"))
     callsent = models.IntegerField(null=True, blank=True,
-                                      verbose_name="Message Sent")
+                                      verbose_name=_("Message Sent"))
     voip_provider_id = models.ForeignKey(Provider, db_column="voip_provider_id",
-                                        verbose_name="Provider",
+                                        verbose_name=_("Provider"),
                                         null=True, blank=True,
                                         help_text=_("Select Provider"))
-    created_date = models.DateTimeField(auto_now_add=True, verbose_name="Date")
+    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_("Date"))
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -273,16 +270,16 @@ class VoIPCarrierRate(models.Model):
     """
     voip_carrier_plan_id = models.ForeignKey(VoIPCarrierPlan,
                                            db_column="voip_carrier_plan_id",
-                                           verbose_name="Carrier Plan",
+                                           verbose_name=_("Carrier Plan"),
                                            null=True, blank=True,
                                            help_text=_("Select Carrier Plan"))
     prefix = models.ForeignKey(Prefix, db_column="prefix",
-                               verbose_name="Prefix", null=True, blank=True,
+                               verbose_name=_("Prefix"), null=True, blank=True,
                                help_text=_("Select Prefix"))
     carrier_rate = models.DecimalField(max_digits=10, decimal_places=4,
-                                       default=0, verbose_name="Rate",
+                                       default=0, verbose_name=_("Rate"),
                                        help_text=_("Enter Rate"))
-    created_date = models.DateTimeField(auto_now_add=True, verbose_name="Date")
+    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_("Date"))
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:

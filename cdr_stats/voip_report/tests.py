@@ -32,3 +32,5 @@ class VoipReportAdminInterfaceTestCase(BaseAuthenticatedClient):
         self.failUnlessEqual(response.status_code, 200)
         response = self.client.get('/admin/voip_report/voipcall_report/import_voip_report/')
         self.failUnlessEqual(response.status_code, 200)
+        response = self.client.get('/admin/voip_report/voipcall_report/export_voip_report/')
+        self.failUnlessEqual(response.status_code, 200)
