@@ -149,6 +149,7 @@ class VoipRateResource(ModelResource):
                 raise BadRequest(error_msg)
 
         cursor = connection.cursor()
+        #TODO: rename code to dialcode / in the api url too
         if code:
             try:
                 code = int(code)
