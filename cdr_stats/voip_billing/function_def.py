@@ -125,6 +125,7 @@ def prefix_allowed_to_voip_call(destination_number, voipplan_id):
     destination_prefix_list = prefix_list_string(destination_number)
     banned_prefix_list = banned_prefix_qs(voipplan_id)
     # Cache the query set of banned prefix
+    #TODO: Review the name of the key, we are not using the caching properly
     result = cache.get('test_key')
     if result is None:
         cache.set("test_key", banned_prefix_list, 60)
@@ -135,11 +136,10 @@ def prefix_allowed_to_voip_call(destination_number, voipplan_id):
             if i['prefix'] == j:
                 flag = True
                 break
-        # if flag is true
-        # VoIP call is not allowed
+        # flag is true then calls are not allowed
         if flag:
             return False
-    # VoIP call is allowed
+    # Calls are allowed
     return True
 
 
