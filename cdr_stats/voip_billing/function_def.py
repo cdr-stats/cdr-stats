@@ -14,8 +14,9 @@
 from django.conf import settings
 from django.core.cache import cache
 from country_dialcode.models import Prefix
-from voip_billing.models import VoIPPlan, VoIPRetailPlan, VoIPRetailRate,\
-    VoIPCarrierPlan, VoIPCarrierRate
+from voip_billing.models import VoIPPlan, VoIPRetailPlan,\
+    VoIPCarrierPlan
+# from voip_billing.models import VoIPRetailRate, VoIPCarrierRate
 import os
 
 
@@ -76,11 +77,9 @@ def prefix_list_string(phone_number):
     destination_prefix_list = ''
     for i in prefix_range:
         if i == settings.PREFIX_LIMIT_MIN:
-            destination_prefix_list = destination_prefix_list + \
-            phone_number[0:i]
+            destination_prefix_list = destination_prefix_list + phone_number[0:i]
         else:
-            destination_prefix_list = destination_prefix_list + \
-            phone_number[0:i] + ', '
+            destination_prefix_list = destination_prefix_list + phone_number[0:i] + ', '
     return str(destination_prefix_list)
 
 
@@ -101,12 +100,13 @@ def banned_prefix_qs(voipplan_id):
     """
     Banned Prefix queryset should be cached
     """
-    from django.db import connection, transaction
+    from django.db import connection
     cursor = connection.cursor()
-    sql_statement = ('SELECT voipbilling_ban_prefix.prefix_id FROM '\
-        'voipbilling_ban_prefix,voipbilling_banplan,voipbilling_voipplan_banplan '\
-        'WHERE voipbilling_ban_prefix.ban_plan_id = voipbilling_banplan.id '\
-        'AND voipbilling_banplan.id = voipbilling_voipplan_banplan.banplan_id '\
+    sql_statement = (
+        'SELECT voipbilling_ban_prefix.prefix_id FROM '
+        'voipbilling_ban_prefix,voipbilling_banplan,voipbilling_voipplan_banplan '
+        'WHERE voipbilling_ban_prefix.ban_plan_id = voipbilling_banplan.id '
+        'AND voipbilling_banplan.id = voipbilling_voipplan_banplan.banplan_id '
         'AND voipbilling_voipplan_banplan.voipplan_id = %s')
     cursor.execute(sql_statement, [str(voipplan_id)])
     row = cursor.fetchall()
