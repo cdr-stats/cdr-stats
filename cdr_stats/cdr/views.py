@@ -1254,8 +1254,7 @@ def cdr_report_by_hour(request):
 
             if from_date != '':
                 end_date = from_date = select_date
-                start_date = end_date + \
-                    relativedelta(days=-int(comp_days))
+                start_date = end_date + relativedelta(days=-int(comp_days))
                 start_date = datetime(start_date.year, start_date.month,
                                       start_date.day, 0, 0, 0, 0)
                 end_date = datetime(end_date.year, end_date.month,

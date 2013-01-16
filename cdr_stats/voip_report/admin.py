@@ -158,9 +158,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
         kwargs = {}
         if request.META['QUERY_STRING'] == '':
             tday = datetime.today()
-            kwargs['updated_date__gte'] = datetime(tday.year,
-                tday.month,
-                tday.day, 0, 0, 0, 0)
+            kwargs['updated_date__gte'] = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
             cl.root_query_set.filter(**kwargs)
 
         cl.formset = None
@@ -292,9 +290,8 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
                                          disposition=get_disposition_id(row[2]),
                                          )                                
                                 
-                                response = \
-                                    VoIPbilling.delay(voipcall_id=voipcall.id,
-                                                      voipplan_id=voipplan_id)
+                                response = VoIPbilling.delay(voipcall_id=voipcall.id,
+                                                             voipplan_id=voipplan_id)
 
                                 # Due to task voipcall_id is disconnected/blank
                                 # So need to get back voipcall id
@@ -335,8 +332,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
         'msg': msg,
         'title': _('Import VoPI Report'),
         })
-        return render_to_response(
-               'admin/voip_report/voipcall_report/import_voip_report.html',
+        return render_to_response('admin/voip_report/voipcall_report/import_voip_report.html',
                context_instance=ctx)
 
     def export_voip_report(self, request):
