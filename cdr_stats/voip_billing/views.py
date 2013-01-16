@@ -11,27 +11,22 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.contrib.auth.models import User
+
 from django.contrib.auth.decorators import login_required, permission_required
-from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.views.decorators.cache import cache_page
 from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template.context import RequestContext
-from pymongo.connection import Connection
-from pymongo.errors import ConnectionFailure
-
-
 from voip_billing.models import VoIPRetailRate
 from voip_billing.forms import PrefixRetailRrateForm, SimulatorForm, BillingForm,\
     HourlyBillingForm
-from voip_billing.function_def import variable_value, prefix_allowed_to_voip_call
+from voip_billing.function_def import prefix_allowed_to_voip_call
 from voip_billing.rate_engine import rate_engine
 from user_profile.models import UserProfile
 from cdr.views import check_user_accountcode, check_cdr_exists, chk_account_code
 from cdr.functions_def import chk_account_code
 from cdr.aggregate import pipeline_daily_billing_report, pipeline_hourly_billing_report
-from common.common_functions import current_view, ceil_strdate
+from common.common_functions import current_view, ceil_strdate, variable_value
 from datetime import datetime
 import logging
 import time
