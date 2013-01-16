@@ -224,8 +224,8 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                     voipplan_id = request.POST['plan_id']
                     sql_statement = ( \
                         'SELECT voipbilling_voip_retail_rate.prefix, '\
-                        'Min(retail_rate) as minrate, dialcode_prefix.destination'\
-                        ' FROM voipbilling_voip_retail_rate '\
+                        'Min(retail_rate) as minrate, dialcode_prefix.destination '\
+                        'FROM voipbilling_voip_retail_rate '\
                         'INNER JOIN voipbilling_voipplan_voipretailplan '\
                         'ON voipbilling_voipplan_voipretailplan.voipretailplan_id = '\
                         'voipbilling_voip_retail_rate.voip_retail_plan_id '\
@@ -507,8 +507,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
             'title': _('Select VoIP Retail Rate to Change'),
             'form': form,
         }
-        return super(VoIPRetailRateAdmin, self)\
-               .changelist_view(request, extra_context=ctx)
+        return super(VoIPRetailRateAdmin, self).changelist_view(request, extra_context=ctx)
 
     def add_view(self, request, extra_context=None):
         """
@@ -518,8 +517,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
             'app_label': _('VoIP Billing'),
             'title': _('Add VoIP Retail Rate'),
         }
-        return super(VoIPRetailRateAdmin, self)\
-               .add_view(request, extra_context=ctx)
+        return super(VoIPRetailRateAdmin, self).add_view(request, extra_context=ctx)
 
     def change_view(self, request, object_id, extra_context=None):
         """
@@ -529,8 +527,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
             'app_label': _('VoIP Billing'),
             'title': _('Change VoIP Retail Rate'),
         }
-        return super(VoIPRetailRateAdmin, self)\
-               .change_view(request, object_id, extra_context=ctx, )
+        return super(VoIPRetailRateAdmin, self).change_view(request, object_id, extra_context=ctx, )
 
     def export_rr(self, request):
         """
@@ -653,8 +650,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
         'error_import_list': error_import_list,
         'type_error_import_list': type_error_import_list,
         })
-        return render_to_response(
-               'admin/voip_billing/voipretailrate/import_rr.html',
+        return render_to_response('admin/voip_billing/voipretailrate/import_rr.html',
                context_instance=ctx)
 admin.site.register(VoIPRetailRate, VoIPRetailRateAdmin)
 
@@ -806,8 +802,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
             'title': _('Select VoIP Carrier Rate to Change'),
             'form': form,
         }
-        return super(VoIPCarrierRateAdmin, self)\
-               .changelist_view(request, extra_context=ctx)
+        return super(VoIPCarrierRateAdmin, self).changelist_view(request, extra_context=ctx)
 
     def add_view(self, request, extra_context=None):
         """
@@ -817,8 +812,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
             'app_label': _('VoIP Billing'),
             'title': _('Add VoIP Carrier Rate'),
         }
-        return super(VoIPCarrierRateAdmin, self)\
-               .add_view(request, extra_context=ctx)
+        return super(VoIPCarrierRateAdmin, self).add_view(request, extra_context=ctx)
 
     def change_view(self, request, object_id, extra_context=None):
         """
@@ -828,8 +822,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
             'app_label': _('VoIP Billing'),
             'title': _('Change VoIP Carrier Rate'),
         }
-        return super(VoIPCarrierRateAdmin, self)\
-               .change_view(request, object_id, extra_context=ctx)
+        return super(VoIPCarrierRateAdmin, self).change_view(request, object_id, extra_context=ctx)
 
     def export_cr(self, request):
         """
@@ -1004,8 +997,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
         'rr_error_import_list': rr_error_import_list,
         'type_error_import_list': type_error_import_list,
         })
-        return render_to_response(
-               'admin/voip_billing/voipcarrierrate/import_cr.html',
+        return render_to_response('admin/voip_billing/voipcarrierrate/import_cr.html',
                context_instance=ctx)
 admin.site.register(VoIPCarrierRate, VoIPCarrierRateAdmin)
 

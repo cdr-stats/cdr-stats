@@ -1,11 +1,20 @@
+#
+# CDR-Stats License
+# http://www.cdr-stats.org
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this file,
+# You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (C) 2011-2012 Star2Billing S.L.
+#
+# The Initial Developer of the Original Code is
+# Arezqui Belaid <info@star2billing.com>
+#
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from common.intermediate_model_base_class import Model
-
-GATEWAY_STATUS = (
-    (1,   u'ACTIVE'),
-    (0,   u'INACTIVE'),
-)
+from voip_gateway.constants import GATEWAY_STATUS
 
 
 class Gateway(Model):
@@ -35,8 +44,9 @@ class Gateway(Model):
     count_call = models.IntegerField(null=True, blank=True)
     count_using = models.IntegerField(null=True, blank=True)
     maximum_call = models.IntegerField(null=True, blank=True)
-    status = models.IntegerField(choices=GATEWAY_STATUS, default='1', 
-                verbose_name=_("Gateway Status"), blank=True, null=True)
+    status = models.IntegerField(choices=list(GATEWAY_STATUS),
+        default=GATEWAY_STATUS.INACTIVE, verbose_name=_("Gateway Status"),
+        blank=True, null=True)
     max_call_gateway = models.IntegerField(null=True, blank=True,
         verbose_name=_("Max Call Gateway"),
         help_text=_("Select Gateway to route the call if the maximum call is reached"))
