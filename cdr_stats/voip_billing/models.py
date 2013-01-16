@@ -12,7 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from country_dialcode.models import Prefix
 from voip_gateway.models import Provider
 from voip_billing.constants import LCR_TYPE
@@ -95,14 +95,14 @@ class VoIPPlan_BanPlan(models.Model):
 class BanPrefix(models.Model):
     """
     BanPrefix
-    
+
     Ban prefixes are linked to Ban plan & VoIP with these prefix
     will not be authorized to send.
-    """    
+    """
     ban_plan = models.ForeignKey(BanPlan, verbose_name=_('Ban Plan'),
-                                help_text=_("Select Ban Plan"))
+        help_text=_("Select Ban Plan"))
     prefix = models.ForeignKey(Prefix, verbose_name=_('Prefix'),
-                               help_text=_("Select Prefix"))
+       help_text=_("Select Prefix"))
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
@@ -127,6 +127,7 @@ class BanPrefix(models.Model):
     prefix_with_name.short_description = _('Prefix')
 
 
+
 class VoIPRetailPlan(Model):
     """
     VoIPRetailPlan
@@ -134,7 +135,7 @@ class VoIPRetailPlan(Model):
     This contains the VoIPRetailRates to retail to the customer. these plans are
     associated to the VoIPPlan with a ManyToMany relation.
     It defines the costs at which we sell the VoIP calls to clients.
-    
+
     VoIPRetailPlan will then contain a set of VoIPRetailRates which will define
     the cost of sending a VoIP call to each destination.
     The system can have several VoIPRetailPlans, but only the ones associated to
@@ -166,8 +167,7 @@ class VoIPPlan_VoIPRetailPlan(models.Model):
 
     ManytoMany relationship between VoIPPlan & VoIPRetailPlan
     """
-    voipretailplan = models.ForeignKey(VoIPRetailPlan,
-                                      related_name='VoIP Retail Plan')
+    voipretailplan = models.ForeignKey(VoIPRetailPlan, related_name='VoIP Retail Plan')
     voipplan = models.ForeignKey(VoIPPlan, related_name='VoIP Plan')
     created_date = models.DateTimeField(auto_now_add=True)
 
@@ -187,8 +187,7 @@ class VoIPRetailRate(models.Model):
     VoIPRetailRates are grouped by VoIPRetailPlan, which will be then in turn be
     associated to a VoIPPlan
     """
-    voip_retail_plan_id = models.ForeignKey(VoIPRetailPlan,
-                                           db_column="voip_retail_plan_id",
+    voip_retail_plan_id = models.ForeignKey(VoIPRetailPlan, db_column="voip_retail_plan_id",
                                            verbose_name=_("Retail Plan"),
                                            null=True, blank=True,
                                            help_text=_("Select Retail Plan"))
@@ -238,11 +237,11 @@ class VoIPCarrierPlan(Model):
     Once the retail price is defined by the VoIPPlan, VoIPRetailPlans and
     VoIPRetailRates, we also need to know which is the best route to send
     the VoIP how much it will cost, and which VoIP Gateway to use.
-    
+
     VoIPCarrierPlan is linked to the VoIP Plan, so once we found how to sell
-    the service to the client, we need to look at which carrier (Provider) 
+    the service to the client, we need to look at which carrier (Provider)
     we want to use, The VoIPCarrierPlan defines this.
-    
+
     The system can have several VoIPCarrierPlans, but only the one associated to
     the VoIPRetailPlan-VoIPPlan will be used to connect the VoIP of
     the client.
@@ -330,8 +329,7 @@ class VoIPPlan_VoIPCarrierPlan(models.Model):
 
     ManytoMany relationship between VoIPPlan & VoIPCarrierPlan
     """
-    voipcarrierplan = models.ForeignKey(VoIPCarrierPlan,
-                                      related_name='carrier plan')
+    voipcarrierplan = models.ForeignKey(VoIPCarrierPlan, related_name='carrier plan')
     voipplan = models.ForeignKey(VoIPPlan, related_name='voip_plan')
     created_date = models.DateTimeField(auto_now_add=True)
 
