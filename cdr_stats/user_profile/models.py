@@ -83,14 +83,14 @@ class UserProfile(models.Model):
             ("view_api_explorer", _('Can view API-Explorer')),
             ("dashboard", _('Can view CDR dashboard')),
             ("search", _('Can view CDR')),
-            ("allow_cdr_detail", _('Can view CDR detail')),
+            ("cdr_detail", _('Can view CDR detail')),
             ("daily_comparison", _('Can view CDR hourly report')),
             ("overview", _('Can view CDR overview')),
             ("concurrent_calls", _('Can view CDR concurrent calls')),
             ("real_time_calls", _('Can view CDR realtime')),
-            ("mail_report", _('Can view CDR mail report')),
             ("by_country", _('Can view CDR country report')),
             ("world_map", _('Can view CDR world map')),
+            ("mail_report", _('Can view CDR mail report')),
         )
         db_table = 'user_profile'
         verbose_name = _("User Profile")
