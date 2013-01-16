@@ -20,7 +20,7 @@ from django.template.context import RequestContext
 from voip_billing.models import VoIPRetailRate
 from voip_billing.forms import PrefixRetailRrateForm, SimulatorForm, BillingForm,\
     HourlyBillingForm
-from voip_billing.function_def import prefix_allowed_to_voip_call
+from voip_billing.function_def import prefix_allowed_to_call
 from voip_billing.rate_engine import rate_engine
 from user_profile.models import UserProfile
 from cdr.views import check_user_accountcode, check_cdr_exists, chk_account_code
@@ -74,7 +74,7 @@ def simulator(request):
             # (Not banned Prefix) ?
             destination_no = request.POST.get("destination_no")
 
-            allowed = prefix_allowed_to_voip_call(destination_no, voipplan_id)
+            allowed = prefix_allowed_to_call(destination_no, voipplan_id)
 
             if allowed:
                 query = rate_engine(destination_no=destination_no, voipplan_id=voipplan_id)

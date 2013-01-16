@@ -24,7 +24,7 @@ from tastypie.throttle import BaseThrottle
 from tastypie.exceptions import BadRequest, ImmediateHttpResponse
 from tastypie import http
 from voip_billing.models import VoIPRetailRate
-from voip_billing.function_def import prefix_allowed_to_voip_call, prefix_list_string
+from voip_billing.function_def import prefix_allowed_to_call, prefix_list_string
 from user_profile.models import UserProfile
 
 import logging
@@ -134,7 +134,7 @@ class VoipRateResource(ModelResource):
 
         if recipient_phone_no:
             # Should Not banned recipient_phone_no
-            allowed = prefix_allowed_to_voip_call(recipient_phone_no, voipplan_id)
+            allowed = prefix_allowed_to_call(recipient_phone_no, voipplan_id)
             if allowed:
                 # Get Destination prefix list e.g (34,346,3465,34657)
                 destination_prefix_list = prefix_list_string(str(recipient_phone_no))
@@ -212,7 +212,7 @@ class VoipRateResource(ModelResource):
         result = []
         for record in row:
             # Not banned Prefix
-            allowed = prefix_allowed_to_voip_call(record[0], voipplan_id)
+            allowed = prefix_allowed_to_call(record[0], voipplan_id)
 
             if allowed:
                 modrecord = {}

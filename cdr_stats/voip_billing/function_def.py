@@ -118,7 +118,7 @@ def banned_prefix_qs(voipplan_id):
     return result
 
 
-def prefix_allowed_to_voip_call(destination_number, voipplan_id):
+def prefix_allowed_to_call(destination_number, voipplan_id):
     """
     Check destination no with ban prefix & voip_plan
     """
