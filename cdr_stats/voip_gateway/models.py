@@ -80,7 +80,7 @@ class Provider(Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'voip_provider'
+        db_table = u'voip_provider'
         app_label = _('voip_gateway')
         verbose_name = _("Provider")
         verbose_name_plural = _("Providers")

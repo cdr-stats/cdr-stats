@@ -17,6 +17,7 @@ from common.utils import BaseAuthenticatedClient
 from voip_gateway.models import Gateway, Provider
 from voip_billing.models import VoIPPlan
 from voip_report.models import VoIPCall, VoIPCall_Report
+from voip_billing.views import daily_billing_report, hourly_billing_report
 from user_profile.models import UserProfile
 
 
@@ -113,6 +114,36 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         response = self.client.get('/voip_billing/simulator/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'voip_billing/simulator.html')
+
+    def test_daily_billing_report(self):
+        """
+        Test Function to check VoIP Call simulator
+        """
+        response = self.client.post('/voip_billing/daily_billing_report/',
+            data={'plan_id': 1})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'voip_billing/daily_billing_report.html')
+
+        request = self.factory.get('/voip_billing/daily_billing_report/')
+        request.user = self.user
+        request.session = {}
+        response = daily_billing_report(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_hourly_billing_report(self):
+        """
+        Test Function to check VoIP Call simulator
+        """
+        response = self.client.post('/voip_billing/hourly_billing_report/',
+            data={'plan_id': 1})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'voip_billing/hourly_billing_report.html')
+
+        request = self.factory.get('/voip_billing/hourly_billing_report/')
+        request.user = self.user
+        request.session = {}
+        response = hourly_billing_report(request)
+        self.assertEqual(response.status_code, 200)
 
 
 class VoipBillingCheckTestCase(BaseAuthenticatedClient):
