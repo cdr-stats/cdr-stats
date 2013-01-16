@@ -22,14 +22,21 @@
                                 <span class="help-block">{{ form.from_date.help_text|safe }} </span>
                             </div>
                         </div>
-                        {% if user.is_superuser %}
                         <div class="span4">
-                            <label class="control-label" for="{{ form.plan_id.auto_id }}">{{ form.plan_id.label }}</label>
+                            <label class="control-label" for="{{ form.switch.auto_id }}">{{ form.switch.label }}</label>
                             <div class="input">
-                                {{ form.plan_id }}
-                                <span class="help-block">{{ form.plan_id.help_text|safe }} </span>
+                                {{ form.switch }}
+                                <span class="help-block">{{ form.switch.help_text|safe }} </span>
                             </div>
                         </div>
+                        {% if user.is_superuser %}
+                            <div class="span4">
+                                <label class="control-label" for="{{ form.plan_id.auto_id }}">{{ form.plan_id.label }}</label>
+                                <div class="input">
+                                    {{ form.plan_id }}
+                                    <span class="help-block">{{ form.plan_id.help_text|safe }} </span>
+                                </div>
+                            </div>
                         {% endif %}
                     </div>
                 </div>

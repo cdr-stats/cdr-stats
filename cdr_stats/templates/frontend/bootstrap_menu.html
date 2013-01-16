@@ -83,11 +83,27 @@
                 </ul>
               </li>
             </ul>
+
+              <ul class="nav pull-left">
+                  <li id="fat-menu-V" class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "billing"|title %}<b class="caret"></b></a>
+                      <ul class="dropdown-menu">
+                          <!--<li><a href="/voip_billing/retail_rate/"> {% trans "Retail Rate" %}</a></li>
+                          <li><a href="/voip_billing/simulator/"> {% trans "Rate simulator" %}</a></li>-->
+                          {% if perms.voip_report.daily_billing_report %}
+                            <li><a href="/voip_billing/daily_billing_report/"> {% trans "Daily Billing report" %}</a></li>
+                          {% endif %}
+                          {% if perms.voip_report.hourly_billing_report %}
+                              <li><a href="/voip_billing/hourly_billing_report/"> {% trans "Hourly Billing report" %}</a></li>
+                          {% endif %}
+                      </ul>
+                  </li>
+              </ul>
           {% endif %}
 
           {% if user.is_authenticated %}
             <ul class="nav pull-right">
-              <li id="fat-menu-V" class="dropdown">
+              <li id="fat-menu-VI" class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username|capfirst }}
                   {% if notice_count or notice_count == 0 %}
                     <span class="label label-warning">{{ notice_count }}</span>
@@ -120,12 +136,6 @@
                     <li><a href="/diagnostic/"> {% trans "Diagnostic" %}</a></li>
                   {% endif %}
                   <li class="divider"></li>
-
-                  <li><a href="/voip_billing/retail_rate/"> {% trans "Retail Rate" %}</a></li>
-                  <li><a href="/voip_billing/simulator/"> {% trans "Rate simulator" %}</a></li>
-                  <li><a href="/voip_billing/daily_billing_report/"> {% trans "Daily Billing report" %}</a></li>
-                  <li><a href="/voip_billing/hourly_billing_report/"> {% trans "Hourly Billing report" %}</a></li>
-
                   <li class="divider"></li>
                   {% if user.is_superuser %}
                     <li><a href="/admin/"> {% trans "Administration" %}</a></li>

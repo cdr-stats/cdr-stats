@@ -111,35 +111,36 @@ def daily_billing_report(request):
     tday = datetime.today()
     form = BillingForm(request.user, initial={'from_date': tday.strftime('%Y-%m-%d'),
                                               'to_date': tday.strftime('%Y-%m-%d')})
-    #plan_id = request.GET['plan_id']
+    switch_id = 0
     if request.method == 'POST':
         search_tag = 1
         form = BillingForm(request.user, request.POST)
         if "from_date" in request.POST:
             from_date = request.POST['from_date']
             start_date = ceil_strdate(from_date, 'start')
-        else:
-            from_date = tday.strftime('%Y-%m-%d')
 
         if "to_date" in request.POST:
             to_date = request.POST['to_date']
             end_date = ceil_strdate(to_date, 'end')
-        else:
-            to_date = tday.strftime('%Y-%m-%d')
 
         if "plan_id" in request.POST:
             plan_id = request.POST['plan_id']
+
+        if "switch" in request.POST:
+            switch_id = request.POST['switch']
     else:
         start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
         end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
 
     query_var = {}
+    if switch_id and int(switch_id) != 0:
+        query_var['metadata.switch_id'] = int(switch_id)
 
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
     if not request.user.is_superuser:  # not superuser
         query_var['metadata.accountcode'] = chk_account_code(request)
 
-    logging.debug('Aggregate cdr analytic')
+    logging.debug('Aggregate daily billing analytic')
     pipeline = pipeline_daily_billing_report(query_var)
 
     logging.debug('Before Aggregate')
@@ -148,10 +149,8 @@ def daily_billing_report(request):
                                        pipeline=pipeline)
 
     logging.debug('After Aggregate')
-
     daily_data = dict()
     total_data = []
-
     if list_data:
         for doc in list_data['result']:
             graph_day = datetime(int(doc['_id'][0:4]),
@@ -171,7 +170,6 @@ def daily_billing_report(request):
 
             total_data = daily_data.items()
             total_data = sorted(total_data, key=lambda k: k[0])
-
 
     data = {
         'module': current_view(request),
@@ -207,15 +205,13 @@ def hourly_billing_report(request):
     search_tag = 0
     tday = datetime.today()
     form = HourlyBillingForm(request.user, initial={'from_date': tday.strftime('%Y-%m-%d')})
-    #plan_id = request.GET['plan_id']
+    switch_id = 0
     if request.method == 'POST':
         search_tag = 1
         form = HourlyBillingForm(request.user, request.POST)
         if "from_date" in request.POST:
             from_date = request.POST['from_date']
             start_date = ceil_strdate(from_date, 'start')
-        else:
-            from_date = tday.strftime('%Y-%m-%d')
 
         start_date = datetime(start_date.year, start_date.month,
             start_date.day, 0, 0, 0, 0)
@@ -224,17 +220,23 @@ def hourly_billing_report(request):
 
         if "plan_id" in request.POST:
             plan_id = request.POST['plan_id']
+
+        if "switch" in request.POST:
+            switch_id = request.POST['switch']
     else:
         start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
         end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
 
     query_var = {}
 
+    if switch_id and int(switch_id) != 0:
+        query_var['metadata.switch_id'] = int(switch_id)
+
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
     if not request.user.is_superuser:  # not superuser
         query_var['metadata.accountcode'] = chk_account_code(request)
 
-    logging.debug('Aggregate cdr analytic')
+    logging.debug('Aggregate hourly billing analytic')
     pipeline = pipeline_hourly_billing_report(query_var)
 
     logging.debug('Before Aggregate')
