@@ -64,12 +64,12 @@ def prefix_qs():
         q = Prefix.objects.extra(select={'prefix': 'prefix',
                                          'destination': 'destination',
                                          'ascii_prefix': 'ASCII(prefix)',
-                                        }, tables=['simu_prefix'])
+                                        }, tables=['dialcode_prefix'])
     else:
         q = Prefix.objects.extra(select={'prefix': 'prefix',
                                          'destination': 'destination',
                                          'ascii_prefix': 'lower(prefix)',
-                                        }, tables=['simu_prefix'])
+                                        }, tables=['dialcode_prefix'])
     q.group_by = ['prefix']
     q = q.extra(order_by=['ascii_prefix', 'prefix', 'destination'])
     return q
@@ -224,12 +224,12 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                     voipplan_id = request.POST['plan_id']
                     sql_statement = ( \
                         'SELECT voipbilling_voip_retail_rate.prefix, '\
-                        'Min(retail_rate) as minrate, simu_prefix.destination'\
+                        'Min(retail_rate) as minrate, dialcode_prefix.destination'\
                         ' FROM voipbilling_voip_retail_rate '\
                         'INNER JOIN voipbilling_voipplan_voipretailplan '\
                         'ON voipbilling_voipplan_voipretailplan.voipretailplan_id = '\
                         'voipbilling_voip_retail_rate.voip_retail_plan_id '\
-                        'LEFT JOIN simu_prefix ON simu_prefix.prefix =  '\
+                        'LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix =  '\
                         'voipbilling_voip_retail_rate.prefix '\
                         'WHERE voipplan_id=%s '\
                         'GROUP BY voipbilling_voip_retail_rate.prefix')
@@ -545,12 +545,10 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
                 if "plan_id" in request.POST:
 
                     response = HttpResponse(mimetype='text/csv')
-                    response['Content-Disposition'] = \
-                    'attachment;filename=export_retail_rate.csv'
+                    response['Content-Disposition'] = 'attachment;filename=export_retail_rate.csv'
 
                     writer = csv.writer(response)
-                    qs = VoIPRetailRate.objects.filter(
-                         voip_retail_plan_id=request.POST['plan_id'])
+                    qs = VoIPRetailRate.objects.filter(voip_retail_plan_id=request.POST['plan_id'])
 
                     # Content writing in file
                     writer.writerow(['prefix', 'rate', ])
@@ -670,8 +668,7 @@ class VoIPCarrierPlanAdmin(admin.ModelAdmin):
                        'voip_provider_id'),
         }),
     )
-    list_display = ('id', 'name', 'metric', 'voip_provider_id', 'callsent',
-                    'updated_date')
+    list_display = ('id', 'name', 'metric', 'voip_provider_id', 'callsent', 'updated_date')
     list_display_links = ('name',)
     list_filter = ['name',  'updated_date', ]
     ordering = ('id',)
@@ -756,8 +753,8 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
         """
         if db_field.name == "prefix":
             kwargs["queryset"] = prefix_qs()
-        return super(VoIPCarrierRateAdmin, self).formfield_for_foreignkey(
-                                            db_field, request, **kwargs)
+        return super(VoIPCarrierRateAdmin, self)\
+            .formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_urls(self):
         urls = super(VoIPCarrierRateAdmin, self).get_urls()
@@ -846,8 +843,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
             if form.is_valid():
                 if "plan_id" in request.POST:
                     response = HttpResponse(mimetype='text/csv')
-                    response['Content-Disposition'] = \
-                    'attachment;filename=export_carrier_rate.csv'
+                    response['Content-Disposition'] = 'attachment;filename=export_carrier_rate.csv'
                     writer = csv.writer(response)
 
                     qs = VoIPCarrierRate.objects.filter(
@@ -868,8 +864,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
         'model_name': opts.object_name.lower(),
         'app_label': _('VoIP Billing'),
         })
-        return render_to_response(
-               'admin/voip_billing/voipcarrierrate/export_cr.html',
+        return render_to_response('admin/voip_billing/voipcarrierrate/export_cr.html',
                context_instance=ctx)
 
     def import_cr(self, request):
