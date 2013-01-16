@@ -256,16 +256,18 @@ class Command(BaseCommand):
                     'uduration': '12959984',
                     'billusec': '12959984',
                 },
-                'callflow': {
-                    'dialplan': 'XML',
-                    'caller_profile': {'caller_id_name': str(caller_id),
-                    'ani': str(caller_id),
-                    'caller_id_number': str(caller_id),
-                    'network_addr': '192.168.1.21',
-                    'destination_number': str(destination_number),
-                    'uuid': uuid,
-                    'chan_name': 'sofia/internal/1000@127.0.0.1'}
-                }
+                'callflow': [
+                    {
+                        'dialplan': 'XML',
+                        'caller_profile': {'caller_id_name': str(caller_id),
+                        'ani': str(caller_id),
+                        'caller_id_number': str(caller_id),
+                        'network_addr': '192.168.1.21',
+                        'destination_number': str(destination_number),
+                        'uuid': uuid,
+                        'chan_name': 'sofia/internal/1000@127.0.0.1'}
+                    }
+                ]
             }
 
             DBCON[table_name].insert(cdr_json)

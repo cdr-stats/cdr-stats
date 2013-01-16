@@ -474,7 +474,10 @@ func_prepare_backend_settings(){
             sed -i "s/MYSQL_IMPORT_CDR_PASSWORD/$MYSQLPASSWORD/g"  $INSTALL_DIR/settings_local.py
         ;;
         'FREESWITCH')
-            echo "Defaut settings are fine with FreeSwitch..."
+            echo "You will need to configure your CDR Backends to access your CDRs"
+            echo "After the installation please edit the config file: $INSTALL_DIR/settings_local.py"
+            echo "If you are using MongoDB, there is an example commented."
+            read TEMP
         ;;
     esac
 }
