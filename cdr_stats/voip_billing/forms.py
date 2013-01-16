@@ -18,7 +18,7 @@ class FileImport(forms.Form):
         Form Validation :  File extension Check
         """
         filename = self.cleaned_data["csv_file"]
-        file_exts = (".csv", )
+        file_exts = ("csv", "txt")
         if not str(filename).split(".")[1].lower() in file_exts:
             raise forms.ValidationError(_(u'Document types accepted: %s' %
                                         ' '.join(file_exts)))

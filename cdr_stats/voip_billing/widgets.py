@@ -40,8 +40,7 @@ class ForeignKeySearchInput(forms.HiddenInput):
     def render(self, name, value, attrs=None):
         if attrs is None:
             attrs = {}
-        rendered = \
-        super(ForeignKeySearchInput, self).render(name, value, attrs)
+        rendered = super(ForeignKeySearchInput, self).render(name, value, attrs)
         if value:
             label = self.label_for_value(value)
         else:
@@ -345,8 +344,7 @@ class AutocompleteModelAdmin(admin.ModelAdmin):
         # Here, we distinguish between different save types by checking for
         # the presence of keys in request.POST.
         if "_continue" in request.POST:
-            self.message_user(request, msg + ' ' \
-            + _("You may edit it again below."))
+            self.message_user(request, msg + ' ' + _("You may edit it again below."))
             if "_popup" in request.POST:
                 post_url_continue += "?_popup=%s" % request.POST.get('_popup')
             return HttpResponseRedirect(post_url_continue % pk_value)
@@ -355,13 +353,12 @@ class AutocompleteModelAdmin(admin.ModelAdmin):
             #htturn response to Autocomplete PopUp
             if "_popup" in request.POST:
                 return HttpResponse('<script type="text/javascript">\
-            opener.dismissAutocompletePopup(window, "%s", "%s");</script>' % \
-            (escape(pk_value), escape(obj)))
+                    opener.dismissAutocompletePopup(window, "%s", "%s");</script>' % \
+                    (escape(pk_value), escape(obj)))
 
         elif "_addanother" in request.POST:
-            self.message_user(request, msg + ' ' + \
-            (_("You may add another %s below.") % \
-            force_unicode(opts.verbose_name)))
+            self.message_user(request, msg + ' ' + (_("You may add another %s below.") % \
+                force_unicode(opts.verbose_name)))
             return HttpResponseRedirect(request.path)
         else:
             self.message_user(request, msg)
@@ -392,8 +389,8 @@ class AutocompleteWidgetWrapper(RelatedFieldWidgetWrapper):
             id="add_id_%s" onclick="return showAutocompletePopup(this);"> ' % \
                 (related_url, name))
             output.append(u'<img src="%simg/admin/icon_addlink.gif"\
-            width="10" height="10" alt="%s"/></a>' % \
-            (settings.ADMIN_MEDIA_PREFIX, _('Add Another')))
+                width="10" height="10" alt="%s"/></a>' % \
+                (settings.ADMIN_MEDIA_PREFIX, _('Add Another')))
         return mark_safe(u''.join(output))
 
 
@@ -424,6 +421,6 @@ class RelatedFieldWidgetWrapperNew(RelatedFieldWidgetWrapper):
                 (related_url, name))
             output.append(u'<img src="%simg/admin/icon_addlink.gif" width="10" height="10" alt="%s"/></a>\
             <div id="div_add_id_%s"></div>' % \
-            (settings.ADMIN_MEDIA_PREFIX, _('Add Another'), name))
+                (settings.ADMIN_MEDIA_PREFIX, _('Add Another'), name))
 
         return mark_safe(u''.join(output))
