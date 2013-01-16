@@ -23,7 +23,6 @@ from tastypie.authorization import Authorization
 from tastypie.throttle import BaseThrottle
 from tastypie.exceptions import BadRequest, ImmediateHttpResponse
 from tastypie import http
-from api.resources import IpAddressAuthorization, IpAddressAuthentication
 from voip_billing.models import VoIPRetailRate
 from voip_billing.function_def import prefix_allowed_to_voip_call, prefix_list_string
 from user_profile.models import UserProfile
@@ -81,7 +80,6 @@ class VoipRateResource(ModelResource):
                }
             ]
 
-
         Response::
 
             [
@@ -92,12 +90,9 @@ class VoipRateResource(ModelResource):
                }
             ]
 
-
     """
     class Meta:
         resource_name = 'voip_rate'
-        #authentication = BasicAuthentication()#IpAddressAuthentication()
-        #authorization = Authorization()#IpAddressAuthorization()
         authorization = Authorization()
         authentication = BasicAuthentication()
         allowed_methods = ['post']
@@ -113,7 +108,7 @@ class VoipRateResource(ModelResource):
                 self.wrap_view('create')),
             url(r'^(?P<resource_name>%s)/recipient_phone_no/(.+)/$' % self._meta.resource_name,
                 self.wrap_view('create')),
-            ]
+        ]
 
     def create(self, request=None, **kwargs):
         """GET method of Subscriber API"""
@@ -126,14 +121,15 @@ class VoipRateResource(ModelResource):
         auth_result = self._meta.authorization.is_authorized(request, object)
 
         user_voip_plan = UserProfile.objects.get(user=request.user)
-        voipplan_id = user_voip_plan.voipplan_id #  1
+        voipplan_id = user_voip_plan.voipplan_id
         code = ''
         recipient_phone_no = ''
         if '/code/' in request.META['PATH_INFO']:
             code = request.META['PATH_INFO'].split('/api/v1/voip_rate/code/')[1].split('/')[0]
         if '/recipient_phone_no/' in request.META['PATH_INFO']:
-            recipient_phone_no = \
-                request.META['PATH_INFO'].split('/api/v1/voip_rate/recipient_phone_no/')[1].split('/')[0]
+            recipient_phone_no = request.META['PATH_INFO']\
+                .split('/api/v1/voip_rate/recipient_phone_no/')[1]\
+                .split('/')[0]
 
         if recipient_phone_no:
             # Should Not banned recipient_phone_no
@@ -180,31 +176,33 @@ class VoipRateResource(ModelResource):
                              % (voipplan_id, q))
             """
             # for postgre-sql
-            q =  str(code) + '%'
-            sql_statement = ("SELECT voipbilling_voip_retail_rate.prefix, "\
-                             "Min(retail_rate) as minrate, dialcode_prefix.destination "\
-                             "FROM voipbilling_voip_retail_rate "\
-                             "INNER JOIN voipbilling_voipplan_voipretailplan "\
-                             "ON voipbilling_voipplan_voipretailplan.voipretailplan_id = "\
-                             "voipbilling_voip_retail_rate.voip_retail_plan_id "\
-                             "LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix =  "\
-                             "voipbilling_voip_retail_rate.prefix "\
-                             "WHERE voipplan_id=%s "\
-                             "AND CAST(voipbilling_voip_retail_rate.prefix AS TEXT) LIKE %s "\
-                             "GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination;")
+            q = str(code) + '%'
+            sql_statement = (
+                "SELECT voipbilling_voip_retail_rate.prefix, "
+                "Min(retail_rate) as minrate, dialcode_prefix.destination "
+                "FROM voipbilling_voip_retail_rate "
+                "INNER JOIN voipbilling_voipplan_voipretailplan "
+                "ON voipbilling_voipplan_voipretailplan.voipretailplan_id = "
+                "voipbilling_voip_retail_rate.voip_retail_plan_id "
+                "LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix = "
+                "voipbilling_voip_retail_rate.prefix "
+                "WHERE voipplan_id=%s "
+                "AND CAST(voipbilling_voip_retail_rate.prefix AS TEXT) LIKE %s "
+                "GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination;")
 
             cursor.execute(sql_statement, [voipplan_id, q])
         else:
-            sql_statement = ('SELECT voipbilling_voip_retail_rate.prefix, '\
-                             'Min(retail_rate) as minrate, dialcode_prefix.destination '\
-                             'FROM voipbilling_voip_retail_rate '\
-                             'INNER JOIN voipbilling_voipplan_voipretailplan '\
-                             'ON voipbilling_voipplan_voipretailplan.voipretailplan_id = '\
-                             'voipbilling_voip_retail_rate.voip_retail_plan_id '\
-                             'LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix =  '\
-                             'voipbilling_voip_retail_rate.prefix '\
-                             'WHERE voipplan_id=%s '\
-                             'GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination')
+            sql_statement = (
+                'SELECT voipbilling_voip_retail_rate.prefix, '
+                'Min(retail_rate) as minrate, dialcode_prefix.destination '
+                'FROM voipbilling_voip_retail_rate '
+                'INNER JOIN voipbilling_voipplan_voipretailplan '
+                'ON voipbilling_voipplan_voipretailplan.voipretailplan_id = '
+                'voipbilling_voip_retail_rate.voip_retail_plan_id '
+                'LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix = '
+                'voipbilling_voip_retail_rate.prefix '
+                'WHERE voipplan_id=%s '
+                'GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination')
 
             cursor.execute(sql_statement, [voipplan_id])
 

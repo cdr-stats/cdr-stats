@@ -65,16 +65,17 @@ urlpatterns = patterns('',
     (r'^admin_tools/', include('admin_tools.urls')),
 
     (r'^api/', include(tastypie_api.urls)),
-    
+
     #Add VoIP Billing
     (r'^voip_billing/', include('voip_billing.urls')),
 
     # Serve static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
-                        {'document_root': settings.STATIC_ROOT}),
+        {'document_root': settings.STATIC_ROOT}),
 
-    (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', \
-                            {'url': 'static/cdr_stats/images/favicon.ico'}),
+    (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to',
+        {'url': 'static/cdr_stats/images/favicon.ico'}),
+
     (r'^%s/' % settings.DAJAXICE_MEDIA_PREFIX, include('dajaxice.urls')),
 )
 
