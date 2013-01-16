@@ -14,21 +14,13 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.conf.urls import url
-from django.contrib.auth.models import User
-from django.db import connection
-
 from tastypie.resources import ModelResource
 from tastypie.authentication import BasicAuthentication
 from tastypie.authorization import Authorization
-
 from tastypie.throttle import BaseThrottle
 from tastypie.exceptions import BadRequest, ImmediateHttpResponse
-from tastypie.validation import Validation
 from tastypie import http
-from api.resources import IpAddressAuthorization, IpAddressAuthentication
-from voip_billing.models import VoIPRetailRate
-from voip_billing.function_def import prefix_allowed_to_voip_call, prefix_list_string,\
-    check_celeryd_process
+from voip_billing.function_def import check_celeryd_process
 from voip_billing.tasks import VoIPbilling
 from voip_report.models import VoIPCall, VoIPCall_Report
 from user_profile.models import UserProfile
@@ -68,7 +60,7 @@ class VoipCallBilledResource(ModelResource):
         return [
             url(r'^(?P<resource_name>%s)/$' % self._meta.resource_name,
                 self.wrap_view('create')),
-            ]
+        ]
 
     def create(self, request=None, **kwargs):
         """GET method of voip call get billed API"""
@@ -81,8 +73,7 @@ class VoipCallBilledResource(ModelResource):
         auth_result = self._meta.authorization.is_authorized(request, object)
 
         user_voip_plan = UserProfile.objects.get(user=request.user)
-        voipplan_id = user_voip_plan.voipplan_id #  1
-
+        voipplan_id = user_voip_plan.voipplan_id
 
         recipient_phone_no = request.POST.get('recipient_phone_no')
         sender_phone_no = request.POST.get('sender_phone_no')
@@ -121,7 +112,6 @@ class VoipCallBilledResource(ModelResource):
                 obj = voipcall._update_voip_call_status(res['voipcall_id'])
                 logger.debug('Voip Rate API : result ok 200')
 
-
                 result = []
                 modrecord = {}
                 modrecord['recipient_number'] = obj.recipient_number
@@ -138,5 +128,3 @@ class VoipCallBilledResource(ModelResource):
             error_msg = "Error"
             logger.error(error_msg)
             raise BadRequest(error_msg)
-
-
