@@ -94,6 +94,7 @@ class UserProfile(models.Model):
             ("by_country", _('Can view CDR country report')),
             ("world_map", _('Can view CDR world map')),
             ("mail_report", _('Can view CDR mail report')),
+            ("diagnostic", _('Can view diagnostic report'))
         )
         db_table = 'user_profile'
         verbose_name = _("User Profile")

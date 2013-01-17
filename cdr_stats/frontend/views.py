@@ -13,7 +13,7 @@
 #
 
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.views import password_reset, password_reset_done,\
     password_reset_confirm, password_reset_complete
 from django.http import HttpResponseRedirect
@@ -30,6 +30,7 @@ from cdr.import_cdr_freeswitch_mongodb import chk_ipaddress
 news_url = settings.NEWS_URL
 
 
+@permission_required('user_profile.diagnostic', login_url='/')
 @login_required
 def diagnostic(request):
     """
