@@ -11,14 +11,14 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.contrib.auth.models import User
-from django.test import TestCase
+
 from common.utils import BaseAuthenticatedClient
 from voip_gateway.models import Gateway, Provider
 from voip_billing.models import VoIPPlan
 from voip_report.models import VoIPCall, VoIPCall_Report
 from voip_billing.views import daily_billing_report, hourly_billing_report
 from user_profile.models import UserProfile
+from datetime import datetime
 
 
 class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):

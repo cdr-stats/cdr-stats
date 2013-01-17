@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 #
 # CDR-Stats License
 # http://www.cdr-stats.org
@@ -32,20 +30,18 @@ logger = logging.getLogger('cdr-stats.filelog')
 
 
 class VoipRateResource(ModelResource):
-    """API to bulk create cdr
+    """API to get voip call rate via dialcode or recipient_phone_no
 
     **Attributes**:
 
-        * ``accountcode`` -
-        * ``answer_uepoch`` -
-        * ``billmsec`` -
-
+        * ``dialcode`` -
+        * ``recipient_phone_no`` -
 
     **Create**:
 
          CURL Usage::
 
-             curl -u username:password -H 'Accept: application/json' http://localhost:8000/api/v1/voip_rate/code/34/?format=json
+             curl -u username:password -H 'Accept: application/json' http://localhost:8000/api/v1/voip_rate/dialcode/34/?format=json
 
                  or
 
@@ -104,15 +100,14 @@ class VoipRateResource(ModelResource):
         return [
             url(r'^(?P<resource_name>%s)/$' % self._meta.resource_name,
                 self.wrap_view('create')),
-            url(r'^(?P<resource_name>%s)/code/(.+)/$' % self._meta.resource_name,
+            url(r'^(?P<resource_name>%s)/dialcode/(.+)/$' % self._meta.resource_name,
                 self.wrap_view('create')),
             url(r'^(?P<resource_name>%s)/recipient_phone_no/(.+)/$' % self._meta.resource_name,
                 self.wrap_view('create')),
         ]
 
     def create(self, request=None, **kwargs):
-        #FIXME Comment is not correct
-        """GET method of Subscriber API"""
+        """API to get voip call rate via dialcode or recipient_phone_no"""
         logger.debug('Voip Rate GET API get called')
         auth_result = self._meta.authentication.is_authenticated(request)
         if not auth_result is True:
@@ -123,10 +118,10 @@ class VoipRateResource(ModelResource):
 
         user_voip_plan = UserProfile.objects.get(user=request.user)
         voipplan_id = user_voip_plan.voipplan_id
-        code = ''
+        dialcode = ''
         recipient_phone_no = ''
-        if '/code/' in request.META['PATH_INFO']:
-            code = request.META['PATH_INFO'].split('/api/v1/voip_rate/code/')[1].split('/')[0]
+        if '/dialcode/' in request.META['PATH_INFO']:
+            dialcode = request.META['PATH_INFO'].split('/api/v1/voip_rate/dialcode/')[1].split('/')[0]
         if '/recipient_phone_no/' in request.META['PATH_INFO']:
             recipient_phone_no = request.META['PATH_INFO']\
                 .split('/api/v1/voip_rate/recipient_phone_no/')[1]\
@@ -149,16 +144,15 @@ class VoipRateResource(ModelResource):
                 raise BadRequest(error_msg)
 
         cursor = connection.cursor()
-        #TODO: rename code to dialcode / in the api url too
-        if code:
+        if dialcode:
             try:
-                code = int(code)
+                dialcode = int(dialcode)
             except ValueError:
                 error_msg = "Wrong value for dialcode !"
                 logger.error(error_msg)
                 raise BadRequest(error_msg)
 
-            sqldialcode = str(code) + '%'
+            sqldialcode = str(dialcode) + '%'
             sql_statement = (
                 "SELECT voipbilling_voip_retail_rate.prefix, "
                 "Min(retail_rate) as minrate, dialcode_prefix.destination "
