@@ -34,7 +34,7 @@ from dateutil.relativedelta import relativedelta
 import time
 
 
-@permission_required('cdr_alert.view_alarm', login_url='/')
+@permission_required('cdr_alert.alert_settings', login_url='/')
 @login_required
 def alarm_list(request):
     """Alarm list for the logged in user
@@ -258,7 +258,7 @@ def last_seven_days_report(request, kwargs):
     return data
 
 
-@permission_required('cdr_alert.view_alarm_report', login_url='/')
+@permission_required('cdr_alert.alarm_report', login_url='/')
 @login_required
 def alert_report(request):
     """
@@ -341,6 +341,7 @@ def alert_report(request):
 
 
 @permission_required('cdr_alert.view_whitelist', login_url='/')
+@permission_required('cdr_alert.view_blacklist', login_url='/')
 @login_required
 def trust_control(request):
     #Blacklist, Whitelist

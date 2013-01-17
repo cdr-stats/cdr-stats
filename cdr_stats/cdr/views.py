@@ -226,7 +226,7 @@ def unset_session_var(request, field_list):
     return True
 
 
-@permission_required('user_profile.allow_cdr_view', login_url='/')
+@permission_required('user_profile.search', login_url='/')
 @check_cdr_exists
 @check_user_accountcode
 @login_required
@@ -700,7 +700,7 @@ def calculate_act_and_acd(total_calls, total_duration):
     return {'ACT': ACT, 'ACD': ACD}
 
 
-@permission_required('user_profile.allow_cdr_dashboard', login_url='/')
+@permission_required('user_profile.dashboard', login_url='/')
 @check_cdr_exists
 @check_user_accountcode
 @login_required
@@ -852,7 +852,7 @@ def cdr_dashboard(request):
            context_instance=RequestContext(request))
 
 
-@permission_required('user_profile.allow_cdr_concurrent_calls', login_url='/')
+@permission_required('user_profile.concurrent_calls', login_url='/')
 @check_cdr_exists
 @check_user_accountcode
 @login_required
@@ -921,7 +921,7 @@ def cdr_concurrent_calls(request):
            context_instance=RequestContext(request))
 
 
-@permission_required('user_profile.allow_cdr_realtime', login_url='/')
+@permission_required('user_profile.real_time_calls', login_url='/')
 @check_user_accountcode
 @login_required
 def cdr_realtime(request):
@@ -1094,7 +1094,7 @@ def get_userprofile(request):
     return user_profile
 
 
-@permission_required('user_profile.allow_mail_report', login_url='/')
+@permission_required('user_profile.mail_report', login_url='/')
 @check_cdr_exists
 @login_required
 def mail_report(request):
@@ -1186,7 +1186,7 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
     return variables
 
 
-@permission_required('user_profile.allow_hourly_report', login_url='/')
+@permission_required('user_profile.daily_comparison', login_url='/')
 @check_cdr_exists
 @check_user_accountcode
 @login_required
@@ -1337,7 +1337,7 @@ def cdr_report_by_hour(request):
                                 context_instance=RequestContext(request))
 
 
-@permission_required('user_profile.allow_cdr_overview', login_url='/')
+@permission_required('user_profile.overview', login_url='/')
 @check_cdr_exists
 @check_user_accountcode
 @login_required
@@ -1618,7 +1618,7 @@ def cdr_overview(request):
             context_instance=RequestContext(request))
 
 
-@permission_required('user_profile.allow_country_report', login_url='/')
+@permission_required('user_profile.by_country', login_url='/')
 @check_cdr_exists
 @check_user_accountcode
 @login_required
@@ -1793,7 +1793,7 @@ def cdr_country_report(request):
         context_instance=RequestContext(request))
 
 
-@permission_required('user_profile.allow_world_map', login_url='/')
+@permission_required('user_profile.world_map', login_url='/')
 @check_cdr_exists
 @check_user_accountcode
 @login_required

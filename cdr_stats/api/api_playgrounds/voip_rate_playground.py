@@ -31,7 +31,7 @@ class VoipRateAPIPlayground(APIPlayground):
                     },
                     {
                         "method": "GET",
-                        "url": "/api/v1/voip_rate/code/{prefix-code}/",
+                        "url": "/api/v1/voip_rate/dialcode/{dialcode}/",
                         "description": "Returns a specific rate for prefix"
                     },
                     {
