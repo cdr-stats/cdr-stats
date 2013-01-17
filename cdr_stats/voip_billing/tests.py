@@ -26,10 +26,14 @@ class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):
     Test cases for voip_billing Admin Interface.
     """
     fixtures = ['auth_user.json', 'country_dialcode.json',
-                '2_example_voipplan.json', '3_example_voipcarrierplan.json',
-                '4_example_voipcarrier_rate.json', '5_example_voipretailplan.json',
-                '6_example_voipretailrate.json', '7_example_voipplan_voipretail_plan.json',
-                '8_example_voipplan_voipcarrierplan.json', ]
+                'voip_gateway.json', 'voip_provider.json'
+                '2_example_voipplan.json',
+		        '3_example_voipcarrierplan.json',
+                '4_example_voipcarrier_rate.json',
+                '8_example_voipplan_voipcarrierplan.json'
+                '5_example_voipretailplan.json',
+                '7_example_voipplan_voipretail_plan.json'
+                '6_example_voipretailrate.json',]
 
     def test_admin_voip_billing(self):
         """
@@ -42,11 +46,7 @@ class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):
 
         response = self.client.get('/admin/voip_billing/voipcarrierplan/')
         self.failUnlessEqual(response.status_code, 200)
-        response = self.client.post('/admin/voip_billing/voipcarrierplan/add/',
-            {'name': 'Test', 'description': 'XYZ', 'metric': '1',
-             'messagesent': 'x', 'voip_provider_id': '1'}, **self.extra)
-        self.assertEqual(response.status_code, 200)
-
+        
         response = self.client.get('/admin/voip_billing/voipcarrierrate/')
         self.failUnlessEqual(response.status_code, 200)
         response = self.client.get('/admin/voip_billing/voipcarrierrate/import_cr/')
@@ -56,11 +56,7 @@ class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):
 
         response = self.client.get('/admin/voip_billing/voipretailplan/')
         self.failUnlessEqual(response.status_code, 200)
-        response = self.client.post('/admin/voip_billing/voipretailplan/add/',
-            {'name': 'Test', 'description': 'XYZ', 'metric': '1',
-             'voip_plan': '1'}, **self.extra)
-
-        self.assertEqual(response.status_code, 200)
+        
         response = self.client.get('/admin/voip_billing/voipretailrate/')
         self.failUnlessEqual(response.status_code, 200)
         response = self.client.get('/admin/voip_billing/voipretailrate/import_rr/')
@@ -70,29 +66,26 @@ class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):
 
         response = self.client.get('/admin/voip_billing/voipplan/')
         self.failUnlessEqual(response.status_code, 200)
-        response = self.client.post('/admin/voip_billing/voipplan/add/',
-            {'name': 'TEST', 'pubname': 'TT', 'lcrtype': '1', }, **self.extra)
-        self.assertEqual(response.status_code, 200)
-        response = self.client.post('/admin/voip_billing/voipplan/simulator/',
-            {'destination_no': '123456789', 'plan_id': 1}, **self.extra)
-        self.assertEqual(response.status_code, 200)
+                
         response = self.client.get('/admin/voip_billing/voipplan/export/')
         self.failUnlessEqual(response.status_code, 200)
-        response = self.client.post('/admin/voip_billing/voipplan/export/',
-            {'plan_id': 1}, **self.extra)
-        self.assertEqual(response.status_code, 200)
-        
+
+
 
 class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
     """
     Test cases for voip_billing Customer Interface.
     """
-    fixtures = ['auth_user.json', 'user_profile.json', 'country_dialcode.json',
+    fixtures = ['auth_user.json', 'country_dialcode.json',
                 'voip_gateway.json', 'voip_provider.json'
-                '2_example_voipplan.json', '3_example_voipcarrierplan.json',
-                '4_example_voipcarrier_rate.json', '5_example_voipretailplan.json',
-                '6_example_voipretailrate.json', '7_example_voipplan_voipretail_plan.json',
-                '8_example_voipplan_voipcarrierplan.json']
+                '2_example_voipplan.json',
+                '3_example_voipcarrierplan.json',
+                '4_example_voipcarrier_rate.json',
+                '8_example_voipplan_voipcarrierplan.json'
+                '5_example_voipretailplan.json',
+                '7_example_voipplan_voipretail_plan.json'
+                '6_example_voipretailrate.json',
+                'user_profile.json',]
 
     def test_retail_rate_view(self):
         """
@@ -108,8 +101,8 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         Test Function to check VoIP Call simulator
         """
         response = self.client.post('/voip_billing/simulator/',
-                   data={'destination_no': '123456789',
-                         'plan_id': 1})
+            data={'destination_no': '123456789',
+                  'plan_id': 1})
         self.assertEqual(response.status_code, 200)
         response = self.client.get('/voip_billing/simulator/')
         self.assertEqual(response.status_code, 200)
@@ -150,21 +143,25 @@ class VoipBillingCheckTestCase(BaseAuthenticatedClient):
     """
     Test cases for VoIP billing Calculation.
     """
-    fixtures = ['auth_user.json', 'user_profile.json', 'country_dialcode.json',
+    fixtures = ['auth_user.json', 'country_dialcode.json',
                 'voip_gateway.json', 'voip_provider.json'
-                '2_example_voipplan.json', '3_example_voipcarrierplan.json',
-                '4_example_voipcarrier_rate.json', '5_example_voipretailplan.json',
-                '6_example_voipretailrate.json', '7_example_voipplan_voipretail_plan.json',
-                '8_example_voipplan_voipcarrierplan.json']
+                '2_example_voipplan.json',
+                '3_example_voipcarrierplan.json',
+                '4_example_voipcarrier_rate.json',
+                '8_example_voipplan_voipcarrierplan.json'
+                '5_example_voipretailplan.json',
+                '7_example_voipplan_voipretail_plan.json'
+                '6_example_voipretailrate.json',
+                'user_profile.json',]
 
     def test_check_voip_bill(self):
         """
         To check billing calculation
         """
         voipcall = VoIPCall.objects.create(recipient_number='44650355212',
-                                callid=1,
-                                callerid='32650841345',)
-        
+            callid=1,
+            callerid='32650841345',)
+
         voipcall.save()
         voipcall_report = VoIPCall_Report()
         response = voipcall_report._bill(voipcall_id=voipcall.id, voipplan_id=1)
