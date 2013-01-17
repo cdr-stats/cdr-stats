@@ -116,8 +116,13 @@ class VoipRateResource(ModelResource):
         logger.debug('Voip Rate GET API authorization called!')
         auth_result = self._meta.authorization.is_authorized(request, object)
 
-        user_voip_plan = UserProfile.objects.get(user=request.user)
-        voipplan_id = user_voip_plan.voipplan_id
+        user_profile = UserProfile.objects.get(user=request.user)
+        voipplan_id = user_profile.voipplan_id
+        if voipplan_id is None:
+            error_msg = "User is not attached with voip plan \n"
+            logger.error(error_msg)
+            raise BadRequest(error_msg)
+
         dialcode = ''
         recipient_phone_no = ''
         if '/dialcode/' in request.META['PATH_INFO']:

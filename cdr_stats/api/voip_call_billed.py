@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 #
 # CDR-Stats License
 # http://www.cdr-stats.org
@@ -30,13 +28,14 @@ logger = logging.getLogger('cdr-stats.filelog')
 
 
 class VoipCallBilledResource(ModelResource):
-    """API to bulk create cdr
+    """API to create voip cdr record and bill it
 
     **Attributes**:
 
-        * ``accountcode`` -
-        * ``answer_uepoch`` -
-        * ``billmsec`` -
+        * ``recipient_phone_no`` -
+        * ``sender_phone_no`` -
+        * ``disposition`` -
+        * ``call_date`` -
 
 
     **Create**:
@@ -63,7 +62,7 @@ class VoipCallBilledResource(ModelResource):
         ]
 
     def create(self, request=None, **kwargs):
-        """GET method of voip call get billed API"""
+        """Create voip call record and bill it API"""
         logger.debug('Voip call billed API get called')
         auth_result = self._meta.authentication.is_authenticated(request)
         if not auth_result is True:
@@ -72,8 +71,12 @@ class VoipCallBilledResource(ModelResource):
         logger.debug('Voip call billed API authorization called!')
         auth_result = self._meta.authorization.is_authorized(request, object)
 
-        user_voip_plan = UserProfile.objects.get(user=request.user)
-        voipplan_id = user_voip_plan.voipplan_id
+        user_profile = UserProfile.objects.get(user=request.user)
+        voipplan_id = user_profile.voipplan_id
+        if voipplan_id is None:
+            error_msg = "User is not attached with voip plan \n"
+            logger.error(error_msg)
+            raise BadRequest(error_msg)
 
         recipient_phone_no = request.POST.get('recipient_phone_no')
         sender_phone_no = request.POST.get('sender_phone_no')
