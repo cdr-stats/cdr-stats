@@ -349,7 +349,7 @@
                         {% endifequal %}
 
                         {% if "cdr_object_id" in row %}
-                            {% if perms.user_profile.allow_cdr_detail %}
+                            {% if perms.user_profile.cdr_detail %}
                                 <a data-toggle="modal" href="#modal-create-{{ row.cdr_object_id }}" class="ajax-modal-{{ row.cdr_object_id }}" url='/cdr_detail/{{ row.cdr_object_id }}/{{ row.switch_id }}' data-controls-modal='modal-create-content-{{ row.cdr_object_id }}'><img src="{{STATIC_URL}}cdr-stats/icons/zoom.png" class="elemtooltip" title="{% trans "Show details" %}"/></a>
                             {% endif %}
                         {% endif %}

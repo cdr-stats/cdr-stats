@@ -604,7 +604,7 @@ def cdr_export_to_csv(request):
     return response
 
 
-@permission_required('user_profile.allow_cdr_detail', login_url='/')
+@permission_required('user_profile.cdr_detail', login_url='/')
 @login_required
 def cdr_detail(request, id, switch_id):
     """Detail of Call

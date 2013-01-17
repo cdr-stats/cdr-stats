@@ -19,7 +19,7 @@
           {% if user.is_authenticated %}
             <ul class="nav">
               {% if perms.user_profile.dashboard %}
-                <li {% ifequal module 'cdr_dashboard' %}class="active"{% endifequal %}><a href="/dashboard/">{% trans "Dashboard" %}</a></li>
+                <li {% ifequal module 'dashboard' %}class="active"{% endifequal %}><a href="/dashboard/">{% trans "Dashboard" %}</a></li>
               {% endif %}
             </ul>
             <ul class="nav pull-left">
@@ -27,10 +27,10 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Analytics" %}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   {% if perms.user_profile.overview %}
-                    <li {% ifequal module 'cdr_overview' %}class="active"{% endifequal %}><a href="/cdr_overview/">{% trans "overview"|title %}</a></li>
+                    <li {% ifequal module 'overview' %}class="active"{% endifequal %}><a href="/cdr_overview/">{% trans "overview"|title %}</a></li>
                   {% endif %}
                   {% if perms.user_profile.search %}
-                    <li {% ifequal module 'cdr_view' %}class="active"{% endifequal %}><a href="/cdr_view/">{% trans "search"|title %}</a></li>
+                    <li {% ifequal module 'search' %}class="active"{% endifequal %}><a href="/cdr_view/">{% trans "search"|title %}</a></li>
                   {% endif %}
                   {% if perms.user_profile.daily_comparison %}
                     <li {% ifequal module 'cdr_report_by_hour' %}class="active"{% endifequal %}><a href="/hourly_report/">{% trans "daily comparison"|title %}</a></li>
