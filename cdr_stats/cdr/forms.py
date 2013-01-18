@@ -73,7 +73,7 @@ class SearchForm(forms.Form):
     Form used to search on general parameters in the Customer UI.
     """
 
-    caller = forms.CharField(label=_('Caller ID'), required=False)
+    caller = forms.CharField(label=_('CallerID Number'), required=False)
     caller_type = forms.ChoiceField(label='', required=False,
                                     choices=list(STRING_SEARCH_TYPE_LIST))
     caller_type.widget.attrs['class'] = 'input-small'
