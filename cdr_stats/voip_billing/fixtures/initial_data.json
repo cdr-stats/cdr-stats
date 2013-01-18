@@ -1,0 +1,147 @@
+[
+   {
+      "pk":1,
+      "model":"voip_billing.voipplan",
+      "fields":{
+         "lcrtype":0,
+         "updated_date":"2010-12-10 10:32:35",
+         "pubname":"voipplan default",
+         "name":"voipPlan Default",
+         "created_date":"2010-12-10 06:59:12"
+      }
+   },
+   
+   {
+      "pk":1,
+      "model":"voip_billing.voipcarrierplan",
+      "fields":{
+         "callsent":1,
+         "updated_date":"2010-12-10 10:33:44",
+         "name":"Carrier Plan Default",
+         "metric":10,
+         "voip_provider_id":1,
+         "created_date":"2010-12-10 07:00:12",
+         "description":"Carrier Plan Default"
+      }
+   },
+   
+   {
+      "pk":1,
+      "model":"voip_billing.voipcarrierrate",
+      "fields":{
+         "updated_date":"2010-12-10 10:38:42",
+         "prefix":34,
+         "created_date":"2010-12-10 07:00:27",
+         "carrier_rate":"0.029",
+         "voip_carrier_plan_id":1
+      }
+   },
+   {
+      "pk":2,
+      "model":"voip_billing.voipcarrierrate",
+      "fields":{
+         "updated_date":"2010-12-10 10:40:30",
+         "prefix":32,
+         "created_date":"2010-12-10 10:40:30",
+         "carrier_rate":"0.062",
+         "voip_carrier_plan_id":1
+      }
+   },
+   {
+      "pk":3,
+      "model":"voip_billing.voipcarrierrate",
+      "fields":{
+         "updated_date":"2010-12-10 10:42:17",
+         "prefix":33,
+         "created_date":"2010-12-10 10:42:17",
+         "carrier_rate":"0.082",
+         "voip_carrier_plan_id":1
+      }
+   },
+   {
+      "pk":4,
+      "model":"voip_billing.voipcarrierrate",
+      "fields":{
+         "updated_date":"2010-12-10 10:42:52",
+         "prefix":39,
+         "created_date":"2010-12-10 10:42:52",
+         "carrier_rate":"0.06",
+         "voip_carrier_plan_id":1
+      }
+   },
+   {
+      "pk":1,
+      "model":"voip_billing.voipretailplan",
+      "fields":{
+         "updated_date":"2010-12-10 10:33:09",
+         "metric":10,
+         "created_date":"2010-12-10 06:59:30",
+         "name":"Retail Plan Default",
+         "description":"Retail Plan Default"
+      }
+   },
+   {
+      "pk":1,
+      "model":"voip_billing.voipretailrate",
+      "fields":{
+         "updated_date":"2010-12-10 10:38:58",
+         "prefix":34,
+         "created_date":"2010-12-10 06:59:45",
+         "retail_rate":"0.035",
+         "voip_retail_plan_id":1
+      }
+   },
+   {
+      "pk":2,
+      "model":"voip_billing.voipretailrate",
+      "fields":{
+         "updated_date":"2010-12-10 10:41:00",
+         "prefix":32,
+         "created_date":"2010-12-10 09:49:49",
+         "retail_rate":"0.0744",
+         "voip_retail_plan_id":1
+      }
+   },
+   {
+      "pk":3,
+      "model":"voip_billing.voipretailrate",
+      "fields":{
+         "updated_date":"2010-12-10 10:42:32",
+         "prefix":33,
+         "created_date":"2010-12-10 09:50:40",
+         "retail_rate":"0.0984",
+         "voip_retail_plan_id":1
+      }
+   },
+   {
+      "pk":4,
+      "model":"voip_billing.voipretailrate",
+      "fields":{
+         "updated_date":"2010-12-10 10:43:41",
+         "prefix":39,
+         "created_date":"2010-12-10 09:52:12",
+         "retail_rate":"0.072",
+         "voip_retail_plan_id":1
+      }
+   },
+   
+   {
+      "pk":1,
+      "model":"voip_billing.voipplan_voipretailplan",
+      "fields":{
+         "voipplan":1,
+         "voipretailplan":1,
+         "created_date":"2010-12-14 08:30:22"
+      }
+   },
+   
+   {
+      "pk":1,
+      "model":"voip_billing.voipplan_voipcarrierplan",
+      "fields":{
+         "voipplan":1,
+         "voipcarrierplan":1,
+         "created_date":"2010-12-14 08:30:38"
+      }
+   }
+]
