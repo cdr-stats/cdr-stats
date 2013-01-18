@@ -16,6 +16,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.views.decorators.cache import cache_page
 from django.shortcuts import render_to_response
 from django.conf import settings
+from django.utils.translation import gettext as _
 from django.template.context import RequestContext
 from voip_billing.models import VoIPRetailRate
 from voip_billing.forms import PrefixRetailRrateForm, SimulatorForm, BillingForm,\
@@ -56,39 +57,36 @@ def simulator(request):
     To view rate according to VoIP Plan & Destination No.
     """
     template = 'voip_billing/simulator.html'
-    # Assign form field value to local variable
-    destination_no = variable_value(request, "destination_no")
-
-    # Get SMS Plan ID according to USER
-    dt = UserProfile.objects.get(user=request.user)
-    voipplan_id = dt.voipplan_id #  variable_value(request, "plan_id")
-    error = ""
+    error_msg = ""
     data = []
-
     form = SimulatorForm(request.user)
+    # Get SMS Plan ID according to USER
+    try:
+        dt = UserProfile.objects.get(user=request.user)
+        voipplan_id = dt.voipplan_id #  variable_value(request, "plan_id")
 
-    if request.method == 'POST':
-        form = SimulatorForm(request.user, request.POST)
-        if form.is_valid():
-            # IS recipient_phone_no/destination no is valid prefix
-            # (Not banned Prefix) ?
-            destination_no = request.POST.get("destination_no")
-
-            allowed = prefix_allowed_to_call(destination_no, voipplan_id)
-
-            if allowed:
-                query = rate_engine(destination_no=destination_no, voipplan_id=voipplan_id)
-                for i in query:
-                    r_r_plan = VoIPRetailRate.objects.get(id=i.rrid)
-                    data.append((voipplan_id,
-                                 r_r_plan.voip_retail_plan_id.name,
-                                 i.retail_rate))
+        if request.method == 'POST':
+            form = SimulatorForm(request.user, request.POST)
+            if form.is_valid():
+                # IS recipient_phone_no/destination no is valid prefix
+                # (Not banned Prefix) ?
+                destination_no = request.POST.get("destination_no")
+                allowed = prefix_allowed_to_call(destination_no, voipplan_id)
+                if allowed:
+                    query = rate_engine(destination_no=destination_no, voipplan_id=voipplan_id)
+                    for i in query:
+                        r_r_plan = VoIPRetailRate.objects.get(id=i.rrid)
+                        data.append((voipplan_id,
+                                     r_r_plan.voip_retail_plan_id.name,
+                                     i.retail_rate))
+    except:
+        error_msg = _('User is not attached with voip plan')
 
     data = {
         'module': current_view(request),
         'form': form,
         'data': data,
-        'error': error,
+        'error_msg': error_msg,
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))

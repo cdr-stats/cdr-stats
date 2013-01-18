@@ -124,11 +124,14 @@ def prefix_allowed_to_call(destination_number, voipplan_id):
     """
     destination_prefix_list = prefix_list_string(destination_number)
 
-    # Cache the query set of banned prefix
-    banned_prefix_list = cache.get('banned_prefix_list')
-    if banned_prefix_list is None:
+    # Cache the voipplan_id & banned_prefix query set
+    cache_voipplan_id = cache.get('cache_voipplan_id')
+    if cache_voipplan_id is None:
         banned_prefix_list = banned_prefix_qs(voipplan_id)
         cache.set("banned_prefix_list", banned_prefix_list, 60)
+        cache.set("cache_voipplan_id", voipplan_id, 60)
+    else:
+        banned_prefix_list = cache.get('banned_prefix_list')
 
     flag = False
     for j in eval(destination_prefix_list):

@@ -7,18 +7,30 @@
 
 {% block content %}
 
-<form class="well" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
-    {% for field in form %}
+<form class="well" method="POST" action="." enctype="multipart/form-data">
+    {% csrf_token %}
     <div class="row">
-        <div class="span4">
-            <label class="control-label" for="{{ field.auto_id }}">{{ field.label }}</label>
-            <div class="input">
-                {{ field }}
-                <span class="help-block">{{ field.help_text|safe }} </span>
+        <div class="span12">
+            <div class="row">
+                <div class="span4">
+                    <label class="control-label" for="{{ form.destination_no.auto_id }}">{{ form.destination_no.label }}</label>
+                    <div class="input">
+                        {{ form.destination_no }}
+                        <span class="help-block">{{ form.destination_no.help_text|safe }} </span>
+                    </div>
+                </div>
+                {% if user.is_superuser %}
+                <div class="span4">
+                    <label class="control-label" for="{{ form.plan_id.auto_id }}">{{ form.plan_id.label }}</label>
+                    <div class="input">
+                        {{ form.plan_id }}
+                        <span class="help-block">{{ form.plan_id.help_text|safe }} </span>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
-    {% endfor %}
     <label></label>
     <div class="actions">
         <input class="btn btn-primary" id="simulator" type="submit" value="{% trans "Submit" %}" />
