@@ -14,6 +14,7 @@
 from django.conf import settings
 from django.core.cache import cache
 from country_dialcode.models import Prefix
+from cdr.functions_def import prefix_list_string
 from voip_billing.models import VoIPPlan, VoIPRetailPlan,\
     VoIPCarrierPlan
 # from voip_billing.models import VoIPRetailRate, VoIPCarrierRate
@@ -61,26 +62,6 @@ def prfix_list():
     list = Prefix.objects.all()
     LIST = map(lambda x: (int(x.prefix), int(x.prefix)), list)
     return LIST
-
-
-def prefix_list_string(phone_number):
-    """
-    To return prefix string
-    For Example :-
-    phone_no = 34650784355
-    prefix_string = (34650, 3465, 346, 34)
-    """
-    phone_number = str(phone_number)
-    prefix_range = range(settings.PREFIX_LIMIT_MIN,
-                         settings.PREFIX_LIMIT_MAX + 1)
-    prefix_range.reverse()
-    destination_prefix_list = ''
-    for i in prefix_range:
-        if i == settings.PREFIX_LIMIT_MIN:
-            destination_prefix_list = destination_prefix_list + phone_number[0:i]
-        else:
-            destination_prefix_list = destination_prefix_list + phone_number[0:i] + ', '
-    return str(destination_prefix_list)
 
 
 def rate_range():

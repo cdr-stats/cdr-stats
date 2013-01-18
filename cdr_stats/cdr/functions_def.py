@@ -149,8 +149,8 @@ def prefix_list_string(phone_number):
     except ValueError:
         return False
     phone_number = str(phone_number)
-    prefix_range = range(settings.PREFIX_LIMIT_MIN, settings.PREFIX_LIMIT_MAX
-                         + 1)
+    prefix_range = range(settings.PREFIX_LIMIT_MIN,
+                         settings.PREFIX_LIMIT_MAX + 1)
     prefix_range.reverse()
     destination_prefix_list = ''
     for i in prefix_range:
