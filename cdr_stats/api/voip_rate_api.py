@@ -21,6 +21,7 @@ from tastypie.authorization import Authorization
 from tastypie.throttle import BaseThrottle
 from tastypie.exceptions import BadRequest, ImmediateHttpResponse
 from tastypie import http
+from api.resources import IpAddressAuthentication
 from voip_billing.models import VoIPRetailRate
 from voip_billing.function_def import prefix_allowed_to_call, prefix_list_string
 from user_profile.models import UserProfile
@@ -90,23 +91,23 @@ class VoipRateResource(ModelResource):
     class Meta:
         resource_name = 'voip_rate'
         authorization = Authorization()
-        authentication = BasicAuthentication()
-        allowed_methods = ['post']
-        detail_allowed_methods = ['post']
+        authentication = IpAddressAuthentication()
+        allowed_methods = ['get']
+        detail_allowed_methods = ['get']
         throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
 
     def override_urls(self):
         """Override urls"""
         return [
             url(r'^(?P<resource_name>%s)/$' % self._meta.resource_name,
-                self.wrap_view('create')),
+                self.wrap_view('read')),
             url(r'^(?P<resource_name>%s)/dialcode/(.+)/$' % self._meta.resource_name,
-                self.wrap_view('create')),
+                self.wrap_view('read')),
             url(r'^(?P<resource_name>%s)/recipient_phone_no/(.+)/$' % self._meta.resource_name,
-                self.wrap_view('create')),
+                self.wrap_view('read')),
         ]
 
-    def create(self, request=None, **kwargs):
+    def read(self, request=None, **kwargs):
         """API to get voip call rate via dialcode or recipient_phone_no"""
         logger.debug('Voip Rate GET API get called')
         auth_result = self._meta.authentication.is_authenticated(request)

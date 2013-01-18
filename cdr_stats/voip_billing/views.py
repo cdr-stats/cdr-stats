@@ -34,7 +34,7 @@ import time
 
 
 @login_required
-@cache_page(60 * 5)
+#@cache_page(60 * 5)
 def retail_rate_view(request):
     """
     All Retail Rates are displayed & according to Destination No

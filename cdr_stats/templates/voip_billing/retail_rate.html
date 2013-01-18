@@ -38,7 +38,7 @@
             return false;
           }
           $.ajax({
-               url: "http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/api/v1/voip_rate/code/" + String(document.getElementById('id_prefix').value) + "/?format=json",
+               url: "http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/api/v1/voip_rate/dialcode/" + String(document.getElementById('id_prefix').value) + "/?format=json",
                type: "GET",
                dataType: "json",
                //timeout: 30000,
@@ -53,8 +53,6 @@
                    alert("Request failed");
                }
            });
-    
-
        });
 
        $("#clear_search_prefix").click(function() {
@@ -65,10 +63,10 @@
        });
     });
 
-    //$.getJSON("http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/api/v1/voip_rate/?format=json",
-    //       function(json) {
-    //         data_into_table(json);
-    //});
+    $.getJSON("http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/api/v1/voip_rate/?format=json",
+           function(json) {
+             data_into_table(json);
+    });
 
     function isEmpty(obj) {
         for(var prop in obj) {
@@ -98,6 +96,7 @@
     <label></label>
     <div class="actions">
         <input class="btn btn-primary" id="search_prefix" type="button" value="{% trans "Search" %}" />
+        <input class="btn btn-danger" id="clear_search_prefix" type="button" value="{% trans "Clear" %}" />
     </div>
 </form>
 <p>&nbsp;</p>
