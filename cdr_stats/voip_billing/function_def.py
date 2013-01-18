@@ -11,28 +11,12 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.conf import settings
+
 from django.core.cache import cache
 from country_dialcode.models import Prefix
 from cdr.functions_def import prefix_list_string
-from voip_billing.models import VoIPPlan, VoIPRetailPlan,\
-    VoIPCarrierPlan
 # from voip_billing.models import VoIPRetailRate, VoIPCarrierRate
 import os
-
-
-def plan_list(name):
-    """
-    Return List of Carrier/Retail/VoIP Plans
-    """
-    list = ()
-    if name == "carrier":
-        list = VoIPCarrierPlan.objects.all()
-    if name == "retail":
-        list = VoIPRetailPlan.objects.all()
-    if name == "voip":
-        list = VoIPPlan.objects.all()
-    return ((l.id, l.name) for l in list)
 
 
 def rate_filter_range_field_chk(rate, rate_range, field_name):

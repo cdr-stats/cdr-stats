@@ -14,8 +14,30 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from common.common_functions import isint
-from voip_billing.function_def import plan_list, rate_range
+from voip_billing.function_def import rate_range
+from voip_billing.models import VoIPPlan, VoIPRetailPlan,\
+    VoIPCarrierPlan
 from cdr.forms import sw_list_with_all
+
+
+def voip_plan_list():
+    """
+    Return List of VoIP Plans
+    """
+    list = VoIPPlan.objects.all()
+    return ((l.id, l.name) for l in list)
+
+
+def carrier_plan_list():
+    """List all carrier plan"""
+    list = VoIPCarrierPlan.objects.all()
+    return ((l.id, l.name) for l in list)
+
+
+def retail_plan_list():
+    """List all retail plan"""
+    list = VoIPRetailPlan.objects.all()
+    return ((l.id, l.name) for l in list)
 
 
 class FileImport(forms.Form):
@@ -43,25 +65,24 @@ class RetailRate_fileImport(FileImport):
     """
     Admin Form : Import CSV file with Retail Plan
     """
-    plan_id = forms.ChoiceField(label=_("Retail Plan"),
-                                choices=plan_list("retail"), required=False,
-                                help_text=_("Select Retail Plan"))
+    plan_id = forms.ChoiceField(label=_("Retail Plan"), required=False,
+        choices=retail_plan_list(), help_text=_("Select Retail Plan"))
 
 
 class CarrierRate_fileImport(FileImport):
     """
     Admin Form : Import CSV file with Carrier Plan
     """
-    plan_id = forms.ChoiceField(label=_("Carrier Plan"),
-                                choices=plan_list("carrier"), required=False,
+    plan_id = forms.ChoiceField(label=_("Carrier Plan"), required=False,
+                                choices=carrier_plan_list(),
                                 help_text=_("Select Carrier Plan"))
     chk = forms.BooleanField(label=_("Make Retail Plan"), required=False,
                         help_text=_("Select if you want to make retail plan"))
-    retail_plan_id = forms.ChoiceField(label=_("Retail Plan"),
-                                choices=plan_list("retail"), required=False,
+    retail_plan_id = forms.ChoiceField(label=_("Retail Plan"), required=False,
+                                choices=retail_plan_list(),
                                 help_text=_("Select Retail Plan"))
-    profit_percentage = forms.CharField(label=_("Profit in % :"),
-                    widget=forms.TextInput(attrs={'size': 3}), required=False,
+    profit_percentage = forms.CharField(label=_("Profit in % :"), required=False,
+                    widget=forms.TextInput(attrs={'size': 3}),
                     help_text=_("Enter digit without %"))
 
     def clean_profit_percentage(self):
@@ -83,7 +104,7 @@ class Carrier_Rate_fileExport(forms.Form):
     Admin Form : Carrier Rate Export
     """
     plan_id = forms.ChoiceField(label=_("Carrier Plan"),
-                                choices=plan_list("carrier"), required=False)
+                                choices=carrier_plan_list(), required=False)
 
 
 class Retail_Rate_fileExport(forms.Form):
@@ -91,14 +112,14 @@ class Retail_Rate_fileExport(forms.Form):
     Admin Form : Retail Rate Export
     """
     plan_id = forms.ChoiceField(label=_("Retail Plan"),
-                                choices=plan_list("retail"), required=False)
+                                choices=retail_plan_list(), required=False)
 
 class VoIPPlan_fileExport(forms.Form):
     """
     Admin Form : VoIP Plan Export
     """
     plan_id = forms.ChoiceField(label=_("VoIP Plan"),
-                    choices=plan_list("voip"), required=False,
+                    choices=voip_plan_list(), required=False,
                     help_text=_('This will export the VoIPPlan using '\
                     'LCR on each prefix-rate tuple'))
 
@@ -106,7 +127,7 @@ class PrefixRetailRrateForm(forms.Form):
     """
     Client Form : To know Retail Rate for prefix
     """
-    prefix = forms.CharField(label=_("Enter Prefix :"),
+    prefix = forms.CharField(label=_("Enter Prefix"),
                    widget=forms.TextInput(attrs={'size': 15}), required=False)
 
 
@@ -146,7 +167,7 @@ class SimulatorForm(SendVoIPForm):
     Admin/Client Form : To Simulator
     """
     plan_id = forms.ChoiceField(label=_("VoIP Plan"),
-                                choices=plan_list("voip"), required=False)
+                                choices=voip_plan_list(), required=False)
 
     def __init__(self, user, *args, **kwargs):
         super(SimulatorForm, self).__init__(*args, **kwargs)
