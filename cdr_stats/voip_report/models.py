@@ -12,7 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext as _
 from voip_gateway.models import Gateway
 from voip_billing.models import VoIPPlan, VoIPRetailRate, VoIPCarrierRate
 from country_dialcode.models import Prefix

@@ -11,13 +11,13 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.conf.urls import url
+
 from tastypie.resources import ModelResource
 from tastypie.authentication import BasicAuthentication
 from tastypie.authorization import Authorization
+from tastypie.validation import Validation
 from tastypie.throttle import BaseThrottle
-from tastypie.exceptions import BadRequest, ImmediateHttpResponse
-from tastypie import http
+
 from voip_billing.function_def import check_celeryd_process
 from voip_billing.tasks import VoIPbilling
 from voip_report.models import VoIPCall, VoIPCall_Report
@@ -25,6 +25,24 @@ from user_profile.models import UserProfile
 from datetime import datetime
 import logging
 logger = logging.getLogger('cdr-stats.filelog')
+
+
+class VoipCallBilledValidation(Validation):
+    """
+    Voip Call Billed Validation Class
+    """
+
+    def is_valid(self, bundle, request=None):
+        errors = {}
+        if not bundle.data:
+            errors['Data'] = ['Data set is empty']
+
+        user_profile = UserProfile.objects.get(user=request.user)
+        voipplan_id = user_profile.voipplan_id
+        if voipplan_id is None:
+            errors['user_error'] = ["User is not attached with voip plan"]
+
+        return errors
 
 
 class VoipCallBilledResource(ModelResource):
@@ -42,92 +60,74 @@ class VoipCallBilledResource(ModelResource):
 
          CURL Usage::
 
-             curl -u username:password --dump-header - -H "Content-Type:application/json" -X POST --data "recipient_phone_no=34657077888&sender_phone_no=919427164510&disposition=1&call_date=2013-01-11 11:11:22" http://localhost:8000/api/v1/voip_call_billed/
+             curl -u username:password --dump-header - -H "Content-Type:application/json" -X POST --data '{"recipient_phone_no": "34657077888", "sender_phone_no": "919427164510", "disposition": "1", "call_date": "2013-01-11 11:11:22"}' http://localhost:8000/api/v1/voip_call_billed/
 
          Response::
+
+            HTTP/1.0 201 CREATED
+            Date: Fri, 18 Jan 2013 08:09:53 GMT
+            Server: WSGIServer/0.1 Python/2.7.3
+            Vary: Accept-Language, Cookie
+            Content-Type: text/html; charset=utf-8
+            Location: http://localhost:8000/api/v1/voip_call_billed/None/
+            Content-Language: en-us
+
     """
     class Meta:
         resource_name = 'voip_call_billed'
+        queryset = VoIPCall_Report.objects.all()
         authorization = Authorization()
         authentication = BasicAuthentication()
         allowed_methods = ['post']
         detail_allowed_methods = ['post']
         throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
 
-    def override_urls(self):
-        """Override urls"""
-        return [
-            url(r'^(?P<resource_name>%s)/$' % self._meta.resource_name,
-                self.wrap_view('create')),
-        ]
+    def obj_create(self, bundle, request=None, **kwargs):
+        """
+        A ORM-specific implementation of ``obj_create``.
+        """
+        logger.debug('VoIPCall Report API get called')
 
-    def create(self, request=None, **kwargs):
-        """Create voip call record and bill it API"""
-        logger.debug('Voip call billed API get called')
-        auth_result = self._meta.authentication.is_authenticated(request)
-        if not auth_result is True:
-            raise ImmediateHttpResponse(response=http.HttpUnauthorized())
+        bundle.obj = self._meta.object_class()
+        bundle = self.full_hydrate(bundle)
 
-        logger.debug('Voip call billed API authorization called!')
-        auth_result = self._meta.authorization.is_authorized(request, object)
-
-        user_profile = UserProfile.objects.get(user=request.user)
-        voipplan_id = user_profile.voipplan_id
-        if voipplan_id is None:
-            error_msg = "User is not attached with voip plan \n"
-            logger.error(error_msg)
-            raise BadRequest(error_msg)
-
-        recipient_phone_no = request.POST.get('recipient_phone_no')
-        sender_phone_no = request.POST.get('sender_phone_no')
-        disposition_status = request.POST.get('disposition')
-        call_date = datetime.strptime(request.POST.get('call_date'),
+        recipient_phone_no = bundle.data.get('recipient_phone_no')
+        sender_phone_no = bundle.data.get('sender_phone_no')
+        disposition_status = bundle.data.get('disposition')
+        call_date = datetime.strptime(bundle.data.get('call_date'),
             '%Y-%m-%d %H:%M:%S')
 
-        try:
-            if check_celeryd_process():
-                # Create message record
-                voipcall = VoIPCall.objects.create(
-                    user=request.user,
-                    recipient_number=recipient_phone_no,
-                    callid=1,
-                    callerid=sender_phone_no,
-                    dnid=1,
-                    nasipaddress='0.0.0.0',
-                    sessiontime=1,
-                    sessiontime_real=1,
-                    disposition=disposition_status,)
+        voipplan_id = UserProfile.objects.get(user=request.user).voipplan_id
 
-                # Created task to bill VoIP Call
-                response = VoIPbilling.delay(voipcall_id=voipcall.id,
-                    voipplan_id=voipplan_id)
+        if check_celeryd_process():
+            # Create message record
+            voipcall = VoIPCall.objects.create(
+                user=request.user,
+                recipient_number=recipient_phone_no,
+                callid=1,
+                callerid=sender_phone_no,
+                dnid=1,
+                nasipaddress='0.0.0.0',
+                sessiontime=1,
+                sessiontime_real=1,
+                disposition=disposition_status,)
 
-                # Due to task, message_id is disconnected/blank
-                # So need to get back voipcall_id
-                res = response.get()
+            # Created task to bill VoIP Call
+            response = VoIPbilling.delay(voipcall_id=voipcall.id,
+                voipplan_id=voipplan_id)
 
-                # Created VoIPCall Report record gets created date
-                obj = VoIPCall_Report.objects.get(pk=res['voipcall_id'])
-                obj.created_date = call_date
-                obj.save()
+            # Due to task, message_id is disconnected/blank
+            # So need to get back voipcall_id
+            res = response.get()
 
-                # Call status get changed according to status filed
-                obj = voipcall._update_voip_call_status(res['voipcall_id'])
-                logger.debug('Voip Rate API : result ok 200')
+            # Created VoIPCall Report record gets created date
+            obj = VoIPCall_Report.objects.get(pk=res['voipcall_id'])
+            obj.created_date = call_date
+            obj.save()
 
-                result = []
-                modrecord = {}
-                modrecord['recipient_number'] = obj.recipient_number
-                modrecord['disposition'] = obj.disposition
-                modrecord['id'] = obj.id
-                result.append(modrecord)
-                return self.create_response(request, result)
+            # Call status get changed according to status filed
+            obj = voipcall._update_voip_call_status(res['voipcall_id'])
+            logger.debug('VoIPCall Report API : result ok 200')
 
-            else:
-                error_msg = "Error : Please Start Celeryd Service"
-                logger.error(error_msg)
-                raise BadRequest(error_msg)
-        except:
-            error_msg = "Error"
-            logger.error(error_msg)
-            raise BadRequest(error_msg)
+        logger.debug('VoIPCall Report API : result ok 200')
+        return obj

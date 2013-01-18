@@ -27,13 +27,7 @@ class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):
     """
     fixtures = ['auth_user.json', 'country_dialcode.json',
                 'voip_gateway.json', 'voip_provider.json'
-                '2_example_voipplan.json',
-		        '3_example_voipcarrierplan.json',
-                '4_example_voipcarrier_rate.json',
-                '8_example_voipplan_voipcarrierplan.json'
-                '5_example_voipretailplan.json',
-                '7_example_voipplan_voipretail_plan.json'
-                '6_example_voipretailrate.json',]
+                'inintal_data.json', 'user_profile.json']
 
     def test_admin_voip_billing(self):
         """
