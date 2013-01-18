@@ -37,6 +37,7 @@
             document.getElementById('id_prefix').focus();
             return false;
           }
+
           $.ajax({
                url: "http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/api/v1/voip_rate/dialcode/" + String(document.getElementById('id_prefix').value) + "/?format=json",
                type: "GET",

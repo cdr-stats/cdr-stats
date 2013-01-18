@@ -71,10 +71,13 @@ def index(request):
         if request.GET['db_error'] == 'locked':
             errorlogin = _('Mongodb Database is locked!')
 
-    code_error = _('Account code is not assigned!')
     if request.GET.get('acc_code_error'):
         if request.GET['acc_code_error'] == 'true':
-            errorlogin = code_error
+            errorlogin = _('Account code is not assigned!')
+
+    #if request.GET.get('voip_plan_error'):
+    #    if request.GET['voip_plan_error'] == 'true':
+    #        errorlogin = _('Voip plan is not attached with login user!')
 
     data = {
         'module': current_view(request),
@@ -96,8 +99,7 @@ def check_cdr_exists(function=None):
             """Caller."""
             doc = cdr_data.find_one()
             if not doc:
-                return render_to_response(
-                    'frontend/error_import.html',
+                return render_to_response('frontend/error_import.html',
                     context_instance=RequestContext(request))
             else:
                 return run_func(request, *args, **kwargs)
@@ -118,6 +120,9 @@ def check_user_accountcode(function=None):
                 if not chk_account_code(request):
                     return HttpResponseRedirect('/?acc_code_error=true')
                 else:
+                    #TODO: Can we check voipplan here or create new decorator
+                    #if request.user.get_profile().voipplan is None:
+                    #    return HttpResponseRedirect('/?voip_plan_error=true')
                     return run_func(request, *args, **kwargs)
             else:
                 return run_func(request, *args, **kwargs)

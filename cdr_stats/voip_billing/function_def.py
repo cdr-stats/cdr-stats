@@ -15,7 +15,6 @@
 from django.core.cache import cache
 from country_dialcode.models import Prefix
 from cdr.functions_def import prefix_list_string
-# from voip_billing.models import VoIPRetailRate, VoIPCarrierRate
 import os
 
 
