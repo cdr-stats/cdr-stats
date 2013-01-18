@@ -12,6 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from apiplayground import APIPlayground
+from datetime import datetime
 
 
 class VoipCallBilledAPIPlayground(APIPlayground):
@@ -52,7 +53,7 @@ class VoipCallBilledAPIPlayground(APIPlayground):
                                        {
                                            "name": "call_date",
                                            "type": "string",
-                                           "default": "2013-01-11 11:11:22"
+                                           "default": datetime.today().strftime('%Y-%m-%d %H:%M:%S')
                                        },
                                        ]
                     },

@@ -127,7 +127,8 @@ class VoipCallBilledResource(ModelResource):
 
             # Call status get changed according to status filed
             obj = voipcall._update_voip_call_status(res['voipcall_id'])
+
             logger.debug('VoIPCall Report API : result ok 200')
 
         logger.debug('VoIPCall Report API : result ok 200')
-        return obj
+        return bundle
