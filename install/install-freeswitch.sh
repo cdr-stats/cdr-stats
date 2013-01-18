@@ -18,6 +18,7 @@
 # cd /usr/src/ ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-freeswitch.sh -O install-freeswitch.sh ; bash install-freeswitch.sh
 
 BRANCH='master'
+KERNELARCH=$(uname -p)
 
 #Get Scripts dependencies
 cd /usr/src/
@@ -124,9 +125,7 @@ case $DIST in
         if [ ! -f /etc/yum.repos.d/rpmforge.repo ];
             then
                 # Install RPMFORGE Repo
-                #Check architecture
-        		KERNELARCH=$(uname -p)
-        		if [ $KERNELARCH = "x86_64" ]; then
+                if [ $KERNELARCH = "x86_64" ]; then
 					rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm
 				else
 					rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
