@@ -25,9 +25,10 @@ from voip_billing.function_def import prefix_allowed_to_call
 from voip_billing.rate_engine import rate_engine
 from user_profile.models import UserProfile
 from cdr.views import check_user_accountcode, check_cdr_exists, chk_account_code
+#TODO: second time we import chk_account_code
 from cdr.functions_def import chk_account_code
 from cdr.aggregate import pipeline_daily_billing_report, pipeline_hourly_billing_report
-from common.common_functions import current_view, ceil_strdate, variable_value
+from common.common_functions import current_view, ceil_strdate
 from datetime import datetime
 import logging
 import time
@@ -41,10 +42,12 @@ def retail_rate_view(request):
     """
     template = 'voip_billing/retail_rate.html'
     form = PrefixRetailRrateForm()
-    variables = RequestContext(request, {'module': current_view(request),
-                                         'form': form,
-                                         'user': request.user,
-                                        })
+    variables = RequestContext(request,
+        {
+            'module': current_view(request),
+            'form': form,
+            'user': request.user,
+        })
 
     return render_to_response(template, variables,
            context_instance=RequestContext(request))
@@ -63,7 +66,7 @@ def simulator(request):
     # Get SMS Plan ID according to USER
     try:
         dt = UserProfile.objects.get(user=request.user)
-        voipplan_id = dt.voipplan_id #  variable_value(request, "plan_id")
+        voipplan_id = dt.voipplan_id
 
         if request.method == 'POST':
             form = SimulatorForm(request.user, request.POST)
@@ -128,6 +131,7 @@ def daily_billing_report(request):
             to_date = request.POST['to_date']
             end_date = ceil_strdate(to_date, 'end')
 
+        #TODO: This variable plan_id is never used
         if "plan_id" in request.POST:
             plan_id = request.POST['plan_id']
 
@@ -224,6 +228,7 @@ def hourly_billing_report(request):
             start_date.day, 23, 59, 59, 999999)
 
         if "plan_id" in request.POST:
+            #TODO: This variable plan_id is never used
             plan_id = request.POST['plan_id']
 
         if "switch" in request.POST:
