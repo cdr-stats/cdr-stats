@@ -265,7 +265,7 @@
                         {{ CDR_COLUMN_NAME.buy_cost }}
                         {% sort_link "<i class='icon-chevron-down'></i>" "-buy_cost"  %}
                     {% else %}
-                        {% sort_link CDR_COLUMN_NAME.buy_rate "-buy_cost"  %}
+                        {% sort_link CDR_COLUMN_NAME.buy_cost "-buy_cost"  %}
                     {% endifequal %}
                 </th>
                 <th>
@@ -274,7 +274,7 @@
                         {{ CDR_COLUMN_NAME.sell_rate }}
                         {% sort_link "<i class='icon-chevron-down'></i>" "-sell_rate"  %}
                     {% else %}
-                        {% sort_link CDR_COLUMN_NAME.buy_rate "-sell_rate"  %}
+                        {% sort_link CDR_COLUMN_NAME.sell_rate "-sell_rate"  %}
                     {% endifequal %}
                 </th>
                 <th>
@@ -283,7 +283,7 @@
                         {{ CDR_COLUMN_NAME.sell_cost }}
                         {% sort_link "<i class='icon-chevron-down'></i>" "-sell_cost"  %}
                     {% else %}
-                        {% sort_link CDR_COLUMN_NAME.buy_rate "-sell_cost"  %}
+                        {% sort_link CDR_COLUMN_NAME.sell_cost "-sell_cost"  %}
                     {% endifequal %}
                 </th>
                 <th></th>
