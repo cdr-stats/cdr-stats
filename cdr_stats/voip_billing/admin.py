@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.contrib.sites.models import Site
 from django.conf.urls import patterns
 from django.utils.translation import ugettext as _
 from django.template import RequestContext
@@ -44,7 +43,7 @@ def export_as_csv_action(description="Export selected objects as CSV file",
 
         response = HttpResponse(mimetype='text/csv')
         response['Content-Disposition'] = 'attachment; filename=%s.csv' % \
-        unicode(opts).replace('.', '_')
+            unicode(opts).replace('.', '_')
 
         writer = csv.writer(response)
         if header:
@@ -61,15 +60,20 @@ def prefix_qs():
     Function To get Prefix Query Set with ASCII Order
     """
     if settings.DATABASES['default']['ENGINE'] == 'mysql':
-        q = Prefix.objects.extra(select={'prefix': 'prefix',
-                                         'destination': 'destination',
-                                         'ascii_prefix': 'ASCII(prefix)',
-                                        }, tables=['dialcode_prefix'])
+        q = Prefix.objects.extra(
+            select={
+                'prefix': 'prefix',
+                'destination': 'destination',
+                'ascii_prefix': 'ASCII(prefix)',
+            },
+            tables=['dialcode_prefix'])
     else:
-        q = Prefix.objects.extra(select={'prefix': 'prefix',
-                                         'destination': 'destination',
-                                         'ascii_prefix': 'lower(prefix)',
-                                        }, tables=['dialcode_prefix'])
+        q = Prefix.objects.extra(
+            select={
+                'prefix': 'prefix',
+                'destination': 'destination',
+                'ascii_prefix': 'lower(prefix)',
+            }, tables=['dialcode_prefix'])
     q.group_by = ['prefix']
     q = q.extra(order_by=['ascii_prefix', 'prefix', 'destination'])
     return q
@@ -138,7 +142,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
             'title': _('Select VoIP Plan to Change'),
         }
         return super(VoIPPlanAdmin, self)\
-               .changelist_view(request, extra_context=ctx)
+            .changelist_view(request, extra_context=ctx)
 
     def add_view(self, request, extra_context=None):
         """
@@ -149,7 +153,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
             'title': _('Add VoIP Plan'),
         }
         return super(VoIPPlanAdmin, self)\
-               .add_view(request, extra_context=ctx)
+            .add_view(request, extra_context=ctx)
 
     def change_view(self, request, object_id, extra_context=None):
         """
@@ -160,7 +164,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
             'title': _('Change VoIP Plan'),
         }
         return super(VoIPPlanAdmin, self)\
-               .change_view(request, object_id, extra_context=ctx)
+            .change_view(request, object_id, extra_context=ctx)
 
     def simulator(self, request):
         """
@@ -168,6 +172,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
         To view rate according to VoIP Plan & Destination No.
         """
         opts = VoIPPlan._meta
+        #TODO: is app_label needed
         app_label = opts.app_label
 
         # Assign form field value to local variable
@@ -194,14 +199,16 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                                  i.crid, i.carrier_rate,
                                  i.rrid, i.retail_rate, i.rt_prefix))
 
-
-        ctx = RequestContext(request, {'title': _('VoIP Simulator'),
-                                       'form': form,
-                                       'opts': opts,
-                                       'model_name': opts.object_name.lower(),
-                                       'app_label': _('VoIP Billing'),
-                                       'data': data,
-                                      })
+        ctx = RequestContext(
+            request,
+            {
+                'title': _('VoIP Simulator'),
+                'form': form,
+                'opts': opts,
+                'model_name': opts.object_name.lower(),
+                'app_label': _('VoIP Billing'),
+                'data': data,
+            })
         template = 'admin/voip_billing/voipplan/simulator.html'
         return render_to_response(template, context_instance=ctx)
 
@@ -210,39 +217,38 @@ class VoIPPlanAdmin(admin.ModelAdmin):
         Export Carrier Rate into CSV file
         """
         opts = VoIPPlan._meta
+        #TODO: is app_label needed
         app_label = opts.app_label
-        file_exts = ('.csv')
         if request.method == 'POST':
             form = VoIPPlan_fileExport(request.POST)
             if form.is_valid():
                 if "plan_id" in request.POST:
                     response = HttpResponse(mimetype='text/csv')
                     response['Content-Disposition'] = \
-                    'attachment;filename=export_voipplan.csv'
+                        'attachment;filename=export_voipplan.csv'
                     writer = csv.writer(response)
-                    
+
                     voipplan_id = request.POST['plan_id']
-                    sql_statement = ( \
-                        'SELECT voipbilling_voip_retail_rate.prefix, '\
-                        'Min(retail_rate) as minrate, dialcode_prefix.destination '\
-                        'FROM voipbilling_voip_retail_rate '\
-                        'INNER JOIN voipbilling_voipplan_voipretailplan '\
-                        'ON voipbilling_voipplan_voipretailplan.voipretailplan_id = '\
-                        'voipbilling_voip_retail_rate.voip_retail_plan_id '\
-                        'LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix =  '\
-                        'voipbilling_voip_retail_rate.prefix '\
-                        'WHERE voipplan_id=%s '\
+                    sql_statement = (
+                        'SELECT voipbilling_voip_retail_rate.prefix, '
+                        'Min(retail_rate) as minrate, dialcode_prefix.destination '
+                        'FROM voipbilling_voip_retail_rate '
+                        'INNER JOIN voipbilling_voipplan_voipretailplan '
+                        'ON voipbilling_voipplan_voipretailplan.voipretailplan_id = '
+                        'voipbilling_voip_retail_rate.voip_retail_plan_id '
+                        'LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix = '
+                        'voipbilling_voip_retail_rate.prefix '
+                        'WHERE voipplan_id=%s '
                         'GROUP BY voipbilling_voip_retail_rate.prefix')
-                    
-                    from django.db import connection, transaction
+
+                    from django.db import connection
                     cursor = connection.cursor()
-                    cursor.execute(sql_statement, [voipplan_id,])
+                    cursor.execute(sql_statement, [voipplan_id, ])
                     row = cursor.fetchall()
-                    
+
                     # Content writing in file
                     writer.writerow(['prefix', 'rate', 'destination'])
-                    
-                    result = []
+
                     for record in row:
                         writer.writerow([record[0], record[1], record[2]])
                     return response
@@ -250,21 +256,21 @@ class VoIPPlanAdmin(admin.ModelAdmin):
             form = VoIPPlan_fileExport()
 
         ctx = RequestContext(request, {
-        'title': _('Export VoIP Plan'),
-        'form': form,
-        'opts': opts,
-        'model_name': opts.object_name.lower(),
-        'app_label': _('VoIP Billing'),
+            'title': _('Export VoIP Plan'),
+            'form': form,
+            'opts': opts,
+            'model_name': opts.object_name.lower(),
+            'app_label': _('VoIP Billing'),
         })
         return render_to_response(
-               'admin/voip_billing/voipplan/export.html',
-               context_instance=ctx)
+            'admin/voip_billing/voipplan/export.html',
+            context_instance=ctx)
 admin.site.register(VoIPPlan, VoIPPlanAdmin)
 
 
 #BanPlan
 class BanPlanAdmin(admin.ModelAdmin):
-    list_display = ('name',  'created_date', 'updated_date')
+    list_display = ('name', 'created_date', 'updated_date')
     list_display_links = ('name', )
 
     def get_urls(self):
@@ -272,7 +278,7 @@ class BanPlanAdmin(admin.ModelAdmin):
         my_urls = patterns('',
             (r'^$', self.admin_site.admin_view(self.changelist_view)),
             (r'^add/$', self.admin_site.admin_view(self.add_view)),
-            (r'^/(.+)/$', self.admin_site.admin_view(self.change_view)),            
+            (r'^/(.+)/$', self.admin_site.admin_view(self.change_view)),
         )
         return my_urls + urls
 
@@ -285,7 +291,7 @@ class BanPlanAdmin(admin.ModelAdmin):
             'title': _('Select Ban Plan To Change'),
         }
         return super(BanPlanAdmin, self)\
-               .changelist_view(request, extra_context=ctx)
+            .changelist_view(request, extra_context=ctx)
 
     def add_view(self, request, extra_context=None):
         """
@@ -296,7 +302,7 @@ class BanPlanAdmin(admin.ModelAdmin):
             'title': _('Add Ban Plan'),
         }
         return super(BanPlanAdmin, self)\
-               .add_view(request, extra_context=ctx)
+            .add_view(request, extra_context=ctx)
 
     def change_view(self, request, object_id, extra_context=None):
         """
@@ -307,7 +313,7 @@ class BanPlanAdmin(admin.ModelAdmin):
             'title': _('Change Ban Plan'),
         }
         return super(BanPlanAdmin, self)\
-               .change_view(request, object_id, extra_context=ctx)
+            .change_view(request, object_id, extra_context=ctx)
 admin.site.register(BanPlan, BanPlanAdmin)
 
 
@@ -329,7 +335,7 @@ class BanPrefixAdmin(AutocompleteModelAdmin):
             (r'^search/$', self.admin_site.admin_view(self.search)),
         )
         return my_urls + urls
-    
+
     def changelist_view(self, request, extra_context=None):
         """
         Ban Prefix Listing with respect of VoIP Plan
@@ -339,7 +345,7 @@ class BanPrefixAdmin(AutocompleteModelAdmin):
             'title': _('Select Ban Prefix To Change'),
         }
         return super(BanPrefixAdmin, self)\
-               .changelist_view(request, extra_context=ctx)
+            .changelist_view(request, extra_context=ctx)
 
     def add_view(self, request, extra_context=None):
         """
@@ -350,7 +356,7 @@ class BanPrefixAdmin(AutocompleteModelAdmin):
             'title': _('Add Prefix To Ban '),
         }
         return super(BanPrefixAdmin, self)\
-               .add_view(request, extra_context=ctx)
+            .add_view(request, extra_context=ctx)
 
     def change_view(self, request, object_id, extra_context=None):
         """
@@ -361,7 +367,7 @@ class BanPrefixAdmin(AutocompleteModelAdmin):
             'title': _('Change Prefix To Ban'),
         }
         return super(BanPrefixAdmin, self)\
-               .change_view(request, object_id, extra_context=ctx)
+            .change_view(request, object_id, extra_context=ctx)
 admin.site.register(BanPrefix, BanPrefixAdmin)
 
 
@@ -378,7 +384,7 @@ class VoIPRetailPlanAdmin(admin.ModelAdmin):
     ordering = ('id', )
     list_filter = ['metric', 'name']
     inlines = [
-        VoIPPlan_VoIPRetailPlanInline, 
+        VoIPPlan_VoIPRetailPlanInline,
     ]
 
     def get_urls(self):
@@ -399,7 +405,7 @@ class VoIPRetailPlanAdmin(admin.ModelAdmin):
             'title': _('Select VoIP Retail Plan to Change'),
         }
         return super(VoIPRetailPlanAdmin, self)\
-               .changelist_view(request, extra_context=ctx)
+            .changelist_view(request, extra_context=ctx)
 
     def add_view(self, request, extra_context=None):
         """
@@ -410,7 +416,7 @@ class VoIPRetailPlanAdmin(admin.ModelAdmin):
             'title': _('Add VoIP Retail Plan'),
         }
         return super(VoIPRetailPlanAdmin, self)\
-               .add_view(request, extra_context=ctx)
+            .add_view(request, extra_context=ctx)
 
     def change_view(self, request, object_id, extra_context=None):
         """
@@ -421,7 +427,7 @@ class VoIPRetailPlanAdmin(admin.ModelAdmin):
             'title': _('Change VoIP Retail Plan'),
         }
         return super(VoIPRetailPlanAdmin, self)\
-               .change_view(request, object_id, extra_context=ctx)
+            .change_view(request, object_id, extra_context=ctx)
 admin.site.register(VoIPRetailPlan, VoIPRetailPlanAdmin)
 
 
@@ -441,11 +447,11 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
     search_fields = ('retail_rate', )
     valid_lookups = ('updated_date', 'voip_retail_plan_id', 'prefix')
     related_search_fields = {
-                'prefix': ('prefix', 'destination'),
-        }
+        'prefix': ('prefix', 'destination'),
+    }
     actions = [export_as_csv_action("Export selected retail rates as CSV file",
                fields=['voip_retail_plan_id', 'prefix', 'retail_rate'],
-                       header=False)]
+               header=False)]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """
@@ -454,7 +460,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
         if db_field.name == "prefix":
             kwargs["queryset"] = prefix_qs()
         return super(VoIPRetailRateAdmin, self).formfield_for_foreignkey(
-                                            db_field, request, **kwargs)
+            db_field, request, **kwargs)
 
     def get_urls(self):
         urls = super(VoIPRetailRateAdmin, self).get_urls()
@@ -534,8 +540,8 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
         Export Retail Rate into CSV file
         """
         opts = VoIPRetailRate._meta
+        #TODO: is app_label needed
         app_label = opts.app_label
-        file_exts = ('.csv', )
         if request.method == 'POST':
             form = Retail_Rate_fileExport(request.POST)
             if form.is_valid():
@@ -556,15 +562,15 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
             form = Retail_Rate_fileExport()
 
         ctx = RequestContext(request, {
-        'title': _('Export Retail Rate'),
-        'form': form,
-        'opts': opts,
-        'model_name': opts.object_name.lower(),
-        'app_label': _('VoIP Billing'),
+            'title': _('Export Retail Rate'),
+            'form': form,
+            'opts': opts,
+            'model_name': opts.object_name.lower(),
+            'app_label': _('VoIP Billing'),
         })
         return render_to_response(
-               'admin/voip_billing/voipretailrate/export_rr.html',
-               context_instance=ctx)
+            'admin/voip_billing/voipretailrate/export_rr.html',
+            context_instance=ctx)
 
     def import_rr(self, request):
         """
@@ -577,7 +583,6 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
         """
         opts = VoIPRetailRate._meta
         app_label = opts.app_label
-        file_exts = ('.csv', )
         rdr = ''  # will contain CSV data
         msg = ''
         success_import_list = []
@@ -609,21 +614,23 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
                             pfix = Prefix.objects.get(prefix=row[0])
                             if pfix is not None:
                                 voip_retail_plan = VoIPRetailPlan.objects.get(
-                                                  pk=request.POST['plan_id'])
+                                    pk=request.POST['plan_id'])
                                 try:
                                     # check if prefix is alredy
                                     # exist with retail plan or not
+
+                                    #TODO: rr is never used
                                     rr = VoIPRetailRate.objects.get(
-                                         voip_retail_plan_id=voip_retail_plan,
-                                         prefix=pfix)
+                                        voip_retail_plan_id=voip_retail_plan,
+                                        prefix=pfix)
                                     msg = _('Retail Rate(s) are already exist !!')
                                     error_import_list.append(row)
                                 except:
                                     # if not, insert record
                                     srr = VoIPRetailRate.objects.create(
-                                          voip_retail_plan_id=voip_retail_plan,
-                                          prefix=pfix,
-                                          retail_rate=row[1])                                    
+                                        voip_retail_plan_id=voip_retail_plan,
+                                        prefix=pfix,
+                                        retail_rate=row[1])
                                     retail_record_count = retail_record_count + 1
                                     msg = '%d Retail Rate(s) are uploaded  \
                                           successfully out of %d row(s) !!'\
@@ -639,16 +646,16 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
             form = RetailRate_fileImport()
 
         ctx = RequestContext(request, {
-        'title': _('Import Retail Rate'),
-        'form': form,
-        'opts': opts,
-        'model_name': opts.object_name.lower(),
-        'app_label': _('VoIP Billing'),
-        'rdr': rdr,
-        'msg': msg,
-        'success_import_list': success_import_list,
-        'error_import_list': error_import_list,
-        'type_error_import_list': type_error_import_list,
+            'title': _('Import Retail Rate'),
+            'form': form,
+            'opts': opts,
+            'model_name': opts.object_name.lower(),
+            'app_label': _('VoIP Billing'),
+            'rdr': rdr,
+            'msg': msg,
+            'success_import_list': success_import_list,
+            'error_import_list': error_import_list,
+            'type_error_import_list': type_error_import_list,
         })
         return render_to_response('admin/voip_billing/voipretailrate/import_rr.html',
                context_instance=ctx)
@@ -666,7 +673,7 @@ class VoIPCarrierPlanAdmin(admin.ModelAdmin):
     )
     list_display = ('id', 'name', 'metric', 'voip_provider_id', 'callsent', 'updated_date')
     list_display_links = ('name',)
-    list_filter = ['name',  'updated_date', ]
+    list_filter = ['name', 'updated_date', ]
     ordering = ('id',)
     inlines = [
         VoIPPlan_VoIPCarrierPlanInline,
@@ -695,7 +702,7 @@ class VoIPCarrierPlanAdmin(admin.ModelAdmin):
             'title': _('Select VoIP Carrier Plan to Change'),
         }
         return super(VoIPCarrierPlanAdmin, self)\
-               .changelist_view(request, extra_context=ctx)
+            .changelist_view(request, extra_context=ctx)
 
     def add_view(self, request, extra_context=None):
         """
@@ -706,7 +713,7 @@ class VoIPCarrierPlanAdmin(admin.ModelAdmin):
             'title': _('Add VoIP Carrier Plan'),
         }
         return super(VoIPCarrierPlanAdmin, self)\
-               .add_view(request, extra_context=ctx)
+            .add_view(request, extra_context=ctx)
 
     def change_view(self, request, object_id, extra_context=None):
         """
@@ -717,7 +724,7 @@ class VoIPCarrierPlanAdmin(admin.ModelAdmin):
             'title': _('Change VoIP Carrier Plan'),
         }
         return super(VoIPCarrierPlanAdmin, self)\
-               .change_view(request, object_id, extra_context=ctx)
+            .change_view(request, object_id, extra_context=ctx)
 admin.site.register(VoIPCarrierPlan, VoIPCarrierPlanAdmin)
 
 
@@ -737,11 +744,11 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
     search_fields = ('carrier_rate',)
     valid_lookups = ('updated_date', 'voip_carrier_plan_id', 'prefix')
     related_search_fields = {
-                'prefix': ('prefix', 'destination'),
-        }
+        'prefix': ('prefix', 'destination'),
+    }
     actions = [export_as_csv_action("Export selected carrier rates as CSV file",
-               fields=['voip_carrier_plan_id', 'prefix', 'carrier_rate'],
-                       header=False)]
+        fields=['voip_carrier_plan_id', 'prefix', 'carrier_rate'],
+        header=False)]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """
@@ -830,7 +837,6 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
         """
         opts = VoIPCarrierRate._meta
         app_label = opts.app_label
-        file_exts = ('.csv')
         if request.method == 'POST':
             form = Carrier_Rate_fileExport(request.POST)
             if form.is_valid():
@@ -840,7 +846,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                     writer = csv.writer(response)
 
                     qs = VoIPCarrierRate.objects.filter(
-                    voip_carrier_plan_id=request.POST['plan_id'])
+                        voip_carrier_plan_id=request.POST['plan_id'])
 
                     # Content writing in file
                     writer.writerow(['prefix', 'rate'])
@@ -851,11 +857,11 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
             form = Carrier_Rate_fileExport()
 
         ctx = RequestContext(request, {
-        'title': _('Export Carrier Rate'),
-        'form': form,
-        'opts': opts,
-        'model_name': opts.object_name.lower(),
-        'app_label': _('VoIP Billing'),
+            'title': _('Export Carrier Rate'),
+            'form': form,
+            'opts': opts,
+            'model_name': opts.object_name.lower(),
+            'app_label': _('VoIP Billing'),
         })
         return render_to_response('admin/voip_billing/voipcarrierrate/export_cr.html',
                context_instance=ctx)
@@ -873,7 +879,6 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
         """
         opts = VoIPCarrierRate._meta
         app_label = opts.app_label
-        file_exts = ('.csv')
         rdr = ''  # will contain CSV data
         msg = ''
         cr_success_import_list = []
@@ -890,7 +895,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                     if request.POST['chk'] == "on":
                         profit_per = request.POST['profit_percentage']
                         voip_retail_plan = VoIPRetailPlan.objects.get(
-                                          pk=request.POST['retail_plan_id'])
+                            pk=request.POST['retail_plan_id'])
 
                 # col_no - field name
                 #  0     - Prefix
@@ -921,8 +926,8 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                                     # check if prefix is alredy exist with
                                     # retail plan or not
                                     cr = VoIPCarrierRate.objects.get(
-                                         voip_carrier_plan_id=voip_carrier_plan,
-                                         prefix=pfix)
+                                        voip_carrier_plan_id=voip_carrier_plan,
+                                        prefix=pfix)
 
                                     msg = _('Carrier Rates are already exist !!')
                                     cr_error_import_list.append(row)
@@ -939,8 +944,8 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                                 except:
                                     # if not, insert record
                                     scr = VoIPCarrierRate.objects.create(
-                                          voip_carrier_plan_id=voip_carrier_plan,
-                                          prefix=pfix, carrier_rate=row[1])                                    
+                                        voip_carrier_plan_id=voip_carrier_plan,
+                                        prefix=pfix, carrier_rate=row[1])
                                     carrier_record_count = carrier_record_count + 1
 
                                     msg = '%d Carrier Rate(s) are uploaded \
@@ -954,14 +959,13 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                                         if request.POST['chk'] == "on":
 
                                             # Calculate New Retail Rate
-                                            new_rate = (float(row[1]) * \
-                                            (float(profit_per) / 100)\
-                                            + float(row[1]))
+                                            new_rate = (float(row[1]) *
+                                                (float(profit_per) / 100) + float(row[1]))
 
                                             srr = VoIPRetailRate.objects.create(
-                                            voip_retail_plan_id=voip_retail_plan,
-                                            prefix=pfix,
-                                            retail_rate=str(new_rate))                                            
+                                                voip_retail_plan_id=voip_retail_plan,
+                                                prefix=pfix,
+                                                retail_rate=str(new_rate))
 
                                             retail_record_count = retail_record_count + 1
                                             msg = '%d Carrier Rate(s) are \
@@ -971,9 +975,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                                                   (carrier_record_count,
                                                    retail_record_count,
                                                    total_rows)
-                                            rr_success_import_list.append(
-                                                          (row[0],
-                                                           str(new_rate)))
+                                            rr_success_import_list.append((row[0], str(new_rate)))
                             else:
                                 msg = _('Error: Prefix is not in the Prfix table')
                         except:
@@ -984,22 +986,19 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
             form = CarrierRate_fileImport()
 
         ctx = RequestContext(request, {
-        'title': _('Import Carrier Rate'),
-        'form': form,
-        'opts': opts,
-        'model_name': opts.object_name.lower(),
-        'app_label': _('VoIP Billing'),
-        'rdr': rdr,
-        'msg': msg,
-        'cr_success_import_list': cr_success_import_list,
-        'cr_error_import_list': cr_error_import_list,
-        'rr_success_import_list': rr_success_import_list,
-        'rr_error_import_list': rr_error_import_list,
-        'type_error_import_list': type_error_import_list,
+            'title': _('Import Carrier Rate'),
+            'form': form,
+            'opts': opts,
+            'model_name': opts.object_name.lower(),
+            'app_label': _('VoIP Billing'),
+            'rdr': rdr,
+            'msg': msg,
+            'cr_success_import_list': cr_success_import_list,
+            'cr_error_import_list': cr_error_import_list,
+            'rr_success_import_list': rr_success_import_list,
+            'rr_error_import_list': rr_error_import_list,
+            'type_error_import_list': type_error_import_list,
         })
         return render_to_response('admin/voip_billing/voipcarrierrate/import_cr.html',
                context_instance=ctx)
 admin.site.register(VoIPCarrierRate, VoIPCarrierRateAdmin)
-
-
-admin.site.unregister(Site)
