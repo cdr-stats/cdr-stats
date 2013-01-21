@@ -16,14 +16,13 @@
 
 from django.contrib.auth.models import User
 from django.conf import settings
-from tastypie.authentication import Authentication, BasicAuthentication
+from tastypie.authentication import Authentication
 from tastypie.authorization import Authorization
 from tastypie.serializers import Serializer
 from tastypie.exceptions import ImmediateHttpResponse
 from tastypie import http
 from random import seed
 import urllib
-import simplejson
 import logging
 
 logger = logging.getLogger('cdr-stats.filelog')
@@ -35,7 +34,6 @@ class CustomJSONSerializer(Serializer):
 
     def from_json(self, content):
         decoded_content = urllib.unquote(content.decode('utf8'))
-        # data = simplejson.loads(content)
         data = {}
         data['cdr'] = decoded_content[4:]
         return data

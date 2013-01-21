@@ -16,7 +16,6 @@ from django.conf.urls import url
 from django.db import connection
 
 from tastypie.resources import ModelResource
-from tastypie.authentication import BasicAuthentication
 from tastypie.authorization import Authorization
 from tastypie.throttle import BaseThrottle
 from tastypie.exceptions import BadRequest, ImmediateHttpResponse
