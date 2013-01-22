@@ -72,6 +72,7 @@ def banned_prefix_qs(voipplan_id):
         'WHERE voipbilling_ban_prefix.ban_plan_id = voipbilling_banplan.id '
         'AND voipbilling_banplan.id = voipbilling_voipplan_banplan.banplan_id '
         'AND voipbilling_voipplan_banplan.voipplan_id = %s')
+
     cursor.execute(sql_statement, [str(voipplan_id)])
     row = cursor.fetchall()
     result = []

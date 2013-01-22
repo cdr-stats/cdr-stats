@@ -1,0 +1,60 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_modify adminmedia %}
+
+{% block breadcrumbs %}{% if not is_popup %}
+    <div class="breadcrumbs">
+        <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+        <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
+        <a href="/admin/{{ opts.app_label }}/{{ model_name }}">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
+        {{ opts.verbose_name }}
+    </div>
+{% endif %}{% endblock %}
+
+
+{% block content %}
+  <div id="content-main">
+    
+    {% if cl.formset.errors %}
+        <p class="errornote">
+        {% blocktrans count cl.formset.errors|length as counter %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+        </p>
+        {{ cl.formset.non_form_errors }}
+    {% endif %}
+
+    {% block custom-search %}
+    <form method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
+    <table class="actions">
+        {% for field in form %}
+            <tr>
+                <td>
+                    <label class="control-label" for="{{ field.auto_id }}">
+                        {{ field.label }}
+                    </label>
+                </td>
+                <td>{{ field }}
+                    {% if field.errors %}
+                        <span>{{ field.errors|removetags:"ul li"|safe }}</span>
+                    {% endif %}
+                    <span>{{ field.help_text }} </span>
+                </td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td>&nbsp;</td>
+            <td><input type="submit" value="{% trans "Search" %}" class="l-1" />&nbsp;
+			<input type="reset" class="j-2" name="reset" value="{% trans "Reset" %}"><td>
+        </tr>
+    </table>
+    </form>
+    {% endblock %}
+
+    {% block object-tools %}
+    {% endblock %}
+
+
+
+    {% block extra_data %}
+    {% endblock %}
+
+  </div>
+{% endblock %}

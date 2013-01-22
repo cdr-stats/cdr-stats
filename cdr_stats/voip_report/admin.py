@@ -26,7 +26,7 @@ from voip_billing.tasks import VoIPbilling
 from voip_billing.forms import FileImport
 from voip_billing.function_def import check_celeryd_process
 from voip_report.models import VoIPCall_Report, VoIPCall
-from voip_report.forms import VoipSearchForm
+from voip_report.forms import VoipSearchForm, RebillForm
 from voip_report.function_def import get_disposition_id, get_disposition_name
 from user_profile.models import UserProfile
 from common.common_functions import variable_value
@@ -114,6 +114,8 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
              self.admin_site.admin_view(self.import_voip_report)),
             (r'^export_voip_report/$',
              self.admin_site.admin_view(self.export_voip_report)),
+            (r'^rebilling/$',
+             self.admin_site.admin_view(self.rebilling)),
         )
         return my_urls + urls
 
@@ -379,5 +381,32 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
                              i.gateway,
                              ])
         return response
+
+    def rebilling(self, request):
+        """
+        Re-billing unsuccessful voip calls
+        """
+        opts = VoIPCall_Report._meta
+
+
+        if request.method == 'POST':
+            pass
+        else:
+            tday = datetime.today()
+            to_date = from_date = tday.strftime('%Y-%m-%d')
+            form = RebillForm(initial={'from_date': from_date,
+                                       'to_date': to_date})
+
+
+        ctx = RequestContext(request, {
+            'form': form,
+            'opts': opts,
+            'model_name': opts.object_name.lower(),
+            'app_label': _('VoIP Report'),
+            'title': _('Rebill VoPI Call'),
+
+        })
+        return render_to_response('admin/voip_report/voipcall_report/rebilling.html',
+            context_instance=ctx)
 
 admin.site.register(VoIPCall_Report, VoIPCall_ReportAdmin)

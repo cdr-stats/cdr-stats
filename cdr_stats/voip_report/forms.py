@@ -38,3 +38,12 @@ class VoipSearchForm(CdrSearchForm):
     def __init__(self, *args, **kwargs):
         super(VoipSearchForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['from_date', 'to_date', 'billed', 'status']
+
+
+class RebillForm(CdrSearchForm):
+    """
+    Rebill VoIP call
+    """
+    def __init__(self, *args, **kwargs):
+        super(RebillForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['from_date', 'to_date']
