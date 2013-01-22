@@ -163,7 +163,7 @@ func_prepare_system_common(){
         'DEBIAN')
             apt-get -y install python-setuptools python-dev build-essential libevent-dev python-pip
             #We need both Postgresql and Mysql for the Connectors
-            apt-get -y install postgresql-client-9.1 libmysqlclient-dev
+            apt-get -y install postgresql-client-9.1 libmysqlclient-dev mysql-client-core-5.5
             apt-get -y install git-core mercurial gawk
             #for audiofile convertion
             apt-get -y install libsox-fmt-mp3 libsox-fmt-all mpg321 ffmpeg
