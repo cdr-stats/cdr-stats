@@ -72,14 +72,52 @@ class VoipCallBilledResource(ModelResource):
             Location: http://localhost:8000/api/v1/voip_call_billed/1/
             Content-Language: en-us
 
+    **Read**:
+
+         CURL Usage::
+
+             curl -u username:password -H 'Accept: application/json' -X GET http://localhost:8000/api/v1/voip_call_billed/?format=json
+
+         Response::
+
+            {
+               "meta":{
+                  "limit":20,
+                  "next":null,
+                  "offset":0,
+                  "previous":null,
+                  "total_count":1
+               },
+               "objects":[
+                  {
+                     "billed":true,
+                     "callerid":"48092924",
+                     "callid":"1",
+                     "carrier_cost":"0.0290",
+                     "created_date":"2013-01-22T13:34:04",
+                     "disposition":1,
+                     "dnid":"1",
+                     "id":"1",
+                     "nasipaddress":"0.0.0.0",
+                     "recipient_number":"34657077888",
+                     "resource_uri":"/api/v1/voip_call_billed/1/",
+                     "retail_cost":"0.0350",
+                     "sessiontime":1,
+                     "sessiontime_real":1,
+                     "starting_date":null,
+                     "uniqueid":"4a0147e2-646a-11e2-964f-000c2925d15f",
+                     "updated_date":"2013-01-22T13:37:12.524737"
+                  },
+               ]
+            }
     """
     class Meta:
         resource_name = 'voip_call_billed'
         queryset = VoIPCall_Report.objects.all()
         authorization = Authorization()
         authentication = BasicAuthentication()
-        allowed_methods = ['post']
-        detail_allowed_methods = ['post']
+        allowed_methods = ['get', 'post']
+        detail_allowed_methods = ['get', 'post']
         throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
 
     def obj_create(self, bundle, request=None, **kwargs):
