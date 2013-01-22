@@ -31,6 +31,16 @@ class VoipCallBilledAPIPlayground(APIPlayground):
                 "description": "This resource allows you to bill voip call.",
                 "endpoints": [
                     {
+                        "method": "GET",
+                        "url": "/api/v1/voip_call_billed/",
+                        "description": "Returns all CDRs"
+                    },
+                    {
+                        "method": "GET",
+                        "url": "/api/v1/voip_call_billed/{cdr-id}/",
+                        "description": "Returns a specific cdr"
+                    },
+                    {
                         "method": "POST",
                         "url": "/api/v1/voip_call_billed/",
                         "description": "Creates new billed voip call",
