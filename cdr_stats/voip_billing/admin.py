@@ -236,8 +236,8 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                         'LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix = '
                         'voipbilling_voip_retail_rate.prefix '
                         'WHERE voipplan_id=%s '
-                        'GROUP BY voipbilling_voip_retail_rate.prefix')
-
+                        'GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination')
+                    
                     from django.db import connection
                     cursor = connection.cursor()
                     cursor.execute(sql_statement, [voipplan_id, ])
