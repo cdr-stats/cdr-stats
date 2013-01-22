@@ -196,23 +196,19 @@ class CustomRateFilterForm(forms.Form):
                            required=False)
 
 
-class BillingForm(SimulatorForm):
+class BillingForm(forms.Form):
 
     from_date = forms.CharField(label=_('From'), required=True, max_length=10)
     to_date = forms.CharField(label=_('To'), required=True, max_length=10)
     switch = forms.ChoiceField(label=_('Switch'), required=False, choices=sw_list_with_all())
 
-    def __init__(self, user, *args, **kwargs):
-        super(BillingForm, self).__init__(user, *args, **kwargs)
-        self.fields.keyOrder = ['from_date', 'to_date', 'plan_id', 'switch']
-        if not user.is_superuser:
-            self.fields['plan_id'] = forms.ChoiceField(widget=forms.HiddenInput())
+    def __init__(self, *args, **kwargs):
+        super(BillingForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['from_date', 'to_date', 'switch']
 
 
 class HourlyBillingForm(BillingForm):
 
-    def __init__(self, user, *args, **kwargs):
-        super(HourlyBillingForm, self).__init__(user, *args, **kwargs)
-        self.fields.keyOrder = ['from_date', 'plan_id', 'switch']
-        if not user.is_superuser:
-            self.fields['plan_id'] = forms.ChoiceField(widget=forms.HiddenInput())
+    def __init__(self, *args, **kwargs):
+        super(HourlyBillingForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['from_date', 'switch']
