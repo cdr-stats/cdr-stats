@@ -315,8 +315,8 @@ class AutocompleteModelAdmin(admin.ModelAdmin):
                 # parent_link=True
                 if formfield is not None:
                     formfield.widget = \
-                    AutocompleteWidgetWrapper(formfield.widget, db_field.rel,
-                                              self.admin_site)
+                        AutocompleteWidgetWrapper(formfield.widget, db_field.rel,
+                                                  self.admin_site)
             return formfield
 
         # For ManyToManyField use a special Autocomplete widget.
@@ -401,7 +401,7 @@ class AutocompleteWidgetWrapper(RelatedFieldWidgetWrapper):
             output.append(u'<a href="%sadd/" class="add-another" \
             id="add_id_%s" onclick="return showAutocompletePopup(this);"> ' % \
                 (related_url, name))
-            output.append(u'<img src="%simg/admin/icon_addlink.gif"\
+            output.append(u'<img src="%simg/icon_addlink.gif"\
                 width="10" height="10" alt="%s"/></a>' % \
                 (settings.ADMIN_MEDIA_PREFIX, _('Add Another')))
         return mark_safe(u''.join(output))
@@ -428,11 +428,11 @@ class RelatedFieldWidgetWrapperNew(RelatedFieldWidgetWrapper):
             """
             output.append(u'<a href="%s" class="add-another" id="add_id_%s" onclick="return showAddAnotherPopup(this);"> ' % \
                 (related_url, name))
-            output.append(u'<img src="%simg/admin/icon_addlink.gif" width="10" height="10" alt="%s"/></a>' % (settings.ADMIN_MEDIA_PREFIX, _('Add Another')))
+            output.append(u'<img src="%simg/icon_addlink.gif" width="10" height="10" alt="%s"/></a>' % (settings.ADMIN_MEDIA_PREFIX, _('Add Another')))
             """
             output.append(u'<a href="%s" class="add-another" id="add_id_%s" onclick="return showAddAnotherPopup(this);"> ' % \
                 (related_url, name))
-            output.append(u'<img src="%simg/admin/icon_addlink.gif" width="10" height="10" alt="%s"/></a>\
+            output.append(u'<img src="%simg/icon_addlink.gif" width="10" height="10" alt="%s"/></a>\
             <div id="div_add_id_%s"></div>' % \
                 (settings.ADMIN_MEDIA_PREFIX, _('Add Another'), name))
 
