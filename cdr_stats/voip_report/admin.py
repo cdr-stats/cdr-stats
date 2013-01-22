@@ -134,15 +134,15 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
         """
         opts = VoIPCall_Report._meta
         query_string = ''
-        form = VoipSearchForm()
+
         if request.method == 'POST':
             query_string = voipcall_search_admin_form_fun(request)
             return HttpResponseRedirect("/admin/%s/%s/?%s"
                                         % (opts.app_label, opts.object_name.lower(), query_string))
         else:
             status = ''
-            from_date = ''
-            to_date = ''
+            tday = datetime.today()
+            to_date = from_date = tday.strftime('%Y-%m-%d')
             if request.GET.get('updated_date__gte'):
                 from_date = variable_value(request, 'updated_date__gte')
             if request.GET.get('updated_date__lte'):
@@ -182,7 +182,6 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
             'All %(total_count)s selected', cl.result_count)
 
         select_data =  {"updated_date": "SUBSTR(CAST(updated_date as CHAR(30)),1,10)"}
-        total_data = ''
 
         # Get Total Rrecords from VoIPCall Report table for Daily Call Report
         kwargs['billed'] = True
