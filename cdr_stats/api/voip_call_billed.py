@@ -69,7 +69,7 @@ class VoipCallBilledResource(ModelResource):
             Server: WSGIServer/0.1 Python/2.7.3
             Vary: Accept-Language, Cookie
             Content-Type: text/html; charset=utf-8
-            Location: http://localhost:8000/api/v1/voip_call_billed/None/
+            Location: http://localhost:8000/api/v1/voip_call_billed/1/
             Content-Language: en-us
 
     """
@@ -129,6 +129,7 @@ class VoipCallBilledResource(ModelResource):
             obj = voipcall._update_voip_call_status(res['voipcall_id'])
 
             logger.debug('VoIPCall Report API : result ok 200')
+            bundle.obj = obj
 
         logger.debug('VoIPCall Report API : result ok 200')
         return bundle
