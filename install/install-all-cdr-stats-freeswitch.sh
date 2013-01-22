@@ -85,20 +85,20 @@ esac
 
 #Install MongoDB
 cd /usr/src/
-wget https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/install-mongodb.sh -O install-mongodb.sh
+wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/install-mongodb.sh -O install-mongodb.sh
 bash install-mongodb.sh
 
 
 #Install Freeswitch
 cd /usr/src/
-wget https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/install-freeswitch.sh -O install-freeswitch.sh
+wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/install-freeswitch.sh -O install-freeswitch.sh
 bash install-freeswitch.sh
 /etc/init.d/freeswitch start
 
 #Install CDR-Stats
 cd /usr/src/
-wget https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/bash-common-functions.sh -O bash-common-functions.sh
-wget https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
+wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/bash-common-functions.sh -O bash-common-functions.sh
+wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
 
 
 #Include general functions

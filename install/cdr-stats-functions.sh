@@ -843,7 +843,7 @@ func_prepare_logger() {
 func_install_mongodb() {
     cd /usr/src/
     rm install-mongodb.sh
-    wget https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/install-mongodb.sh
+    wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/install-mongodb.sh
     bash install-mongodb.sh
 }
 
