@@ -102,15 +102,17 @@
             }
 
             var data = [
+                {% if user.is_superuser %}
+                    {
+                        label: '{% trans "Buy cost" %}',
+                        data: [
+                            {% for data in total_data %}
+                                [{{ data.0 }}, {{ data.1.buy_cost_per_day }}],
+                            {% endfor %}
+                        ]
+                    },
+                {% endif %}
 
-                {
-                    label: '{% trans "Buy cost" %}',
-                    data: [
-                        {% for data in total_data %}
-                            [{{ data.0 }}, {{ data.1.buy_cost_per_day }}],
-                        {% endfor %}
-                    ]
-                },
                 {
                     label: '{% trans "Sell cost" %}',
                     data: [

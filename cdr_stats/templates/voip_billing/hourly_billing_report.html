@@ -57,17 +57,18 @@
         $(function () {
 
             var data = [
-
-                {% for date, buy_cost in total_buy_record.items %}
-                    {
-                        label: '{% trans "Buy cost" %}',
-                        data: [
-                            {% for hour, cost in buy_cost.items %}
-                                [{{ hour }}, {{ cost }}],
-                            {% endfor %}
-                        ],
-                    },
-                {% endfor %}
+                {% if user.is_superuser %}
+                    {% for date, buy_cost in total_buy_record.items %}
+                        {
+                            label: '{% trans "Buy cost" %}',
+                            data: [
+                                {% for hour, cost in buy_cost.items %}
+                                    [{{ hour }}, {{ cost }}],
+                                {% endfor %}
+                            ],
+                        },
+                    {% endfor %}
+                {% endif %}
 
                 {% for date, sell_cost in total_sell_record.items %}
                     {
