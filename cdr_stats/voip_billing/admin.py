@@ -172,8 +172,6 @@ class VoIPPlanAdmin(admin.ModelAdmin):
         To view rate according to VoIP Plan & Destination No.
         """
         opts = VoIPPlan._meta
-        #TODO: is app_label needed
-        app_label = opts.app_label
 
         # Assign form field value to local variable
         destination_no = variable_value(request, "destination_no")
@@ -217,8 +215,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
         Export Carrier Rate into CSV file
         """
         opts = VoIPPlan._meta
-        #TODO: is app_label needed
-        app_label = opts.app_label
+
         if request.method == 'POST':
             form = VoIPPlan_fileExport(request.POST)
             if form.is_valid():
@@ -540,8 +537,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
         Export Retail Rate into CSV file
         """
         opts = VoIPRetailRate._meta
-        #TODO: is app_label needed
-        app_label = opts.app_label
+
         if request.method == 'POST':
             form = Retail_Rate_fileExport(request.POST)
             if form.is_valid():
@@ -582,7 +578,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
         retail_record_count - No. of records which are imported from CSV file
         """
         opts = VoIPRetailRate._meta
-        app_label = opts.app_label
+
         rdr = ''  # will contain CSV data
         msg = ''
         success_import_list = []
@@ -618,9 +614,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
                                 try:
                                     # check if prefix is alredy
                                     # exist with retail plan or not
-
-                                    #TODO: rr is never used
-                                    rr = VoIPRetailRate.objects.get(
+                                    VoIPRetailRate.objects.get(
                                         voip_retail_plan_id=voip_retail_plan,
                                         prefix=pfix)
                                     msg = _('Retail Rate(s) are already exist !!')
@@ -836,7 +830,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
         Export Carrier Rate into CSV file
         """
         opts = VoIPCarrierRate._meta
-        app_label = opts.app_label
+
         if request.method == 'POST':
             form = Carrier_Rate_fileExport(request.POST)
             if form.is_valid():
@@ -878,7 +872,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                               profit(%) & carrier rates
         """
         opts = VoIPCarrierRate._meta
-        app_label = opts.app_label
+
         rdr = ''  # will contain CSV data
         msg = ''
         cr_success_import_list = []
@@ -925,7 +919,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                                 try:
                                     # check if prefix is alredy exist with
                                     # retail plan or not
-                                    cr = VoIPCarrierRate.objects.get(
+                                    VoIPCarrierRate.objects.get(
                                         voip_carrier_plan_id=voip_carrier_plan,
                                         prefix=pfix)
 
@@ -943,7 +937,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                                             rr_error_import_list.append(row)
                                 except:
                                     # if not, insert record
-                                    scr = VoIPCarrierRate.objects.create(
+                                    VoIPCarrierRate.objects.create(
                                         voip_carrier_plan_id=voip_carrier_plan,
                                         prefix=pfix, carrier_rate=row[1])
                                     carrier_record_count = carrier_record_count + 1
@@ -962,7 +956,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                                             new_rate = (float(row[1]) *
                                                 (float(profit_per) / 100) + float(row[1]))
 
-                                            srr = VoIPRetailRate.objects.create(
+                                            VoIPRetailRate.objects.create(
                                                 voip_retail_plan_id=voip_retail_plan,
                                                 prefix=pfix,
                                                 retail_rate=str(new_rate))
