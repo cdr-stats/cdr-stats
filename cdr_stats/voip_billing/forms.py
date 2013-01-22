@@ -21,23 +21,18 @@ from cdr.forms import sw_list_with_all
 
 
 def voip_plan_list():
-    """
-    Return List of VoIP Plans
-    """
-    list = VoIPPlan.objects.all()
-    return ((l.id, l.name) for l in list)
+    """Return List of VoIP Plans"""
+    return VoIPPlan.objects.values_list('id', 'name').all()
 
 
 def carrier_plan_list():
     """List all carrier plan"""
-    list = VoIPCarrierPlan.objects.all()
-    return ((l.id, l.name) for l in list)
+    return VoIPCarrierPlan.objects.values_list('id', 'name').all()
 
 
 def retail_plan_list():
     """List all retail plan"""
-    list = VoIPRetailPlan.objects.all()
-    return ((l.id, l.name) for l in list)
+    return VoIPRetailPlan.objects.values_list('id', 'name').all()
 
 
 class FileImport(forms.Form):
