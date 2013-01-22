@@ -250,24 +250,26 @@
                       {% sort_link CDR_COLUMN_NAME.account "-accountcode"  %}
                     {% endifequal %}
                 </th>
-                <th>
-                    {% ifequal col_name_with_order.sort_field 'buy_rate' %}
-                        {% sort_link "<i class='icon-chevron-up'></i>" "buy_rate"  %}
-                        {{ CDR_COLUMN_NAME.buy_rate }}
-                        {% sort_link "<i class='icon-chevron-down'></i>" "-buy_rate"  %}
-                    {% else %}
-                        {% sort_link CDR_COLUMN_NAME.buy_rate "-buy_rate"  %}
-                    {% endifequal %}
-                </th>
-                <th>
-                    {% ifequal col_name_with_order.sort_field 'buy_cost' %}
-                        {% sort_link "<i class='icon-chevron-up'></i>" "buy_cost"  %}
-                        {{ CDR_COLUMN_NAME.buy_cost }}
-                        {% sort_link "<i class='icon-chevron-down'></i>" "-buy_cost"  %}
-                    {% else %}
-                        {% sort_link CDR_COLUMN_NAME.buy_cost "-buy_cost"  %}
-                    {% endifequal %}
-                </th>
+                {% if user.is_superuser %}
+                    <th>
+                        {% ifequal col_name_with_order.sort_field 'buy_rate' %}
+                            {% sort_link "<i class='icon-chevron-up'></i>" "buy_rate"  %}
+                            {{ CDR_COLUMN_NAME.buy_rate }}
+                            {% sort_link "<i class='icon-chevron-down'></i>" "-buy_rate"  %}
+                        {% else %}
+                            {% sort_link CDR_COLUMN_NAME.buy_rate "-buy_rate"  %}
+                        {% endifequal %}
+                    </th>
+                    <th>
+                        {% ifequal col_name_with_order.sort_field 'buy_cost' %}
+                            {% sort_link "<i class='icon-chevron-up'></i>" "buy_cost"  %}
+                            {{ CDR_COLUMN_NAME.buy_cost }}
+                            {% sort_link "<i class='icon-chevron-down'></i>" "-buy_cost"  %}
+                        {% else %}
+                            {% sort_link CDR_COLUMN_NAME.buy_cost "-buy_cost"  %}
+                        {% endifequal %}
+                    </th>
+                {% endif %}
                 <th>
                     {% ifequal col_name_with_order.sort_field 'sell_rate' %}
                         {% sort_link "<i class='icon-chevron-up'></i>" "sell_rate"  %}
@@ -320,8 +322,10 @@
                   {% endcache %}
                 </td>
                 <td>{{ row.accountcode }}</td>
-                <td>{{ row.buy_rate }}</td>
-                <td>{{ row.buy_cost }}</td>
+                {% if user.is_superuser %}
+                    <td>{{ row.buy_rate }}</td>
+                    <td>{{ row.buy_cost }}</td>
+                {% endif %}
                 <td>{{ row.sell_rate }}</td>
                 <td>{{ row.sell_cost }}</td>
                 <td>
@@ -440,7 +444,9 @@
                 </td>
                 <td>{{ td.calldate__count }}</td>
                 <td>{{ td.duration__avg|conv_min }}</td>
-                <td>{{ td.buy_cost }}</td>
+                {% if user.is_superuser %}
+                    <td>{{ td.buy_cost }}</td>
+                {% endif %}
                 <td>{{ td.sell_cost }}</td>
             </tr>
             {% endfor %}
