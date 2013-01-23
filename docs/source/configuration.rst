@@ -12,6 +12,7 @@ Contents:
     ./configuration/configuration-file
     ./configuration/configuration-country-reporting
     ./configuration/configuration-asterisk
-    ./configuration/configuration-freeswitch    
+    ./configuration/configuration-freeswitch
     ./configuration/configuration-reset-data
     ./celery/celery-configuration
+    ./configuration/configuration-acl-control
