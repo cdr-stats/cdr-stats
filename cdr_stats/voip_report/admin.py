@@ -21,6 +21,7 @@ from django.shortcuts import render_to_response
 from django.db.models import Sum, Avg, Count
 from django.contrib.admin.options import IncorrectLookupParameters
 from django.contrib.admin.views.main import ERROR_FLAG
+from django.conf import settings
 
 from voip_billing.tasks import VoIPbilling
 from voip_billing.forms import FileImport
@@ -411,16 +412,31 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
                 kwargs['updated_date__lte'] = end_date
 
             VoIPCall_Report.objects.filter(**kwargs).update(billed=False)
+
             #call_rebill_list = VoIPCall_Report.objects.filter(**kwargs).update(billed=False)
             #if call_rebill_list:
             #    for call in call_rebill_list:
             #        # call re-bill
             #        call._bill(call.id, call.voipplan_id)
+
+            #TODO: Update cdr_common buy_cost/sell_cost + daily/monthly aggregate
+            daily_query_var = {}
+            daily_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m-%d'),
+                                                '$lt': end_date.strftime('%Y-%m-%d')}
+
+            daily_data = settings.DBCON[settings.MONGO_CDRSTATS['DAILY_ANALYTIC']]
+            daily_data.remove(daily_query_var)
+
+            monthly_query_var = {}
+            monthly_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m'),
+                                                  '$lt': end_date.strftime('%Y-%m')}
+
+            monthly_data = settings.DBCON[settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC']]
+            monthly_data.remove(monthly_query_var)
         else:
             tday = datetime.today()
             to_date = from_date = tday.strftime('%Y-%m-%d')
-            form = RebillForm(initial={'from_date': from_date,
-                                       'to_date': to_date})
+            form = RebillForm(initial={'from_date': from_date, 'to_date': to_date})
 
 
         ctx = RequestContext(request, {
