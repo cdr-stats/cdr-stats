@@ -48,13 +48,21 @@
     </form>
     {% endblock %}
 
-    {% block object-tools %}
-    {% endblock %}
+    {% if call_rebill_list %}
+        <table border="1">
+        <tr>
+            <th>{% trans "Voip calls are going rebilled" %} :</th>
+        </tr>
+        {% for row in call_rebill_list %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+            <td>
+            {{ row }}
+            </td>
+        </tr>
+        {% endfor %}
+        </table>
+    {% endif %}
 
-
-
-    {% block extra_data %}
-    {% endblock %}
 
   </div>
 {% endblock %}

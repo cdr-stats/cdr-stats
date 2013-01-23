@@ -22,6 +22,7 @@ from django.db.models import Sum, Avg, Count
 from django.contrib.admin.options import IncorrectLookupParameters
 from django.contrib.admin.views.main import ERROR_FLAG
 from django.conf import settings
+from django.contrib import messages
 
 from voip_billing.tasks import VoIPbilling
 from voip_billing.forms import FileImport
@@ -388,8 +389,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
         Re-billing successful voip calls
         """
         opts = VoIPCall_Report._meta
-
-
+        call_rebill_list = []
         if request.method == 'POST':
             form = RebillForm(request.POST)
             if "from_date" in request.POST:
@@ -411,9 +411,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
             if start_date == '' and end_date:
                 kwargs['updated_date__lte'] = end_date
 
-            VoIPCall_Report.objects.filter(**kwargs).update(billed=False)
-
-            #call_rebill_list = VoIPCall_Report.objects.filter(**kwargs).update(billed=False)
+            call_rebill_list = VoIPCall_Report.objects.filter(**kwargs).update(billed=False)
             #if call_rebill_list:
             #    for call in call_rebill_list:
             #        # call re-bill
@@ -433,6 +431,8 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
 
             monthly_data = settings.DBCON[settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC']]
             monthly_data.remove(monthly_query_var)
+            msg = _('Re-billing is done')
+            messages.info(request, msg)
         else:
             tday = datetime.today()
             to_date = from_date = tday.strftime('%Y-%m-%d')
@@ -445,7 +445,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
             'model_name': opts.object_name.lower(),
             'app_label': _('VoIP Report'),
             'title': _('Rebill VoPI Call'),
-
+            'call_rebill_list': call_rebill_list,
         })
         return render_to_response('admin/voip_report/voipcall_report/rebilling.html',
             context_instance=ctx)
