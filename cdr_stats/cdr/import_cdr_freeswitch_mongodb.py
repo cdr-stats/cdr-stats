@@ -251,12 +251,12 @@ def calculate_call_cost(voipplan_id, destination_number, billsec):
     sell_rate = 0.0
     sell_cost = 0.0
 
-    retail_paln_id = ''
+    retail_plan_id = ''
 
     for i in query:
         buy_rate = float(i.carrier_rate)
         sell_rate = float(i.retail_rate)
-        retail_paln_id = i.rrid
+        retail_plan_id = i.rrid
 
         try:
             buy_cost = (float(buy_rate) * float(float(billsec)/60))
@@ -273,7 +273,7 @@ def calculate_call_cost(voipplan_id, destination_number, billsec):
         'buy_cost': round(buy_cost, 4),
         'sell_rate': sell_rate,
         'sell_cost': round(sell_cost, 4),
-        'retail_paln_id': retail_paln_id,
+        'retail_paln_id': retail_plan_id,
     }
     return data
 
@@ -283,11 +283,11 @@ def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest
                                uuid, remote_media_ip, start_uepoch, answer_uepoch, end_uepoch,
                                mduration, billmsec, read_codec, write_codec, cdr_type,
                                cdr_object_id, country_id, authorized,
-                               buy_rate, buy_cost, sell_rate, sell_cost, retail_paln_id):
+                               buy_rate, buy_cost, sell_rate, sell_cost, retail_plan_id):
     """
     Common function to create global cdr record
     """
-    #print call_cost
+
     cdr_record = {
         'switch_id': switch_id,
         'caller_id_number': caller_id_number,
@@ -317,14 +317,14 @@ def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest
         'buy_cost': buy_cost,
         'sell_rate': sell_rate,
         'sell_cost': sell_cost,
-        'retail_paln_id': retail_paln_id,
+        'retail_plan_id': retail_plan_id,
     }
     return cdr_record
 
 
 def common_function_to_create_analytic(date_start_uepoch, start_uepoch, switch_id,
                                        country_id, accountcode, hangup_cause_id, duration,
-                                       buy_cost, sell_cost, retail_paln_id):
+                                       buy_cost, sell_cost, retail_plan_id):
     """
     Common function to create DAILY_ANALYTIC, MONTHLY_ANALYTIC
     """
@@ -441,7 +441,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         buy_cost = call_rate['buy_cost']
         sell_rate = call_rate['sell_rate']
         sell_cost = call_rate['sell_cost']
-        retail_paln_id = call_rate['retail_paln_id']
+        retail_plan_id = call_rate['retail_plan_id']
 
 
         # Prepare global CDR
@@ -450,7 +450,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             accountcode, direction, uuid, remote_media_ip, start_uepoch, answer_uepoch,
             end_uepoch, mduration, billmsec, read_codec, write_codec,
             CDR_TYPE["freeswitch"], cdr['_id'], country_id, authorized,
-            buy_rate, buy_cost, sell_rate, sell_cost, retail_paln_id)
+            buy_rate, buy_cost, sell_rate, sell_cost, retail_plan_id)
 
         # Append cdr to bulk_cdr list
         cdr_bulk_record.append(cdr_record)
@@ -472,7 +472,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         date_start_uepoch = cdr['variables']['start_uepoch'][:10]
         common_function_to_create_analytic(date_start_uepoch, start_uepoch, switch.id,
             country_id, accountcode, hangup_cause_id, duration,
-            buy_cost, sell_cost, retail_paln_id)
+            buy_cost, sell_cost, retail_plan_id)
 
         # Flag the CDR as imported
         importcdr_handler.update(

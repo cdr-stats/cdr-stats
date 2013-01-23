@@ -410,11 +410,12 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
             if start_date == '' and end_date:
                 kwargs['updated_date__lte'] = end_date
 
-            call_rebill_list = VoIPCall_Report.objects.filter(**kwargs)
-            if call_rebill_list:
-                for call in call_rebill_list:
-                    # call re-bill
-                    call._bill(call.id, call.voipplan_id)
+            VoIPCall_Report.objects.filter(**kwargs).update(billed=False)
+            #call_rebill_list = VoIPCall_Report.objects.filter(**kwargs).update(billed=False)
+            #if call_rebill_list:
+            #    for call in call_rebill_list:
+            #        # call re-bill
+            #        call._bill(call.id, call.voipplan_id)
         else:
             tday = datetime.today()
             to_date = from_date = tday.strftime('%Y-%m-%d')
