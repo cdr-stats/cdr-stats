@@ -13,7 +13,7 @@
 
 {% block content %}
   <div id="content-main">
-    
+
     {% if cl.formset.errors %}
         <p class="errornote">
         {% blocktrans count cl.formset.errors|length as counter %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
@@ -51,7 +51,7 @@
     {% if call_rebill_list %}
         <table border="1">
         <tr>
-            <th>{% trans "Voip calls are going rebilled" %} :</th>
+            <th>{% trans "Voip calls are going to be rebilled" %} :</th>
         </tr>
         {% for row in call_rebill_list %}
         <tr class="{% cycle 'row1' 'row2' %}">
