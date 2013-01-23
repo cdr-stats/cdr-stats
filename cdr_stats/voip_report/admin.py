@@ -29,7 +29,7 @@ from voip_report.models import VoIPCall_Report, VoIPCall
 from voip_report.forms import VoipSearchForm, RebillForm
 from voip_report.function_def import get_disposition_id, get_disposition_name
 from user_profile.models import UserProfile
-from common.common_functions import variable_value
+from common.common_functions import variable_value, ceil_strdate
 from datetime import datetime
 import csv
 
@@ -384,13 +384,37 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
 
     def rebilling(self, request):
         """
-        Re-billing unsuccessful voip calls
+        Re-billing successful voip calls
         """
         opts = VoIPCall_Report._meta
 
 
         if request.method == 'POST':
-            pass
+            form = RebillForm(request.POST)
+            if "from_date" in request.POST:
+                # From
+                from_date = request.POST['from_date']
+                start_date = ceil_strdate(from_date, 'start')
+
+            if "to_date" in request.POST:
+                # To
+                to_date = request.POST['to_date']
+                end_date = ceil_strdate(to_date, 'end')
+
+            kwargs = {}
+            kwargs['billed'] = True
+            if start_date and end_date:
+                kwargs['updated_date__range'] = (start_date, end_date)
+            if start_date and end_date == '':
+                kwargs['updated_date__gte'] = start_date
+            if start_date == '' and end_date:
+                kwargs['updated_date__lte'] = end_date
+
+            call_rebill_list = VoIPCall_Report.objects.filter(**kwargs)
+            if call_rebill_list:
+                for call in call_rebill_list:
+                    # call re-bill
+                    call._bill(call.id, call.voipplan_id)
         else:
             tday = datetime.today()
             to_date = from_date = tday.strftime('%Y-%m-%d')
