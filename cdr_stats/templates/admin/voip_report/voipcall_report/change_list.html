@@ -18,11 +18,11 @@
         <caption>{% trans "Search Option" %}</caption>
         {% for field in form %}
             <tr>
-                <td>
+                <th>
                     <label class="control-label" for="{{ field.auto_id }}">
                         {{ field.label }}
                     </label>
-                </td>
+                </th>
                 <td>{{ field }}
                     {% if field.errors %}
                         <span>{{ field.errors|removetags:"ul li"|safe }}</span>

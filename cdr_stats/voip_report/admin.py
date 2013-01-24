@@ -23,12 +23,14 @@ from django.contrib.admin.options import IncorrectLookupParameters
 from django.contrib.admin.views.main import ERROR_FLAG
 from django.conf import settings
 from django.contrib import messages
+from django import forms
 
 from voip_billing.tasks import VoIPbilling
 from voip_billing.forms import FileImport
 from voip_billing.function_def import check_celeryd_process
 from voip_report.models import VoIPCall_Report, VoIPCall
 from voip_report.forms import VoipSearchForm, RebillForm
+from voip_report.constants import CONFIRMATION_TYPE
 from voip_report.function_def import get_disposition_id, get_disposition_name
 from user_profile.models import UserProfile
 from common.common_functions import variable_value, ceil_strdate
@@ -390,6 +392,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
         """
         opts = VoIPCall_Report._meta
         call_rebill_list = []
+        call_rebill_count = 0
         if request.method == 'POST':
             form = RebillForm(request.POST)
             if "from_date" in request.POST:
@@ -411,32 +414,59 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
             if start_date == '' and end_date:
                 kwargs['updated_date__lte'] = end_date
 
-            call_rebill_list = VoIPCall_Report.objects.filter(**kwargs).update(billed=False)
-            #if call_rebill_list:
-            #    for call in call_rebill_list:
-            #        # call re-bill
-            #        call._bill(call.id, call.voipplan_id)
+            call_rebill = VoIPCall_Report.objects.filter(**kwargs)
+            call_rebill_count = call_rebill.count()
 
-            #TODO: Update cdr_common buy_cost/sell_cost + daily/monthly aggregate
-            daily_query_var = {}
-            daily_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m-%d'),
-                                                '$lt': end_date.strftime('%Y-%m-%d')}
+            if "confirmation" in request.POST:
+                confirmation = request.POST.get('confirmation')
+                # To confirm re-billing
+                if confirmation == CONFIRMATION_TYPE.NO:
+                    request.POST['confirmation'] = CONFIRMATION_TYPE.YES
+                    form.fields['from_date'].widget = form.fields['to_date'].widget = forms.HiddenInput()
+                    ctx = RequestContext(request, {
+                        'form': form,
+                        'start_date': start_date,
+                        'end_date': end_date,
+                        'opts': opts,
+                        'model_name': opts.object_name.lower(),
+                        'app_label': _('VoIP Report'),
+                        'title': _('Rebill VoPI Call'),
+                        'call_rebill_count': call_rebill_count,
+                        'CONFIRMATION_TYPE': CONFIRMATION_TYPE,
+                        })
+                    return render_to_response('admin/voip_report/voipcall_report/rebilling.html',
+                        context_instance=ctx)
 
-            daily_data = settings.DBCON[settings.MONGO_CDRSTATS['DAILY_ANALYTIC']]
-            daily_data.remove(daily_query_var)
+                # re-billing is confirmed by user
+                if confirmation == CONFIRMATION_TYPE.YES:
+                    call_rebill_list = call_rebill.update(billed=False)
+                    #if call_rebill_list:
+                    #    for call in call_rebill_list:
+                    #        # call re-bill
+                    #        call._bill(call.id, call.voipplan_id)
 
-            monthly_query_var = {}
-            monthly_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m'),
-                                                  '$lt': end_date.strftime('%Y-%m')}
+                    #TODO: Update cdr_common buy_cost/sell_cost + daily/monthly aggregate
+                    daily_query_var = {}
+                    daily_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m-%d'),
+                                                        '$lt': end_date.strftime('%Y-%m-%d')}
 
-            monthly_data = settings.DBCON[settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC']]
-            monthly_data.remove(monthly_query_var)
-            msg = _('Re-billing is done')
-            messages.info(request, msg)
+                    daily_data = settings.DBCON[settings.MONGO_CDRSTATS['DAILY_ANALYTIC']]
+                    daily_data.remove(daily_query_var)
+
+                    monthly_query_var = {}
+                    monthly_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m'),
+                                                          '$lt': end_date.strftime('%Y-%m')}
+
+                    monthly_data = settings.DBCON[settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC']]
+                    monthly_data.remove(monthly_query_var)
+                    msg = _('Re-billing is done')
+                    messages.info(request, msg)
+                    request.POST['confirmation'] = CONFIRMATION_TYPE.NO
         else:
             tday = datetime.today()
             to_date = from_date = tday.strftime('%Y-%m-%d')
-            form = RebillForm(initial={'from_date': from_date, 'to_date': to_date})
+            form = RebillForm(initial={'from_date': from_date, 'to_date': to_date,
+                                       'confirmation': CONFIRMATION_TYPE.NO})
 
 
         ctx = RequestContext(request, {
@@ -446,6 +476,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
             'app_label': _('VoIP Report'),
             'title': _('Rebill VoPI Call'),
             'call_rebill_list': call_rebill_list,
+            'call_rebill_count': call_rebill_count,
         })
         return render_to_response('admin/voip_report/voipcall_report/rebilling.html',
             context_instance=ctx)
