@@ -19,18 +19,13 @@ General
 What is CDR-Stats?
 ------------------
 
-**Answer:** .
-
-CDR-Stats is a free and open source web based Call Detail Record analysis application with the ability
-to display reports and graphs.
+**Answer:** CDR-Stats is a free and open source web based Call Detail Record analysis application with the ability to display reports and graphs.
 
 
 Why should I use CDR-Stats?
 ---------------------------
 
-**Answer:** .
-
-If you have call detail records from an office PBX, telecoms switch(s), or carrier CDR to analyse
+**Answer:** If you have call detail records from an office PBX, telecoms switch(s), or carrier CDR to analyse
 then CDR-Stats is a useful tool to analyse the data and look for patterns in the traffic that
 may indicate problems or potential fraud. Furthermore, CDR-Stats can be configured to send email
 alerts on detection of unusual activity, as well as send daily reports on traffic.
@@ -39,13 +34,11 @@ alerts on detection of unusual activity, as well as send daily reports on traffi
 How to start over, delete CDRs and relaunch the import ?
 --------------------------------------------------------
 
-**Answer:** .
-
-First, stop celery and drop your current mongoDB, you can do this with this command::
+**Answer:** First, stop celery and drop your current mongoDB, you can do this with this command::
 
     $ mongo cdr-stats --eval 'db.dropDatabase();'
 
-Update all your CDRs to be reimported as we flag them after import. This next step is dependant on your CDR store, 
+Update all your CDRs to be reimported as we flag them after import. This next step is dependant on your CDR store,
 
 Mysql with Asterisk: run this command on the CDR Database::
 
@@ -62,9 +55,7 @@ Start Celery, and check CDR are being imported correctly.
 How to debug mail connectivity?
 -------------------------------
 
-**Answer:** .
-
-Use mail_debug to test the mail connectivity::
+**Answer:** Use mail_debug to test the mail connectivity::
 
     $ cd /usr/share/cdr_stats
     $ workon cdr-stats
@@ -75,7 +66,7 @@ Use mail_debug to test the mail connectivity::
 What should I do if I have problems?
 ------------------------------------
 
-**Answer:** .
+**Answer:**
 
 - Review the installation script, and check that services are running.
 - Read the documentation contained in the CDR-Stats website.
