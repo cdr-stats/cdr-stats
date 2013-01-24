@@ -52,6 +52,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User)
     voipplan = models.ForeignKey(VoIPPlan, verbose_name=_('VoIP Plan'),
         help_text=_("Select VoIP Plan"))
+    accountcode = models.CharField(max_length=50, verbose_name=_('Account code'))
     address = models.CharField(blank=True, null=True,
             max_length=200, verbose_name=_('Address'))
     city = models.CharField(max_length=120, blank=True, null=True,
@@ -73,7 +74,7 @@ class UserProfile(models.Model):
     language = LanguageField(blank=True, null=True, verbose_name=_('Language'))
     note = models.CharField(max_length=250, blank=True, null=True,
             verbose_name=_('Note'))
-    accountcode = models.CharField(max_length=50, null=True, blank=True)
+
     multiple_email = models.TextField(blank=True, null=True,
         verbose_name=_('Report mail list'),
         help_text=_('Enter a valid e-mail address separated by commas.'))

@@ -15,7 +15,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from cdr.forms import CdrSearchForm
 from voip_report.models import VOIPCALL_DISPOSITION
-from voip_report.constants import BILLED_STATUS_LIST
+from voip_report.constants import BILLED_STATUS_LIST, CONFIRMATION_TYPE
 
 
 voip_call_disposition_list = []
@@ -44,6 +44,9 @@ class RebillForm(CdrSearchForm):
     """
     Rebill VoIP call
     """
+    confirmation = forms.ChoiceField(choices=list(CONFIRMATION_TYPE),
+        required=False)
     def __init__(self, *args, **kwargs):
         super(RebillForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['from_date', 'to_date']
+        self.fields.keyOrder = ['from_date', 'to_date', 'confirmation']
+        self.fields['confirmation'].widget = forms.HiddenInput()

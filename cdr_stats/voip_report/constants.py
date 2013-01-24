@@ -22,3 +22,6 @@ class BILLED_STATUS_LIST(Choice):
     no = 'no', _('NO')
 
 
+class CONFIRMATION_TYPE(Choice):
+    YES = 'YES', _('Yes')
+    NO = 'NO', _('No')
