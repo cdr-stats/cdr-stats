@@ -153,6 +153,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
             if request.GET.get('disposition__exact'):
                 status = variable_value(request, 'disposition__exact')
             if request.GET.get('billed__exact'):
+                #TODO: var billed never used
                 billed = variable_value(request, 'billed')
             form = VoipSearchForm(initial={'status': status,
                                            'from_date': from_date,
