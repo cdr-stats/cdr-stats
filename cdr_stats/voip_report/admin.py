@@ -121,7 +121,6 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
         )
         return my_urls + urls
 
-
     def changelist_view(self, request, extra_context=None):
         """
         Override changelist_view method of django-admin for search parameters
@@ -185,7 +184,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
         selection_note_all = ungettext('%(total_count)s selected',
             'All %(total_count)s selected', cl.result_count)
 
-        select_data =  {"updated_date": "SUBSTR(CAST(updated_date as CHAR(30)),1,10)"}
+        select_data = {"updated_date": "SUBSTR(CAST(updated_date as CHAR(30)),1,10)"}
 
         # Get Total Rrecords from VoIPCall Report table for Daily Call Report
         kwargs['billed'] = True
@@ -210,7 +209,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
             max_duration = max([x['sessiontime_real__sum'] for x in total_data])
             total_duration = sum([x['sessiontime_real__sum'] for x in total_data])
             total_calls = sum([x['updated_date__count'] for x in total_data])
-            total_avg_duration = (sum([x['sessiontime_real__avg'] for x in total_data]))/total_data.count()
+            total_avg_duration = (sum([x['sessiontime_real__avg'] for x in total_data])) / total_data.count()
             total_carrier_cost = sum([x['carrier_cost__sum'] for x in total_data])
             total_retail_cost = sum([x['retail_cost__sum'] for x in total_data])
             total_profit = sum([x[1] for x in profit])
@@ -233,24 +232,21 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
             'app_label': _('VoIP Report'),
             'title': _('VoIP Call Report'),
             'total_data': total_data,
-            'total_duration':total_duration,
-            'total_calls':total_calls,
-            'total_avg_duration':total_avg_duration,
+            'total_duration': total_duration,
+            'total_calls': total_calls,
+            'total_avg_duration': total_avg_duration,
             'total_carrier_cost': total_carrier_cost,
             'total_retail_cost': total_retail_cost,
             'total_profit': total_profit,
-            'max_duration':max_duration,
+            'max_duration': max_duration,
         }
         return super(VoIPCall_ReportAdmin, self).changelist_view(request, extra_context=ctx)
-
 
     def import_voip_report(self, request):
         """
         Import CSV file of VoIP Report
         """
         opts = VoIPCall_Report._meta
-        app_label = opts.app_label
-        file_exts = ('.csv')
         rdr = ''
         msg = ''
         success_import_list = []
@@ -290,21 +286,21 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
 
                             user_voip_plan = \
                                 UserProfile.objects.get(user=request.user)
-                            voipplan_id = user_voip_plan.voipplan_id #  1
+                            voipplan_id = user_voip_plan.voipplan_id
                             try:
                                 # Create VoIP call record
                                 voipcall = VoIPCall.objects.create(
-                                         user=request.user,
-                                         recipient_number=row[0],
-                                         callid=1,
-                                         callerid=row[1],
-                                         dnid=1,
-                                         nasipaddress='0.0.0.0',
-                                         sessiontime=row[3],
-                                         sessiontime_real=row[4],
-                                         starting_date=starting_date,
-                                         disposition=get_disposition_id(row[2]),
-                                         )
+                                    user=request.user,
+                                    recipient_number=row[0],
+                                    callid=1,
+                                    callerid=row[1],
+                                    dnid=1,
+                                    nasipaddress='0.0.0.0',
+                                    sessiontime=row[3],
+                                    sessiontime_real=row[4],
+                                    starting_date=starting_date,
+                                    disposition=get_disposition_id(row[2]),
+                                )
 
                                 response = VoIPbilling.delay(voipcall_id=voipcall.id,
                                                              voipplan_id=voipplan_id)
@@ -322,7 +318,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
                                 # Voipcall status get changed according
                                 # to disposition
                                 response = voipcall._update_voip_call_status(
-                                                            res['voipcall_id'])
+                                    res['voipcall_id'])
 
                                 voipcall_record_count = voipcall_record_count + 1
                                 msg = '%d Record(s) are uploaded successfully\
@@ -339,14 +335,14 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
             form = FileImport()
 
         ctx = RequestContext(request, {
-        'form': form,
-        'opts': opts,
-        'model_name': opts.object_name.lower(),
-        'app_label': _('VoIP Report'),
-        'success_import_list': success_import_list,
-        'error_import_list': error_import_list,
-        'msg': msg,
-        'title': _('Import VoIP Report'),
+            'form': form,
+            'opts': opts,
+            'model_name': opts.object_name.lower(),
+            'app_label': _('VoIP Report'),
+            'success_import_list': success_import_list,
+            'error_import_list': error_import_list,
+            'msg': msg,
+            'title': _('Import VoIP Report'),
         })
         return render_to_response('admin/voip_report/voipcall_report/import_voip_report.html',
                context_instance=ctx)
@@ -363,7 +359,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
         qs = request.session['admin_voipcall_record_qs']
 
         writer.writerow(['user', 'callid', 'callerid', 'dnid',
-                         'recipient_number', 'starting_date','sessiontime',
+                         'recipient_number', 'starting_date', 'sessiontime',
                          'sessiontime_real', 'disposition', 'billed',
                          'carrier_cost', 'retail_cost', 'voipplan', 'gateway'])
         for i in qs:
@@ -437,7 +433,6 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
             tday = datetime.today()
             to_date = from_date = tday.strftime('%Y-%m-%d')
             form = RebillForm(initial={'from_date': from_date, 'to_date': to_date})
-
 
         ctx = RequestContext(request, {
             'form': form,
