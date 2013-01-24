@@ -287,11 +287,11 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
                                              '%Y-%m-%d %H:%M:%S')
                             else:
                                 starting_date = datetime.now()
-                            
+
                             user_voip_plan = \
                                 UserProfile.objects.get(user=request.user)
                             voipplan_id = user_voip_plan.voipplan_id #  1
-                            try:                        
+                            try:
                                 # Create VoIP call record
                                 voipcall = VoIPCall.objects.create(
                                          user=request.user,
@@ -304,8 +304,8 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
                                          sessiontime_real=row[4],
                                          starting_date=starting_date,
                                          disposition=get_disposition_id(row[2]),
-                                         )                                
-                                
+                                         )
+
                                 response = VoIPbilling.delay(voipcall_id=voipcall.id,
                                                              voipplan_id=voipplan_id)
 
@@ -346,7 +346,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
         'success_import_list': success_import_list,
         'error_import_list': error_import_list,
         'msg': msg,
-        'title': _('Import VoPI Report'),
+        'title': _('Import VoIP Report'),
         })
         return render_to_response('admin/voip_report/voipcall_report/import_voip_report.html',
                context_instance=ctx)
@@ -444,7 +444,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
             'opts': opts,
             'model_name': opts.object_name.lower(),
             'app_label': _('VoIP Report'),
-            'title': _('Rebill VoPI Call'),
+            'title': _('Rebill VoIP Call'),
             'call_rebill_list': call_rebill_list,
         })
         return render_to_response('admin/voip_report/voipcall_report/rebilling.html',
