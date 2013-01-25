@@ -190,7 +190,7 @@ def import_cdr_asterisk(shell=False):
             buy_cost = call_rate['buy_cost']
             sell_rate = call_rate['sell_rate']
             sell_cost = call_rate['sell_cost']
-            retail_paln_id = call_rate['retail_paln_id']
+            retail_plan_id = call_rate['retail_plan_id']
 
             # Prepare global CDR
             cdr_record = {
@@ -223,7 +223,7 @@ def import_cdr_asterisk(shell=False):
                 'buy_cost': buy_cost,
                 'sell_rate': sell_rate,
                 'sell_cost': sell_cost,
-                'retail_paln_id': retail_paln_id,
+                'retail_plan_id': retail_plan_id,
             }
 
             # record global CDR
