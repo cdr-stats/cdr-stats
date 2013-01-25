@@ -406,7 +406,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
                 int(cdr['variables']['end_uepoch'][:10]))
 
         # Check Destination number
-        print(cdr)
+        #print(cdr)
         destination_number = cdr['callflow'][0]['caller_profile']['destination_number']
 
         if len(destination_number) <= settings.INTERNAL_CALL:
