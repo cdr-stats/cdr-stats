@@ -30,7 +30,7 @@ from voip_billing.forms import FileImport
 from voip_billing.function_def import check_celeryd_process
 from voip_report.models import VoIPCall_Report, VoIPCall
 from voip_report.forms import VoipSearchForm, RebillForm
-from voip_report.constants import CONFIRMATION_TYPE
+from voip_report.constants import CONFIRMATION_TYPE, BILLED_STATUS_LIST
 from voip_report.function_def import get_disposition_id, get_disposition_name
 from user_profile.models import UserProfile
 from common.common_functions import variable_value, ceil_strdate
@@ -66,7 +66,7 @@ def voipcall_search_admin_form_fun(request):
 
     # Assign form field value to local variable
     disposition = variable_value(request, 'status')
-    billed = variable_value(request, 'billed')
+    billed = variable_value(request, 'billed')      
     query_string = ''
 
     if start_date and end_date:
@@ -86,10 +86,10 @@ def voipcall_search_admin_form_fun(request):
         disposition_string = 'disposition__exact=' + disposition
         query_string = return_query_string(query_string,
             disposition_string)
-
-    if billed and billed != 'ALL':
-        billed_string = 'billed__exact=' + billed
-        query_string = return_query_string(query_string, billed_string)
+    
+    if billed and billed != BILLED_STATUS_LIST.ALL:        
+        billed_string = 'billed=' + billed        
+        query_string = return_query_string(query_string, billed_string)        
 
     return query_string
 
@@ -146,6 +146,7 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
                                         % (opts.app_label, opts.object_name.lower(), query_string))
         else:
             status = ''
+            billed = ''
             tday = datetime.today()
             to_date = from_date = tday.strftime('%Y-%m-%d')
             if request.GET.get('updated_date__gte'):
@@ -154,10 +155,11 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
                 to_date = variable_value(request, 'updated_date__lte')[0:10]
             if request.GET.get('disposition__exact'):
                 status = variable_value(request, 'disposition__exact')
-            if request.GET.get('billed__exact'):
-                #TODO: var billed never used
+            if request.GET.get('billed'):                
                 billed = variable_value(request, 'billed')
+                
             form = VoipSearchForm(initial={'status': status,
+                                           'billed': billed,
                                            'from_date': from_date,
                                            'to_date': to_date})
 

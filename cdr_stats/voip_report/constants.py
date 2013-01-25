@@ -17,9 +17,9 @@ from common.utils import Choice
 
 
 class BILLED_STATUS_LIST(Choice):
-    all = 'all', _('ALL')
-    yes = 'yes', _('YES')
-    no = 'no', _('NO')
+    ALL = 'ALL', _('ALL')
+    YES = 1, _('YES')
+    NO = 0, _('NO')
 
 
 class CONFIRMATION_TYPE(Choice):
