@@ -35,7 +35,7 @@
      <thead><tr>
      {% for field in inline_admin_formset.fields %}
        {% if not field.widget.is_hidden %}
-         <th{% if forloop.first %} colspan="2"{% endif %}{% if field.required %} class="required"{% endif %}>Select SMS Plan</th>
+         <th{% if forloop.first %} colspan="2"{% endif %}{% if field.required %} class="required"{% endif %}>Select Plan</th>
        {% endif %}
      {% endfor %}
      {% if inline_admin_formset.formset.can_delete %}<th>{% trans "Delete?" %}</th>{% endif %}
