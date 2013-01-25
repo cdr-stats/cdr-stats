@@ -273,7 +273,7 @@ def calculate_call_cost(voipplan_id, destination_number, billsec):
         'buy_cost': round(buy_cost, 4),
         'sell_rate': sell_rate,
         'sell_cost': round(sell_cost, 4),
-        'retail_paln_id': retail_plan_id,
+        'retail_plan_id': retail_plan_id,
     }
     return data
 
