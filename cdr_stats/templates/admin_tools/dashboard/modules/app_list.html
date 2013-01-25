@@ -43,6 +43,11 @@
                     <a href="/admin/cdr/switch/import_cdr/">{% trans "Import CDR" %}</a>
                 </li>
             {% endifequal %}
+            {% ifequal model.title 'VoIP Plans' %}
+                <li>
+                    <a href="/admin/voip_report/voipcall_report/rebilling/">{% trans "Rebilling" %}</a>
+                </li>
+            {% endifequal %}
             {% endspaceless %}
             {% endfor %}
         </ul>
