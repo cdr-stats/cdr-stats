@@ -255,8 +255,7 @@ class VoIPCarrierPlan(Model):
     callsent = models.IntegerField(null=True, blank=True,
                                       verbose_name=_("Message Sent"))
     voip_provider_id = models.ForeignKey(Provider, db_column="voip_provider_id",
-                                         verbose_name=_("Provider"),
-                                         null=True, blank=True,
+                                         verbose_name=_("Provider"),                                         
                                          help_text=_("Select Provider"))
     created_date = models.DateTimeField(auto_now_add=True, verbose_name=_("Date"))
     updated_date = models.DateTimeField(auto_now=True)
