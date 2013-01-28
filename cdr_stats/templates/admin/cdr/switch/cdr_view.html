@@ -13,6 +13,11 @@
 
 {% block content %}
 <link href="{{STATIC_URL}}cdr-stats/css/admin_custom.css" rel="stylesheet">
+<script>
+  $(function() {
+    $( "#tabs" ).tabs();
+  });
+</script>
 <div id="content-main">
   {% block custom-search %}
     <form class="well" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
@@ -86,8 +91,12 @@
           <!--<li><a href="rebilling/" class="addlink">{% trans "Rebilling" %}</a></li>-->
         </ul>
     {% endblock %}
-
-
+  <div id="tabs">
+    <ul>
+    <li><a href="#tabs-1">{% trans "Call Detail Records" %}</a></li>
+    <li><a href="#tabs-2">{% trans "Report By Day" %}</a></li>    
+    </ul>
+    <div id="tabs-1">
     <div class="module" id="changelist">
       <div class="result">
         <table>
@@ -289,7 +298,8 @@
         {% if rows %}
             {% paginate %}
         {% endif %}
-
+      </div>
+      <div id="tabs-2">  
       <div class="module" id="changelist">
         <div class="result">          
         <table class="table table-striped table-bordered table-condensed">            
@@ -339,5 +349,7 @@
         </table>
       </div>
       </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

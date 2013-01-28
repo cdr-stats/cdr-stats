@@ -444,7 +444,7 @@ class SwitchAdmin(admin.ModelAdmin):
                     'CDR_COLUMN_NAME': CDR_COLUMN_NAME,
                     'opts': opts,
                     'model_name': opts.object_name.lower(),
-                    'app_label': _('VoIP Billing'),
+                    'app_label': _('Cdr'),
                 })
                 logging.debug('CDR View End')
                 return render_to_response(template_name, context_instance=template_data)
@@ -622,7 +622,7 @@ class SwitchAdmin(admin.ModelAdmin):
             'CDR_COLUMN_NAME': CDR_COLUMN_NAME,
             'opts': opts,
             'model_name': opts.object_name.lower(),
-            'app_label': _('VoIP Billing'),
+            'app_label': _('Cdr'),
         })
         logging.debug('CDR View End')            
         return render_to_response(template_name, context_instance=template_data)        
