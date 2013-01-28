@@ -45,6 +45,9 @@
             {% endifequal %}
             {% ifequal model.title 'VoIP Plans' %}
                 <li>
+                    <a href="/admin/voip_billing/voipplan/cdr_view/">{% trans "CDR view" %}</a>
+                </li>
+                <li>
                     <a href="/admin/voip_report/voipcall_report/rebilling/">{% trans "Rebilling" %}</a>
                 </li>
             {% endifequal %}
