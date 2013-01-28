@@ -32,19 +32,21 @@
 
     {% block custom-search %}
 
-        {% if form.confirmation.value == CONFIRMATION_TYPE.YES %}
-            <p>
-                <h3>
-                    {% trans "There are" %} {{ call_rebill_count }} {% trans "calls selected" %}
+    {% if form.confirmation.value == CONFIRMATION_TYPE.YES %}
+        <p>
+            <h3>
+                {% trans "There are" %} {{ call_rebill_count }} {% trans "calls selected" %}
+                {% trans "from" %} {{ start_date|date:"jS N Y" }}
+                {% trans "to" %} {{ end_date|date:"jS N Y" }}
+            </h3>
+        </p>
+    {% endif %}
 
-                        {% trans "from" %} {{ start_date|date:"jS N Y" }}
-
-                        {% trans "to" %} {{ end_date|date:"jS N Y" }},
-
-                    {% trans "do you wish to proceed with the rebilling?" %}
-                </h3>
-            </p>
-        {% endif %}
+    {% if call_rebill_count != 0 %}
+        <h3>
+            {% trans "Do you wish to proceed with the rebilling?" %}
+        </h3>
+    {% endif %}
 
     <form method="POST" action="." enctype="multipart/form-data">
         {% csrf_token %}
@@ -69,7 +71,6 @@
             {% endfor %}
 
             <tr>
-                <td>&nbsp;</td>
                 <td>
                     {% if form.confirmation.value == CONFIRMATION_TYPE.YES %}
                         {% if call_rebill_count != 0 %}
