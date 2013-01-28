@@ -179,12 +179,14 @@ class VoIPCall_ReportAdmin(admin.ModelAdmin):
         kwargs = {}
         if request.META['QUERY_STRING'] == '':
             tday = datetime.today()
-            kwargs['updated_date__gte'] = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
+            kwargs['updated_date__gte'] = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)            
             cl.root_query_set.filter(**kwargs)
+            cl.result_list = cl.result_list.filter(**kwargs)
+            cl.result_count = cl.result_list.count()
 
         cl.formset = None
         # Session variable get record set with searched option into export file
-        request.session['admin_voipcall_record_qs'] = cl.root_query_set
+        request.session['admin_voipcall_record_qs'] = cl.result_list
 
         selection_note_all = ungettext('%(total_count)s selected',
             'All %(total_count)s selected', cl.result_count)
