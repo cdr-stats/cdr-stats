@@ -69,10 +69,8 @@
       </table>
     {% endblock %}
 
-    {% block object-tools %}
-
-        
-        <center><h3>
+    {% block object-tools %}        
+        <center><h1>
         {% trans "calls detail records"|title %} -
         
         {% if start_date  %}
@@ -81,10 +79,8 @@
         {% if end_date  %}
             {% trans "to" %} {{ end_date|date:"jS N Y" }}
         {% endif %}
-        </h3></center>
-        
-
-        
+        </h1></center>
+                
         <ul class="object-tools">
           <li><a href="/cdr_export_csv/">{% trans "Export CSV file" %}</a></li>          
           <!--<li><a href="rebilling/" class="addlink">{% trans "Rebilling" %}</a></li>-->
@@ -266,30 +262,9 @@
 
                         {% if "cdr_object_id" in row %}
                             {% if perms.user_profile.cdr_detail %}
-                                <a data-toggle="modal" href="#modal-create-{{ row.cdr_object_id }}" class="ajax-modal-{{ row.cdr_object_id }}" url='/cdr_detail/{{ row.cdr_object_id }}/{{ row.switch_id }}' data-controls-modal='modal-create-content-{{ row.cdr_object_id }}'><img src="{{STATIC_URL}}cdr-stats/icons/zoom.png" class="elemtooltip" title="{% trans "Show details" %}"/></a>
+                                <a href='/cdr_detail/{{ row.cdr_object_id }}/{{ row.switch_id }}' target="_blank"><img src="{{STATIC_URL}}cdr-stats/icons/zoom.png" class="elemtooltip" title="{% trans "Show details" %}"/></a>
                             {% endif %}
-                        {% endif %}
-
-                        <script type="text/javascript" charset="utf-8">
-                            $(".ajax-modal-{{ row.cdr_object_id }}").live('click', function() {
-                                var url = $(this).attr('url');
-                                var modal_id = $(this).attr('data-controls-modal');
-                                url = url + "/?menu=off";
-                                $("#" + modal_id).load(url);
-                            });
-                        </script>
-                        <!-- modal content -->
-                        <div id="modal-create-{{ row.cdr_object_id }}" class="modal hide fade" >
-                            <div class="modal-header">
-                                <a class="close" data-dismiss="modal" >&times;</a>
-                                <h3>{% trans "Call Details" %}</h3>
-                            </div>
-                            <div class="modal-body" id="modal-create-content-{{ row.cdr_object_id }}">
-                            </div>
-                            <div class="modal-footer">
-                                <a href="#" class="btn" data-dismiss="modal">{% trans "Close" %}</a>
-                            </div>
-                        </div>
+                        {% endif %}                        
                     </div>
                 </td>
             </tr>
@@ -309,23 +284,15 @@
             {% trans "total calls"|title %} : {{ record_count }}
         </div>
         </form>
-
+      </div>
+      </div>
         {% if rows %}
             {% paginate %}
         {% endif %}
-    
-        <table class="table table-striped table-bordered table-condensed">
-            <caption class="graph_header">
-                {% trans "daily report"|title  %} -
-                <b>
-                {% if start_date  %}
-                    {{ start_date|date:"jS N Y" }}
-                {% endif %}
-                {% if end_date  %}
-                    {% trans "to" %} {{ end_date|date:"jS N Y" }}
-                {% endif %}
-                </b>
-            </caption>
+
+      <div class="module" id="changelist">
+        <div class="result">          
+        <table class="table table-striped table-bordered table-condensed">            
             <thead>
             <tr>
                 <th scope="col">{% trans "Date"  %}</th>

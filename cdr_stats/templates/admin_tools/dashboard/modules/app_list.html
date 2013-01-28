@@ -40,13 +40,13 @@
             </li>
             {% ifequal model.title 'Switches' %}
                 <li>
+                    <a href="/admin/cdr/switch/cdr_view/">{% trans "CDR view" %}</a>
+                </li>
+                <li>
                     <a href="/admin/cdr/switch/import_cdr/">{% trans "Import CDR" %}</a>
                 </li>
             {% endifequal %}
-            {% ifequal model.title 'VoIP Plans' %}
-                <li>
-                    <a href="/admin/voip_billing/voipplan/cdr_view/">{% trans "CDR view" %}</a>
-                </li>
+            {% ifequal model.title 'VoIP Plans' %}                
                 <li>
                     <a href="/admin/voip_report/voipcall_report/rebilling/">{% trans "Rebilling" %}</a>
                 </li>

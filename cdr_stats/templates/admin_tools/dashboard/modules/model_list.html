@@ -17,6 +17,7 @@
             <li>
                 {% if child.change_url %}
                     {% if child.title == "Switches" %}
+                        <a href="/admin/cdr/switch/cdr_view/">{% trans "CDR view" %}</a><br>
                         <a class="" href="/admin/cdr/switch/import_cdr/">{% trans "Import CDR" %}</a>
                     {% endif %}
                     {% if child.title == "VoIP Plans" %}
