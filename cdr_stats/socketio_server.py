@@ -52,8 +52,8 @@ class MyDaemon(Daemon):
         self.logger = logging.getLogger("socketio_server")
         self.logger.info("Creating websocket-server")
         SocketIOServer((settings.SOCKETIO_HOST, settings.SOCKETIO_PORT),
-                        application, resource="socket.io",
-                        log=StdErrWrapper()).serve_forever()
+            application, resource="socket.io",
+            log=StdErrWrapper()).serve_forever()
         self.logger.info("Done.")
 
 
