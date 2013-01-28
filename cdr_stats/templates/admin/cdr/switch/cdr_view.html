@@ -281,17 +281,19 @@
 
             {% else %}
             <tr>
-                <td colspan="8" align="center">
+                <td colspan="12" align="center">
                     {% trans "no records found"|title %}
                 </td>
             </tr>
             {% endif %}
-        </table>
-        <div align="right" class="show-rows">
-            {% trans "show rows"|title %} :
-            {{ form.records_per_page }}
-            {% trans "total calls"|title %} : {{ record_count }}
-        </div>
+            <tr>
+              <td colspan="12" align="right">
+                {% trans "show rows"|title %} :
+                {{ form.records_per_page }}
+                {% trans "total calls"|title %} : {{ record_count }}
+              </td>
+            </tr>  
+        </table>        
         </form>
       </div>
       </div>
