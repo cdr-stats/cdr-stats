@@ -72,8 +72,12 @@
                 <td>&nbsp;</td>
                 <td>
                     {% if form.confirmation.value == CONFIRMATION_TYPE.YES %}
-                        <input type="submit" value="{{ CONFIRMATION_TYPE.YES }}" class="l-1"/>
-                        <input type="button" id="id_no" value="{{ CONFIRMATION_TYPE.NO }}" class="l-1"/>
+                        {% if call_rebill_count != 0 %}
+                            <input type="submit" value="{{ CONFIRMATION_TYPE.YES }}" class="l-1"/>
+                            <input type="button" id="id_no" value="{{ CONFIRMATION_TYPE.NO }}" class="l-1"/>
+                        {% else %}
+                            <input type="button" id="id_no" value="{% trans 'Go back'%}" class="l-1"/>
+                        {% endif %}
                     {% else %}
                         <input type="submit" value="{% trans "Rebill calls" %}" class="l-1"/>
                     {% endif %}
