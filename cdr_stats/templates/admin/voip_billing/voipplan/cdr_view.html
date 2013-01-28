@@ -12,6 +12,7 @@
 {% endif %}{% endblock %}
 
 {% block content %}
+<link href="{{STATIC_URL}}cdr-stats/css/admin_custom.css" rel="stylesheet">
 <div id="content-main">
   {% block custom-search %}
     <form class="well" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
@@ -92,10 +93,11 @@
 
 
     <div class="module" id="changelist">
-        <table class="table table-striped table-bordered table-condensed">
+      <div class="result">
+        <table>
             <thead>
             <tr>
-                <th>
+                <th class="sortable" scope="col">
                     {% ifequal col_name_with_order.sort_field 'start_uepoch' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "start_uepoch"  %}
                         {{ CDR_COLUMN_NAME.call_date }}
@@ -104,7 +106,7 @@
                       {% sort_link CDR_COLUMN_NAME.call_date "-start_uepoch"  %}
                     {% endifequal %}
                 </th>
-                <th>
+                <th class="sortable" scope="col">
                     {% ifequal col_name_with_order.sort_field 'caller_id_number' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "caller_id_number"  %}
                         {{ CDR_COLUMN_NAME.clid }}
@@ -113,7 +115,7 @@
                       {% sort_link CDR_COLUMN_NAME.clid "-caller_id_number"  %}
                     {% endifequal %}
                 </th>
-                <th>
+                <th class="sortable" scope="col">
                     {% ifequal col_name_with_order.sort_field 'destination_number' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "destination_number"  %}
                         {{ CDR_COLUMN_NAME.destination }}
@@ -122,7 +124,7 @@
                       {% sort_link CDR_COLUMN_NAME.destination "-destination_number"  %}
                     {% endifequal %}
                 </th>
-                <th>
+                <th class="sortable" scope="col">
                     {% ifequal col_name_with_order.sort_field 'duration' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "duration"  %}
                         {{ CDR_COLUMN_NAME.duration }}
@@ -131,7 +133,7 @@
                       {% sort_link CDR_COLUMN_NAME.duration "-duration"  %}
                     {% endifequal %}
                 </th>
-                <th>
+                <th class="sortable" scope="col">
                     {% ifequal col_name_with_order.sort_field 'billsec' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "billsec"  %}
                       <abbr title='{% trans "Bill Seconds" %}'>{{ CDR_COLUMN_NAME.bill }}</abbr>
@@ -142,7 +144,7 @@
                         </abbr>
                     {% endifequal %}
                 </th>
-                <th>
+                <th class="sortable" scope="col">
                     {% ifequal col_name_with_order.sort_field 'hangup_cause_id' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "hangup_cause_id"  %}
                         {{ CDR_COLUMN_NAME.hangup_cause }}
@@ -151,7 +153,7 @@
                       {% sort_link CDR_COLUMN_NAME.hangup_cause "-hangup_cause_id"  %}
                     {% endifequal %}
                 </th>
-                <th>
+                <th class="sortable" scope="col">
                     {% ifequal col_name_with_order.sort_field 'accountcode' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "accountcode"  %}
                         {{ CDR_COLUMN_NAME.account }}
@@ -161,7 +163,7 @@
                     {% endifequal %}
                 </th>
                 {% if user.is_superuser %}
-                    <th>
+                    <th class="sortable" scope="col">
                         {% ifequal col_name_with_order.sort_field 'buy_rate' %}
                             {% sort_link "<i class='icon-chevron-up'></i>" "buy_rate"  %}
                             {{ CDR_COLUMN_NAME.buy_rate }}
@@ -170,7 +172,7 @@
                             {% sort_link CDR_COLUMN_NAME.buy_rate "-buy_rate"  %}
                         {% endifequal %}
                     </th>
-                    <th>
+                    <th class="sortable" scope="col">
                         {% ifequal col_name_with_order.sort_field 'buy_cost' %}
                             {% sort_link "<i class='icon-chevron-up'></i>" "buy_cost"  %}
                             {{ CDR_COLUMN_NAME.buy_cost }}
@@ -180,7 +182,7 @@
                         {% endifequal %}
                     </th>
                 {% endif %}
-                <th>
+                <th class="sortable" scope="col">
                     {% ifequal col_name_with_order.sort_field 'sell_rate' %}
                         {% sort_link "<i class='icon-chevron-up'></i>" "sell_rate"  %}
                         {{ CDR_COLUMN_NAME.sell_rate }}
@@ -189,7 +191,7 @@
                         {% sort_link CDR_COLUMN_NAME.sell_rate "-sell_rate"  %}
                     {% endifequal %}
                 </th>
-                <th>
+                <th class="sortable" scope="col">
                     {% ifequal col_name_with_order.sort_field 'sell_cost' %}
                         {% sort_link "<i class='icon-chevron-up'></i>" "sell_cost"  %}
                         {{ CDR_COLUMN_NAME.sell_cost }}
@@ -204,7 +206,7 @@
             {% if cdr_daily_data.total_calls %}
             {% autopaginate rows PAGE_SIZE %}
             {% for row in rows %}
-            <tr>
+            <tr class="{% cycle 'row1' 'row2' %}">
                 <td>{{ row.start_uepoch }}</td>
                 <td>
                     {{ row.caller_id_number }}
@@ -326,17 +328,17 @@
             </caption>
             <thead>
             <tr>
-                <th>{% trans "Date"  %}</th>
-                <th>{% trans "Duration"  %}</th>
-                <th>{% trans "Graphic"  %}</th>
-                <th>{% trans "Calls"  %}</th>
-                <th><acronym title="{% trans "Average Connection Time"  %}">{% trans "ACT"  %}</acronym></th>
-                <th>{% trans "Buy cost" %}</th>
-                <th>{% trans "Sell cost" %}</th>
+                <th scope="col">{% trans "Date"  %}</th>
+                <th scope="col">{% trans "Duration"  %}</th>
+                <th scope="col">{% trans "Graphic"  %}</th>
+                <th scope="col">{% trans "Calls"  %}</th>
+                <th scope="col"><acronym title="{% trans "Average Connection Time"  %}">{% trans "ACT"  %}</acronym></th>
+                <th scope="col">{% trans "Buy cost" %}</th>
+                <th scope="col">{% trans "Sell cost" %}</th>
             </tr>
             </thead>
             {% for td in cdr_daily_data.total_data %}
-            <tr>
+            <tr class="{% cycle 'row1' 'row2' %}">
                 <td>{{ td.calldate|date:"D d M Y" }}</td>
                 <td>
                     {% if result == 1 %}
@@ -368,6 +370,7 @@
                 <td>{{ cdr_daily_data.total_sell_cost }}</td>
             </tr>
         </table>
+      </div>
       </div>
 </div>
 {% endblock %}
