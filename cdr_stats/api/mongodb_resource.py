@@ -45,7 +45,8 @@ class MongoDBResource(Resource):
         """
         Creates mongodb document from POST data.
         """        
-        self.get_collection().insert(bundle.data)              
+        self.get_collection().insert(bundle.data)
+
         return bundle
 
     def obj_update(self, bundle, request=None, **kwargs):
@@ -71,15 +72,24 @@ class MongoDBResource(Resource):
         """
         self.get_collection().remove()
 
-    def get_resource_uri(self, item):
+    def get_resource_uri(self, bundle_or_obj):
         """
         Returns resource URI for bundle or object.
-        """        
-        if isinstance(item, Bundle):                                 
-            pk = item.obj._id
+        """   
+        kwargs = {
+            'resource_name': self._meta.resource_name,
+        }
+
+        if isinstance(bundle_or_obj, Bundle):
+            if bundle_or_obj.obj._id is None:
+                kwargs['pk'] = bundle_or_obj.data['_id']
+            else:
+                kwargs['pk'] = bundle_or_obj.obj._id
         else:
-            pk = item._id
-        return reverse("api_dispatch_detail", kwargs={
-            "resource_name": self._meta.resource_name,
-            "pk": pk
-        })
+            kwargs['pk'] = bundle_or_obj.id
+
+        if self._meta.api_name is not None:
+            kwargs['api_name'] = self._meta.api_name
+
+        return self._build_reverse_url("api_dispatch_detail", kwargs=kwargs)
+        

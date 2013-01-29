@@ -48,31 +48,58 @@ class VoipCallResource(MongoDBResource):
 
     **Attributes**:
 
-        * ``recipient_phone_no`` -
-        * ``sender_phone_no`` -
-        * ``disposition`` -
-        * ``call_date`` -
-
+        * ``switch_id`` -
+        * ``caller_id_number`` -
+        * ``caller_id_name`` -
+        * ``destination_number`` -
+        * ``duration`` -
+        * ``billsec`` -
+        * ``hangup_cause_id`` -
+        * ``accountcode`` -
+        * ``direction`` -
+        * ``uuid`` -
+        * ``remote_media_ip`` -
+        * ``start_uepoch`` -
+        * ``answer_uepoch`` -
+        * ``end_uepoch`` -
+        * ``mduration`` -
+        * ``billmsec`` -
+        * ``read_codec`` -
+        * ``write_codec`` -
+        * ``cdr_type`` -
+        * ``cdr_object_id`` -
+        * ``country_id`` -
+        * ``authorized`` -
+        * ``buy_rate`` -
+        * ``buy_cost`` -
+        * ``sell_rate`` -
+        * ``sell_cost`` -        
 
     **Create**:
 
-         CURL Usage::
+        CURL Usage::
 
-             curl -u username:password --dump-header - -H "Content-Type:application/json" -X POST --data '{"accountcode":"1000", "answer_uepoch":"2012-01-26 01:35:53", "authorized":"True", "billmsec":"12960", "billsec":"104", "buy_cost":"0.1075", "buy_rate":"0.062", "caller_id_name":"29914046", "caller_id_number":"29914046", "cdr_object_id":"50efc46d1d41c81733b6939d", "cdr_type":"1", "country_id":"21", "destination_number":"032287971777", "direction":"inbound", "duration":"154.0", "end_uepoch":"2012-01-26 01:36:06", "hangup_cause_id":"8", "id":"50efc47b1d41c8174542f4d6", "mduration":"12960", "read_codec":"G722", "remote_media_ip":"192.168.1.21", "resource_uri":"", "sell_cost":"0.129", "sell_rate":"0.0744", "start_uepoch":"2013-01-05 23:12:09", "switch_id":"1", "uuid":"a993c388-5bc3-11e2-964f-000c2925d15f", "write_codec":"G722"}' http://localhost:8000/api/v1/voip_call/
+            curl -u username:password --dump-header - -H "Content-Type:application/json" -X POST --data '{"accountcode":"1000", "answer_uepoch":"2012-01-26 01:35:53", "authorized":"True", "billmsec":"12960", "billsec":"104", "buy_cost":"0.1075", "buy_rate":"0.062", "caller_id_name":"29914046", "caller_id_number":"29914046", "cdr_object_id":"50efc46d1d41c81733b6939d", "cdr_type":"1", "country_id":"21", "destination_number":"032287971777", "direction":"inbound", "duration":"154.0", "end_uepoch":"2012-01-26 01:36:06", "hangup_cause_id":"8", "id":"50efc47b1d41c8174542f4d6", "mduration":"12960", "read_codec":"G722", "remote_media_ip":"192.168.1.21", "resource_uri":"", "sell_cost":"0.129", "sell_rate":"0.0744", "start_uepoch":"2013-01-05 23:12:09", "switch_id":"1", "uuid":"a993c388-5bc3-11e2-964f-000c2925d15f", "write_codec":"G722"}' http://localhost:8000/api/v1/voip_call/
 
-         Response::
+        Response::
 
-            
-
+            HTTP/1.0 201 CREATED
+            Date: Tue, 29 Jan 2013 11:31:13 GMT
+            Server: WSGIServer/0.1 Python/2.7.3
+            Vary: Accept-Language, Cookie
+            Content-Type: text/html; charset=utf-8
+            Location: http://localhost:8000/api/v1/voip_call/5107b3011d41c8168f076179/
+            Content-Language: en-us
+        
     **Read**:
 
-         CURL Usage::
+        CURL Usage::
 
-             curl -u username:password -H 'Accept: application/json' -X GET http://localhost:8000/api/v1/voip_call/?format=json
+            curl -u username:password -H 'Accept: application/json' -X GET http://localhost:8000/api/v1/voip_call/?format=json
 
-             curl -u username:password -H 'Accept: application/json' -X GET http://localhost:8000/api/v1/voip_call/%_id%/?format=json
+            curl -u username:password -H 'Accept: application/json' -X GET http://localhost:8000/api/v1/voip_call/%_id%/?format=json
 
-         Response::
+        Response::
 
             {
                "meta":{
@@ -132,7 +159,6 @@ class VoipCallResource(MongoDBResource):
     end_uepoch = fields.CharField(attribute="end_uepoch")
     mduration = fields.CharField(attribute="mduration")
     billmsec = fields.CharField(attribute="billmsec")
-
     read_codec = fields.CharField(attribute="read_codec")
     write_codec = fields.CharField(attribute="write_codec")
     cdr_type = fields.CharField(attribute="cdr_type")
