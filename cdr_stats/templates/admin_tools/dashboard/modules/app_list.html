@@ -11,12 +11,8 @@
                 {% else %}
                     {% if child.title == "Voip_Billing" %}
                         {% trans "Voip billing" %}
-                    {% else %}
-                        {% if child.title == "Voip_Report" %}
-                            {% trans "Voip report" %}
-                        {% else %}
-                            {{ child.title }}
-                        {% endif %}
+                    {% else %}                        
+                        {{ child.title }}                    
                     {% endif %}
                 {% endif %}
             {% endif %}
@@ -48,7 +44,7 @@
             {% endifequal %}
             {% ifequal model.title 'VoIP Plans' %}                
                 <li>
-                    <a href="/admin/voip_report/voipcall_report/rebilling/">{% trans "Rebilling" %}</a>
+                    <a href="/admin/voip_billing/voipplan/rebilling/">{% trans "Rebilling" %}</a>
                 </li>
             {% endifequal %}
             {% endspaceless %}

@@ -20,8 +20,4 @@ class BILLED_STATUS_LIST(Choice):
     ALL = 'ALL', _('ALL')
     YES = 1, _('YES')
     NO = 0, _('NO')
-
-
-class CONFIRMATION_TYPE(Choice):
-    YES = 'YES', _('Yes')
-    NO = 'NO', _('No')
+    

@@ -19,3 +19,8 @@ from common.utils import Choice
 class LCR_TYPE(Choice):
     LCR = 0, _('LCR')
     LCD = 1, _('LCD')
+
+
+class CONFIRMATION_TYPE(Choice):
+    YES = 'YES', _('Yes')
+    NO = 'NO', _('No')

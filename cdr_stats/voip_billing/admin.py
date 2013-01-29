@@ -1,3 +1,17 @@
+#
+# CDR-Stats License
+# http://www.cdr-stats.org
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this file,
+# You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (C) 2011-2012 Star2Billing S.L.
+#
+# The Initial Developer of the Original Code is
+# Arezqui Belaid <info@star2billing.com>
+#
+from django import forms
 from django.contrib import admin
 from django.conf.urls import patterns
 from django.utils.translation import ugettext as _
@@ -5,8 +19,6 @@ from django.template import RequestContext
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings
-from pymongo.connection import Connection
-from pymongo.errors import ConnectionFailure
 
 from country_dialcode.models import Prefix
 from voip_billing.models import VoIPRetailRate, VoIPPlan, BanPlan,\
@@ -14,11 +26,14 @@ from voip_billing.models import VoIPRetailRate, VoIPPlan, BanPlan,\
     VoIPCarrierPlan, VoIPCarrierRate, VoIPPlan_VoIPCarrierPlan
 from voip_billing.forms import RetailRate_fileImport, CarrierRate_fileImport,\
     Carrier_Rate_fileExport, SimulatorForm, VoIPPlan_fileExport, CustomRateFilterForm,\
-    Retail_Rate_fileExport
+    Retail_Rate_fileExport, RebillForm
+from voip_billing.constants import CONFIRMATION_TYPE
 from voip_billing.widgets import AutocompleteModelAdmin
 from voip_billing.function_def import rate_filter_range_field_chk
 from voip_billing.rate_engine import rate_engine
-from common.common_functions import variable_value
+from common.common_functions import variable_value, ceil_strdate
+from voip_report.models import VoIPCall_Report
+from datetime import datetime
 import csv
 
 
@@ -132,7 +147,8 @@ class VoIPPlanAdmin(admin.ModelAdmin):
             (r'^add/$', self.admin_site.admin_view(self.add_view)),
             (r'^/(.+)/$', self.admin_site.admin_view(self.change_view)),
             (r'^simulator/$', self.admin_site.admin_view(self.simulator)),
-            (r'^export/$', self.admin_site.admin_view(self.export)),           
+            (r'^export/$', self.admin_site.admin_view(self.export)), 
+            (r'^rebilling/$', self.admin_site.admin_view(self.rebilling)),          
         )
         return my_urls + urls
 
@@ -265,6 +281,101 @@ class VoIPPlanAdmin(admin.ModelAdmin):
         return render_to_response(
             'admin/voip_billing/voipplan/export.html',
             context_instance=ctx)
+
+    def rebilling(self, request):
+        """
+        Re-billing successful voip calls
+        """
+        opts = VoIPPlan._meta
+        call_rebill_list = []
+        call_rebill_count = 0
+        if request.method == 'POST':
+            form = RebillForm(request.POST)
+            if "from_date" in request.POST:
+                # From
+                from_date = request.POST['from_date']
+                start_date = ceil_strdate(from_date, 'start')
+
+            if "to_date" in request.POST:
+                # To
+                to_date = request.POST['to_date']
+                end_date = ceil_strdate(to_date, 'end')
+
+            kwargs = {}
+            kwargs['billed'] = True
+            if start_date and end_date:
+                kwargs['updated_date__range'] = (start_date, end_date)
+            if start_date and end_date == '':
+                kwargs['updated_date__gte'] = start_date
+            if start_date == '' and end_date:
+                kwargs['updated_date__lte'] = end_date
+
+            call_rebill = VoIPCall_Report.objects.filter(**kwargs)
+            call_rebill_count = call_rebill.count()
+
+            if "confirmation" in request.POST:
+                confirmation = request.POST.get('confirmation')
+                # To confirm re-billing
+                if confirmation == CONFIRMATION_TYPE.NO:
+                    request.POST['confirmation'] = CONFIRMATION_TYPE.YES
+                    form.fields['from_date'].widget = form.fields['to_date'].widget = forms.HiddenInput()
+                    ctx = RequestContext(request, {
+                        'form': form,
+                        'start_date': start_date,
+                        'end_date': end_date,
+                        'opts': opts,
+                        'model_name': opts.object_name.lower(),
+                        'app_label': _('VoIP Billing'),
+                        'title': _('Rebill VoPI Call'),
+                        'call_rebill_count': call_rebill_count,
+                        'CONFIRMATION_TYPE': CONFIRMATION_TYPE,
+                        })
+                    return render_to_response('admin/voip_billing/voipplan/rebilling.html',
+                        context_instance=ctx)
+
+                # re-billing is confirmed by user
+                if confirmation == CONFIRMATION_TYPE.YES:
+                    call_rebill_list = call_rebill.update(billed=False)
+                    #if call_rebill_list:
+                    #    for call in call_rebill_list:
+                    #        # call re-bill
+                    #        call._bill(call.id, call.voipplan_id)
+
+                    #TODO: Update cdr_common buy_cost/sell_cost + daily/monthly aggregate
+                    daily_query_var = {}
+                    daily_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m-%d'),
+                                                        '$lt': end_date.strftime('%Y-%m-%d')}
+
+                    daily_data = settings.DBCON[settings.MONGO_CDRSTATS['DAILY_ANALYTIC']]
+                    daily_data.remove(daily_query_var)
+
+                    monthly_query_var = {}
+                    monthly_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m'),
+                                                          '$lt': end_date.strftime('%Y-%m')}
+
+                    monthly_data = settings.DBCON[settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC']]
+                    monthly_data.remove(monthly_query_var)
+                    msg = _('Re-billing is done')
+                    messages.info(request, msg)
+                    request.POST['confirmation'] = CONFIRMATION_TYPE.NO
+        else:
+            tday = datetime.today()
+            to_date = from_date = tday.strftime('%Y-%m-%d')
+            form = RebillForm(initial={'from_date': from_date, 'to_date': to_date,
+                                       'confirmation': CONFIRMATION_TYPE.NO})
+
+        ctx = RequestContext(request, {
+            'form': form,
+            'opts': opts,
+            'model_name': opts.object_name.lower(),
+            'app_label': _('VoIP Billing'),
+            'title': _('Rebill VoIP Call'),
+            'call_rebill_list': call_rebill_list,
+            'call_rebill_count': call_rebill_count,
+        })
+        return render_to_response('admin/voip_billing/voipplan/rebilling.html',
+            context_instance=ctx)
+
 admin.site.register(VoIPPlan, VoIPPlanAdmin)
 
 

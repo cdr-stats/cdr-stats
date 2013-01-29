@@ -17,23 +17,21 @@ from django.utils.translation import ugettext as _
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.conf import settings
-from common.common_functions import striplist
-from common.common_functions import current_view, \
-    variable_value, mongodb_str_filter, mongodb_int_filter, \
-    int_convert_to_minute, validate_days, ceil_strdate
+
+from common.common_functions import variable_value, mongodb_str_filter, mongodb_int_filter, \
+    validate_days, ceil_strdate, striplist
 from cdr.models import Switch, HangupCause, CDR_TYPE
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.functions_def import get_hangupcause_id, get_hangupcause_id_from_name
 from cdr.import_cdr_freeswitch_mongodb import apply_index, \
     CDR_COMMON, common_function_to_create_analytic, generate_global_cdr_record
-from cdr_alert.functions_blacklist import chk_destination
-
-from cdr.functions_def import get_country_name, \
-    chk_account_code, get_hangupcause_name
+from cdr.functions_def import get_country_name, chk_account_code, get_hangupcause_name
 from cdr.forms import CdrSearchForm
 from cdr.aggregate import pipeline_cdr_view_daily_report
 from cdr.constants import CDR_COLUMN_NAME
 from cdr.views import cdr_view_daily_report, unset_session_var, get_pagination_vars
+from cdr_alert.functions_blacklist import chk_destination
+
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
 import csv
@@ -428,8 +426,7 @@ class SwitchAdmin(admin.ModelAdmin):
                     'total_avg_duration': 0,
                     'max_duration': 0,
                 }
-                template_data = RequestContext(request, {
-                    'module': current_view(request),
+                template_data = RequestContext(request, {                    
                     'rows': [],
                     'form': form,
                     'PAGE_SIZE': settings.PAGE_SIZE,
@@ -605,8 +602,7 @@ class SwitchAdmin(admin.ModelAdmin):
             cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
             request.session['session_cdr_view_daily_data'] = cdr_view_daily_data
 
-        template_data = RequestContext(request, {
-            'module': current_view(request),
+        template_data = RequestContext(request, {            
             'rows': rows,
             'form': form,
             'record_count': record_count,

@@ -17,7 +17,8 @@ from common.common_functions import isint
 from voip_billing.function_def import rate_range
 from voip_billing.models import VoIPPlan, VoIPRetailPlan,\
     VoIPCarrierPlan
-from cdr.forms import sw_list_with_all
+from voip_billing.constants import CONFIRMATION_TYPE
+from cdr.forms import sw_list_with_all, CdrSearchForm
 
 
 def voip_plan_list():
@@ -207,3 +208,15 @@ class HourlyBillingForm(BillingForm):
     def __init__(self, *args, **kwargs):
         super(HourlyBillingForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['from_date', 'switch']
+
+
+class RebillForm(CdrSearchForm):
+    """
+    Rebill VoIP call
+    """
+    confirmation = forms.ChoiceField(choices=list(CONFIRMATION_TYPE),
+        required=False)
+    def __init__(self, *args, **kwargs):
+        super(RebillForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['from_date', 'to_date', 'confirmation']
+        self.fields['confirmation'].widget = forms.HiddenInput()

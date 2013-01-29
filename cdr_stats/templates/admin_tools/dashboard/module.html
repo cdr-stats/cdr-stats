@@ -11,12 +11,8 @@
                 {% else %}
                     {% if module.title == "Voip_Billing" %}
                         {% trans "Voip billing" %}
-                    {% else %}
-                        {% if module.title == "Voip_Report" %}
-                            {% trans "Voip report" %}
-                        {% else %}
-                            {{ module.title }}
-                        {% endif %}
+                    {% else %}                        
+                        {{ module.title }}                    
                     {% endif %}
                 {% endif %}
             {% endif %}
