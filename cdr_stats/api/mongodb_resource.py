@@ -44,8 +44,8 @@ class MongoDBResource(Resource):
     def obj_create(self, bundle, **kwargs):
         """
         Creates mongodb document from POST data.
-        """
-        self.get_collection().insert(bundle.data)
+        """        
+        self.get_collection().insert(bundle.data)              
         return bundle
 
     def obj_update(self, bundle, request=None, **kwargs):
@@ -74,8 +74,8 @@ class MongoDBResource(Resource):
     def get_resource_uri(self, item):
         """
         Returns resource URI for bundle or object.
-        """
-        if isinstance(item, Bundle):
+        """        
+        if isinstance(item, Bundle):                                 
             pk = item.obj._id
         else:
             pk = item._id

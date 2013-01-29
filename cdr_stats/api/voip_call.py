@@ -25,6 +25,24 @@ from datetime import datetime
 from api.mongodb_resource import MongoDBResource, Document
 
 
+class VoipCallValidation(Validation):
+    """
+    Voip Call Validation Class
+    """
+
+    def is_valid(self, bundle, request=None):
+        errors = {}
+        if not bundle.data:
+            errors['Data'] = ['Data set is empty']
+
+        user_profile = UserProfile.objects.get(user=request.user)
+        voipplan_id = user_profile.voipplan_id
+        if voipplan_id is None:
+            errors['user_error'] = ["User is not attached with voip plan"]
+
+        return errors
+
+
 class VoipCallResource(MongoDBResource):
     """API to create voip cdr record and bill it
 
@@ -40,7 +58,7 @@ class VoipCallResource(MongoDBResource):
 
          CURL Usage::
 
-             curl -u username:password --dump-header - -H "Content-Type:application/json" -X POST --data '{"recipient_phone_no": "34657077888", "sender_phone_no": "919427164510", "disposition": "1", "call_date": "2013-01-11 11:11:22"}' http://localhost:8000/api/v1/voip_call_billed/
+             curl -u username:password --dump-header - -H "Content-Type:application/json" -X POST --data '{"recipient_phone_no": "34657077888", "sender_phone_no": "919427164510", "disposition": "1", "call_date": "2013-01-11 11:11:22"}' http://localhost:8000/api/v1/voip_call/
 
          Response::
 
@@ -86,8 +104,7 @@ class VoipCallResource(MongoDBResource):
                      "id":"50efc47b1d41c8174542f4d6",
                      "mduration":"12960",
                      "read_codec":"G722",
-                     "remote_media_ip":"192.168.1.21",
-                     "resource_uri":"",
+                     "remote_media_ip":"192.168.1.21",                     
                      "sell_cost":"0.129",
                      "sell_rate":"0.0744",
                      "start_uepoch":"2013-01-05 23:12:09",
@@ -125,12 +142,13 @@ class VoipCallResource(MongoDBResource):
     buy_rate = fields.CharField(attribute="buy_rate")
     buy_cost = fields.CharField(attribute="buy_cost")
     sell_rate = fields.CharField(attribute="sell_rate")
-    sell_cost = fields.CharField(attribute="sell_cost")
-    #billmsec = fields.CharField(attribute="billmsec")
+    sell_cost = fields.CharField(attribute="sell_cost")    
 
     class Meta:
         resource_name = "voip_call"
-        list_allowed_methods = ["delete", "get", "post"]
+        list_allowed_methods = ["get", "post"]
+        validation = VoipCallValidation()
         authorization = Authorization()
+        authentication = BasicAuthentication()
         object_class = Document
         collection = 'cdr_common' # collection name
