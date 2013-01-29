@@ -16,6 +16,8 @@ from api.api_playgrounds.cdr_playground import CdrAPIPlayground
 from api.api_playgrounds.switch_playground import SwitchAPIPlayground
 from api.api_playgrounds.voip_rate_playground import VoipRateAPIPlayground
 from api.api_playgrounds.voip_call_billed_playground import VoipCallBilledAPIPlayground
+from api.api_playgrounds.voip_call_playground import VoipCallAPIPlayground
+
 
 urlpatterns = patterns('',
 
@@ -23,6 +25,7 @@ urlpatterns = patterns('',
     (r'api-explorer/switch/', include(SwitchAPIPlayground().urls)),
     (r'api-explorer/voip-rate/', include(VoipRateAPIPlayground().urls)),
     (r'api-explorer/voip-call-billed/', include(VoipCallBilledAPIPlayground().urls)),
+    (r'api-explorer/voip-call/', include(VoipCallAPIPlayground().urls)),
 
     # API list view
     (r'api-explorer/$', 'api.api_playgrounds.views.api_list_view'),

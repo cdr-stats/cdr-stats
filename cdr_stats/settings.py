@@ -189,7 +189,7 @@ INSTALLED_APPS = (
     'south',
     'linaro_django_pagination',
     'djcelery',
-    'tastypie',
+    'tastypie',    
     'django_socketio',
     'common',
     'notification',

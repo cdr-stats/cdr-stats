@@ -22,6 +22,7 @@ from api.cdr_daily_api import CdrDailyResource
 from api.cdr_api import CdrResource
 from api.voip_rate_api import VoipRateResource
 from api.voip_call_billed import VoipCallBilledResource
+from api.voip_call import VoipCallResource
 from cdr.urls import urlpatterns as urlpatterns_cdr
 from cdr_alert.urls import urlpatterns as urlpatterns_cdr_alert
 from user_profile.urls import urlpatterns as urlpatterns_user_profile
@@ -49,6 +50,7 @@ tastypie_api.register(CdrDailyResource())
 tastypie_api.register(CdrResource())
 tastypie_api.register(VoipRateResource())
 tastypie_api.register(VoipCallBilledResource())
+tastypie_api.register(VoipCallResource())
 
 
 urlpatterns = patterns('',

@@ -12,6 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
+from django.conf import settings
 from tastypie.resources import ModelResource
 from tastypie.authentication import BasicAuthentication
 from tastypie.authorization import Authorization
@@ -24,7 +25,6 @@ from voip_report.models import VoIPCall, VoIPCall_Report
 from user_profile.models import UserProfile
 from datetime import datetime
 import logging
-logger = logging.getLogger('cdr-stats.filelog')
 
 
 class VoipCallBilledValidation(Validation):
