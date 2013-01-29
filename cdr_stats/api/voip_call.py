@@ -58,7 +58,7 @@ class VoipCallResource(MongoDBResource):
 
          CURL Usage::
 
-             curl -u username:password --dump-header - -H "Content-Type:application/json" -X POST --data '{"recipient_phone_no": "34657077888", "sender_phone_no": "919427164510", "disposition": "1", "call_date": "2013-01-11 11:11:22"}' http://localhost:8000/api/v1/voip_call/
+             curl -u username:password --dump-header - -H "Content-Type:application/json" -X POST --data '{"accountcode":"1000", "answer_uepoch":"2012-01-26 01:35:53", "authorized":"True", "billmsec":"12960", "billsec":"104", "buy_cost":"0.1075", "buy_rate":"0.062", "caller_id_name":"29914046", "caller_id_number":"29914046", "cdr_object_id":"50efc46d1d41c81733b6939d", "cdr_type":"1", "country_id":"21", "destination_number":"032287971777", "direction":"inbound", "duration":"154.0", "end_uepoch":"2012-01-26 01:36:06", "hangup_cause_id":"8", "id":"50efc47b1d41c8174542f4d6", "mduration":"12960", "read_codec":"G722", "remote_media_ip":"192.168.1.21", "resource_uri":"", "sell_cost":"0.129", "sell_rate":"0.0744", "start_uepoch":"2013-01-05 23:12:09", "switch_id":"1", "uuid":"a993c388-5bc3-11e2-964f-000c2925d15f", "write_codec":"G722"}' http://localhost:8000/api/v1/voip_call/
 
          Response::
 
