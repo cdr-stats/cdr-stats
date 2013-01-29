@@ -12,7 +12,9 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from apiplayground import APIPlayground
-from datetime import datetime
+import datetime
+import random
+import time
 
 
 class VoipCallAPIPlayground(APIPlayground):
@@ -20,7 +22,15 @@ class VoipCallAPIPlayground(APIPlayground):
     To test CDR api in broswer
 
         ``URL`` : http://127.0.0.1:8000/api-explorer/voip-call/
-    """         
+    """ 
+    delta_days = random.randint(0, 1)
+    delta_minutes = random.randint(1, 1440)
+    answer_stamp = datetime.datetime.now() \
+        - datetime.timedelta(minutes=delta_minutes) \
+        - datetime.timedelta(days=delta_days)
+
+    # convert answer_stamp into milliseconds
+    start_uepoch = int(time.mktime(answer_stamp.timetuple()))        
     schema = {
         "title": "Voip call billed API Playground",
         "base_url": "http://localhost/api/v1/",
@@ -78,18 +88,13 @@ class VoipCallAPIPlayground(APIPlayground):
                                        {
                                            "name": "hangup_cause_id",
                                            "type": "string",
-                                           "default": "1"
+                                           "default": "NORMAL_CLEARING "
                                        },
                                        {
                                            "name": "direction",
                                            "type": "string",
                                            "default": "INBOUND"
-                                       },
-                                       {
-                                           "name": "uuid",
-                                           "type": "string",
-                                           "default": ""
-                                       },
+                                       },                                       
                                        {
                                            "name": "remote_media_ip",
                                            "type": "string",
@@ -103,17 +108,17 @@ class VoipCallAPIPlayground(APIPlayground):
                                        {
                                            "name": "start_uepoch",
                                            "type": "string",
-                                           "default": datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+                                           "default": start_uepoch
                                        },
                                        {
                                            "name": "answer_uepoch",
                                            "type": "string",
-                                           "default": datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+                                           "default": start_uepoch
                                        },
                                        {
                                            "name": "end_uepoch",
                                            "type": "string",
-                                           "default": datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+                                           "default": start_uepoch
                                        },
                                        {
                                            "name": "mduration",
@@ -134,27 +139,7 @@ class VoipCallAPIPlayground(APIPlayground):
                                            "name": "write_codec",
                                            "type": "string",
                                            "default": "G727"
-                                       },
-                                       {
-                                           "name": "cdr_type",
-                                           "type": "string",
-                                           "default": ""
-                                       },
-                                       {
-                                           "name": "cdr_object_id",
-                                           "type": "string",
-                                           "default": ""
-                                       },
-                                       {
-                                           "name": "country_id",
-                                           "type": "string",
-                                           "default": "1"
-                                       },
-                                       {
-                                           "name": "authorized",
-                                           "type": "string",
-                                           "default": "TRUE"
-                                       },
+                                       },                                                                                                                     
                                        ]
                     },
                     ]

@@ -7,6 +7,7 @@ from django.conf import settings
 from tastypie.bundle import Bundle
 from tastypie.resources import Resource
 from pymongo import Connection
+from cdr.import_cdr_freeswitch_mongodb import common_function_to_create_analytic
 
 
 class Document(dict):
@@ -44,9 +45,24 @@ class MongoDBResource(Resource):
     def obj_create(self, bundle, **kwargs):
         """
         Creates mongodb document from POST data.
-        """        
+        """            
         self.get_collection().insert(bundle.data)
 
+        # To create daily / monthly analytic
+        """
+        start_uepoch = date_start_uepoch = bundle.data.get('date_start_uepoch')
+        switch_id = bundle.data.get('switch_id')
+        country_id = bundle.data.get('country_id')
+        accountcode = bundle.data.get('accountcode')
+        hangup_cause_id = bundle.data.get('hangup_cause_id')        
+        duration = bundle.data.get('duration')
+        buy_cost = bundle.data.get('buy_cost')
+        sell_cost = bundle.data.get('sell_cost')
+        retail_plan_id = bundle.data.get('retail_plan_id')
+        common_function_to_create_analytic(date_start_uepoch, start_uepoch, switch_id,
+            country_id, accountcode, hangup_cause_id, duration,
+            buy_cost, sell_cost, retail_plan_id)
+        """
         return bundle
 
     def obj_update(self, bundle, request=None, **kwargs):
@@ -92,4 +108,3 @@ class MongoDBResource(Resource):
             kwargs['api_name'] = self._meta.api_name
 
         return self._build_reverse_url("api_dispatch_detail", kwargs=kwargs)
-        

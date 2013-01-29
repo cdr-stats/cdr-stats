@@ -21,8 +21,16 @@ from tastypie.throttle import BaseThrottle
 from tastypie import fields
 
 from user_profile.models import UserProfile
-from datetime import datetime
+from cdr.import_cdr_freeswitch_mongodb import calculate_call_cost
+from cdr.models import Switch, CDR_TYPE
+from cdr.functions_def import get_hangupcause_id
+from cdr_alert.functions_blacklist import chk_destination
 from api.mongodb_resource import MongoDBResource, Document
+from uuid import uuid1
+from datetime import datetime
+
+def str_uuid1():
+    return str(uuid1())
 
 
 class VoipCallValidation(Validation):
@@ -35,11 +43,47 @@ class VoipCallValidation(Validation):
         if not bundle.data:
             errors['Data'] = ['Data set is empty']
 
-        user_profile = UserProfile.objects.get(user=request.user)
-        voipplan_id = user_profile.voipplan_id
+        voipplan_id = UserProfile.objects.get(user=request.user).voipplan_id        
         if voipplan_id is None:
             errors['user_error'] = ["User is not attached with voip plan"]
 
+        bundle.data['uuid'] = str_uuid1()
+        bundle.data['date_start_uepoch'] = bundle.data.get('start_uepoch')
+
+        if bundle.data.get('start_uepoch'):
+            bundle.data['start_uepoch'] = \
+                datetime.fromtimestamp(int(bundle.data.get('start_uepoch')[:10]))
+
+        if bundle.data.get('answer_uepoch'):
+            bundle.data['answer_uepoch'] = \
+                datetime.fromtimestamp(int(bundle.data.get('answer_uepoch')[:10]))
+
+        if bundle.data.get('end_uepoch'):
+            bundle.data['end_uepoch'] = \
+                datetime.fromtimestamp(int(bundle.data.get('end_uepoch')[:10]))
+
+        destination_number = bundle.data.get('destination_number')
+        if len(destination_number) <= settings.INTERNAL_CALL:
+            bundle.data['authorized'] = 1
+            bundle.data['country_id'] = 999
+        else:
+            destination_data = chk_destination(destination_number)
+            bundle.data['authorized'] = destination_data['authorized']
+            bundle.data['country_id'] = destination_data['country_id']
+
+        if bundle.data.get('hangup_cause_id'):
+            bundle.data['hangup_cause_id'] = get_hangupcause_id(bundle.data.get('hangup_cause_id'))
+
+        billsec = bundle.data.get('billsec')
+
+        call_rate = calculate_call_cost(voipplan_id, destination_number, billsec)
+        bundle.data['buy_rate'] = call_rate['buy_rate']
+        bundle.data['buy_cost'] = call_rate['buy_cost']
+        bundle.data['sell_rate'] = call_rate['sell_rate']
+        bundle.data['sell_cost'] = call_rate['sell_cost']
+        bundle.data['retail_plan_id'] = call_rate['retail_plan_id']
+
+        bundle.data['cdr_type'] = CDR_TYPE['API']
         return errors
 
 
@@ -54,10 +98,9 @@ class VoipCallResource(MongoDBResource):
         * ``destination_number`` -
         * ``duration`` -
         * ``billsec`` -
-        * ``hangup_cause_id`` -
+        * ``hangup_cause`` -
         * ``accountcode`` -
-        * ``direction`` -
-        * ``uuid`` -
+        * ``direction`` -        
         * ``remote_media_ip`` -
         * ``start_uepoch`` -
         * ``answer_uepoch`` -
@@ -65,21 +108,13 @@ class VoipCallResource(MongoDBResource):
         * ``mduration`` -
         * ``billmsec`` -
         * ``read_codec`` -
-        * ``write_codec`` -
-        * ``cdr_type`` -
-        * ``cdr_object_id`` -
-        * ``country_id`` -
-        * ``authorized`` -
-        * ``buy_rate`` -
-        * ``buy_cost`` -
-        * ``sell_rate`` -
-        * ``sell_cost`` -        
+        * ``write_codec`` -                        
 
     **Create**:
 
         CURL Usage::
 
-            curl -u username:password --dump-header - -H "Content-Type:application/json" -X POST --data '{"accountcode":"1000", "answer_uepoch":"2012-01-26 01:35:53", "authorized":"True", "billmsec":"12960", "billsec":"104", "buy_cost":"0.1075", "buy_rate":"0.062", "caller_id_name":"29914046", "caller_id_number":"29914046", "cdr_object_id":"50efc46d1d41c81733b6939d", "cdr_type":"1", "country_id":"21", "destination_number":"032287971777", "direction":"inbound", "duration":"154.0", "end_uepoch":"2012-01-26 01:36:06", "hangup_cause_id":"8", "id":"50efc47b1d41c8174542f4d6", "mduration":"12960", "read_codec":"G722", "remote_media_ip":"192.168.1.21", "resource_uri":"", "sell_cost":"0.129", "sell_rate":"0.0744", "start_uepoch":"2013-01-05 23:12:09", "switch_id":"1", "uuid":"a993c388-5bc3-11e2-964f-000c2925d15f", "write_codec":"G722"}' http://localhost:8000/api/v1/voip_call/
+            curl -u username:password --dump-header - -H "Content-Type:application/json" -X POST --data '{"accountcode":"1000", "answer_uepoch":"1359403221", "billmsec":"12960", "billsec":"104", "caller_id_name":"29914046", "caller_id_number":"29914046", "destination_number":"032287971777", "direction":"inbound", "duration":"154.0", "end_uepoch":"1359403221", "hangup_cause":"NORMAL_CLEARING", "mduration":"12960", "read_codec":"G722", "remote_media_ip":"192.168.1.21", "resource_uri":"", "start_uepoch":"1359403221", "switch_id":"1", "write_codec":"G722"}' http://localhost:8000/api/v1/voip_call/
 
         Response::
 

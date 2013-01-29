@@ -21,7 +21,8 @@ CDR_TYPE = {
     "asterisk": 2,
     "yate": 3,
     "opensips": 4,
-    "kamailio": 5
+    "kamailio": 5,
+    "API": 6,
 }
 
 DISPOSITION = (
