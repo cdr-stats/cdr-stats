@@ -433,6 +433,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         read_codec = data_element['read_codec']
         write_codec = data_element['write_codec']
 
+        #TODO : select user voipplan_id
         voipplan_id = 1
         call_rate = calculate_call_cost(voipplan_id, destination_number, billsec)
         buy_rate = call_rate['buy_rate']
