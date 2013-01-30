@@ -67,7 +67,7 @@ class VoipCallAPIPlayground(APIPlayground):
                                        {
                                            "name": "caller_id_name",
                                            "type": "string",
-                                           "default": "Areski"
+                                           "default": "48092924"
                                        },
                                        {
                                            "name": "destination_number",
@@ -88,7 +88,7 @@ class VoipCallAPIPlayground(APIPlayground):
                                        {
                                            "name": "hangup_cause_id",
                                            "type": "string",
-                                           "default": "NORMAL_CLEARING "
+                                           "default": "16"
                                        },
                                        {
                                            "name": "direction",
@@ -133,12 +133,12 @@ class VoipCallAPIPlayground(APIPlayground):
                                        {
                                            "name": "read_codec",
                                            "type": "string",
-                                           "default": "G727"
+                                           "default": "G722"
                                        },
                                        {
                                            "name": "write_codec",
                                            "type": "string",
-                                           "default": "G727"
+                                           "default": "G722"
                                        },                                                                                                                     
                                        ]
                     },

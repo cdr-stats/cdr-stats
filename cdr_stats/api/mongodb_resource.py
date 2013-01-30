@@ -48,21 +48,21 @@ class MongoDBResource(Resource):
         """            
         self.get_collection().insert(bundle.data)
 
-        # To create daily / monthly analytic
-        """
-        start_uepoch = date_start_uepoch = bundle.data.get('date_start_uepoch')
-        switch_id = bundle.data.get('switch_id')
+        # To create daily / monthly analytic        
+        date_start_uepoch = bundle.data.get('date_start_uepoch')   
+        start_uepoch = bundle.data.get('start_uepoch')     
+        switch_id = int(bundle.data.get('switch_id'))
         country_id = bundle.data.get('country_id')
         accountcode = bundle.data.get('accountcode')
         hangup_cause_id = bundle.data.get('hangup_cause_id')        
         duration = bundle.data.get('duration')
         buy_cost = bundle.data.get('buy_cost')
         sell_cost = bundle.data.get('sell_cost')
-        retail_plan_id = bundle.data.get('retail_plan_id')
+        retail_plan_id = bundle.data.get('retail_plan_id')        
         common_function_to_create_analytic(date_start_uepoch, start_uepoch, switch_id,
             country_id, accountcode, hangup_cause_id, duration,
             buy_cost, sell_cost, retail_plan_id)
-        """
+        
         return bundle
 
     def obj_update(self, bundle, request=None, **kwargs):

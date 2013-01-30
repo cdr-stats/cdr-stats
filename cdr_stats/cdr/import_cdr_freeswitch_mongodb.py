@@ -166,7 +166,7 @@ def apply_index(shell):
 def create_daily_analytic(daily_date, switch_id, country_id,
                           accountcode, hangup_cause_id, duration,
                           buy_cost, sell_cost):
-    """Create DAILY_ANALYTIC"""
+    """Create DAILY_ANALYTIC"""    
     id_daily = daily_date.strftime('%Y%m%d') + "/%d/%s/%d/%d" % \
         (switch_id, accountcode, country_id, hangup_cause_id)
     hour = daily_date.hour
@@ -211,7 +211,7 @@ def create_daily_analytic(daily_date, switch_id, country_id,
 def create_monthly_analytic(daily_date, start_uepoch, switch_id,
                             country_id, accountcode, duration,
                             buy_cost, sell_cost):
-    """Create DAILY_ANALYTIC"""
+    """Create DAILY_ANALYTIC"""      
     # Get a datetime that only include year-month info
     d = datetime.datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
 
