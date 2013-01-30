@@ -79,12 +79,12 @@ class CdrResource(ModelResource):
            "end_uepoch":"2012-01-25T14:06:06",
            "hangup_cause_id":8,
            "mduration":"12960",
-           "read_codec":"G722",
+           "read_codec":"G711",
            "remote_media_ip":"192.168.1.21",
            "start_uepoch":"2012-02-15T22:02:51",
            "switch_id":1,
            "uuid":"2ffd8364-592c-11e1-964f-000c296bd875",
-           "write_codec":"G722"
+           "write_codec":"G711"
         }
     """
     class Meta:

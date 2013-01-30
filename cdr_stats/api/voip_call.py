@@ -43,7 +43,7 @@ class VoipCallValidation(Validation):
         if not bundle.data:
             errors['Data'] = ['Data set is empty']
 
-        voipplan_id = UserProfile.objects.get(user=request.user).voipplan_id        
+        voipplan_id = UserProfile.objects.get(user=request.user).voipplan_id
         if voipplan_id is None:
             errors['user_error'] = ["User is not attached with voip plan"]
 
@@ -100,7 +100,7 @@ class VoipCallResource(MongoDBResource):
         * ``billsec`` -
         * ``hangup_cause`` -
         * ``accountcode`` -
-        * ``direction`` -        
+        * ``direction`` -
         * ``remote_media_ip`` -
         * ``start_uepoch`` -
         * ``answer_uepoch`` -
@@ -108,13 +108,13 @@ class VoipCallResource(MongoDBResource):
         * ``mduration`` -
         * ``billmsec`` -
         * ``read_codec`` -
-        * ``write_codec`` -                        
+        * ``write_codec`` -
 
     **Create**:
 
         CURL Usage::
 
-            curl -u username:password --dump-header - -H "Content-Type:application/json" -X POST --data '{"accountcode":"1000", "answer_uepoch":"1359403221", "billmsec":"12960", "billsec":"104", "caller_id_name":"29914046", "caller_id_number":"29914046", "destination_number":"032287971777", "direction":"inbound", "duration":"154.0", "end_uepoch":"1359403221", "hangup_cause":"NORMAL_CLEARING", "mduration":"12960", "read_codec":"G722", "remote_media_ip":"192.168.1.21", "resource_uri":"", "start_uepoch":"1359403221", "switch_id":"1", "write_codec":"G722"}' http://localhost:8000/api/v1/voip_call/
+            curl -u username:password --dump-header - -H "Content-Type:application/json" -X POST --data '{"accountcode":"1000", "answer_uepoch":"1359403221", "billmsec":"12960", "billsec":"104", "caller_id_name":"29914046", "caller_id_number":"29914046", "destination_number":"032287971777", "direction":"inbound", "duration":"154.0", "end_uepoch":"1359403221", "hangup_cause":"NORMAL_CLEARING", "mduration":"12960", "read_codec":"G711", "remote_media_ip":"192.168.1.21", "resource_uri":"", "start_uepoch":"1359403221", "switch_id":"1", "write_codec":"G711"}' http://localhost:8000/api/v1/voip_call/
 
         Response::
 
@@ -125,7 +125,7 @@ class VoipCallResource(MongoDBResource):
             Content-Type: text/html; charset=utf-8
             Location: http://localhost:8000/api/v1/voip_call/5107b3011d41c8168f076179/
             Content-Language: en-us
-        
+
     **Read**:
 
         CURL Usage::
@@ -165,15 +165,15 @@ class VoipCallResource(MongoDBResource):
                      "hangup_cause_id":"8",
                      "id":"50efc47b1d41c8174542f4d6",
                      "mduration":"12960",
-                     "read_codec":"G722",
-                     "remote_media_ip":"192.168.1.21",                     
+                     "read_codec":"G711",
+                     "remote_media_ip":"192.168.1.21",
                      "sell_cost":"0.129",
                      "sell_rate":"0.0744",
                      "start_uepoch":"2013-01-05 23:12:09",
                      "switch_id":"1",
                      "uuid":"a993c388-5bc3-11e2-964f-000c2925d15f",
-                     "write_codec":"G722"
-                  }                  
+                     "write_codec":"G711"
+                  }
                ]
             }
     """
@@ -203,7 +203,7 @@ class VoipCallResource(MongoDBResource):
     buy_rate = fields.CharField(attribute="buy_rate")
     buy_cost = fields.CharField(attribute="buy_cost")
     sell_rate = fields.CharField(attribute="sell_rate")
-    sell_cost = fields.CharField(attribute="sell_cost")    
+    sell_cost = fields.CharField(attribute="sell_cost")
 
     class Meta:
         resource_name = "voip_call"
