@@ -64,27 +64,27 @@ class CdrResource(ModelResource):
     **Response**::
 
         {
-           "_id":"4f3dec801d41c80b8e000000",
-           "accountcode":"1000",
-           "answer_uepoch":"2012-01-25T14:05:53",
-           "billmsec":"12960",
-           "billsec":13,
-           "caller_id_name":"1000",
-           "caller_id_number":"1000",
-           "cdr_object_id":"4f3dec231d41c80b2600001f",
-           "cdr_type":1,
-           "destination_number":"5545",
-           "direction":"inbound",
-           "duration":107,
-           "end_uepoch":"2012-01-25T14:06:06",
-           "hangup_cause_id":8,
-           "mduration":"12960",
-           "read_codec":"G711",
-           "remote_media_ip":"192.168.1.21",
-           "start_uepoch":"2012-02-15T22:02:51",
-           "switch_id":1,
-           "uuid":"2ffd8364-592c-11e1-964f-000c296bd875",
-           "write_codec":"G711"
+            "_id":"4f3dec801d41c80b8e000000",
+            "accountcode":"1000",
+            "answer_uepoch":"2012-01-25T14:05:53",
+            "billmsec":"12960",
+            "billsec":13,
+            "caller_id_name":"1000",
+            "caller_id_number":"1000",
+            "cdr_object_id":"4f3dec231d41c80b2600001f",
+            "cdr_type":1,
+            "destination_number":"5545",
+            "direction":"inbound",
+            "duration":107,
+            "end_uepoch":"2012-01-25T14:06:06",
+            "hangup_cause_id":8,
+            "mduration":"12960",
+            "read_codec":"G711",
+            "remote_media_ip":"192.168.1.21",
+            "start_uepoch":"2012-02-15T22:02:51",
+            "switch_id":1,
+            "uuid":"2ffd8364-592c-11e1-964f-000c296bd875",
+            "write_codec":"G711"
         }
     """
     class Meta:

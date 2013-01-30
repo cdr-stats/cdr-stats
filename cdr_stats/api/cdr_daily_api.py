@@ -48,22 +48,22 @@ class CdrDailyResource(ModelResource):
             Response::
 
                 [
-                   {
-                      "_id":"4f3dec808365701c4a25aaad",
-                      "accountcode":"1000",
-                      "destination_number":"5545",
-                      "hangup_cause_id":8,
-                      "start_uepoch":"2012-02-15T00:00:00",
-                      "switch_id":1
-                   },
-                   {
-                      "_id":"4f3dec808365701c4a25aab0",
-                      "accountcode":"1000",
-                      "destination_number":"2133",
-                      "hangup_cause_id":9,
-                      "start_uepoch":"2012-02-15T00:00:00",
-                      "switch_id":1
-                   }
+                    {
+                        "_id":"4f3dec808365701c4a25aaad",
+                        "accountcode":"1000",
+                        "destination_number":"5545",
+                        "hangup_cause_id":8,
+                        "start_uepoch":"2012-02-15T00:00:00",
+                        "switch_id":1
+                    },
+                    {
+                        "_id":"4f3dec808365701c4a25aab0",
+                        "accountcode":"1000",
+                        "destination_number":"2133",
+                        "hangup_cause_id":9,
+                        "start_uepoch":"2012-02-15T00:00:00",
+                        "switch_id":1
+                    }
                 ]
 
     """
