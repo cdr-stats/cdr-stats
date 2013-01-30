@@ -125,8 +125,12 @@ def import_cdr_asterisk(shell=False):
             row = cursor.fetchone()
         except Exception, e:
             #Add missing field to flag import
-            cursor.execute("ALTER TABLE %s ADD import_cdr TINYINT NOT NULL "
-                "DEFAULT '0'" % table_name)
+            if db_engine == 'mysql':
+                cursor.execute("ALTER TABLE %s ADD import_cdr TINYINT NOT NULL "
+                    "DEFAULT '0'" % table_name)
+            elif db_engine == 'pgsql':
+                cursor.execute("ALTER TABLE %s ADD import_cdr SMALLINT NOT NULL "
+                    "DEFAULT '0'" % table_name)
             cursor.execute("ALTER TABLE %s ADD INDEX (import_cdr)" %
                 table_name)
 
