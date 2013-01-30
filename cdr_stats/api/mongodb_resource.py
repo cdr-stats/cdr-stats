@@ -13,7 +13,6 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-
 from bson import ObjectId
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
@@ -56,7 +55,7 @@ class MongoDBResource(Resource):
 
     def obj_create(self, bundle, **kwargs):
         """
-        Creates mongodb document from POST data.
+        Insert document into MongoDB and create also the analytic collections
         """
         self.get_collection().insert(bundle.data)
 

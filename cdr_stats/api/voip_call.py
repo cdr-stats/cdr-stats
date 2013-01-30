@@ -205,5 +205,6 @@ class VoipCallResource(MongoDBResource):
         validation = VoipCallValidation()
         authorization = Authorization()
         authentication = BasicAuthentication()
+        #We are using Document from mongodb_resource
         object_class = Document
         collection = 'cdr_common'
