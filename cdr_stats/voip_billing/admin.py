@@ -32,10 +32,10 @@ from voip_billing.widgets import AutocompleteModelAdmin
 from voip_billing.function_def import rate_filter_range_field_chk
 from voip_billing.rate_engine import rate_engine
 from common.common_functions import variable_value, ceil_strdate
-from voip_report.models import VoIPCall_Report
 from datetime import datetime
 import csv
 
+cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
 
 def export_as_csv_action(description="Export selected objects as CSV file",
                          fields=None, exclude=None, header=True,):
@@ -301,17 +301,16 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                 to_date = request.POST['to_date']
                 end_date = ceil_strdate(to_date, 'end')
 
-            kwargs = {}
-            kwargs['billed'] = True
+            kwargs = {}            
             if start_date and end_date:
-                kwargs['updated_date__range'] = (start_date, end_date)
+                kwargs['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
             if start_date and end_date == '':
-                kwargs['updated_date__gte'] = start_date
+                kwargs['start_uepoch'] = {'$gte': start_date}
             if start_date == '' and end_date:
-                kwargs['updated_date__lte'] = end_date
-
-            call_rebill = VoIPCall_Report.objects.filter(**kwargs)
-            call_rebill_count = call_rebill.count()
+                kwargs['start_uepoch'] = {'$lt': end_date}
+                        
+            call_rebill  = cdr_data.find(kwargs)
+            call_rebill_count = call_rebill .count()
 
             if "confirmation" in request.POST:
                 confirmation = request.POST.get('confirmation')
