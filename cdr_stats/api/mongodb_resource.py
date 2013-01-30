@@ -1,12 +1,24 @@
+# -*- coding: utf-8 -*-
+
+#
+# CDR-Stats License
+# http://www.cdr-stats.org
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this file,
+# You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (C) 2011-2012 Star2Billing S.L.
+#
+# The Initial Developer of the Original Code is
+# Arezqui Belaid <info@star2billing.com>
+#
+
 from bson import ObjectId
-
 from django.core.exceptions import ImproperlyConfigured
-from django.core.urlresolvers import reverse
 from django.conf import settings
-
 from tastypie.bundle import Bundle
 from tastypie.resources import Resource
-from pymongo import Connection
 from cdr.import_cdr_freeswitch_mongodb import common_function_to_create_analytic
 
 
@@ -23,7 +35,7 @@ class MongoDBResource(Resource):
         """
         Encapsulates collection name.
         """
-        try:            
+        try:
             return settings.DBCON[self._meta.collection]
         except AttributeError:
             raise ImproperlyConfigured("Define a collection in your resource.")
@@ -31,13 +43,13 @@ class MongoDBResource(Resource):
     def obj_get_list(self, request=None, **kwargs):
         """
         Maps mongodb documents to Document class.
-        """             
+        """
         return map(Document, self.get_collection().find())
 
     def obj_get(self, request=None, **kwargs):
         """
         Returns mongodb document from provided id.
-        """        
+        """
         return Document(self.get_collection().find_one({
             "_id": ObjectId(kwargs.get("pk"))
         }))
@@ -45,24 +57,24 @@ class MongoDBResource(Resource):
     def obj_create(self, bundle, **kwargs):
         """
         Creates mongodb document from POST data.
-        """            
+        """
         self.get_collection().insert(bundle.data)
 
-        # To create daily / monthly analytic        
-        date_start_uepoch = bundle.data.get('date_start_uepoch')   
-        start_uepoch = bundle.data.get('start_uepoch')     
+        # To create daily / monthly analytic
+        date_start_uepoch = bundle.data.get('date_start_uepoch')
+        start_uepoch = bundle.data.get('start_uepoch')
         switch_id = int(bundle.data.get('switch_id'))
         country_id = bundle.data.get('country_id')
         accountcode = bundle.data.get('accountcode')
-        hangup_cause_id = bundle.data.get('hangup_cause_id')        
+        hangup_cause_id = bundle.data.get('hangup_cause_id')
         duration = bundle.data.get('duration')
         buy_cost = bundle.data.get('buy_cost')
         sell_cost = bundle.data.get('sell_cost')
-        retail_plan_id = bundle.data.get('retail_plan_id')        
+        retail_plan_id = bundle.data.get('retail_plan_id')
         common_function_to_create_analytic(date_start_uepoch, start_uepoch, switch_id,
             country_id, accountcode, hangup_cause_id, duration,
             buy_cost, sell_cost, retail_plan_id)
-        
+
         return bundle
 
     def obj_update(self, bundle, request=None, **kwargs):
@@ -80,7 +92,7 @@ class MongoDBResource(Resource):
         """
         Removes single document from collection
         """
-        self.get_collection().remove({ "_id": ObjectId(kwargs.get("pk")) })
+        self.get_collection().remove({"_id": ObjectId(kwargs.get("pk"))})
 
     def obj_delete_list(self, request=None, **kwargs):
         """
@@ -91,7 +103,7 @@ class MongoDBResource(Resource):
     def get_resource_uri(self, bundle_or_obj):
         """
         Returns resource URI for bundle or object.
-        """   
+        """
         kwargs = {
             'resource_name': self._meta.resource_name,
         }

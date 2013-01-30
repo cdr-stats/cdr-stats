@@ -38,42 +38,44 @@ class SwitchAPIPlayground(APIPlayground):
                         "method": "POST",
                         "url": "/api/v1/switch/",
                         "description": "Creates new switch",
-                        "parameters": [{
-                                           "name": "name",
-                                           "type": "string",
-                                           "is_required": True,
-                                           "default": "localhost"
-                                       },
-                                       {
-                                           "name": "ipaddress",
-                                           "type": "string",
-                                           "default": "192.168.1.4"
-                                       },
-                                      ]
+                        "parameters": [
+                            {
+                                "name": "name",
+                                "type": "string",
+                                "is_required": True,
+                                "default": "localhost"
+                            },
+                            {
+                                "name": "ipaddress",
+                                "type": "string",
+                                "default": "192.168.1.4"
+                            },
+                        ]
                     },
                     {
                         "method": "PUT",
                         "url": "/api/v1/switch/{switch-id}/",
                         "description": "Update switch",
-                        "parameters": [{
-                                           "name": "name",
-                                           "type": "string",
-                                           "is_required": True,
-                                           "default": "localhost"
-                                       },
-                                       {
-                                           "name": "ipaddress",
-                                           "type": "string",
-                                           "default": "192.168.1.4"
-                                       },
-                                       ]
+                        "parameters": [
+                            {
+                                "name": "name",
+                                "type": "string",
+                                "is_required": True,
+                                "default": "localhost"
+                            },
+                            {
+                                "name": "ipaddress",
+                                "type": "string",
+                                "default": "192.168.1.4"
+                            },
+                        ]
                     },
                     {
                         "method": "DELETE",
                         "url": "/api/v1/switch/{switch-id}/",
                         "description": "Delete switch",
-                        }
+                    }
                 ]
             },
-            ]
+        ]
     }

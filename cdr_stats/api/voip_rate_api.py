@@ -14,7 +14,6 @@
 
 from django.conf.urls import url
 from django.db import connection
-
 from tastypie.resources import ModelResource
 from tastypie.authorization import Authorization
 from tastypie.throttle import BaseThrottle
@@ -24,8 +23,8 @@ from api.resources import IpAddressAuthentication
 from voip_billing.models import VoIPRetailRate
 from voip_billing.function_def import prefix_allowed_to_call, prefix_list_string
 from user_profile.models import UserProfile
-
 import logging
+
 logger = logging.getLogger('cdr-stats.filelog')
 
 

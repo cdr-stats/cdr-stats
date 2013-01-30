@@ -42,5 +42,5 @@ class VoipRateAPIPlayground(APIPlayground):
 
                 ]
             },
-            ]
+        ]
     }

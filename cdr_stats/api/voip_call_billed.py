@@ -24,6 +24,7 @@ from voip_report.models import VoIPCall, VoIPCall_Report
 from user_profile.models import UserProfile
 from datetime import datetime
 import logging
+
 logger = logging.getLogger('cdr-stats.filelog')
 
 

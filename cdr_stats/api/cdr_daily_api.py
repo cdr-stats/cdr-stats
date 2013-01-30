@@ -13,6 +13,7 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
+
 from django.conf.urls.defaults import url
 from django.http import HttpResponse
 from django.conf import settings
