@@ -12,7 +12,6 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-from django.conf import settings
 from tastypie.resources import ModelResource
 from tastypie.authentication import BasicAuthentication
 from tastypie.authorization import Authorization
@@ -47,7 +46,7 @@ class VoipCallBilledValidation(Validation):
 
 
 class VoipCallBilledResource(ModelResource):
-    """API to create voip cdr record and bill it
+    """API to create and bill CDRs
 
     **Attributes**:
 

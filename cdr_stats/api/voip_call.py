@@ -13,24 +13,18 @@
 #
 
 from django.conf import settings
-from tastypie.resources import ModelResource
 from tastypie.authentication import BasicAuthentication
 from tastypie.authorization import Authorization
 from tastypie.validation import Validation
-from tastypie.throttle import BaseThrottle
 from tastypie import fields
-
 from user_profile.models import UserProfile
 from cdr.import_cdr_freeswitch_mongodb import calculate_call_cost
-from cdr.models import Switch, CDR_TYPE
+from cdr.models import CDR_TYPE
 from cdr.functions_def import get_hangupcause_id
 from cdr_alert.functions_blacklist import chk_destination
 from api.mongodb_resource import MongoDBResource, Document
 from uuid import uuid1
 from datetime import datetime
-
-def str_uuid1():
-    return str(uuid1())
 
 
 class VoipCallValidation(Validation):
@@ -47,7 +41,7 @@ class VoipCallValidation(Validation):
         if voipplan_id is None:
             errors['user_error'] = ["User is not attached with voip plan"]
 
-        bundle.data['uuid'] = str_uuid1()
+        bundle.data['uuid'] = str(uuid1())
         bundle.data['date_start_uepoch'] = bundle.data.get('start_uepoch')
 
         if bundle.data.get('start_uepoch'):
@@ -212,4 +206,4 @@ class VoipCallResource(MongoDBResource):
         authorization = Authorization()
         authentication = BasicAuthentication()
         object_class = Document
-        collection = 'cdr_common' # collection name
+        collection = 'cdr_common'
