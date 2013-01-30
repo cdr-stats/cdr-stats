@@ -22,21 +22,25 @@ class SwitchAPIPlayground(APIPlayground):
         "resources": [
             {
                 "name": "/switch/",
+                #TODO: We will need to add gettext on description
                 "description": "Resource to manage switches.",
                 "endpoints": [
                     {
                         "method": "GET",
                         "url": "/api/v1/switch/",
+                        #TODO: We will need to add gettext on description
                         "description": "Returns all switches"
                     },
                     {
                         "method": "GET",
                         "url": "/api/v1/switch/{switch-id}/",
+                        #TODO: We will need to add gettext on description
                         "description": "Returns a specific switch"
                     },
                     {
                         "method": "POST",
                         "url": "/api/v1/switch/",
+                        #TODO: We will need to add gettext on description
                         "description": "Creates new switch",
                         "parameters": [
                             {
@@ -55,6 +59,7 @@ class SwitchAPIPlayground(APIPlayground):
                     {
                         "method": "PUT",
                         "url": "/api/v1/switch/{switch-id}/",
+                        #TODO: We will need to add gettext on description
                         "description": "Update switch",
                         "parameters": [
                             {

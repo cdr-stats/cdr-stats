@@ -140,7 +140,7 @@ class VoipRateResource(ModelResource):
                 prefixlist = destination_prefix_list.split(",")
                 #Get Rate List
                 rate_list = VoIPRetailRate.objects.values('prefix', 'retail_rate', 'prefix__destination').filter(prefix__in=[int(s) for s in prefixlist])
-                logger.debug('Voip Rate API : result ok 200')
+                logger.debug('Voip Rate API : result OK 200')
                 return self.create_response(request, rate_list)
             else:
                 error_msg = "Not allowed : %s" % recipient_phone_no
@@ -200,5 +200,5 @@ class VoipRateResource(ModelResource):
                 modrecord['prefix__destination'] = record[2]
                 result.append(modrecord)
 
-        logger.debug('Voip Rate API : result ok 200')
+        logger.debug('Voip Rate API : result OK 200')
         return self.create_response(request, result)

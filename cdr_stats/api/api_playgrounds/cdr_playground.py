@@ -16,9 +16,10 @@ from apiplayground import APIPlayground
 
 class CdrAPIPlayground(APIPlayground):
     """
-    To test CDR api in browse
+    To test CDR API in browser
 
         ``URL`` : http://127.0.0.1:8000/api-explorer/cdr/
+
     """
 
     schema = {
@@ -27,12 +28,14 @@ class CdrAPIPlayground(APIPlayground):
         "resources": [
             {
                 "name": "/cdr/",
-                "description": "This resource allows you to manage cdr.",
+                #TODO: We will need to add gettext on description
+                "description": "This resource allows you to create new cdr",
                 "endpoints": [
                     {
                         "method": "POST",
                         "url": "/api/v1/cdr/",
-                        "description": "Creates new phonebook",
+                        #TODO: We will need to add gettext on description
+                        "description": "Creates new cdr",
                         "parameters": [
                             {
                                 "name": "switch_id",

@@ -168,5 +168,5 @@ class CdrResource(ModelResource):
         new_obj = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']].find_one()
 
         # print new_obj['_id']
-        logger.debug('CDR API : result ok 200')
+        logger.debug('CDR API : result OK 200')
         return self.create_response(request, new_obj)

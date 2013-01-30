@@ -17,7 +17,6 @@ from tastypie.authentication import BasicAuthentication
 from tastypie.authorization import Authorization
 from tastypie.validation import Validation
 from tastypie.throttle import BaseThrottle
-
 from voip_billing.function_def import check_celeryd_process
 from voip_billing.tasks import VoIPbilling
 from voip_report.models import VoIPCall, VoIPCall_Report
@@ -167,8 +166,8 @@ class VoipCallBilledResource(ModelResource):
             # Call status get changed according to status filed
             obj = voipcall._update_voip_call_status(res['voipcall_id'])
 
-            logger.debug('VoIPCall Report API : result ok 200')
+            logger.debug('VoIPCall Report API : result OK 200')
             bundle.obj = obj
 
-        logger.debug('VoIPCall Report API : result ok 200')
+        logger.debug('VoIPCall Report API : result OK 200')
         return bundle

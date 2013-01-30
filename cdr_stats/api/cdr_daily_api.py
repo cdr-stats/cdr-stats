@@ -71,6 +71,7 @@ class CdrDailyResource(ModelResource):
         resource_name = 'cdr_daily_report'
         authorization = Authorization()
         authentication = BasicAuthentication()
+        #TODO: according to the documentation above it's using POST but it seems only get is allowed
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get']
         # default 1000 calls / hour
@@ -101,11 +102,13 @@ class CdrDailyResource(ModelResource):
 
         j = 0
         temp_var = {}
+        #TODO: What do we do here ?!
         for i in request.POST:
             if j == 0:
                 temp_var = i
                 j = j + 1
 
+        #TODO: Should we not ove this import to the top ?
         import ast
         temp_var = ast.literal_eval(temp_var)
 
@@ -149,5 +152,5 @@ class CdrDailyResource(ModelResource):
 
             result.append(modrecord)
 
-        logger.debug('CDR Daily Report API : result ok 200')
+        logger.debug('CDR Daily Report API : result OK 200')
         return self.read_response(request, result)

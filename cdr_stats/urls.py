@@ -12,7 +12,6 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-
 from django.conf.urls import url, patterns, include
 from django.conf import settings
 from tastypie.api import Api
@@ -28,8 +27,6 @@ from user_profile.urls import urlpatterns as urlpatterns_user_profile
 from frontend.urls import urlpatterns as urlpatterns_frontend
 from api.api_playgrounds.urls import urlpatterns as urlpatterns_api_playgrounds
 from frontend_notification.urls import urlpatterns as urlpatterns_frontend_notification
-
-# Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 from dajaxice.core import dajaxice_autodiscover
 dajaxice_autodiscover()
@@ -40,6 +37,7 @@ except admin.sites.AlreadyRegistered:
     # nose imports the admin.py files during tests, so
     # the models have already been registered.
     pass
+
 # tastypie api
 tastypie_api = Api(api_name='v1')
 tastypie_api.register(UserResource())
@@ -56,7 +54,6 @@ urlpatterns = patterns('',
     # to INSTALLED_APPS to enable admin documentation:
     #(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-    # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
 
     (r'^i18n/', include('django.conf.urls.i18n')),
@@ -65,7 +62,6 @@ urlpatterns = patterns('',
 
     (r'^api/', include(tastypie_api.urls)),
 
-    #Add VoIP Billing
     (r'^voip_billing/', include('voip_billing.urls')),
 
     # Serve static
