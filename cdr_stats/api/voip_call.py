@@ -22,7 +22,7 @@ from cdr.import_cdr_freeswitch_mongodb import calculate_call_cost
 from cdr.models import CDR_TYPE
 from cdr.functions_def import get_hangupcause_id
 from cdr_alert.functions_blacklist import chk_destination
-from api.mongodb_resource import MongoDBResource, Document
+from api.mongodb_resource import CDRMongoDBResource, Document
 from uuid import uuid1
 from datetime import datetime
 
@@ -81,7 +81,7 @@ class VoipCallValidation(Validation):
         return errors
 
 
-class VoipCallResource(MongoDBResource):
+class VoipCallResource(CDRMongoDBResource):
     """API to create voip cdr record and bill it
 
     **Attributes**:
