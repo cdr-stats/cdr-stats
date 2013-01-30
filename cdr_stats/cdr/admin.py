@@ -14,6 +14,7 @@
 from django.contrib import admin
 from django.conf.urls import patterns
 from django.utils.translation import ugettext as _
+from django.http import HttpResponse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.conf import settings
@@ -80,7 +81,8 @@ class SwitchAdmin(admin.ModelAdmin):
         urls = super(SwitchAdmin, self).get_urls()
         my_urls = patterns('',
             (r'^import_cdr/$', self.admin_site.admin_view(self.import_cdr)),
-            (r'^cdr_view/$', self.admin_site.admin_view(self.cdr_view)),
+            (r'^cdr_view/$', self.admin_site.admin_view(self.cdr_view)),            
+            (r'^export_cdr/$', self.admin_site.admin_view(self.export_cdr)),
         )
         return my_urls + urls
 
@@ -225,7 +227,7 @@ class SwitchAdmin(admin.ModelAdmin):
                                     caller_id_name, destination_number, duration, billsec, hangup_cause_id,
                                     accountcode, direction, uuid, remote_media_ip, start_uepoch, answer_uepoch,
                                     end_uepoch, mduration, billmsec, read_codec, write_codec,
-                                    'CSV_IMPORT', '', country_id, authorized)
+                                    CDR_TYPE['CSV_IMPORT'], '', country_id, authorized)
 
                                 # check if cdr is already existing in cdr_common
                                 cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
@@ -623,7 +625,48 @@ class SwitchAdmin(admin.ModelAdmin):
         logging.debug('CDR View End')            
         return render_to_response(template_name, context_instance=template_data)        
 
+    def export_cdr(self, request):
+        # get the response object, this can be used as a stream.
+        response = HttpResponse(mimetype='text/csv')
+        # force download.
+        response['Content-Disposition'] = 'attachment;filename=export.csv'
+        # the csv writer
+        writer = csv.writer(response)
 
+        # super(VoIPCall_ReportAdmin, self).queryset(request)
+        qs = request.session['query_var']
+
+        query_var = request.session['query_var']
+
+        final_result = cdr_data.find(query_var,
+            {
+                "uuid": 0,
+                "answer_uepoch": 0,
+                "end_uepoch": 0,
+                "mduration": 0,
+                "billmsec": 0,
+                "read_codec": 0,
+                "write_codec": 0,
+                "remote_media_ip": 0
+            }
+        )
+
+        writer = csv.writer(response, dialect=csv.excel_tab)
+        writer.writerow(['Call-date', 'CLID', 'Destination', 'Duration',
+                         'Bill sec', 'Hangup cause', 'AccountCode', 'Direction'])
+
+        for cdr in final_result:
+            writer.writerow([
+                cdr['start_uepoch'],
+                cdr['caller_id_number'] + '-' + cdr['caller_id_name'],
+                cdr['destination_number'],
+                cdr['duration'],
+                cdr['billsec'],
+                get_hangupcause_name(cdr['hangup_cause_id']),
+                cdr['accountcode'],
+                cdr['direction']
+            ])
+        return response
 admin.site.register(Switch, SwitchAdmin)
 
 

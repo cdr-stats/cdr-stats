@@ -23,6 +23,7 @@ CDR_TYPE = {
     "opensips": 4,
     "kamailio": 5,
     "API": 6,
+    "CSV_IMPORT": 7,
 }
 
 DISPOSITION = (

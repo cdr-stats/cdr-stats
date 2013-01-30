@@ -71,7 +71,7 @@
         </tr>
       </table>
     {% endblock %}
-
+    <p>&nbsp;</p>
     {% block object-tools %}        
         <center><h1>
         {% trans "calls detail records"|title %} -
@@ -82,19 +82,23 @@
         {% if end_date  %}
             {% trans "to" %} {{ end_date|date:"jS N Y" }}
         {% endif %}
-        </h1></center>
-                
-        <ul class="object-tools">
-          <li><a href="/cdr_export_csv/">{% trans "Export CSV file" %}</a></li>          
-          <!--<li><a href="rebilling/" class="addlink">{% trans "Rebilling" %}</a></li>-->
-        </ul>
+        </h1></center>                        
     {% endblock %}
+
   <div id="tabs">
     <ul>
     <li><a href="#tabs-1">{% trans "Call Detail Records" %}</a></li>
     <li><a href="#tabs-2">{% trans "Report By Day" %}</a></li>    
     </ul>
     <div id="tabs-1">
+    <p>&nbsp;</p>
+    <ul class="object-tools">
+      <li><a href="../export_cdr/" class="addlink">{% trans "Export CSV file" %}</a></li> 
+      <li><a href="../import_cdr/" class="addlink">{% trans "Import CDR" %}</a></li>         
+      <li><a href="/admin/voip_billing/voipplan/rebilling/" class="addlink">{% trans "Rebilling" %}</a></li>
+    </ul>  
+
+
     <div class="module" id="changelist">
       <div class="result">
         <table>
