@@ -13,7 +13,6 @@
 #
 
 from django.conf.urls import url
-from django.http import HttpResponse
 from django.db import connection
 from tastypie.resources import ModelResource
 from tastypie.authorization import Authorization

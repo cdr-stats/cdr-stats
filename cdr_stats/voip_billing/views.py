@@ -15,7 +15,6 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.views.decorators.cache import cache_page
 from django.shortcuts import render_to_response
 from django.conf import settings
-from django.db import connection
 from django.utils.translation import gettext as _
 from django.template.context import RequestContext
 from voip_billing.models import VoIPRetailRate
@@ -28,7 +27,6 @@ from cdr.views import check_user_accountcode, check_cdr_exists
 from cdr.functions_def import chk_account_code
 from cdr.aggregate import pipeline_daily_billing_report, pipeline_hourly_billing_report
 from user_profile.models import UserProfile
-from api.voip_rate_api import VoipRateResource
 from common.common_functions import current_view, ceil_strdate
 from datetime import datetime
 import logging
