@@ -41,15 +41,15 @@
      {% for field in inline_admin_formset.fields %}
        {% if not field.widget.is_hidden %}
          <th{% if forloop.first %} colspan="2"{% endif %}{% if field.required %} class="required"{% endif %}>
-            {% if field.label == "Smsplan" %}                
-                {% trans "Select SMS Plan" %}
+            {% if field.label == "Voipplan" %}
+                {% trans "Select VoIP Plan" %}
             {% else %}
-                {% if field.label == "Smscarrierplan" %}
-                    {% trans "Select SMS Carrier Plan" %}
+                {% if field.label == "Voipcarrierplan" %}
+                    {% trans "Select Voip Carrier Plan" %}
                 {% else %}
                     {{ field.label }}
                 {% endif %}
-            {% endif %}           
+            {% endif %}
         </th>
        {% endif %}
      {% endfor %}

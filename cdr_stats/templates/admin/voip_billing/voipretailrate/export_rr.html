@@ -7,7 +7,7 @@
      <a href="../../../">{% trans "Home" %}</a> &rsaquo;
      <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
      <a href="/admin/{{ opts.app_label }}/{{ model_name }}">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
-     Export {{ opts.verbose_name }}
+     {% trans "Export" %} {{ opts.verbose_name }}
 </div>
 {% endif %}{% endblock %}
 
