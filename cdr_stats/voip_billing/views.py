@@ -11,11 +11,11 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-
 from django.contrib.auth.decorators import login_required, permission_required
 from django.views.decorators.cache import cache_page
 from django.shortcuts import render_to_response
 from django.conf import settings
+from django.db import connection
 from django.utils.translation import gettext as _
 from django.template.context import RequestContext
 from voip_billing.models import VoIPRetailRate
@@ -27,10 +27,14 @@ from user_profile.models import UserProfile
 from cdr.views import check_user_accountcode, check_cdr_exists
 from cdr.functions_def import chk_account_code
 from cdr.aggregate import pipeline_daily_billing_report, pipeline_hourly_billing_report
+from user_profile.models import UserProfile
+from api.voip_rate_api import VoipRateResource
 from common.common_functions import current_view, ceil_strdate
 from datetime import datetime
 import logging
 import time
+import requests
+import ast
 
 
 @login_required
@@ -39,15 +43,29 @@ def retail_rate_view(request):
     """
     All Retail Rates are displayed & according to Destination No
     """
-    template = 'voip_billing/retail_rate.html'
+    template = 'voip_billing/retail_rate.html'    
     form = PrefixRetailRrateForm()
+    final_rate_list = []
+    try:
+        UserProfile.objects.get(user=request.user).voipplan_id
+        response = requests.get('http://localhost:8000/api/v1/voip_rate/?format=json', 
+            auth=(request.user, request.user))
+        rate_list = response.content        
+        rate_list = rate_list.replace('[', '').replace(']', '').replace('}, {', '}|{').split('|')
+        
+        for i in rate_list:
+            final_rate_list.append(ast.literal_eval(i))
+    except:
+        error_msg = _('Voip plan is not attached with loggedin user')
+        
     variables = RequestContext(request,
-        {
-            'module': current_view(request),
-            'form': form,
-            'user': request.user,
-        })
-
+    {
+        'module': current_view(request),
+        'form': form,
+        'user': request.user,
+        'rate_list': final_rate_list,
+        'PAGE_SIZE': settings.PAGE_SIZE
+    })
     return render_to_response(template, variables,
            context_instance=RequestContext(request))
 

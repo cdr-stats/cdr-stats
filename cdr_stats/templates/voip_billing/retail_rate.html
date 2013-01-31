@@ -106,5 +106,34 @@
     <div id="rate_list"></div>
 {% endcache %}
 
+{% if rate_list %}
+<table class="table table-striped table-bordered table-condensed">
+  {% autopaginate rate_list PAGE_SIZE %}
+  {% for item in rate_list %}    
+      {% if forloop.first %}
+        <thead>
+            <tr>
+              <th>{% trans "Prefix" %}</th>
+              <th>{% trans "Destination" %}</th>
+              <th>{% trans "Rate" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+      {% endif %}        
+        <tr>
+          <td>{{ item.prefix }}</td>
+          <td>{{ item.prefix__destination }}</td>
+          <td>{{ item.retail_rate }}</td>
+        </tr>        
+  {% endfor %}
+      </tbody>
+  </table>
+
+  {% if rate_list %}
+      {% paginate %}
+  {% endif %}
+  
+{% endif %}
+
 
 {% endblock %}

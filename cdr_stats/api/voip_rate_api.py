@@ -13,9 +13,11 @@
 #
 
 from django.conf.urls import url
+from django.http import HttpResponse
 from django.db import connection
 from tastypie.resources import ModelResource
 from tastypie.authorization import Authorization
+from tastypie.authentication import BasicAuthentication
 from tastypie.throttle import BaseThrottle
 from tastypie.exceptions import BadRequest, ImmediateHttpResponse
 from tastypie import http
@@ -89,7 +91,7 @@ class VoipRateResource(ModelResource):
     class Meta:
         resource_name = 'voip_rate'
         authorization = Authorization()
-        authentication = IpAddressAuthentication()
+        authentication = BasicAuthentication()#IpAddressAuthentication()
         allowed_methods = ['get']
         detail_allowed_methods = ['get']
         throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
@@ -103,18 +105,18 @@ class VoipRateResource(ModelResource):
                 self.wrap_view('read')),
             url(r'^(?P<resource_name>%s)/recipient_phone_no/(.+)/$' % self._meta.resource_name,
                 self.wrap_view('read')),
-        ]
+        ]    
 
     def read(self, request=None, **kwargs):
         """API to get voip call rate via dialcode or recipient_phone_no"""
-        logger.debug('Voip Rate GET API get called')
+        logger.debug('Voip Rate GET API get called')        
         auth_result = self._meta.authentication.is_authenticated(request)
         if not auth_result is True:
             raise ImmediateHttpResponse(response=http.HttpUnauthorized())
 
         logger.debug('Voip Rate GET API authorization called!')
         auth_result = self._meta.authorization.is_authorized(request, object)
-
+        
         user_profile = UserProfile.objects.get(user=request.user)
         voipplan_id = user_profile.voipplan_id
         if voipplan_id is None:
