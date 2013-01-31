@@ -88,7 +88,6 @@ def prefix_allowed_to_call(destination_number, voipplan_id):
     Check destination no with ban prefix & voip_plan
     """
     destination_prefix_list = prefix_list_string(destination_number)
-
     # Cache the voipplan_id & banned_prefix query set
     cachekey = "banned_prefix_list_%s" % (str(voipplan_id))
     banned_prefix_list = cache.get(cachekey)

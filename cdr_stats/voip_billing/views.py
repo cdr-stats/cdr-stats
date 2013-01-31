@@ -63,10 +63,9 @@ def simulator(request):
     error_msg = ""
     data = []
     form = SimulatorForm(request.user)
-    # Get SMS Plan ID according to USER
+    # Get Voip Plan ID according to USER
     try:
-        dt = UserProfile.objects.get(user=request.user)
-        voipplan_id = dt.voipplan_id
+        voipplan_id = UserProfile.objects.get(user=request.user).voipplan_id
 
         if request.method == 'POST':
             form = SimulatorForm(request.user, request.POST)
