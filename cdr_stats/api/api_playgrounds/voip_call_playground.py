@@ -12,8 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from apiplayground import APIPlayground
-import datetime
-import random
+from datetime import datetime, timedelta
 import time
 
 
@@ -22,11 +21,11 @@ class VoipCallAPIPlayground(APIPlayground):
     To test CDR api in broswer
 
         ``URL`` : http://127.0.0.1:8000/api-explorer/voip-call/
-    """        
+    """
     # convert s_uepoch/e_uepoch into milliseconds
-    s_uepoch = datetime.datetime.now()
+    s_uepoch = datetime.now()
     start_uepoch = int(time.mktime(s_uepoch.timetuple()))
-    e_uepoch = s_uepoch + datetime.timedelta(seconds=100)
+    e_uepoch = s_uepoch + timedelta(seconds=100)
     end_uepoch = int(time.mktime(e_uepoch.timetuple()))
 
     schema = {
