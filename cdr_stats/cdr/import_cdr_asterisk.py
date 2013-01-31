@@ -86,7 +86,7 @@ def import_cdr_asterisk(shell=False):
         if db_engine == 'mysql':
             import MySQLdb as Database
         elif db_engine == 'pgsql':
-            import psycopg2 as Database
+            import psycopg2 as PgDatabase
         else:
             sys.stderr.write("Wrong setting for db_engine: %s" %
                 (str(db_engine)))
@@ -104,11 +104,13 @@ def import_cdr_asterisk(shell=False):
         host = settings.CDR_BACKEND[ipaddress]['host']
         port = settings.CDR_BACKEND[ipaddress]['port']
         try:
-            connection = Database.connect(user=user, passwd=password,
-                db=db_name, host=host, port=port)
             if db_engine == 'mysql':
+                connection = Database.connect(user=user, passwd=password,
+                    db=db_name, host=host, port=port)
                 connection.autocommit(True)
             elif db_engine == 'pgsql':
+                connection = PgDatabase.connect(user=user, password=password,
+                    database=db_name, host=host, port=port)
                 connection.autocommit = True
             cursor = connection.cursor()
             #update cursor used as we update at the end and we need
@@ -120,8 +122,12 @@ def import_cdr_asterisk(shell=False):
             sys.exit(1)
 
         try:
-            cursor.execute("SELECT VERSION() from %s WHERE import_cdr "
-                "IS NOT NULL LIMIT 0,1" % table_name)
+            if db_engine == 'mysql':
+                cursor.execute("SELECT VERSION() from %s WHERE import_cdr "
+                    "IS NOT NULL LIMIT 0,1" % table_name)
+            elif db_engine == 'pgsql':
+                cursor.execute("SELECT VERSION() from %s WHERE import_cdr "
+                    "IS NOT NULL LIMIT 1" % table_name)
             row = cursor.fetchone()
         except Exception, e:
             #Add missing field to flag import
@@ -144,7 +150,7 @@ def import_cdr_asterisk(shell=False):
         elif db_engine == 'pgsql':
             cursor.execute("SELECT dst, extract(epoch FROM calldate), clid, channel,"
                 "duration, billsec, disposition, accountcode, uniqueid,"
-                " %s FROM %s WHERE import_cdr=0 LIMIT 0, 1000" %
+                " %s FROM %s WHERE import_cdr=0 LIMIT 1000" %
                 (settings.ASTERISK_PRIMARY_KEY, table_name))
         row = cursor.fetchone()
 
