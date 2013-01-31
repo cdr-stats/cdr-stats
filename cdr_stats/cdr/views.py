@@ -763,6 +763,8 @@ def cdr_dashboard(request):
     logging.debug('After daily_data.find')
     total_calls = 0
     total_duration = 0
+    total_buy_cost = 0.0
+    total_sell_cost = 0.0
     previous_date = datetime.now() - relativedelta(days=1)
 
     hangup_analytic = dict()
@@ -772,6 +774,9 @@ def cdr_dashboard(request):
     for i in daily_data:
         calldate_dict = i['call_minute']
         duration_dict = i['duration_minute']
+        buy_cost_dict = i['buy_cost_minute']
+        sell_cost_dict = i['sell_cost_minute']
+
         a_Year = int(i['metadata']['date'].strftime('%Y'))
         b_Month = int(i['metadata']['date'].strftime('%m'))
         c_Day = int(i['metadata']['date'].strftime('%d'))
@@ -782,6 +787,7 @@ def cdr_dashboard(request):
             for call_hour, min_dict in calldate_dict.iteritems():
                 for min, count_val in min_dict.iteritems():
                     calldate__count = int(calldate_dict[call_hour][min])
+
                     if calldate__count > 0:
                         graph_day = datetime(a_Year, b_Month, c_Day,
                                              int(call_hour), int(min))
@@ -790,16 +796,25 @@ def cdr_dashboard(request):
                         if chk_date_for_hrs(previous_date, graph_day):
                             duration__sum = int(duration_dict[call_hour][min])
 
+                            buy_cost__sum = float(buy_cost_dict[call_hour][min])
+                            sell_cost__sum = float(sell_cost_dict[call_hour][min])
+
                             if dt in final_record:
                                 final_record[dt]['duration_sum'] += duration__sum
                                 final_record[dt]['count_call'] += calldate__count
+                                final_record[dt]['buy_cost_sum'] += buy_cost__sum
+                                final_record[dt]['sell_cost_sum'] += sell_cost__sum
                             else:
                                 final_record[dt] = {
                                     'duration_sum': duration__sum,
-                                    'count_call': calldate__count
+                                    'count_call': calldate__count,
+                                    'buy_cost_sum': buy_cost__sum,
+                                    'sell_cost_sum': sell_cost__sum,
                                 }
                             total_calls += calldate__count
                             total_duration += duration__sum
+                            total_buy_cost += buy_cost__sum
+                            total_sell_cost += sell_cost__sum
 
                             # created hangup_analytic
                             if hc in hangup_analytic:
@@ -810,10 +825,14 @@ def cdr_dashboard(request):
                             if country_id in country_all_data:
                                 country_all_data[country_id]['call_count'] += calldate__count
                                 country_all_data[country_id]['duration_sum'] += duration__sum
+                                country_all_data[country_id]['buy_cost_sum'] += buy_cost__sum
+                                country_all_data[country_id]['sell_cost_sum'] += sell_cost__sum
                             else:
                                 country_all_data[country_id] = {
                                     'call_count': calldate__count,
-                                    'duration_sum': duration__sum
+                                    'duration_sum': duration__sum,
+                                    'buy_cost_sum': buy_cost__sum,
+                                    'sell_cost_sum': sell_cost__sum
                                 }
     logging.debug('*** After loop to handle data ***')
 
@@ -843,6 +862,8 @@ def cdr_dashboard(request):
         'module': current_view(request),
         'total_calls': total_calls,
         'total_duration': int_convert_to_minute(total_duration),
+        'total_buy_cost': total_buy_cost,
+        'total_sell_cost': total_sell_cost,
         'ACT': ACT,
         'ACD': ACD,
         'total_record': final_record,

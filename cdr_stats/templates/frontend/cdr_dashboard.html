@@ -27,7 +27,7 @@
 $(function () {
     var data = [
         {% for data in total_record %}
-            [{{ data.0 }}, {{ data.1.count_call }}, {{ data.1.duration_sum }}],
+            [{{ data.0 }}, {{ data.1.count_call }}, {{ data.1.duration_sum }}, {% if user.is_superuser %}{{ data.1.buy_cost_sum }},{% endif %} {{ data.1.sell_cost_sum }}],
         {% endfor %}
     ];
 
@@ -43,6 +43,14 @@ $(function () {
                     break;
                     case 2:
                         return data[i][2];
+                    break;
+                    {% if user.is_superuser %}
+                        case 3:
+                            return data[i][3];
+                        break;
+                    {% endif %}
+                    case 4:
+                        return data[i][4];
                     break;
                     default:
                         return data[i][0];
@@ -128,7 +136,13 @@ $(function () {
                 minute = minute < 10 ? '0'+minute : minute;
                 strTime = hour + ':' + minute + ' ' + ampm;
 
-                output += strTime + '</div><div class="graph_tooltip_info">{% trans "Calls" %}: ' + Info(time,1) + '<br>{% trans "Duration" %}: ' + Info(time,2) + ' {% trans "secs" %}</div>';
+                output += strTime + '</div><div class="graph_tooltip_info">{% trans "Calls" %}: ' + Info(time,1) + '<br>{% trans "Duration" %}: ' + Info(time,2) + ' {% trans "secs" %}';
+
+                {% if user.is_superuser %}
+                    output += '<br>{% trans "Buy Cost" %}: ' + Info(time,3) ;
+                {% endif %}
+
+                output += '<br>{% trans "Sell Cost" %}: ' + Info(time,4) +'</div>';
 
                 showTooltip(item.pageX, item.pageY, output);
             }
@@ -312,6 +326,16 @@ $(function () {
                     <td class="td-dashboard">{{ ACD }}</td>
                     <td>{% trans "Average Call Duration"%}</td>
                 </tr>
+                {% if user.is_superuser %}
+                <tr>
+                    <td class="td-dashboard">{{ total_buy_cost }}</td>
+                    <td>{% trans "Total Buy Cost"%}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td class="td-dashboard">{{ total_sell_cost }}</td>
+                    <td>{% trans "Total Sell Cost"%}</td>
+                </tr>
                 </tbody>
             </table>
         </div>
@@ -342,7 +366,11 @@ $(function () {
                             </td>
                             <td class="td-dashboard" width="100">{{ country_data.0|country_name|title }}</td>
                             <td width="100">{{ country_data.1.call_count }} {% trans "Calls"%}</td>
-                            <td>{{ country_data.1.duration_sum|conv_min }} {% trans "minutes"%}</td>
+                            <td width="100">{{ country_data.1.duration_sum|conv_min }} {% trans "minutes"%}</td>
+                            {% if user.is_superuser %}
+                                <td width="100">{{ country_data.1.buy_cost_sum }} {% trans "B"%}</td>
+                            {% endif %}
+                            <td width="100">{{ country_data.1.sell_cost_sum }} {% trans "S"%}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
