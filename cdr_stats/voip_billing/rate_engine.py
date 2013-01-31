@@ -12,10 +12,8 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-from country_dialcode.models import Prefix
 from voip_billing.models import VoIPRetailPlan
 from voip_billing.function_def import prefix_list_string
-from datetime import datetime
 
 
 def rate_engine(voipcall_id=None, voipplan_id=None, destination_no=None):
@@ -87,7 +85,7 @@ def rate_engine(voipcall_id=None, voipplan_id=None, destination_no=None):
                              allsellrates.prefix DESC \
         ) AS bothrates \
         ORDER BY cr_prefix DESC, rt_prefix DESC, \
-        sum_metric ASC, carrier_rate ASC, retail_rate ASC LIMIT 1' %\
+        sum_metric ASC, carrier_rate ASC, retail_rate ASC LIMIT 1' %
         (str(destination_prefix_list), str(voipplan_id), str(voipplan_id), str(destination_prefix_list)))
 
     # This return is used by rate simulator
@@ -105,10 +103,9 @@ def rate_engine(voipcall_id=None, voipplan_id=None, destination_no=None):
         # i.retail_rate , i.crid, i.provider_id, i.gateway_id, i.sum_metric)
         data = i
 
-    # TODO: Create VoIP report record    
-    
+    # TODO: Create VoIP report record
 
-    result_data = {'voipcall_id': 1} #voipcall.id
+    result_data = {'voipcall_id': 1}
 
     # This return is used by voip call task
     # to determine gateway
