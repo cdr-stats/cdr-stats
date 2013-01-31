@@ -14,7 +14,6 @@
 
 from country_dialcode.models import Prefix
 from voip_billing.models import VoIPRetailPlan
-from voip_report.models import VoIPCall, VoIPCall_Report
 from voip_billing.function_def import prefix_list_string
 from datetime import datetime
 
@@ -25,7 +24,10 @@ def rate_engine(voipcall_id=None, voipplan_id=None, destination_no=None):
     to use to deliver the call.
     """
     if voipcall_id is not None:
-        voipcall = VoIPCall.objects.get(pk=voipcall_id)
+        #TODO : check with cdr_common
+        #voipcall = VoIPCall.objects.get(pk=voipcall_id)
+        voipcall = ''
+        pass
 
     if destination_no is not None:
         destination_prefix_list = prefix_list_string(str(destination_no))
@@ -103,29 +105,10 @@ def rate_engine(voipcall_id=None, voipplan_id=None, destination_no=None):
         # i.retail_rate , i.crid, i.provider_id, i.gateway_id, i.sum_metric)
         data = i
 
-    # Create VoIP report record
-    obj = VoIPCall_Report()
-    obj.voipcall_ptr_id = voipcall.id
-    if data != '':
-        obj.carrier_cost = data.carrier_rate
-        obj.carrier_rate_id = data.crid
-        obj.retail_cost = data.retail_rate
-        obj.retail_rate_id = data.rrid
-        obj.gateway_id = data.gateway_id
-        voipcall.prefix = Prefix.objects.get(prefix=data.rt_prefix)
-    else:
-        voipcall.disposition = 20 # No Route
+    # TODO: Create VoIP report record    
+    
 
-    obj.voipplan_id = voipplan_id
-    obj.user_id = voipcall.user_id
-    obj.starting_date = voipcall.starting_date
-    obj.created_date = datetime.now()
-    obj.updated_date = datetime.now()
-
-    obj.save()
-    voipcall.save()
-
-    result_data = {'voipcall_id': voipcall.id}
+    result_data = {'voipcall_id': 1} #voipcall.id
 
     # This return is used by voip call task
     # to determine gateway

@@ -23,6 +23,7 @@ from cdr.urls import urlpatterns as urlpatterns_cdr
 from cdr_alert.urls import urlpatterns as urlpatterns_cdr_alert
 from user_profile.urls import urlpatterns as urlpatterns_user_profile
 from frontend.urls import urlpatterns as urlpatterns_frontend
+from voip_billing.urls import urlpatterns as urlpatterns_voip_billing
 from api.api_playgrounds.urls import urlpatterns as urlpatterns_api_playgrounds
 from frontend_notification.urls import urlpatterns as urlpatterns_frontend_notification
 from django.contrib import admin
@@ -58,8 +59,6 @@ urlpatterns = patterns('',
 
     (r'^api/', include(tastypie_api.urls)),
 
-    (r'^voip_billing/', include('voip_billing.urls')),
-
     # Serve static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
         {'document_root': settings.STATIC_ROOT}),
@@ -77,6 +76,7 @@ urlpatterns += urlpatterns_user_profile
 urlpatterns += urlpatterns_frontend
 urlpatterns += urlpatterns_api_playgrounds
 urlpatterns += urlpatterns_frontend_notification
+urlpatterns += urlpatterns_voip_billing
 
 urlpatterns += patterns('',
     url("", include('django_socketio.urls')),

@@ -201,10 +201,7 @@ INSTALLED_APPS = (
     'dajaxice',
     'dajax',
     'voip_gateway',
-    'voip_billing',
-    #'voip_billing.api',
-    'voip_report',
-    #'voip2bill.user_profile',
+    'voip_billing',    
 )
 
 # Debug Toolbar

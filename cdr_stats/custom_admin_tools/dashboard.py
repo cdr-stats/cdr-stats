@@ -98,12 +98,7 @@ class CustomIndexDashboard(Dashboard):
             _('Voip billing'),
             models=('voip_billing.*', ),
         ))
-
-        self.children.append(modules.AppList(
-            _('Voip report'),
-            models=('voip_report.*', ),
-        ))
-
+       
         # append a link list module for "quick links"
         self.children.append(modules.LinkList(
             _('Quick links'),
