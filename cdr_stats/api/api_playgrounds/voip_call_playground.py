@@ -32,11 +32,11 @@ class VoipCallAPIPlayground(APIPlayground):
     # convert answer_stamp into milliseconds
     start_uepoch = int(time.mktime(answer_stamp.timetuple()))
     schema = {
-        "title": "Voip call billed API Playground",
+        "title": "To record CDRs and bill them",
         "base_url": "http://localhost/api/v1/",
         "resources": [
             {
-                "name": "/voip_call_billed/",
+                "name": "/voip_call/",
                 "description": "This resource allows to record CDRs and bill them.",
                 "endpoints": [
                     {
@@ -84,7 +84,7 @@ class VoipCallAPIPlayground(APIPlayground):
                             {
                                 "name": "billsec",
                                 "type": "string",
-                                "default": "50"
+                                "default": "90"
                             },
                             {
                                 "name": "hangup_cause_id",
@@ -124,12 +124,12 @@ class VoipCallAPIPlayground(APIPlayground):
                             {
                                 "name": "mduration",
                                 "type": "string",
-                                "default": "12"
+                                "default": "10000"
                             },
                             {
                                 "name": "billmsec",
                                 "type": "string",
-                                "default": "25"
+                                "default": "90000"
                             },
                             {
                                 "name": "read_codec",

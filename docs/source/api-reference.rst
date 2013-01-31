@@ -11,8 +11,8 @@ Contents:
 
 
     ./api-doc/switch_resource
-    ./api-doc/cdr_daily_resource
-    ./api-doc/cdr_resource
+    ./api-doc/voip_rate_resource
+    ./api-doc/voip_call_resource
 
 Testing console of APIs:
 
