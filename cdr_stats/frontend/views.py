@@ -73,8 +73,8 @@ def diagnostic(request):
                 cursor = connection.cursor()
             elif db_engine == 'pgsql':
                 import psycopg2 as Database
-                connection = Database.connect(user=user, passwd=password,
-                    db=db_name, host=host, port=port)
+                connection = Database.connect(user=user, password=password,
+                    database=db_name, host=host, port=port)
                 connection.autocommit(True)
                 cursor = connection.cursor()
             elif db_engine == 'mongodb':
