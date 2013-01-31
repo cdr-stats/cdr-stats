@@ -48,10 +48,15 @@ $(function () {
                         case 3:
                             return data[i][3];
                         break;
+                        case 4:
+                            return data[i][4];
+                        break;
+                    {% else %}
+                        case 3:
+                            return data[i][3];
+                        break;
                     {% endif %}
-                    case 4:
-                        return data[i][4];
-                    break;
+                    
                     default:
                         return data[i][0];
                 }
@@ -139,10 +144,12 @@ $(function () {
                 output += strTime + '</div><div class="graph_tooltip_info">{% trans "Calls" %}: ' + Info(time,1) + '<br>{% trans "Duration" %}: ' + Info(time,2) + ' {% trans "secs" %}';
 
                 {% if user.is_superuser %}
-                    output += '<br>{% trans "Buy Cost" %}: ' + Info(time,3) ;
+                    output += '<br>{% trans "Buy Cost" %}: ' + Info(time,3) + '<br>{% trans "Sell Cost" %}: ' + Info(time,4) +'</div>' ;
+                {% else %}
+                    output += '<br>{% trans "Sell Cost" %}: ' + Info(time,4) ;
                 {% endif %}
-
-                output += '<br>{% trans "Sell Cost" %}: ' + Info(time,4) +'</div>';
+                output += '</div>';
+                
 
                 showTooltip(item.pageX, item.pageY, output);
             }
