@@ -114,11 +114,7 @@
 
                         var time = parseInt(x);
                         var label = item.series.label;
-                        output = '<div class="graph_tooltip_header">' + label + '</div><div class="graph_tooltip_info">{% trans "Hour" %}: ' + String(time) + '<br>';
-
-                        output += '{% trans "cost" %}: ' + y + ' </div>';
-
-
+                        output = '<div class="graph_tooltip_header">' + label + ' : ' + y + '</div><div class="graph_tooltip_info">{% trans "Hour" %}: ' + String(time) + '</div>';
                         showTooltip(item.pageX, item.pageY, output);
                     }
                 }

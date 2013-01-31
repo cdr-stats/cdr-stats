@@ -207,7 +207,7 @@
                         minute = minute < 10 ? '0'+minute : minute;
 
                         strTime = Day + ', ' + month_name + ' ' + Year ;//+ ' ' + hour + ':' + minute + ' ' + ampm;
-                        output += strTime + '</div><div class="graph_tooltip_info">{% trans "Cost" %}: ' + y + '</div>';
+                        output += strTime + '</div><div class="graph_tooltip_info">' + item.series.label + ' : ' + y + '</div>';
 
                         showTooltip(item.pageX, item.pageY, output);
                     }
