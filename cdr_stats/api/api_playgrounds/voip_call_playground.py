@@ -22,15 +22,13 @@ class VoipCallAPIPlayground(APIPlayground):
     To test CDR api in broswer
 
         ``URL`` : http://127.0.0.1:8000/api-explorer/voip-call/
-    """
-    delta_days = random.randint(0, 1)
-    delta_minutes = random.randint(1, 1440)
-    answer_stamp = datetime.datetime.now() \
-        - datetime.timedelta(minutes=delta_minutes) \
-        - datetime.timedelta(days=delta_days)
+    """        
+    # convert s_uepoch/e_uepoch into milliseconds
+    s_uepoch = datetime.datetime.now()
+    start_uepoch = int(time.mktime(s_uepoch.timetuple()))
+    e_uepoch = s_uepoch + datetime.timedelta(seconds=100)
+    end_uepoch = int(time.mktime(e_uepoch.timetuple()))
 
-    # convert answer_stamp into milliseconds
-    start_uepoch = int(time.mktime(answer_stamp.timetuple()))
     schema = {
         "title": "To record CDRs and bill them",
         "base_url": "http://localhost/api/v1/",
@@ -119,7 +117,7 @@ class VoipCallAPIPlayground(APIPlayground):
                             {
                                 "name": "end_uepoch",
                                 "type": "string",
-                                "default": start_uepoch
+                                "default": end_uepoch
                             },
                             {
                                 "name": "mduration",
