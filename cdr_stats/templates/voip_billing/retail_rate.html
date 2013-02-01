@@ -1,82 +1,8 @@
 {% extends "frontend/master.html" %}
-{% load i18n pagination_tags cache %}
+{% load i18n pagination_tags cache common_tags %}
 
 {% block extra_head %}
-   
-    <script language="javascript" type="text/javascript">
-    function data_into_table(json)
-    {
-        var html = '<table class="table table-striped table-bordered table-condensed"><thead><tr>';
-        html += '<th>Prefix</th>';
-        html += '<th>Destination</th>';
-        html += '<th>Rate</th>';
-        html += '</tr></thead>';
-        html += '<tbody>';
-        if(isEmpty(json))
-        {
-            html += '<tr><td colspan=3><center>No Record Found</center></td></tr>';
-        }
-        $('#rate_list').empty();
-        $.each(json, function (i, obj) {
 
-            html += '<tr><td>' + obj.prefix + '</td>';
-            html += '<td>' + obj.prefix__destination + '</td>';
-            html += '<td>' + obj.retail_rate + '</td></tr>';
-
-        });
-        html += '</tbody>'
-        $('#rate_list').append(html).append('</table>');
-    }
-
-    $(document).ready(function() {
-       $("#search_prefix").click(function() {
-
-          if(document.getElementById('id_prefix').value.length == 0)
-          {
-            alert('Please Enter Prefix: field');
-            document.getElementById('id_prefix').focus();
-            return false;
-          }
-
-          $.ajax({
-               url: "http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/api/v1/voip_rate/dialcode/" + String(document.getElementById('id_prefix').value) + "/?format=json",
-               type: "GET",
-               dataType: "json",
-               //timeout: 30000,
-               //data: "?format=json",
-               success: function(data) {
-                   //alert(data);
-                   data_into_table(data);
-               },
-               error: function(data) {
-                   //alert(data);
-                   //data_into_table(data);
-                   alert("Request failed");
-               }
-           });
-       });
-
-       $("#clear_search_prefix").click(function() {
-            $.getJSON("http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/api/v1/voip_rate/?format=json",
-                function(json) {
-                    data_into_table(json);
-            });
-       });
-    });
-
-    $.getJSON("http://{{ user.username }}:{{ user.password }}@127.0.0.1:8000/api/v1/voip_rate/?format=json",
-           function(json) {
-             data_into_table(json);
-    });
-
-    function isEmpty(obj) {
-        for(var prop in obj) {
-            if(obj.hasOwnProperty(prop))
-                return false;
-        }
-        return true;
-    }
-    </script>
 {% endblock %}
 
 
@@ -102,38 +28,32 @@
 </form>
 <p>&nbsp;</p>
 
-{% cache 500 sidebar %}
-    <div id="rate_list"></div>
-{% endcache %}
-
-{% if rate_list %}
 <table class="table table-striped table-bordered table-condensed">
-  {% autopaginate rate_list PAGE_SIZE %}
-  {% for item in rate_list %}    
-      {% if forloop.first %}
-        <thead>
+    <thead>
+    <tr>
+        <th>{% sort_link RATE_COLUMN_NAME.prefix col_name_with_order.prefix %}</th>
+        <th>{% sort_link RATE_COLUMN_NAME.destination col_name_with_order.destination %}</th>
+        <th>{% sort_link RATE_COLUMN_NAME.rate col_name_with_order.rate %}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% if rate_list %}
+        {% autopaginate rate_list PAGE_SIZE %}
+        {% for item in rate_list %}
             <tr>
-              <th>{% trans "Prefix" %}</th>
-              <th>{% trans "Destination" %}</th>
-              <th>{% trans "Rate" %}</th>
+              <td>{{ item.prefix }}</td>
+              <td>{{ item.prefix__destination }}</td>
+              <td>{{ item.retail_rate }}</td>
             </tr>
-        </thead>
-        <tbody>
-      {% endif %}        
-        <tr>
-          <td>{{ item.prefix }}</td>
-          <td>{{ item.prefix__destination }}</td>
-          <td>{{ item.retail_rate }}</td>
-        </tr>        
-  {% endfor %}
-      </tbody>
+        {% endfor %}
+    {% else %}
+        <tr><td colspan="3">{% trans "No record found!!" %}</td></tr>
+    {% endif %}
+    </tbody>
   </table>
 
   {% if rate_list %}
       {% paginate %}
   {% endif %}
-  
-{% endif %}
-
 
 {% endblock %}

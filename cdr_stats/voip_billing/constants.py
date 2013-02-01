@@ -24,3 +24,9 @@ class LCR_TYPE(Choice):
 class CONFIRMATION_TYPE(Choice):
     YES = 'YES', _('Yes')
     NO = 'NO', _('No')
+
+
+class RATE_COLUMN_NAME(Choice):
+    prefix = _('Prefix')
+    destination = _('Destination')
+    rate = _('Rate')

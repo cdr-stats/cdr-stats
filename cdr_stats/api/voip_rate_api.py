@@ -173,17 +173,30 @@ class VoipRateResource(ModelResource):
 
             cursor.execute(sql_statement, [voipplan_id, sqldialcode])
         else:
+            sort_field = ''
+            sort_order = ''
+            if request.GET.get('sort_field'):
+                sort_field = request.GET.get('sort_field')
+                sort_order = request.GET.get('sort_order')
+                if sort_field == 'prefix':
+                    sort_field = 'voipbilling_voip_retail_rate.prefix'
+                if sort_field == 'retail_rate':
+                    sort_field = 'minrate'
+                if sort_field == 'destination':
+                    sort_field = 'dialcode_prefix.destination'
+
             sql_statement = (
-                'SELECT voipbilling_voip_retail_rate.prefix, '
-                'Min(retail_rate) as minrate, dialcode_prefix.destination '
-                'FROM voipbilling_voip_retail_rate '
-                'INNER JOIN voipbilling_voipplan_voipretailplan '
-                'ON voipbilling_voipplan_voipretailplan.voipretailplan_id = '
-                'voipbilling_voip_retail_rate.voip_retail_plan_id '
-                'LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix = '
-                'voipbilling_voip_retail_rate.prefix '
-                'WHERE voipplan_id=%s '
-                'GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination')
+                "SELECT voipbilling_voip_retail_rate.prefix, "
+                "Min(retail_rate) as minrate, dialcode_prefix.destination "
+                "FROM voipbilling_voip_retail_rate "
+                "INNER JOIN voipbilling_voipplan_voipretailplan "
+                "ON voipbilling_voipplan_voipretailplan.voipretailplan_id = "
+                "voipbilling_voip_retail_rate.voip_retail_plan_id "
+                "LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix = "
+                "voipbilling_voip_retail_rate.prefix "
+                "WHERE voipplan_id=%s "
+                "GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination "
+                "ORDER BY " + sort_field + ' ' + sort_order)
 
             cursor.execute(sql_statement, [voipplan_id])
 

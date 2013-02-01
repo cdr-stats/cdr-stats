@@ -22,12 +22,13 @@ from voip_billing.forms import PrefixRetailRrateForm, SimulatorForm, BillingForm
     HourlyBillingForm
 from voip_billing.function_def import prefix_allowed_to_call
 from voip_billing.rate_engine import rate_engine
+from voip_billing.constants import RATE_COLUMN_NAME
 from user_profile.models import UserProfile
 from cdr.views import check_user_accountcode, check_cdr_exists
 from cdr.functions_def import chk_account_code
 from cdr.aggregate import pipeline_daily_billing_report, pipeline_hourly_billing_report
 from user_profile.models import UserProfile
-from common.common_functions import current_view, ceil_strdate
+from common.common_functions import current_view, ceil_strdate, get_pagination_vars
 from datetime import datetime
 import logging
 import time
@@ -44,9 +45,25 @@ def retail_rate_view(request):
     template = 'voip_billing/retail_rate.html'    
     form = PrefixRetailRrateForm()
     final_rate_list = []
+    error_msg = ''
+
+    sort_col_field_list = ['prefix', 'retail_rate', 'destination']
+    default_sort_field = 'prefix'
+    pagination_data =\
+        get_pagination_vars(request, sort_col_field_list, default_sort_field)
+
+    PAGE_SIZE = pagination_data['PAGE_SIZE']
+    sort_order = pagination_data['sort_order']
+
+    order = 'ASC'
+    if "-" in sort_order:
+        order = 'DESC'
+        sort_order = sort_order[1:]
+
     try:
         UserProfile.objects.get(user=request.user).voipplan_id
-        response = requests.get('http://localhost:8000/api/v1/voip_rate/?format=json', 
+
+        response = requests.get('http://localhost:8000/api/v1/voip_rate/?format=json&sort_field='+sort_order+'&sort_order='+order,
             auth=(request.user, request.user))
         rate_list = response.content        
         rate_list = rate_list.replace('[', '').replace(']', '').replace('}, {', '}|{').split('|')
@@ -56,14 +73,16 @@ def retail_rate_view(request):
     except:
         error_msg = _('Voip plan is not attached with loggedin user')
         
-    variables = RequestContext(request,
-    {
-        'module': current_view(request),
-        'form': form,
-        'user': request.user,
-        'rate_list': final_rate_list,
-        'PAGE_SIZE': settings.PAGE_SIZE
-    })
+    variables = RequestContext(request, {
+            'module': current_view(request),
+            'form': form,
+            'user': request.user,
+            'rate_list': final_rate_list,
+            'col_name_with_order': pagination_data['col_name_with_order'],
+            'PAGE_SIZE': PAGE_SIZE,
+            'error_msg': error_msg,
+            'RATE_COLUMN_NAME': RATE_COLUMN_NAME,
+        })
     return render_to_response(template, variables,
            context_instance=RequestContext(request))
 
