@@ -148,6 +148,18 @@ class VoipRateResource(ModelResource):
                 logger.error(error_msg)
                 raise BadRequest(error_msg)
 
+        sort_field = ''
+        sort_order = ''
+        if request.GET.get('sort_field'):
+            sort_field = request.GET.get('sort_field')
+            sort_order = request.GET.get('sort_order')
+            if sort_field == 'prefix':
+                sort_field = 'voipbilling_voip_retail_rate.prefix'
+            if sort_field == 'retail_rate':
+                sort_field = 'minrate'
+            if sort_field == 'destination':
+                sort_field = 'dialcode_prefix.destination'
+
         cursor = connection.cursor()
         if dialcode:
             try:
@@ -169,21 +181,12 @@ class VoipRateResource(ModelResource):
                 "voipbilling_voip_retail_rate.prefix "
                 "WHERE voipplan_id=%s "
                 "AND CAST(voipbilling_voip_retail_rate.prefix AS TEXT) LIKE %s "
-                "GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination;")
+                "GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination "
+                "ORDER BY " + sort_field + ' ' + sort_order)
 
             cursor.execute(sql_statement, [voipplan_id, sqldialcode])
         else:
-            sort_field = ''
-            sort_order = ''
-            if request.GET.get('sort_field'):
-                sort_field = request.GET.get('sort_field')
-                sort_order = request.GET.get('sort_order')
-                if sort_field == 'prefix':
-                    sort_field = 'voipbilling_voip_retail_rate.prefix'
-                if sort_field == 'retail_rate':
-                    sort_field = 'minrate'
-                if sort_field == 'destination':
-                    sort_field = 'dialcode_prefix.destination'
+
 
             sql_statement = (
                 "SELECT voipbilling_voip_retail_rate.prefix, "

@@ -63,8 +63,28 @@ def retail_rate_view(request):
     try:
         UserProfile.objects.get(user=request.user).voipplan_id
 
-        response = requests.get('http://localhost:8000/api/v1/voip_rate/?format=json&sort_field='+sort_order+'&sort_order='+order,
-            auth=(request.user, request.user))
+        prefix_code = ''
+        if request.method == 'POST':
+            form = PrefixRetailRrateForm(request.POST)
+            if form.is_valid():
+                prefix_code = request.POST.get('prefix')
+                request.session['prefix_code'] = prefix_code
+
+        else:
+            if request.session.get('prefix_code') and \
+               (request.GET.get('page') or request.GET.get('sort_by')):
+                prefix_code = request.session.get('prefix_code')
+            else:
+                request.session['prefix_code'] = ''
+                prefix_code = ''
+
+        if prefix_code:
+            response = requests.get('http://localhost:8000/api/v1/voip_rate/dialcode/%s/?format=json&sort_field=%s&sort_order=%s' % (prefix_code, sort_order, order),
+                auth=(request.user, request.user))
+        else:
+            response = requests.get('http://localhost:8000/api/v1/voip_rate/?format=json&sort_field=%s&sort_order=%s' % (sort_order, order),
+                auth=(request.user, request.user))
+
         rate_list = response.content        
         rate_list = rate_list.replace('[', '').replace(']', '').replace('}, {', '}|{').split('|')
         
