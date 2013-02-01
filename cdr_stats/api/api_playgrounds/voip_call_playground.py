@@ -11,6 +11,7 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
+from django.utils.translation import gettext as _
 from apiplayground import APIPlayground
 from datetime import datetime, timedelta
 import time
@@ -29,27 +30,27 @@ class VoipCallAPIPlayground(APIPlayground):
     end_uepoch = int(time.mktime(e_uepoch.timetuple()))
 
     schema = {
-        "title": "To record CDRs and bill them",
+        "title": _("To record CDRs and bill them"),
         "base_url": "http://localhost/api/v1/",
         "resources": [
             {
                 "name": "/voip_call/",
-                "description": "This resource allows to record CDRs and bill them.",
+                "description": _("This resource allows to record CDRs and bill them."),
                 "endpoints": [
                     {
                         "method": "GET",
                         "url": "/api/v1/voip_call/",
-                        "description": "Returns all CDRs"
+                        "description": _("Returns all CDRs")
                     },
                     {
                         "method": "GET",
                         "url": "/api/v1/voip_call/{id}/",
-                        "description": "Returns a specific cdr"
+                        "description": _("Returns a specific cdr")
                     },
                     {
                         "method": "POST",
                         "url": "/api/v1/voip_call/",
-                        "description": "Creates new billed voip call",
+                        "description": _("Creates new billed voip call"),
                         "parameters": [
                             {
                                 "name": "switch_id",

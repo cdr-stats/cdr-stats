@@ -11,33 +11,34 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
+from django.utils.translation import gettext as _
 from apiplayground import APIPlayground
 
 
 class VoipRateAPIPlayground(APIPlayground):
 
     schema = {
-        "title": "Voip Rate API Playground",
+        "title": _("Voip Rate API Playground"),
         "base_url": "http://localhost/api/v1/",
         "resources": [
             {
                 "name": "/voip_rate/",
-                "description": "Resource to get voip rate.",
+                "description": _("Resource to get voip rate."),
                 "endpoints": [
                     {
                         "method": "GET",
                         "url": "/api/v1/voip_rate/",
-                        "description": "Returns all rates"
+                        "description": _("Returns all rates")
                     },
                     {
                         "method": "GET",
                         "url": "/api/v1/voip_rate/dialcode/{dialcode}/",
-                        "description": "Returns a specific rate for prefix"
+                        "description": _("Returns a specific rate for prefix")
                     },
                     {
                         "method": "GET",
                         "url": "/api/v1/voip_rate/recipient_phone_no/{recipient-phone-no}/",
-                        "description": "Returns a specific rate for recipient phone no"
+                        "description": _("Returns a specific rate for recipient phone no")
                     },
 
                 ]

@@ -11,37 +11,34 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
+from django.utils.translation import gettext as _
 from apiplayground import APIPlayground
 
 
 class SwitchAPIPlayground(APIPlayground):
 
     schema = {
-        "title": "Switch API Playground",
+        "title": _("Switch API Playground"),
         "base_url": "http://localhost/api/v1/",
         "resources": [
             {
                 "name": "/switch/",
-                #TODO: We will need to add gettext on description
-                "description": "Resource to manage switches.",
+                "description": _("Resource to manage switches."),
                 "endpoints": [
                     {
                         "method": "GET",
                         "url": "/api/v1/switch/",
-                        #TODO: We will need to add gettext on description
-                        "description": "Returns all switches"
+                        "description": _("Returns all switches")
                     },
                     {
                         "method": "GET",
                         "url": "/api/v1/switch/{switch-id}/",
-                        #TODO: We will need to add gettext on description
-                        "description": "Returns a specific switch"
+                        "description": _("Returns a specific switch")
                     },
                     {
                         "method": "POST",
                         "url": "/api/v1/switch/",
-                        #TODO: We will need to add gettext on description
-                        "description": "Creates new switch",
+                        "description": _("Creates new switch"),
                         "parameters": [
                             {
                                 "name": "name",
@@ -59,8 +56,7 @@ class SwitchAPIPlayground(APIPlayground):
                     {
                         "method": "PUT",
                         "url": "/api/v1/switch/{switch-id}/",
-                        #TODO: We will need to add gettext on description
-                        "description": "Update switch",
+                        "description": _("Update switch"),
                         "parameters": [
                             {
                                 "name": "name",
@@ -78,7 +74,7 @@ class SwitchAPIPlayground(APIPlayground):
                     {
                         "method": "DELETE",
                         "url": "/api/v1/switch/{switch-id}/",
-                        "description": "Delete switch",
+                        "description": _("Delete switch"),
                     }
                 ]
             },
