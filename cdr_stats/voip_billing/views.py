@@ -46,7 +46,7 @@ def retail_rate_view(request):
     form = PrefixRetailRrateForm()
     final_rate_list = []
     error_msg = ''
-
+    # Get pagination data
     sort_col_field_list = ['prefix', 'retail_rate', 'destination']
     default_sort_field = 'prefix'
     pagination_data =\
@@ -61,6 +61,7 @@ def retail_rate_view(request):
         sort_order = sort_order[1:]
 
     try:
+        # check user with voipplan_id
         UserProfile.objects.get(user=request.user).voipplan_id
 
         prefix_code = ''
@@ -71,9 +72,11 @@ def retail_rate_view(request):
                 request.session['prefix_code'] = prefix_code
 
         else:
+            # pagination with prefix code
             if request.session.get('prefix_code') and \
                (request.GET.get('page') or request.GET.get('sort_by')):
                 prefix_code = request.session.get('prefix_code')
+                form = PrefixRetailRrateForm(initial={'prefix': prefix_code})
             else:
                 request.session['prefix_code'] = ''
                 prefix_code = ''
@@ -82,27 +85,27 @@ def retail_rate_view(request):
             response = requests.get('http://localhost:8000/api/v1/voip_rate/dialcode/%s/?format=json&sort_field=%s&sort_order=%s' % (prefix_code, sort_order, order),
                 auth=(request.user, request.user))
         else:
+            # Default listing or rate
             response = requests.get('http://localhost:8000/api/v1/voip_rate/?format=json&sort_field=%s&sort_order=%s' % (sort_order, order),
                 auth=(request.user, request.user))
 
-        rate_list = response.content        
+        rate_list = response.content
         rate_list = rate_list.replace('[', '').replace(']', '').replace('}, {', '}|{').split('|')
-        
         for i in rate_list:
             final_rate_list.append(ast.literal_eval(i))
     except:
         error_msg = _('Voip plan is not attached with loggedin user')
         
     variables = RequestContext(request, {
-            'module': current_view(request),
-            'form': form,
-            'user': request.user,
-            'rate_list': final_rate_list,
-            'col_name_with_order': pagination_data['col_name_with_order'],
-            'PAGE_SIZE': PAGE_SIZE,
-            'error_msg': error_msg,
-            'RATE_COLUMN_NAME': RATE_COLUMN_NAME,
-        })
+        'module': current_view(request),
+        'form': form,
+        'user': request.user,
+        'rate_list': final_rate_list,
+        'col_name_with_order': pagination_data['col_name_with_order'],
+        'PAGE_SIZE': PAGE_SIZE,
+        'error_msg': error_msg,
+        'RATE_COLUMN_NAME': RATE_COLUMN_NAME,
+    })
     return render_to_response(template, variables,
            context_instance=RequestContext(request))
 
