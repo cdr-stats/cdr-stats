@@ -95,7 +95,12 @@ class UserProfile(models.Model):
             ("by_country", _('Can view CDR country report')),
             ("world_map", _('Can view CDR world map')),
             ("mail_report", _('Can view CDR mail report')),
-            ("diagnostic", _('Can view diagnostic report'))
+            ("diagnostic", _('Can view diagnostic report')),
+            ("daily_billing", _('Can view daily billing report')),
+            ("hourly_billing", _('Can view hourly billing report')),
+            ("sumulator", _('Can view voip call simulator')),
+            ("call_rate", _('Can view voip call rate')),
+            ("export_call_rate", _('Can export voip call rate')),
         )
         db_table = 'user_profile'
         verbose_name = _("User Profile")

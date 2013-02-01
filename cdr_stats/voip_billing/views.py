@@ -13,6 +13,7 @@
 #
 from django.contrib.auth.decorators import login_required, permission_required
 from django.views.decorators.cache import cache_page
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings
 from django.utils.translation import gettext as _
@@ -33,12 +34,13 @@ from datetime import datetime
 import logging
 import time
 import requests
-import ast
+import ast, csv
 
 
+@permission_required('user_profile.call_rate', login_url='/')
 @login_required
 #@cache_page(60 * 5)
-def retail_rate_view(request):
+def retail_rate(request):
     """
     All Retail Rates are displayed & according to Destination No
     """
@@ -79,6 +81,7 @@ def retail_rate_view(request):
                 form = PrefixRetailRrateForm(initial={'prefix': prefix_code})
             else:
                 request.session['prefix_code'] = ''
+                request.session['final_rate_list'] = ''
                 prefix_code = ''
 
         if prefix_code:
@@ -93,6 +96,7 @@ def retail_rate_view(request):
         rate_list = rate_list.replace('[', '').replace(']', '').replace('}, {', '}|{').split('|')
         for i in rate_list:
             final_rate_list.append(ast.literal_eval(i))
+        request.session['final_rate_list'] = final_rate_list
     except:
         error_msg = _('Voip plan is not attached with loggedin user')
         
@@ -110,6 +114,37 @@ def retail_rate_view(request):
            context_instance=RequestContext(request))
 
 
+@permission_required('user_profile.export_call_rate', login_url='/')
+@login_required
+def export_rate(request):
+    """
+    **Logic Description**:
+
+        get the prifix rates  from voip rate API
+        according to search parameters & store into csv file
+    """
+    # get the response object, this can be used as a stream
+    response = HttpResponse(mimetype='text/csv')
+    # force download
+    response['Content-Disposition'] = 'attachment;filename=call_rate.csv'
+    # the csv writer
+
+    writer = csv.writer(response, dialect=csv.excel_tab)
+    writer.writerow(['prefix', 'destination', 'retail_rate',])
+    final_result = []
+    if request.session.get('final_rate_list'):
+        final_result = request.session['final_rate_list']
+
+    for row in final_result:
+        writer.writerow([
+            row['prefix'],
+            row['prefix__destination'],
+            row['retail_rate'],
+        ])
+    return response
+
+
+@permission_required('user_profile.simulator', login_url='/')
 @login_required
 def simulator(request):
     """
@@ -151,7 +186,7 @@ def simulator(request):
         context_instance=RequestContext(request))
 
 
-@permission_required('voip_report.daily_billing_report', login_url='/')
+@permission_required('user_profile.daily_billing', login_url='/')
 @check_cdr_exists
 @check_user_accountcode
 @login_required
@@ -243,7 +278,7 @@ def daily_billing_report(request):
     return render_to_response(template, data, context_instance=RequestContext(request))
 
 
-@permission_required('voip_report.hourly_billing_report', login_url='/')
+@permission_required('user_profile.hourly_billing', login_url='/')
 @check_cdr_exists
 @check_user_accountcode
 @login_required

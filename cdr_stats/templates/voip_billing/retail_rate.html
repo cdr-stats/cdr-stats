@@ -27,33 +27,51 @@
     </div>
 </form>
 <p>&nbsp;</p>
+<div class="span12">
+    <div class="row">
+        <div class="btn-group">
+            <button class="btn">{% trans "Action" %}</button>
+            <button class="btn dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                {% if perms.user_profile.export_call_rate %}
+                    <li><a href="/export_rate/">{% trans "Export csv" %}</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
 
-<table class="table table-striped table-bordered table-condensed">
-    <thead>
-    <tr>
-        <th>{% sort_link RATE_COLUMN_NAME.prefix col_name_with_order.prefix %}</th>
-        <th>{% sort_link RATE_COLUMN_NAME.destination col_name_with_order.destination %}</th>
-        <th>{% sort_link RATE_COLUMN_NAME.rate col_name_with_order.retail_rate %}</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% if rate_list %}
-        {% autopaginate rate_list PAGE_SIZE %}
-        {% for item in rate_list %}
+<div class="span12">
+    <div class="row">
+        <table class="table table-striped table-bordered table-condensed">
+            <thead>
             <tr>
-              <td>{{ item.prefix }}</td>
-              <td>{{ item.prefix__destination }}</td>
-              <td>{{ item.retail_rate }}</td>
+                <th>{% sort_link RATE_COLUMN_NAME.prefix col_name_with_order.prefix %}</th>
+                <th>{% sort_link RATE_COLUMN_NAME.destination col_name_with_order.destination %}</th>
+                <th>{% sort_link RATE_COLUMN_NAME.rate col_name_with_order.retail_rate %}</th>
             </tr>
-        {% endfor %}
-    {% else %}
-        <tr><td colspan="3">{% trans "No record found!!" %}</td></tr>
-    {% endif %}
-    </tbody>
-  </table>
+            </thead>
+            <tbody>
+            {% if rate_list %}
+                {% autopaginate rate_list PAGE_SIZE %}
+                {% for item in rate_list %}
+                    <tr>
+                      <td>{{ item.prefix }}</td>
+                      <td>{{ item.prefix__destination }}</td>
+                      <td>{{ item.retail_rate }}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr><td colspan="3">{% trans "No record found!!" %}</td></tr>
+            {% endif %}
+            </tbody>
+          </table>
 
-  {% if rate_list %}
-      {% paginate %}
-  {% endif %}
-
+          {% if rate_list %}
+              {% paginate %}
+          {% endif %}
+    </div>
+</div>
 {% endblock %}

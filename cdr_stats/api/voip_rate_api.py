@@ -186,8 +186,6 @@ class VoipRateResource(ModelResource):
 
             cursor.execute(sql_statement, [voipplan_id, sqldialcode])
         else:
-
-
             sql_statement = (
                 "SELECT voipbilling_voip_retail_rate.prefix, "
                 "Min(retail_rate) as minrate, dialcode_prefix.destination "

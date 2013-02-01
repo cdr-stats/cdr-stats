@@ -88,12 +88,16 @@
                   <li id="fat-menu-V" class="dropdown">
                       <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "billing"|title %}<b class="caret"></b></a>
                       <ul class="dropdown-menu">
+                          {% if perms.user_profile.call_rate %}
                           <li><a href="/retail_rate/"> {% trans "Rates" %}</a></li>
+                          {% endif %}
+                          {% if perms.user_profile.sumulator %}
                           <li><a href="/simulator/"> {% trans "Call simulator" %}</a></li>
-                          {% if perms.voip_report.daily_billing_report %}
+                          {% endif %}
+                          {% if perms.user_profile.daily_billing %}
                             <li><a href="/daily_billing_report/"> {% trans "Daily Billing report" %}</a></li>
                           {% endif %}
-                          {% if perms.voip_report.hourly_billing_report %}
+                          {% if perms.user_profile.hourly_billing %}
                               <li><a href="/hourly_billing_report/"> {% trans "Hourly Billing report" %}</a></li>
                           {% endif %}
                       </ul>
