@@ -198,6 +198,7 @@ class VoipCallResource(CDRMongoDBResource):
     buy_cost = fields.CharField(attribute="buy_cost")
     sell_rate = fields.CharField(attribute="sell_rate")
     sell_cost = fields.CharField(attribute="sell_cost")
+    cdr_object_id = fields.CharField(attribute="cdr_object_id", null=True)
 
     class Meta:
         resource_name = "voip_call"
