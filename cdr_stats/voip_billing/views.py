@@ -229,6 +229,8 @@ def daily_billing_report(request):
     form = BillingForm(initial={'from_date': tday.strftime('%Y-%m-%d'),
                                 'to_date': tday.strftime('%Y-%m-%d')})
     switch_id = 0
+    start_date = ''
+    end_date = ''
     if request.method == 'POST':
         search_tag = 1
         form = BillingForm(request.POST)
@@ -320,6 +322,8 @@ def hourly_billing_report(request):
     tday = datetime.today()
     form = HourlyBillingForm(initial={'from_date': tday.strftime('%Y-%m-%d')})
     switch_id = 0
+    start_date = ''
+    end_date = ''
     if request.method == 'POST':
         search_tag = 1
         form = HourlyBillingForm(request.POST)
@@ -327,10 +331,10 @@ def hourly_billing_report(request):
             from_date = request.POST['from_date']
             start_date = ceil_strdate(from_date, 'start')
 
-        start_date = datetime(start_date.year, start_date.month,
-            start_date.day, 0, 0, 0, 0)
-        end_date = datetime(start_date.year, start_date.month,
-            start_date.day, 23, 59, 59, 999999)
+            start_date = datetime(start_date.year, start_date.month,
+                start_date.day, 0, 0, 0, 0)
+            end_date = datetime(start_date.year, start_date.month,
+                start_date.day, 23, 59, 59, 999999)
 
         if "switch" in request.POST:
             switch_id = request.POST['switch']

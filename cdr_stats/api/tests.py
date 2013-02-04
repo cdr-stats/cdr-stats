@@ -19,7 +19,10 @@ import simplejson
 
 class ApiTestCase(BaseAuthenticatedClient):
     """Test cases for CDR-Stats API."""
-    fixtures = ['auth_user.json', 'hangup_cause.json', 'switch.json']
+    fixtures = ['auth_user.json', 
+                'hangup_cause.json', 'switch.json',
+                'voip_gateway.json', 'voip_provider.json'                
+                'user_profile.json' ]
 
     def test_switch(self):
         """Test Function to create a switch"""
@@ -43,6 +46,36 @@ class ApiTestCase(BaseAuthenticatedClient):
         response = self.client.delete('/api/v1/switch/1/', **self.extra)
         self.assertEqual(response.status_code, 204)
 
+    def test_voip_rate(self):
+        """Test Function to read voip rate"""        
+        # Read
+        response = self.client.get('/api/v1/voip_rate/?format=json', **self.extra)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get('/api/v1/voip_rate/dialcode/34/?format=json', **self.extra)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get('/api/v1/voip_rate/recipient_phone_no/34650784355/?format=json', **self.extra)
+        self.assertEqual(response.status_code, 200)
+        
+    def test_voip_call(self):
+        """Test Function to create a switch"""
+        # Create
+        data = simplejson.dumps({"accountcode":"1000", "answer_uepoch":"1359403221", 
+            "billmsec":"12960", "billsec":"104", "caller_id_name":"29914046",
+            "caller_id_number":"29914046", "destination_number":"032287971777",
+            "direction":"inbound", "duration":"154.0", "end_uepoch":"1359403221", 
+            "hangup_cause":"NORMAL_CLEARING", "mduration":"12960", "read_codec":"G711", 
+            "remote_media_ip":"192.168.1.21", "resource_uri":"", "start_uepoch":"1359403221", 
+            "switch_id":"1", "write_codec":"G711"})
+        response = self.client.post('/api/v1/voip_call/', data,
+            content_type='application/json', **self.extra)
+        self.assertEqual(response.status_code, 201)
+
+        # Read
+        response = self.client.get('/api/v1/voip_call/?format=json', **self.extra)
+        self.assertEqual(response.status_code, 200)
+        
     def test_playground_view(self):
         """Test Function to create a api list view"""
         response = self.client.get("/api-explorer/")

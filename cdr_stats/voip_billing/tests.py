@@ -15,7 +15,7 @@
 from common.utils import BaseAuthenticatedClient
 from voip_gateway.models import Gateway, Provider
 from voip_billing.models import VoIPPlan
-from voip_billing.views import daily_billing_report, hourly_billing_report
+from voip_billing.views import voip_rates, export_rate, simulator, daily_billing_report, hourly_billing_report
 from user_profile.models import UserProfile
 from datetime import datetime
 
@@ -26,7 +26,7 @@ class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):
     """
     fixtures = ['auth_user.json', 'country_dialcode.json',
                 'voip_gateway.json', 'voip_provider.json'
-                'inintal_data.json', 'user_profile.json']
+                'user_profile.json']
 
     def test_admin_voip_billing(self):
         """
@@ -70,34 +70,25 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
     Test cases for voip_billing Customer Interface.
     """
     fixtures = ['auth_user.json', 'country_dialcode.json',
-                'voip_gateway.json', 'voip_provider.json'
-                '2_example_voipplan.json',
-                '3_example_voipcarrierplan.json',
-                '4_example_voipcarrier_rate.json',
-                '8_example_voipplan_voipcarrierplan.json'
-                '5_example_voipretailplan.json',
-                '7_example_voipplan_voipretail_plan.json'
-                '6_example_voipretailrate.json',
+                'voip_gateway.json', 'voip_provider.json'                
                 'user_profile.json',]
 
-    def test_retail_rate_view(self):
+    def test_rates_view(self):
         """
         Test Function to check rate for VoIP Call
         """
-        response = self.client.get('/voip_billing/retail_rate/')
+        response = self.client.get('/rates/')
         self.assertEqual(response.status_code, 200)
-        response = self.client.get('/voip_billing/retail_rate/')
-        self.assertEqual(response.status_code, 200)
-
+        
     def test_simulator(self):
         """
         Test Function to check VoIP Call simulator
         """
-        response = self.client.post('/voip_billing/simulator/',
+        response = self.client.post('/simulator/',
             data={'destination_no': '123456789',
                   'plan_id': 1})
         self.assertEqual(response.status_code, 200)
-        response = self.client.get('/voip_billing/simulator/')
+        response = self.client.get('/simulator/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'voip_billing/simulator.html')
 
@@ -105,12 +96,12 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         """
         Test Function to check VoIP Call simulator
         """
-        response = self.client.post('/voip_billing/daily_billing_report/',
+        response = self.client.post('/daily_billing_report/',
             data={'plan_id': 1})
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'voip_billing/daily_billing_report.html')
 
-        request = self.factory.get('/voip_billing/daily_billing_report/')
+        request = self.factory.get('/daily_billing_report/')
         request.user = self.user
         request.session = {}
         response = daily_billing_report(request)
@@ -120,12 +111,12 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         """
         Test Function to check VoIP Call simulator
         """
-        response = self.client.post('/voip_billing/hourly_billing_report/',
+        response = self.client.post('/hourly_billing_report/',
             data={'plan_id': 1})
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'voip_billing/hourly_billing_report.html')
 
-        request = self.factory.get('/voip_billing/hourly_billing_report/')
+        request = self.factory.get('/hourly_billing_report/')
         request.user = self.user
         request.session = {}
         response = hourly_billing_report(request)
