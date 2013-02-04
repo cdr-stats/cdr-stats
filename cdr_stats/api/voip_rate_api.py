@@ -110,12 +110,13 @@ class VoipRateResource(ModelResource):
         """API to get voip call rate via dialcode or recipient_phone_no"""
         logger.debug('Voip Rate GET API get called')        
         auth_result = self._meta.authentication.is_authenticated(request)
-        if not auth_result is True:
-            raise ImmediateHttpResponse(response=http.HttpUnauthorized())
+
+        #if not auth_result is True:
+        #    raise ImmediateHttpResponse(response=http.HttpUnauthorized())
 
         logger.debug('Voip Rate GET API authorization called!')
         auth_result = self._meta.authorization.is_authorized(request, object)
-        
+
         user_profile = UserProfile.objects.get(user=request.user)
         voipplan_id = user_profile.voipplan_id
         if voipplan_id is None:
