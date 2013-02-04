@@ -166,9 +166,10 @@ def apply_index(shell):
 def create_daily_analytic(daily_date, switch_id, country_id,
                           accountcode, hangup_cause_id, duration,
                           buy_cost, sell_cost):
-    """Create DAILY_ANALYTIC"""    
+    """Create DAILY_ANALYTIC"""
     id_daily = daily_date.strftime('%Y%m%d') + "/%d/%s/%d/%d" % \
         (switch_id, accountcode, country_id, hangup_cause_id)
+
     hour = daily_date.hour
     minute = daily_date.minute
     # Get a datetime that only include date info
@@ -322,7 +323,7 @@ def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest
 
 def common_function_to_create_analytic(date_start_uepoch, start_uepoch, switch_id,
                                        country_id, accountcode, hangup_cause_id, duration,
-                                       buy_cost, sell_cost, retail_plan_id):
+                                       buy_cost, sell_cost):
     """
     Common function to create DAILY_ANALYTIC, MONTHLY_ANALYTIC
     """
@@ -470,7 +471,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         date_start_uepoch = cdr['variables']['start_uepoch'][:10]
         common_function_to_create_analytic(date_start_uepoch, start_uepoch, switch.id,
             country_id, accountcode, hangup_cause_id, duration,
-            buy_cost, sell_cost, retail_plan_id)
+            buy_cost, sell_cost)
 
         # Flag the CDR as imported
         importcdr_handler.update(
