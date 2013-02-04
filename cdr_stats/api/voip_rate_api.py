@@ -150,6 +150,7 @@ class VoipRateResource(ModelResource):
 
         sort_field = ''
         sort_order = ''
+        extension_query = ''
         if request.GET.get('sort_field'):
             sort_field = request.GET.get('sort_field')
             sort_order = request.GET.get('sort_order')
@@ -159,6 +160,9 @@ class VoipRateResource(ModelResource):
                 sort_field = 'minrate'
             if sort_field == 'destination':
                 sort_field = 'dialcode_prefix.destination'
+
+            if sort_field:
+                extension_query = "ORDER BY " + sort_field + ' ' + sort_order
 
         cursor = connection.cursor()
         if dialcode:
@@ -182,7 +186,7 @@ class VoipRateResource(ModelResource):
                 "WHERE voipplan_id=%s "
                 "AND CAST(voipbilling_voip_retail_rate.prefix AS TEXT) LIKE %s "
                 "GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination "
-                "ORDER BY " + sort_field + ' ' + sort_order)
+                + extension_query)
 
             cursor.execute(sql_statement, [voipplan_id, sqldialcode])
         else:
@@ -197,7 +201,7 @@ class VoipRateResource(ModelResource):
                 "voipbilling_voip_retail_rate.prefix "
                 "WHERE voipplan_id=%s "
                 "GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination "
-                "ORDER BY " + sort_field + ' ' + sort_order)
+                + extension_query)
 
             cursor.execute(sql_statement, [voipplan_id])
 
