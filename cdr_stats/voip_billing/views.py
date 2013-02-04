@@ -40,11 +40,11 @@ import ast, csv
 @permission_required('user_profile.call_rate', login_url='/')
 @login_required
 #@cache_page(60 * 5)
-def retail_rate(request):
+def voip_rates(request):
     """
     All Retail Rates are displayed & according to Destination No
     """
-    template = 'voip_billing/retail_rate.html'    
+    template = 'voip_billing/rates.html'
     form = PrefixRetailRrateForm()
     final_rate_list = []
     error_msg = ''

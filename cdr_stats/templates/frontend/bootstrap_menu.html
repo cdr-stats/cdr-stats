@@ -89,7 +89,7 @@
                       <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "billing"|title %}<b class="caret"></b></a>
                       <ul class="dropdown-menu">
                           {% if perms.user_profile.call_rate %}
-                          <li><a href="/retail_rate/"> {% trans "Rates" %}</a></li>
+                          <li><a href="/rates/"> {% trans "Rates" %}</a></li>
                           {% endif %}
                           {% if perms.user_profile.sumulator %}
                           <li><a href="/simulator/"> {% trans "Call simulator" %}</a></li>
