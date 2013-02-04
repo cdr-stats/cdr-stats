@@ -20,7 +20,9 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings
 from django.contrib import messages
+from bson import ObjectId
 
+from cdr.import_cdr_freeswitch_mongodb import calculate_call_cost
 from country_dialcode.models import Prefix
 from voip_billing.models import VoIPRetailRate, VoIPPlan, BanPlan,\
     VoIPPlan_BanPlan, BanPrefix, VoIPRetailPlan, VoIPPlan_VoIPRetailPlan,\
@@ -335,11 +337,22 @@ class VoIPPlanAdmin(admin.ModelAdmin):
 
                 # re-billing is confirmed by user
                 if confirmation == CONFIRMATION_TYPE.YES:
-                    if call_rebill_list:
-                        for call in call_rebill_list:
+                    if call_rebill:
+                        for call in call_rebill:
                             # call re-bill
-                            #call._bill(call.id, call.voipplan_id)
-                            print call
+                            voipplan_id = 1
+                            new_rate = \
+                                calculate_call_cost(voipplan_id, call['destination_number'], call['billsec'])
+
+                            cdr_data.update({"_id": ObjectId(call['_id'])}, {
+                                "$set": {
+                                    "buy_rate": new_rate['buy_rate'],
+                                    "buy_cost": new_rate['buy_cost'],
+                                    "sell_rate": new_rate['sell_rate'],
+                                    "sell_cost": new_rate['sell_cost']
+                                }
+                            })
+                            call_rebill_list.append(call)
 
                     #TODO: Update cdr_common buy_cost/sell_cost + daily/monthly aggregate
                     daily_query_var = {}
