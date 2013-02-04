@@ -20,7 +20,7 @@ from django.shortcuts import render_to_response
 from django.conf import settings
 
 from common.common_functions import variable_value, mongodb_str_filter, mongodb_int_filter, \
-    validate_days, ceil_strdate, striplist
+    ceil_strdate, striplist
 from cdr.models import Switch, HangupCause, CDR_TYPE
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.functions_def import get_hangupcause_id, get_hangupcause_id_from_name

@@ -19,6 +19,7 @@ from django.template import RequestContext
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings
+from django.contrib import messages
 
 from country_dialcode.models import Prefix
 from voip_billing.models import VoIPRetailRate, VoIPPlan, BanPlan,\
@@ -334,11 +335,11 @@ class VoIPPlanAdmin(admin.ModelAdmin):
 
                 # re-billing is confirmed by user
                 if confirmation == CONFIRMATION_TYPE.YES:
-                    call_rebill_list = call_rebill.update(billed=False)
-                    #if call_rebill_list:
-                    #    for call in call_rebill_list:
-                    #        # call re-bill
-                    #        call._bill(call.id, call.voipplan_id)
+                    if call_rebill_list:
+                        for call in call_rebill_list:
+                            # call re-bill
+                            #call._bill(call.id, call.voipplan_id)
+                            print call
 
                     #TODO: Update cdr_common buy_cost/sell_cost + daily/monthly aggregate
                     daily_query_var = {}
@@ -357,6 +358,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                     msg = _('Re-billing is done')
                     messages.info(request, msg)
                     request.POST['confirmation'] = CONFIRMATION_TYPE.NO
+                    call_rebill_count = 0
         else:
             tday = datetime.today()
             to_date = from_date = tday.strftime('%Y-%m-%d')
