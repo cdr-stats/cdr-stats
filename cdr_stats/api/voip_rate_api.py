@@ -149,6 +149,7 @@ class VoipRateResource(ModelResource):
                 logger.error(error_msg)
                 raise BadRequest(error_msg)
 
+        # variables used for sorting
         sort_field = ''
         sort_order = ''
         extension_query = ''

@@ -41,8 +41,17 @@ import ast, csv
 @login_required
 #@cache_page(60 * 5)
 def voip_rates(request):
-    """
-    All Retail Rates are displayed & according to Destination No
+    """List voip call rates according to country prefix
+
+    **Attributes**:
+
+        * ``template`` - voip_billing/rates.html
+        * ``form`` - PrefixRetailRrateForm
+
+    **Logic Description**:
+
+        get all call rates from voip rate API and list them in template
+        with pagination & sorting column
     """
     template = 'voip_billing/rates.html'
     form = PrefixRetailRrateForm()
@@ -72,7 +81,6 @@ def voip_rates(request):
             if form.is_valid():
                 prefix_code = request.POST.get('prefix')
                 request.session['prefix_code'] = prefix_code
-
         else:
             # pagination with prefix code
             if request.session.get('prefix_code') and \
@@ -80,6 +88,7 @@ def voip_rates(request):
                 prefix_code = request.session.get('prefix_code')
                 form = PrefixRetailRrateForm(initial={'prefix': prefix_code})
             else:
+                # Reset variables
                 request.session['prefix_code'] = ''
                 request.session['final_rate_list'] = ''
                 prefix_code = ''
@@ -93,6 +102,7 @@ def voip_rates(request):
                 auth=(request.user, request.user))
 
         rate_list = response.content
+        # due to string response of API, we need to convert result in to array
         rate_list = rate_list.replace('[', '').replace(']', '').replace('}, {', '}|{').split('|')
         for i in rate_list:
             final_rate_list.append(ast.literal_eval(i))
@@ -147,9 +157,17 @@ def export_rate(request):
 @permission_required('user_profile.simulator', login_url='/')
 @login_required
 def simulator(request):
-    """
-    Client Simulator
+    """Client Simulator
     To view rate according to VoIP Plan & Destination No.
+
+    **Attributes**:
+
+        * ``template`` - voip_billing/simulator.html
+        * ``form`` - SimulatorForm
+
+    **Logic Description**:
+
+        get min call rates for destination from rate_engine and display them in template
     """
     template = 'voip_billing/simulator.html'
     error_msg = ""
