@@ -21,11 +21,7 @@ def rate_engine(voipplan_id=None, destination_no=None):
     To determine the cost of the voip call and get provider/gateway
     to use to deliver the call.
     """
-
-    if destination_no is not None:
-        destination_prefix_list = prefix_list_string(str(destination_no))
-    else:
-        destination_prefix_list = prefix_list_string(str(voipcall.recipient_number))
+    destination_prefix_list = prefix_list_string(str(destination_no))
 
     #destination_prefix_list = '34, 346, 3465, 34650'
     #voipplan_id = 1
