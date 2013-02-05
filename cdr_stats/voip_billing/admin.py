@@ -343,7 +343,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                 kwargs['start_uepoch'] = {'$lt': end_date}
 
             call_rebill = cdr_data.find(kwargs)
-            call_rebill_count = call_rebill .count()
+            call_rebill_count = call_rebill.count()
 
             if "confirmation" in request.POST:
                 confirmation = request.POST.get('confirmation')

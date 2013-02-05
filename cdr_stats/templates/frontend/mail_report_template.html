@@ -16,6 +16,10 @@
         <th>{% trans "Bill sec" %}</th>
         <th>{% trans "Hangup cause" %}</th>
         <th>{% trans "Account" %}</th>
+        {% if user.is_superuser %}
+        <th>{% trans "Buy cost" %}</th>
+        {% endif %}
+        <th>{% trans "Sell cost" %}</th>
         <th>&nbsp;</th>
     </tr>
     </thead>
@@ -30,6 +34,10 @@
         <td>{{ row.billsec|conv_min }}</td>
         <td>{{ row.hangup_cause_id|hangupcause_name }}</td>
         <td>{{ row.accountcode }}</td>
+        {% if user.is_superuser %}
+        <td>{{ row.buy_cost }}</td>
+        {% endif %}
+        <td>{{ row.sell_cost }}</td>
         <td>
             <div class="flag_icon">
                 {% if row.country_id %}
@@ -63,9 +71,11 @@
         <td>...</td>
         <td>...</td>
         <td>...</td>
+        <td>...</td>
+        <td>...</td>
     </tr>
     {% else %}
-      <tr><td colspan="8">{% trans "No record found" %}</td></tr>
+      <tr><td colspan="10">{% trans "No record found" %}</td></tr>
     {% endif %}
 </table>
 
@@ -94,6 +104,16 @@
                         <td class="td-dashboard">{{ ACD }}</td>
                         <td>{% trans "Average Call Duration"%}</td>
                     </tr>
+                    {% if user.is_superuser %}
+                    <tr>
+                        <td class="td-dashboard">{{ total_buy_cost }}</td>
+                        <td>{% trans "Buy cost"%}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <td class="td-dashboard">{{ total_sell_cost }}</td>
+                        <td>{% trans "Sell cost"%}</td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -120,7 +140,11 @@
                                 </td>
                                 <td class="td-dashboard" width="100">{{ country_data.0|country_name|title }}</td>
                                 <td width="100">{{ country_data.1.call_count }} {% trans "Calls"%}</td>
-                                <td>{{ country_data.1.duration_sum|conv_min }} {% trans "minutes"%}</td>
+                                <td width="100">{{ country_data.1.duration_sum|conv_min }} {% trans "minutes"%}</td>
+                                {% if user.is_superuser %}
+                                    <td width="100">{{ country_data.1.buy_cost }} <abbr title="{% trans "buy cost"|title %}">{% trans "BC"%}</abbr></td>
+                                {% endif %}
+                                <td width="100">{{ country_data.1.sell_cost }} <abbr title="{% trans "sell cost"|title %}">{% trans "SC"%}</abbr></td>
                             </tr>
                             {% endfor %}
                             </tbody>

@@ -1044,12 +1044,16 @@ def get_cdr_mail_report():
 
     total_duration = 0
     total_calls = 0
+    total_buy_cost = 0.0
+    total_sell_cost = 0.0
     country_analytic = dict()
     hangup_analytic = dict()
     if list_data:
         for doc in list_data['result']:
             total_duration += doc['duration_sum']
             total_calls += int(doc['call_count'])
+            total_buy_cost += float(doc['buy_cost'])
+            total_sell_cost += float(doc['sell_cost'])
 
             # created cdr_hangup_analytic
             hangup_cause_id = int(doc['_id']['hangup_cause_id'])
@@ -1064,12 +1068,17 @@ def get_cdr_mail_report():
                     int(doc['call_count'])
                 country_analytic[country_id]['duration_sum'] +=\
                     doc['duration_sum']
+                country_analytic[country_id]['buy_cost'] +=\
+                    float(doc['buy_cost'])
+                country_analytic[country_id]['sell_cost'] +=\
+                    float(doc['sell_cost'])
             else:
                 country_analytic[country_id] = {
                     'call_count': int(doc['call_count']),
-                    'duration_sum': doc['duration_sum']
+                    'duration_sum': doc['duration_sum'],
+                    'buy_cost': float(doc['buy_cost']),
+                    'sell_cost': float(doc['sell_cost'])
                 }
-
     #Calculate the Average Time of Call
     act_acd_array = calculate_act_and_acd(total_calls, total_duration)
     ACT = act_acd_array['ACT']
@@ -1097,6 +1106,8 @@ def get_cdr_mail_report():
         'rows': final_result,
         'total_duration': total_duration,
         'total_calls': total_calls,
+        'total_buy_cost': total_buy_cost,
+        'total_sell_cost': total_sell_cost,
         'ACT': ACT,
         'ACD': ACD,
         'country_analytic_array': country_analytic[0:5],
@@ -1160,6 +1171,8 @@ def mail_report(request):
         'form': form,
         'total_duration': mail_data['total_duration'],
         'total_calls': mail_data['total_calls'],
+        'total_buy_cost': mail_data['total_buy_cost'],
+        'total_sell_cost': mail_data['total_sell_cost'],
         'ACT': mail_data['ACT'],
         'ACD': mail_data['ACD'],
         'country_analytic_array': mail_data['country_analytic_array'],
