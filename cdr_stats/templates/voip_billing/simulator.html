@@ -19,7 +19,7 @@
                         <span class="help-block">{{ form.destination_no.help_text|safe }} </span>
                     </div>
                 </div>
-                {% if not user.is_superuser %}
+                {% if user.is_superuser %}
                 <div class="span4">
                     <label class="control-label" for="{{ form.plan_id.auto_id }}">{{ form.plan_id.label }}</label>
                     <div class="input">

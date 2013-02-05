@@ -23,8 +23,7 @@ from django.contrib import messages
 from bson import ObjectId
 
 from user_profile.models import UserProfile
-from cdr.import_cdr_freeswitch_mongodb import calculate_call_cost,\
-    common_function_to_create_analytic
+from cdr.import_cdr_freeswitch_mongodb import calculate_call_cost
 from country_dialcode.models import Prefix
 from voip_billing.models import VoIPRetailRate, VoIPPlan, BanPlan,\
     VoIPPlan_BanPlan, BanPrefix, VoIPRetailPlan, VoIPPlan_VoIPRetailPlan,\
@@ -36,10 +35,10 @@ from voip_billing.constants import CONFIRMATION_TYPE
 from voip_billing.widgets import AutocompleteModelAdmin
 from voip_billing.function_def import rate_filter_range_field_chk
 from voip_billing.rate_engine import rate_engine
+from voip_billing.tasks import Reaggregate_call
 from common.common_functions import variable_value, ceil_strdate
 from datetime import datetime
 import csv
-import time
 
 cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
 
@@ -378,36 +377,8 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                                                      'buy_cost': new_call['buy_cost'],
                                                      'sell_cost': new_call['sell_cost']})
 
-                    #1) remove daily/monthly aggregate
-                    daily_query_var = {}
-                    daily_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m-%d'),
-                                                        '$lt': end_date.strftime('%Y-%m-%d')}
-                    daily_data = settings.DBCON[settings.MONGO_CDRSTATS['DAILY_ANALYTIC']]
-                    daily_data.remove(daily_query_var)
-
-                    monthly_query_var = {}
-                    monthly_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m'),
-                                                          '$lt': end_date.strftime('%Y-%m')}
-                    monthly_data = settings.DBCON[settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC']]
-                    monthly_data.remove(monthly_query_var)
-
-                    #2) Recreate daily/monthly analytic
-                    rebilled_call  = cdr_data.find(kwargs)
-                    for call in rebilled_call:
-                        start_uepoch = call['start_uepoch']
-                        switch_id = int(call['switch_id'])
-                        country_id = call['country_id']
-                        accountcode = call['accountcode']
-                        hangup_cause_id = call['hangup_cause_id']
-                        duration = call['duration']
-                        buy_cost = call['buy_cost']
-                        sell_cost = call['sell_cost']
-
-                        date_start_uepoch = int(time.mktime(start_uepoch.timetuple()))
-
-                        common_function_to_create_analytic(str(date_start_uepoch),
-                            start_uepoch, switch_id, country_id, accountcode,
-                            hangup_cause_id, duration, buy_cost, sell_cost)
+                    # Re-aggregate calls to re-generate daily/monthly analytics
+                    Reaggregate_call.delay(start_date, end_date)
 
                     msg = _('Re-billing is done')
                     messages.info(request, msg)
