@@ -111,8 +111,8 @@ class VoipRateResource(ModelResource):
         logger.debug('Voip Rate GET API get called')
         auth_result = self._meta.authentication.is_authenticated(request)
 
-        #if not auth_result is True:
-        #    raise ImmediateHttpResponse(response=http.HttpUnauthorized())
+        if not auth_result is True:
+            raise ImmediateHttpResponse(response=http.HttpUnauthorized())
 
         logger.debug('Voip Rate GET API authorization called!')
         auth_result = self._meta.authorization.is_authorized(request, object)

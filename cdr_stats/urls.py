@@ -12,7 +12,8 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.conf.urls import url, patterns, include
+from django.conf.urls import handler404, handler500,\
+    url, patterns, include
 from django.conf import settings
 from tastypie.api import Api
 from api.user_api import UserResource
@@ -28,6 +29,7 @@ from api.api_playgrounds.urls import urlpatterns as urlpatterns_api_playgrounds
 from frontend_notification.urls import urlpatterns as urlpatterns_frontend_notification
 from django.contrib import admin
 from dajaxice.core import dajaxice_autodiscover
+import os
 dajaxice_autodiscover()
 
 try:
@@ -81,3 +83,42 @@ urlpatterns += urlpatterns_voip_billing
 urlpatterns += patterns('',
     url("", include('django_socketio.urls')),
 )
+
+urlpatterns += patterns('',
+    (r'^%s/(?P<path>.*)$' % settings.MEDIA_URL.strip(os.sep),
+     'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+)
+
+
+handler404 = 'cdr_stats.urls.custom_404_view'
+handler500 = 'cdr_stats.urls.custom_500_view'
+
+
+def custom_404_view(request, template_name='404.html'):
+    """404 error handler which includes ``request`` in the context.
+
+    Templates: `404.html`
+    Context: None
+    """
+    from django.template import Context, loader
+    from django.http import HttpResponseServerError
+
+    t = loader.get_template('404.html')  # Need to create a 404.html template.
+    return HttpResponseServerError(t.render(Context({
+        'request': request,
+        })))
+
+
+def custom_500_view(request, template_name='500.html'):
+    """500 error handler which includes ``request`` in the context.
+
+    Templates: `500.html`
+    Context: None
+    """
+    from django.template import Context, loader
+    from django.http import HttpResponseServerError
+
+    t = loader.get_template('500.html')  # Need to create a 500.html template.
+    return HttpResponseServerError(t.render(Context({
+        'request': request,
+        })))
