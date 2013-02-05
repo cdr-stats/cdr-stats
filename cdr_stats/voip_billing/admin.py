@@ -320,7 +320,6 @@ class VoIPPlanAdmin(admin.ModelAdmin):
         Re-billing successful voip calls
         """
         opts = VoIPPlan._meta
-        call_rebill_list = []
         call_rebill_count = 0
         if request.method == 'POST':
             form = RebillForm(request.POST)
@@ -372,9 +371,6 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                     if call_rebill:
                         for call in call_rebill:
                             new_call = _rebilling_call(voipplan_id, call)
-                            call_rebill_list.append({'destination_number': new_call['destination_number'],
-                                                     'buy_cost': new_call['buy_cost'],
-                                                     'sell_cost': new_call['sell_cost']})
 
                     # Re-aggregate calls to re-generate daily/monthly analytics
                     Reaggregate_call.delay(start_date, end_date)
@@ -395,7 +391,6 @@ class VoIPPlanAdmin(admin.ModelAdmin):
             'model_name': opts.object_name.lower(),
             'app_label': _('VoIP Billing'),
             'title': _('Rebill VoIP Call'),
-            'call_rebill_list': call_rebill_list,
             'call_rebill_count': call_rebill_count,
         })
         return render_to_response('admin/voip_billing/voipplan/rebilling.html',
