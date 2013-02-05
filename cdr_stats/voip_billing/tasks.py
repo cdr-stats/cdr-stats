@@ -19,6 +19,7 @@ import time
 
 cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
 
+
 class VoIPbilling(Task):
     """
     Billing for VoIPCall
@@ -57,7 +58,11 @@ class Reaggregate_call(Task):
         #2) Recreate daily/monthly analytic
         kwargs = {}
         kwargs['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
-        rebilled_call  = cdr_data.find(kwargs)
+        rebilled_call = cdr_data.find(kwargs)
+
+        #TODO: Do we need to use pagination here ?
+        #Risk if there is too many calls
+
         for call in rebilled_call:
             start_uepoch = call['start_uepoch']
             switch_id = int(call['switch_id'])
@@ -73,6 +78,8 @@ class Reaggregate_call(Task):
             common_function_to_create_analytic(str(date_start_uepoch),
                 start_uepoch, switch_id, country_id, accountcode,
                 hangup_cause_id, duration, buy_cost, sell_cost)
+
+            #TODO: Above we create the analytic but we should also delete it
 
         logging.debug("Done re-aggregate")
         return True
