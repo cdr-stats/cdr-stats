@@ -79,7 +79,5 @@ class Reaggregate_call(Task):
                 start_uepoch, switch_id, country_id, accountcode,
                 hangup_cause_id, duration, buy_cost, sell_cost)
 
-            #TODO: Above we create the analytic but we should also delete it
-
         logging.debug("Done re-aggregate")
         return True
