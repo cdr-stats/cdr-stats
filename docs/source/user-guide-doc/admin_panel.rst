@@ -157,3 +157,14 @@ HangupCause
 
 .. image:: ../_static/images/admin/hangup_cause_list.png
     :width: 1000
+
+
+CDR View
+~~~~~~~~
+
+**URL**:
+
+    * http://localhost:8000/admin/cdr/switch/cdr_view/
+
+.. image:: ../_static/images/admin/admin_cdr_view.png
+    :width: 1000

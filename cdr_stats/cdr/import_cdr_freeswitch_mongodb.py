@@ -363,7 +363,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
     result = importcdr_handler.find(
         {
             '$or': [{'import_cdr': {'$exists': False}},
-                {'import_cdr': 0}]
+                    {'import_cdr': 0}]
         },
         {
             "callflow.caller_profile.caller_id_number": 1,

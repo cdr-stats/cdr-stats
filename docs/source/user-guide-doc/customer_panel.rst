@@ -214,3 +214,55 @@ Diagnostic CDR-Stats
 
 .. image:: ../_static/images/customer/diagnostic.png
     :width: 700
+
+
+Rates
+~~~~~
+
+voip call rates.
+
+**URL**:
+
+    * http://localhost:8000/rates/
+
+.. image:: ../_static/images/customer/rates.png
+    :width: 700
+
+
+Call Simulator
+~~~~~~~~~~~~~~
+
+voip call simulator.
+
+**URL**:
+
+    * http://localhost:8000/simulator/
+
+.. image:: ../_static/images/customer/call_simulator.png
+    :width: 700
+
+
+Daily report of Billed call
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Daily report of Billed call.
+
+**URL**:
+
+    * http://localhost:8000/daily_billing_report/
+
+.. image:: ../_static/images/customer/daily_billing_report.png
+    :width: 700
+
+
+Hourly report of Billed call
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Hourly report of Billed call.
+
+**URL**:
+
+    * http://localhost:8000/hourly_billing_report/
+
+.. image:: ../_static/images/customer/hourly_billing_report.png
+    :width: 700
