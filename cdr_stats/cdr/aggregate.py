@@ -326,12 +326,16 @@ def pipeline_mail_report(query_var):
                         'hangup_cause_id': '$hangup_cause_id'},
                 'duration_sum': {'$sum': '$duration'},
                 'call_count': {'$sum': 1},
+                'buy_cost': {'$sum': '$buy_cost'},
+                'sell_cost': {'$sum': '$sell_cost'},
             }
         },
         {
             '$project': {
                 'call_count': 1,
                 'duration_sum': 1,
+                'buy_cost': 1,
+                'sell_cost': 1,
                 #'avg_duration': {'$divide': ['$duration_sum',
                 #                             '$call_count']},
             }
