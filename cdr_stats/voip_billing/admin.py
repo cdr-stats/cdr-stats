@@ -21,7 +21,6 @@ from django.shortcuts import render_to_response
 from django.conf import settings
 from django.contrib import messages
 from bson import ObjectId
-
 from user_profile.models import UserProfile
 from cdr.import_cdr_freeswitch_mongodb import calculate_call_cost
 from country_dialcode.models import Prefix
@@ -181,8 +180,8 @@ class VoIPPlanAdmin(admin.ModelAdmin):
             (r'^add/$', self.admin_site.admin_view(self.add_view)),
             (r'^/(.+)/$', self.admin_site.admin_view(self.change_view)),
             (r'^simulator/$', self.admin_site.admin_view(self.simulator)),
-            (r'^export/$', self.admin_site.admin_view(self.export)), 
-            (r'^rebilling/$', self.admin_site.admin_view(self.rebilling)),          
+            (r'^export/$', self.admin_site.admin_view(self.export)),
+            (r'^rebilling/$', self.admin_site.admin_view(self.rebilling)),
         )
         return my_urls + urls
 
@@ -334,15 +333,15 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                 to_date = request.POST['to_date']
                 end_date = ceil_strdate(to_date, 'end')
 
-            kwargs = {}            
+            kwargs = {}
             if start_date and end_date:
                 kwargs['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
             if start_date and end_date == '':
                 kwargs['start_uepoch'] = {'$gte': start_date}
             if start_date == '' and end_date:
                 kwargs['start_uepoch'] = {'$lt': end_date}
-                        
-            call_rebill  = cdr_data.find(kwargs)
+
+            call_rebill = cdr_data.find(kwargs)
             call_rebill_count = call_rebill.count()
 
             if "confirmation" in request.POST:
@@ -361,7 +360,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                         'title': _('Rebill VoPI Call'),
                         'call_rebill_count': call_rebill_count,
                         'CONFIRMATION_TYPE': CONFIRMATION_TYPE,
-                        })
+                    })
                     return render_to_response('admin/voip_billing/voipplan/rebilling.html',
                         context_instance=ctx)
 
@@ -756,7 +755,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
                                     error_import_list.append(row)
                                 except:
                                     # if not, insert record
-                                    srr = VoIPRetailRate.objects.create(
+                                    VoIPRetailRate.objects.create(
                                         voip_retail_plan_id=voip_retail_plan,
                                         prefix=pfix,
                                         retail_rate=row[1])
@@ -1065,7 +1064,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                                     # - check_box value
                                     if "chk" in request.POST:
                                         if request.POST['chk'] == "on":
-                                            rr = VoIPRetailRate.objects.get(
+                                            VoIPRetailRate.objects.get(
                                                 voip_retail_plan_id=voip_retail_plan,
                                                 prefix=pfix)
                                             msg = _('Carrier/Retail Rates are already exist !!')
