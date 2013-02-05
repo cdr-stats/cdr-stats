@@ -15,17 +15,36 @@
 <link href="{{STATIC_URL}}cdr-stats/css/datepicker.css" rel="stylesheet">
 <script type="text/javascript">
     $(function() {
+        var today = new Date();
+        var last_day_of_month = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
+
+        var fromDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        var toDate = new Date(today.getFullYear(), today.getMonth(), last_day_of_month);
+
         var dates = $('#id_from_date, #id_to_date').datepicker({
             defaultDate: "+1w",
             changeMonth: true,
             dateFormat: 'yy-mm-dd',
             onSelect: function(selectedDate) {
+
                 var option = this.id == "id_from_date" ? "minDate" : "maxDate";
                 var instance = $(this).data("datepicker");
                 var date = $.datepicker.parseDate(instance.settings.dateFormat || $.datepicker._defaults.dateFormat, selectedDate, instance.settings);
                 dates.not(this).datepicker("option", option, date);
             }
         });
+
+        // from_date, to_date should not be null
+        $('#id_from_date, #id_to_date').blur(function () {
+            if($('#id_from_date').val() == ''){
+                $('#id_from_date').datepicker("setDate", fromDate );
+            }
+            if($('#id_to_date').val() == ''){
+                $('#id_to_date').datepicker("setDate", toDate );
+            }
+        });
+
+
     });
 </script>
 <style>
