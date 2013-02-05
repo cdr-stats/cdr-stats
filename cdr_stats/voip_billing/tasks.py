@@ -23,7 +23,7 @@ class VoIPbilling(Task):
     def run(self, voipcall_id, voipplan_id, **kwargs):
         logging.debug("About to bill a message.")
 
-        #TODO : rewrite task for billing     
+        #TODO : rewrite task for billing or do we need task
 
         #logging.debug("Done billing call.")
-        return response
+        return ''

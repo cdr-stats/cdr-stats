@@ -16,16 +16,11 @@ from voip_billing.models import VoIPRetailPlan
 from voip_billing.function_def import prefix_list_string
 
 
-def rate_engine(voipcall_id=None, voipplan_id=None, destination_no=None):
+def rate_engine(voipplan_id=None, destination_no=None):
     """
     To determine the cost of the voip call and get provider/gateway
     to use to deliver the call.
     """
-    if voipcall_id is not None:
-        #TODO : check with cdr_common
-        #voipcall = VoIPCall.objects.get(pk=voipcall_id)
-        voipcall = ''
-        pass
 
     if destination_no is not None:
         destination_prefix_list = prefix_list_string(str(destination_no))
@@ -103,10 +98,8 @@ def rate_engine(voipcall_id=None, voipplan_id=None, destination_no=None):
         # i.retail_rate , i.crid, i.provider_id, i.gateway_id, i.sum_metric)
         data = i
 
-    # TODO: Create VoIP report record
 
-    result_data = {'voipcall_id': 1}
-
+    result_data = {}
     # This return is used by voip call task
     # to determine gateway
     if data != "":  # Return Gateway ID
