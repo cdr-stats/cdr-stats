@@ -43,6 +43,35 @@ import time
 
 cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
 
+
+def _rebilling_call(voipplan_id, call):
+    """Perform call re-billing
+
+    **Attributes**:
+
+        * ``voipplan_id`` - frontend/cdr_graph_concurrent_calls.html
+        * ``call`` - ConcurrentCallForm
+        * ``cdr_data`` - MONGO_CDRSTATS['CDR_COMMON'] (cdr_common collection)
+
+    **Logic Description**:
+
+        get call record & voipplan_id to re-bill
+    """
+    new_rate =\
+        calculate_call_cost(voipplan_id, call['destination_number'], call['billsec'])
+
+    # Update cdr_common buy_cost/sell_cost
+    cdr_data.update({"_id": ObjectId(call['_id'])}, {
+        "$set": {
+            "buy_rate": new_rate['buy_rate'],
+            "buy_cost": new_rate['buy_cost'],
+            "sell_rate": new_rate['sell_rate'],
+            "sell_cost": new_rate['sell_cost']
+        }
+    })
+    return cdr_data.find_one({"_id": ObjectId(call['_id'])})
+
+
 def export_as_csv_action(description="Export selected objects as CSV file",
                          fields=None, exclude=None, header=True,):
     """
@@ -344,22 +373,10 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                 if confirmation == CONFIRMATION_TYPE.YES:
                     if call_rebill:
                         for call in call_rebill:
-                            # call re-bill
-                            new_rate = \
-                                calculate_call_cost(voipplan_id, call['destination_number'], call['billsec'])
-
-                            # Update cdr_common buy_cost/sell_cost
-                            cdr_data.update({"_id": ObjectId(call['_id'])}, {
-                                "$set": {
-                                    "buy_rate": new_rate['buy_rate'],
-                                    "buy_cost": new_rate['buy_cost'],
-                                    "sell_rate": new_rate['sell_rate'],
-                                    "sell_cost": new_rate['sell_cost']
-                                }
-                            })
-                            call_rebill_list.append({'destination_number': call['destination_number'],
-                                                     'buy_cost': new_rate['buy_cost'],
-                                                     'sell_cost': new_rate['sell_cost']})
+                            new_call = _rebilling_call(voipplan_id, call)
+                            call_rebill_list.append({'destination_number': new_call['destination_number'],
+                                                     'buy_cost': new_call['buy_cost'],
+                                                     'sell_cost': new_call['sell_cost']})
 
                     #1) remove daily/monthly aggregate
                     daily_query_var = {}
