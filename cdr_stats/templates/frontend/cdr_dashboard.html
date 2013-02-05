@@ -56,7 +56,7 @@ $(function () {
                             return data[i][3];
                         break;
                     {% endif %}
-                    
+
                     default:
                         return data[i][0];
                 }
@@ -149,7 +149,7 @@ $(function () {
                     output += '<br>{% trans "Sell Cost" %}: ' + Info(time,4) ;
                 {% endif %}
                 output += '</div>';
-                
+
 
                 showTooltip(item.pageX, item.pageY, output);
             }
@@ -375,9 +375,9 @@ $(function () {
                             <td width="100">{{ country_data.1.call_count }} {% trans "Calls"%}</td>
                             <td width="100">{{ country_data.1.duration_sum|conv_min }} {% trans "minutes"%}</td>
                             {% if user.is_superuser %}
-                                <td width="100">{{ country_data.1.buy_cost_sum }} {% trans "B"%}</td>
+                                <td width="100">{{ country_data.1.buy_cost_sum }} <abbr title="{% trans "buy cost"|title %}">{% trans "BC"%}</abbr></td>
                             {% endif %}
-                            <td width="100">{{ country_data.1.sell_cost_sum }} {% trans "S"%}</td>
+                            <td width="100">{{ country_data.1.sell_cost_sum }} <abbr title="{% trans "sell cost"|title %}">{% trans "SC"%}</abbr></td>
                         </tr>
                     {% endfor %}
                     </tbody>
