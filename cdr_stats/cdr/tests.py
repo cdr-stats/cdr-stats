@@ -50,6 +50,9 @@ class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
         response = self.client.get('/admin/cdr/switch/')
         self.failUnlessEqual(response.status_code, 200)
 
+        response = self.client.get('/admin/cdr/switch/cdr_view/')
+        self.failUnlessEqual(response.status_code, 200)
+
     def test_admin_switch_add(self):
         """Test Function to check admin switch add"""
         response = self.client.get('/admin/cdr/switch/add/')

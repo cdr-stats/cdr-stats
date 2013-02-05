@@ -37,9 +37,17 @@ class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):
         response = self.client.get('/admin/voip_billing/')
         self.failUnlessEqual(response.status_code, 200)
 
+        response = self.client.get('/admin/voip_billing/voipplan/')
+        self.failUnlessEqual(response.status_code, 200)
+        response = self.client.get('/admin/voip_billing/voipplan/rebilling/')
+        self.failUnlessEqual(response.status_code, 200)
+
+        response = self.client.get('/admin/voip_billing/voipplan/export/')
+        self.failUnlessEqual(response.status_code, 200)
+
         response = self.client.get('/admin/voip_billing/voipcarrierplan/')
         self.failUnlessEqual(response.status_code, 200)
-        
+
         response = self.client.get('/admin/voip_billing/voipcarrierrate/')
         self.failUnlessEqual(response.status_code, 200)
         response = self.client.get('/admin/voip_billing/voipcarrierrate/import_cr/')
@@ -56,13 +64,6 @@ class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):
         self.failUnlessEqual(response.status_code, 200)
         response = self.client.get('/admin/voip_billing/voipretailrate/export_rr/')
         self.failUnlessEqual(response.status_code, 200)
-
-        response = self.client.get('/admin/voip_billing/voipplan/')
-        self.failUnlessEqual(response.status_code, 200)
-                
-        response = self.client.get('/admin/voip_billing/voipplan/export/')
-        self.failUnlessEqual(response.status_code, 200)
-
 
 
 class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
