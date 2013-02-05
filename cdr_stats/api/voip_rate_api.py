@@ -39,58 +39,58 @@ class VoipRateResource(ModelResource):
 
     **Create**:
 
-         CURL Usage::
+        CURL Usage::
 
-             curl -u username:password -H 'Accept: application/json' http://localhost:8000/api/v1/voip_rate/dialcode/34/?format=json
-
-                 or
-
-             curl -u username:password -H 'Accept: application/json' http://localhost:8000/api/v1/voip_rate/?format=json
+            curl -u username:password -H 'Accept: application/json' http://localhost:8000/api/v1/voip_rate/dialcode/34/?format=json
 
                 or
 
-             curl -u username:password -H 'Accept: application/json' http://localhost:8000/api/v1/voip_rate/recipient_phone_no/34650784355/?format=json
+            curl -u username:password -H 'Accept: application/json' http://localhost:8000/api/v1/voip_rate/?format=json
 
-         Response::
+                or
+
+            curl -u username:password -H 'Accept: application/json' http://localhost:8000/api/v1/voip_rate/recipient_phone_no/34650784355/?format=json
+
+        Response::
 
             [
-               {
-                  "prefix":34,
-                  "prefix__destination":"Spain",
-                  "retail_rate":"0.0350"
-               },
-               {
-                  "prefix":33,
-                  "prefix__destination":"France",
-                  "retail_rate":"0.0984"
-               },
-               {
-                  "prefix":32,
-                  "prefix__destination":"Belgium",
-                  "retail_rate":"0.0744"
-               },
-               {
-                  "prefix":39,
-                  "prefix__destination":"Italy",
-                  "retail_rate":"0.0720"
-               }
+                {
+                    "prefix":34,
+                    "prefix__destination":"Spain",
+                    "retail_rate":"0.0350"
+                },
+                {
+                    "prefix":33,
+                    "prefix__destination":"France",
+                    "retail_rate":"0.0984"
+                },
+                {
+                    "prefix":32,
+                    "prefix__destination":"Belgium",
+                    "retail_rate":"0.0744"
+                },
+                {
+                    "prefix":39,
+                    "prefix__destination":"Italy",
+                    "retail_rate":"0.0720"
+                }
             ]
 
         Response::
 
             [
-               {
-                  "prefix":34,
-                  "prefix__destination":"Spain",
-                  "retail_rate":"0.0350"
-               }
+                {
+                    "prefix":34,
+                    "prefix__destination":"Spain",
+                    "retail_rate":"0.0350"
+                }
             ]
 
     """
     class Meta:
         resource_name = 'voip_rate'
         authorization = Authorization()
-        authentication = BasicAuthentication()#IpAddressAuthentication()
+        authentication = BasicAuthentication()  # IpAddressAuthentication()
         allowed_methods = ['get']
         detail_allowed_methods = ['get']
         throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
@@ -104,11 +104,11 @@ class VoipRateResource(ModelResource):
                 self.wrap_view('read')),
             url(r'^(?P<resource_name>%s)/recipient_phone_no/(.+)/$' % self._meta.resource_name,
                 self.wrap_view('read')),
-        ]    
+        ]
 
     def read(self, request=None, **kwargs):
         """API to get voip call rate via dialcode or recipient_phone_no"""
-        logger.debug('Voip Rate GET API get called')        
+        logger.debug('Voip Rate GET API get called')
         auth_result = self._meta.authentication.is_authenticated(request)
 
         #if not auth_result is True:
