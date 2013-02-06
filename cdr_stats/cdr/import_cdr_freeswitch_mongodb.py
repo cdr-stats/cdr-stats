@@ -322,8 +322,8 @@ def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest
 
 
 def create_analytic(date_start_uepoch, start_uepoch, switch_id,
-                                       country_id, accountcode, hangup_cause_id, duration,
-                                       buy_cost, sell_cost):
+                    country_id, accountcode, hangup_cause_id, duration,
+                    buy_cost, sell_cost):
     """
     Common function to create DAILY_ANALYTIC, MONTHLY_ANALYTIC
     """
@@ -342,7 +342,7 @@ def create_analytic(date_start_uepoch, start_uepoch, switch_id,
     return True
 
 
-def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
+def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
     """
     function go through the current mongodb, then will
     - create CDR_COMMON
@@ -565,4 +565,4 @@ def import_cdr_freeswitch_mongodb(shell=False):
         importcdr_handler = DBCON[table_name]
 
         #Start import for this mongoDB
-        func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress)
+        importcdr_aggregate(shell, importcdr_handler, switch, ipaddress)

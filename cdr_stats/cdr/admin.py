@@ -18,22 +18,19 @@ from django.http import HttpResponse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.conf import settings
-
-from common.common_functions import variable_value, mongodb_str_filter, mongodb_int_filter, \
-    ceil_strdate, striplist
+from common.common_functions import variable_value, mongodb_str_filter, \
+    mongodb_int_filter, ceil_strdate, striplist
 from cdr.models import Switch, HangupCause, CDR_TYPE
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.functions_def import get_hangupcause_id, get_hangupcause_id_from_name
 from cdr.import_cdr_freeswitch_mongodb import apply_index, \
     CDR_COMMON, create_analytic, generate_global_cdr_record
-from cdr.functions_def import get_country_name, chk_account_code, get_hangupcause_name
+from cdr.functions_def import chk_account_code, get_hangupcause_name
 from cdr.forms import CdrSearchForm
-from cdr.aggregate import pipeline_cdr_view_daily_report
 from cdr.constants import CDR_COLUMN_NAME
 from cdr.views import cdr_view_daily_report, unset_session_var, get_pagination_vars
 from cdr_alert.functions_blacklist import chk_destination
-
-from datetime import datetime, date, timedelta
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import csv
 import logging
@@ -71,7 +68,7 @@ uuid - 4
 start_uepoch - 17
 """
 
-# Switch
+
 class SwitchAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'ipaddress', 'key_uuid')
     list_filter = ['name', 'ipaddress']
@@ -195,8 +192,8 @@ class SwitchAdmin(admin.ModelAdmin):
                                 duration = int(get_cdr_from_row['duration'])
                                 billsec = int(get_cdr_from_row['billsec'])
 
-                                if request.POST.get('import_asterisk') \
-                                    and request.POST['import_asterisk'] == 'on':
+                                if (request.POST.get('import_asterisk')
+                                   and request.POST['import_asterisk'] == 'on'):
                                     hangup_cause_name = "_".join(get_cdr_from_row['hangup_cause_id'].upper().split(' '))
                                     hangup_cause_id =\
                                         get_hangupcause_id_from_name(hangup_cause_name)
@@ -259,8 +256,8 @@ class SwitchAdmin(admin.ModelAdmin):
 
                                     msg =\
                                         _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
-                                            % {'cdr_record_count': cdr_record_count,
-                                               'total_rows': total_rows}
+                                        % {'cdr_record_count': cdr_record_count,
+                                            'total_rows': total_rows}
                                     success_import_list.append(row)
                             except:
                                 msg = _("Error : invalid value for import")
@@ -296,7 +293,6 @@ class SwitchAdmin(admin.ModelAdmin):
         })
         template = 'admin/cdr/switch/import_cdr.html'
         return render_to_response(template, context_instance=ctx)
-
 
     def cdr_view(self, request):
         """List of CDRs
@@ -634,8 +630,6 @@ class SwitchAdmin(admin.ModelAdmin):
         writer = csv.writer(response)
 
         # super(VoIPCall_ReportAdmin, self).queryset(request)
-        qs = request.session['query_var']
-
         query_var = request.session['query_var']
 
         final_result = cdr_data.find(query_var,
