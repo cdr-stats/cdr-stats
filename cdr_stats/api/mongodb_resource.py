@@ -18,7 +18,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
 from tastypie.bundle import Bundle
 from tastypie.resources import Resource
-from cdr.import_cdr_freeswitch_mongodb import common_function_to_create_analytic
+from cdr.import_cdr_freeswitch_mongodb import create_analytic
 
 
 class Document(dict):
@@ -126,7 +126,7 @@ class CDRMongoDBResource(MongoDBResource):
         buy_cost = bundle.data.get('buy_cost')
         sell_cost = bundle.data.get('sell_cost')
         retail_plan_id = int(bundle.data.get('retail_plan_id'))
-        common_function_to_create_analytic(date_start_uepoch, start_uepoch, switch_id,
+        create_analytic(date_start_uepoch, start_uepoch, switch_id,
             country_id, accountcode, hangup_cause_id, duration,
             buy_cost, sell_cost, retail_plan_id)
 

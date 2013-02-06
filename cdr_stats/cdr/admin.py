@@ -25,7 +25,7 @@ from cdr.models import Switch, HangupCause, CDR_TYPE
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.functions_def import get_hangupcause_id, get_hangupcause_id_from_name
 from cdr.import_cdr_freeswitch_mongodb import apply_index, \
-    CDR_COMMON, common_function_to_create_analytic, generate_global_cdr_record
+    CDR_COMMON, create_analytic, generate_global_cdr_record
 from cdr.functions_def import get_country_name, chk_account_code, get_hangupcause_name
 from cdr.forms import CdrSearchForm
 from cdr.aggregate import pipeline_cdr_view_daily_report
@@ -81,7 +81,7 @@ class SwitchAdmin(admin.ModelAdmin):
         urls = super(SwitchAdmin, self).get_urls()
         my_urls = patterns('',
             (r'^import_cdr/$', self.admin_site.admin_view(self.import_cdr)),
-            (r'^cdr_view/$', self.admin_site.admin_view(self.cdr_view)),            
+            (r'^cdr_view/$', self.admin_site.admin_view(self.cdr_view)),
             (r'^export_cdr/$', self.admin_site.admin_view(self.export_cdr)),
         )
         return my_urls + urls
@@ -252,7 +252,7 @@ class SwitchAdmin(admin.ModelAdmin):
                                         cdr_bulk_record = []
 
                                     date_start_uepoch = get_cdr_from_row['start_uepoch']
-                                    common_function_to_create_analytic(date_start_uepoch, start_uepoch,
+                                    create_analytic(date_start_uepoch, start_uepoch,
                                         switch_id, country_id, accountcode, hangup_cause_id, duration)
 
                                     cdr_record_count = cdr_record_count + 1
@@ -428,7 +428,7 @@ class SwitchAdmin(admin.ModelAdmin):
                     'total_avg_duration': 0,
                     'max_duration': 0,
                 }
-                template_data = RequestContext(request, {                    
+                template_data = RequestContext(request, {
                     'rows': [],
                     'form': form,
                     'PAGE_SIZE': settings.PAGE_SIZE,
@@ -439,7 +439,7 @@ class SwitchAdmin(admin.ModelAdmin):
                     'start_date': start_date,
                     'end_date': end_date,
                     'action': action,
-                    'result': result,                    
+                    'result': result,
                     'CDR_COLUMN_NAME': CDR_COLUMN_NAME,
                     'opts': opts,
                     'model_name': opts.object_name.lower(),
@@ -604,7 +604,7 @@ class SwitchAdmin(admin.ModelAdmin):
             cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
             request.session['session_cdr_view_daily_data'] = cdr_view_daily_data
 
-        template_data = RequestContext(request, {            
+        template_data = RequestContext(request, {
             'rows': rows,
             'form': form,
             'record_count': record_count,
@@ -616,14 +616,14 @@ class SwitchAdmin(admin.ModelAdmin):
             'start_date': start_date,
             'end_date': end_date,
             'action': action,
-            'result': int(result),            
+            'result': int(result),
             'CDR_COLUMN_NAME': CDR_COLUMN_NAME,
             'opts': opts,
             'model_name': opts.object_name.lower(),
             'app_label': _('Cdr'),
         })
-        logging.debug('CDR View End')            
-        return render_to_response(template_name, context_instance=template_data)        
+        logging.debug('CDR View End')
+        return render_to_response(template_name, context_instance=template_data)
 
     def export_cdr(self, request):
         # get the response object, this can be used as a stream.

@@ -19,8 +19,6 @@ from tastypie.authorization import Authorization
 from tastypie.authentication import BasicAuthentication
 from tastypie.throttle import BaseThrottle
 from tastypie.exceptions import BadRequest
-
-from api.resources import IpAddressAuthentication
 from voip_billing.models import VoIPRetailRate
 from voip_billing.function_def import prefix_allowed_to_call, prefix_list_string
 from user_profile.models import UserProfile
@@ -147,7 +145,6 @@ class VoipRateResource(ModelResource):
                 error_msg = "Not allowed : %s" % recipient_phone_no
                 logger.error(error_msg)
                 raise BadRequest(error_msg)
-
 
         # variables used for sorting
         sort_field = ''

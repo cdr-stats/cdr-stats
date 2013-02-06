@@ -212,7 +212,7 @@ def create_daily_analytic(daily_date, switch_id, country_id,
 def create_monthly_analytic(daily_date, start_uepoch, switch_id,
                             country_id, accountcode, duration,
                             buy_cost, sell_cost):
-    """Create DAILY_ANALYTIC"""      
+    """Create DAILY_ANALYTIC"""
     # Get a datetime that only include year-month info
     d = datetime.datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
 
@@ -321,7 +321,7 @@ def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest
     return cdr_record
 
 
-def common_function_to_create_analytic(date_start_uepoch, start_uepoch, switch_id,
+def create_analytic(date_start_uepoch, start_uepoch, switch_id,
                                        country_id, accountcode, hangup_cause_id, duration,
                                        buy_cost, sell_cost):
     """
@@ -469,7 +469,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         #             count_import))
 
         date_start_uepoch = cdr['variables']['start_uepoch'][:10]
-        common_function_to_create_analytic(date_start_uepoch, start_uepoch, switch.id,
+        create_analytic(date_start_uepoch, start_uepoch, switch.id,
             country_id, accountcode, hangup_cause_id, duration,
             buy_cost, sell_cost)
 

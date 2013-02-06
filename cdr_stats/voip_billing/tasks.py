@@ -13,9 +13,8 @@
 #
 from django.conf import settings
 from celery.task import Task
-from cdr.import_cdr_freeswitch_mongodb import common_function_to_create_analytic,\
+from cdr.import_cdr_freeswitch_mongodb import create_analytic,\
     calculate_call_cost
-from cdr.functions_def import chk_account_code
 from bson import ObjectId
 import logging
 import time
@@ -114,7 +113,7 @@ class ReaggregateTask(Task):
 
                 date_start_uepoch = int(time.mktime(start_uepoch.timetuple()))
 
-                common_function_to_create_analytic(str(date_start_uepoch),
+                create_analytic(str(date_start_uepoch),
                     start_uepoch, switch_id, country_id, accountcode,
                     hangup_cause_id, duration, buy_cost, sell_cost)
 
