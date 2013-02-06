@@ -58,26 +58,31 @@ class Reaggregate_call(Task):
         #2) Recreate daily/monthly analytic
         kwargs = {}
         kwargs['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
-        rebilled_call = cdr_data.find(kwargs)
 
-        #TODO: Do we need to use pagination here ?
-        #Risk if there is too many calls
+        PAGE_SIZE = 1000
+        record_count = cdr_data.find(kwargs).count()
+        total_pages = int(record_count / PAGE_SIZE) + 1 if (record_count % PAGE_SIZE) != 0 else 0
 
-        for call in rebilled_call:
-            start_uepoch = call['start_uepoch']
-            switch_id = int(call['switch_id'])
-            country_id = call['country_id']
-            accountcode = call['accountcode']
-            hangup_cause_id = call['hangup_cause_id']
-            duration = call['duration']
-            buy_cost = call['buy_cost']
-            sell_cost = call['sell_cost']
+        for PAGE_NUMBER in range(1, total_pages + 1):
 
-            date_start_uepoch = int(time.mktime(start_uepoch.timetuple()))
+            SKIP_NO = PAGE_SIZE * (PAGE_NUMBER - 1)
+            rebilled_call = cdr_data.find(kwargs).skip(SKIP_NO).limit(PAGE_SIZE)
 
-            common_function_to_create_analytic(str(date_start_uepoch),
-                start_uepoch, switch_id, country_id, accountcode,
-                hangup_cause_id, duration, buy_cost, sell_cost)
+            for call in rebilled_call:
+                start_uepoch = call['start_uepoch']
+                switch_id = int(call['switch_id'])
+                country_id = call['country_id']
+                accountcode = call['accountcode']
+                hangup_cause_id = call['hangup_cause_id']
+                duration = call['duration']
+                buy_cost = call['buy_cost']
+                sell_cost = call['sell_cost']
+
+                date_start_uepoch = int(time.mktime(start_uepoch.timetuple()))
+
+                common_function_to_create_analytic(str(date_start_uepoch),
+                    start_uepoch, switch_id, country_id, accountcode,
+                    hangup_cause_id, duration, buy_cost, sell_cost)
 
         logging.debug("Done re-aggregate")
         return True
