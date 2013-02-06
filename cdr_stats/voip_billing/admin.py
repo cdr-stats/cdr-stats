@@ -20,9 +20,7 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings
 from django.contrib import messages
-from bson import ObjectId
 from user_profile.models import UserProfile
-from cdr.import_cdr_freeswitch_mongodb import calculate_call_cost
 from country_dialcode.models import Prefix
 from voip_billing.models import VoIPRetailRate, VoIPPlan, BanPlan,\
     VoIPPlan_BanPlan, BanPrefix, VoIPRetailPlan, VoIPPlan_VoIPRetailPlan,\
@@ -34,7 +32,7 @@ from voip_billing.constants import CONFIRMATION_TYPE
 from voip_billing.widgets import AutocompleteModelAdmin
 from voip_billing.function_def import rate_filter_range_field_chk
 from voip_billing.rate_engine import rate_engine
-from voip_billing.tasks import Reaggregate_call
+from voip_billing.tasks import VoIPRebilling, Reaggregate_call
 from common.common_functions import variable_value, ceil_strdate
 from datetime import datetime
 import csv
@@ -42,33 +40,6 @@ import csv
 cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
 APP_LABEL = _('VoIP Billing')
 
-
-def _rebilling_call(voipplan_id, call):
-    """Perform call re-billing
-
-    **Attributes**:
-
-        * ``voipplan_id`` - frontend/cdr_graph_concurrent_calls.html
-        * ``call`` - ConcurrentCallForm
-        * ``cdr_data`` - MONGO_CDRSTATS['CDR_COMMON'] (cdr_common collection)
-
-    **Logic Description**:
-
-        get call record & voipplan_id to re-bill
-    """
-    new_rate =\
-        calculate_call_cost(voipplan_id, call['destination_number'], call['billsec'])
-
-    # Update cdr_common buy_cost/sell_cost
-    cdr_data.update({"_id": ObjectId(call['_id'])}, {
-        "$set": {
-            "buy_rate": new_rate['buy_rate'],
-            "buy_cost": new_rate['buy_cost'],
-            "sell_rate": new_rate['sell_rate'],
-            "sell_cost": new_rate['sell_cost']
-        }
-    })
-    return cdr_data.find_one({"_id": ObjectId(call['_id'])})
 
 
 def export_as_csv_action(description="Export selected objects as CSV file",
@@ -342,8 +313,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
             if start_date == '' and end_date:
                 kwargs['start_uepoch'] = {'$lt': end_date}
 
-            call_rebill = cdr_data.find(kwargs)
-            call_rebill_count = call_rebill.count()
+            call_rebill_count = cdr_data.find(kwargs).count()
 
             if "confirmation" in request.POST:
                 confirmation = request.POST.get('confirmation')
@@ -369,9 +339,9 @@ class VoIPPlanAdmin(admin.ModelAdmin):
 
                 # re-billing is confirmed by user
                 if confirmation == CONFIRMATION_TYPE.YES:
-                    if call_rebill:
-                        for call in call_rebill:
-                            _rebilling_call(voipplan_id, call)
+                    if call_rebill_count != 0:
+                        # Rebill all calls
+                        VoIPRebilling.delay(start_date, end_date, voipplan_id)
 
                         # Re-aggregate calls to re-generate daily/monthly analytics
                         Reaggregate_call.delay(start_date, end_date)

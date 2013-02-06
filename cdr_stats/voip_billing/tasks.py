@@ -13,24 +13,60 @@
 #
 from django.conf import settings
 from celery.task import Task
-from cdr.import_cdr_freeswitch_mongodb import common_function_to_create_analytic
+from cdr.import_cdr_freeswitch_mongodb import common_function_to_create_analytic,\
+    calculate_call_cost
+from bson import ObjectId
 import logging
 import time
 
 cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
 
 
-class VoIPbilling(Task):
+def _rebilling_call(voipplan_id, call):
+    """Perform call re-billing
+
+    **Attributes**:
+
+        * ``voipplan_id`` - frontend/cdr_graph_concurrent_calls.html
+        * ``call`` - ConcurrentCallForm
+        * ``cdr_data`` - MONGO_CDRSTATS['CDR_COMMON'] (cdr_common collection)
+
+    **Logic Description**:
+
+        get call record & voipplan_id to re-bill
+    """
+    new_rate =\
+        calculate_call_cost(voipplan_id, call['destination_number'], call['billsec'])
+
+    # Update cdr_common buy_cost/sell_cost
+    cdr_data.update({"_id": ObjectId(call['_id'])}, {
+        "$set": {
+            "buy_rate": new_rate['buy_rate'],
+            "buy_cost": new_rate['buy_cost'],
+            "sell_rate": new_rate['sell_rate'],
+            "sell_cost": new_rate['sell_cost']
+        }
+    })
+    # cdr_data.find_one({"_id": ObjectId(call['_id'])})
+    return True
+
+
+class VoIPRebilling(Task):
     """
     Billing for VoIPCall
     """
 
-    def run(self, voipcall_id, voipplan_id, **kwargs):
-        logging.debug("About to bill a message.")
+    def run(self, start_date, end_date, voipplan_id, **kwargs):
+        logging.debug("Start re-billing calls.")
 
-        #TODO : rewrite task for billing or do we need task
+        kwargs = {}
+        kwargs['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
+        call_rebill = cdr_data.find(kwargs)
 
-        #logging.debug("Done billing call.")
+        for call in call_rebill:
+            _rebilling_call(voipplan_id, call)
+
+        logging.debug("End re-billing calls.")
         return ''
 
 
@@ -55,7 +91,7 @@ class Reaggregate_call(Task):
         monthly_data = settings.DBCON[settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC']]
         monthly_data.remove(monthly_query_var)
 
-        #2) Recreate daily/monthly analytic
+        #2) Re-create daily/monthly analytic
         kwargs = {}
         kwargs['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
@@ -66,6 +102,7 @@ class Reaggregate_call(Task):
         for PAGE_NUMBER in range(1, total_pages + 1):
 
             SKIP_NO = PAGE_SIZE * (PAGE_NUMBER - 1)
+            # create analytic in chunks
             rebilled_call = cdr_data.find(kwargs).skip(SKIP_NO).limit(PAGE_SIZE)
 
             for call in rebilled_call:
