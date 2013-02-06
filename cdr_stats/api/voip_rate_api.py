@@ -18,9 +18,7 @@ from tastypie.resources import ModelResource
 from tastypie.authorization import Authorization
 from tastypie.authentication import BasicAuthentication
 from tastypie.throttle import BaseThrottle
-from tastypie.exceptions import BadRequest, ImmediateHttpResponse
-from tastypie.utils import trailing_slash
-from tastypie import http
+from tastypie.exceptions import BadRequest
 
 from api.resources import IpAddressAuthentication
 from voip_billing.models import VoIPRetailRate
@@ -92,7 +90,7 @@ class VoipRateResource(ModelResource):
     class Meta:
         resource_name = 'voip_rate'
         authorization = Authorization()
-        authentication = BasicAuthentication()  # IpAddressAuthentication()
+        authentication = BasicAuthentication()
         allowed_methods = ['get']
         detail_allowed_methods = ['get']
         throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
@@ -109,9 +107,9 @@ class VoipRateResource(ModelResource):
         logger.debug('Voip Rate GET API get called')
         self.is_authenticated(request)
 
-        user_profile = UserProfile.objects.get(user=request.user)
-        voipplan_id = user_profile.voipplan_id
-        if voipplan_id is None:
+        try:
+            voipplan_id = UserProfile.objects.get(user=request.user).voipplan_id
+        except:
             error_msg = "User is not attached with voip plan \n"
             logger.error(error_msg)
             raise BadRequest(error_msg)
