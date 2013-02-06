@@ -17,6 +17,8 @@ from voip_gateway.models import Gateway, Provider
 from voip_billing.models import VoIPPlan
 from voip_billing.views import voip_rates, export_rate, simulator, daily_billing_report, hourly_billing_report
 from user_profile.models import UserProfile
+from voip_billing.tasks import RebillingTask, ReaggregateTask
+from dateutil.relativedelta import relativedelta
 from datetime import datetime
 
 
@@ -122,3 +124,23 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         request.session = {}
         response = hourly_billing_report(request)
         self.assertEqual(response.status_code, 200)
+
+    def test_rebilling(self):
+        """Test task : RebillingTask"""
+        tday = datetime.today()
+        voipplan_id = 1
+        end_date = datetime(tday.year, tday.month, tday.day,
+            tday.hour, tday.minute, tday.second, tday.microsecond)
+        start_date = end_date + relativedelta(days=-1)
+        result = RebillingTask.delay(start_date, end_date, voipplan_id)
+        self.assertEqual(result.get(), True)
+
+    def test_reaggregate(self):
+        """Test task : ReaggregateTask"""
+        tday = datetime.today()
+        voipplan_id = 1
+        end_date = datetime(tday.year, tday.month, tday.day,
+            tday.hour, tday.minute, tday.second, tday.microsecond)
+        start_date = end_date + relativedelta(days=-1)
+        result = ReaggregateTask.delay(start_date, end_date, voipplan_id)
+        self.assertEqual(result.get(), True)
