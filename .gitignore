@@ -12,3 +12,4 @@ cdr_stats/settings_local.py
 *.log
 build
 output.html
+*.ipynb

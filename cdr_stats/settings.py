@@ -190,7 +190,7 @@ INSTALLED_APPS = (
     'south',
     'linaro_django_pagination',
     'djcelery',
-    'tastypie',    
+    'tastypie',
     'django_socketio',
     'common',
     'notification',
@@ -202,7 +202,7 @@ INSTALLED_APPS = (
     'dajaxice',
     'dajax',
     'voip_gateway',
-    'voip_billing',    
+    'voip_billing',
 )
 
 # Debug Toolbar
@@ -451,6 +451,15 @@ EMAIL_SUBJECT_PREFIX = '[CDR-Stats] '
 #Define the delay in minute between mail notification
 #This setting avoid getting span with loads of alarms
 DELAY_BETWEEN_MAIL_NOTIFICATION = 10
+
+
+#IPYTHON
+#=======
+IPYTHON_ARGUMENTS = [
+    '--ext', 'django_extensions.management.notebook_extension',
+    '--profile=nbserver',
+    '--debug'
+]
 
 #LOGGING
 #=======
