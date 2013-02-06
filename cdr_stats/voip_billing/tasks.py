@@ -53,7 +53,11 @@ def _rebilling_call(voipplan_id, call):
 
 class RebillingTask(Task):
     """
-    Billing for VoIPCall
+    Re-billing for VoIPCall
+
+    **Usage**:
+
+        RebillingTask.delay(start_date, end_date, voipplan_id)
     """
 
     def run(self, start_date, end_date, voipplan_id, **kwargs):
@@ -73,6 +77,10 @@ class RebillingTask(Task):
 class ReaggregateTask(Task):
     """
     Re-aggregate voip calls for daily/monthly analytics
+
+    **Usage**:
+
+        ReaggregateTask.delay(start_date, end_date)
     """
 
     def run(self, start_date, end_date, **kwargs):

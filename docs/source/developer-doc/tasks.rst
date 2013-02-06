@@ -41,3 +41,21 @@ CDR-Stats Tasks
     :members:
 
 
+.. automodule:: voip_billing.tasks
+
+.. _rebilling-task:
+
+:class:`RebillingTask`
+----------------------
+
+.. autoclass:: RebillingTask
+    :members:
+
+
+.. _reaggregate-task:
+
+:class:`ReaggregateTask`
+------------------------
+
+.. autoclass:: RebillingTask
+    :members:
