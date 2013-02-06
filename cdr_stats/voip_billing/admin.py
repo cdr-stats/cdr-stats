@@ -370,6 +370,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                 if confirmation == CONFIRMATION_TYPE.YES:
                     if call_rebill:
                         for call in call_rebill:
+                            #TODO: var new_call never used
                             new_call = _rebilling_call(voipplan_id, call)
 
                     # Re-aggregate calls to re-generate daily/monthly analytics

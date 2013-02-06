@@ -38,7 +38,7 @@ switch2bill-common==2.4.0
 django-socketio==0.3.5
 django-cache-machine==0.6
 django-redis-cache==0.9.5
-django-extensions==1.0.1
+django-extensions==1.0.3
 git+git://github.com/Star2Billing/django-notification
 django-frontend-notification==0.1.2
 git+git://github.com/jschrewe/django-genericadmin.git
