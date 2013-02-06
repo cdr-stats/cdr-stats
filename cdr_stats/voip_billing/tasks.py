@@ -15,6 +15,7 @@ from django.conf import settings
 from celery.task import Task
 from cdr.import_cdr_freeswitch_mongodb import common_function_to_create_analytic,\
     calculate_call_cost
+from cdr.functions_def import chk_account_code
 from bson import ObjectId
 import logging
 import time
@@ -60,18 +61,16 @@ class RebillingTask(Task):
         RebillingTask.delay(start_date, end_date, voipplan_id)
     """
 
-    def run(self, start_date, end_date, voipplan_id, **kwargs):
+    def run(self, calls_kwargs, voipplan_id, **kwargs):
         logging.debug("Start re-billing calls.")
 
-        kwargs = {}
-        kwargs['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
-        call_rebill = cdr_data.find(kwargs)
+        call_rebill = cdr_data.find(calls_kwargs)
 
         for call in call_rebill:
             _rebilling_call(voipplan_id, call)
 
         logging.debug("End re-billing calls.")
-        return ''
+        return True
 
 
 class ReaggregateTask(Task):
@@ -83,35 +82,25 @@ class ReaggregateTask(Task):
         ReaggregateTask.delay(start_date, end_date)
     """
 
-    def run(self, start_date, end_date, **kwargs):
+    def run(self, daily_query_var, monthly_query_var, call_kwargs, **kwargs):
         logging.debug("About to re-aggregate voip calls for daily/monthly analytics.")
 
         #1) remove daily/monthly aggregate
-        daily_query_var = {}
-        daily_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m-%d'),
-                                            '$lt': end_date.strftime('%Y-%m-%d')}
         daily_data = settings.DBCON[settings.MONGO_CDRSTATS['DAILY_ANALYTIC']]
         daily_data.remove(daily_query_var)
-
-        monthly_query_var = {}
-        monthly_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m'),
-                                              '$lt': end_date.strftime('%Y-%m')}
         monthly_data = settings.DBCON[settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC']]
         monthly_data.remove(monthly_query_var)
 
         #2) Re-create daily/monthly analytic
-        kwargs = {}
-        kwargs['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
-
         PAGE_SIZE = 1000
-        record_count = cdr_data.find(kwargs).count()
+        record_count = cdr_data.find(call_kwargs).count()
         total_pages = int(record_count / PAGE_SIZE) + 1 if (record_count % PAGE_SIZE) != 0 else 0
 
         for PAGE_NUMBER in range(1, total_pages + 1):
 
             SKIP_NO = PAGE_SIZE * (PAGE_NUMBER - 1)
             # create analytic in chunks
-            rebilled_call = cdr_data.find(kwargs).skip(SKIP_NO).limit(PAGE_SIZE)
+            rebilled_call = cdr_data.find(call_kwargs).skip(SKIP_NO).limit(PAGE_SIZE)
 
             for call in rebilled_call:
                 start_uepoch = call['start_uepoch']

@@ -22,6 +22,7 @@ from django.conf import settings
 from django.contrib import messages
 from user_profile.models import UserProfile
 from country_dialcode.models import Prefix
+from cdr.functions_def import chk_account_code
 from voip_billing.models import VoIPRetailRate, VoIPPlan, BanPlan,\
     VoIPPlan_BanPlan, BanPrefix, VoIPRetailPlan, VoIPPlan_VoIPRetailPlan,\
     VoIPCarrierPlan, VoIPCarrierRate, VoIPPlan_VoIPCarrierPlan
@@ -302,11 +303,14 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                 to_date = request.POST['to_date']
                 end_date = ceil_strdate(to_date, 'end')
 
-            kwargs = {}
+            call_kwargs = {}
             if start_date and end_date:
-                kwargs['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
+                call_kwargs['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
-            call_rebill_count = cdr_data.find(kwargs).count()
+            if not request.user.is_superuser:  # not superuser
+                call_kwargs['accountcode'] = chk_account_code(request)
+
+            call_rebill_count = cdr_data.find(call_kwargs).count()
 
             if "confirmation" in request.POST:
                 confirmation = request.POST.get('confirmation')
@@ -334,10 +338,22 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                 if confirmation == CONFIRMATION_TYPE.YES:
                     if call_rebill_count != 0:
                         # Rebill all calls
-                        RebillingTask.delay(start_date, end_date, voipplan_id)
+                        RebillingTask.delay(call_kwargs, voipplan_id)
+
+                        # get kwargs for aggregate
+                        daily_query_var = {}
+                        monthly_query_var = {}
+                        if not request.user.is_superuser:  # not superuser
+                            monthly_query_var['metadata.accountcode'] =\
+                                daily_query_var['metadata.accountcode'] = chk_account_code(request)
+
+                        daily_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m-%d'),
+                                                            '$lt': end_date.strftime('%Y-%m-%d')}
+                        monthly_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m'),
+                                                              '$lt': end_date.strftime('%Y-%m')}
 
                         # Re-aggregate calls to re-generate daily/monthly analytics
-                        ReaggregateTask.delay(start_date, end_date)
+                        ReaggregateTask.delay(daily_query_var, monthly_query_var, call_kwargs)
 
                     msg = _('Re-billing is done')
                     messages.info(request, msg)

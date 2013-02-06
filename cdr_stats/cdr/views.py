@@ -21,7 +21,7 @@ from django.utils.translation import gettext as _
 from django.conf import settings
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
-from notification import models as notification
+
 from common.common_functions import current_view, get_news, \
     variable_value, mongodb_str_filter, mongodb_int_filter, \
     int_convert_to_minute, validate_days, ceil_strdate
