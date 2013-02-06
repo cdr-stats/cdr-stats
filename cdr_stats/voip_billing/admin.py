@@ -40,6 +40,7 @@ from datetime import datetime
 import csv
 
 cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
+APP_LABEL = _('VoIP Billing')
 
 
 def _rebilling_call(voipplan_id, call):
@@ -190,7 +191,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
         VoIP Plan Listing
         """
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Select VoIP Plan to Change'),
         }
         return super(VoIPPlanAdmin, self)\
@@ -201,7 +202,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
         Add VoIP Plan
         """
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Add VoIP Plan'),
         }
         return super(VoIPPlanAdmin, self)\
@@ -212,7 +213,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
         Edit VoIP Plan
         """
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Change VoIP Plan'),
         }
         return super(VoIPPlanAdmin, self)\
@@ -256,7 +257,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                 'form': form,
                 'opts': opts,
                 'model_name': opts.object_name.lower(),
-                'app_label': _('VoIP Billing'),
+                'app_label': APP_LABEL,
                 'data': data,
             })
         template = 'admin/voip_billing/voipplan/simulator.html'
@@ -309,7 +310,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
             'form': form,
             'opts': opts,
             'model_name': opts.object_name.lower(),
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
         })
         return render_to_response(
             'admin/voip_billing/voipplan/export.html',
@@ -356,7 +357,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                         'end_date': end_date,
                         'opts': opts,
                         'model_name': opts.object_name.lower(),
-                        'app_label': _('VoIP Billing'),
+                        'app_label': APP_LABEL,
                         'title': _('Rebill VoPI Call'),
                         'call_rebill_count': call_rebill_count,
                         'CONFIRMATION_TYPE': CONFIRMATION_TYPE,
@@ -370,10 +371,10 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                 if confirmation == CONFIRMATION_TYPE.YES:
                     if call_rebill:
                         for call in call_rebill:
-                            new_call = _rebilling_call(voipplan_id, call)
+                            _rebilling_call(voipplan_id, call)
 
-                    # Re-aggregate calls to re-generate daily/monthly analytics
-                    Reaggregate_call.delay(start_date, end_date)
+                        # Re-aggregate calls to re-generate daily/monthly analytics
+                        Reaggregate_call.delay(start_date, end_date)
 
                     msg = _('Re-billing is done')
                     messages.info(request, msg)
@@ -389,7 +390,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
             'form': form,
             'opts': opts,
             'model_name': opts.object_name.lower(),
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Rebill VoIP Call'),
             'call_rebill_count': call_rebill_count,
         })
@@ -418,7 +419,7 @@ class BanPlanAdmin(admin.ModelAdmin):
         Ban Plan Listing
         """
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Select Ban Plan To Change'),
         }
         return super(BanPlanAdmin, self)\
@@ -429,7 +430,7 @@ class BanPlanAdmin(admin.ModelAdmin):
         Add Ban Plan
         """
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Add Ban Plan'),
         }
         return super(BanPlanAdmin, self)\
@@ -440,7 +441,7 @@ class BanPlanAdmin(admin.ModelAdmin):
         Edit Ban Plan
         """
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Change Ban Plan'),
         }
         return super(BanPlanAdmin, self)\
@@ -472,7 +473,7 @@ class BanPrefixAdmin(AutocompleteModelAdmin):
         Ban Prefix Listing with respect of VoIP Plan
         """
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Select Ban Prefix To Change'),
         }
         return super(BanPrefixAdmin, self)\
@@ -483,7 +484,7 @@ class BanPrefixAdmin(AutocompleteModelAdmin):
         Add Prefix To Ban
         """
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Add Prefix To Ban '),
         }
         return super(BanPrefixAdmin, self)\
@@ -494,7 +495,7 @@ class BanPrefixAdmin(AutocompleteModelAdmin):
         Edit Prefix To Ban
         """
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Change Prefix To Ban'),
         }
         return super(BanPrefixAdmin, self)\
@@ -532,7 +533,7 @@ class VoIPRetailPlanAdmin(admin.ModelAdmin):
         VoIP Retail Plan Listing
         """
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Select VoIP Retail Plan to Change'),
         }
         return super(VoIPRetailPlanAdmin, self)\
@@ -543,7 +544,7 @@ class VoIPRetailPlanAdmin(admin.ModelAdmin):
         Add VoIP Retail Plan
         """
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Add VoIP Retail Plan'),
         }
         return super(VoIPRetailPlanAdmin, self)\
@@ -554,7 +555,7 @@ class VoIPRetailPlanAdmin(admin.ModelAdmin):
         Edit VoIP Retail Plan
         """
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Change VoIP Retail Plan'),
         }
         return super(VoIPRetailPlanAdmin, self)\
@@ -640,7 +641,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
             # Custom Rate Filter Form
             form = CustomRateFilterForm(initial={})
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Select VoIP Retail Rate to Change'),
             'form': form,
         }
@@ -651,7 +652,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
         Add VoIP Retail Rate
         """
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Add VoIP Retail Rate'),
         }
         return super(VoIPRetailRateAdmin, self).add_view(request, extra_context=ctx)
@@ -661,7 +662,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
         Edit VoIP Retail Rate
         """
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Change VoIP Retail Rate'),
         }
         return super(VoIPRetailRateAdmin, self).change_view(request, object_id, extra_context=ctx, )
@@ -696,7 +697,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
             'form': form,
             'opts': opts,
             'model_name': opts.object_name.lower(),
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
         })
         return render_to_response(
             'admin/voip_billing/voipretailrate/export_rr.html',
@@ -765,7 +766,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
                                           % (retail_record_count, total_rows)
                                     success_import_list.append(row)
                             else:
-                                msg = _('Error: Prefix is not in the Prfix table')
+                                msg = _('Error: Prefix is not in the Prefix table')
                         except:
                             msg = _("Error : invalid value for import! \
                                    Please look at the import samples.")
@@ -778,7 +779,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
             'form': form,
             'opts': opts,
             'model_name': opts.object_name.lower(),
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'rdr': rdr,
             'msg': msg,
             'success_import_list': success_import_list,
@@ -826,7 +827,7 @@ class VoIPCarrierPlanAdmin(admin.ModelAdmin):
         VoIP Carrier Plan Listing
         """
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Select VoIP Carrier Plan to Change'),
         }
         return super(VoIPCarrierPlanAdmin, self)\
@@ -837,7 +838,7 @@ class VoIPCarrierPlanAdmin(admin.ModelAdmin):
         Add VoIP Carrier Plan
         """
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Add VoIP Carrier Plan'),
         }
         return super(VoIPCarrierPlanAdmin, self)\
@@ -848,7 +849,7 @@ class VoIPCarrierPlanAdmin(admin.ModelAdmin):
         Edit VoIP Carrier Plan
         """
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Change VoIP Carrier Plan'),
         }
         return super(VoIPCarrierPlanAdmin, self)\
@@ -933,7 +934,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
             # Custom Rate Filter Form
             form = CustomRateFilterForm(initial={})
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Select VoIP Carrier Rate to Change'),
             'form': form,
         }
@@ -944,7 +945,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
         Add VoIP Carrier Rate
         """
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Add VoIP Carrier Rate'),
         }
         return super(VoIPCarrierRateAdmin, self).add_view(request, extra_context=ctx)
@@ -954,7 +955,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
         Edit VoIP Carrier Rate
         """
         ctx = {
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'title': _('Change VoIP Carrier Rate'),
         }
         return super(VoIPCarrierRateAdmin, self).change_view(request, object_id, extra_context=ctx)
@@ -989,7 +990,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
             'form': form,
             'opts': opts,
             'model_name': opts.object_name.lower(),
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
         })
         return render_to_response('admin/voip_billing/voipcarrierrate/export_cr.html',
                context_instance=ctx)
@@ -1118,7 +1119,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
             'form': form,
             'opts': opts,
             'model_name': opts.object_name.lower(),
-            'app_label': _('VoIP Billing'),
+            'app_label': APP_LABEL,
             'rdr': rdr,
             'msg': msg,
             'cr_success_import_list': cr_success_import_list,
