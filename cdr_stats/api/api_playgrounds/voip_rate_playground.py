@@ -32,12 +32,12 @@ class VoipRateAPIPlayground(APIPlayground):
                     },
                     {
                         "method": "GET",
-                        "url": "/api/v1/voip_rate/dialcode/{dialcode}/",
+                        "url": "/api/v1/voip_rate/?dialcode={dialcode}",
                         "description": _("Returns a specific rate for prefix")
                     },
                     {
                         "method": "GET",
-                        "url": "/api/v1/voip_rate/recipient_phone_no/{recipient-phone-no}/",
+                        "url": "/api/v1/voip_rate/?recipient_phone_no={recipient-phone-no}",
                         "description": _("Returns a specific rate for recipient phone no")
                     },
 
