@@ -52,10 +52,10 @@ class ApiTestCase(BaseAuthenticatedClient):
         response = self.client.get('/api/v1/voip_rate/?format=json', **self.extra)
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get('/api/v1/voip_rate/dialcode/34/?format=json', **self.extra)
+        response = self.client.get('/api/v1/voip_rate/?dialcode=34&format=json', **self.extra)
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get('/api/v1/voip_rate/recipient_phone_no/34650784355/?format=json', **self.extra)
+        response = self.client.get('/api/v1/voip_rate/?recipient_phone_no=34650784355&format=json', **self.extra)
         self.assertEqual(response.status_code, 200)
         
     def test_voip_call(self):

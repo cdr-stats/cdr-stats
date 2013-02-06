@@ -75,34 +75,34 @@ def voip_rates(request):
         # check user with voipplan_id
         UserProfile.objects.get(user=request.user).voipplan_id
 
-        prefix_code = ''
+        dialcode = ''
         if request.method == 'POST':
             form = PrefixRetailRrateForm(request.POST)
             if form.is_valid():
-                prefix_code = request.POST.get('prefix')
-                request.session['prefix_code'] = prefix_code
+                dialcode = request.POST.get('prefix')
+                request.session['dialcode'] = dialcode
         else:
             # pagination with prefix code
-            if request.session.get('prefix_code') and \
+            if request.session.get('dialcode') and \
                (request.GET.get('page') or request.GET.get('sort_by')):
-                prefix_code = request.session.get('prefix_code')
-                form = PrefixRetailRrateForm(initial={'prefix': prefix_code})
+                dialcode = request.session.get('dialcode')
+                form = PrefixRetailRrateForm(initial={'prefix': dialcode})
             else:
                 # Reset variables
-                request.session['prefix_code'] = ''
+                request.session['dialcode'] = ''
                 request.session['final_rate_list'] = ''
-                prefix_code = ''
+                dialcode = ''
 
-        if prefix_code:
-            response = requests.get('http://localhost:8000/api/v1/voip_rate/dialcode/%s/?format=json&sort_field=%s&sort_order=%s' % (prefix_code, sort_order, order),
+        if dialcode:
+            response = requests.get('http://localhost:8000/api/v1/voip_rate/?dialcode=%s&sort_field=%s&sort_order=%s' % (dialcode, sort_order, order),
                 auth=(request.user, request.user))
         else:
             # Default listing or rate
-            response = requests.get('http://localhost:8000/api/v1/voip_rate/?format=json&sort_field=%s&sort_order=%s' % (sort_order, order),
+            response = requests.get('http://localhost:8000/api/v1/voip_rate/?sort_field=%s&sort_order=%s' % (sort_order, order),
                 auth=(request.user, request.user))
 
         rate_list = response.content
-        # due to string response of API, we need to convert result in to array
+        # due to string response of API, we need to convert response in to array
         rate_list = rate_list.replace('[', '').replace(']', '').replace('}, {', '}|{').split('|')
         for i in rate_list:
             final_rate_list.append(ast.literal_eval(i))

@@ -18,8 +18,8 @@ from tastypie.resources import ModelResource
 from tastypie.authorization import Authorization
 from tastypie.authentication import BasicAuthentication
 from tastypie.throttle import BaseThrottle
-from tastypie.exceptions import BadRequest, ImmediateHttpResponse
-from tastypie import http
+from tastypie.exceptions import BadRequest
+
 from api.resources import IpAddressAuthentication
 from voip_billing.models import VoIPRetailRate
 from voip_billing.function_def import prefix_allowed_to_call, prefix_list_string
@@ -41,15 +41,15 @@ class VoipRateResource(ModelResource):
 
         CURL Usage::
 
-            curl -u username:password -H 'Accept: application/json' http://localhost:8000/api/v1/voip_rate/dialcode/34/?format=json
+            curl -u username:password -H 'Accept: application/json' http://localhost:8000/api/v1/voip_rate/
 
                 or
 
-            curl -u username:password -H 'Accept: application/json' http://localhost:8000/api/v1/voip_rate/?format=json
+            curl -u username:password -H 'Accept: application/json' http://localhost:8000/api/v1/voip_rate/?dialcode=34
 
                 or
 
-            curl -u username:password -H 'Accept: application/json' http://localhost:8000/api/v1/voip_rate/recipient_phone_no/34650784355/?format=json
+            curl -u username:password -H 'Accept: application/json' http://localhost:8000/api/v1/voip_rate/?recipient_phone_no=34650784355
 
         Response::
 
@@ -90,7 +90,7 @@ class VoipRateResource(ModelResource):
     class Meta:
         resource_name = 'voip_rate'
         authorization = Authorization()
-        authentication = BasicAuthentication()  # IpAddressAuthentication()
+        authentication = BasicAuthentication()
         allowed_methods = ['get']
         detail_allowed_methods = ['get']
         throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
@@ -98,40 +98,39 @@ class VoipRateResource(ModelResource):
     def override_urls(self):
         """Override urls"""
         return [
-            url(r'^(?P<resource_name>%s)/$' % self._meta.resource_name,
-                self.wrap_view('read')),
-            url(r'^(?P<resource_name>%s)/dialcode/(.+)/$' % self._meta.resource_name,
-                self.wrap_view('read')),
-            url(r'^(?P<resource_name>%s)/recipient_phone_no/(.+)/$' % self._meta.resource_name,
-                self.wrap_view('read')),
+            url(r'^(?P<resource_name>%s)/$' % (self._meta.resource_name),
+                self.wrap_view('read'), name="api_read"),
         ]
 
     def read(self, request=None, **kwargs):
         """API to get voip call rate via dialcode or recipient_phone_no"""
         logger.debug('Voip Rate GET API get called')
-        auth_result = self._meta.authentication.is_authenticated(request)
+        self.is_authenticated(request)
 
-        if not auth_result is True:
-            raise ImmediateHttpResponse(response=http.HttpUnauthorized())
-
-        logger.debug('Voip Rate GET API authorization called!')
-        auth_result = self._meta.authorization.is_authorized(request, object)
-
-        user_profile = UserProfile.objects.get(user=request.user)
-        voipplan_id = user_profile.voipplan_id
-        if voipplan_id is None:
+        try:
+            voipplan_id = UserProfile.objects.get(user=request.user).voipplan_id
+        except:
             error_msg = "User is not attached with voip plan \n"
             logger.error(error_msg)
             raise BadRequest(error_msg)
 
         dialcode = ''
         recipient_phone_no = ''
-        if '/dialcode/' in request.META['PATH_INFO']:
-            dialcode = request.META['PATH_INFO'].split('/api/v1/voip_rate/dialcode/')[1].split('/')[0]
-        if '/recipient_phone_no/' in request.META['PATH_INFO']:
-            recipient_phone_no = request.META['PATH_INFO']\
-                .split('/api/v1/voip_rate/recipient_phone_no/')[1]\
-                .split('/')[0]
+        if 'dialcode' in request.GET:
+            if request.GET.get('dialcode') != '':
+                dialcode = request.GET.get('dialcode')
+            else:
+                error_msg = "Please enter dialcode\n"
+                logger.error(error_msg)
+                raise BadRequest(error_msg)
+
+        if 'recipient_phone_no' in request.GET:
+            if request.GET.get('recipient_phone_no') != '':
+                recipient_phone_no = request.GET.get('recipient_phone_no')
+            else:
+                error_msg = "Please enter recipient_phone_no\n"
+                logger.error(error_msg)
+                raise BadRequest(error_msg)
 
         if recipient_phone_no:
             #Check if recipient_phone_no is not banned
@@ -148,6 +147,7 @@ class VoipRateResource(ModelResource):
                 error_msg = "Not allowed : %s" % recipient_phone_no
                 logger.error(error_msg)
                 raise BadRequest(error_msg)
+
 
         # variables used for sorting
         sort_field = ''
