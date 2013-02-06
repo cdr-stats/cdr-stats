@@ -32,14 +32,13 @@ from voip_billing.constants import CONFIRMATION_TYPE
 from voip_billing.widgets import AutocompleteModelAdmin
 from voip_billing.function_def import rate_filter_range_field_chk
 from voip_billing.rate_engine import rate_engine
-from voip_billing.tasks import VoIPRebilling, Reaggregate_call
+from voip_billing.tasks import RebillingTask, ReaggregateTask
 from common.common_functions import variable_value, ceil_strdate
 from datetime import datetime
 import csv
 
 cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
 APP_LABEL = _('VoIP Billing')
-
 
 
 def export_as_csv_action(description="Export selected objects as CSV file",
@@ -239,7 +238,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
         Export Carrier Rate into CSV file
         """
         opts = VoIPPlan._meta
-
+        form = VoIPPlan_fileExport()
         if request.method == 'POST':
             form = VoIPPlan_fileExport(request.POST)
             if form.is_valid():
@@ -273,8 +272,6 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                     for record in row:
                         writer.writerow([record[0], record[1], record[2]])
                     return response
-        else:
-            form = VoIPPlan_fileExport()
 
         ctx = RequestContext(request, {
             'title': _('Export VoIP Plan'),
@@ -308,10 +305,6 @@ class VoIPPlanAdmin(admin.ModelAdmin):
             kwargs = {}
             if start_date and end_date:
                 kwargs['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
-            if start_date and end_date == '':
-                kwargs['start_uepoch'] = {'$gte': start_date}
-            if start_date == '' and end_date:
-                kwargs['start_uepoch'] = {'$lt': end_date}
 
             call_rebill_count = cdr_data.find(kwargs).count()
 
@@ -341,10 +334,10 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                 if confirmation == CONFIRMATION_TYPE.YES:
                     if call_rebill_count != 0:
                         # Rebill all calls
-                        VoIPRebilling.delay(start_date, end_date, voipplan_id)
+                        RebillingTask.delay(start_date, end_date, voipplan_id)
 
                         # Re-aggregate calls to re-generate daily/monthly analytics
-                        Reaggregate_call.delay(start_date, end_date)
+                        ReaggregateTask.delay(start_date, end_date)
 
                     msg = _('Re-billing is done')
                     messages.info(request, msg)
@@ -455,7 +448,7 @@ class BanPrefixAdmin(AutocompleteModelAdmin):
         """
         ctx = {
             'app_label': APP_LABEL,
-            'title': _('Add Prefix To Ban '),
+            'title': _('Add Prefix To Ban'),
         }
         return super(BanPrefixAdmin, self)\
             .add_view(request, extra_context=ctx)
@@ -581,8 +574,6 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
         Queryset will be changed as per the Rate filter selection
         on changelist_view
         """
-        kwargs = {}
-
         # Assign form field value to local variable
         rate = variable_value(request, 'rate')
         rate_range = variable_value(request, 'rate_range')
@@ -599,6 +590,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
         """
         VoIP Retail Rate Listing & Custom Rate Filter (>,>=,=,<=,<)
         """
+        form = CustomRateFilterForm()
         if request.method == 'POST':
             # Assign form field value to local variable
             rate = variable_value(request, 'rate')
@@ -607,9 +599,6 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
             # Custom Rate Filter Form
             form = CustomRateFilterForm(initial={"rate": rate,
                                                  "rate_range": rate_range})
-        else:
-            # Custom Rate Filter Form
-            form = CustomRateFilterForm(initial={})
         ctx = {
             'app_label': APP_LABEL,
             'title': _('Select VoIP Retail Rate to Change'),
@@ -642,7 +631,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
         Export Retail Rate into CSV file
         """
         opts = VoIPRetailRate._meta
-
+        form = Retail_Rate_fileExport()
         if request.method == 'POST':
             form = Retail_Rate_fileExport(request.POST)
             if form.is_valid():
@@ -659,8 +648,6 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
                     for row in qs:
                         writer.writerow([row.prefix, row.retail_rate, ])
                     return response
-        else:
-            form = Retail_Rate_fileExport()
 
         ctx = RequestContext(request, {
             'title': _('Export Retail Rate'),
@@ -683,7 +670,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
         retail_record_count - No. of records which are imported from CSV file
         """
         opts = VoIPRetailRate._meta
-
+        form = RetailRate_fileImport()
         rdr = ''  # will contain CSV data
         msg = ''
         success_import_list = []
@@ -741,8 +728,6 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
                             msg = _("Error : invalid value for import! \
                                    Please look at the import samples.")
                             type_error_import_list.append(row)
-        else:
-            form = RetailRate_fileImport()
 
         ctx = RequestContext(request, {
             'title': _('Import Retail Rate'),
@@ -892,6 +877,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
         """
         VoIP Carrier Rate Listing & Custom Rate Filter (>,>=,=,<=,<)
         """
+        form = CustomRateFilterForm()
         if request.method == 'POST':
             # Assign form field value to local variable
             rate = variable_value(request, 'rate')
@@ -900,9 +886,6 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
             # Custom Rate Filter Form
             form = CustomRateFilterForm(initial={"rate": rate,
                                                  "rate_range": rate_range})
-        else:
-            # Custom Rate Filter Form
-            form = CustomRateFilterForm(initial={})
         ctx = {
             'app_label': APP_LABEL,
             'title': _('Select VoIP Carrier Rate to Change'),
@@ -935,7 +918,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
         Export Carrier Rate into CSV file
         """
         opts = VoIPCarrierRate._meta
-
+        form = Carrier_Rate_fileExport()
         if request.method == 'POST':
             form = Carrier_Rate_fileExport(request.POST)
             if form.is_valid():
@@ -952,8 +935,6 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                     for row in qs:
                         writer.writerow([row.prefix, row.carrier_rate])
                     return response
-        else:
-            form = Carrier_Rate_fileExport()
 
         ctx = RequestContext(request, {
             'title': _('Export Carrier Rate'),
@@ -977,7 +958,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                               profit(%) & carrier rates
         """
         opts = VoIPCarrierRate._meta
-
+        form = CarrierRate_fileImport()
         rdr = ''  # will contain CSV data
         msg = ''
         cr_success_import_list = []
@@ -1081,8 +1062,6 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                             msg = _("Error : invalid value for import! \
                                    Please look at the import samples.")
                             type_error_import_list.append(row)
-        else:
-            form = CarrierRate_fileImport()
 
         ctx = RequestContext(request, {
             'title': _('Import Carrier Rate'),

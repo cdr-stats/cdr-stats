@@ -51,7 +51,7 @@ def _rebilling_call(voipplan_id, call):
     return True
 
 
-class VoIPRebilling(Task):
+class RebillingTask(Task):
     """
     Billing for VoIPCall
     """
@@ -70,7 +70,7 @@ class VoIPRebilling(Task):
         return ''
 
 
-class Reaggregate_call(Task):
+class ReaggregateTask(Task):
     """
     Re-aggregate voip calls for daily/monthly analytics
     """
