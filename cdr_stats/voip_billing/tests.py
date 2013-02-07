@@ -15,7 +15,8 @@
 from common.utils import BaseAuthenticatedClient
 from voip_gateway.models import Gateway, Provider
 from voip_billing.models import VoIPPlan
-from voip_billing.forms import HourlyBillingForm, BillingForm
+from voip_billing.forms import HourlyBillingForm, DailyBillingForm, SimulatorForm,\
+    PrefixRetailRrateForm
 from voip_billing.views import voip_rates, export_rate, simulator, daily_billing_report, hourly_billing_report
 from user_profile.models import UserProfile
 from voip_billing.tasks import RebillingTask, ReaggregateTask
@@ -82,12 +83,17 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         Test Function to check rate for VoIP Call
         """
         response = self.client.get('/rates/')
+        self.assertTrue(response.context['form'], PrefixRetailRrateForm())
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'voip_billing/rates.html')
         
     def test_simulator(self):
         """
         Test Function to check VoIP Call simulator
         """
+        response = self.client.get('/simulator/')
+        self.assertEqual(response.status_code, 200)
+
         response = self.client.post('/simulator/',
             data={'destination_no': '123456789',
                   'plan_id': 1})
@@ -100,11 +106,15 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         """
         Test Function to check VoIP Call simulator
         """
+        response = self.client.get('/daily_billing_report/')
+        self.assertTrue(response.context['form'], DailyBillingForm())        
+        self.assertEqual(response.status_code, 200)
+
         response = self.client.post('/daily_billing_report/',
             data={'plan_id': 1,
                   'from_date': datetime.now().strftime("%Y-%m-%d"),
                   'to_date': datetime.now().strftime("%Y-%m-%d"),})
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)        
         self.assertTemplateUsed(response, 'voip_billing/daily_billing_report.html')
 
         request = self.factory.get('/daily_billing_report/')
@@ -116,7 +126,7 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         data = {'plan_id': 1,
                 'from_date': datetime.now().strftime("%Y-%m-%d"),
                 'to_date': datetime.now().strftime("%Y-%m-%d"),}
-        request = self.factory.post('/hourly_billing_report/', data)
+        request = self.factory.post('/daily_billing_report/', data)
         request.user = self.user
         request.session = {}
         response = daily_billing_report(request)
