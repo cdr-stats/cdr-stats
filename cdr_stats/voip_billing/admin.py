@@ -304,11 +304,21 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                 end_date = ceil_strdate(to_date, 'end')
 
             call_kwargs = {}
+            daily_query_var = {}
+            monthly_query_var = {}
             if start_date and end_date:
                 call_kwargs['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
+                # get kwargs for aggregate
+                daily_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m-%d'),
+                                                    '$lt': end_date.strftime('%Y-%m-%d')}
+                monthly_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m'),
+                                                      '$lt': end_date.strftime('%Y-%m')}
+
             if not request.user.is_superuser:  # not superuser
                 call_kwargs['accountcode'] = chk_account_code(request)
+                monthly_query_var['metadata.accountcode'] =\
+                    daily_query_var['metadata.accountcode'] = call_kwargs['accountcode']
 
             call_rebill_count = cdr_data.find(call_kwargs).count()
 
@@ -339,18 +349,6 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                     if call_rebill_count != 0:
                         # Rebill all calls
                         RebillingTask.delay(call_kwargs, voipplan_id)
-
-                        # get kwargs for aggregate
-                        daily_query_var = {}
-                        monthly_query_var = {}
-                        if not request.user.is_superuser:  # not superuser
-                            monthly_query_var['metadata.accountcode'] =\
-                                daily_query_var['metadata.accountcode'] = chk_account_code(request)
-
-                        daily_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m-%d'),
-                                                            '$lt': end_date.strftime('%Y-%m-%d')}
-                        monthly_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m'),
-                                                              '$lt': end_date.strftime('%Y-%m')}
 
                         # Re-aggregate calls to re-generate daily/monthly analytics
                         ReaggregateTask.delay(daily_query_var, monthly_query_var, call_kwargs)
