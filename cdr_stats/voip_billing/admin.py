@@ -311,7 +311,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                 # get kwargs for aggregate
                 daily_kwargs['metadata.date'] = {'$gte': start_date.strftime('%Y-%m-%d'),
                                                  '$lt': end_date.strftime('%Y-%m-%d')}
-                monthly_kwargs'metadata.date'] = {'$gte': start_date.strftime('%Y-%m'),
+                monthly_kwargs['metadata.date'] = {'$gte': start_date.strftime('%Y-%m'),
                                                   '$lt': end_date.strftime('%Y-%m')}
 
             if not request.user.is_superuser:  # not superuser
