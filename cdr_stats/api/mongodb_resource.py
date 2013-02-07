@@ -55,7 +55,7 @@ class MongoDBResource(Resource):
 
     def obj_create(self, bundle, **kwargs):
         """
-        Insert document into MongoDB and create also the analytic collections
+        Insert document into MongoDB
         """
         self.get_collection().insert(bundle.data)
         return bundle
@@ -125,9 +125,9 @@ class CDRMongoDBResource(MongoDBResource):
         duration = bundle.data.get('duration')
         buy_cost = bundle.data.get('buy_cost')
         sell_cost = bundle.data.get('sell_cost')
-        retail_plan_id = int(bundle.data.get('retail_plan_id'))
+        
         create_analytic(date_start_uepoch, start_uepoch, switch_id,
             country_id, accountcode, hangup_cause_id, duration,
-            buy_cost, sell_cost, retail_plan_id)
+            buy_cost, sell_cost)
 
         return bundle

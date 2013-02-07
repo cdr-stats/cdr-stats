@@ -319,6 +319,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                 monthly_kwargs['metadata.accountcode'] =\
                     daily_kwargs['metadata.accountcode'] = call_kwargs['accountcode']
 
+            # Get total no of calls which are going to rebill
             call_rebill_count = cdr_data.find(call_kwargs).count()
 
             if "confirmation" in request.POST:
@@ -357,6 +358,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                     request.POST['confirmation'] = CONFIRMATION_TYPE.NO
                     call_rebill_count = 0
         else:
+            # default values for form
             tday = datetime.today()
             to_date = from_date = tday.strftime('%Y-%m-%d')
             form = RebillForm(initial={'from_date': from_date, 'to_date': to_date,

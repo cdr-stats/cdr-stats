@@ -45,17 +45,26 @@ class VoipCallValidation(Validation):
         bundle.data['date_start_uepoch'] = bundle.data.get('start_uepoch')
 
         if bundle.data.get('start_uepoch'):
-            bundle.data['start_uepoch'] = \
-                datetime.fromtimestamp(int(bundle.data.get('start_uepoch')[:10]))
+            try:
+                bundle.data['start_uepoch'] = \
+                    datetime.fromtimestamp(int(bundle.data.get('start_uepoch')[:10]))
+            except:
+                errors['start_uepoch_error'] = ["start_uepoch must be in timestamp format"]
 
         if bundle.data.get('answer_uepoch'):
-            bundle.data['answer_uepoch'] = \
-                datetime.fromtimestamp(int(bundle.data.get('answer_uepoch')[:10]))
+            try:
+                bundle.data['answer_uepoch'] = \
+                    datetime.fromtimestamp(int(bundle.data.get('answer_uepoch')[:10]))
+            except:
+                errors['answer_uepoch_error'] = ["answer_uepoch must be in timestamp format"]
 
         if bundle.data.get('end_uepoch'):
-            bundle.data['end_uepoch'] = \
-                datetime.fromtimestamp(int(bundle.data.get('end_uepoch')[:10]))
-
+            try:
+                bundle.data['end_uepoch'] = \
+                    datetime.fromtimestamp(int(bundle.data.get('end_uepoch')[:10]))
+            except:
+                errors['end_uepoch_error'] = ["end_uepoch must be in timestamp format"]
+        
         destination_number = bundle.data.get('destination_number')
         if len(destination_number) <= settings.INTERNAL_CALL:
             bundle.data['authorized'] = 1
@@ -65,19 +74,22 @@ class VoipCallValidation(Validation):
             bundle.data['authorized'] = destination_data['authorized']
             bundle.data['country_id'] = destination_data['country_id']
 
-        if bundle.data.get('hangup_cause_id'):
-            bundle.data['hangup_cause_id'] = get_hangupcause_id(bundle.data.get('hangup_cause_id'))
+        try:
+            bundle.data['hangup_cause_id'] = get_hangupcause_id(int(bundle.data.get('hangup_cause_id')))
+        except:
+            errors['hangup_cause_id_error'] = ["hangup_cause_id must be int"]
 
-        billsec = bundle.data.get('billsec')
-
-        call_rate = calculate_call_cost(voipplan_id, destination_number, billsec)
-        bundle.data['buy_rate'] = call_rate['buy_rate']
-        bundle.data['buy_cost'] = call_rate['buy_cost']
-        bundle.data['sell_rate'] = call_rate['sell_rate']
-        bundle.data['sell_cost'] = call_rate['sell_cost']
-        bundle.data['retail_plan_id'] = call_rate['retail_plan_id']
-
-        bundle.data['cdr_type'] = CDR_TYPE['API']
+        try:
+            billsec = bundle.data.get('billsec')
+            call_rate = calculate_call_cost(voipplan_id, destination_number, billsec)
+            bundle.data['buy_rate'] = call_rate['buy_rate']
+            bundle.data['buy_cost'] = call_rate['buy_cost']
+            bundle.data['sell_rate'] = call_rate['sell_rate']
+            bundle.data['sell_cost'] = call_rate['sell_cost']            
+            bundle.data['cdr_type'] = CDR_TYPE['API']
+        except:
+            errors['billsec_error'] = ["billsec must be int"]
+        
         return errors
 
 
