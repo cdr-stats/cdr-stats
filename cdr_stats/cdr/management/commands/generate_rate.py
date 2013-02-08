@@ -61,41 +61,42 @@ class Command(BaseCommand):
 
         try:
             voip_plan = VoIPPlan.objects.get(pk=int(voip_plan_id))
-            carrierplanid = VoIPPlan_VoIPCarrierPlan.objects.get(voipplan=voip_plan).voipcarrierplan_id
-            carrier_plan = VoIPCarrierPlan.objects.get(pk=carrierplanid)
-
-            retail_plan = VoIPRetailPlan.objects.get(voip_plan=voip_plan_id)
-
-            for i in range(1, int(no_of_record) + 1):
-                # get random prefixes from Prefix
-                prefix = Prefix.objects.order_by('?')[0]
-
-                # Create carrier_rate & retail_rate with random prefix
-                carrier_rate = '%.4f' % random.random()
-
-                # No duplication
-                if VoIPCarrierRate.objects.filter(prefix=prefix).count() == 0:
-                    VoIPCarrierRate.objects.create(
-                        voip_carrier_plan_id=carrier_plan,
-                        prefix=prefix,
-                        carrier_rate=float(carrier_rate)
-                    )
-                    print "Insert VoIPCarrierRate [call-plan=%d;carrier_plan=%d;prefix=%d;carrier_rate=%f]" % \
-                        (voip_plan_id, carrier_plan, prefix, float(carrier_rate))
-
-                # retail_rate = 10% increase in carrier_rate
-                retail_rate = float(carrier_rate) + ((float(carrier_rate) * 10) / 100)
-
-                # No duplication
-                if VoIPRetailRate.objects.filter(prefix=prefix).count() == 0:
-                    VoIPRetailRate.objects.create(
-                        voip_retail_plan_id=retail_plan,
-                        prefix=prefix,
-                        retail_rate=float(retail_rate)
-                    )
-                    print "Insert VoIPRetailRate [call-plan=%d;retail_plan=%d;prefix=%d;retail_rate=%f]" % \
-                        (voip_plan_id, retail_plan, prefix, float(retail_rate))
-
         except:
-            raise
             print "No call-plan"
+            return False
+
+        return False
+        carrierplanid = VoIPPlan_VoIPCarrierPlan.objects.get(voipplan=voip_plan).voipcarrierplan_id
+        carrier_plan = VoIPCarrierPlan.objects.get(pk=carrierplanid)
+
+        retail_plan = VoIPRetailPlan.objects.get(voip_plan=voip_plan_id)
+
+        for i in range(1, int(no_of_record) + 1):
+            # get random prefixes from Prefix
+            prefix = Prefix.objects.order_by('?')[0]
+
+            # Create carrier_rate & retail_rate with random prefix
+            carrier_rate = '%.4f' % random.random()
+
+            # No duplication
+            if VoIPCarrierRate.objects.filter(prefix=prefix).count() == 0:
+                VoIPCarrierRate.objects.create(
+                    voip_carrier_plan_id=carrier_plan,
+                    prefix=prefix,
+                    carrier_rate=float(carrier_rate)
+                )
+                print "Insert VoIPCarrierRate [call-plan=%d;carrier_plan=%d;prefix=%d;carrier_rate=%f]" % \
+                    (voip_plan_id, carrier_plan, prefix, float(carrier_rate))
+
+            # retail_rate = 10% increase in carrier_rate
+            retail_rate = float(carrier_rate) + ((float(carrier_rate) * 10) / 100)
+
+            # No duplication
+            if VoIPRetailRate.objects.filter(prefix=prefix).count() == 0:
+                VoIPRetailRate.objects.create(
+                    voip_retail_plan_id=retail_plan,
+                    prefix=prefix,
+                    retail_rate=float(retail_rate)
+                )
+                print "Insert VoIPRetailRate [call-plan=%d;retail_plan=%d;prefix=%d;retail_rate=%f]" % \
+                    (voip_plan_id, retail_plan, prefix, float(retail_rate))
