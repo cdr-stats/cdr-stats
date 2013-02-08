@@ -21,71 +21,10 @@ from voip_billing.models import VoIPRetailRate, VoIPPlan, BanPlan,\
 from country_dialcode.models import Prefix
 from optparse import make_option
 from random import choice
-from uuid import uuid1
-
-import sys
 import random
 
 
 random.seed()
-
-HANGUP_CAUSE = ['NORMAL_CLEARING', 'NORMAL_CLEARING', 'NORMAL_CLEARING',
-                'NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED',
-                'INVALID_NUMBER_FORMAT']
-HANGUP_CAUSE_Q850 = ['16', '17', '18', '19', '20', '21']
-
-#list of exit code : http://www.howtocallabroad.com/codes.html
-COUNTRY_PREFIX = ['0034', '011346', '+3465',  # Spain
-                  #'3912', '39', '+3928',  # Italy
-                  #'15', '17',  # US
-                  #'16', '1640',  # Canada
-                  #'44', '441', '00442',  # UK
-                  #'45', '451', '00452',  # Denmark
-                  '32', '321', '0322',  # Belgium
-                  #'91', '919', '0911',  # India
-                  #'53', '531', '00532',  # Cuba
-                  #'55', '551', '552',  # Brazil
-                  ]
-
-
-def generate_cdr_data(day_delta_int):
-    """
-    TODO: Add function documentation
-    """
-    digit = '1234567890'
-
-    caller_id = ''.join([choice(digit) for i in range(8)])
-    channel_name = 'sofia/internal/' + caller_id + '@127.0.0.1'
-    destination_number = ''.join([choice(digit) for i in range(8)])
-
-    if random.randint(1, 20) == 1:
-        #Add local calls
-        destination_number = ''.join([choice(digit) for i in range(5)])
-    else:
-        #International calls
-        destination_number = choice(COUNTRY_PREFIX) + destination_number
-
-    hangup_cause = choice(HANGUP_CAUSE)
-    hangup_cause_q850 = choice(HANGUP_CAUSE_Q850)
-    if hangup_cause == 'NORMAL_CLEARING':
-        duration = random.randint(1, 200)
-        billsec = random.randint(1, 200)
-    else:
-        duration = 0
-        billsec = 0
-
-    uuid = str(uuid1())
-
-    return (
-        caller_id,
-        channel_name,
-        destination_number,
-        hangup_cause,
-        hangup_cause_q850,
-        duration,
-        billsec,
-        uuid,
-    )
 
 
 class Command(BaseCommand):
@@ -107,7 +46,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """
-        Note that subscriber created this way are only for devel purposes
+        Note that rates created this way are only for devel purposes
         """
         no_of_record = 1  # default
         if options.get('number-rate'):
@@ -155,16 +94,3 @@ class Command(BaseCommand):
                     prefix=prefix,
                     retail_rate=float(retail_rate)
                 )
-
-
-
-
-
-
-
-
-
-
-
-
-
