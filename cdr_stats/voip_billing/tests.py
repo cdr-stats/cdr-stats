@@ -30,7 +30,7 @@ class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):
     """
     fixtures = ['auth_user.json', 'country_dialcode.json',
                 'voip_gateway.json', 'voip_provider.json'
-                'user_profile.json']
+                'user_profile.json', 'voip_billing.json',]
 
     def test_admin_voip_billing(self):
         """
@@ -75,8 +75,8 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
     Test cases for voip_billing Customer Interface.
     """
     fixtures = ['auth_user.json', 'country_dialcode.json',
-                'voip_gateway.json', 'voip_provider.json'                
-                'user_profile.json',]
+                'voip_gateway.json', 'voip_provider.json'
+                'user_profile.json', 'voip_billing.json', ]
 
     def test_rates_view(self):
         """
