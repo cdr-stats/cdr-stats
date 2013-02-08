@@ -52,7 +52,8 @@ class UserProfileAdminView(BaseAuthenticatedClient):
 class UserProfileCustomerView(BaseAuthenticatedClient):
     """Test Function to check UserProfile Customer pages"""
 
-    fixtures = ['auth_user.json', 'notice_type.json', 'notification.json']
+    fixtures = ['auth_user.json', 'notice_type.json', 'notification.json',
+                'voip_gateway.json', 'voip_provider.json', 'user_profile.json',]
 
     def test_user_settings(self):
         """Test Function to check User settings"""

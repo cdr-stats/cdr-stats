@@ -125,7 +125,7 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
             {'country': 198,
              'blacklist_country': [1],
              'select': [34]})
-        self.failUnlessEqual(response.status_code, 200)
+        self.failUnlessEqual(response.status_code, 302)
 
 
 class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
