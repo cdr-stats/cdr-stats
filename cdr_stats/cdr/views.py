@@ -1916,13 +1916,16 @@ def world_map_view(request):
     world_analytic_array = []
     if list_data:
         for doc in list_data['result']:
-            #country id - country name - call count - call duration - country_id
+            #country id - country name - call count - call duration - country_id - buy cost - sell cost
             # _id = country id
             world_analytic_array.append((int(doc['_id']),
                                          get_country_name(int(doc['_id']), type='iso2'),
                                          int(doc['call_per_day']),
                                          doc['duration_per_day'],
-                                         get_country_name(int(doc['_id']))))
+                                         get_country_name(int(doc['_id'])),
+                                         doc['buy_cost_per_day'],
+                                         doc['sell_cost_per_day'],
+                                         ))
 
     logging.debug('CDR world report view end')
 

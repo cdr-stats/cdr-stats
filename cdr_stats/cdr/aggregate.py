@@ -149,19 +149,25 @@ def pipeline_country_report(query_var):
         {'$group': {
             '_id': '$metadata.country_id',  # grouping on country id
             'call_per_day': {'$sum': '$call_daily'},
-            'duration_per_day': {'$sum': '$duration_daily'}
+            'duration_per_day': {'$sum': '$duration_daily'},
+            'buy_cost_per_day': {'$sum': '$buy_cost_daily'},
+            'sell_cost_per_day': {'$sum': '$sell_cost_daily'},
         }
         },
         {
             '$project': {
                 'call_per_day': 1,
                 'duration_per_day': 1,
+                'buy_cost_per_day': 1,
+                'sell_cost_per_day': 1,
             }
         },
         {
             '$sort': {
                 'call_per_day': -1,
                 'duration_per_day': -1,
+                'buy_cost_per_day': -1,
+                'sell_cost_per_day': -1,
             }
         },
         {'$limit': settings.NUM_COUNTRY}

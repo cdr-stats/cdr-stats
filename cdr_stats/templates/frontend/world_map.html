@@ -16,7 +16,7 @@
                 {% for rc in world_analytic_array %}
                     {
                         label: '{{ rc.1 }}',
-                        data: [{{ rc.2 }}, {{ rc.3 }}]
+                        data: [{{ rc.2 }}, {{ rc.3 }}, {{ rc.5 }}, {{ rc.6 }}]
                     },
                 {% endfor %}
             ];
@@ -52,7 +52,13 @@
                         if(call_data[k].label == code)
                         {
                             var temp_string = label.text();
-                            temp_string = temp_string + " : " + String(call_data[k].data[0])+ " Calls - " + conve_min(parseInt(call_data[k].data[1]));
+                            temp_string = temp_string + " : " + String(call_data[k].data[0]) + " Calls - " + conve_min(parseInt(call_data[k].data[1]));
+
+                            {% if user.is_superuser %}
+                            temp_string += " - Buy Cost : " + call_data[k].data[2];
+                            {% endif %}
+
+                            temp_string += " - Sell Cost : " + call_data[k].data[3];
                             label.text(temp_string);
                             break;
                         }
@@ -145,6 +151,10 @@
                         <th>{% trans "Country"  %}</th>
                         <th>{% trans "Calls"  %}</th>
                         <th>{% trans "Duration"  %}</th>
+                        {% if user.is_superuser %}
+                        <th>{% trans "Buy Cost"  %}</th>
+                        {% endif %}
+                        <th>{% trans "Sell Cost"  %}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -163,6 +173,10 @@
                             </td>
                             <td>{{ country_data.2 }} {% trans "Calls"%}</td>
                             <td>{{ country_data.3|conv_min }} {% trans "minutes"%}</td>
+                            {% if user.is_superuser %}
+                            <td>{{ country_data.5 }}</td>
+                            {% endif %}
+                            <td>{{ country_data.6 }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
