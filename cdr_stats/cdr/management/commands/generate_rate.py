@@ -55,42 +55,44 @@ class Command(BaseCommand):
             except ValueError:
                 no_of_record = 1
 
-        call_plan = 1  # default
+        voip_plan_id = 1  # default
         if options.get('call-plan'):
             try:
-                call_plan = int(options.get('call-plan'))
-                voip_plan_id = VoIPPlan.objects.get(pk=int(call_plan))
+                voip_plan_id = int(options.get('call-plan'))
             except ValueError:
                 voip_plan_id = 1
 
-
-        for i in range(1, int(no_of_record) + 1):
-            carrierplanid = VoIPPlan_VoIPCarrierPlan.objects.get(voipplan=voip_plan_id).voipcarrierplan_id
+        try:
+            voip_plan = VoIPPlan.objects.get(pk=int(voip_plan_id))
+            carrierplanid = VoIPPlan_VoIPCarrierPlan.objects.get(voipplan=voip_plan).voipcarrierplan_id
             carrier_plan = VoIPCarrierPlan.objects.get(pk=carrierplanid)
 
             retail_plan = VoIPRetailPlan.objects.get(voip_plan=voip_plan_id)
 
-            # get random prefixes from Prefix
-            prefix = Prefix.objects.order_by('?')[0]
+            for i in range(1, int(no_of_record) + 1):
+                # get random prefixes from Prefix
+                prefix = Prefix.objects.order_by('?')[0]
 
-            # Create carrier_rate & retail_rate with random prefix
-            carrier_rate = '%.4f' % random.random()
+                # Create carrier_rate & retail_rate with random prefix
+                carrier_rate = '%.4f' % random.random()
 
-            # No duplication
-            if VoIPCarrierRate.objects.filter(prefix=prefix).count() == 0:
-                VoIPCarrierRate.objects.create(
-                    voip_carrier_plan_id=carrier_plan,
-                    prefix=prefix,
-                    carrier_rate=float(carrier_rate)
-                )
+                # No duplication
+                if VoIPCarrierRate.objects.filter(prefix=prefix).count() == 0:
+                    VoIPCarrierRate.objects.create(
+                        voip_carrier_plan_id=carrier_plan,
+                        prefix=prefix,
+                        carrier_rate=float(carrier_rate)
+                    )
 
-            # retail_rate = 10% increase in carrier_rate
-            retail_rate = float(carrier_rate) + ((float(carrier_rate) * 10)/100)
+                # retail_rate = 10% increase in carrier_rate
+                retail_rate = float(carrier_rate) + ((float(carrier_rate) * 10)/100)
 
-            # No duplication
-            if VoIPRetailRate.objects.filter(prefix=prefix).count() == 0:
-                VoIPRetailRate.objects.create(
-                    voip_retail_plan_id=retail_plan,
-                    prefix=prefix,
-                    retail_rate=float(retail_rate)
-                )
+                # No duplication
+                if VoIPRetailRate.objects.filter(prefix=prefix).count() == 0:
+                    VoIPRetailRate.objects.create(
+                        voip_retail_plan_id=retail_plan,
+                        prefix=prefix,
+                        retail_rate=float(retail_rate)
+                    )
+        except:
+            print "No call-plan"
