@@ -452,7 +452,6 @@ EMAIL_SUBJECT_PREFIX = '[CDR-Stats] '
 #This setting avoid getting span with loads of alarms
 DELAY_BETWEEN_MAIL_NOTIFICATION = 10
 
-
 #IPYTHON
 #=======
 IPYTHON_ARGUMENTS = [
