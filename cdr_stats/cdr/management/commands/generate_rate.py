@@ -13,16 +13,13 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.conf import settings
 from django.core.management.base import BaseCommand
-from voip_billing.models import VoIPRetailRate, VoIPPlan, BanPlan,\
-    VoIPPlan_BanPlan, BanPrefix, VoIPRetailPlan, VoIPPlan_VoIPRetailPlan,\
-    VoIPCarrierPlan, VoIPCarrierRate, VoIPPlan_VoIPCarrierPlan
+from voip_billing.models import VoIPRetailRate, VoIPPlan, \
+    VoIPRetailPlan, VoIPCarrierPlan, VoIPCarrierRate, \
+    VoIPPlan_VoIPCarrierPlan
 from country_dialcode.models import Prefix
 from optparse import make_option
-from random import choice
 import random
-
 
 random.seed()
 
@@ -31,7 +28,7 @@ class Command(BaseCommand):
     args = ' number-rate, call-plan '
     help = "Generate random rates\n"\
            "---------------------------------\n"\
-           "python manage.py generate_rate --number-rate=100 --call-plan=1"
+           "python manage.py generate_rate --number=100 --call-plan=1"
 
     option_list = BaseCommand.option_list + (
         make_option('--number-rate',
@@ -83,9 +80,11 @@ class Command(BaseCommand):
                         prefix=prefix,
                         carrier_rate=float(carrier_rate)
                     )
+                    print "Insert VoIPCarrierRate [call-plan=%d;carrier_plan=%d;prefix=%d;carrier_rate=%f]" % \
+                        (voip_plan_id, carrier_plan, prefix, float(carrier_rate))
 
                 # retail_rate = 10% increase in carrier_rate
-                retail_rate = float(carrier_rate) + ((float(carrier_rate) * 10)/100)
+                retail_rate = float(carrier_rate) + ((float(carrier_rate) * 10) / 100)
 
                 # No duplication
                 if VoIPRetailRate.objects.filter(prefix=prefix).count() == 0:
@@ -94,5 +93,9 @@ class Command(BaseCommand):
                         prefix=prefix,
                         retail_rate=float(retail_rate)
                     )
+                    print "Insert VoIPRetailRate [call-plan=%d;retail_plan=%d;prefix=%d;retail_rate=%f]" % \
+                        (voip_plan_id, retail_plan, prefix, float(retail_rate))
+
         except:
+            raise
             print "No call-plan"
