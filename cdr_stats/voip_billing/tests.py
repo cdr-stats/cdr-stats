@@ -15,6 +15,8 @@
 from common.utils import BaseAuthenticatedClient
 from voip_gateway.models import Gateway, Provider
 from voip_billing.models import VoIPPlan
+from voip_billing.forms import HourlyBillingForm, DailyBillingForm, SimulatorForm,\
+    PrefixRetailRrateForm
 from voip_billing.views import voip_rates, export_rate, simulator, daily_billing_report, hourly_billing_report
 from user_profile.models import UserProfile
 from voip_billing.tasks import RebillingTask, ReaggregateTask
@@ -28,7 +30,7 @@ class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):
     """
     fixtures = ['auth_user.json', 'country_dialcode.json',
                 'voip_gateway.json', 'voip_provider.json'
-                'user_profile.json']
+                'user_profile.json', 'voip_billing.json',]
 
     def test_admin_voip_billing(self):
         """
@@ -73,20 +75,25 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
     Test cases for voip_billing Customer Interface.
     """
     fixtures = ['auth_user.json', 'country_dialcode.json',
-                'voip_gateway.json', 'voip_provider.json'                
-                'user_profile.json',]
+                'voip_gateway.json', 'voip_provider.json'
+                'user_profile.json', 'voip_billing.json', ]
 
     def test_rates_view(self):
         """
         Test Function to check rate for VoIP Call
         """
         response = self.client.get('/rates/')
+        self.assertTrue(response.context['form'], PrefixRetailRrateForm())
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'voip_billing/rates.html')
         
     def test_simulator(self):
         """
         Test Function to check VoIP Call simulator
         """
+        response = self.client.get('/simulator/')
+        self.assertEqual(response.status_code, 200)
+
         response = self.client.post('/simulator/',
             data={'destination_no': '123456789',
                   'plan_id': 1})
@@ -99,9 +106,15 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         """
         Test Function to check VoIP Call simulator
         """
-        response = self.client.post('/daily_billing_report/',
-            data={'plan_id': 1})
+        response = self.client.get('/daily_billing_report/')
+        self.assertTrue(response.context['form'], DailyBillingForm())        
         self.assertEqual(response.status_code, 200)
+
+        response = self.client.post('/daily_billing_report/',
+            data={'plan_id': 1,
+                  'from_date': datetime.now().strftime("%Y-%m-%d"),
+                  'to_date': datetime.now().strftime("%Y-%m-%d"),})
+        self.assertEqual(response.status_code, 200)        
         self.assertTemplateUsed(response, 'voip_billing/daily_billing_report.html')
 
         request = self.factory.get('/daily_billing_report/')
@@ -110,16 +123,40 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         response = daily_billing_report(request)
         self.assertEqual(response.status_code, 200)
 
+        data = {'plan_id': 1,
+                'from_date': datetime.now().strftime("%Y-%m-%d"),
+                'to_date': datetime.now().strftime("%Y-%m-%d"),}
+        request = self.factory.post('/daily_billing_report/', data)
+        request.user = self.user
+        request.session = {}
+        response = daily_billing_report(request)
+        self.assertEqual(response.status_code, 200)
+
+
     def test_hourly_billing_report(self):
         """
         Test Function to check VoIP Call simulator
         """
+        response = self.client.get('/hourly_billing_report/')
+        self.assertTrue(response.context['form'], HourlyBillingForm())
+        self.assertTemplateUsed(response, 'voip_billing/hourly_billing_report.html')
+        self.assertEqual(response.status_code, 200)
+
         response = self.client.post('/hourly_billing_report/',
-            data={'plan_id': 1})
+            data={'plan_id': 1,
+                  'from_date': datetime.now().strftime("%Y-%m-%d"),})
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'voip_billing/hourly_billing_report.html')
 
         request = self.factory.get('/hourly_billing_report/')
+        request.user = self.user
+        request.session = {}
+        response = hourly_billing_report(request)
+        self.assertEqual(response.status_code, 200)
+
+        data = {'plan_id': 1,
+                'from_date': datetime.now().strftime("%Y-%m-%d"),}
+        request = self.factory.post('/hourly_billing_report/', data)
         request.user = self.user
         request.session = {}
         response = hourly_billing_report(request)
@@ -132,15 +169,27 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         end_date = datetime(tday.year, tday.month, tday.day,
             tday.hour, tday.minute, tday.second, tday.microsecond)
         start_date = end_date + relativedelta(days=-1)
-        result = RebillingTask.delay(start_date, end_date, voipplan_id)
+        call_kwargs = {}
+        call_kwargs['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
+        result = RebillingTask.delay(call_kwargs, voipplan_id)
         self.assertEqual(result.get(), True)
 
     def test_reaggregate(self):
         """Test task : ReaggregateTask"""
+        call_kwargs = {}
+        daily_query_var = {}
+        monthly_query_var = {}
+        
         tday = datetime.today()
-        voipplan_id = 1
         end_date = datetime(tday.year, tday.month, tday.day,
             tday.hour, tday.minute, tday.second, tday.microsecond)
         start_date = end_date + relativedelta(days=-1)
-        result = ReaggregateTask.delay(start_date, end_date, voipplan_id)
+
+        call_kwargs['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
+        daily_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m-%d'),
+                                            '$lt': end_date.strftime('%Y-%m-%d')}
+        monthly_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m'),
+                                              '$lt': end_date.strftime('%Y-%m')}
+
+        result = ReaggregateTask.delay(daily_query_var, monthly_query_var, call_kwargs)
         self.assertEqual(result.get(), True)

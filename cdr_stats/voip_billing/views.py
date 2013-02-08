@@ -19,7 +19,7 @@ from django.conf import settings
 from django.utils.translation import gettext as _
 from django.template.context import RequestContext
 from voip_billing.models import VoIPRetailRate
-from voip_billing.forms import PrefixRetailRrateForm, SimulatorForm, BillingForm,\
+from voip_billing.forms import PrefixRetailRrateForm, SimulatorForm, DailyBillingForm,\
     HourlyBillingForm
 from voip_billing.function_def import prefix_allowed_to_call
 from voip_billing.rate_engine import rate_engine
@@ -214,7 +214,7 @@ def daily_billing_report(request):
     **Attributes**:
 
         * ``template`` - voip_billing/daily_billing_report.html
-        * ``form`` - BillingForm
+        * ``form`` - DailyBillingForm
         * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
         * ``aggregate`` - pipeline_daily_billing_report()
 
@@ -226,14 +226,14 @@ def daily_billing_report(request):
     template = 'voip_billing/daily_billing_report.html'
     search_tag = 0
     tday = datetime.today()
-    form = BillingForm(initial={'from_date': tday.strftime('%Y-%m-%d'),
-                                'to_date': tday.strftime('%Y-%m-%d')})
+    form = DailyBillingForm(initial={'from_date': tday.strftime('%Y-%m-%d'),
+                                     'to_date': tday.strftime('%Y-%m-%d')})
     switch_id = 0
     start_date = ''
     end_date = ''
     if request.method == 'POST':
         search_tag = 1
-        form = BillingForm(request.POST)
+        form = DailyBillingForm(request.POST)
         if "from_date" in request.POST:
             from_date = request.POST['from_date']
             start_date = ceil_strdate(from_date, 'start')

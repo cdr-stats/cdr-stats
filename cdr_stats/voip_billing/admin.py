@@ -132,7 +132,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
     fieldsets = (
         (_('VoIP Plan'), {
             #'classes':('collapse', ),
-            'fields': ('name', 'pubname', 'lcrtype', ),
+            'fields': ('name', 'pubname', 'lcrtype',),
         }),
     )
     list_display = ('id', 'name', 'lcrtype', 'updated_date', )
@@ -221,8 +221,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                                  i.crid, i.carrier_rate,
                                  i.rrid, i.retail_rate, i.rt_prefix))
 
-        ctx = RequestContext(
-            request,
+        ctx = RequestContext(request,
             {
                 'title': _('VoIP Simulator'),
                 'form': form,
@@ -304,12 +303,23 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                 end_date = ceil_strdate(to_date, 'end')
 
             call_kwargs = {}
+            daily_kwargs = {}
+            monthly_kwargs = {}
             if start_date and end_date:
                 call_kwargs['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
+                # get kwargs for aggregate
+                daily_kwargs['metadata.date'] = {'$gte': start_date.strftime('%Y-%m-%d'),
+                                                 '$lt': end_date.strftime('%Y-%m-%d')}
+                monthly_kwargs['metadata.date'] = {'$gte': start_date.strftime('%Y-%m'),
+                                                  '$lt': end_date.strftime('%Y-%m')}
+
             if not request.user.is_superuser:  # not superuser
                 call_kwargs['accountcode'] = chk_account_code(request)
+                monthly_kwargs['metadata.accountcode'] =\
+                    daily_kwargs['metadata.accountcode'] = call_kwargs['accountcode']
 
+            # Get total no of calls which are going to rebill
             call_rebill_count = cdr_data.find(call_kwargs).count()
 
             if "confirmation" in request.POST:
@@ -340,26 +350,15 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                         # Rebill all calls
                         RebillingTask.delay(call_kwargs, voipplan_id)
 
-                        # get kwargs for aggregate
-                        daily_query_var = {}
-                        monthly_query_var = {}
-                        if not request.user.is_superuser:  # not superuser
-                            monthly_query_var['metadata.accountcode'] =\
-                                daily_query_var['metadata.accountcode'] = chk_account_code(request)
-
-                        daily_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m-%d'),
-                                                            '$lt': end_date.strftime('%Y-%m-%d')}
-                        monthly_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m'),
-                                                              '$lt': end_date.strftime('%Y-%m')}
-
                         # Re-aggregate calls to re-generate daily/monthly analytics
-                        ReaggregateTask.delay(daily_query_var, monthly_query_var, call_kwargs)
+                        ReaggregateTask.delay(daily_kwargs, monthly_kwargs, call_kwargs)
 
                     msg = _('Re-billing is done')
                     messages.info(request, msg)
                     request.POST['confirmation'] = CONFIRMATION_TYPE.NO
                     call_rebill_count = 0
         else:
+            # default values for form
             tday = datetime.today()
             to_date = from_date = tday.strftime('%Y-%m-%d')
             form = RebillForm(initial={'from_date': from_date, 'to_date': to_date,
@@ -487,12 +486,12 @@ class VoIPRetailPlanAdmin(admin.ModelAdmin):
     fieldsets = (
         (_('VoIP Retail Plan'), {
             #'classes': ('collapse', ),
-            'fields': ('name', 'description', 'metric', ),
+            'fields': ('name', 'description', 'metric',),
         }),
     )
-    list_display = ('id', 'name', 'description', 'metric', 'updated_date', )
-    list_display_links = ('name', )
-    ordering = ('id', )
+    list_display = ('id', 'name', 'description', 'metric', 'updated_date',)
+    list_display_links = ('name',)
+    ordering = ('id',)
     list_filter = ['metric', 'name']
     inlines = [
         VoIPPlan_VoIPRetailPlanInline,
@@ -551,11 +550,11 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
         }),
     )
     list_display = ('id', 'voip_retail_plan_name', 'prefix_with_name',
-                    'retail_rate', 'updated_date', )
-    list_display_links = ('id', )
-    list_editable = ['retail_rate', ]
+                    'retail_rate', 'updated_date',)
+    list_display_links = ('id',)
+    list_editable = ['retail_rate',]
     list_filter = ['updated_date', 'voip_retail_plan_id', 'prefix']
-    search_fields = ('retail_rate', )
+    search_fields = ('retail_rate',)
     valid_lookups = ('updated_date', 'voip_retail_plan_id', 'prefix')
     related_search_fields = {
         'prefix': ('prefix', 'destination'),
@@ -660,9 +659,9 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
                     qs = VoIPRetailRate.objects.filter(voip_retail_plan_id=request.POST['plan_id'])
 
                     # Content writing in file
-                    writer.writerow(['prefix', 'rate', ])
+                    writer.writerow(['prefix', 'rate',])
                     for row in qs:
-                        writer.writerow([row.prefix, row.retail_rate, ])
+                        writer.writerow([row.prefix, row.retail_rate,])
                     return response
 
         ctx = RequestContext(request, {
@@ -773,7 +772,7 @@ class VoIPCarrierPlanAdmin(admin.ModelAdmin):
     )
     list_display = ('id', 'name', 'metric', 'voip_provider_id', 'callsent', 'updated_date')
     list_display_links = ('name',)
-    list_filter = ['name', 'updated_date', ]
+    list_filter = ['name', 'updated_date',]
     ordering = ('id',)
     inlines = [
         VoIPPlan_VoIPCarrierPlanInline,
@@ -781,7 +780,7 @@ class VoIPCarrierPlanAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if obj:  # In edit mode
-            return ('callsent', ) + self.readonly_fields
+            return ('callsent',) + self.readonly_fields
         return self.readonly_fields
 
     def get_urls(self):
@@ -833,14 +832,14 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
     fieldsets = (
         (_('VoIP Carrier Rate'), {
             #'classes': ('collapse', ),
-            'fields': ('voip_carrier_plan_id', 'prefix', 'carrier_rate', ),
+            'fields': ('voip_carrier_plan_id', 'prefix', 'carrier_rate',),
         }),
     )
     list_display = ('id', 'voip_carrier_plan_name', 'prefix_with_name',
-                    'carrier_rate', 'updated_date', )
+                    'carrier_rate', 'updated_date',)
     list_display_links = ('id', )
     list_filter = ['updated_date', 'voip_carrier_plan_id', 'prefix']
-    list_editable = ['carrier_rate', ]
+    list_editable = ['carrier_rate',]
     search_fields = ('carrier_rate',)
     valid_lookups = ('updated_date', 'voip_carrier_plan_id', 'prefix')
     related_search_fields = {

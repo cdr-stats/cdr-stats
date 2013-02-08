@@ -106,7 +106,9 @@ class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
 class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Customer Interface."""
 
-    fixtures = ['auth_user.json', 'switch.json']
+    fixtures = ['auth_user.json', 'switch.json',
+                'voip_gateway.json', 'voip_provider.json',
+                'user_profile.json']
 
     #def test_mgt_command(self):
     #    # Test mgt command
@@ -439,7 +441,7 @@ class CdrStatsTaskTestCase(TestCase):
     def test_get_channels_info(self):
         """Test task : get_channels_info"""
         result = get_channels_info().run()
-        self.assertEqual(result, False)
+        self.assertEqual(result, True)
 
     #def test_sync_cdr_pending(self):
     #    """Test task : sync_cdr_pending"""

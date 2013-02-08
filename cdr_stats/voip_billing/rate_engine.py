@@ -93,8 +93,7 @@ def rate_engine(voipplan_id=None, destination_no=None):
         # (i.id, i.cpid, i.cr_prefix, i.rt_prefix, i.rrid, i.carrier_rate,
         # i.retail_rate , i.crid, i.provider_id, i.gateway_id, i.sum_metric)
         data = i
-
-
+        
     result_data = {}
     # This return is used by voip call task
     # to determine gateway

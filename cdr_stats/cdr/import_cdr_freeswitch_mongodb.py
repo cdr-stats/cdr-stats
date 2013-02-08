@@ -257,7 +257,7 @@ def calculate_call_cost(voipplan_id, destination_number, billsec):
     for i in query:
         buy_rate = float(i.carrier_rate)
         sell_rate = float(i.retail_rate)
-        retail_plan_id = i.rrid
+        
         try:
             buy_cost = (float(buy_rate) * float(float(billsec) / 60))
         except:
@@ -271,8 +271,7 @@ def calculate_call_cost(voipplan_id, destination_number, billsec):
         'buy_rate': buy_rate,
         'buy_cost': round(buy_cost, 4),
         'sell_rate': sell_rate,
-        'sell_cost': round(sell_cost, 4),
-        'retail_plan_id': retail_plan_id,
+        'sell_cost': round(sell_cost, 4),        
     }
     return data
 
@@ -282,7 +281,7 @@ def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest
                                uuid, remote_media_ip, start_uepoch, answer_uepoch, end_uepoch,
                                mduration, billmsec, read_codec, write_codec, cdr_type,
                                cdr_object_id, country_id, authorized,
-                               buy_rate, buy_cost, sell_rate, sell_cost, retail_plan_id):
+                               buy_rate, buy_cost, sell_rate, sell_cost):
     """
     Common function to create global cdr record
     """
@@ -315,8 +314,7 @@ def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest
         'buy_rate': buy_rate,
         'buy_cost': buy_cost,
         'sell_rate': sell_rate,
-        'sell_cost': sell_cost,
-        'retail_plan_id': retail_plan_id,
+        'sell_cost': sell_cost,        
     }
     return cdr_record
 
@@ -440,8 +438,7 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         buy_rate = call_rate['buy_rate']
         buy_cost = call_rate['buy_cost']
         sell_rate = call_rate['sell_rate']
-        sell_cost = call_rate['sell_cost']
-        retail_plan_id = call_rate['retail_plan_id']
+        sell_cost = call_rate['sell_cost']        
 
         # Prepare global CDR
         cdr_record = generate_global_cdr_record(switch.id, caller_id_number,
@@ -449,7 +446,7 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             accountcode, direction, uuid, remote_media_ip, start_uepoch, answer_uepoch,
             end_uepoch, mduration, billmsec, read_codec, write_codec,
             CDR_TYPE["freeswitch"], cdr['_id'], country_id, authorized,
-            buy_rate, buy_cost, sell_rate, sell_cost, retail_plan_id)
+            buy_rate, buy_cost, sell_rate, sell_cost)
 
         # Append cdr to bulk_cdr list
         cdr_bulk_record.append(cdr_record)

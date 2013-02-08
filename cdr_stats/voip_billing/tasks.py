@@ -57,7 +57,7 @@ class RebillingTask(Task):
 
     **Usage**:
 
-        RebillingTask.delay(start_date, end_date, voipplan_id)
+        RebillingTask.delay(calls_kwargs, voipplan_id)
     """
 
     def run(self, calls_kwargs, voipplan_id, **kwargs):
@@ -78,17 +78,17 @@ class ReaggregateTask(Task):
 
     **Usage**:
 
-        ReaggregateTask.delay(start_date, end_date)
+        ReaggregateTask.delay(daily_kwargs, monthly_kwargs, call_kwargs)
     """
 
-    def run(self, daily_query_var, monthly_query_var, call_kwargs, **kwargs):
+    def run(self, daily_kwargs, monthly_kwargs, call_kwargs, **kwargs):
         logging.debug("About to re-aggregate voip calls for daily/monthly analytics.")
 
         #1) remove daily/monthly aggregate
         daily_data = settings.DBCON[settings.MONGO_CDRSTATS['DAILY_ANALYTIC']]
-        daily_data.remove(daily_query_var)
+        daily_data.remove(daily_kwargs)
         monthly_data = settings.DBCON[settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC']]
-        monthly_data.remove(monthly_query_var)
+        monthly_data.remove(monthly_kwargs)
 
         #2) Re-create daily/monthly analytic
         PAGE_SIZE = 1000
