@@ -67,11 +67,14 @@
                 <tr><td colspan="3">{% trans "No record found!!" %}</td></tr>
             {% endif %}
             </tbody>
-          </table>
+        </table>
+        <div align="right" class="show-rows">            
+            {% trans "total rates"|title %} : {{ rate_list|length }}
+        </div>
 
-          {% if rate_list %}
-              {% paginate %}
-          {% endif %}
+        {% if rate_list %}
+            {% paginate %}
+        {% endif %}
     </div>
 </div>
 {% endblock %}
