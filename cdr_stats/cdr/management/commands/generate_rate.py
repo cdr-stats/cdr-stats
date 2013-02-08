@@ -65,7 +65,6 @@ class Command(BaseCommand):
             print "No call-plan"
             return False
 
-        return False
         carrierplanid = VoIPPlan_VoIPCarrierPlan.objects.get(voipplan=voip_plan).voipcarrierplan_id
         carrier_plan = VoIPCarrierPlan.objects.get(pk=carrierplanid)
 
@@ -85,8 +84,8 @@ class Command(BaseCommand):
                     prefix=prefix,
                     carrier_rate=float(carrier_rate)
                 )
-                print "Insert VoIPCarrierRate [call-plan=%d;carrier_plan=%d;prefix=%d;carrier_rate=%f]" % \
-                    (voip_plan_id, carrier_plan, prefix, float(carrier_rate))
+                print "Insert VoIPCarrierRate - prefix=%d [call-plan=%d;carrier_plan=%d;carrier_rate=%f]" % \
+                    (prefix.prefix, voip_plan_id, carrier_plan.id, float(carrier_rate))
 
             # retail_rate = 10% increase in carrier_rate
             retail_rate = float(carrier_rate) + ((float(carrier_rate) * 10) / 100)
@@ -98,5 +97,5 @@ class Command(BaseCommand):
                     prefix=prefix,
                     retail_rate=float(retail_rate)
                 )
-                print "Insert VoIPRetailRate [call-plan=%d;retail_plan=%d;prefix=%d;retail_rate=%f]" % \
-                    (voip_plan_id, retail_plan, prefix, float(retail_rate))
+                print "Insert VoIPRetailRate - prefix=%d [call-plan=%d;retail_plan=%d;retail_rate=%f]" % \
+                    (prefix.prefix, voip_plan_id, retail_plan.id, float(retail_rate))
