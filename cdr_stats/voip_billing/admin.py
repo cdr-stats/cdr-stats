@@ -135,7 +135,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
             'fields': ('name', 'pubname', 'lcrtype',),
         }),
     )
-    list_display = ('id', 'name', 'lcrtype', 'updated_date', )
+    list_display = ('id', 'name', 'lcrtype', 'updated_date',)
     list_display_links = ('name', )
     list_filter = ['lcrtype', 'created_date']
     ordering = ('id', )

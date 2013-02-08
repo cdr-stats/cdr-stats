@@ -19,10 +19,9 @@ import simplejson
 
 class ApiTestCase(BaseAuthenticatedClient):
     """Test cases for CDR-Stats API."""
-    fixtures = ['auth_user.json', 
-                'hangup_cause.json', 'switch.json',
-                'voip_gateway.json', 'voip_provider.json'                
-                'user_profile.json' ]
+    fixtures = ['auth_user.json', 'hangup_cause.json', 'switch.json',
+                'country_dialcode.json', 'voip_gateway.json', 'voip_provider.json'                
+                'user_profile.json', 'voip_billing_data.json']
 
     def test_switch(self):
         """Test Function to create a switch"""
