@@ -64,8 +64,8 @@ def voip_rates(request):
         get_pagination_vars(request, sort_col_field_list, default_sort_field)
 
     PAGE_SIZE = pagination_data['PAGE_SIZE']
-    sort_order = pagination_data['sort_order']
-
+    sort_order = pagination_data['sort_order']    
+    
     order = 'ASC'
     if "-" in sort_order:
         order = 'DESC'
@@ -119,6 +119,7 @@ def voip_rates(request):
         'PAGE_SIZE': PAGE_SIZE,
         'error_msg': error_msg,
         'RATE_COLUMN_NAME': RATE_COLUMN_NAME,
+        'sort_order': sort_order,
     })
     return render_to_response(template, variables,
            context_instance=RequestContext(request))
