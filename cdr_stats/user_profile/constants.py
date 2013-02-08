@@ -6,7 +6,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -21,4 +21,3 @@ class NOTICE_TYPE(Choice):
     answer_seize_ratio = 2, _('answer seize ratio')
     blacklist_prefix = 3, _('blacklist prefix')
     whitelist_prefix = 4, _('whitelist prefix')
-

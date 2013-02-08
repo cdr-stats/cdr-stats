@@ -6,7 +6,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -252,12 +252,11 @@ def calculate_call_cost(voipplan_id, destination_number, billsec):
     buy_cost = 0.0
     sell_rate = 0.0
     sell_cost = 0.0
-    retail_plan_id = ''
 
     for i in query:
         buy_rate = float(i.carrier_rate)
         sell_rate = float(i.retail_rate)
-        
+
         try:
             buy_cost = (float(buy_rate) * float(float(billsec) / 60))
         except:
@@ -271,7 +270,7 @@ def calculate_call_cost(voipplan_id, destination_number, billsec):
         'buy_rate': buy_rate,
         'buy_cost': round(buy_cost, 4),
         'sell_rate': sell_rate,
-        'sell_cost': round(sell_cost, 4),        
+        'sell_cost': round(sell_cost, 4),
     }
     return data
 
@@ -314,7 +313,7 @@ def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest
         'buy_rate': buy_rate,
         'buy_cost': buy_cost,
         'sell_rate': sell_rate,
-        'sell_cost': sell_cost,        
+        'sell_cost': sell_cost,
     }
     return cdr_record
 
@@ -438,7 +437,7 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         buy_rate = call_rate['buy_rate']
         buy_cost = call_rate['buy_cost']
         sell_rate = call_rate['sell_rate']
-        sell_cost = call_rate['sell_cost']        
+        sell_cost = call_rate['sell_cost']
 
         # Prepare global CDR
         cdr_record = generate_global_cdr_record(switch.id, caller_id_number,

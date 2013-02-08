@@ -2,12 +2,12 @@
 # CDR-Stats License
 # http://www.cdr-stats.org
 #
-# This Source Code Form is subject to the terms of the Mozilla Public 
+# This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
-# 
+# Copyright (C) 2011-2013 Star2Billing S.L.
+#
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
@@ -25,7 +25,7 @@ def icon(icon_name):
     'class="icon" style="text-decoration:none;background-image:url(/static/cdr-stats/icons/test.png);"'
     """
     return 'class="icon" style="text-decoration:none;background-image:url(%scdr-stats/icons/%s.png);"'\
-       % (settings.STATIC_URL, icon_name)
+        % (settings.STATIC_URL, icon_name)
 register.simple_tag(icon)
 
 

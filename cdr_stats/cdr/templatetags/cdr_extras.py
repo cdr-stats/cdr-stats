@@ -6,13 +6,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
 from django import template
-from django.utils.translation import gettext as _
 from cdr.models import Switch
 from cdr.functions_def import get_hangupcause_name
 from cdr_alert.constants import PERIOD, ALARM_TYPE, STATUS,\
@@ -20,6 +19,7 @@ from cdr_alert.constants import PERIOD, ALARM_TYPE, STATUS,\
 import re
 
 register = template.Library()
+
 
 @register.filter(name='get_switch_ip')
 def get_switch_ip(id):
@@ -76,6 +76,7 @@ def alarm_period(value):
     """
     if not value:
         return ''
+    #TODO : STATUS is not a good name for this
     STATUS = dict(PERIOD)
     try:
         status = STATUS[value]
@@ -94,6 +95,7 @@ def alarm_type(value):
     """
     if not value:
         return ''
+    #TODO : STATUS is not a good name for this
     STATUS = dict(ALARM_TYPE)
     try:
         status = STATUS[value]
@@ -101,6 +103,7 @@ def alarm_type(value):
         status = ''
 
     return str(status)
+
 
 @register.filter(name='alarm_status')
 def alarm_status(value):
@@ -150,7 +153,7 @@ def alarm_report_status(value):
 @register.filter(name='get_cost')
 def get_cost(rate, billsec):
     try:
-        cost = (float(rate) * float(float(billsec)/60))
+        cost = (float(rate) * float(float(billsec) / 60))
     except:
         cost = 0.0
     return str(round(cost, 4))

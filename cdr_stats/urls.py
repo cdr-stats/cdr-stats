@@ -7,7 +7,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -89,7 +89,6 @@ urlpatterns += patterns('',
      'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
 )
 
-
 handler404 = 'cdr_stats.urls.custom_404_view'
 handler500 = 'cdr_stats.urls.custom_500_view'
 
@@ -106,7 +105,7 @@ def custom_404_view(request, template_name='404.html'):
     t = loader.get_template('404.html')  # Need to create a 404.html template.
     return HttpResponseServerError(t.render(Context({
         'request': request,
-        })))
+    })))
 
 
 def custom_500_view(request, template_name='500.html'):
@@ -121,4 +120,4 @@ def custom_500_view(request, template_name='500.html'):
     t = loader.get_template('500.html')  # Need to create a 500.html template.
     return HttpResponseServerError(t.render(Context({
         'request': request,
-        })))
+    })))

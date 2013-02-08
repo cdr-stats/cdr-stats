@@ -8,7 +8,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -173,7 +173,7 @@ def get_country_id(prefix_list):
     except:
         return country_id
     # find the longest prefix with a non-zero country_id
-    for i in xrange(0,len(prefix_obj)):
+    for i in xrange(0, len(prefix_obj)):
         if prefix_obj[i].country_id:
             country_id = prefix_obj[i].country_id.id
     return country_id

@@ -7,7 +7,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -151,7 +151,7 @@ func_accept_license_mplv2() {
     echo "License, v. 2.0. If a copy of the MPL was not distributed with this file,"
     echo "You can obtain one at http://mozilla.org/MPL/2.0/."
     echo ""
-    echo "Copyright (C) 2011-2012 Star2Billing S.L."
+    echo "Copyright (C) 2011-2013 Star2Billing S.L."
     echo ""
     echo ""
     echo "I agree to be bound by the terms of the license - [YES/NO]"

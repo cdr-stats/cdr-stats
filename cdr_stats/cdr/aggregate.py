@@ -6,7 +6,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -392,24 +392,24 @@ def pipeline_daily_billing_report(query_var):
         {'$match': query_var},
         {
             '$group':
-                {
-                    '_id': {'$substr': ["$_id", 0, 8]},
-                    'buy_cost_per_day': {'$sum': '$buy_cost_daily'},
-                    'sell_cost_per_day': {'$sum': '$sell_cost_daily'},
-                }
+            {
+                '_id': {'$substr': ["$_id", 0, 8]},
+                'buy_cost_per_day': {'$sum': '$buy_cost_daily'},
+                'sell_cost_per_day': {'$sum': '$sell_cost_daily'},
+            }
         },
         {
             '$project':
-                {
-                    'buy_cost_per_day': 1,
-                    'sell_cost_per_day': 1,
-                }
+            {
+                'buy_cost_per_day': 1,
+                'sell_cost_per_day': 1,
+            }
         },
         {
             '$sort':
-                {
-                    '_id': -1
-                }
+            {
+                '_id': -1
+            }
         }
     ]
     return pipeline
@@ -430,18 +430,18 @@ def pipeline_hourly_billing_report(query_var):
                 '_id': {'$substr': ['$_id', 0, 8]},
                 'buy_cost_per_hour': {'$push': '$buy_cost_hourly'},
                 'sell_cost_per_hour': {'$push': '$sell_cost_hourly'},
-                }
+            }
         },
         {
             '$project': {
                 'buy_cost_per_hour': 1,
                 'sell_cost_per_hour': 1,
-                }
+            }
         },
         {
             '$sort': {
                 '_id': -1,
-                }
+            }
         }
     ]
     return pipeline

@@ -8,7 +8,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -362,7 +362,8 @@ class CDR_FileImport(FileImport):
     accountcode = forms.ChoiceField(label=_('accountcode'), required=True,
                                     choices=ACCOUNTCODE_FIELD_LIST_NUM)
     import_asterisk = forms.BooleanField(label=_('Asterisk Hangup format'),
-        required=False, help_text='With this option on, the field hangup_cause_id will expect Asterisk Hangup Cause in the format : ANSWER, CANCEL, BUSY, CONGESTION, CHANUNAVAIL, etc..')
+        required=False,
+        help_text='With this option on, the field hangup_cause_id will expect Asterisk Hangup Cause in the format : ANSWER, CANCEL, BUSY, CONGESTION, CHANUNAVAIL, etc..')
 
     def __init__(self, user, *args, **kwargs):
         super(CDR_FileImport, self).__init__(*args, **kwargs)

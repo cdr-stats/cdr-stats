@@ -6,14 +6,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.contrib.auth.decorators import login_required, permission_required
 from django.views.decorators.cache import cache_page
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings
 from django.utils.translation import gettext as _
@@ -28,13 +28,13 @@ from user_profile.models import UserProfile
 from cdr.views import check_user_accountcode, check_cdr_exists
 from cdr.functions_def import chk_account_code
 from cdr.aggregate import pipeline_daily_billing_report, pipeline_hourly_billing_report
-from user_profile.models import UserProfile
 from common.common_functions import current_view, ceil_strdate, get_pagination_vars
 from datetime import datetime
 import logging
 import time
 import requests
-import ast, csv
+import ast
+import csv
 
 
 @permission_required('user_profile.call_rate', login_url='/')
@@ -83,8 +83,8 @@ def voip_rates(request):
                 request.session['dialcode'] = dialcode
         else:
             # pagination with prefix code
-            if request.session.get('dialcode') and \
-               (request.GET.get('page') or request.GET.get('sort_by')):
+            if (request.session.get('dialcode') and
+               (request.GET.get('page') or request.GET.get('sort_by'))):
                 dialcode = request.session.get('dialcode')
                 form = PrefixRetailRrateForm(initial={'prefix': dialcode})
             else:
@@ -109,7 +109,7 @@ def voip_rates(request):
         request.session['final_rate_list'] = final_rate_list
     except:
         error_msg = _('Voip plan is not attached with loggedin user')
-        
+
     variables = RequestContext(request, {
         'module': current_view(request),
         'form': form,
@@ -140,7 +140,7 @@ def export_rate(request):
     # the csv writer
 
     writer = csv.writer(response, dialect=csv.excel_tab)
-    writer.writerow(['prefix', 'destination', 'retail_rate',])
+    writer.writerow(['prefix', 'destination', 'retail_rate'])
     final_result = []
     if request.session.get('final_rate_list'):
         final_result = request.session['final_rate_list']

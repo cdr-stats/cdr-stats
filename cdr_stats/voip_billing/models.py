@@ -6,7 +6,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -127,7 +127,6 @@ class BanPrefix(models.Model):
     prefix_with_name.short_description = _('Prefix')
 
 
-
 class VoIPRetailPlan(Model):
     """
     VoIPRetailPlan
@@ -200,7 +199,6 @@ class VoIPRetailRate(models.Model):
     created_date = models.DateTimeField(auto_now_add=True, verbose_name=_("Date"))
     updated_date = models.DateTimeField(auto_now=True)
 
-
     class Meta:
         db_table = u'voipbilling_voip_retail_rate'
         app_label = _('voip_billing')
@@ -253,9 +251,9 @@ class VoIPCarrierPlan(Model):
     metric = models.IntegerField(default=10, verbose_name=_("Metric"),
                                  help_text=_("Enter metric in digit"))
     callsent = models.IntegerField(null=True, blank=True,
-                                      verbose_name=_("Message Sent"))
+                                   verbose_name=_("Message Sent"))
     voip_provider_id = models.ForeignKey(Provider, db_column="voip_provider_id",
-                                         verbose_name=_("Provider"),                                         
+                                         verbose_name=_("Provider"),
                                          help_text=_("Select Provider"))
     created_date = models.DateTimeField(auto_now_add=True, verbose_name=_("Date"))
     updated_date = models.DateTimeField(auto_now=True)

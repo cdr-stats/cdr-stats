@@ -6,7 +6,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -17,7 +17,7 @@ from django.db import models
 from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.http import HttpResponse, HttpResponseNotFound, \
-HttpResponseRedirect
+    HttpResponseRedirect
 from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_unicode
@@ -159,12 +159,12 @@ class ManyToManySearchInput(forms.MultipleHiddenInput):
 
             selected = selected + mark_safe(u"""
                 <div class="to_delete deletelink" >
-    <input type="hidden" name="%(name)s" value="%(value)s"/>%(label)s</div>"""
-                ) % {
+    <input type="hidden" name="%(name)s" value="%(value)s"/>%(label)s</div>""") % \
+                {
                     'label': getattr(obj, rel_name),
                     'name': name,
                     'value': obj.id,
-        }
+                }
         return mark_safe(u'''
 <input type="text" id="lookup_%(name)s" value="" size="40"/>%(label)s
 <div style="float:left; padding-left:105px; width:300px;">
@@ -289,8 +289,7 @@ class AutocompleteModelAdmin(admin.ModelAdmin):
 
             rel_name = field_name.split('__')[0]
 
-            data = ''.join([u'%s|%s\n' % \
-            (getattr(f, rel_name), f.pk) for f in qs])
+            data = ''.join([u'%s|%s\n' % (getattr(f, rel_name), f.pk) for f in qs])
             #print data
     #			data = ''.join([u'%s|%s\n' % (f.__unicode__(), f.pk) for f in qs])
             return HttpResponse(data)
@@ -298,8 +297,8 @@ class AutocompleteModelAdmin(admin.ModelAdmin):
 
     def formfield_for_dbfield(self, db_field, **kwargs):
         # For ForeignKey use a special Autocomplete widget.
-        if isinstance(db_field, models.ForeignKey) and \
-           db_field.name in self.related_search_fields:
+        if (isinstance(db_field, models.ForeignKey) and
+           db_field.name in self.related_search_fields):
             kwargs['widget'] = ForeignKeySearchInput(db_field.rel,
                                     self.related_search_fields[db_field.name])
 
@@ -320,8 +319,8 @@ class AutocompleteModelAdmin(admin.ModelAdmin):
             return formfield
 
         # For ManyToManyField use a special Autocomplete widget.
-        if isinstance(db_field, models.ManyToManyField) and \
-           db_field.name in self.related_search_fields:
+        if (isinstance(db_field, models.ManyToManyField) and
+           db_field.name in self.related_search_fields):
             kwargs['widget'] = ManyToManySearchInput(db_field.rel,
                                     self.related_search_fields[db_field.name])
             db_field.help_text = ''
@@ -338,12 +337,11 @@ class AutocompleteModelAdmin(admin.ModelAdmin):
                 # parent_link=True
                 if formfield is not None:
                     formfield.widget = \
-                    AutocompleteWidgetWrapper(formfield.widget, db_field.rel,
+                        AutocompleteWidgetWrapper(formfield.widget, db_field.rel,
                                               self.admin_site)
             return formfield
 
-        return super(AutocompleteModelAdmin, self)\
-               .formfield_for_dbfield(db_field, **kwargs)
+        return super(AutocompleteModelAdmin, self).formfield_for_dbfield(db_field, **kwargs)
 
     def response_add(self, request, obj, post_url_continue='../%s/'):
         """
@@ -353,7 +351,7 @@ class AutocompleteModelAdmin(admin.ModelAdmin):
         pk_value = obj._get_pk_val()
 
         msg = _('The %(name)s "%(obj)s" was added successfully.') % \
-        {'name': force_unicode(opts.verbose_name), 'obj': force_unicode(obj)}
+            {'name': force_unicode(opts.verbose_name), 'obj': force_unicode(obj)}
         # Here, we distinguish between different save types by checking for
         # the presence of keys in request.POST.
         if "_continue" in request.POST:
@@ -366,11 +364,11 @@ class AutocompleteModelAdmin(admin.ModelAdmin):
             #htturn response to Autocomplete PopUp
             if "_popup" in request.POST:
                 return HttpResponse('<script type="text/javascript">\
-                    opener.dismissAutocompletePopup(window, "%s", "%s");</script>' % \
+                    opener.dismissAutocompletePopup(window, "%s", "%s");</script>' %
                     (escape(pk_value), escape(obj)))
 
         elif "_addanother" in request.POST:
-            self.message_user(request, msg + ' ' + (_("You may add another %s below.") % \
+            self.message_user(request, msg + ' ' + (_("You may add another %s below.") %
                 force_unicode(opts.verbose_name)))
             return HttpResponseRedirect(request.path)
         else:
@@ -390,7 +388,7 @@ class AutocompleteWidgetWrapper(RelatedFieldWidgetWrapper):
     def render(self, name, value, *args, **kwargs):
         rel_to = self.rel.to
         related_url = '../../../%s/%s/' % \
-        (rel_to._meta.app_label, rel_to._meta.object_name.lower())
+            (rel_to._meta.app_label, rel_to._meta.object_name.lower())
         self.widget.choices = self.choices
         output = [self.widget.render(name, value, *args, **kwargs)]
         if rel_to in self.admin_site._registry:
@@ -399,10 +397,10 @@ class AutocompleteWidgetWrapper(RelatedFieldWidgetWrapper):
             # This should instead use the correct
             # API to determine the ID dynamically.
             output.append(u'<a href="%sadd/" class="add-another" \
-            id="add_id_%s" onclick="return showAutocompletePopup(this);"> ' % \
+                id="add_id_%s" onclick="return showAutocompletePopup(this);"> ' %
                 (related_url, name))
             output.append(u'<img src="%simg/icon_addlink.gif"\
-                width="10" height="10" alt="%s"/></a>' % \
+                width="10" height="10" alt="%s"/></a>' %
                 (settings.ADMIN_MEDIA_PREFIX, _('Add Another')))
         return mark_safe(u''.join(output))
 
@@ -430,10 +428,10 @@ class RelatedFieldWidgetWrapperNew(RelatedFieldWidgetWrapper):
                 (related_url, name))
             output.append(u'<img src="%simg/icon_addlink.gif" width="10" height="10" alt="%s"/></a>' % (settings.ADMIN_MEDIA_PREFIX, _('Add Another')))
             """
-            output.append(u'<a href="%s" class="add-another" id="add_id_%s" onclick="return showAddAnotherPopup(this);"> ' % \
+            output.append(u'<a href="%s" class="add-another" id="add_id_%s" onclick="return showAddAnotherPopup(this);"> ' %
                 (related_url, name))
             output.append(u'<img src="%simg/icon_addlink.gif" width="10" height="10" alt="%s"/></a>\
-            <div id="div_add_id_%s"></div>' % \
+                <div id="div_add_id_%s"></div>' %
                 (settings.ADMIN_MEDIA_PREFIX, _('Add Another'), name))
 
         return mark_safe(u''.join(output))

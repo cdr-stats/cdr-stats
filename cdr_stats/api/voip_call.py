@@ -6,7 +6,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -64,7 +64,7 @@ class VoipCallValidation(Validation):
                     datetime.fromtimestamp(int(bundle.data.get('end_uepoch')[:10]))
             except:
                 errors['end_uepoch_error'] = ["end_uepoch must be in timestamp format"]
-        
+
         destination_number = bundle.data.get('destination_number')
         if len(destination_number) <= settings.INTERNAL_CALL:
             bundle.data['authorized'] = 1
@@ -85,11 +85,11 @@ class VoipCallValidation(Validation):
             bundle.data['buy_rate'] = call_rate['buy_rate']
             bundle.data['buy_cost'] = call_rate['buy_cost']
             bundle.data['sell_rate'] = call_rate['sell_rate']
-            bundle.data['sell_cost'] = call_rate['sell_cost']            
+            bundle.data['sell_cost'] = call_rate['sell_cost']
             bundle.data['cdr_type'] = CDR_TYPE['API']
         except:
             errors['billsec_error'] = ["billsec must be int"]
-        
+
         return errors
 
 

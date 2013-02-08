@@ -6,19 +6,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
 
 from common.utils import BaseAuthenticatedClient
-from voip_gateway.models import Gateway, Provider
-from voip_billing.models import VoIPPlan
-from voip_billing.forms import HourlyBillingForm, DailyBillingForm, SimulatorForm,\
+from voip_billing.forms import HourlyBillingForm, DailyBillingForm, \
     PrefixRetailRrateForm
-from voip_billing.views import voip_rates, export_rate, simulator, daily_billing_report, hourly_billing_report
-from user_profile.models import UserProfile
+from voip_billing.views import daily_billing_report, hourly_billing_report
 from voip_billing.tasks import RebillingTask, ReaggregateTask
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
@@ -30,7 +27,7 @@ class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):
     """
     fixtures = ['auth_user.json', 'country_dialcode.json',
                 'voip_gateway.json', 'voip_provider.json'
-                'user_profile.json', 'voip_billing.json',]
+                'user_profile.json', 'voip_billing.json']
 
     def test_admin_voip_billing(self):
         """
@@ -61,7 +58,7 @@ class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):
 
         response = self.client.get('/admin/voip_billing/voipretailplan/')
         self.failUnlessEqual(response.status_code, 200)
-        
+
         response = self.client.get('/admin/voip_billing/voipretailrate/')
         self.failUnlessEqual(response.status_code, 200)
         response = self.client.get('/admin/voip_billing/voipretailrate/import_rr/')
@@ -86,7 +83,7 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertTrue(response.context['form'], PrefixRetailRrateForm())
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'voip_billing/rates.html')
-        
+
     def test_simulator(self):
         """
         Test Function to check VoIP Call simulator
@@ -107,14 +104,14 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         Test Function to check VoIP Call simulator
         """
         response = self.client.get('/daily_billing_report/')
-        self.assertTrue(response.context['form'], DailyBillingForm())        
+        self.assertTrue(response.context['form'], DailyBillingForm())
         self.assertEqual(response.status_code, 200)
 
         response = self.client.post('/daily_billing_report/',
             data={'plan_id': 1,
                   'from_date': datetime.now().strftime("%Y-%m-%d"),
-                  'to_date': datetime.now().strftime("%Y-%m-%d"),})
-        self.assertEqual(response.status_code, 200)        
+                  'to_date': datetime.now().strftime("%Y-%m-%d")})
+        self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'voip_billing/daily_billing_report.html')
 
         request = self.factory.get('/daily_billing_report/')
@@ -125,13 +122,12 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
         data = {'plan_id': 1,
                 'from_date': datetime.now().strftime("%Y-%m-%d"),
-                'to_date': datetime.now().strftime("%Y-%m-%d"),}
+                'to_date': datetime.now().strftime("%Y-%m-%d")}
         request = self.factory.post('/daily_billing_report/', data)
         request.user = self.user
         request.session = {}
         response = daily_billing_report(request)
         self.assertEqual(response.status_code, 200)
-
 
     def test_hourly_billing_report(self):
         """
@@ -144,7 +140,7 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
         response = self.client.post('/hourly_billing_report/',
             data={'plan_id': 1,
-                  'from_date': datetime.now().strftime("%Y-%m-%d"),})
+                  'from_date': datetime.now().strftime("%Y-%m-%d")})
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'voip_billing/hourly_billing_report.html')
 
@@ -155,7 +151,7 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
         data = {'plan_id': 1,
-                'from_date': datetime.now().strftime("%Y-%m-%d"),}
+                'from_date': datetime.now().strftime("%Y-%m-%d")}
         request = self.factory.post('/hourly_billing_report/', data)
         request.user = self.user
         request.session = {}
@@ -179,7 +175,7 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         call_kwargs = {}
         daily_query_var = {}
         monthly_query_var = {}
-        
+
         tday = datetime.today()
         end_date = datetime(tday.year, tday.month, tday.day,
             tday.hour, tday.minute, tday.second, tday.microsecond)

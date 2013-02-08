@@ -6,7 +6,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -19,16 +19,21 @@ from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
 from user_profile.models import UserProfile, Customer, Staff
-
 from notification.models import Notice
 from notification.admin import NoticeAdmin
 
 
 class UserProfileInline(admin.StackedInline):
+    """
+    TODO: Add docstring
+    """
     model = UserProfile
 
 
 class StaffAdmin(UserAdmin):
+    """
+    TODO: Add docstring
+    """
     inlines = [UserProfileInline]
 
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff',
@@ -41,7 +46,9 @@ class StaffAdmin(UserAdmin):
 
 
 class CustomerAdmin(StaffAdmin):
-
+    """
+    TODO: Add docstring
+    """
     fieldsets = (
         ('', {
             'fields': ('username', 'password', ),
@@ -78,7 +85,7 @@ def make_read(self, request, queryset):
     try:
         queryset.update(unseen=0)
         self.message_user(request,
-                    _("Notifications are successfully marked as read."))
+            _("Notifications are successfully marked as read."))
     except:
         messages.error(request, _("Notifications are not marked as read."))
 make_read.short_description = _("Mark notification as seen")

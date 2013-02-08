@@ -6,7 +6,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -34,10 +34,10 @@ class Gateway(Model):
     protocol = models.CharField(max_length=60)
     hostname = models.CharField(max_length=240)
     secondused = models.IntegerField(null=True, blank=True)
-    
+
     created_date = models.DateTimeField(auto_now_add=True, verbose_name=_('Date'))
     updated_date = models.DateTimeField(auto_now=True)
-    
+
     failover = models.ForeignKey('self', null=True, blank=True,
                 related_name="Failover", help_text=_("Select Gateway"))
     addparameter = models.CharField(max_length=360, blank=True)

@@ -6,7 +6,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -53,7 +53,7 @@ class UserProfileCustomerView(BaseAuthenticatedClient):
     """Test Function to check UserProfile Customer pages"""
 
     fixtures = ['auth_user.json', 'notice_type.json', 'notification.json',
-                'voip_gateway.json', 'voip_provider.json', 'user_profile.json',]
+                'voip_gateway.json', 'voip_provider.json', 'user_profile.json']
 
     def test_user_settings(self):
         """Test Function to check User settings"""

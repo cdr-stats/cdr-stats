@@ -6,7 +6,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -14,11 +14,10 @@
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required,\
     permission_required
-from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.utils.translation import gettext as _
-from django.utils.encoding import smart_str, smart_unicode
 from django.conf import settings
 from django.db.models import Count
 from cdr_alert.models import Alarm, Blacklist, Whitelist, AlarmReport
@@ -27,9 +26,9 @@ from cdr_alert.forms import AlarmForm, BWCountryForm, BWPrefixForm,\
     AlarmReportForm
 from frontend_notification.views import notice_count
 from common.common_functions import current_view, get_pagination_vars,\
-    variable_value, ceil_strdate, validate_days
-from country_dialcode.models import Country, Prefix
-from datetime import datetime, date, timedelta
+    validate_days
+from country_dialcode.models import Prefix
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import time
 
@@ -101,7 +100,7 @@ def alarm_add(request):
             obj.user = User.objects.get(username=request.user)
             obj.save()
             request.session["msg"] = _('"%(name)s" added.') %\
-                                     {'name': request.POST['name']}
+                {'name': request.POST['name']}
             return HttpResponseRedirect('/alert/')
     template = 'frontend/cdr_alert/alarm/change.html'
     data = {
@@ -112,7 +111,6 @@ def alarm_add(request):
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))
-
 
 
 @permission_required('cdr_alert.delete_alarm', login_url='/')
@@ -136,7 +134,7 @@ def alarm_del(request, object_id):
 
         # 1) delete alarm
         request.session["msg"] = _('"%(name)s" is deleted.')\
-                                 % {'name': alarm.name}
+            % {'name': alarm.name}
         alarm.delete()
     else:
         # When object_id is 0 (Multiple records delete)
@@ -149,7 +147,7 @@ def alarm_del(request, object_id):
             if alarm_list:
                 request.session["msg"] =\
                     _('%(count)s alarm(s) are deleted.')\
-                        % {'count': alarm_list.count()}
+                    % {'count': alarm_list.count()}
                 alarm_list.delete()
         except:
             raise Http404
@@ -184,7 +182,7 @@ def alarm_change(request, object_id):
             if form.is_valid():
                 form.save()
                 request.session["msg"] = _('"%(name)s" is updated.')\
-                                         % {'name': request.POST['name']}
+                    % {'name': request.POST['name']}
                 return HttpResponseRedirect('/alert/')
 
     template = 'frontend/cdr_alert/alarm/change.html'
@@ -212,7 +210,6 @@ def last_seven_days_report(request, kwargs):
                           start_date.day, 0, 0, 0, 0)
     end_date = datetime(end_date.year, end_date.month,
                         end_date.day, 23, 59, 59, 999999)
-
 
     if start_date and end_date:
         kwargs['daterun__range'] = (start_date, end_date)
@@ -270,14 +267,13 @@ def alert_report(request):
         * ``template`` - frontend/cdr_alert/alarm_report.html
     """
     form = AlarmReportForm(request.user, initial={'alarm': 0})
-    sort_col_field_list = ['id', 'alarm', 'calculatedvalue', 'status','daterun']
+    sort_col_field_list = ['id', 'alarm', 'calculatedvalue', 'status', 'daterun']
     default_sort_field = 'id'
     pagination_data =\
         get_pagination_vars(request, sort_col_field_list, default_sort_field)
 
     PAGE_SIZE = pagination_data['PAGE_SIZE']
     sort_order = pagination_data['sort_order']
-    search_tag = 1
     alert_id = ''
     action = 'tabs-1'
 
@@ -317,7 +313,6 @@ def alert_report(request):
     days_report = last_seven_days_report(request, kwargs)
 
     total_data = days_report['total_data']
-    total_alert = days_report['total_alert']
     start_date = days_report['start_date']
     end_date = days_report['end_date']
 

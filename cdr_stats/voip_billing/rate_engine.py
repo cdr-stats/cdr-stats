@@ -6,7 +6,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -93,7 +93,7 @@ def rate_engine(voipplan_id=None, destination_no=None):
         # (i.id, i.cpid, i.cr_prefix, i.rt_prefix, i.rrid, i.carrier_rate,
         # i.retail_rate , i.crid, i.provider_id, i.gateway_id, i.sum_metric)
         data = i
-        
+
     result_data = {}
     # This return is used by voip call task
     # to determine gateway

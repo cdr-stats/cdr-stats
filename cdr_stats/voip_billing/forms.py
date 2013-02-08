@@ -6,7 +6,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -88,8 +88,8 @@ class CarrierRate_fileImport(FileImport):
         """
         chk = self.cleaned_data["chk"]
         p_p = self.cleaned_data["profit_percentage"]
-        if chk == True:
-            if isint(p_p) == False:
+        if chk:
+            if not isint(p_p):
                 raise forms.ValidationError(_("Please enter int/float value"))
             else:
                 return p_p
@@ -110,14 +110,15 @@ class Retail_Rate_fileExport(forms.Form):
     plan_id = forms.ChoiceField(label=_("Retail Plan"),
                                 choices=retail_plan_list(), required=False)
 
+
 class VoIPPlan_fileExport(forms.Form):
     """
     Admin Form : VoIP Plan Export
     """
     plan_id = forms.ChoiceField(label=_("VoIP Plan"),
-                    choices=voip_plan_list(), required=False,
-                    help_text=_('This will export the VoIPPlan using '\
-                    'LCR on each prefix-rate tuple'))
+        choices=voip_plan_list(), required=False,
+        help_text=_('This will export the VoIPPlan using LCR on each prefix-rate tuple'))
+
 
 class PrefixRetailRrateForm(forms.Form):
     """
@@ -143,7 +144,7 @@ class SendVoIPForm(forms.Form):
         Form Validation :  destination_no Check
         """
         destination_no = self.cleaned_data['destination_no']
-        if isint(destination_no) == False:
+        if not isint(destination_no):
             raise forms.ValidationError("Enter Digit only!")
         return destination_no
 
@@ -216,6 +217,7 @@ class RebillForm(CdrSearchForm):
     """
     confirmation = forms.ChoiceField(choices=list(CONFIRMATION_TYPE),
         required=False)
+
     def __init__(self, *args, **kwargs):
         super(RebillForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['from_date', 'to_date', 'confirmation']

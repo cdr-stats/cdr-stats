@@ -6,7 +6,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -31,7 +31,6 @@ from cdr.functions_def import get_switch_list, get_hangupcause_name,\
     get_hangupcause_id, get_hc_list, get_country_id, chk_account_code
 from cdr.templatetags.cdr_extras import hangupcause_name_with_title,\
     mongo_id
-
 from bson.objectid import ObjectId
 from datetime import datetime
 
@@ -106,12 +105,10 @@ class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
 class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Customer Interface."""
 
-    fixtures = [ 'switch.json',
-                #'voip_gateway.json', 'voip_provider.json',
-                #'user_profile.json',
-                'auth_user.json', 'country_dialcode.json',
-                'voip_gateway.json', 'voip_provider.json'
-                 'user_profile.json', 'voip_billing.json',]
+    fixtures = ['switch.json',
+        #'voip_gateway.json', 'voip_provider.json', 'user_profile.json',
+        'auth_user.json', 'country_dialcode.json', 'voip_gateway.json',
+        'voip_provider.json' 'user_profile.json', 'voip_billing.json']
 
     #def test_mgt_command(self):
     #    # Test mgt command
@@ -440,11 +437,9 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 class CdrStatsTaskTestCase(TestCase):
 
     fixtures = ['auth_user.json', 'switch.json',
-                #'voip_gateway.json', 'voip_provider.json',
-                #'user_profile.json',
-                'auth_user.json', 'country_dialcode.json',
-                'voip_gateway.json', 'voip_provider.json'
-                'user_profile.json', 'voip_billing.json',]
+        #'voip_gateway.json', 'voip_provider.json', 'user_profile.json',
+        'auth_user.json', 'country_dialcode.json', 'voip_gateway.json',
+        'voip_provider.json', 'user_profile.json', 'voip_billing.json']
 
     def test_get_channels_info(self):
         """Test task : get_channels_info"""

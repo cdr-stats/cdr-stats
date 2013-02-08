@@ -6,7 +6,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -552,7 +552,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
     list_display = ('id', 'voip_retail_plan_name', 'prefix_with_name',
                     'retail_rate', 'updated_date',)
     list_display_links = ('id',)
-    list_editable = ['retail_rate',]
+    list_editable = ['retail_rate']
     list_filter = ['updated_date', 'voip_retail_plan_id', 'prefix']
     search_fields = ('retail_rate',)
     valid_lookups = ('updated_date', 'voip_retail_plan_id', 'prefix')
@@ -659,9 +659,9 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
                     qs = VoIPRetailRate.objects.filter(voip_retail_plan_id=request.POST['plan_id'])
 
                     # Content writing in file
-                    writer.writerow(['prefix', 'rate',])
+                    writer.writerow(['prefix', 'rate'])
                     for row in qs:
-                        writer.writerow([row.prefix, row.retail_rate,])
+                        writer.writerow([row.prefix, row.retail_rate])
                     return response
 
         ctx = RequestContext(request, {
@@ -772,7 +772,7 @@ class VoIPCarrierPlanAdmin(admin.ModelAdmin):
     )
     list_display = ('id', 'name', 'metric', 'voip_provider_id', 'callsent', 'updated_date')
     list_display_links = ('name',)
-    list_filter = ['name', 'updated_date',]
+    list_filter = ['name', 'updated_date']
     ordering = ('id',)
     inlines = [
         VoIPPlan_VoIPCarrierPlanInline,
@@ -839,7 +839,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                     'carrier_rate', 'updated_date',)
     list_display_links = ('id', )
     list_filter = ['updated_date', 'voip_carrier_plan_id', 'prefix']
-    list_editable = ['carrier_rate',]
+    list_editable = ['carrier_rate']
     search_fields = ('carrier_rate',)
     valid_lookups = ('updated_date', 'voip_carrier_plan_id', 'prefix')
     related_search_fields = {

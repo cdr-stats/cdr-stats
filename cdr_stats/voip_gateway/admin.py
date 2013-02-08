@@ -6,7 +6,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -37,7 +37,7 @@ class GatewayAdmin(admin.ModelAdmin):
         my_urls = patterns('',
             (r'^$', self.admin_site.admin_view(self.changelist_view)),
             (r'^add/$', self.admin_site.admin_view(self.add_view)),
-            (r'^/(.+)/$', self.admin_site.admin_view(self.change_view)),            
+            (r'^/(.+)/$', self.admin_site.admin_view(self.change_view)),
         )
         return my_urls + urls
 
@@ -46,10 +46,9 @@ class GatewayAdmin(admin.ModelAdmin):
         VoIP Gateway Listing
         """
         ctx = {
-            'app_label': _('VoIP Gateway'),            
+            'app_label': _('VoIP Gateway'),
         }
-        return super(GatewayAdmin, self)\
-               .changelist_view(request, extra_context=ctx)
+        return super(GatewayAdmin, self).changelist_view(request, extra_context=ctx)
 
     def add_view(self, request, extra_context=None):
         """
@@ -58,18 +57,16 @@ class GatewayAdmin(admin.ModelAdmin):
         ctx = {
             'app_label': _('VoIP Gateway'),
         }
-        return super(GatewayAdmin, self)\
-               .add_view(request, extra_context=ctx)
+        return super(GatewayAdmin, self).add_view(request, extra_context=ctx)
 
     def change_view(self, request, object_id, extra_context=None):
         """
         Edit VoIP Gateway
         """
         ctx = {
-            'app_label': _('VoIP Gateway'),            
+            'app_label': _('VoIP Gateway'),
         }
-        return super(GatewayAdmin, self)\
-               .change_view(request, object_id, extra_context=ctx)
+        return super(GatewayAdmin, self).change_view(request, object_id, extra_context=ctx)
 admin.site.register(Gateway, GatewayAdmin)
 
 
@@ -101,8 +98,7 @@ class ProviderAdmin(admin.ModelAdmin):
         ctx = {
             'app_label': _('VoIP Gateway'),
         }
-        return super(ProviderAdmin, self)\
-               .changelist_view(request, extra_context=ctx)
+        return super(ProviderAdmin, self).changelist_view(request, extra_context=ctx)
 
     def add_view(self, request, extra_context=None):
         """
@@ -111,8 +107,7 @@ class ProviderAdmin(admin.ModelAdmin):
         ctx = {
             'app_label': _('VoIP Gateway'),
         }
-        return super(ProviderAdmin, self)\
-               .add_view(request, extra_context=ctx)
+        return super(ProviderAdmin, self).add_view(request, extra_context=ctx)
 
     def change_view(self, request, object_id, extra_context=None):
         """
@@ -121,7 +116,6 @@ class ProviderAdmin(admin.ModelAdmin):
         ctx = {
             'app_label': _('VoIP Gateway'),
         }
-        return super(ProviderAdmin, self)\
-               .change_view(request, object_id, extra_context=ctx)
+        return super(ProviderAdmin, self).change_view(request, object_id, extra_context=ctx)
 
 admin.site.register(Provider, ProviderAdmin)

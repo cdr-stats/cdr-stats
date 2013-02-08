@@ -6,14 +6,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2013 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
 
 from django.db import models
-from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from country_dialcode.models import Country
 from cdr_alert.constants import PERIOD, STATUS, ALARM_TYPE, \
@@ -22,7 +21,7 @@ from cdr_alert.constants import PERIOD, STATUS, ALARM_TYPE, \
 
 class AlertRemovePrefix(models.Model):
     """This defines the Alert Remove Prefix
-    Define the list of prefixes that need to be removed from the dialed digits, 
+    Define the list of prefixes that need to be removed from the dialed digits,
     assuming the phone numbers are in the format 5559004432, with the signifcant digits
     9004432, the prefix 555 needs to be removed to analyse the phone numbers.
 
