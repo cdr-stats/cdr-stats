@@ -76,14 +76,14 @@ def alarm_period(value):
     """
     if not value:
         return ''
-    #TODO : STATUS is not a good name for this
-    STATUS = dict(PERIOD)
+    
+    PERIOD = dict(PERIOD)
     try:
-        status = STATUS[value]
+        period = PERIOD[value]
     except:
-        status = ''
+        period = ''
 
-    return str(status)
+    return str(period)
 
 
 @register.filter(name='alarm_type')
@@ -95,14 +95,14 @@ def alarm_type(value):
     """
     if not value:
         return ''
-    #TODO : STATUS is not a good name for this
-    STATUS = dict(ALARM_TYPE)
+    
+    ALARM_TYPE = dict(ALARM_TYPE)
     try:
-        status = STATUS[value]
+        alarm_type = ALARM_TYPE[value]
     except:
-        status = ''
+        alarm_type = ''
 
-    return str(status)
+    return str(alarm_type)
 
 
 @register.filter(name='alarm_status')
