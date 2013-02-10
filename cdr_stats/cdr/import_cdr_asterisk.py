@@ -67,8 +67,7 @@ def print_shell(shell, message):
         print message
 
 
-def import_cdr_asterisk(shell=False):
-    #TODO : dont use the args here
+def import_cdr_asterisk(shell=False):    
     # Browse settings.CDR_BACKEND and for each IP
     # check if the IP exist in our Switch objects if it does we will
     # connect to that Database and import the data as we do below
@@ -278,10 +277,6 @@ def import_cdr_asterisk(shell=False):
         cursor_updated.close()
         cursor.close()
         connection.close()
-
-        if count_import > 0:
-            #TODO: Apply index only if needed
-            apply_index(shell)
-
+        
         print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" %
             (ipaddress, count_import))

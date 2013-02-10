@@ -27,7 +27,7 @@ from common.common_functions import current_view, get_news, \
     int_convert_to_minute, validate_days, ceil_strdate
 from cdr.models import Switch
 from cdr.functions_def import get_country_name, \
-    chk_account_code, get_hangupcause_name
+    chk_account_code, get_hangupcause_name, chk_user_voipplan
 from cdr.forms import CdrSearchForm, \
     CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
     ConcurrentCallForm, SwitchForm, WorldForm, EmailReportForm
@@ -75,9 +75,9 @@ def index(request):
         if request.GET['acc_code_error'] == 'true':
             errorlogin = _('Account code is not assigned!')
 
-    #if request.GET.get('voip_plan_error'):
-    #    if request.GET['voip_plan_error'] == 'true':
-    #        errorlogin = _('Voip plan is not attached with login user!')
+    if request.GET.get('voip_plan_error'):
+        if request.GET['voip_plan_error'] == 'true':
+            errorlogin = _('Voip plan is not attached with login user!')
 
     data = {
         'module': current_view(request),
@@ -119,10 +119,27 @@ def check_user_accountcode(function=None):
             if not request.user.is_superuser:
                 if not chk_account_code(request):
                     return HttpResponseRedirect('/?acc_code_error=true')
-                else:
-                    #TODO: Can we check voipplan here or create new decorator
-                    #if request.user.get_profile().voipplan is None:
-                    #    return HttpResponseRedirect('/?voip_plan_error=true')
+                else:                    
+                    return run_func(request, *args, **kwargs)
+            else:
+                return run_func(request, *args, **kwargs)
+        return _caller
+    return _dec(function) if function is not None else _dec
+
+
+def check_user_voipplan(function=None):
+    """
+    decorator check if voip plan exists for user
+    if not go to error page
+    """
+    def _dec(run_func):
+        """Decorator"""
+        def _caller(request, *args, **kwargs):
+            """Caller."""
+            if not request.user.is_superuser:
+                if not chk_user_voipplan(request):
+                    return HttpResponseRedirect('/?voipplan_error=true')
+                else:                    
                     return run_func(request, *args, **kwargs)
             else:
                 return run_func(request, *args, **kwargs)

@@ -90,7 +90,7 @@ class Command(BaseCommand):
             #Create collection for Analytics
             set_concurrentcall_analytic(call_date, switch_id, accountcode, numbercall)
 
-        # Add unique index with sorting
+        #Add unique index with sorting
         try:
             settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].ensure_index([('call_date', -1),
                 ('switch_id', 1), ('accountcode', 1)], unique=True)
