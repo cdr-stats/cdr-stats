@@ -92,8 +92,11 @@
             {% endif %}
             </tbody>
         </table>
+        <div align="left" class="show-rows">            
+            {% trans "total of rates"|title %} : {{ sum_of_rates }}
+        </div>
         <div align="right" class="show-rows">            
-            {% trans "total rates"|title %} : {{ rate_list|length }}
+            {% trans "total records"|title %} : {{ rate_list|length }}
         </div>
 
         {% if rate_list %}

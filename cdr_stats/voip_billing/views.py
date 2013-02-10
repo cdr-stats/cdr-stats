@@ -57,6 +57,7 @@ def voip_rates(request):
     form = PrefixRetailRrateForm()
     final_rate_list = []
     error_msg = ''
+    sum_of_rates = 0.0
     # Get pagination data
     sort_col_field_list = ['prefix', 'retail_rate', 'destination']
     default_sort_field = 'prefix'
@@ -101,11 +102,14 @@ def voip_rates(request):
             response = requests.get('http://localhost:8000/api/v1/voip_rate/?sort_field=%s&sort_order=%s' % (sort_order, order),
                 auth=(request.user, request.user))
 
-        rate_list = response.content
+        rate_list = response.content        
         # due to string response of API, we need to convert response in to array
         rate_list = rate_list.replace('[', '').replace(']', '').replace('}, {', '}|{').split('|')
         for i in rate_list:
-            final_rate_list.append(ast.literal_eval(i))
+            # convert string into dict
+            dict_i = ast.literal_eval(i)
+            final_rate_list.append(dict_i)            
+            sum_of_rates += float(dict_i['retail_rate'])
         request.session['final_rate_list'] = final_rate_list
     except:
         error_msg = _('Voip plan is not attached with loggedin user')
@@ -120,6 +124,7 @@ def voip_rates(request):
         'error_msg': error_msg,
         'RATE_COLUMN_NAME': RATE_COLUMN_NAME,
         'sort_order': sort_order,
+        'sum_of_rates': sum_of_rates,
     })
     return render_to_response(template, variables,
            context_instance=RequestContext(request))
