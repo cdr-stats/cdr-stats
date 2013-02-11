@@ -1417,9 +1417,16 @@ def cdr_overview(request):
     """
     template_name = 'frontend/cdr_overview.html'
     logging.debug('CDR overview start')
+    # initialize variables
     query_var = {}
     tday = datetime.today()
     search_tag = 0
+    total_hour_record = []
+    total_hour_data = []
+    total_day_record = []
+    total_day_data = []
+    total_month_record = []
+    total_month_data = []
     if request.method == 'POST':
         logging.debug('CDR overview with search option')
         search_tag = 1
@@ -1456,18 +1463,9 @@ def cdr_overview(request):
         else:
             # form is not valid
             logging.debug('Error : CDR overview search form')
-            total_hour_record = []
-            total_hour_data = []
-            total_day_record = []
-            total_day_data = []
-            total_month_record = []
-            total_month_data = []
-
             tday = datetime.today()
-            start_date = datetime(tday.year, tday.month,
-                tday.day, 0, 0, 0, 0)
-            end_date = datetime(tday.year, tday.month,
-                tday.day, 23, 59, 59, 999999)
+            start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
+            end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
 
             variables = {
                 'module': current_view(request),
@@ -1493,6 +1491,7 @@ def cdr_overview(request):
     if len(query_var) == 0:
         tday = datetime.today()
         switch_id = 0
+        # assign initial value in form fields
         form = CdrOverviewForm(initial={'from_date': tday.strftime('%Y-%m-%d'),
                                         'to_date': tday.strftime('%Y-%m-%d'),
                                         'switch': switch_id})
@@ -1522,8 +1521,6 @@ def cdr_overview(request):
                                            pipeline=pipeline)
         logging.debug('After Aggregate')
 
-        total_hour_record = []
-        total_hour_data = []
         hour_data = dict()
         if list_data:
             for doc in list_data['result']:
@@ -1535,9 +1532,13 @@ def cdr_overview(request):
                 for dict_in_list in doc['call_per_hour']:
                     for key, value in dict_in_list.iteritems():
                         key = int(key)
+                        # Get date from aggregate result array
                         graph_day = datetime(a_Year, b_Month, c_Day, key)
+                        # convert date into timestamp value
                         dt = int(1000 * time.mktime(graph_day.timetuple()))
 
+                        # prepare day_hours dict var with hour key
+                        # and values are like call count, duration sum, switch id
                         if key in day_hours:
                             day_hours[key]['calldate__count'] += int(value)
                         else:
@@ -1548,6 +1549,7 @@ def cdr_overview(request):
                                 'switch_id': int(doc['switch_id'])
                             }
 
+                # update day_hours for duration
                 for dict_in_list in doc['duration_per_hour']:
                     for key, value in dict_in_list.iteritems():
                         day_hours[int(key)]['duration__sum'] += int(value)
@@ -1568,6 +1570,7 @@ def cdr_overview(request):
                             'duration_sum': temp_duration_sum
                         }
 
+        # apply sorting on timestamp value
         total_hour_record = sorted(total_hour_record, key=lambda k: k['dt'])
 
         total_hour_data = hour_data.items()
@@ -1583,17 +1586,19 @@ def cdr_overview(request):
                                            pipeline=pipeline)
         logging.debug('After Aggregate')
 
-        total_day_record = []
-        total_day_data = []
         if list_data:
             day_data = dict()
             for doc in list_data['result']:
+                # Get date from aggregate result array
                 graph_day = datetime(int(doc['_id'][0:4]),
                                      int(doc['_id'][4:6]),
                                      int(doc['_id'][6:8]),
                                      0, 0, 0, 0)
+                # convert date into timestamp value
                 dt = int(1000 * time.mktime(graph_day.timetuple()))
 
+                # prepare total_day_record list with dict values like
+                # call count, duration sum, switch id
                 total_day_record.append({
                     'dt': dt,
                     'calldate__count': int(doc['call_per_day']),
@@ -1610,6 +1615,7 @@ def cdr_overview(request):
                         'duration_sum': int(doc['duration_per_day']),
                     }
 
+            # apply sorting on timestamp value
             total_day_data = day_data.items()
             total_day_data = sorted(total_day_data, key=lambda k: k[0])
 
@@ -1627,16 +1633,18 @@ def cdr_overview(request):
                                            pipeline=pipeline)
         logging.debug('After Aggregate')
 
-        total_month_record = []
-        total_month_data = []
         if list_data:
             month_data = dict()
             for doc in list_data['result']:
+                # Get date from aggregate result array
                 graph_month = datetime(int(doc['_id'][0:4]),
                                        int(doc['_id'][4:6]),
                                        1, 0, 0, 0, 0)
+                # convert date into timestamp value
                 dt = int(1000 * time.mktime(graph_month.timetuple()))
 
+                # prepare total_month_record list with dict values like
+                # call count, duration sum, switch id
                 total_month_record.append({
                     'dt': dt,
                     'calldate__count': int(doc['call_per_month']),
@@ -1644,6 +1652,8 @@ def cdr_overview(request):
                     'switch_id': int(doc['switch_id'])
                 })
 
+                # prepare month_data dict variable with timestamp key
+                # and values like call count, duration sum, switch id
                 if dt in month_data:
                     month_data[dt]['call_count'] +=\
                         int(doc['call_per_month'])
@@ -1655,6 +1665,7 @@ def cdr_overview(request):
                         'duration_sum': int(doc['duration_per_month'])
                     }
 
+            # apply sorting on timestamp value
             total_month_data = month_data.items()
             total_month_data = sorted(total_month_data, key=lambda k: k[0])
 
