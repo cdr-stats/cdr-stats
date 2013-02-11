@@ -57,7 +57,6 @@ def voip_rates(request):
     template = 'voip_billing/rates.html'
     form = PrefixRetailRrateForm()
     final_rate_list = []
-    error_msg = ''
     sum_of_rates = 0.0
     # Get pagination data
     sort_col_field_list = ['prefix', 'retail_rate', 'destination']
@@ -73,47 +72,41 @@ def voip_rates(request):
         order = 'DESC'
         sort_order = sort_order[1:]
 
-    try:
-        # check user with voipplan_id
-        UserProfile.objects.get(user=request.user).voipplan_id
-
-        dialcode = ''
-        if request.method == 'POST':
-            form = PrefixRetailRrateForm(request.POST)
-            if form.is_valid():
-                dialcode = request.POST.get('prefix')
-                request.session['dialcode'] = dialcode
+    dialcode = ''
+    if request.method == 'POST':
+        form = PrefixRetailRrateForm(request.POST)
+        if form.is_valid():
+            dialcode = request.POST.get('prefix')
+            request.session['dialcode'] = dialcode
+    else:
+        # pagination with prefix code
+        if (request.session.get('dialcode') and
+           (request.GET.get('page') or request.GET.get('sort_by'))):
+            dialcode = request.session.get('dialcode')
+            form = PrefixRetailRrateForm(initial={'prefix': dialcode})
         else:
-            # pagination with prefix code
-            if (request.session.get('dialcode') and
-               (request.GET.get('page') or request.GET.get('sort_by'))):
-                dialcode = request.session.get('dialcode')
-                form = PrefixRetailRrateForm(initial={'prefix': dialcode})
-            else:
-                # Reset variables
-                request.session['dialcode'] = ''
-                request.session['final_rate_list'] = ''
-                dialcode = ''
+            # Reset variables
+            request.session['dialcode'] = ''
+            request.session['final_rate_list'] = ''
+            dialcode = ''
 
-        if dialcode:
-            response = requests.get('http://localhost:8000/api/v1/voip_rate/?dialcode=%s&sort_field=%s&sort_order=%s' % (dialcode, sort_order, order),
-                auth=(request.user, request.user))
-        else:
-            # Default listing or rate
-            response = requests.get('http://localhost:8000/api/v1/voip_rate/?sort_field=%s&sort_order=%s' % (sort_order, order),
-                auth=(request.user, request.user))
+    if dialcode:
+        response = requests.get('http://localhost:8000/api/v1/voip_rate/?dialcode=%s&sort_field=%s&sort_order=%s' % (dialcode, sort_order, order),
+            auth=(request.user, request.user))
+    else:
+        # Default listing or rate
+        response = requests.get('http://localhost:8000/api/v1/voip_rate/?sort_field=%s&sort_order=%s' % (sort_order, order),
+            auth=(request.user, request.user))
 
-        rate_list = response.content        
-        # due to string response of API, we need to convert response in to array
-        rate_list = rate_list.replace('[', '').replace(']', '').replace('}, {', '}|{').split('|')
-        for i in rate_list:
-            # convert string into dict
-            dict_i = ast.literal_eval(i)
-            final_rate_list.append(dict_i)            
-            sum_of_rates += float(dict_i['retail_rate'])
-        request.session['final_rate_list'] = final_rate_list
-    except:
-        error_msg = _('Voip plan is not attached with loggedin user')
+    rate_list = response.content
+    # due to string response of API, we need to convert response in to array
+    rate_list = rate_list.replace('[', '').replace(']', '').replace('}, {', '}|{').split('|')
+    for i in rate_list:
+        # convert string into dict
+        dict_i = ast.literal_eval(i)
+        final_rate_list.append(dict_i)
+        sum_of_rates += float(dict_i['retail_rate'])
+    request.session['final_rate_list'] = final_rate_list
 
     variables = RequestContext(request, {
         'module': current_view(request),
@@ -123,7 +116,6 @@ def voip_rates(request):
         'rate_list_count': len(final_rate_list),
         'col_name_with_order': pagination_data['col_name_with_order'],
         'PAGE_SIZE': PAGE_SIZE,
-        'error_msg': error_msg,
         'RATE_COLUMN_NAME': RATE_COLUMN_NAME,
         'sort_order': sort_order,
         'sum_of_rates': sum_of_rates,
@@ -179,35 +171,29 @@ def simulator(request):
         get min call rates for destination from rate_engine and display them in template
     """
     template = 'voip_billing/simulator.html'
-    error_msg = ""
     data = []
     form = SimulatorForm(request.user)
     # Get Voip Plan ID according to USER
-    try:
-        voipplan_id = UserProfile.objects.get(user=request.user).voipplan_id
+    voipplan_id = UserProfile.objects.get(user=request.user).voipplan_id
 
-        if request.method == 'POST':
-            form = SimulatorForm(request.user, request.POST)
-            if form.is_valid():
-                # IS recipient_phone_no/destination no is valid prefix
-                # (Not banned Prefix) ?
-                destination_no = request.POST.get("destination_no")
-                allowed = prefix_allowed_to_call(destination_no, voipplan_id)
-                if allowed:
-                    query = rate_engine(destination_no=destination_no, voipplan_id=voipplan_id)
-                    for i in query:
-                        r_r_plan = VoIPRetailRate.objects.get(id=i.rrid)
-                        data.append((voipplan_id,
-                                     r_r_plan.voip_retail_plan_id.name,
-                                     i.retail_rate))
-    except:
-        error_msg = _('User is not attached with voip plan')
-
+    if request.method == 'POST':
+        form = SimulatorForm(request.user, request.POST)
+        if form.is_valid():
+            # IS recipient_phone_no/destination no is valid prefix
+            # (Not banned Prefix) ?
+            destination_no = request.POST.get("destination_no")
+            allowed = prefix_allowed_to_call(destination_no, voipplan_id)
+            if allowed:
+                query = rate_engine(destination_no=destination_no, voipplan_id=voipplan_id)
+                for i in query:
+                    r_r_plan = VoIPRetailRate.objects.get(id=i.rrid)
+                    data.append((voipplan_id,
+                                 r_r_plan.voip_retail_plan_id.name,
+                                 i.retail_rate))
     data = {
         'module': current_view(request),
         'form': form,
         'data': data,
-        'error_msg': error_msg,
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))
