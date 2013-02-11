@@ -119,6 +119,7 @@ def voip_rates(request):
         'form': form,
         'user': request.user,
         'rate_list': final_rate_list,
+        'rate_list_count': len(final_rate_list),
         'col_name_with_order': pagination_data['col_name_with_order'],
         'PAGE_SIZE': PAGE_SIZE,
         'error_msg': error_msg,
