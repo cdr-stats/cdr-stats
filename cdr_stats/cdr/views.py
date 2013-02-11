@@ -251,6 +251,7 @@ def unset_session_var(request, field_list):
 @permission_required('user_profile.search', login_url='/')
 @check_cdr_exists
 @check_user_accountcode
+@check_user_voipplan
 @login_required
 def cdr_view(request):
     """List of CDRs
@@ -725,6 +726,7 @@ def calculate_act_and_acd(total_calls, total_duration):
 @permission_required('user_profile.dashboard', login_url='/')
 @check_cdr_exists
 @check_user_accountcode
+@check_user_voipplan
 @login_required
 def cdr_dashboard(request):
     """CDR dashboard for a current day
@@ -1150,6 +1152,8 @@ def get_userprofile(request):
 
 @permission_required('user_profile.mail_report', login_url='/')
 @check_cdr_exists
+@check_user_accountcode
+@check_user_voipplan
 @login_required
 def mail_report(request):
     """Mail Report Template
@@ -1852,6 +1856,7 @@ def cdr_country_report(request):
 @permission_required('user_profile.world_map', login_url='/')
 @check_cdr_exists
 @check_user_accountcode
+@check_user_voipplan
 @login_required
 def world_map_view(request):
     """CDR world report
