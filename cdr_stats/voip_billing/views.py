@@ -221,12 +221,13 @@ def daily_billing_report(request):
     """
     template = 'voip_billing/daily_billing_report.html'
     search_tag = 0
-    tday = datetime.today()
-    form = DailyBillingForm(initial={'from_date': tday.strftime('%Y-%m-%d'),
-                                     'to_date': tday.strftime('%Y-%m-%d')})
     switch_id = 0
     start_date = ''
     end_date = ''
+    tday = datetime.today()
+    # assign initial value in form fields
+    form = DailyBillingForm(initial={'from_date': tday.strftime('%Y-%m-%d'),
+                                     'to_date': tday.strftime('%Y-%m-%d')})
     if request.method == 'POST':
         search_tag = 1
         form = DailyBillingForm(request.POST)
@@ -265,21 +266,26 @@ def daily_billing_report(request):
     total_data = []
     if list_data:
         for doc in list_data['result']:
+            # Get date from aggregate result array
             graph_day = datetime(int(doc['_id'][0:4]),
                                  int(doc['_id'][4:6]),
                                  int(doc['_id'][6:8]),
                                  0, 0, 0, 0)
+            # convert date into timestamp value
             dt = int(1000 * time.mktime(graph_day.timetuple()))
 
+            # if timestamp value in daily_data, then update dict value
             if dt in daily_data:
                 daily_data[dt]['buy_cost_per_day'] += float(doc['buy_cost_per_day'])
                 daily_data[dt]['sell_cost_per_day'] += float(doc['sell_cost_per_day'])
             else:
+                # assign new timestamp value in daily_data with dict value
                 daily_data[dt] = {
                     'buy_cost_per_day': float(doc['buy_cost_per_day']),
                     'sell_cost_per_day': float(doc['sell_cost_per_day']),
                 }
 
+            # apply sorting on timestamp value
             total_data = daily_data.items()
             total_data = sorted(total_data, key=lambda k: k[0])
 
@@ -316,11 +322,12 @@ def hourly_billing_report(request):
     """
     template = 'voip_billing/hourly_billing_report.html'
     search_tag = 0
-    tday = datetime.today()
-    form = HourlyBillingForm(initial={'from_date': tday.strftime('%Y-%m-%d')})
     switch_id = 0
     start_date = ''
     end_date = ''
+    tday = datetime.today()
+    # assign initial value in form fields
+    form = HourlyBillingForm(initial={'from_date': tday.strftime('%Y-%m-%d')})
     if request.method == 'POST':
         search_tag = 1
         form = HourlyBillingForm(request.POST)
@@ -340,7 +347,6 @@ def hourly_billing_report(request):
         end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
 
     query_var = {}
-
     if switch_id and int(switch_id) != 0:
         query_var['metadata.switch_id'] = int(switch_id)
 
@@ -362,15 +368,19 @@ def hourly_billing_report(request):
     total_sell_record = {}
     if list_data:
         for doc in list_data['result']:
+            # Get called_time from aggregate result array
             called_time = datetime(int(doc['_id'][0:4]),
                                    int(doc['_id'][4:6]),
                                    int(doc['_id'][6:8]))
+
             buy_hours = {}
             sell_hours = {}
+            # Assign 0 - 23 hrs in dict variable and initialize them with 0
             for hr in range(0, 24):
                 buy_hours[hr] = 0
                 sell_hours[hr] = 0
 
+            # update dict variables with aggregate data
             for dict_in_list in doc['buy_cost_per_hour']:
                 for key, value in dict_in_list.iteritems():
                     buy_hours[int(key)] += float(value)
@@ -379,6 +389,9 @@ def hourly_billing_report(request):
                 for key, value in dict_in_list.iteritems():
                     sell_hours[int(key)] += float(value)
 
+            # Assign buy_hours/sell_hours variables to another
+            # total_buy_record/total_sell_record variables which will
+            # store per day data
             total_buy_record[str(called_time)[:10]] = buy_hours
             total_sell_record[str(called_time)[:10]] = sell_hours
 

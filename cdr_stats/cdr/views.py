@@ -1698,8 +1698,6 @@ def cdr_country_report(request):
     """
     logging.debug('CDR country report view start')
     template_name = 'frontend/cdr_country_report.html'
-    form = CountryReportForm()
-
     switch_id = 0
     query_var = {}
     search_tag = 0
@@ -1708,6 +1706,7 @@ def cdr_country_report(request):
     end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
     from_date = start_date.strftime("%Y-%m-%d")
     to_date = end_date.strftime("%Y-%m-%d")
+    # assign initial value in form fields
     form = CountryReportForm(initial={'from_date': from_date,
                                       'to_date': to_date})
     total_calls = 0
@@ -1781,6 +1780,7 @@ def cdr_country_report(request):
 
     if list_data:
         for doc in list_data['result']:
+            # Get date from aggregate result array
             a_Year = int(doc['_id']['date'][0:4])
             b_Month = int(doc['_id']['date'][5:7])
             c_Day = int(doc['_id']['date'][8:10])
@@ -1791,8 +1791,10 @@ def cdr_country_report(request):
                 for key, value in dict_in_list.iteritems():
                     key = int(key)
                     graph_day = datetime(a_Year, b_Month, c_Day, key)
+                    # convert date into timestamp value
                     dt = int(1000 * time.mktime(graph_day.timetuple()))
 
+                    #Create day_hours dict with call count, duration sum, country id
                     if key in day_hours:
                         day_hours[key]['calldate__count'] += int(value)
                     else:
@@ -1803,15 +1805,18 @@ def cdr_country_report(request):
                             'country_id': doc['_id']['country_id']
                         }
 
+            #Update day_hours dict for duration sum
             for dict_in_list in doc['duration_per_hour']:
                 for key, value in dict_in_list.iteritems():
                     key = int(key)
                     if key in day_hours:
                         day_hours[key]['duration__sum'] += int(value)
 
+            # hours of day data append to total_record_final array
             for hr in day_hours:
                 total_record_final.append(day_hours[hr])
 
+        # apply sorting on timestamp value
         total_record_final = sorted(total_record_final, key=lambda k: k['dt'])
 
     # World report
@@ -1874,7 +1879,7 @@ def world_map_view(request):
     """
     logging.debug('CDR world report view start')
     template_name = 'frontend/world_map.html'
-
+    action = 'tabs-1'
     switch_id = 0
     query_var = {}
     search_tag = 0
@@ -1883,8 +1888,8 @@ def world_map_view(request):
     end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
     from_date = start_date.strftime("%Y-%m-%d")
     to_date = end_date.strftime("%Y-%m-%d")
+    # assign initial value in form fields
     form = WorldForm(initial={'from_date': from_date, 'to_date': to_date})
-    action = 'tabs-1'
 
     if request.method == 'POST':
         logging.debug('CDR world report view with search option')
@@ -1938,7 +1943,8 @@ def world_map_view(request):
     world_analytic_array = []
     if list_data:
         for doc in list_data['result']:
-            #country id - country name - call count - call duration - country_id - buy cost - sell cost
+            # append data to world_analytic_array with following order
+            # country id|country name|call count|call duration|country_id|buy cost|sell cost
             # _id = country id
             world_analytic_array.append((int(doc['_id']),
                                          get_country_name(int(doc['_id']), type='iso2'),
