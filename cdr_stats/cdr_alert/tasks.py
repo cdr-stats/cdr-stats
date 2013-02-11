@@ -318,7 +318,7 @@ def notify_admin_without_mail(notice_id, email_id):
     all_admin_user = User.objects.filter(is_superuser=True)
     for user in all_admin_user:
         recipient = user
-    
+
         # send notification
         if notification:
             note_label = notification.NoticeType.objects.get(default=notice_id)
@@ -379,7 +379,7 @@ class send_cdr_report(PeriodicTask):
 
     run_every = timedelta(seconds=86400)  # every day
 
-    @only_one(key="send_cdr_report", timeout=LOCK_EXPIRE)
+    @only_one(ikey="send_cdr_report", timeout=LOCK_EXPIRE)
     def run(self, **kwargs):
         logger = self.get_logger()
         logger.info('TASK :: send_cdr_report')

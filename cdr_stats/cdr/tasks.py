@@ -37,7 +37,7 @@ class sync_cdr_pending(PeriodicTask):
     """
     run_every = timedelta(seconds=10)  # every 10 secs
 
-    @only_one(key="sync_cdr_pending", timeout=LOCK_EXPIRE)
+    @only_one(ikey="sync_cdr_pending", timeout=LOCK_EXPIRE)
     def run(self, **kwargs):
         logger = self.get_logger()
         logger.info('TASK :: sync_cdr_pending')
@@ -59,7 +59,7 @@ class get_channels_info(PeriodicTask):
     """
     run_every = timedelta(seconds=1)  # every minute - 60 seconds
 
-    @only_one(key="get_channels_info", timeout=LOCK_EXPIRE)
+    @only_one(ikey="get_channels_info", timeout=LOCK_EXPIRE)
     def run(self, **kwargs):
 
         logger = self.get_logger()
