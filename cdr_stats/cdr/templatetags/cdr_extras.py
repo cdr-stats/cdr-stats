@@ -76,10 +76,10 @@ def alarm_period(value):
     """
     if not value:
         return ''
-    
-    PERIOD = dict(PERIOD)
+
+    period = dict(PERIOD)
     try:
-        period = PERIOD[value]
+        period = period[value]
     except:
         period = ''
 
@@ -95,10 +95,10 @@ def alarm_type(value):
     """
     if not value:
         return ''
-    
-    ALARM_TYPE = dict(ALARM_TYPE)
+
+    alarm_type = dict(ALARM_TYPE)
     try:
-        alarm_type = ALARM_TYPE[value]
+        alarm_type = alarm_type[value]
     except:
         alarm_type = ''
 
@@ -126,13 +126,13 @@ def alarm_condition(value):
     """
     if not value:
         return ''
-    STATUS = dict(ALERT_CONDITION)
+    alarm_condition = dict(ALERT_CONDITION)
     try:
-        status = STATUS[value]
+        alarm_condition = alarm_condition[value]
     except:
-        status = ''
+        alarm_condition = ''
 
-    return str(status)
+    return str(alarm_condition)
 
 
 @register.filter(name='alarm_report_status')
