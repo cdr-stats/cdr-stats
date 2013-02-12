@@ -212,11 +212,13 @@ def cdr_view_daily_report(query_var):
 
 
 def get_pagination_vars(request, default_sort_field='start_uepoch'):
+    """Pagination data for mongodb cdr_common collection"""
     try:
         PAGE_NUMBER = int(request.GET['page'])
     except:
         PAGE_NUMBER = 1
 
+    # get sorting field and sorting order
     col_name_with_order = {}
     sort_field = variable_value(request, 'sort_by')
     if not sort_field:
@@ -243,6 +245,7 @@ def get_pagination_vars(request, default_sort_field='start_uepoch'):
 
 
 def unset_session_var(request, field_list):
+    """Unset session variables witch are used in cdr_view"""
     for field in field_list:
         request.session['session_' + field] = ''
     return True
@@ -547,6 +550,7 @@ def cdr_view(request):
     logging.debug('Create cdr result')
     SKIP_NO = PAGE_SIZE * (PAGE_NUMBER - 1)
     record_count = final_result.count()
+    # perform pagination on cdr_common collection via skip() and limit()
     rows = final_result.skip(SKIP_NO).limit(PAGE_SIZE)\
         .sort([(sort_field, default_order)])
 
@@ -594,6 +598,7 @@ def cdr_export_to_csv(request):
     response['Content-Disposition'] = 'attachment;filename=export.csv'
     # the csv writer
 
+    # get query_var from request.session
     query_var = request.session['query_var']
 
     final_result = cdr_data.find(query_var,
@@ -780,6 +785,7 @@ def cdr_dashboard(request):
                ('metadata.country_id', 1),
                ('metadata.hangup_cause_id', 1)])
     logging.debug('After daily_data.find')
+    # initialize variables
     total_calls = 0
     total_duration = 0
     total_buy_cost = 0.0
@@ -791,11 +797,13 @@ def cdr_dashboard(request):
     final_record = dict()
 
     for i in daily_data:
+        # get individual dict variable from daily_data
         calldate_dict = i['call_minute']
         duration_dict = i['duration_minute']
         buy_cost_dict = i['buy_cost_minute']
         sell_cost_dict = i['sell_cost_minute']
 
+        # get date info from daily_data
         a_Year = int(i['metadata']['date'].strftime('%Y'))
         b_Month = int(i['metadata']['date'].strftime('%m'))
         c_Day = int(i['metadata']['date'].strftime('%d'))
@@ -803,33 +811,41 @@ def cdr_dashboard(request):
         hc = int(i['metadata']['hangup_cause_id'])
 
         if len(calldate_dict) > 0:
+            # get key(call_hour) - value(min_dict) from calldate_dict
             for call_hour, min_dict in calldate_dict.iteritems():
+                # get key(min) - value(count_val) from min_dict
                 for min, count_val in min_dict.iteritems():
                     calldate__count = int(calldate_dict[call_hour][min])
 
                     if calldate__count > 0:
+                        # Get graph_day from aggregate result array
                         graph_day = datetime(a_Year, b_Month, c_Day,
                                              int(call_hour), int(min))
+                        # convert date into timestamp value
                         dt = int(1000 * time.mktime(graph_day.timetuple()))
+
                         # check graph date
                         if chk_date_for_hrs(previous_date, graph_day):
                             duration__sum = int(duration_dict[call_hour][min])
-
                             buy_cost__sum = float(buy_cost_dict[call_hour][min])
                             sell_cost__sum = float(sell_cost_dict[call_hour][min])
 
+                            # if timestamp value in final_record, then update dict value
                             if dt in final_record:
                                 final_record[dt]['duration_sum'] += duration__sum
                                 final_record[dt]['count_call'] += calldate__count
                                 final_record[dt]['buy_cost_sum'] += buy_cost__sum
                                 final_record[dt]['sell_cost_sum'] += sell_cost__sum
                             else:
+                                # assign new timestamp value in final_record with dict value
                                 final_record[dt] = {
                                     'duration_sum': duration__sum,
                                     'count_call': calldate__count,
                                     'buy_cost_sum': buy_cost__sum,
                                     'sell_cost_sum': sell_cost__sum,
                                 }
+
+                            # make total values of calls, duration, buy_cost, sell_cost
                             total_calls += calldate__count
                             total_duration += duration__sum
                             total_buy_cost += buy_cost__sum
@@ -841,6 +857,7 @@ def cdr_dashboard(request):
                             else:
                                 hangup_analytic[hc] = calldate__count
 
+                            # created country_analytic
                             if country_id in country_all_data:
                                 country_all_data[country_id]['call_count'] += calldate__count
                                 country_all_data[country_id]['duration_sum'] += duration__sum
@@ -855,12 +872,13 @@ def cdr_dashboard(request):
                                 }
     logging.debug('*** After loop to handle data ***')
 
-    # sorting on date col
+    # sorting on timestamp col
     final_record = final_record.items()
     final_record = sorted(final_record, key=lambda k: k[0])
 
     hangup_analytic = hangup_analytic.items()
 
+    # sorting on call_count, duration_sum col
     total_country_data = country_all_data.items()
     total_country_data = sorted(total_country_data,
                                 key=lambda k: (k[1]['call_count'],
@@ -948,6 +966,7 @@ def cdr_concurrent_calls(request):
         calls_in_day = CONC_CALL_AGG.find(query_var).sort([('date', 1)])
 
         for d in calls_in_day:
+            # convert date into timestamp value
             ts = time.mktime(d['date'].timetuple())
             tsint = int(ts * 1000)
             final_data.append({'today_minute': tsint,
@@ -1047,7 +1066,7 @@ def get_cdr_mail_report():
 
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
-    # result set
+    # find result from cdr_common collection
     final_result =\
         cdr_data.find(query_var).sort([('start_uepoch', -1)]).limit(10)
 
@@ -1061,6 +1080,7 @@ def get_cdr_mail_report():
                                        pipeline=pipeline)
     logging.debug('After Aggregate')
 
+    # inintalize variables
     total_duration = 0
     total_calls = 0
     total_buy_cost = 0.0
@@ -1069,18 +1089,20 @@ def get_cdr_mail_report():
     hangup_analytic = dict()
     if list_data:
         for doc in list_data['result']:
+            # make total of duration, call count, buy/sell cost
             total_duration += doc['duration_sum']
             total_calls += int(doc['call_count'])
             total_buy_cost += float(doc['buy_cost'])
             total_sell_cost += float(doc['sell_cost'])
 
-            # created cdr_hangup_analytic
+            # created hangup_analytic
             hangup_cause_id = int(doc['_id']['hangup_cause_id'])
             if hangup_cause_id in hangup_analytic:
                 hangup_analytic[hangup_cause_id] += 1
             else:
                 hangup_analytic[hangup_cause_id] = 1
 
+            # created country_analytic
             country_id = int(doc['_id']['country_id'])
             if country_id in country_analytic:
                 country_analytic[country_id]['call_count'] +=\
@@ -1103,13 +1125,14 @@ def get_cdr_mail_report():
     ACT = act_acd_array['ACT']
     ACD = act_acd_array['ACD']
 
+    # sorting on country_analytic
     country_analytic = country_analytic.items()
     country_analytic = sorted(country_analytic,
                               key=lambda k: (k[1]['call_count'],
                                              k[1]['duration_sum']),
                               reverse=True)
 
-    # Hangup Cause analytic end
+    # Create Hangup Cause analytic in percentage format
     hangup_analytic_array = []
     hangup_analytic = hangup_analytic.items()
     hangup_analytic = sorted(hangup_analytic, key=lambda k: k[0])
@@ -1220,12 +1243,14 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
             called_time = datetime(int(doc['_id'][0:4]),
                                    int(doc['_id'][4:6]),
                                    int(doc['_id'][6:8]))
+            # assign 0 to 23 as key hours to day_hours with initial value 0
             day_hours = {}
             for hr in range(0, 24):
                 day_hours[hr] = 0
 
             if graph_view == 1:  # Calls per hour
                 for dict_in_list in doc['call_per_hour']:
+                    # update day_hours via key
                     for key, value in dict_in_list.iteritems():
                         day_hours[int(key)] += int(value)
 
@@ -1233,6 +1258,7 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
 
             if graph_view == 2:  # Min per hour
                 for dict_in_list in doc['duration_per_hour']:
+                    # update day_hours via key
                     for key, value in dict_in_list.iteritems():
                         day_hours[int(key)] += float(value) / 60
 
