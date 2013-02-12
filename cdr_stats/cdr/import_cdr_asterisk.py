@@ -13,8 +13,8 @@
 #
 from django.conf import settings
 from cdr.models import CDR_TYPE
-from cdr.import_cdr_freeswitch_mongodb import apply_index,\
-    chk_ipaddress, CDR_COMMON, create_analytic,\
+from cdr.import_cdr_freeswitch_mongodb import chk_ipaddress,\
+    CDR_COMMON, create_analytic,\
     set_int_default, calculate_call_cost
 from cdr.functions_def import get_hangupcause_id
 from cdr_alert.functions_blacklist import chk_destination
@@ -67,7 +67,7 @@ def print_shell(shell, message):
         print message
 
 
-def import_cdr_asterisk(shell=False):    
+def import_cdr_asterisk(shell=False):
     # Browse settings.CDR_BACKEND and for each IP
     # check if the IP exist in our Switch objects if it does we will
     # connect to that Database and import the data as we do below
@@ -141,6 +141,8 @@ def import_cdr_asterisk(shell=False):
 
         count_import = 0
 
+        #Each time the task is running we will only take 1000 records to import
+        #This define the max speed of import, this limit could be changed
         if db_engine == 'mysql':
             cursor.execute("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel,"
                 "duration, billsec, disposition, accountcode, uniqueid,"
@@ -265,7 +267,7 @@ def import_cdr_asterisk(shell=False):
 
             acctid_list += "%s, " % str(acctid)
             if batch_count == 100:
-                acctid_list = acctid_list[-1] # trim last comma (,) from string
+                acctid_list = acctid_list[-1]  # trim last comma (,) from string
                 #Postgresql
                 #select * from table_name where id in (1,2,3);
                 cursor_updated.execute(
@@ -288,6 +290,6 @@ def import_cdr_asterisk(shell=False):
             # Reset counter to zero
             local_count_import = 0
             cdr_bulk_record = []
-        
+
         print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" %
             (ipaddress, count_import))

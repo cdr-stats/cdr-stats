@@ -32,7 +32,7 @@ def set_concurrentcall_analytic(call_date, switch_id, accountcode, numbercall):
         })
 
     if not get_cc_obj:
-        #If doesn't exist set numbercall        
+        #If doesn't exist set numbercall
         CONC_CALL_AGG.insert(
             {
                 "date": date_minprec,
