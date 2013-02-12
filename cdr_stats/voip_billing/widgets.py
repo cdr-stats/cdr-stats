@@ -393,7 +393,7 @@ class AutocompleteWidgetWrapper(RelatedFieldWidgetWrapper):
         output = [self.widget.render(name, value, *args, **kwargs)]
         if rel_to in self.admin_site._registry:
             # If the related object has an admin interface:
-            # TODO: "id_" is hard-coded here.
+            # TO REVIEW: "id_" is hard-coded here.
             # This should instead use the correct
             # API to determine the ID dynamically.
             output.append(u'<a href="%sadd/" class="add-another" \
@@ -421,7 +421,7 @@ class RelatedFieldWidgetWrapperNew(RelatedFieldWidgetWrapper):
         self.widget.choices = self.choices
         output = [self.widget.render(name, value, *args, **kwargs)]
         if self.can_add_related:
-            # TODO: "id_" is hard-coded here. This should instead use the correct
+            # TO REVIEW: "id_" is hard-coded here. This should instead use the correct
             # API to determine the ID dynamically.
             """
             output.append(u'<a href="%s" class="add-another" id="add_id_%s" onclick="return showAddAnotherPopup(this);"> ' % \
