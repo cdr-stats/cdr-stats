@@ -14,8 +14,8 @@
 from django.conf import settings
 from cdr.models import CDR_TYPE
 from cdr.import_cdr_freeswitch_mongodb import apply_index,\
-    chk_ipaddress, CDR_COMMON, create_daily_analytic,\
-    create_monthly_analytic, set_int_default, calculate_call_cost
+    chk_ipaddress, CDR_COMMON, create_analytic,\
+    set_int_default, calculate_call_cost
 from cdr.functions_def import get_hangupcause_id
 from cdr_alert.functions_blacklist import chk_destination
 from datetime import datetime
@@ -153,6 +153,10 @@ def import_cdr_asterisk(shell=False):
                 (settings.ASTERISK_PRIMARY_KEY, table_name))
         row = cursor.fetchone()
 
+        #Store cdr in list to insert by bulk
+        cdr_bulk_record = []
+        local_count_import = 0
+
         while row is not None:
             acctid = row[9]
             callerid = row[2]
@@ -233,9 +237,9 @@ def import_cdr_asterisk(shell=False):
                 'sell_cost': sell_cost,
             }
 
-            # record global CDR
-            # TODO: implement Bulk insert
-            CDR_COMMON.insert(cdr_record)
+            # Append cdr to bulk_cdr list
+            cdr_bulk_record.append(cdr_record)
+
             """
             print_shell(shell, "Sync CDR (%s:%d, cid:%s, dest:%s, dur:%s, "\
                                 "hg:%s, country:%s, auth:%s, calldate:%s)" % (
@@ -250,16 +254,12 @@ def import_cdr_asterisk(shell=False):
                                     start_uepoch.strftime('%Y-%m-%d %M:%S'),))
             """
             count_import = count_import + 1
-            daily_date = datetime.fromtimestamp(int(row[1]))
-            # insert daily analytic record
-            create_daily_analytic(daily_date, switch.id, country_id,
-                                  accountcode, hangup_cause_id, duration,
-                                  buy_cost, sell_cost)
+            local_count_import = local_count_import + 1
 
-            # insert monthly analytic record
-            create_monthly_analytic(daily_date, start_uepoch, switch.id,
-                                    country_id, accountcode, duration,
-                                    buy_cost, sell_cost)
+            daily_date = datetime.fromtimestamp(int(row[1]))
+            create_analytic(daily_date, start_uepoch, switch.id,
+                country_id, accountcode, hangup_cause_id, duration,
+                buy_cost, sell_cost)
 
             #Flag the CDR
             try:
@@ -277,6 +277,12 @@ def import_cdr_asterisk(shell=False):
         cursor_updated.close()
         cursor.close()
         connection.close()
+
+        if local_count_import > 0:
+            # Bulk cdr list insert into cdr_common
+            CDR_COMMON.insert(cdr_bulk_record)
+            # Reset counter to zero
+            local_count_import = 0
         
         print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" %
             (ipaddress, count_import))
