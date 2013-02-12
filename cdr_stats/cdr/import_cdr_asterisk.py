@@ -287,6 +287,7 @@ def import_cdr_asterisk(shell=False):
             CDR_COMMON.insert(cdr_bulk_record)
             # Reset counter to zero
             local_count_import = 0
+            cdr_bulk_record = []
         
         print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" %
             (ipaddress, count_import))
