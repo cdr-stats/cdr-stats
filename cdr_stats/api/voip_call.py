@@ -80,6 +80,7 @@ class VoipCallValidation(Validation):
             errors['hangup_cause_id_error'] = ["hangup_cause_id must be int"]
 
         try:
+            # calculate billing of call
             billsec = bundle.data.get('billsec')
             call_rate = calculate_call_cost(voipplan_id, destination_number, billsec)
             bundle.data['buy_rate'] = call_rate['buy_rate']

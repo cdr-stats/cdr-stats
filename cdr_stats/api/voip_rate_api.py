@@ -105,6 +105,7 @@ class VoipRateResource(ModelResource):
         logger.debug('Voip Rate GET API get called')
         self.is_authenticated(request)
 
+        #check voipplan id for user
         try:
             voipplan_id = UserProfile.objects.get(user=request.user).voipplan_id
         except:

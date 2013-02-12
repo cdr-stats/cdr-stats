@@ -194,7 +194,7 @@ class CustomRateFilterForm(forms.Form):
 
 
 class DailyBillingForm(forms.Form):
-
+    """Daily Billing Form"""
     from_date = forms.CharField(label=_('From'), required=True, max_length=10)
     to_date = forms.CharField(label=_('To'), required=True, max_length=10)
     switch = forms.ChoiceField(label=_('Switch'), required=False, choices=sw_list_with_all())
@@ -205,16 +205,14 @@ class DailyBillingForm(forms.Form):
 
 
 class HourlyBillingForm(DailyBillingForm):
-
+    """Hourly Billing Form"""
     def __init__(self, *args, **kwargs):
         super(HourlyBillingForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['from_date', 'switch']
 
 
 class RebillForm(CdrSearchForm):
-    """
-    Rebill VoIP call
-    """
+    """Re-bill VoIP call"""
     confirmation = forms.ChoiceField(choices=list(CONFIRMATION_TYPE),
         required=False)
 

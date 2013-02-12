@@ -719,7 +719,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
                                 voip_retail_plan = VoIPRetailPlan.objects.get(
                                     pk=request.POST['plan_id'])
                                 try:
-                                    # check if prefix is alredy
+                                    # check if prefix is already
                                     # exist with retail plan or not
                                     VoIPRetailRate.objects.get(
                                         voip_retail_plan_id=voip_retail_plan,
