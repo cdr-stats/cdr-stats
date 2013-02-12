@@ -57,7 +57,6 @@ def voip_rates(request):
     template = 'voip_billing/rates.html'
     form = PrefixRetailRrateForm()
     final_rate_list = []
-    sum_of_rates = 0.0
     # Get pagination data
     sort_col_field_list = ['prefix', 'retail_rate', 'destination']
     default_sort_field = 'prefix'
@@ -103,9 +102,8 @@ def voip_rates(request):
     rate_list = rate_list.replace('[', '').replace(']', '').replace('}, {', '}|{').split('|')
     for i in rate_list:
         # convert string into dict
-        dict_i = ast.literal_eval(i)
-        final_rate_list.append(dict_i)
-        sum_of_rates += float(dict_i['retail_rate'])
+        final_rate_list.append(ast.literal_eval(i))
+        
     request.session['final_rate_list'] = final_rate_list
 
     variables = RequestContext(request, {
@@ -118,7 +116,6 @@ def voip_rates(request):
         'PAGE_SIZE': PAGE_SIZE,
         'RATE_COLUMN_NAME': RATE_COLUMN_NAME,
         'sort_order': sort_order,
-        'sum_of_rates': sum_of_rates,
     })
     return render_to_response(template, variables,
            context_instance=RequestContext(request))
