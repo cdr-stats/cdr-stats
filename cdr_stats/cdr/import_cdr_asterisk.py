@@ -156,6 +156,8 @@ def import_cdr_asterisk(shell=False):
         #Store cdr in list to insert by bulk
         cdr_bulk_record = []
         local_count_import = 0
+        batch_count = 0
+        acctid_list = ""
 
         while row is not None:
             acctid = row[9]
@@ -239,6 +241,9 @@ def import_cdr_asterisk(shell=False):
 
             # Append cdr to bulk_cdr list
             cdr_bulk_record.append(cdr_record)
+            count_import = count_import + 1
+            local_count_import = local_count_import + 1
+            batch_count = batch_count + 1
 
             """
             print_shell(shell, "Sync CDR (%s:%d, cid:%s, dest:%s, dur:%s, "\
@@ -253,23 +258,22 @@ def import_cdr_asterisk(shell=False):
                                     authorized,
                                     start_uepoch.strftime('%Y-%m-%d %M:%S'),))
             """
-            count_import = count_import + 1
-            local_count_import = local_count_import + 1
-
             daily_date = datetime.fromtimestamp(int(row[1]))
             create_analytic(daily_date, start_uepoch, switch.id,
                 country_id, accountcode, hangup_cause_id, duration,
                 buy_cost, sell_cost)
 
-            #Flag the CDR
-            try:
-                #TODO: Build Update by batch of max 100
+            acctid_list += "%s, " % str(acctid)
+            if batch_count == 100:
+                acctid_list = acctid_list[-1] # trim last comma (,) from string
+                #Postgresql
+                #select * from table_name where id in (1,2,3);
                 cursor_updated.execute(
-                    "UPDATE %s SET import_cdr=1 WHERE %s=%d" %
-                    (table_name, settings.ASTERISK_PRIMARY_KEY, acctid))
-            except:
-                print_shell(shell, "ERROR : Update failed (%s:%d)" %
-                    (settings.ASTERISK_PRIMARY_KEY, acctid))
+                    "UPDATE %s SET import_cdr=1 WHERE %s in (%s)" %
+                    (table_name, settings.ASTERISK_PRIMARY_KEY, acctid_list))
+
+                batch_count = 0
+                acctid_list = ''
 
             #Fetch a other record
             row = cursor.fetchone()

@@ -103,7 +103,7 @@ def voip_rates(request):
     for i in rate_list:
         # convert string into dict
         final_rate_list.append(ast.literal_eval(i))
-        
+
     request.session['final_rate_list'] = final_rate_list
 
     variables = RequestContext(request, {
