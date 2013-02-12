@@ -119,7 +119,7 @@ def check_user_accountcode(function=None):
             if not request.user.is_superuser:
                 if not chk_account_code(request):
                     return HttpResponseRedirect('/?acc_code_error=true')
-                else:                    
+                else:
                     return run_func(request, *args, **kwargs)
             else:
                 return run_func(request, *args, **kwargs)
@@ -139,7 +139,7 @@ def check_user_voipplan(function=None):
             if not request.user.is_superuser:
                 if not chk_user_voipplan(request):
                     return HttpResponseRedirect('/?voipplan_error=true')
-                else:                    
+                else:
                     return run_func(request, *args, **kwargs)
             else:
                 return run_func(request, *args, **kwargs)
@@ -649,7 +649,10 @@ def cdr_detail(request, id, switch_id):
     ipaddress = c_switch.ipaddress
     menu = show_menu(request)
 
-    if settings.CDR_BACKEND[settings.LOCAL_SWITCH_IP]['cdr_type'] == 'freeswitch':
+    db_engine = settings.CDR_BACKEND[ipaddress]['db_engine']
+    cdr_type = settings.CDR_BACKEND[ipaddress]['cdr_type']
+
+    if cdr_type == 'freeswitch':
         #Connect on MongoDB Database
         host = settings.CDR_BACKEND[ipaddress]['host']
         port = settings.CDR_BACKEND[ipaddress]['port']
@@ -667,20 +670,26 @@ def cdr_detail(request, id, switch_id):
             {'row': list(doc), 'menu': menu},
             context_instance=RequestContext(request))
 
-    elif settings.CDR_BACKEND[settings.LOCAL_SWITCH_IP]['cdr_type'] == 'asterisk':
-        #Connect on Mysql Database
-        #TODO: support other DBMS
-        #TODO: Support postgresql
-        import MySQLdb as Database
+    elif cdr_type == 'asterisk':
+        #Connect on Database
         db_name = settings.CDR_BACKEND[ipaddress]['db_name']
         table_name = settings.CDR_BACKEND[ipaddress]['table_name']
         user = settings.CDR_BACKEND[ipaddress]['user']
         password = settings.CDR_BACKEND[ipaddress]['password']
         host = settings.CDR_BACKEND[ipaddress]['host']
         try:
-            connection = Database.connect(user=user, passwd=password,
-                                          db=db_name, host=host)
-            cursor = connection.cursor()
+            if db_engine == 'mysql':
+                import MySQLdb as Database
+                connection = Database.connect(user=user, passwd=password,
+                    db=db_name, host=host, port=port, connect_timeout=4)
+                connection.autocommit(True)
+                cursor = connection.cursor()
+            elif db_engine == 'pgsql':
+                import psycopg2 as Database
+                connection = Database.connect(user=user, password=password,
+                    database=db_name, host=host, port=port)
+                connection.autocommit(True)
+                cursor = connection.cursor()
         except:
             raise Http404
 
