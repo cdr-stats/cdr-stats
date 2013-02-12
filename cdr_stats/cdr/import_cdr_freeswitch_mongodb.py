@@ -431,8 +431,7 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         read_codec = data_element['read_codec']
         write_codec = data_element['write_codec']
 
-        #TODO : select user voipplan_id
-        voipplan_id = 1
+        voipplan_id = 1 # default
         call_rate = calculate_call_cost(voipplan_id, destination_number, billsec)
         buy_rate = call_rate['buy_rate']
         buy_cost = call_rate['buy_cost']
