@@ -4,8 +4,8 @@ django-pagination==1.0.7
 django-urlauth==0.1.8
 django-uuidfield==0.4.0
 django-cache-utils==0.7.2
-django-jsonfield==0.8.11
-django-countries==1.4
+django-jsonfield==0.8.12
+django-countries==1.5
 django-tastypie==0.9.11
 linaro-django-pagination==2.0.2
 django-admin-tools==0.4.1
@@ -15,7 +15,7 @@ django-admin-tools-stats==0.4.1
 switch2bill-common==2.4.1
 django-socketio==0.3.5
 django-cache-machine==0.6
-django-redis-cache==0.9.5
+django-redis-cache==0.9.6
 django-extensions==1.0.3
 git+git://github.com/Star2Billing/django-notification
 django-frontend-notification==0.1.2
