@@ -63,6 +63,8 @@ def set_concurrentcall_analytic(call_date, switch_id, accountcode, numbercall):
                 })
 
     # Should we apply indexing here on conc_call collection
+    #TODO : Create a command line to apply apply_index_conc_call this is something we want to do only once, when we got some data
+    #So we can remove this from here.
     #apply_index_conc_call()
     return True
 
