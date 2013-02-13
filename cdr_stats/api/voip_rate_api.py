@@ -20,7 +20,8 @@ from tastypie.authentication import BasicAuthentication
 from tastypie.throttle import BaseThrottle
 from tastypie.exceptions import BadRequest
 from voip_billing.models import VoIPRetailRate
-from voip_billing.function_def import prefix_allowed_to_call, prefix_list_string
+from cdr.functions_def import prefix_list_string
+from voip_billing.function_def import prefix_allowed_to_call
 from user_profile.models import UserProfile
 import logging
 

@@ -17,6 +17,7 @@ from pymongo.errors import ConnectionFailure
 from cdr.models import Switch, CDR_TYPE
 from cdr.functions_def import get_hangupcause_id
 from cdr_alert.functions_blacklist import chk_destination
+from voip_billing.models import VoIPPlan
 from voip_billing.rate_engine import rate_engine
 import datetime
 import sys
@@ -430,9 +431,12 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         billmsec = data_element['billmsec']
         read_codec = data_element['read_codec']
         write_codec = data_element['write_codec']
+        
+        # get random voipplan_id from VoIPPlan
+        voipplan_id = VoIPPlan.objects.order_by('?')[0].id
+        if voipplan_id == '':
+            voipplan_id = 1
 
-        #TODO: Why voipplan_id is hardcoded ?
-        voipplan_id = 1 # default
         call_rate = calculate_call_cost(voipplan_id, destination_number, billsec)
         buy_rate = call_rate['buy_rate']
         buy_cost = call_rate['buy_cost']
