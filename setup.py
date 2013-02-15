@@ -2,12 +2,12 @@
 # CDR-Stats License
 # http://www.cdr-stats.org
 #
-# This Source Code Form is subject to the terms of the Mozilla Public 
+# This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
-# 
+# Copyright (C) 2011-2013 Star2Billing S.L.
+#
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
@@ -34,7 +34,7 @@ except pkg_resources.DistributionNotFound:
         pass
 
 Distribution({
-    "setup_requires": add_django_dependency and  ['Django >=1.4.0'] or []
+    "setup_requires": add_django_dependency and ['Django >=1.4.3'] or []
 })
 
 
@@ -74,13 +74,14 @@ def parse_requirements(file_name):
             requirements.append(line)
     return requirements
 
+
 def parse_dependency_links(file_name, install_flag=False):
     dependency_links = []
     for line in open(file_name, 'r').read().split('\n'):
         if re.match(r'\s*-e\s+', line):
             dependency_links.append(re.sub(r'\s*-e\s+', '', line))
         if re.match(r'(\s*git)|(\s*hg)', line):
-            if install_flag == True:
+            if install_flag:
                 line_arr = line.split('/')
                 line_arr_length = len(line.split('/'))
                 pck_name = line_arr[line_arr_length - 1].split('.git')
@@ -91,7 +92,7 @@ def parse_dependency_links(file_name, install_flag=False):
     return dependency_links
 
 
-install_flag=False
+install_flag = False
 if sys.argv[1] == "install":
     install_flag = True
 
@@ -117,15 +118,13 @@ setup(
         'Programming Language :: Python, Javascript, HTML',
         'Topic :: Call Analytic Software'
     ],
-    zip_safe = False,
-    install_requires = parse_requirements('install/conf/requirements.txt'),
-    dependency_links = parse_dependency_links('install/conf/requirements.txt',
-                                              install_flag),
-    setup_requires = [
-        "Django >= 1.4.0",
+    zip_safe=False,
+    install_requires=parse_requirements('install/requirements/all-requirements.txt'),
+    dependency_links=parse_dependency_links('install/requirements/all-requirements.txt',
+        install_flag),
+    setup_requires=[
+        "Django >= 1.4.3",
         "Sphinx >= 0.4.2",
     ],
-    
-    # devel
-    cmdclass = COMMANDS,
+    cmdclass=COMMANDS,
 )
