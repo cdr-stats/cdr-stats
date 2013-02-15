@@ -261,11 +261,15 @@ func_prepare_system_frontend(){
 
     elif echo $DB_BACKEND | grep -i "^POSTGRESQL" > /dev/null ; then
         # Create the Database
-        echo "Remove Existing Database if exists..."
-        if [ `sudo -u postgres psql -qAt --list | egrep '^$DATABASENAME\|' | wc -l` -eq 1 ]; then
-            echo "sudo -u postgres dropdb $DATABASENAME"
-            sudo -u postgres dropdb $DATABASENAME
-        fi
+        echo "We will remove existing Database"
+        echo "Press Enter to continue"
+        read TEMP
+        echo "sudo -u postgres dropdb $DATABASENAME"
+        # echo "Remove Existing Database if exists..."
+        # if [ `sudo -u postgres psql -qAt --list | egrep $DATABASENAME | wc -l` -eq 1 ]; then
+        #     echo "sudo -u postgres dropdb $DATABASENAME"
+        #     sudo -u postgres dropdb $DATABASENAME
+        # fi
         echo "Create Database..."
         echo "sudo -u postgres createdb $DATABASENAME"
         sudo -u postgres createdb $DATABASENAME
