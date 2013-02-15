@@ -20,8 +20,6 @@ import os
 #sys.path.insert(0, os.path.abspath('.'))
 
 #Add the path of your virtualenv
-#sys.path.append('/home/areski/.virtualenvs/cdr-stats/lib/python2.7/site-packages/')
-
 APP_DIR = os.path.normpath(os.path.join(os.getcwd(), '../../')) + '/'
 APP_DIR_CDRSTATS = os.path.normpath(os.path.join(os.getcwd(), '../../')) + '/cdr_stats/'
 sys.path.insert(0, APP_DIR)
