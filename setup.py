@@ -60,8 +60,8 @@ setup(
     package_dir={'cdr_stats': 'cdr_stats'},
     packages=find_packages(),
     package_data={},
-    install_requires=parse_requirements('install/requirements/all-requirements.txt'),
-    dependency_links=parse_dependency_links('install/requirements/all-requirements.txt'),
+    install_requires=parse_requirements('install/requirements/rtd-requirements.txt'),
+    dependency_links=parse_dependency_links('install/requirements/rtd-requirements.txt'),
     license='MPL 2.0 License',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
