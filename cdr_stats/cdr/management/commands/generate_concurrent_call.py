@@ -15,7 +15,7 @@
 #
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from cdr.aggregate import set_concurrentcall_analytic, apply_index_conc_call
+from cdr.aggregate import set_concurrentcall_analytic
 from random import choice
 from optparse import make_option
 import random
@@ -89,8 +89,4 @@ class Command(BaseCommand):
 
             #Create collection for Analytics
             set_concurrentcall_analytic(call_date, switch_id, accountcode, numbercall)
-
-        # apply indexing on concurrent call collection
-        apply_index_conc_call()
-
-
+        

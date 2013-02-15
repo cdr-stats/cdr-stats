@@ -17,13 +17,6 @@ import datetime
 CONC_CALL_AGG = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL_AGG']]
 
 
-def apply_index_conc_call():
-    """Apply index on cdr-stats mongodb CONC_CALL collections"""
-    CONC_CALL_AGG.ensure_index([('call_date', -1), ('switch_id', 1), ('accountcode', 1)],
-                               unique=True)
-    return True
-
-
 def set_concurrentcall_analytic(call_date, switch_id, accountcode, numbercall):
     """Create Concurrent call Analytic"""
     date_minprec = datetime.datetime(
@@ -61,11 +54,6 @@ def set_concurrentcall_analytic(call_date, switch_id, accountcode, numbercall):
                         "numbercall": int(numbercall),
                     }
                 })
-
-    # Should we apply indexing here on conc_call collection
-    #TODO : Create a command line to apply apply_index_conc_call this is something we want to do only once, when we got some data
-    #So we can remove this from here.
-    #apply_index_conc_call()
     return True
 
 
