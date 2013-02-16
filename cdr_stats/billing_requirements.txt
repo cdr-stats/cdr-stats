@@ -1,2 +1,0 @@
-django-threaded-multihost==1.4-0
-hg+https://bitbucket.org/jespern/django-piston
