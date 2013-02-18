@@ -55,13 +55,13 @@ case $DIST in
     ;;
     'CENTOS')
         if [ ! -f /etc/yum.repos.d/rpmforge.repo ];
-       	then
-			#Install RPMFORGE Repo
+        then
+            #Install RPMFORGE Repo
             if [ $KERNELARCH = "x86_64" ]; then
-				rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm
-			else
-				rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
-			fi
+                rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm
+            else
+                rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
+            fi
         fi
         yum -y update
         yum -y install mlocate vim git-core

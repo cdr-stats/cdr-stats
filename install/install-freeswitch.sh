@@ -52,53 +52,53 @@ read INPUT
 
 func_install_fs_source() {
     #install fs from source
-   	echo "installing from source"
+    echo "installing from source"
 
-   	#Add Freeswitch group and user
-	grep -c "^freeswitch:" /etc/group &> /dev/null
-	if [ $? = 1 ]; then
+    #Add Freeswitch group and user
+    grep -c "^freeswitch:" /etc/group &> /dev/null
+    if [ $? = 1 ]; then
         /usr/sbin/groupadd -r -f freeswitch
-	else
+    else
         echo "group freeswitch already present"
-	fi
+    fi
 
-	grep -c "^freeswitch:" /etc/passwd &> /dev/null
-	if [ $? = 1 ]; then
+    grep -c "^freeswitch:" /etc/passwd &> /dev/null
+    if [ $? = 1 ]; then
         echo "adding user freeswitch..."
         /usr/sbin/useradd -r -c "freeswitch" -g freeswitch freeswitch
-	else
+    else
         echo "user freeswitch already present"
-	fi
+    fi
 
-	# Install FreeSWITCH
-	cd $FS_BASE_PATH
-	git clone $FS_GIT_REPO
-	cd $FS_BASE_PATH/freeswitch
-	sh bootstrap.sh && ./configure --without-pgsql --prefix=/usr/local/freeswitch --sysconfdir=/etc/freeswitch/
-	[ -f modules.conf ] && cp modules.conf modules.conf.bak
-	sed -i -e \
-    	"s/#applications\/mod_curl/applications\/mod_curl/g" \
-    	-e "s/#asr_tts\/mod_flite/asr_tts\/mod_flite/g" \
-    	-e "s/#asr_tts\/mod_tts_commandline/asr_tts\/mod_tts_commandline/g" \
-    	-e "s/#formats\/mod_shout/formats\/mod_shout/g" \
-    	-e "s/#endpoints\/mod_dingaling/endpoints\/mod_dingaling/g" \
-    	-e "s/#formats\/mod_shell_stream/formats\/mod_shell_stream/g" \
-    	-e "s/#say\/mod_say_de/say\/mod_say_de/g" \
-    	-e "s/#say\/mod_say_es/say\/mod_say_es/g" \
-    	-e "s/#say\/mod_say_fr/say\/mod_say_fr/g" \
-    	-e "s/#say\/mod_say_it/say\/mod_say_it/g" \
-    	-e "s/#say\/mod_say_nl/say\/mod_say_nl/g" \
-    	-e "s/#say\/mod_say_ru/say\/mod_say_ru/g" \
-    	-e "s/#say\/mod_say_zh/say\/mod_say_zh/g" \
-    	-e "s/#say\/mod_say_hu/say\/mod_say_hu/g" \
-    	-e "s/#say\/mod_say_th/say\/mod_say_th/g" \
-    	-e "s/#xml_int\/mod_xml_cdr/xml_int\/mod_xml_cdr/g" \
-    	-e "s/#event_handlers\/mod_cdr_mongodb/event_handlers\/mod_cdr_mongodb/g" \
-    	modules.conf
-	make && make install && make sounds-install && make moh-install
+    # Install FreeSWITCH
+    cd $FS_BASE_PATH
+    git clone $FS_GIT_REPO
+    cd $FS_BASE_PATH/freeswitch
+    sh bootstrap.sh && ./configure --without-pgsql --prefix=/usr/local/freeswitch --sysconfdir=/etc/freeswitch/
+    [ -f modules.conf ] && cp modules.conf modules.conf.bak
+    sed -i -e \
+        "s/#applications\/mod_curl/applications\/mod_curl/g" \
+        -e "s/#asr_tts\/mod_flite/asr_tts\/mod_flite/g" \
+        -e "s/#asr_tts\/mod_tts_commandline/asr_tts\/mod_tts_commandline/g" \
+        -e "s/#formats\/mod_shout/formats\/mod_shout/g" \
+        -e "s/#endpoints\/mod_dingaling/endpoints\/mod_dingaling/g" \
+        -e "s/#formats\/mod_shell_stream/formats\/mod_shell_stream/g" \
+        -e "s/#say\/mod_say_de/say\/mod_say_de/g" \
+        -e "s/#say\/mod_say_es/say\/mod_say_es/g" \
+        -e "s/#say\/mod_say_fr/say\/mod_say_fr/g" \
+        -e "s/#say\/mod_say_it/say\/mod_say_it/g" \
+        -e "s/#say\/mod_say_nl/say\/mod_say_nl/g" \
+        -e "s/#say\/mod_say_ru/say\/mod_say_ru/g" \
+        -e "s/#say\/mod_say_zh/say\/mod_say_zh/g" \
+        -e "s/#say\/mod_say_hu/say\/mod_say_hu/g" \
+        -e "s/#say\/mod_say_th/say\/mod_say_th/g" \
+        -e "s/#xml_int\/mod_xml_cdr/xml_int\/mod_xml_cdr/g" \
+        -e "s/#event_handlers\/mod_cdr_mongodb/event_handlers\/mod_cdr_mongodb/g" \
+        modules.conf
+    make && make install && make sounds-install && make moh-install
 
-	#Set permissions
-	chown -R freeswitch:freeswitch /usr/local/freeswitch /etc/freeswitch
+    #Set permissions
+    chown -R freeswitch:freeswitch /usr/local/freeswitch /etc/freeswitch
 }
 
 
@@ -114,36 +114,36 @@ case $DIST in
         func_install_fs_source
         ;;
     'CENTOS')
-    	echo ""
-    	echo "Do you want to install Freeswitch via the yum repository instead of from source [y/n]"
-		read YUMSOURCE
+        echo ""
+        echo "Do you want to install Freeswitch via the yum repository instead of from source [y/n]"
+        read YUMSOURCE
         yum -y update
         yum -y install autoconf automake bzip2 cpio curl curl-devel curl-devel expat-devel fileutils gcc-c++ gettext-devel gnutls-devel libjpeg-devel libogg-devel libtiff-devel libtool libvorbis-devel make ncurses-devel nmap openssl openssl-devel openssl-devel perl patch unixODBC unixODBC-devel unzip wget zip zlib zlib-devel
         yum -y install flite
 
-		#install the RPMFORGE Repository
+        #install the RPMFORGE Repository
         if [ ! -f /etc/yum.repos.d/rpmforge.repo ];
             then
                 # Install RPMFORGE Repo
                 if [ $KERNELARCH = "x86_64" ]; then
-					rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm
-				else
-					rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
-				fi
+                    rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm
+                else
+                    rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
+                fi
         fi
 
         yum -y --enablerepo=rpmforge install git-core
 
-		if [ "$YUMSOURCE" = "y" ] || [ "$YUMSOURCE" = "Y" ]; then
-	    	echo "Installing via yum repository"
-	    	# install the Freeswitch Repo
-			rpm -Uvh http://files.freeswitch.org/yum/freeswitch-release-1-0.noarch.rpm
-			# install the freeswitch files
-			yum -y install freeswitch-config-vanilla freeswitch-codec-siren freeswitch-codec-passthru-amr freeswitch-application-conference freeswitch-application-db freeswitch-endpoint-dingaling freeswitch-application-enum freeswitch-application-esf freeswitch-application-expr freeswitch-application-fifo freeswitch-asrtts-flite freeswitch-application-fsv freeswitch-codec-passthru-g723_1 freeswitch-codec-passthru-g729 freeswitch-codec-h26x freeswitch-application-hash freeswitch-application-httapi freeswitch-codec-ilbc freeswitch-format-local-stream freeswitch-lua freeswitch-format-native-file freeswitch-lang-de freeswitch-lang-en freeswitch-lang-fr freeswitch-lang-ru freeswitch-format-mod-shout freeswitch-codec-speex freeswitch-spidermonkey freeswitch-format-tone-stream freeswitch-asrtts-tts-commandline freeswitch-application-valet_parking freeswitch-application-voicemail freeswitch-format-shell-stream freeswitch-event-cdr-mongodb
-    	else
-        	echo "installing from source"
-        	func_install_fs_source
-    	fi
+        if [ "$YUMSOURCE" = "y" ] || [ "$YUMSOURCE" = "Y" ]; then
+            echo "Installing via yum repository"
+            # install the Freeswitch Repo
+            rpm -Uvh http://files.freeswitch.org/yum/freeswitch-release-1-0.noarch.rpm
+            # install the freeswitch files
+            yum -y install freeswitch-config-vanilla freeswitch-codec-siren freeswitch-codec-passthru-amr freeswitch-application-conference freeswitch-application-db freeswitch-endpoint-dingaling freeswitch-application-enum freeswitch-application-esf freeswitch-application-expr freeswitch-application-fifo freeswitch-asrtts-flite freeswitch-application-fsv freeswitch-codec-passthru-g723_1 freeswitch-codec-passthru-g729 freeswitch-codec-h26x freeswitch-application-hash freeswitch-application-httapi freeswitch-codec-ilbc freeswitch-format-local-stream freeswitch-lua freeswitch-format-native-file freeswitch-lang-de freeswitch-lang-en freeswitch-lang-fr freeswitch-lang-ru freeswitch-format-mod-shout freeswitch-codec-speex freeswitch-spidermonkey freeswitch-format-tone-stream freeswitch-asrtts-tts-commandline freeswitch-application-valet_parking freeswitch-application-voicemail freeswitch-format-shell-stream freeswitch-event-cdr-mongodb
+        else
+            echo "installing from source"
+            func_install_fs_source
+        fi
 
     ;;
 esac
@@ -194,22 +194,22 @@ esac
 
 #replace with our own working init script as per http://jira.freeswitch.org/browse/FS-4042
 if [ "$YUMSOURCE" = "y" ] || [ "$YUMSOURCE" = "Y" ]; then
-	echo "Installed via yum repository"
-	#replace with our own working init script as per http://jira.freeswitch.org/browse/FS-4042
-	rm -f /etc/init.d/freeswitch
-	#Install init.d script
-   	wget --no-check-certificate $FS_INIT_PATH/centos/freeswitch -O /etc/init.d/freeswitch
-   	chmod 0755 /etc/init.d/freeswitch
-   	chkconfig --add freeswitch
-   	chkconfig --level 345 freeswitch on
-   	sed -i "s@/usr/local/freeswitch/bin@/usr/bin@g" /etc/init.d/freeswitch
-	sed -i "s@/usr/local/freeswitch/run@/var/run/freeswitch@g" /etc/init.d/freeswitch
+    echo "Installed via yum repository"
+    #replace with our own working init script as per http://jira.freeswitch.org/browse/FS-4042
+    rm -f /etc/init.d/freeswitch
+    #Install init.d script
+    wget --no-check-certificate $FS_INIT_PATH/centos/freeswitch -O /etc/init.d/freeswitch
+    chmod 0755 /etc/init.d/freeswitch
+    chkconfig --add freeswitch
+    chkconfig --level 345 freeswitch on
+    sed -i "s@/usr/local/freeswitch/bin@/usr/bin@g" /etc/init.d/freeswitch
+    sed -i "s@/usr/local/freeswitch/run@/var/run/freeswitch@g" /etc/init.d/freeswitch
 else
-   	echo "installing from source"
-	#Add alias fs_cli
-	chk=`grep "fs_cli" ~/.bashrc|wc -l`
-	if [ $chk -lt 1 ] ; then
-		echo "alias fs_cli='/usr/local/freeswitch/bin/fs_cli'" >> ~/.bashrc
+    echo "installing from source"
+    #Add alias fs_cli
+    chk=`grep "fs_cli" ~/.bashrc|wc -l`
+    if [ $chk -lt 1 ] ; then
+        echo "alias fs_cli='/usr/local/freeswitch/bin/fs_cli'" >> ~/.bashrc
     fi
 fi
 

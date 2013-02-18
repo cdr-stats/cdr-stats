@@ -614,7 +614,7 @@ func_install_frontend(){
     echo ""
     echo ""
     echo "We will now install CDR-Stats on your server"
-	echo "============================================"
+    echo "============================================"
     echo ""
 
     #Prepare
@@ -703,19 +703,19 @@ func_install_backend() {
             cd /etc/init.d; update-rc.d cdr-stats-celeryd defaults 99
 
             #Check permissions on /dev/shm to ensure that celery can start and run for openVZ.
-			DIR="/dev/shm"
-			echo "Checking the permissions for $dir"
-			stat $DIR
-			if [ `stat -c "%a" $DIR` -ge 777 ] ; then
-     			echo "$DIR has read write permissions."
-			else
-     			echo "$DIR has no read write permissions."
-        		chmod -R 777 /dev/shm
-        		if [ `grep -i /dev/shm /etc/fstab | wc -l` -eq 0 ]; then
-                	echo "Adding fstab entry to set permissions /dev/shm"
-                	echo "none /dev/shm tmpfs rw,nosuid,nodev,noexec 0 0" >> /etc/fstab
-        		fi
-			fi
+            DIR="/dev/shm"
+            echo "Checking the permissions for $dir"
+            stat $DIR
+            if [ `stat -c "%a" $DIR` -ge 777 ] ; then
+                echo "$DIR has read write permissions."
+            else
+                echo "$DIR has no read write permissions."
+                chmod -R 777 /dev/shm
+                if [ `grep -i /dev/shm /etc/fstab | wc -l` -eq 0 ]; then
+                    echo "Adding fstab entry to set permissions /dev/shm"
+                    echo "none /dev/shm tmpfs rw,nosuid,nodev,noexec 0 0" >> /etc/fstab
+                fi
+            fi
         ;;
         'CENTOS')
             # Add init-scripts
@@ -854,16 +854,16 @@ func_install_mongodb() {
 
 #Menu Section for Script
 show_menu_cdr_stats() {
-	clear
-	echo " > CDR-Stats Installation Menu"
-	echo "====================================="
-	echo "	1)  Install All"
-	echo "	2)  Install CDR-Stats Web Frontend"
-	echo "	3)  Install CDR-Stats Backend / CDR-Stats-Celery"
-	echo "	4)  Install MongoDB"
-	echo "	0)  Quit"
-	echo -n "(0-4) : "
-	read OPTION < /dev/tty
+    clear
+    echo " > CDR-Stats Installation Menu"
+    echo "====================================="
+    echo "  1)  Install All"
+    echo "  2)  Install CDR-Stats Web Frontend"
+    echo "  3)  Install CDR-Stats Backend / CDR-Stats-Celery"
+    echo "  4)  Install MongoDB"
+    echo "  0)  Quit"
+    echo -n "(0-4) : "
+    read OPTION < /dev/tty
 }
 
 

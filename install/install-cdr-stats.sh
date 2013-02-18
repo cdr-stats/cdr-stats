@@ -34,13 +34,13 @@ wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANC
 
 #Menu Section for Script
 show_menu_switch() {
-	clear
-	echo " > Do you want to install CDR-Stats for FreeSWITCH or Asterisk ?"
-	echo "================================================================"
-	echo "	1)  FreeSWITCH"
-	echo "	2)  Asterisk"
-	echo -n "(1-2) : "
-	read OPTION < /dev/tty
+    clear
+    echo " > Do you want to install CDR-Stats for FreeSWITCH or Asterisk ?"
+    echo "================================================================"
+    echo "  1)  FreeSWITCH"
+    echo "  2)  Asterisk"
+    echo -n "(1-2) : "
+    read OPTION < /dev/tty
 }
 
 
