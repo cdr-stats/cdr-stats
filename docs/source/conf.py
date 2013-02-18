@@ -14,19 +14,17 @@
 import sys
 import os
 
+
+sys.path.insert(0, os.path.abspath('../../'))
+sys.path.insert(1, os.path.abspath('../../cdr_stats'))
+import cdr_stats.settings
+from django.core.management import setup_environ
+setup_environ(cdr_stats.settings)
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
-
-#Add the path of your virtualenv
-APP_DIR = os.path.normpath(os.path.join(os.getcwd(), '../../')) + '/'
-APP_DIR_CDRSTATS = os.path.normpath(os.path.join(os.getcwd(), '../../')) + '/cdr_stats/'
-sys.path.insert(0, APP_DIR)
-sys.path.insert(1, APP_DIR_CDRSTATS)
-import cdr_stats.settings
-from django.core.management import setup_environ
-setup_environ(cdr_stats.settings)
 
 # -- General configuration -----------------------------------------------------
 
@@ -35,7 +33,10 @@ setup_environ(cdr_stats.settings)
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.coverage']
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.intersphinx',
+]
 #extensions = ['sphinx.ext.autodoc', 'rst2pdf.pdfbuilder', 'sphinx.ext.coverage']
 
 # Add any paths that contain templates here, relative to this directory.
