@@ -13,13 +13,13 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.conf import settings
 from django.core.management.base import BaseCommand
 from cdr.aggregate import set_concurrentcall_analytic
 from random import choice
 from optparse import make_option
 import random
 import datetime
+from mongodb_connection import mongodb
 
 
 random.seed()
@@ -44,6 +44,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Note that subscriber created this way are only for devel purposes"""
+        if not mongodb.conc_call:
+            print "Error mongodb Connection"
 
         no_of_record = 86400  # second in one day
 
@@ -85,8 +87,7 @@ class Command(BaseCommand):
             call_json = {'switch_id': switch_id, 'call_date': call_date,
                          'numbercall': numbercall, 'accountcode': accountcode}
 
-            settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].insert(call_json)
+            mongodb.conc_call.insert(call_json)
 
             #Create collection for Analytics
             set_concurrentcall_analytic(call_date, switch_id, accountcode, numbercall)
-        

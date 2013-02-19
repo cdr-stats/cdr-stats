@@ -11,15 +11,13 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.conf import settings
 from celery.task import Task
 from cdr.import_cdr_freeswitch_mongodb import create_analytic,\
     calculate_call_cost
+from mongodb_connection import mongodb
 from bson import ObjectId
 import logging
 import time
-
-cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
 
 
 def _rebilling_call(voipplan_id, call):
@@ -29,17 +27,16 @@ def _rebilling_call(voipplan_id, call):
 
         * ``voipplan_id`` - frontend/cdr_graph_concurrent_calls.html
         * ``call`` - ConcurrentCallForm
-        * ``cdr_data`` - MONGO_CDRSTATS['CDR_COMMON'] (cdr_common collection)
+        * ``mongodb.cdr_common`` - cdr_common collection
 
     **Logic Description**:
 
         get call record & voipplan_id to re-bill
     """
-    new_rate =\
-        calculate_call_cost(voipplan_id, call['destination_number'], call['billsec'])
+    new_rate = calculate_call_cost(voipplan_id, call['destination_number'], call['billsec'])
 
     # Update cdr_common buy_cost/sell_cost
-    cdr_data.update({"_id": ObjectId(call['_id'])}, {
+    mongodb.cdr_common.update({"_id": ObjectId(call['_id'])}, {
         "$set": {
             "buy_rate": new_rate['buy_rate'],
             "buy_cost": new_rate['buy_cost'],
@@ -47,7 +44,7 @@ def _rebilling_call(voipplan_id, call):
             "sell_cost": new_rate['sell_cost']
         }
     })
-    # cdr_data.find_one({"_id": ObjectId(call['_id'])})
+    # mongodb.cdr_common.find_one({"_id": ObjectId(call['_id'])})
     return True
 
 
@@ -63,7 +60,11 @@ class RebillingTask(Task):
     def run(self, calls_kwargs, voipplan_id, **kwargs):
         logging.debug("Start re-billing calls.")
 
-        call_rebill = cdr_data.find(calls_kwargs)
+        if not mongodb.cdr_common:
+            logging.error("Error mongodb connection")
+            return False
+
+        call_rebill = mongodb.cdr_common.find(calls_kwargs)
 
         for call in call_rebill:
             _rebilling_call(voipplan_id, call)
@@ -84,22 +85,24 @@ class ReaggregateTask(Task):
     def run(self, daily_kwargs, monthly_kwargs, call_kwargs, **kwargs):
         logging.debug("About to re-aggregate voip calls for daily/monthly analytics.")
 
+        if not mongodb.daily_analytic:
+            logging.error("Error mongodb connection")
+            return False
+
         #1) remove daily/monthly aggregate
-        daily_data = settings.DBCON[settings.MONGO_CDRSTATS['DAILY_ANALYTIC']]
-        daily_data.remove(daily_kwargs)
-        monthly_data = settings.DBCON[settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC']]
-        monthly_data.remove(monthly_kwargs)
+        mongodb.daily_analytic.remove(daily_kwargs)
+        mongodb.monthly_analytic.remove(monthly_kwargs)
 
         #2) Re-create daily/monthly analytic
         PAGE_SIZE = 1000
-        record_count = cdr_data.find(call_kwargs).count()
+        record_count = mongodb.cdr_common.find(call_kwargs).count()
         total_pages = int(record_count / PAGE_SIZE) + 1 if (record_count % PAGE_SIZE) != 0 else 0
 
         for PAGE_NUMBER in range(1, total_pages + 1):
 
             SKIP_NO = PAGE_SIZE * (PAGE_NUMBER - 1)
             # create analytic in chunks
-            rebilled_call = cdr_data.find(call_kwargs).skip(SKIP_NO).limit(PAGE_SIZE)
+            rebilled_call = mongodb.cdr_common.find(call_kwargs).skip(SKIP_NO).limit(PAGE_SIZE)
 
             for call in rebilled_call:
                 start_uepoch = call['start_uepoch']

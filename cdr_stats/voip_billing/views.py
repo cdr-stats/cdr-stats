@@ -16,7 +16,6 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings
-from django.utils.translation import gettext as _
 from django.template.context import RequestContext
 from voip_billing.models import VoIPRetailRate
 from voip_billing.forms import PrefixRetailRrateForm, SimulatorForm, DailyBillingForm,\
@@ -24,6 +23,7 @@ from voip_billing.forms import PrefixRetailRrateForm, SimulatorForm, DailyBillin
 from voip_billing.function_def import prefix_allowed_to_call
 from voip_billing.rate_engine import rate_engine
 from voip_billing.constants import RATE_COLUMN_NAME
+from mongodb_connection import mongodb
 from user_profile.models import UserProfile
 from cdr.views import check_user_accountcode, check_cdr_exists, check_user_voipplan
 from cdr.functions_def import chk_account_code
@@ -64,8 +64,8 @@ def voip_rates(request):
         get_pagination_vars(request, sort_col_field_list, default_sort_field)
 
     PAGE_SIZE = pagination_data['PAGE_SIZE']
-    sort_order = pagination_data['sort_order']    
-    
+    sort_order = pagination_data['sort_order']
+
     order = 'ASC'
     if "-" in sort_order:
         order = 'DESC'
@@ -254,9 +254,9 @@ def daily_billing_report(request):
     pipeline = pipeline_daily_billing_report(query_var)
 
     logging.debug('Before Aggregate')
-    list_data = settings.DBCON.command('aggregate',
-                                       settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                       pipeline=pipeline)
+    list_data = mongodb.DBCON.command('aggregate',
+                                      settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+                                      pipeline=pipeline)
 
     logging.debug('After Aggregate')
     daily_data = dict()
@@ -355,9 +355,9 @@ def hourly_billing_report(request):
     pipeline = pipeline_hourly_billing_report(query_var)
 
     logging.debug('Before Aggregate')
-    list_data = settings.DBCON.command('aggregate',
-                                       settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                       pipeline=pipeline)
+    list_data = mongodb.DBCON.command('aggregate',
+                                      settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+                                      pipeline=pipeline)
 
     logging.debug('After Aggregate')
 

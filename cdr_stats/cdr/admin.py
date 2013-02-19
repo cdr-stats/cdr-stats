@@ -14,7 +14,7 @@
 from django.contrib import admin
 from django.conf.urls import patterns
 from django.utils.translation import ugettext as _
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.conf import settings
@@ -24,7 +24,7 @@ from cdr.models import Switch, HangupCause, CDR_TYPE
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.functions_def import get_hangupcause_id, get_hangupcause_id_from_name
 from cdr.import_cdr_freeswitch_mongodb import apply_index, \
-    CDR_COMMON, create_analytic, generate_global_cdr_record
+    create_analytic, generate_global_cdr_record
 from cdr.functions_def import chk_account_code, get_hangupcause_name
 from cdr.forms import CdrSearchForm
 from cdr.constants import CDR_COLUMN_NAME
@@ -34,8 +34,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import csv
 import logging
-
-cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
+from mongodb_connection import mongodb
 
 
 def get_value_from_uni(j, row, field_name):
@@ -227,10 +226,12 @@ class SwitchAdmin(admin.ModelAdmin):
                                     CDR_TYPE['CSV_IMPORT'], '', country_id, authorized)
 
                                 # check if cdr is already existing in cdr_common
-                                cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
+                                if not mongodb.cdr_common:
+                                    raise Http404
+                                mongodb.cdr_common = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
                                 query_var = {}
                                 query_var['uuid'] = uuid
-                                record_count = cdr_data.find(query_var).count()
+                                record_count = mongodb.cdr_common.find(query_var).count()
 
                                 if record_count >= 1:
                                     msg = _('CDR already exists !!')
@@ -244,7 +245,7 @@ class SwitchAdmin(admin.ModelAdmin):
 
                                     local_count_import = local_count_import + 1
                                     if local_count_import == PAGE_SIZE:
-                                        CDR_COMMON.insert(cdr_bulk_record)
+                                        mongodb.cdr_common.insert(cdr_bulk_record)
                                         local_count_import = 0
                                         cdr_bulk_record = []
 
@@ -265,7 +266,7 @@ class SwitchAdmin(admin.ModelAdmin):
 
                     # remaining record
                     if cdr_bulk_record:
-                        CDR_COMMON.insert(cdr_bulk_record)
+                        mongodb.cdr_common.insert(cdr_bulk_record)
                         local_count_import = 0
                         cdr_bulk_record = []
 
@@ -301,7 +302,7 @@ class SwitchAdmin(admin.ModelAdmin):
 
             * ``template`` - admin/voip_billing/voipplan/cdr_view.html
             * ``form`` - CdrSearchForm
-            * ``mongodb_data_set`` - MONGO_CDRSTATS['CDR_COMMON']
+            * ``mongodb_data_set`` - mongodb.cdr_common
 
         **Logic Description**:
 
@@ -541,7 +542,7 @@ class SwitchAdmin(admin.ModelAdmin):
             daily_report_query_var['metadata.country_id'] = {'$in': country_id}
             query_var['country_id'] = {'$in': country_id}
 
-        final_result = cdr_data.find(query_var,
+        final_result = mongodb.cdr_common.find(query_var,
             {
                 "uuid": 0,
                 "answer_uepoch": 0,
@@ -632,7 +633,7 @@ class SwitchAdmin(admin.ModelAdmin):
         # super(VoIPCall_ReportAdmin, self).queryset(request)
         query_var = request.session['query_var']
 
-        final_result = cdr_data.find(query_var,
+        final_result = mongodb.cdr_common.find(query_var,
             {
                 "uuid": 0,
                 "answer_uepoch": 0,

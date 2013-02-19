@@ -35,10 +35,10 @@ from voip_billing.function_def import rate_filter_range_field_chk
 from voip_billing.rate_engine import rate_engine
 from voip_billing.tasks import RebillingTask, ReaggregateTask
 from common.common_functions import variable_value, ceil_strdate
+from mongodb_connection import mongodb
 from datetime import datetime
 import csv
 
-cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
 APP_LABEL = _('VoIP Billing')
 
 
@@ -320,7 +320,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                     daily_kwargs['metadata.accountcode'] = call_kwargs['accountcode']
 
             # Get total no of calls which are going to rebill
-            call_rebill_count = cdr_data.find(call_kwargs).count()
+            call_rebill_count = mongodb.cdr_common.find(call_kwargs).count()
 
             if "confirmation" in request.POST:
                 confirmation = request.POST.get('confirmation')

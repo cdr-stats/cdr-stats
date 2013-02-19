@@ -22,6 +22,7 @@ from voip_billing.rate_engine import rate_engine
 import datetime
 import sys
 import random
+from mongodb_connection import mongodb
 
 random.seed()
 
@@ -33,11 +34,6 @@ HANGUP_CAUSE = ['NORMAL_CLEARING', 'NORMAL_CLEARING', 'NORMAL_CLEARING',
 # value 0 per default
 # 1 in process of import, 2 imported successfully and verified
 STATUS_SYNC = {"new": 0, "in_process": 1, "verified": 2}
-
-# Assign collection names to variables
-CDR_COMMON = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
-DAILY_ANALYTIC = settings.DBCON[settings.MONGO_CDRSTATS['DAILY_ANALYTIC']]
-MONTHLY_ANALYTIC = settings.DBCON[settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC']]
 
 
 def print_shell(shell, message):
@@ -142,19 +138,19 @@ def get_element(cdr):
 
 def apply_index(shell):
     """Apply index on cdr-stats mongodb collections"""
-    CDR_COMMON.ensure_index([
+    mongodb.cdr_common.ensure_index([
         ("start_uepoch", -1),
         ("caller_id_number", 1),
         ("destination_number", 1),
         ("duration", 1),
         ("billsec", 1),
         ("hangup_cause_id", 1)])
-    DAILY_ANALYTIC.ensure_index([
+    mongodb.daily_analytic.ensure_index([
         ("metadata.date", -1),
         ("metadata.switch_id", 1),
         ("metadata.country_id", 1),
         ("metadata.accountcode", 1)])
-    MONTHLY_ANALYTIC.ensure_index([
+    mongodb.monthly_analytic.ensure_index([
         ("metadata.date", -1),
         ("metadata.switch_id", 1),
         ("metadata.country_id", 1),
@@ -167,7 +163,7 @@ def apply_index(shell):
 def create_daily_analytic(daily_date, switch_id, country_id,
                           accountcode, hangup_cause_id, duration,
                           buy_cost, sell_cost):
-    """Create DAILY_ANALYTIC"""
+    """Create mongodb.daily_analytic"""
     id_daily = daily_date.strftime('%Y%m%d') + "/%d/%s/%d/%d" % \
         (switch_id, accountcode, country_id, hangup_cause_id)
 
@@ -176,7 +172,7 @@ def create_daily_analytic(daily_date, switch_id, country_id,
     # Get a datetime that only include date info
     d = datetime.datetime.combine(daily_date.date(), datetime.time.min)
 
-    DAILY_ANALYTIC.update(
+    mongodb.daily_analytic.update(
         {
             "_id": id_daily,
             "metadata": {
@@ -213,14 +209,14 @@ def create_daily_analytic(daily_date, switch_id, country_id,
 def create_monthly_analytic(daily_date, start_uepoch, switch_id,
                             country_id, accountcode, duration,
                             buy_cost, sell_cost):
-    """Create DAILY_ANALYTIC"""
+    """Create mongodb.daily_analytic"""
     # Get a datetime that only include year-month info
     d = datetime.datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
 
     id_monthly = daily_date.strftime('%Y%m') + "/%d/%s/%d" %\
         (switch_id, accountcode, country_id)
 
-    MONTHLY_ANALYTIC.update(
+    mongodb.monthly_analytic.update(
         {
             "_id": id_monthly,
             "metadata": {
@@ -323,16 +319,16 @@ def create_analytic(date_start_uepoch, start_uepoch, switch_id,
                     country_id, accountcode, hangup_cause_id, duration,
                     buy_cost, sell_cost):
     """
-    Common function to create DAILY_ANALYTIC, MONTHLY_ANALYTIC
+    Common function to create mongodb.daily_analytic, mongodb.monthly_analytic
     """
-    # DAILY_ANALYTIC
+    # mongodb.daily_analytic
     daily_date = datetime.datetime.fromtimestamp(int(date_start_uepoch[:10]))
 
     # insert daily analytic record
     create_daily_analytic(daily_date, switch_id, country_id, accountcode,
         hangup_cause_id, duration, buy_cost, sell_cost)
 
-    # MONTHLY_ANALYTIC
+    # mongodb.monthly_analytic
     # insert monthly analytic record
     create_monthly_analytic(daily_date, start_uepoch, switch_id, country_id,
         accountcode, duration, buy_cost, sell_cost)
@@ -343,7 +339,7 @@ def create_analytic(date_start_uepoch, start_uepoch, switch_id,
 def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
     """
     function go through the current mongodb, then will
-    - create CDR_COMMON
+    - create mongodb.cdr_common
     - build the pre-aggregate
     """
 
@@ -431,7 +427,7 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         billmsec = data_element['billmsec']
         read_codec = data_element['read_codec']
         write_codec = data_element['write_codec']
-        
+
         try:
             voipplan_id = UserProfile.objects.get(accountcode=accountcode).voipplan_id
         except:
@@ -484,8 +480,8 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         )
 
     if local_count_import > 0:
-        # Bulk cdr list insert into cdr_common
-        CDR_COMMON.insert(cdr_bulk_record)
+        # Bulk cdr list insert into mongodb.cdr_common
+        mongodb.cdr_common.insert(cdr_bulk_record)
         # Reset counter to zero
         local_count_import = 0
         print_shell(shell, "Switch(%s) - currently imported CDRs:%d" %
@@ -532,6 +528,10 @@ def import_cdr_freeswitch_mongodb(shell=False):
     # and import the data as we do below
 
     print_shell(shell, "Starting the synchronization...")
+
+    if not mongodb.cdr_common:
+        sys.stderr.write('Error mongodb connection')
+        sys.exit(1)
 
     #loop within the Mongo CDR Import List
     for ipaddress in settings.CDR_BACKEND:

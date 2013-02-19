@@ -535,17 +535,3 @@ try:
     from settings_local import *
 except:
     pass
-
-#CONNECT MONGODB
-#===============
-
-#Connect on MongoDB Database
-from pymongo.connection import Connection
-from pymongo.errors import ConnectionFailure
-import sys
-try:
-    connection = Connection(MONGO_CDRSTATS['HOST'], MONGO_CDRSTATS['PORT'])
-    DBCON = connection[MONGO_CDRSTATS['DB_NAME']]
-except ConnectionFailure, e:
-    sys.stderr.write("Could not connect to MongoDB: %s" % e)
-    sys.exit(1)

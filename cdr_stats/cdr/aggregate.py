@@ -13,12 +13,19 @@
 #
 from django.conf import settings
 import datetime
+from mongodb_connection import mongodb
 
-CONC_CALL_AGG = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL_AGG']]
+try:
+    CONC_CALL_AGG = mongodb.DBCON[settings.MONGO_CDRSTATS['CONC_CALL_AGG']]
+except TypeError:
+    CONC_CALL_AGG = False
 
 
 def set_concurrentcall_analytic(call_date, switch_id, accountcode, numbercall):
     """Create Concurrent call Analytic"""
+    if not CONC_CALL_AGG:
+        return False
+
     date_minprec = datetime.datetime(
         call_date.year, call_date.month, call_date.day,
         call_date.hour, call_date.minute)

@@ -14,8 +14,7 @@
 from django.conf import settings
 from cdr.models import CDR_TYPE
 from cdr.import_cdr_freeswitch_mongodb import chk_ipaddress,\
-    CDR_COMMON, create_analytic,\
-    set_int_default, calculate_call_cost
+    create_analytic, set_int_default, calculate_call_cost
 from cdr.functions_def import get_hangupcause_id
 from cdr_alert.functions_blacklist import chk_destination
 from datetime import datetime
@@ -292,7 +291,7 @@ def import_cdr_asterisk(shell=False):
 
         if local_count_import > 0:
             # Bulk cdr list insert into cdr_common
-            CDR_COMMON.insert(cdr_bulk_record)
+            mongodb.cdr_common.insert(cdr_bulk_record)
             # Reset counter to zero
             local_count_import = 0
             cdr_bulk_record = []

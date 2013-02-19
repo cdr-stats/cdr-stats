@@ -32,14 +32,12 @@ from cdr.functions_def import get_hangupcause_id
 from cdr.views import get_cdr_mail_report
 from user_profile.models import UserProfile
 from user_profile.constants import NOTICE_TYPE
-
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+from mongodb_connection import mongodb
 
 # Lock expires in 30 minutes
 LOCK_EXPIRE = 60 * 30
-
-cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
 
 
 def get_start_end_date(alert_condition_add_on):
@@ -174,7 +172,13 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
 
 
 def run_alarm(alarm_obj, logger):
-    """Alarm object"""
+    """
+    Perform Alarm Check
+    """
+    if not mongodb.cdr_common:
+        logger.error('Error MongoDB connection')
+        return False
+
     if alarm_obj.type == ALARM_TYPE.ALOC:  # ALOC (average length of call)
         logger.debug('ALOC (average length of call)')
         # return start and end date of previous/current day
@@ -186,9 +190,9 @@ def run_alarm(alarm_obj, logger):
                                       '$lte': dt_list['p_end_date']}
 
         pipeline = pipeline_cdr_alert_task(query_var)
-        pre_total_data = settings.DBCON.command('aggregate',
-                                                settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                                pipeline=pipeline)
+        pre_total_data = mongodb.DBCON.command('aggregate',
+                                               settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+                                               pipeline=pipeline)
         pre_day_data = {}
         for doc in pre_total_data['result']:
             pre_date = dt_list['p_start_date']
@@ -205,9 +209,9 @@ def run_alarm(alarm_obj, logger):
                                       '$lte': dt_list['c_end_date']}
         # current date
         pipeline = pipeline_cdr_alert_task(query_var)
-        cur_total_data = settings.DBCON.command('aggregate',
-                                                settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                                pipeline=pipeline)
+        cur_total_data = mongodb.DBCON.command('aggregate',
+                                               settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+                                               pipeline=pipeline)
         cur_day_data = {}
         for doc in cur_total_data['result']:
             cur_date = dt_list['c_start_date']
@@ -232,9 +236,9 @@ def run_alarm(alarm_obj, logger):
         query_var['start_uepoch'] = {'$gte': dt_list['p_start_date'],
                                      '$lte': dt_list['p_end_date']}
 
-        pre_total_record = cdr_data.find(query_var).count()
+        pre_total_record = mongodb.cdr_common.find(query_var).count()
         query_var['hangup_cause_id'] = get_hangupcause_id(hangup_cause_q850)
-        pre_total_answered_record = cdr_data.find(query_var).count()
+        pre_total_answered_record = mongodb.cdr_common.find(query_var).count()
         previous_asr = pre_total_answered_record / pre_total_record
 
         if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or \
@@ -247,11 +251,11 @@ def run_alarm(alarm_obj, logger):
         query_var = {}
         query_var['start_uepoch'] = {'$gte': dt_list['c_start_date'],
                                      '$lte': dt_list['c_end_date']}
-        cur_total_record = cdr_data.find(query_var).count()
+        cur_total_record = mongodb.cdr_common.find(query_var).count()
 
         query_var['hangup_cause_id'] = get_hangupcause_id(hangup_cause_q850)
 
-        cur_total_answered_record = cdr_data.find(query_var).count()
+        cur_total_answered_record = mongodb.cdr_common.find(query_var).count()
         current_asr = cur_total_answered_record / cur_total_record
 
         if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or \

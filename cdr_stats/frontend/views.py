@@ -16,7 +16,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.views import password_reset, password_reset_done,\
     password_reset_confirm, password_reset_complete
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template.context import RequestContext
@@ -25,7 +25,7 @@ from pymongo.connection import Connection
 from common.common_functions import current_view, get_news
 from frontend.forms import LoginForm
 from cdr.import_cdr_freeswitch_mongodb import chk_ipaddress
-
+from mongodb_connection import mongodb
 
 news_url = settings.NEWS_URL
 
@@ -89,19 +89,15 @@ def diagnostic(request):
                 CDR_COUNT = row[0]
 
             success_ip.append(ipaddress)
-
-            CDR_COMMON = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
-            DAILY_ANALYTIC = settings.DBCON[settings.MONGO_CDRSTATS['DAILY_ANALYTIC']]
-            MONTHLY_ANALYTIC = settings.DBCON[settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC']]
-            CONC_CALL = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']]
-            CONC_CALL_AGG = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL_AGG']]
+            if not mongodb.cdr_common:
+                raise Http404
 
             collection_data = {
-                'CDR_COMMON': CDR_COMMON.find().count(),
-                'DAILY_ANALYTIC': DAILY_ANALYTIC.find().count(),
-                'MONTHLY_ANALYTIC': MONTHLY_ANALYTIC.find().count(),
-                'CONC_CALL': CONC_CALL.find().count(),
-                'CONC_CALL_AGG': CONC_CALL_AGG.find().count()
+                'CDR_COMMON': mongodb.cdr_common.find().count(),
+                'DAILY_ANALYTIC': mongodb.daily_analytic.find().count(),
+                'MONTHLY_ANALYTIC': mongodb.monthly_analytic.find().count(),
+                'CONC_CALL': mongodb.conc_call.find().count(),
+                'CONC_CALL_AGG': mongodb.conc_call_agg.find().count()
             }
         except:
             CDR_COUNT = _('Error')

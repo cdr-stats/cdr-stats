@@ -14,8 +14,8 @@
 #
 
 from django.conf import settings
-#from django import http
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseForbidden
+#from django.http import HttpResponseRedirect
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 
@@ -31,7 +31,8 @@ class MongodbConnectionMiddleware(object):
             if connection.is_locked:
                 if connection.unlock():  # if db gets unlocked
                     return None
-                return HttpResponseRedirect('/?db_error=locked')
+                #return HttpResponseRedirect('/?db_error=locked')
+                return HttpResponseForbidden('<h1>Error Connection</h1>')
             else:
                 #check if collection have any data
                 #db = connection[settings.MONGO_CDRSTATS['DB_NAME']]
@@ -43,4 +44,5 @@ class MongodbConnectionMiddleware(object):
                 #    return None
                 return None
         except ConnectionFailure:
-            return HttpResponseRedirect('/?db_error=closed')
+            #return HttpResponseRedirect('/?db_error=closed')
+            return HttpResponseForbidden('<h1>Error Connection</h1>')

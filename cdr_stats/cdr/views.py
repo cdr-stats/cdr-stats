@@ -19,9 +19,9 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.utils.translation import gettext as _
 from django.conf import settings
+from mongodb_connection import mongodb
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
-
 from common.common_functions import current_view, get_news, \
     variable_value, mongodb_str_filter, mongodb_int_filter, \
     int_convert_to_minute, validate_days, ceil_strdate
@@ -47,10 +47,6 @@ import math
 import csv
 import time
 import logging
-
-
-cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
-#db.cdr.ensureIndex({"variables.answer_stamp":1}, {background:true});
 
 
 def index(request):
@@ -97,7 +93,9 @@ def check_cdr_exists(function=None):
         """Decorator"""
         def _caller(request, *args, **kwargs):
             """Caller."""
-            doc = cdr_data.find_one()
+            if not mongodb.cdr_common:
+                raise Http404
+            doc = mongodb.cdr_common.find_one()
             if not doc:
                 return render_to_response('frontend/error_import.html',
                     context_instance=RequestContext(request))
@@ -160,9 +158,9 @@ def cdr_view_daily_report(query_var):
     pipeline = pipeline_cdr_view_daily_report(query_var)
 
     logging.debug('Before Aggregate')
-    list_data = settings.DBCON.command('aggregate',
-                                       settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                       pipeline=pipeline)
+    list_data = mongodb.DBCON.command('aggregate',
+                                      settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+                                      pipeline=pipeline)
     logging.debug('After Aggregate')
 
     total_data = []
@@ -263,7 +261,7 @@ def cdr_view(request):
 
         * ``template`` - frontend/cdr_view.html
         * ``form`` - CdrSearchForm
-        * ``mongodb_data_set`` - MONGO_CDRSTATS['CDR_COMMON']
+        * ``mongodb_data_set`` - mongodb.cdr_common
 
     **Logic Description**:
 
@@ -502,7 +500,7 @@ def cdr_view(request):
         daily_report_query_var['metadata.country_id'] = {'$in': country_id}
         query_var['country_id'] = {'$in': country_id}
 
-    final_result = cdr_data.find(query_var,
+    final_result = mongodb.cdr_common.find(query_var,
         {
             "uuid": 0,
             "answer_uepoch": 0,
@@ -601,7 +599,7 @@ def cdr_export_to_csv(request):
     # get query_var from request.session
     query_var = request.session['query_var']
 
-    final_result = cdr_data.find(query_var,
+    final_result = mongodb.cdr_common.find(query_var,
         {
             "uuid": 0,
             "answer_uepoch": 0,
@@ -783,13 +781,14 @@ def cdr_dashboard(request):
 
     logging.debug('cdr dashboard analytic')
 
-    daily_data = settings.DBCON[settings.MONGO_CDRSTATS['DAILY_ANALYTIC']]
     not_require_field = {'call_daily': 0,
                          'call_hourly': 0,
                          'duration_daily': 0,
                          'duration_hourly': 0}
     logging.debug('Before daily_data.find')
-    daily_data = daily_data.find(query_var, not_require_field)\
+    if not mongodb.daily_analytic:
+        raise Http404
+    daily_data = mongodb.daily_analytic.find(query_var, not_require_field)\
         .sort([('metadata.date', 1),
                ('metadata.country_id', 1),
                ('metadata.hangup_cause_id', 1)])
@@ -971,8 +970,9 @@ def cdr_concurrent_calls(request):
 
     final_data = []
     if query_var:
-        CONC_CALL_AGG = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL_AGG']]
-        calls_in_day = CONC_CALL_AGG.find(query_var).sort([('date', 1)])
+        if not mongodb.conc_call_agg:
+            raise Http404
+        calls_in_day = mongodb.conc_call_agg.find(query_var).sort([('date', 1)])
 
         for d in calls_in_day:
             # convert date into timestamp value
@@ -1033,8 +1033,9 @@ def cdr_realtime(request):
         query_var['value.accountcode'] = chk_account_code(request)
 
     if query_var:
-        calls_in_day = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL_AGG']]
-        calls_in_day = calls_in_day.find(query_var).\
+        if not mongodb.conc_call_agg:
+            raise mongodb.conc_call_agg
+        calls_in_day = mongodb.conc_call_agg.find(query_var).\
             sort([('_id.g_Millisec', -1)])
 
         final_data = []
@@ -1077,16 +1078,16 @@ def get_cdr_mail_report():
 
     # find result from cdr_common collection
     final_result =\
-        cdr_data.find(query_var).sort([('start_uepoch', -1)]).limit(10)
+        mongodb.cdr_common.find(query_var).sort([('start_uepoch', -1)]).limit(10)
 
     # Collect analytics
     logging.debug('Aggregate cdr mail report')
     pipeline = pipeline_mail_report(query_var)
 
     logging.debug('Before Aggregate')
-    list_data = settings.DBCON.command('aggregate',
-                                       settings.MONGO_CDRSTATS['CDR_COMMON'],
-                                       pipeline=pipeline)
+    list_data = mongodb.DBCON.command('aggregate',
+                                      settings.MONGO_CDRSTATS['CDR_COMMON'],
+                                      pipeline=pipeline)
     logging.debug('After Aggregate')
 
     # inintalize variables
@@ -1194,7 +1195,7 @@ def mail_report(request):
 
         * ``template`` - frontend/cdr_mail_report.html
         * ``form`` - MailreportForm
-        * ``mongodb_data_set`` - MONGO_CDRSTATS['CDR_COMMON']
+        * ``mongodb_data_set`` - mongodb.cdr_common
 
     **Logic Description**:
 
@@ -1242,9 +1243,9 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
     logging.debug('Aggregate cdr hourly report')
     pipeline = pipeline_hourly_report(query_var)
     logging.debug('Before Aggregate')
-    list_data = settings.DBCON.command('aggregate',
-                                       settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                       pipeline=pipeline)
+    list_data = mongodb.DBCON.command('aggregate',
+                                      settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+                                      pipeline=pipeline)
 
     total_record = {}
     if list_data:
@@ -1551,9 +1552,9 @@ def cdr_overview(request):
         pipeline = pipeline_hourly_overview(query_var)
 
         logging.debug('Before Aggregate')
-        list_data = settings.DBCON.command('aggregate',
-                                           settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                           pipeline=pipeline)
+        list_data = mongodb.DBCON.command('aggregate',
+                                          settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+                                          pipeline=pipeline)
         logging.debug('After Aggregate')
 
         hour_data = dict()
@@ -1616,9 +1617,9 @@ def cdr_overview(request):
         pipeline = pipeline_daily_overview(query_var)
 
         logging.debug('Before Aggregate')
-        list_data = settings.DBCON.command('aggregate',
-                                           settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                           pipeline=pipeline)
+        list_data = mongodb.DBCON.command('aggregate',
+                                          settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+                                          pipeline=pipeline)
         logging.debug('After Aggregate')
 
         if list_data:
@@ -1663,9 +1664,9 @@ def cdr_overview(request):
         pipeline = pipeline_monthly_overview(query_var)
 
         logging.debug('Before Aggregate')
-        list_data = settings.DBCON.command('aggregate',
-                                           settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC'],
-                                           pipeline=pipeline)
+        list_data = mongodb.DBCON.command('aggregate',
+                                          settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC'],
+                                          pipeline=pipeline)
         logging.debug('After Aggregate')
 
         if list_data:
@@ -1819,9 +1820,9 @@ def cdr_country_report(request):
     pipeline = pipeline_country_hourly_report(query_var)
 
     logging.debug('Before Aggregate')
-    list_data = settings.DBCON.command('aggregate',
-                                       settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                       pipeline=pipeline)
+    list_data = mongodb.DBCON.command('aggregate',
+                                      settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+                                      pipeline=pipeline)
     total_record_final = []
 
     if list_data:
@@ -1870,9 +1871,9 @@ def cdr_country_report(request):
     pipeline = pipeline_country_report(query_var)
 
     logging.debug('Before Aggregate')
-    list_data = settings.DBCON.command('aggregate',
-                                       settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                       pipeline=pipeline)
+    list_data = mongodb.DBCON.command('aggregate',
+                                      settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+                                      pipeline=pipeline)
     logging.debug('After Aggregate')
     country_analytic_array = []
     if list_data:
@@ -1982,9 +1983,9 @@ def world_map_view(request):
     pipeline = pipeline_country_report(query_var)
 
     logging.debug('Before Aggregate')
-    list_data = settings.DBCON.command('aggregate',
-                                       settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                       pipeline=pipeline)
+    list_data = mongodb.DBCON.command('aggregate',
+                                      settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+                                      pipeline=pipeline)
     logging.debug('After Aggregate')
     world_analytic_array = []
     if list_data:

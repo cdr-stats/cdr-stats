@@ -17,6 +17,7 @@ from django.conf import settings
 from celery.task import PeriodicTask
 from cdr.import_cdr_freeswitch_mongodb import import_cdr_freeswitch_mongodb
 from cdr.import_cdr_asterisk import import_cdr_asterisk
+from mongodb_connection import mongodb
 from cdr.aggregate import set_concurrentcall_analytic
 from django.core.cache import cache
 from cdr.models import Switch
@@ -105,7 +106,8 @@ class get_channels_info(PeriodicTask):
                         'numbercall': numbercall,
                         'accountcode': accountcode,
                     }
-                    settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].insert(call_json)
+
+                    mongodb.conc_call.insert(call_json)
 
                     #Save to cache
                     key = "%s-%d-%s" % (key_date, switch_id, str(accountcode))
@@ -172,7 +174,7 @@ class get_channels_info(PeriodicTask):
                     'numbercall': numbercall,
                     'accountcode': accountcode,
                 }
-                settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].insert(call_json)
+                mongodb.conc_call.insert(call_json)
                 #Save to cache
                 key = "%s-%d-%s" % (key_date, switch_id, str(accountcode))
                 cache.set(key, numbercall, 1800)  # 30 minutes
@@ -191,7 +193,7 @@ class get_channels_info(PeriodicTask):
                 'numbercall': numbercall,
                 'accountcode': accountcode,
             }
-            settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].insert(call_json)
+            mongodb.conc_call.insert(call_json)
             key = "%s-%d-%s" % (key_date, switch_id, str(accountcode))
             cache.set(key, numbercall, 1800)  # 30 minutes
             set_concurrentcall_analytic(date_now, switch_id, accountcode, numbercall)

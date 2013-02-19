@@ -14,21 +14,23 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.core.management.base import BaseCommand
-from django.conf import settings
+from mongodb_connection import mongodb
 
-CONC_CALL_AGG = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL_AGG']]
 
 class Command(BaseCommand):
     #args = ''
     help = "Apply index on concurrent call collection\n"\
            "-----------------------------------------\n"\
-           "python manage.py apply_index_on_concurrent_call"    
+           "python manage.py apply_index_on_concurrent_call"
 
     def handle(self, *args, **options):
         """
         Note that rates created this way are only for devel purposes
         """
-        CONC_CALL_AGG.ensure_index([('call_date', -1), ('switch_id', 1), ('accountcode', 1)],
+        if not mongodb.conc_call_agg:
+            print "Error mongodb Connection"
+
+        mongodb.conc_call_agg.ensure_index([('call_date', -1), ('switch_id', 1), ('accountcode', 1)],
                                unique=True)
-        
+
         print "Index applied on concurrnt calls"
