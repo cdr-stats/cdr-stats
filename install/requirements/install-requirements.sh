@@ -13,8 +13,14 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-echo "Install basic requirements..."
+echo "Install Basic requirements..."
 for line in $(cat install/requirements/basic-requirements.txt | grep -v \#)
+do
+    pip install $line --use-mirrors
+done
+
+echo "Install Mysql requirements..."
+for line in $(cat install/requirements/mysql-requirements.txt | grep -v \#)
 do
     pip install $line --use-mirrors
 done
