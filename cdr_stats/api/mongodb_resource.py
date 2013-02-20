@@ -19,6 +19,7 @@ from django.conf import settings
 from tastypie.bundle import Bundle
 from tastypie.resources import Resource
 from cdr.import_cdr_freeswitch_mongodb import create_analytic
+from mongodb_connection import mongodb
 
 
 class Document(dict):
@@ -109,6 +110,15 @@ class CDRMongoDBResource(MongoDBResource):
     """
     CDR resource that allows to make CRUD operations for mongodb.
     """
+    def get_collection(self):
+        """
+        Encapsulates collection name.
+        """
+        try:
+            return mongodb.DBCON[self._meta.collection]
+        except AttributeError:
+            raise ImproperlyConfigured("Define a collection in your resource.")
+
     def obj_create(self, bundle, **kwargs):
         """
         Insert document into MongoDB and create also the analytic collections

@@ -121,7 +121,7 @@ class VoipCallResource(CDRMongoDBResource):
 
         CURL Usage::
 
-            curl -u username:password --dump-header - -H "Content-Type:application/json" -X POST --data '{"accountcode":"1000", "answer_uepoch":"1359403221", "billmsec":"12960", "billsec":"104", "caller_id_name":"29914046", "caller_id_number":"29914046", "destination_number":"032287971777", "direction":"inbound", "duration":"154.0", "end_uepoch":"1359403221", "hangup_cause":"NORMAL_CLEARING", "mduration":"12960", "read_codec":"G711", "remote_media_ip":"192.168.1.21", "resource_uri":"", "start_uepoch":"1359403221", "switch_id":"1", "write_codec":"G711"}' http://localhost:8000/api/v1/voip_call/
+            curl -u username:password --dump-header - -H "Content-Type:application/json" -X POST --data '{"accountcode":"1000", "answer_uepoch":"1359403221", "billmsec":"12960", "billsec":"104", "caller_id_name":"29914046", "caller_id_number":"29914046", "destination_number":"032287971777", "direction":"inbound", "duration":"154.0", "end_uepoch":"1359403221", "hangup_cause_id":"16", "mduration":"12960", "read_codec":"G711", "remote_media_ip":"192.168.1.21", "resource_uri":"", "start_uepoch":"1359403221", "switch_id":"1", "write_codec":"G711"}' http://localhost:8000/api/v1/voip_call/
 
         Response::
 

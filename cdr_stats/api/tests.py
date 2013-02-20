@@ -61,12 +61,12 @@ class ApiTestCase(BaseAuthenticatedClient):
     def test_voip_call(self):
         """Test Function to create a switch"""
         # Create
-        data = {"accountcode":"1000", "answer_uepoch":"1359403221", "billmsec":"12960", 
+        data = simplejson.dumps({"accountcode":"1000", "answer_uepoch":"1359403221", "billmsec":"12960", 
             "billsec":"104", "caller_id_name":"29914046", "caller_id_number":"29914046", 
             "destination_number":"032287971777", "direction":"inbound", "duration":"154.0", 
-            "end_uepoch":"1359403221", "hangup_cause":"NORMAL_CLEARING", "mduration":"12960", 
+            "end_uepoch":"1359403221", "hangup_cause_id":"16", "mduration":"12960", 
             "read_codec":"G711", "remote_media_ip":"192.168.1.21", "resource_uri":"", 
-            "start_uepoch":"1359403221", "switch_id":"1", "write_codec":"G711"}
+            "start_uepoch":"1359403221", "switch_id":"1", "write_codec":"G711"})
         response = self.client.post('/api/v1/voip_call/', data,
             content_type='application/json', **self.extra)
         self.assertEqual(response.status_code, 201)
