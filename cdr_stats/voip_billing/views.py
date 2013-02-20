@@ -29,6 +29,7 @@ from cdr.views import check_user_accountcode, check_cdr_exists, check_user_voipp
 from cdr.functions_def import chk_account_code
 from cdr.aggregate import pipeline_daily_billing_report, pipeline_hourly_billing_report
 from common.common_functions import current_view, ceil_strdate, get_pagination_vars
+from frontend_notification.views import notice_count
 from datetime import datetime
 import logging
 import time
@@ -116,6 +117,7 @@ def voip_rates(request):
         'PAGE_SIZE': PAGE_SIZE,
         'RATE_COLUMN_NAME': RATE_COLUMN_NAME,
         'sort_order': sort_order,
+        'notice_count': notice_count(request),
     })
     return render_to_response(template, variables,
            context_instance=RequestContext(request))
@@ -191,6 +193,7 @@ def simulator(request):
         'module': current_view(request),
         'form': form,
         'data': data,
+        'notice_count': notice_count(request),
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))
@@ -293,6 +296,7 @@ def daily_billing_report(request):
         'total_data': total_data,
         'start_date': start_date,
         'end_date': end_date,
+        'notice_count': notice_count(request),
     }
     return render_to_response(template, data, context_instance=RequestContext(request))
 
@@ -399,5 +403,6 @@ def hourly_billing_report(request):
         'total_buy_record': total_buy_record,
         'total_sell_record': total_sell_record,
         'start_date': start_date,
+        'notice_count': notice_count(request),
     }
     return render_to_response(template, data, context_instance=RequestContext(request))
