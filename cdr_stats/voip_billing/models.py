@@ -46,7 +46,7 @@ class VoIPPlan(Model):
     class Meta:
         db_table = u'voipbilling_voip_plan'
         app_label = _('voip_billing')
-        verbose_name = _("VoIP Plans")
+        verbose_name = _("VoIP Plan")
         verbose_name_plural = _("VoIP Plans")
 
     def __unicode__(self):
@@ -68,7 +68,7 @@ class BanPlan(models.Model):
     class Meta:
         db_table = u'voipbilling_banplan'
         app_label = _('voip_billing')
-        verbose_name = _("Ban Plans")
+        verbose_name = _("Ban Plan")
         verbose_name_plural = _("Ban Plans")
 
     def __unicode__(self):
@@ -110,7 +110,7 @@ class BanPrefix(models.Model):
         db_table = u'voipbilling_ban_prefix'
         app_label = _('voip_billing')
         verbose_name = _("Ban Prefix")
-        verbose_name_plural = _("Ban Prefix")
+        verbose_name_plural = _("Ban Prefixes")
 
     def __unicode__(self):
         return "%s" % (self.ban_plan)
@@ -153,7 +153,7 @@ class VoIPRetailPlan(Model):
     class Meta:
         db_table = u'voipbilling_voip_retail_plan'
         app_label = _('voip_billing')
-        verbose_name = _("Retail Plans")
+        verbose_name = _("Retail Plan")
         verbose_name_plural = _("Retail Plans")
 
     def __unicode__(self):
@@ -203,7 +203,7 @@ class VoIPRetailRate(models.Model):
         db_table = u'voipbilling_voip_retail_rate'
         app_label = _('voip_billing')
         verbose_name = _("Retail Rate")
-        verbose_name_plural = _("Retail Rate")
+        verbose_name_plural = _("Retail Rates")
 
     def voip_retail_plan_name(self):
         """
@@ -262,7 +262,7 @@ class VoIPCarrierPlan(Model):
         db_table = u'voipbilling_voip_carrier_plan'
         app_label = _('voip_billing')
         verbose_name = _("Carrier Plan")
-        verbose_name_plural = _("Carrier Plan")
+        verbose_name_plural = _("Carrier Plans")
 
     def __unicode__(self):
         return "%s" % (self.name)
@@ -295,7 +295,7 @@ class VoIPCarrierRate(models.Model):
         db_table = u'voipbilling_voip_carrier_rate'
         app_label = _('voip_billing')
         verbose_name = _("Carrier Rate")
-        verbose_name_plural = _("Carrier Rate")
+        verbose_name_plural = _("Carrier Rates")
 
     def voip_carrier_plan_name(self):
         """
