@@ -23,8 +23,7 @@ Dashboard
 
 Dashboard page for the admin interface after successful login with superuser credentials
 
-.. image:: ../_static/images/admin/admin_dashboard.png
-    :width: 1000
+.. image:: ../_static/images/admin/admin_dashboard.png    
 
 
 Alarm
@@ -40,7 +39,7 @@ to update.
     * http://localhost:8000/admin/cdr_alert/alarm/
 
 .. image:: ../_static/images/admin/alarm_list.png
-    :width: 1000
+
 
 To Add/Update alarm
 
@@ -50,7 +49,6 @@ To Add/Update alarm
     * http://localhost:8000/admin/cdr_alert/alarm/1/
 
 .. image:: ../_static/images/admin/add_alarm.png
-    :width: 1000
 
 
 Alarm-report
@@ -63,7 +61,6 @@ The alarmreport will be displayed from the following URL.
     * http://localhost:8000/admin/cdr_alert/alarmreport/
 
 .. image:: ../_static/images/admin/alarm_report_list.png
-    :width: 1000
 
 To Add/Update alarmreport
 
@@ -73,7 +70,6 @@ To Add/Update alarmreport
     * http://localhost:8000/admin/cdr_alert/alarmreport/1/
 
 .. image:: ../_static/images/admin/alarm_report.png
-    :width: 1000
 
 
 Blacklist
@@ -89,7 +85,7 @@ to update.
     * http://localhost:8000/admin/cdr_alert/blacklist/
 
 .. image:: ../_static/images/admin/blacklist_prefix_list.png
-    :width: 1000
+    
 
 .. image:: ../_static/images/admin/add_prefix_into_blacklist.png
 
@@ -107,7 +103,7 @@ to update.
     * http://localhost:8000/admin/cdr_alert/whitelist/
 
 .. image:: ../_static/images/admin/whitelist_prefix_list.png
-    :width: 1000
+    
 
 
 .. image:: ../_static/images/admin/add_prefix_into_whitelist.png
@@ -126,7 +122,7 @@ Also from the alert remove prefix, click on the remove prefix that you want to u
     * http://localhost:8000/admin/cdr_alert/alertremoveprefix/
 
 .. image:: ../_static/images/admin/alert_remove_prefix_list.png
-    :width: 1000
+    
 
 To Add/Update alert-remove prefix
 
@@ -136,7 +132,7 @@ To Add/Update alert-remove prefix
     * http://localhost:8000/admin/cdr_alert/alertremoveprefix/1/
 
 .. image:: ../_static/images/admin/add_alert_remove_prefix.png
-    :width: 1000
+    
 
 Switch
 ~~~~~~
@@ -146,7 +142,7 @@ Switch
     * http://localhost:8000/admin/cdr/switch/
 
 .. image:: ../_static/images/admin/switch_list.png
-    :width: 1000
+    
 
 HangupCause
 ~~~~~~~~~~~
@@ -156,7 +152,7 @@ HangupCause
     * http://localhost:8000/admin/cdr/hangupcause/
 
 .. image:: ../_static/images/admin/hangup_cause_list.png
-    :width: 1000
+    
 
 
 CDR View
@@ -167,4 +163,4 @@ CDR View
     * http://localhost:8000/admin/cdr/switch/cdr_view/
 
 .. image:: ../_static/images/admin/admin_cdr_view.png
-    :width: 1000
+    

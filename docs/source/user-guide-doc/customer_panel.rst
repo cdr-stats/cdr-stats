@@ -27,7 +27,7 @@ Index
 Index page for the customer interface after successful login with user credentials
 
 .. image:: ../_static/images/customer/index.png
-    :width: 700
+    
 
 Dashboard
 ~~~~~~~~~
@@ -41,7 +41,7 @@ and calls by country, either agregrated for all switches, or selectable by switc
 
 
 .. image:: ../_static/images/customer/dashboard.png
-    :width: 700
+    
 
 CDR-View
 ~~~~~~~~
@@ -57,11 +57,11 @@ The Report by Day shows a graphical illustration of the calls, minutes and avera
     * http://localhost:8000/cdr_view/
 
 .. image:: ../_static/images/customer/cdr_view_I.png
-    :width: 700
+    
 
 
 .. image:: ../_static/images/customer/cdr_view_II.png
-    :width: 700
+    
 
 CDR-Overview
 ~~~~~~~~~~~~
@@ -74,7 +74,7 @@ A pictorial view of calls with call-count or call-duration from any date or date
 
 
 .. image:: ../_static/images/customer/cdr_overview.png
-    :width: 700
+    
 
 
 CDR-Hourly-Report
@@ -88,7 +88,7 @@ You can compare different dates
     * http://localhost:8000/hourly_report/
 
 .. image:: ../_static/images/customer/call_compare.png
-    :width: 700
+    
 
 
 CDR-Country-Report
@@ -102,7 +102,7 @@ A pictorial view of all calls by country with the 10 most called countries in a 
 
 
 .. image:: ../_static/images/customer/country_report.png
-    :width: 700
+    
 
 Mail-Report
 ~~~~~~~~~~~
@@ -119,7 +119,7 @@ in the Mail Report section.
     * http://localhost:8000/mail_report/
 
 .. image:: ../_static/images/customer/mail_report.png
-    :width: 700
+    
 
 Concurrent-call-report
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -132,7 +132,7 @@ report, not from the CDR.
     * http://localhost:8000/cdr_concurrent_calls/
 
 .. image:: ../_static/images/customer/concurrent_call.png
-    :width: 700
+    
 
 
 Realtime-Report
@@ -146,7 +146,7 @@ Freeswitch and Asterisk are supported.
     * http://localhost:8000/cdr_realtime/
 
 .. image:: ../_static/images/customer/realtime.png
-    :width: 700
+    
 
 
 World Map Report
@@ -161,11 +161,11 @@ and on mouse over on the world map you can get information about each country.
     * http://localhost:8000/world_map/
 
 .. image:: ../_static/images/customer/world_map_I.png
-    :width: 700
+    
 
 
 .. image:: ../_static/images/customer/world_map_II.png
-    :width: 700
+    
 
 
 Alert Settings
@@ -177,7 +177,7 @@ Alert Settings
     * http://localhost:8000/alert/
 
 .. image:: ../_static/images/customer/alert_setting.png
-    :width: 700
+    
 
 
 Alert Report
@@ -189,7 +189,7 @@ Alert Report
     * http://localhost:8000/alert_report/
 
 .. image:: ../_static/images/customer/alert_report.png
-    :width: 700
+    
 
 
 Destination Control
@@ -201,7 +201,7 @@ Destination Control
     * http://localhost:8000/trust_control/
 
 .. image:: ../_static/images/customer/destination_control.png
-    :width: 700
+    
 
 
 Diagnostic CDR-Stats
@@ -213,7 +213,7 @@ Diagnostic CDR-Stats
     * http://localhost:8000/diagnostic/
 
 .. image:: ../_static/images/customer/diagnostic.png
-    :width: 700
+    
 
 
 Rates
@@ -226,7 +226,7 @@ voip call rates.
     * http://localhost:8000/rates/
 
 .. image:: ../_static/images/customer/rates.png
-    :width: 700
+    
 
 
 Call Simulator
@@ -239,7 +239,7 @@ voip call simulator.
     * http://localhost:8000/simulator/
 
 .. image:: ../_static/images/customer/call_simulator.png
-    :width: 700
+    
 
 
 Daily report of Billed call
@@ -252,7 +252,7 @@ Daily report of Billed call.
     * http://localhost:8000/daily_billing_report/
 
 .. image:: ../_static/images/customer/daily_billing_report.png
-    :width: 700
+    
 
 
 Hourly report of Billed call
@@ -265,4 +265,4 @@ Hourly report of Billed call.
     * http://localhost:8000/hourly_billing_report/
 
 .. image:: ../_static/images/customer/hourly_billing_report.png
-    :width: 700
+    
