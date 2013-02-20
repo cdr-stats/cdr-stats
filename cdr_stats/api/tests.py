@@ -21,7 +21,7 @@ class ApiTestCase(BaseAuthenticatedClient):
     """Test cases for CDR-Stats API."""
     fixtures = ['auth_user.json', 'country_dialcode.json', 
                 'hangup_cause.json', 'switch.json',
-                'voip_gateway.json', 'voip_provider.json'
+                'voip_gateway.json', 'voip_provider.json',
                 'user_profile.json', 'voip_billing.json']
 
     def test_switch(self):
@@ -59,7 +59,11 @@ class ApiTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
     def test_voip_call(self):
-        """Test Function to create a switch"""
+        """Test Function to create a switch"""        
+        # Read
+        response = self.client.get('/api/v1/voip_call/?format=json', **self.extra)
+        self.assertEqual(response.status_code, 200)
+
         # Create
         data = simplejson.dumps({"accountcode":"1000", "answer_uepoch":"1359403221", "billmsec":"12960", 
             "billsec":"104", "caller_id_name":"29914046", "caller_id_number":"29914046", 
@@ -70,10 +74,6 @@ class ApiTestCase(BaseAuthenticatedClient):
         response = self.client.post('/api/v1/voip_call/', data,
             content_type='application/json', **self.extra)
         self.assertEqual(response.status_code, 201)
-
-        # Read
-        response = self.client.get('/api/v1/voip_call/?format=json', **self.extra)
-        self.assertEqual(response.status_code, 200)
 
     def test_playground_view(self):
         """Test Function to create a api list view"""

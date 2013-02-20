@@ -20,6 +20,9 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings
 from django.contrib import messages
+from django.db.models.base import ModelBase
+from django.core.urlresolvers import resolve
+
 from user_profile.models import UserProfile
 from country_dialcode.models import Prefix
 from cdr.functions_def import chk_account_code
@@ -40,6 +43,69 @@ from datetime import datetime
 import csv
 
 APP_LABEL = _('VoIP Billing')
+
+class AppLabelRenamer(object):
+    ''' Rename app label and app breadcrumbs in admin. '''
+    def __init__(self, native_app_label, app_label):
+        self.native_app_label = native_app_label
+        self.app_label = app_label
+        self.module = '.'.join([native_app_label, 'models'])
+
+    class string_with_realoaded_title(str):
+        ''' tnx to Ionel Maries Cristian for http://ionelmc.wordpress.com/2011/06/24/custom-app-names-in-the-django-admin/'''
+        def __new__(cls, value, title):
+            instance = str.__new__(cls, value)
+            instance._title = title
+            return instance
+
+        def title(self):
+            return self._title
+
+        __copy__ = lambda self: self
+        __deepcopy__ = lambda self, memodict: self
+
+    def rename_app_label(self, f):
+        app_label = self.app_label
+
+        def rename_breadcrumbs(f):
+            def wrap(self, *args, **kwargs):
+                extra_context = kwargs.get('extra_context', {})
+                extra_context['app_label'] = app_label
+                kwargs['extra_context'] = extra_context
+                return f(self, *args, **kwargs)
+            return wrap
+
+        def wrap(model_or_iterable, admin_class=None, **option):
+            if isinstance(model_or_iterable, ModelBase):
+                model_or_iterable = [model_or_iterable]
+            for model in model_or_iterable:
+                if model.__module__ != self.module:
+                    continue
+                if admin_class is None:
+                    admin_class = type(model.__name__+'Admin', (admin.ModelAdmin,), {})
+                admin_class.add_view = rename_breadcrumbs(admin_class.add_view)
+                admin_class.change_view = rename_breadcrumbs(admin_class.change_view)
+                admin_class.changelist_view = rename_breadcrumbs(admin_class.changelist_view)
+                model._meta.app_label = self.string_with_realoaded_title(self.native_app_label, self.app_label)
+            return f(model, admin_class, **option)
+        return wrap
+
+    def rename_app_index(self, f):
+        def wrap(request, app_label, extra_context=None):
+            requested_app_label = resolve(request.path).kwargs.get('app_label', '')
+            if requested_app_label and requested_app_label == self.native_app_label:
+                app_label = self.string_with_realoaded_title(self.native_app_label, self.app_label)
+            else:
+                app_label = requested_app_label
+            return f(request, app_label, extra_context=None)
+        return wrap
+
+    def main(self):
+        admin.site.register = self.rename_app_label(admin.site.register)
+        admin.site.app_index = self.rename_app_index(admin.site.app_index)
+
+AppLabelRenamer(native_app_label=u'voip_billing', app_label=u'Voip Billing').main()
+
 
 
 def export_as_csv_action(description="Export selected objects as CSV file",
@@ -147,49 +213,13 @@ class VoIPPlanAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(VoIPPlanAdmin, self).get_urls()
-        my_urls = patterns('',
-            (r'^$', self.admin_site.admin_view(self.changelist_view)),
-            (r'^add/$', self.admin_site.admin_view(self.add_view)),
-            (r'^/(.+)/$', self.admin_site.admin_view(self.change_view)),
+        my_urls = patterns('',                
             (r'^simulator/$', self.admin_site.admin_view(self.simulator)),
             (r'^export/$', self.admin_site.admin_view(self.export)),
             (r'^rebilling/$', self.admin_site.admin_view(self.rebilling)),
         )
         return my_urls + urls
-
-    def changelist_view(self, request, extra_context=None):
-        """
-        VoIP Plan Listing
-        """
-        ctx = {
-            'app_label': APP_LABEL,
-            'title': _('Select VoIP Plan to Change'),
-        }
-        return super(VoIPPlanAdmin, self)\
-            .changelist_view(request, extra_context=ctx)
-
-    def add_view(self, request, extra_context=None):
-        """
-        Add VoIP Plan
-        """
-        ctx = {
-            'app_label': APP_LABEL,
-            'title': _('Add VoIP Plan'),
-        }
-        return super(VoIPPlanAdmin, self)\
-            .add_view(request, extra_context=ctx)
-
-    def change_view(self, request, object_id, extra_context=None):
-        """
-        Edit VoIP Plan
-        """
-        ctx = {
-            'app_label': APP_LABEL,
-            'title': _('Change VoIP Plan'),
-        }
-        return super(VoIPPlanAdmin, self)\
-            .change_view(request, object_id, extra_context=ctx)
-
+    
     def simulator(self, request):
         """
         Admin Simulator
@@ -383,47 +413,6 @@ class BanPlanAdmin(admin.ModelAdmin):
     list_display = ('name', 'created_date', 'updated_date')
     list_display_links = ('name', )
 
-    def get_urls(self):
-        urls = super(BanPlanAdmin, self).get_urls()
-        my_urls = patterns('',
-            (r'^$', self.admin_site.admin_view(self.changelist_view)),
-            (r'^add/$', self.admin_site.admin_view(self.add_view)),
-            (r'^/(.+)/$', self.admin_site.admin_view(self.change_view)),
-        )
-        return my_urls + urls
-
-    def changelist_view(self, request, extra_context=None):
-        """
-        Ban Plan Listing
-        """
-        ctx = {
-            'app_label': APP_LABEL,
-            'title': _('Select Ban Plan To Change'),
-        }
-        return super(BanPlanAdmin, self)\
-            .changelist_view(request, extra_context=ctx)
-
-    def add_view(self, request, extra_context=None):
-        """
-        Add Ban Plan
-        """
-        ctx = {
-            'app_label': APP_LABEL,
-            'title': _('Add Ban Plan'),
-        }
-        return super(BanPlanAdmin, self)\
-            .add_view(request, extra_context=ctx)
-
-    def change_view(self, request, object_id, extra_context=None):
-        """
-        Edit Ban Plan
-        """
-        ctx = {
-            'app_label': APP_LABEL,
-            'title': _('Change Ban Plan'),
-        }
-        return super(BanPlanAdmin, self)\
-            .change_view(request, object_id, extra_context=ctx)
 admin.site.register(BanPlan, BanPlanAdmin)
 
 
@@ -438,46 +427,11 @@ class BanPrefixAdmin(AutocompleteModelAdmin):
 
     def get_urls(self):
         urls = super(BanPrefixAdmin, self).get_urls()
-        my_urls = patterns('',
-            (r'^$', self.admin_site.admin_view(self.changelist_view)),
-            (r'^add/$', self.admin_site.admin_view(self.add_view)),
-            (r'^/(.+)/$', self.admin_site.admin_view(self.change_view)),
+        my_urls = patterns('',            
             (r'^search/$', self.admin_site.admin_view(self.search)),
         )
         return my_urls + urls
 
-    def changelist_view(self, request, extra_context=None):
-        """
-        Ban Prefix Listing with respect of VoIP Plan
-        """
-        ctx = {
-            'app_label': APP_LABEL,
-            'title': _('Select Ban Prefix To Change'),
-        }
-        return super(BanPrefixAdmin, self)\
-            .changelist_view(request, extra_context=ctx)
-
-    def add_view(self, request, extra_context=None):
-        """
-        Add Prefix To Ban
-        """
-        ctx = {
-            'app_label': APP_LABEL,
-            'title': _('Add Prefix To Ban'),
-        }
-        return super(BanPrefixAdmin, self)\
-            .add_view(request, extra_context=ctx)
-
-    def change_view(self, request, object_id, extra_context=None):
-        """
-        Edit Prefix To Ban
-        """
-        ctx = {
-            'app_label': APP_LABEL,
-            'title': _('Change Prefix To Ban'),
-        }
-        return super(BanPrefixAdmin, self)\
-            .change_view(request, object_id, extra_context=ctx)
 admin.site.register(BanPrefix, BanPrefixAdmin)
 
 
@@ -497,47 +451,6 @@ class VoIPRetailPlanAdmin(admin.ModelAdmin):
         VoIPPlan_VoIPRetailPlanInline,
     ]
 
-    def get_urls(self):
-        urls = super(VoIPRetailPlanAdmin, self).get_urls()
-        my_urls = patterns('',
-            (r'^$', self.admin_site.admin_view(self.changelist_view)),
-            (r'^add/$', self.admin_site.admin_view(self.add_view)),
-            (r'^/(.+)/$', self.admin_site.admin_view(self.change_view)),
-        )
-        return my_urls + urls
-
-    def changelist_view(self, request, extra_context=None):
-        """
-        VoIP Retail Plan Listing
-        """
-        ctx = {
-            'app_label': APP_LABEL,
-            'title': _('Select VoIP Retail Plan to Change'),
-        }
-        return super(VoIPRetailPlanAdmin, self)\
-            .changelist_view(request, extra_context=ctx)
-
-    def add_view(self, request, extra_context=None):
-        """
-        Add VoIP Retail Plan
-        """
-        ctx = {
-            'app_label': APP_LABEL,
-            'title': _('Add VoIP Retail Plan'),
-        }
-        return super(VoIPRetailPlanAdmin, self)\
-            .add_view(request, extra_context=ctx)
-
-    def change_view(self, request, object_id, extra_context=None):
-        """
-        Edit VoIP Retail Plan
-        """
-        ctx = {
-            'app_label': APP_LABEL,
-            'title': _('Change VoIP Retail Plan'),
-        }
-        return super(VoIPRetailPlanAdmin, self)\
-            .change_view(request, object_id, extra_context=ctx)
 admin.site.register(VoIPRetailPlan, VoIPRetailPlanAdmin)
 
 
@@ -575,9 +488,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
     def get_urls(self):
         urls = super(VoIPRetailRateAdmin, self).get_urls()
         my_urls = patterns('',
-            (r'^$', self.admin_site.admin_view(self.changelist_view)),
-            (r'^add/$', self.admin_site.admin_view(self.add_view)),
-            (r'^/(.+)/$', self.admin_site.admin_view(self.change_view)),
+            (r'^$', self.admin_site.admin_view(self.changelist_view)),            
             (r'^import_rr/$', self.admin_site.admin_view(self.import_rr)),
             (r'^export_rr/$', self.admin_site.admin_view(self.export_rr)),
             (r'^search/$', self.admin_site.admin_view(self.search)),
@@ -619,27 +530,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
             'title': _('Select VoIP Retail Rate to Change'),
             'form': form,
         }
-        return super(VoIPRetailRateAdmin, self).changelist_view(request, extra_context=ctx)
-
-    def add_view(self, request, extra_context=None):
-        """
-        Add VoIP Retail Rate
-        """
-        ctx = {
-            'app_label': APP_LABEL,
-            'title': _('Add VoIP Retail Rate'),
-        }
-        return super(VoIPRetailRateAdmin, self).add_view(request, extra_context=ctx)
-
-    def change_view(self, request, object_id, extra_context=None):
-        """
-        Edit VoIP Retail Rate
-        """
-        ctx = {
-            'app_label': APP_LABEL,
-            'title': _('Change VoIP Retail Rate'),
-        }
-        return super(VoIPRetailRateAdmin, self).change_view(request, object_id, extra_context=ctx, )
+        return super(VoIPRetailRateAdmin, self).changelist_view(request, extra_context=ctx)    
 
     def export_rr(self, request):
         """
@@ -783,47 +674,6 @@ class VoIPCarrierPlanAdmin(admin.ModelAdmin):
             return ('callsent',) + self.readonly_fields
         return self.readonly_fields
 
-    def get_urls(self):
-        urls = super(VoIPCarrierPlanAdmin, self).get_urls()
-        my_urls = patterns('',
-            (r'^$', self.admin_site.admin_view(self.changelist_view)),
-            (r'^add/$', self.admin_site.admin_view(self.add_view)),
-            (r'^/(.+)/$', self.admin_site.admin_view(self.change_view)),
-        )
-        return my_urls + urls
-
-    def changelist_view(self, request, extra_context=None):
-        """
-        VoIP Carrier Plan Listing
-        """
-        ctx = {
-            'app_label': APP_LABEL,
-            'title': _('Select VoIP Carrier Plan to Change'),
-        }
-        return super(VoIPCarrierPlanAdmin, self)\
-            .changelist_view(request, extra_context=ctx)
-
-    def add_view(self, request, extra_context=None):
-        """
-        Add VoIP Carrier Plan
-        """
-        ctx = {
-            'app_label': APP_LABEL,
-            'title': _('Add VoIP Carrier Plan'),
-        }
-        return super(VoIPCarrierPlanAdmin, self)\
-            .add_view(request, extra_context=ctx)
-
-    def change_view(self, request, object_id, extra_context=None):
-        """
-        Edit VoIP Carrier Plan
-        """
-        ctx = {
-            'app_label': APP_LABEL,
-            'title': _('Change VoIP Carrier Plan'),
-        }
-        return super(VoIPCarrierPlanAdmin, self)\
-            .change_view(request, object_id, extra_context=ctx)
 admin.site.register(VoIPCarrierPlan, VoIPCarrierPlanAdmin)
 
 
@@ -861,9 +711,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
     def get_urls(self):
         urls = super(VoIPCarrierRateAdmin, self).get_urls()
         my_urls = patterns('',
-            (r'^$', self.admin_site.admin_view(self.changelist_view)),
-            (r'^add/$', self.admin_site.admin_view(self.add_view)),
-            (r'^/(.+)/$', self.admin_site.admin_view(self.change_view)),
+            (r'^$', self.admin_site.admin_view(self.changelist_view)),            
             (r'^import_cr/$', self.admin_site.admin_view(self.import_cr)),
             (r'^export_cr/$', self.admin_site.admin_view(self.export_cr)),
             (r'^search/$', self.admin_site.admin_view(self.search)),
@@ -907,26 +755,6 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
             'form': form,
         }
         return super(VoIPCarrierRateAdmin, self).changelist_view(request, extra_context=ctx)
-
-    def add_view(self, request, extra_context=None):
-        """
-        Add VoIP Carrier Rate
-        """
-        ctx = {
-            'app_label': APP_LABEL,
-            'title': _('Add VoIP Carrier Rate'),
-        }
-        return super(VoIPCarrierRateAdmin, self).add_view(request, extra_context=ctx)
-
-    def change_view(self, request, object_id, extra_context=None):
-        """
-        Edit VoIP Carrier Rate
-        """
-        ctx = {
-            'app_label': APP_LABEL,
-            'title': _('Change VoIP Carrier Rate'),
-        }
-        return super(VoIPCarrierRateAdmin, self).change_view(request, object_id, extra_context=ctx)
 
     def export_cr(self, request):
         """
