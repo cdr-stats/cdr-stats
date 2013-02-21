@@ -12,7 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.db import models
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from common.intermediate_model_base_class import Model
 from voip_gateway.constants import GATEWAY_STATUS
 
@@ -52,8 +52,7 @@ class Gateway(Model):
         help_text=_("Select Gateway to route the call if the maximum call is reached"))
 
     class Meta:
-        db_table = u'voip_gateway'
-        app_label = _('voip_gateway')
+        db_table = u'voip_gateway'        
         verbose_name = _("Gateway")
         verbose_name_plural = _("Gateways")
 
@@ -80,8 +79,7 @@ class Provider(Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = u'voip_provider'
-        app_label = _('voip_gateway')
+        db_table = u'voip_provider'        
         verbose_name = _("Provider")
         verbose_name_plural = _("Providers")
 

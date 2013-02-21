@@ -25,6 +25,7 @@ from cdr_alert.models import AlertRemovePrefix, Alarm, AlarmReport, \
     Blacklist, Whitelist
 from cdr_alert.forms import BWCountryForm
 from common.app_label_renamer import AppLabelRenamer
+
 AppLabelRenamer(native_app_label=u'cdr_alert', app_label=_('CDR Alert')).main()
 
 

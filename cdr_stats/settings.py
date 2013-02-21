@@ -181,7 +181,7 @@ INSTALLED_APPS = (
     'cdr',
     'cdr_alert',
     'user_profile',
-    'frontend',
+    'frontend',    
     'dateutil',
     'south',
     'linaro_django_pagination',
@@ -198,7 +198,7 @@ INSTALLED_APPS = (
     'dajaxice',
     'dajax',
     'voip_gateway',
-    'voip_billing',
+    'voip_billing',    
 )
 
 # Debug Toolbar

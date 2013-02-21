@@ -13,7 +13,7 @@
 #
 
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from country_dialcode.models import Country
 from cdr_alert.constants import PERIOD, STATUS, ALARM_TYPE, \
     ALERT_CONDITION, ALERT_CONDITION_ADD_ON, ALARM_REPROT_STATUS
@@ -42,7 +42,7 @@ class AlertRemovePrefix(models.Model):
     def __unicode__(self):
         return '%s' % (self.label)
 
-    class Meta:
+    class Meta:        
         verbose_name = _("Alert Remove Prefix")
         verbose_name_plural = _("Alert Remove Prefixes")
         db_table = "alert_remove_prefix"
