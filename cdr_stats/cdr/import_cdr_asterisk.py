@@ -24,10 +24,6 @@ import random
 
 random.seed()
 
-HANGUP_CAUSE = ['NORMAL_CLEARING', 'NORMAL_CLEARING', 'NORMAL_CLEARING',
-                'NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED',
-                'INVALID_NUMBER_FORMAT']
-
 # value 0 per default
 # 1 in process of import, 2 imported successfully and verified
 STATUS_SYNC = {"new": 0, "in_process": 1, "verified": 2}

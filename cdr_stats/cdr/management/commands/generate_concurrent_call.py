@@ -21,12 +21,7 @@ import random
 import datetime
 from mongodb_connection import mongodb
 
-
 random.seed()
-
-HANGUP_CAUSE = ['NORMAL_CLEARING', 'NORMAL_CLEARING', 'NORMAL_CLEARING',
-                'NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED',
-                'INVALID_NUMBER_FORMAT']
 
 
 class Command(BaseCommand):
