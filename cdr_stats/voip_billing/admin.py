@@ -42,7 +42,7 @@ from datetime import datetime
 import csv
 
 APP_LABEL = _('VoIP Billing')
-AppLabelRenamer(native_app_label=u'voip_billing', app_label=u'Voip Billing').main()
+AppLabelRenamer(native_app_label=u'voip_billing', app_label=_('Voip Billing')).main()
 
 
 def export_as_csv_action(description="Export selected objects as CSV file",
