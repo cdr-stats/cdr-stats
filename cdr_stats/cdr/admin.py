@@ -35,6 +35,8 @@ from dateutil.relativedelta import relativedelta
 import csv
 import logging
 from mongodb_connection import mongodb
+from common.app_label_renamer import AppLabelRenamer
+AppLabelRenamer(native_app_label=u'cdr', app_label=_('CDR')).main()
 
 
 def get_value_from_uni(j, row, field_name):

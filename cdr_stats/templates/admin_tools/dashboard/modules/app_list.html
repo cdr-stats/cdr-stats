@@ -2,22 +2,7 @@
 {% load i18n %}
 {% block module_content %}
         {% for child in module.children %}
-        <h3><a href="{{ child.url }}">
-            {% if child.title == "Cdr_Alert" %}
-                {% trans "CDR Alert" %}
-            {% else %}
-                {% if child.title == "Voip_Gateway" %}
-                    {% trans "Voip gateway" %}
-                {% else %}
-                    {% if child.title == "Voip_Billing" %}
-                        {% trans "Voip billing" %}
-                    {% else %}                        
-                        {{ child.title }}                    
-                    {% endif %}
-                {% endif %}
-            {% endif %}
-
-            </a></h3>
+        <h3><a href="{{ child.url }}">{{ child.title }}</a></h3>
         <ul>
             {% for model in child.models %}
             {% spaceless %}

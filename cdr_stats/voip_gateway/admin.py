@@ -15,6 +15,8 @@ from django.contrib import admin
 from django.conf.urls import patterns
 from django.utils.translation import ugettext as _
 from voip_gateway.models import Gateway, Provider
+from common.app_label_renamer import AppLabelRenamer
+AppLabelRenamer(native_app_label=u'voip_gateway', app_label=_('Voip Gateway')).main()
 
 
 class GatewayAdmin(admin.ModelAdmin):
