@@ -128,13 +128,29 @@ class CustomAppIndexDashboard(AppIndexDashboard):
     """
     # we disable title because its redundant with the model list module
     title = ''
+    
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):        
         AppIndexDashboard.__init__(self, *args, **kwargs)
+        
+        #TODO: Find out better way 
+        if str(self.app_title) == 'Voip_Gateway':
+            app_title = _('Voip Gateway')
+            models = ['voip_gateway.*']
+        elif str(self.app_title) == 'Voip_Billing':
+            app_title = _('Voip Billing')
+            models = ['voip_billing.*']
+        elif str(self.app_title) == 'Cdr_Alert':
+            app_title = _('CDR Alert')
+            models = ['cdr_alert.*']
+        else:
+            app_title = self.app_title
+            models = self.models
 
         # append a model list module and a recent actions module
         self.children += [
-            modules.ModelList(self.app_title, self.models),
+            #modules.ModelList(self.app_title, self.models),
+            modules.ModelList(app_title, models),
             modules.RecentActions(
                 _('Recent Actions'),
                 include_list=self.get_app_content_types(),
@@ -145,5 +161,5 @@ class CustomAppIndexDashboard(AppIndexDashboard):
     def init_with_context(self, context):
         """
         Use this method if you need to access the request context.
-        """
+        """            
         return super(CustomAppIndexDashboard, self).init_with_context(context)
