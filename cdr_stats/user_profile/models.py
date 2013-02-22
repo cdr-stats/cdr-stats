@@ -108,6 +108,10 @@ class UserProfile(models.Model):
 
 
 class Customer(User):
+    """
+    Django user application allows you to store user accounts for customer without
+    is_staff/is_superuser privilege status
+    """
 
     class Meta:
         proxy = True
@@ -117,6 +121,10 @@ class Customer(User):
 
 
 class Staff(User):
+    """
+    Django user application allows you to store user accounts for staff with
+    is_staff/is_superuser privilege status
+    """
 
     class Meta:
         proxy = True

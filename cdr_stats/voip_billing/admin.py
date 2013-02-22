@@ -21,9 +21,7 @@ from django.shortcuts import render_to_response
 from django.conf import settings
 from django.contrib import messages
 
-from user_profile.models import UserProfile
 from country_dialcode.models import Prefix
-from cdr.functions_def import chk_account_code
 from voip_billing.models import VoIPRetailRate, VoIPPlan, BanPlan,\
     VoIPPlan_BanPlan, BanPrefix, VoIPRetailPlan, VoIPPlan_VoIPRetailPlan,\
     VoIPCarrierPlan, VoIPCarrierRate, VoIPPlan_VoIPCarrierPlan
@@ -37,48 +35,13 @@ from voip_billing.rate_engine import rate_engine
 from voip_billing.tasks import RebillingTask, ReaggregateTask
 from common.common_functions import variable_value, ceil_strdate
 from common.app_label_renamer import AppLabelRenamer
+from common.admin_custom_actions import export_as_csv_action
 from mongodb_connection import mongodb
 from datetime import datetime
 import csv
 
 APP_LABEL = _('VoIP Billing')
-AppLabelRenamer(native_app_label=u'voip_billing', app_label=_('Voip Billing')).main()
-
-
-def export_as_csv_action(description="Export selected objects as CSV file",
-                         fields=None, exclude=None, header=True,):
-    """
-    This function returns an export csv action
-    'fields' and 'exclude' work like in django ModelForm
-    'header' is whether or not to output the column names as the first row
-    """
-    def export_as_csv(modeladmin, request, queryset):
-        """
-        Generic csv export admin action.
-        based on http://djangosnippets.org/snippets/1697/
-        """
-        opts = modeladmin.model._meta
-        field_names = set([field.name for field in opts.fields])
-
-        if fields:
-            fieldset = set(fields)
-            field_names = field_names & fieldset
-        elif exclude:
-            excludeset = set(exclude)
-            field_names = field_names - excludeset
-
-        response = HttpResponse(mimetype='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=%s.csv' % \
-            unicode(opts).replace('.', '_')
-
-        writer = csv.writer(response)
-        if header:
-            writer.writerow(field_names)
-        for obj in queryset:
-            writer.writerow([unicode(getattr(obj, field)) for field in field_names])
-        return response
-    export_as_csv.short_description = description
-    return export_as_csv
+AppLabelRenamer(native_app_label=u'voip_billing', app_label=APP_LABEL).main()
 
 
 def prefix_qs():
@@ -279,10 +242,11 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                 daily_kwargs['metadata.date'] = {'$gte': start_date.strftime('%Y-%m-%d'),
                                                  '$lt': end_date.strftime('%Y-%m-%d')}
                 monthly_kwargs['metadata.date'] = {'$gte': start_date.strftime('%Y-%m'),
-                                                  '$lt': end_date.strftime('%Y-%m')}
-
+                                                   '$lt': end_date.strftime('%Y-%m')}
+            
+            user_profile = request.user.get_profile()            
             if not request.user.is_superuser:  # not superuser
-                call_kwargs['accountcode'] = chk_account_code(request)
+                call_kwargs['accountcode'] = user_profile.accountcode
                 monthly_kwargs['metadata.accountcode'] =\
                     daily_kwargs['metadata.accountcode'] = call_kwargs['accountcode']
 
@@ -309,7 +273,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                     return render_to_response('admin/voip_billing/voipplan/rebilling.html',
                         context_instance=ctx)
 
-                voipplan_id = UserProfile.objects.get(user=request.user).voipplan_id
+                voipplan_id = user_profile.voipplan_id
 
                 # re-billing is confirmed by user
                 if confirmation == CONFIRMATION_TYPE.YES:
@@ -462,8 +426,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
             # Custom Rate Filter Form
             form = CustomRateFilterForm(initial={"rate": rate,
                                                  "rate_range": rate_range})
-        ctx = {
-            'app_label': APP_LABEL,
+        ctx = {            
             'title': _('Select VoIP Retail Rate to Change'),
             'form': form,
         }
@@ -686,8 +649,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
             # Custom Rate Filter Form
             form = CustomRateFilterForm(initial={"rate": rate,
                                                  "rate_range": rate_range})
-        ctx = {
-            'app_label': APP_LABEL,
+        ctx = {            
             'title': _('Select VoIP Carrier Rate to Change'),
             'form': form,
         }

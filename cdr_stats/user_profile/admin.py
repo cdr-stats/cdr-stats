@@ -25,14 +25,15 @@ from notification.admin import NoticeAdmin
 
 class UserProfileInline(admin.StackedInline):
     """
-    TODO: Add docstring
+    Extenstion of User.
+    User's extra details (ex. email, city, country etc...) will be stored in UserProfile
     """
     model = UserProfile
 
 
 class StaffAdmin(UserAdmin):
     """
-    TODO: Add docstring
+    To differentiate staff from all system users 
     """
     inlines = [UserProfileInline]
 
@@ -47,7 +48,7 @@ class StaffAdmin(UserAdmin):
 
 class CustomerAdmin(StaffAdmin):
     """
-    TODO: Add docstring
+    To differentiate customers from all system users
     """
     fieldsets = (
         ('', {
@@ -82,6 +83,10 @@ admin.site.register(Customer, CustomerAdmin)
 
 
 def make_read(self, request, queryset):
+    """    
+    To mark all notifications as read
+    It is being used on notification listing as django custom actions
+    """
     try:
         queryset.update(unseen=0)
         self.message_user(request,
