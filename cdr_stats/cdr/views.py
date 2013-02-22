@@ -26,8 +26,7 @@ from common.common_functions import current_view, get_news, \
     variable_value, mongodb_str_filter, mongodb_int_filter, \
     int_convert_to_minute, validate_days, ceil_strdate
 from cdr.models import Switch
-from cdr.functions_def import get_country_name, \
-    chk_account_code, get_hangupcause_name, chk_user_voipplan
+from cdr.functions_def import get_country_name, get_hangupcause_name
 from cdr.forms import CdrSearchForm, \
     CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
     ConcurrentCallForm, SwitchForm, WorldForm, EmailReportForm
@@ -115,7 +114,7 @@ def check_user_accountcode(function=None):
         def _caller(request, *args, **kwargs):
             """Caller."""
             if not request.user.is_superuser:
-                if not chk_account_code(request):
+                if not request.user.get_profile().accountcode:
                     return HttpResponseRedirect('/?acc_code_error=true')
                 else:
                     return run_func(request, *args, **kwargs)
@@ -135,7 +134,7 @@ def check_user_voipplan(function=None):
         def _caller(request, *args, **kwargs):
             """Caller."""
             if not request.user.is_superuser:
-                if not chk_user_voipplan(request):
+                if not request.user.get_profile().voipplan_id:
                     return HttpResponseRedirect('/?voipplan_error=true')
                 else:
                     return run_func(request, *args, **kwargs)
@@ -474,7 +473,7 @@ def cdr_view(request):
             query_var['accountcode'] = acc
 
     if not request.user.is_superuser:
-        daily_report_query_var['metadata.accountcode'] = chk_account_code(request)
+        daily_report_query_var['metadata.accountcode'] = request.user.get_profile().accountcode
         query_var['accountcode'] = daily_report_query_var['metadata.accountcode']
 
     cli = mongodb_str_filter(caller, caller_type)
@@ -777,7 +776,7 @@ def cdr_dashboard(request):
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = chk_account_code(request)
+        query_var['metadata.accountcode'] = request.user.get_profile().accountcode
 
     logging.debug('cdr dashboard analytic')
 
@@ -966,7 +965,7 @@ def cdr_concurrent_calls(request):
     query_var['date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        query_var['accountcode'] = chk_account_code(request)
+        query_var['accountcode'] = request.user.get_profile().accountcode
 
     final_data = []
     if query_var:
@@ -1030,7 +1029,7 @@ def cdr_realtime(request):
     query_var['value.call_date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        query_var['value.accountcode'] = chk_account_code(request)
+        query_var['value.accountcode'] = request.user.get_profile().accountcode
 
     if query_var:
         if not mongodb.conc_call_agg:
@@ -1395,7 +1394,7 @@ def cdr_report_by_hour(request):
         query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = chk_account_code(request)
+        query_var['metadata.accountcode'] = request.user.get_profile().accountcode
 
     if query_var:
         # Previous days
@@ -1543,7 +1542,7 @@ def cdr_overview(request):
         query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = chk_account_code(request)
+        query_var['metadata.accountcode'] = request.user.get_profile().accountcode
 
     if query_var:
         logging.debug('Map-reduce cdr overview analytic')
@@ -1814,7 +1813,7 @@ def cdr_country_report(request):
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = chk_account_code(request)
+        query_var['metadata.accountcode'] = request.user.get_profile().accountcode
 
     # Country daily data
     pipeline = pipeline_country_hourly_report(query_var)
@@ -1977,7 +1976,7 @@ def world_map_view(request):
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = chk_account_code(request)
+        query_var['metadata.accountcode'] = request.user.get_profile().accountcode
 
     logging.debug('Aggregate world report')
     pipeline = pipeline_country_report(query_var)

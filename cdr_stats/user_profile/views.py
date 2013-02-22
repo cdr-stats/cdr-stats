@@ -19,7 +19,6 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.template.context import RequestContext
 from django.utils.translation import ugettext_lazy as _
-from cdr.functions_def import chk_account_code
 from user_profile.models import UserProfile
 from user_profile.forms import UserChangeDetailForm, \
     UserChangeDetailExtendForm
@@ -41,7 +40,7 @@ def customer_detail_change(request):
         * User is able to change their details.
     """
     if not request.user.is_superuser:  # not superuser
-        if not chk_account_code(request):
+        if not request.user.get_profile().accountcode:
             return HttpResponseRedirect('/?acc_code_error=true')
 
     user_detail = get_object_or_404(User, username=request.user)

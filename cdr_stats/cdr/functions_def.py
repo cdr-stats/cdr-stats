@@ -21,34 +21,6 @@ from django.utils.translation import gettext as _
 import re
 
 
-def chk_account_code(request):
-    """Get account code from  request"""
-    acc_code = ''
-    try:
-        if (not request.user.is_superuser
-           and request.user.get_profile().accountcode is not None):
-            acc_code = request.user.get_profile().accountcode
-            return '%s' % str(acc_code)
-        else:
-            return '%s' % str(acc_code)
-    except:
-        return acc_code
-
-
-def chk_user_voipplan(request):
-    """Get voipplan from  request"""
-    voipplan_id = ''
-    try:
-        if (not request.user.is_superuser
-           and request.user.get_profile().voipplan_id is not None):
-            voipplan_id = request.user.get_profile().voipplan_id
-            return '%s' % str(voipplan_id)
-        else:
-            return '%s' % str(voipplan_id)
-    except:
-        return voipplan_id
-
-
 def get_switch_list():
     """Switch list used in form"""
     list = Switch.objects.all()
