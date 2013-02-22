@@ -26,7 +26,6 @@ from voip_billing.constants import RATE_COLUMN_NAME
 from mongodb_connection import mongodb
 from user_profile.models import UserProfile
 from cdr.views import check_user_accountcode, check_cdr_exists, check_user_voipplan
-from cdr.functions_def import chk_account_code
 from cdr.aggregate import pipeline_daily_billing_report, pipeline_hourly_billing_report
 from common.common_functions import current_view, ceil_strdate, get_pagination_vars
 from frontend_notification.views import notice_count
@@ -251,7 +250,7 @@ def daily_billing_report(request):
 
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
     if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = chk_account_code(request)
+        query_var['metadata.accountcode'] = request.user.get_profile().accountcode
 
     logging.debug('Aggregate daily billing analytic')
     pipeline = pipeline_daily_billing_report(query_var)
@@ -353,7 +352,7 @@ def hourly_billing_report(request):
 
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
     if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = chk_account_code(request)
+        query_var['metadata.accountcode'] = request.user.get_profile().accountcode
 
     logging.debug('Aggregate hourly billing analytic')
     pipeline = pipeline_hourly_billing_report(query_var)

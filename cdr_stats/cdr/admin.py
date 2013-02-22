@@ -25,7 +25,7 @@ from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.functions_def import get_hangupcause_id, get_hangupcause_id_from_name
 from cdr.import_cdr_freeswitch_mongodb import apply_index, \
     create_analytic, generate_global_cdr_record
-from cdr.functions_def import chk_account_code, get_hangupcause_name
+from cdr.functions_def import get_hangupcause_name
 from cdr.forms import CdrSearchForm
 from cdr.constants import CDR_COLUMN_NAME
 from cdr.views import cdr_view_daily_report, unset_session_var, get_pagination_vars
@@ -518,7 +518,7 @@ class SwitchAdmin(admin.ModelAdmin):
                 query_var['accountcode'] = acc
 
         if not request.user.is_superuser:
-            daily_report_query_var['metadata.accountcode'] = chk_account_code(request)
+            daily_report_query_var['metadata.accountcode'] = request.user.get_profile().accountcode
             query_var['accountcode'] = daily_report_query_var['metadata.accountcode']
 
         cli = mongodb_str_filter(caller, caller_type)
