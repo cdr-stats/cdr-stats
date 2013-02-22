@@ -44,8 +44,7 @@ class VoIPPlan(Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = u'voipbilling_voip_plan'
-        app_label = _('voip_billing')
+        db_table = u'voipbilling_voip_plan'        
         verbose_name = _("VoIP Plan")
         verbose_name_plural = _("VoIP Plans")
 
@@ -66,8 +65,7 @@ class BanPlan(models.Model):
     voip_plan = models.ManyToManyField(VoIPPlan, through='VoIPPlan_BanPlan')
 
     class Meta:
-        db_table = u'voipbilling_banplan'
-        app_label = _('voip_billing')
+        db_table = u'voipbilling_banplan'        
         verbose_name = _("Ban Plan")
         verbose_name_plural = _("Ban Plans")
 
@@ -107,8 +105,7 @@ class BanPrefix(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = u'voipbilling_ban_prefix'
-        app_label = _('voip_billing')
+        db_table = u'voipbilling_ban_prefix'        
         verbose_name = _("Ban Prefix")
         verbose_name_plural = _("Ban Prefixes")
 
@@ -151,8 +148,7 @@ class VoIPRetailPlan(Model):
     voip_plan = models.ManyToManyField(VoIPPlan, through='VoIPPlan_VoIPRetailPlan')
 
     class Meta:
-        db_table = u'voipbilling_voip_retail_plan'
-        app_label = _('voip_billing')
+        db_table = u'voipbilling_voip_retail_plan'        
         verbose_name = _("Retail Plan")
         verbose_name_plural = _("Retail Plans")
 
@@ -200,8 +196,7 @@ class VoIPRetailRate(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = u'voipbilling_voip_retail_rate'
-        app_label = _('voip_billing')
+        db_table = u'voipbilling_voip_retail_rate'        
         verbose_name = _("Retail Rate")
         verbose_name_plural = _("Retail Rates")
 
@@ -259,8 +254,7 @@ class VoIPCarrierPlan(Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = u'voipbilling_voip_carrier_plan'
-        app_label = _('voip_billing')
+        db_table = u'voipbilling_voip_carrier_plan'        
         verbose_name = _("Carrier Plan")
         verbose_name_plural = _("Carrier Plans")
 
@@ -292,8 +286,7 @@ class VoIPCarrierRate(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = u'voipbilling_voip_carrier_rate'
-        app_label = _('voip_billing')
+        db_table = u'voipbilling_voip_carrier_rate'        
         verbose_name = _("Carrier Rate")
         verbose_name_plural = _("Carrier Rates")
 
