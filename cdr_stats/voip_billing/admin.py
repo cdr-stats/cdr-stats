@@ -427,8 +427,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
             # Custom Rate Filter Form
             form = CustomRateFilterForm(initial={"rate": rate,
                                                  "rate_range": rate_range})
-        ctx = {
-            'app_label': APP_LABEL,
+        ctx = {            
             'title': _('Select VoIP Retail Rate to Change'),
             'form': form,
         }
@@ -651,8 +650,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
             # Custom Rate Filter Form
             form = CustomRateFilterForm(initial={"rate": rate,
                                                  "rate_range": rate_range})
-        ctx = {
-            'app_label': APP_LABEL,
+        ctx = {            
             'title': _('Select VoIP Carrier Rate to Change'),
             'form': form,
         }
