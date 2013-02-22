@@ -21,9 +21,7 @@ from django.shortcuts import render_to_response
 from django.conf import settings
 from django.contrib import messages
 
-from user_profile.models import UserProfile
 from country_dialcode.models import Prefix
-from cdr.functions_def import chk_account_code
 from voip_billing.models import VoIPRetailRate, VoIPPlan, BanPlan,\
     VoIPPlan_BanPlan, BanPrefix, VoIPRetailPlan, VoIPPlan_VoIPRetailPlan,\
     VoIPCarrierPlan, VoIPCarrierRate, VoIPPlan_VoIPCarrierPlan
@@ -43,7 +41,7 @@ from datetime import datetime
 import csv
 
 APP_LABEL = _('VoIP Billing')
-AppLabelRenamer(native_app_label=u'voip_billing', app_label=_('Voip Billing')).main()
+AppLabelRenamer(native_app_label=u'voip_billing', app_label=APP_LABEL).main()
 
 
 def prefix_qs():
@@ -245,9 +243,10 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                                                  '$lt': end_date.strftime('%Y-%m-%d')}
                 monthly_kwargs['metadata.date'] = {'$gte': start_date.strftime('%Y-%m'),
                                                    '$lt': end_date.strftime('%Y-%m')}
-
+            
+            user_profile = request.user.get_profile()            
             if not request.user.is_superuser:  # not superuser
-                call_kwargs['accountcode'] = chk_account_code(request)
+                call_kwargs['accountcode'] = user_profile.accountcode
                 monthly_kwargs['metadata.accountcode'] =\
                     daily_kwargs['metadata.accountcode'] = call_kwargs['accountcode']
 
@@ -274,7 +273,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                     return render_to_response('admin/voip_billing/voipplan/rebilling.html',
                         context_instance=ctx)
 
-                voipplan_id = UserProfile.objects.get(user=request.user).voipplan_id
+                voipplan_id = user_profile.voipplan_id
 
                 # re-billing is confirmed by user
                 if confirmation == CONFIRMATION_TYPE.YES:
