@@ -209,12 +209,33 @@ def import_cdr_asterisk(shell=False):
             sell_rate = call_rate['sell_rate']
             sell_cost = call_rate['sell_cost']
 
+            #Sanitize callerid_number
+            try:
+                callerid_number = callerid_number.decode('utf-8', 'ignore')
+            except AttributeError:
+                callerid_number = ''
+            #Sanitize callerid_name
+            try:
+                callerid_name = callerid_name.decode('utf-8', 'ignore')
+            except AttributeError:
+                callerid_name = ''
+            #Sanitize destination_number
+            try:
+                destination_number = destination_number.decode('utf-8', 'ignore')
+            except AttributeError:
+                destination_number = ''
+            #Sanitize channel
+            try:
+                channel = channel.decode('utf-8', 'ignore')
+            except AttributeError:
+                channel = ''
+
             # Prepare global CDR
             cdr_record = {
                 'switch_id': switch.id,
-                'caller_id_number': callerid_number.decode('utf-8', 'ignore'),
-                'caller_id_name': callerid_name.decode('utf-8', 'ignore'),
-                'destination_number': destination_number.decode('utf-8', 'ignore'),
+                'caller_id_number': callerid_number,
+                'caller_id_name': callerid_name,
+                'destination_number': destination_number,
                 'duration': duration,
                 'billsec': billsec,
                 'hangup_cause_id': hangup_cause_id,
@@ -229,7 +250,7 @@ def import_cdr_asterisk(shell=False):
                 #'billmsec': '',
                 #'read_codec': '',
                 #'write_codec': '',
-                'channel': channel.decode('utf-8', 'ignore'),
+                'channel': channel,
                 'cdr_type': CDR_TYPE["asterisk"],
                 'cdr_object_id': acctid,
                 'country_id': country_id,
