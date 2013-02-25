@@ -91,15 +91,13 @@ class UserProfileCustomerView(BaseAuthenticatedClient):
 
 class UserProfileModel(TestCase):
     """Test UserProfile Model"""
-    fixtures = ['auth_user.json']
+    fixtures = ['auth_user.json', '2_example_voipplan.json', 'user_profile.json']
 
     def setUp(self):
         self.user = User.objects.get(username='admin')
-
-        self.user_profile = UserProfile(
+        self.user_profile = UserProfile.objects.get(
             user=self.user,
-        )
-        self.user_profile.save()
+        )        
 
     def test_user_profile_forms(self):
         self.assertEqual(self.user_profile.user, self.user)
