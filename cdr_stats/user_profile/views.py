@@ -43,7 +43,7 @@ def customer_detail_change(request):
         if not request.user.get_profile().accountcode:
             return HttpResponseRedirect('/?acc_code_error=true')
 
-    user_detail = get_object_or_404(User, username=request.user)
+    user_detail = get_object_or_404(User, username=request.user)    
     try:
         user_detail_extened = UserProfile.objects.get(user=user_detail)
     except UserProfile.DoesNotExist:

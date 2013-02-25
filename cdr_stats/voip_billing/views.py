@@ -172,7 +172,7 @@ def simulator(request):
     data = []
     form = SimulatorForm(request.user)
     # Get Voip Plan ID according to USER
-    voipplan_id = UserProfile.objects.get(user=request.user).voipplan_id
+    voipplan_id = request.user.get_profile().voipplan_id
 
     if request.method == 'POST':
         form = SimulatorForm(request.user, request.POST)
