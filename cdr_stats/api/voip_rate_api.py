@@ -107,12 +107,11 @@ class VoipRateResource(ModelResource):
         self.is_authenticated(request)
 
         #check voipplan id for user
-        try:
-            voipplan_id = UserProfile.objects.get(user=request.user).voipplan_id
-        except:
+        voipplan_id = request.user.get_profile().voipplan_id
+        if voipplan_id is None:
             error_msg = "User is not attached with voip plan \n"
             logger.error(error_msg)
-            raise BadRequest(error_msg)
+            raise BadRequest(error_msg)        
 
         dialcode = ''
         recipient_phone_no = ''

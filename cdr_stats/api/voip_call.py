@@ -37,7 +37,7 @@ class VoipCallValidation(Validation):
         if not bundle.data:
             errors['Data'] = ['Data set is empty']
 
-        voipplan_id = UserProfile.objects.get(user=request.user).voipplan_id
+        voipplan_id = request.user.get_profile().voipplan_id
         if voipplan_id is None:
             errors['user_error'] = ["User is not attached with voip plan"]
 

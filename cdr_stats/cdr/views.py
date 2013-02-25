@@ -1167,21 +1167,6 @@ def get_cdr_mail_report():
     return mail_data
 
 
-def get_userprofile(request):
-    """
-    Get user profile instance of logged in user if not available
-    create new user profile instance
-    """
-    user_obj = User.objects.get(username=request.user)
-    try:
-        user_profile = UserProfile.objects.get(user=user_obj)
-    except UserProfile.DoesNotExist:
-        #create UserProfile
-        user_profile = UserProfile(user=user_obj)
-        user_profile.save()
-    return user_profile
-
-
 @permission_required('user_profile.mail_report', login_url='/')
 @check_cdr_exists
 @check_user_accountcode
@@ -1205,7 +1190,7 @@ def mail_report(request):
     template = 'frontend/cdr_mail_report.html'
     msg = ''
 
-    user_profile = get_userprofile(request)
+    user_profile = request.user.get_profile()
 
     form = EmailReportForm(request.user, instance=user_profile)
     if request.method == 'POST':
