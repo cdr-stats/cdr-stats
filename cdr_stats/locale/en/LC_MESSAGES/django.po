@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CDR-Stats 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-21 20:40+0100\n"
+"POT-Creation-Date: 2013-02-25 11:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Areski Belaid <areski@gmail.com>\n"
 "Language-Team: Areski Belaid <areski@gmail.com>\n"
@@ -277,7 +277,7 @@ msgstr ""
 msgid "Outbound"
 msgstr ""
 
-#: cdr/forms.py:145 cdr/functions_def.py:216
+#: cdr/forms.py:145 cdr/functions_def.py:188
 msgid "Unknown"
 msgstr ""
 
@@ -422,7 +422,7 @@ msgstr ""
 msgid "Asterisk Hangup format"
 msgstr ""
 
-#: cdr/functions_def.py:208
+#: cdr/functions_def.py:180
 msgid "Internal Calls"
 msgstr ""
 
@@ -490,7 +490,7 @@ msgstr ""
 msgid "Cause"
 msgstr ""
 
-#: cdr/models.py:96 voip_billing/models.py:145 voip_billing/models.py:249
+#: cdr/models.py:96 voip_billing/models.py:142 voip_billing/models.py:244
 #: voip_gateway/models.py:30 voip_gateway/models.py:72
 msgid "Description"
 msgstr ""
@@ -503,23 +503,23 @@ msgstr ""
 msgid "Hangupcauses"
 msgstr ""
 
-#: cdr/views.py:66
+#: cdr/views.py:65
 msgid "Mongodb Database connection is closed!"
 msgstr ""
 
-#: cdr/views.py:68
+#: cdr/views.py:67
 msgid "Mongodb Database is locked!"
 msgstr ""
 
-#: cdr/views.py:72
+#: cdr/views.py:71
 msgid "Account code is not assigned!"
 msgstr ""
 
-#: cdr/views.py:76
+#: cdr/views.py:75
 msgid "Voip plan is not attached with login user!"
 msgstr ""
 
-#: cdr/views.py:1217
+#: cdr/views.py:1201
 msgid "Email ids are saved successfully."
 msgstr ""
 
@@ -670,8 +670,8 @@ msgstr ""
 
 #: cdr_alert/constants.py:58 cdr_alert/models.py:69
 #: templates/frontend/api/api_list.html:25 voip_billing/models.py:37
-#: voip_billing/models.py:62 voip_billing/models.py:143
-#: voip_billing/models.py:247 voip_gateway/models.py:28
+#: voip_billing/models.py:61 voip_billing/models.py:140
+#: voip_billing/models.py:242 voip_gateway/models.py:28
 #: voip_gateway/models.py:70
 msgid "Name"
 msgstr ""
@@ -704,8 +704,8 @@ msgstr ""
 #: templates/frontend/cdr_overview.html:367
 #: templates/frontend/cdr_view.html:422
 #: templates/frontend/mail_report_template.html:12 voip_billing/models.py:43
-#: voip_billing/models.py:149 voip_billing/models.py:199
-#: voip_billing/models.py:258 voip_billing/models.py:291
+#: voip_billing/models.py:146 voip_billing/models.py:195
+#: voip_billing/models.py:253 voip_billing/models.py:285
 #: voip_gateway/models.py:38 voip_gateway/models.py:78
 msgid "Date"
 msgstr ""
@@ -721,10 +721,10 @@ msgstr ""
 
 #: cdr_alert/forms.py:33 cdr_alert/models.py:37
 #: templates/admin/voip_billing/voipplan/simulator.html:39
-#: voip_billing/constants.py:30 voip_billing/models.py:104
-#: voip_billing/models.py:127 voip_billing/models.py:194
-#: voip_billing/models.py:228 voip_billing/models.py:286
-#: voip_billing/models.py:320
+#: voip_billing/constants.py:30 voip_billing/models.py:102
+#: voip_billing/models.py:124 voip_billing/models.py:190
+#: voip_billing/models.py:223 voip_billing/models.py:280
+#: voip_billing/models.py:313
 msgid "Prefix"
 msgstr ""
 
@@ -886,7 +886,7 @@ msgstr ""
 msgid "Voip Gateway"
 msgstr ""
 
-#: custom_admin_tools/dashboard.py:141 voip_billing/admin.py:45
+#: custom_admin_tools/dashboard.py:141
 msgid "Voip Billing"
 msgstr ""
 
@@ -1369,7 +1369,7 @@ msgid "Record(s) not Imported"
 msgstr ""
 
 #: templates/admin/voip_billing/delete_selected_confirmation.html:7
-#: voip_billing/admin.py:44
+#: voip_billing/admin.py:43
 msgid "VoIP Billing"
 msgstr ""
 
@@ -1400,12 +1400,12 @@ msgid "Remove"
 msgstr ""
 
 #: templates/admin/voip_billing/voipcarrierrate/change_list.html:9
-#: voip_billing/admin.py:847
+#: voip_billing/admin.py:809
 msgid "Import Carrier Rate"
 msgstr ""
 
 #: templates/admin/voip_billing/voipcarrierrate/change_list.html:10
-#: voip_billing/admin.py:720
+#: voip_billing/admin.py:682
 msgid "Export Carrier Rate"
 msgstr ""
 
@@ -1475,7 +1475,7 @@ msgid "Rebill calls"
 msgstr ""
 
 #: templates/admin/voip_billing/voipplan/simulator.html:9
-#: voip_billing/admin.py:193
+#: voip_billing/admin.py:156
 msgid "VoIP Simulator"
 msgstr ""
 
@@ -1490,8 +1490,8 @@ msgstr ""
 
 #: templates/admin/voip_billing/voipplan/simulator.html:32
 #: voip_billing/forms.py:72 voip_billing/forms.py:102
-#: voip_billing/models.py:264 voip_billing/models.py:282
-#: voip_billing/models.py:309
+#: voip_billing/models.py:258 voip_billing/models.py:276
+#: voip_billing/models.py:302
 msgid "Carrier Plan"
 msgstr ""
 
@@ -1501,8 +1501,8 @@ msgstr ""
 
 #: templates/admin/voip_billing/voipplan/simulator.html:34
 #: voip_billing/forms.py:64 voip_billing/forms.py:77 voip_billing/forms.py:110
-#: voip_billing/models.py:156 voip_billing/models.py:190
-#: voip_billing/models.py:217
+#: voip_billing/models.py:152 voip_billing/models.py:186
+#: voip_billing/models.py:212
 msgid "Retail Plan"
 msgstr ""
 
@@ -1511,7 +1511,7 @@ msgid "Carrier Rate ID"
 msgstr ""
 
 #: templates/admin/voip_billing/voipplan/simulator.html:36
-#: voip_billing/models.py:297
+#: voip_billing/models.py:290
 msgid "Carrier Rate"
 msgstr ""
 
@@ -1520,7 +1520,7 @@ msgid "Retail Rate ID"
 msgstr ""
 
 #: templates/admin/voip_billing/voipplan/simulator.html:38
-#: templates/voip_billing/simulator.html:44 voip_billing/models.py:205
+#: templates/voip_billing/simulator.html:44 voip_billing/models.py:200
 msgid "Retail Rate"
 msgstr ""
 
@@ -1543,12 +1543,12 @@ msgid "Select Voip Carrier Plan"
 msgstr ""
 
 #: templates/admin/voip_billing/voipretailrate/change_list.html:8
-#: voip_billing/admin.py:576
+#: voip_billing/admin.py:539
 msgid "Import Retail Rate"
 msgstr ""
 
 #: templates/admin/voip_billing/voipretailrate/change_list.html:9
-#: voip_billing/admin.py:496
+#: voip_billing/admin.py:459
 msgid "Export Retail Rate"
 msgstr ""
 
@@ -2536,27 +2536,27 @@ msgstr ""
 msgid "RetailPlan"
 msgstr ""
 
-#: user_profile/admin.py:56
+#: user_profile/admin.py:57
 msgid "Personal info"
 msgstr ""
 
-#: user_profile/admin.py:60
+#: user_profile/admin.py:61
 msgid "Permission"
 msgstr ""
 
-#: user_profile/admin.py:63
+#: user_profile/admin.py:64
 msgid "Important dates"
 msgstr ""
 
-#: user_profile/admin.py:88
+#: user_profile/admin.py:93
 msgid "Notifications are successfully marked as read."
 msgstr ""
 
-#: user_profile/admin.py:90
+#: user_profile/admin.py:95
 msgid "Notifications are not marked as read."
 msgstr ""
 
-#: user_profile/admin.py:91
+#: user_profile/admin.py:96
 msgid "Mark notification as seen"
 msgstr ""
 
@@ -2596,9 +2596,9 @@ msgstr ""
 msgid "Whitelist Prefix"
 msgstr ""
 
-#: user_profile/models.py:53 voip_billing/admin.py:136
+#: user_profile/models.py:53 voip_billing/admin.py:99
 #: voip_billing/forms.py:118 voip_billing/forms.py:166
-#: voip_billing/models.py:49
+#: voip_billing/models.py:48
 msgid "VoIP Plan"
 msgstr ""
 
@@ -2722,109 +2722,109 @@ msgstr ""
 msgid "User Profile"
 msgstr ""
 
-#: user_profile/models.py:115
+#: user_profile/models.py:119
 msgid "Customer"
 msgstr ""
 
-#: user_profile/models.py:116
+#: user_profile/models.py:120
 msgid "Customers"
 msgstr ""
 
-#: user_profile/models.py:124
+#: user_profile/models.py:132
 msgid "Admin"
 msgstr ""
 
-#: user_profile/models.py:125
+#: user_profile/models.py:133
 msgid "Admins"
 msgstr ""
 
-#: user_profile/views.py:81
+#: user_profile/views.py:80
 msgid "Detail has been changed."
 msgstr ""
 
-#: user_profile/views.py:83 user_profile/views.py:93
+#: user_profile/views.py:82 user_profile/views.py:92
 msgid "Please correct the errors below."
 msgstr ""
 
-#: user_profile/views.py:91
+#: user_profile/views.py:90
 msgid "Your password has been changed."
 msgstr ""
 
-#: voip_billing/admin.py:113 voip_billing/admin.py:114
+#: voip_billing/admin.py:76 voip_billing/admin.py:77
 msgid "VoIP Plan | VoIP Retail Plan"
 msgstr ""
 
-#: voip_billing/admin.py:121 voip_billing/admin.py:122
+#: voip_billing/admin.py:84 voip_billing/admin.py:85
 msgid "VoIP Plan | VoIP Carrier Plan"
 msgstr ""
 
-#: voip_billing/admin.py:129 voip_billing/admin.py:130
+#: voip_billing/admin.py:92 voip_billing/admin.py:93
 msgid "VoIP Plan | Ban Plan"
 msgstr ""
 
-#: voip_billing/admin.py:244
+#: voip_billing/admin.py:207
 msgid "Export VoIP Plan"
 msgstr ""
 
-#: voip_billing/admin.py:305
+#: voip_billing/admin.py:269
 msgid "Rebill VoPI Call"
 msgstr ""
 
-#: voip_billing/admin.py:323
+#: voip_billing/admin.py:287
 msgid "Re-billing is done"
 msgstr ""
 
-#: voip_billing/admin.py:339
+#: voip_billing/admin.py:303
 msgid "Rebill VoIP Call"
 msgstr ""
 
-#: voip_billing/admin.py:378
+#: voip_billing/admin.py:342
 msgid "VoIP Retail Plan"
 msgstr ""
 
-#: voip_billing/admin.py:397
+#: voip_billing/admin.py:361
 msgid "VoIP Retail Rate"
 msgstr ""
 
-#: voip_billing/admin.py:467
+#: voip_billing/admin.py:430
 msgid "Select VoIP Retail Rate to Change"
 msgstr ""
 
-#: voip_billing/admin.py:555
+#: voip_billing/admin.py:518
 msgid "Retail Rate(s) are already exist !!"
 msgstr ""
 
-#: voip_billing/admin.py:569
+#: voip_billing/admin.py:532
 msgid "Error: Prefix is not in the Prefix table"
 msgstr ""
 
-#: voip_billing/admin.py:571 voip_billing/admin.py:842
+#: voip_billing/admin.py:534 voip_billing/admin.py:804
 msgid ""
 "Error : invalid value for import!                                    Please "
 "look at the import samples."
 msgstr ""
 
-#: voip_billing/admin.py:595
+#: voip_billing/admin.py:558
 msgid "VoIP Carrier Plan"
 msgstr ""
 
-#: voip_billing/admin.py:620
+#: voip_billing/admin.py:583
 msgid "VoIP Carrier Rate"
 msgstr ""
 
-#: voip_billing/admin.py:691
+#: voip_billing/admin.py:653
 msgid "Select VoIP Carrier Rate to Change"
 msgstr ""
 
-#: voip_billing/admin.py:792
+#: voip_billing/admin.py:754
 msgid "Carrier Rates are already exist !!"
 msgstr ""
 
-#: voip_billing/admin.py:802
+#: voip_billing/admin.py:764
 msgid "Carrier/Retail Rates are already exist !!"
 msgstr ""
 
-#: voip_billing/admin.py:840
+#: voip_billing/admin.py:802
 msgid "Error: Prefix is not in the Prfix table"
 msgstr ""
 
@@ -2840,17 +2840,17 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
-#: voip_billing/constants.py:32 voip_billing/models.py:197
-#: voip_billing/models.py:289
+#: voip_billing/constants.py:32 voip_billing/models.py:193
+#: voip_billing/models.py:283
 msgid "Rate"
 msgstr ""
 
 #: voip_billing/forms.py:65 voip_billing/forms.py:79
-#: voip_billing/models.py:192
+#: voip_billing/models.py:188
 msgid "Select Retail Plan"
 msgstr ""
 
-#: voip_billing/forms.py:74 voip_billing/models.py:284
+#: voip_billing/forms.py:74 voip_billing/models.py:278
 msgid "Select Carrier Plan"
 msgstr ""
 
@@ -2894,8 +2894,8 @@ msgstr ""
 msgid " "
 msgstr ""
 
-#: voip_billing/models.py:38 voip_billing/models.py:144
-#: voip_billing/models.py:248
+#: voip_billing/models.py:38 voip_billing/models.py:141
+#: voip_billing/models.py:243
 msgid "Enter Plan Name"
 msgstr ""
 
@@ -2915,89 +2915,82 @@ msgstr ""
 msgid "Select LCR type"
 msgstr ""
 
-#: voip_billing/models.py:48 voip_billing/models.py:70
-#: voip_billing/models.py:111 voip_billing/models.py:155
-#: voip_billing/models.py:204 voip_billing/models.py:263
-#: voip_billing/models.py:296
-msgid "voip_billing"
-msgstr ""
-
-#: voip_billing/models.py:50
+#: voip_billing/models.py:49
 msgid "VoIP Plans"
 msgstr ""
 
-#: voip_billing/models.py:63
+#: voip_billing/models.py:62
 msgid "Enter Ban Plan Name"
 msgstr ""
 
-#: voip_billing/models.py:71 voip_billing/models.py:102
+#: voip_billing/models.py:69 voip_billing/models.py:100
 msgid "Ban Plan"
 msgstr ""
 
-#: voip_billing/models.py:72
+#: voip_billing/models.py:70
 msgid "Ban Plans"
 msgstr ""
 
-#: voip_billing/models.py:103
+#: voip_billing/models.py:101
 msgid "Select Ban Plan"
 msgstr ""
 
-#: voip_billing/models.py:105 voip_billing/models.py:195
-#: voip_billing/models.py:287
+#: voip_billing/models.py:103 voip_billing/models.py:191
+#: voip_billing/models.py:281
 msgid "Select Prefix"
 msgstr ""
 
-#: voip_billing/models.py:112
+#: voip_billing/models.py:109
 msgid "Ban Prefix"
 msgstr ""
 
-#: voip_billing/models.py:113
+#: voip_billing/models.py:110
 msgid "Ban Prefixes"
 msgstr ""
 
-#: voip_billing/models.py:146 voip_billing/models.py:250
+#: voip_billing/models.py:143 voip_billing/models.py:245
 msgid "Short description about Plan"
 msgstr ""
 
-#: voip_billing/models.py:147 voip_billing/models.py:251
+#: voip_billing/models.py:144 voip_billing/models.py:246
 #: voip_gateway/models.py:74
 msgid "Metric"
 msgstr ""
 
-#: voip_billing/models.py:148 voip_billing/models.py:252
+#: voip_billing/models.py:145 voip_billing/models.py:247
 #: voip_gateway/models.py:75
 msgid "Enter metric in digit"
 msgstr ""
 
-#: voip_billing/models.py:157
+#: voip_billing/models.py:153
 msgid "Retail Plans"
 msgstr ""
 
-#: voip_billing/models.py:198 voip_billing/models.py:290
+#: voip_billing/models.py:194 voip_billing/models.py:284
 msgid "Enter Rate"
 msgstr ""
 
-#: voip_billing/models.py:206
+#: voip_billing/models.py:201
 msgid "Retail Rates"
 msgstr ""
 
-#: voip_billing/models.py:254
+#: voip_billing/models.py:249
 msgid "Message Sent"
 msgstr ""
 
-#: voip_billing/models.py:256 voip_gateway/models.py:83
+#: voip_billing/models.py:251 voip_gateway/models.py:83
 msgid "Provider"
 msgstr ""
 
-#: voip_billing/models.py:257
+#: voip_billing/models.py:252
 msgid "Select Provider"
 msgstr ""
 
-#: voip_billing/models.py:265
+#: voip_billing/models.py:259
 msgid "Carrier Plans"
 msgstr ""
 
-#: voip_billing/models.py:298
+#: voip_billing/models.py:291
 msgid "Carrier Rates"
 msgstr ""
 
