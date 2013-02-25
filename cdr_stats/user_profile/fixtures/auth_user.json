@@ -13,7 +13,7 @@
             "groups": [],
             "user_permissions": [],
             "password": "pbkdf2_sha256$10000$arBXmbpfJwsu$gmsMnLFkuVly/qDv7xrjO5fZ4qtwjQbSMvveBkNdcAg=",
-            "email": "",
+            "email": "admin@localhost.com",
             "date_joined": "2012-07-25T16:18:25"
         }
     }

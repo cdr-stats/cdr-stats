@@ -1165,7 +1165,7 @@ def get_cdr_mail_report():
         'hangup_analytic_array': hangup_analytic_array,
     }
     return mail_data
-
+    
 
 @permission_required('user_profile.mail_report', login_url='/')
 @check_cdr_exists
