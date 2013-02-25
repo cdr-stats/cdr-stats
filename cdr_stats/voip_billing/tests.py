@@ -73,13 +73,13 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
     """
     fixtures = ['auth_user.json', 'country_dialcode.json',
                 'voip_gateway.json', 'voip_provider.json'
-                'user_profile.json', 'voip_billing.json', ]
+                'voip_billing.json', 'user_profile.json', ]
 
     def test_rates_view(self):
         """
         Test Function to check rate for VoIP Call
         """
-        response = self.client.get('/rates/')
+        response = self.client.get('/rates/', follow=True)
         self.assertTrue(response.context['form'], PrefixRetailRrateForm())
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'voip_billing/rates.html')
