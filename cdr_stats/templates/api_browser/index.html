@@ -1,0 +1,74 @@
+{% extends "api_browser/base.html" %}
+{% load i18n %}
+
+{% block content %}
+{% load api_browser_tags %}
+{% for resource in schema.resources %}
+    <section class="resource">
+        <header>
+            <h3>{{ resource.name }}</h3>
+            <p>{{ resource.description|capfirst }}</p>
+        </header>
+        <ul>
+            {% for endpoint in resource.endpoints %}
+                <li class="{{ endpoint.method|lower }} endpoint">
+                    <a href="#">
+                        <strong>{{ endpoint.method|upper }}</strong>
+                        <span>{{ endpoint.url }}</span>
+                        <i>{{ endpoint.description|capfirst }}</i>
+                    </a>
+                    <section class="try-it">
+                        <form action="{{ endpoint.url }}" data-endpoint-url="{{ endpoint.url }}" method="{{ endpoint.method|upper }}">
+                            {% spaceless %}
+                                {% get_endpoint_forms endpoint as forms %}
+                                {% if forms.url_parameter_form.fields %}
+                                    <fieldset class="url-parameters">
+                                        <legend>URL Parameters</legend>
+                                        {{ forms.url_parameter_form.as_p }}
+                                    </fieldset>
+                                {% endif %}{% if forms.data_parameter_form.fields %}
+                                <fieldset>
+                                    <legend>Data Parameters</legend>
+                                    {{ forms.data_parameter_form.as_p }}
+                                </fieldset>
+                            {% endif %}
+                                <input type="submit" value="{{ endpoint.method }}">
+                            {% endspaceless %}</form>
+                        <section class="result request"><h2>{% trans "request"|title %}</h2><pre><code></code></pre></section>
+                        <section class="result response-status"><h2>{% trans "response status"|title %}</h2><pre><code></code></pre></section>
+                        <section class="result response-headers"><h2>{% trans "response headers"|title %}</h2><pre><code></code></pre></section>
+                        <section class="result response-body">
+                            <h2>{% trans "response body"|title %}</h2><pre><code></code></pre>
+                            <a class="give-feedback" data-endpoint="{{ endpoint.method|upper }} {{ endpoint.url }}" href="#">{% trans "give feedback about this response"|capfirst %}</a>
+                        </section>
+                    </section>
+                </li>{% endfor %}
+        </ul>
+    </section>
+    {% endfor %}
+{% endblock %}
+
+{% block footer %}
+
+{% if feedback_form_toggle %}
+    <!-- submit feedback form -->
+    <div id="submit-feedback">
+        <form action="{% url api_playground_submit_feedback %}" method="post">
+            {% csrf_token %}
+            {{ feedback_form.as_p }}
+            <input type="submit" value="Submit">
+        </form>
+        <div id="feedback-response">{% trans "Thanks, Your feedback has been sent successfully." %}</div>
+        <a href="#" id="submit-feedback-button">{% trans "submit bug & feedback"|title %}</a>
+    </div>
+{% endif %}
+
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript">
+    $(function () {
+        new APIBrowser();
+    });
+</script>
+{% endblock %}
