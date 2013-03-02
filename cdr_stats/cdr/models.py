@@ -69,8 +69,8 @@ class Switch(caching.base.CachingMixin, models.Model):
         return '[%s] %s' % (self.id, self.ipaddress)
 
     class Meta:
-        verbose_name = _("Switch")
-        verbose_name_plural = _("Switches")
+        verbose_name = _("switch")
+        verbose_name_plural = _("switches")
         db_table = "voip_switch"
 
 
@@ -86,19 +86,19 @@ class HangupCause(caching.base.CachingMixin, models.Model):
 
     **Name of DB table**: hangup_cause
     """
-    code = models.PositiveIntegerField(unique=True, verbose_name=_('Code'),
+    code = models.PositiveIntegerField(unique=True, verbose_name=_('code'),
                                        help_text=_("ITU-T Q.850 Code"))
     enumeration = models.CharField(max_length=100, null=True, blank=True,
-                                   verbose_name=_('Enumeration'))
+                                   verbose_name=_('enumeration'))
     cause = models.CharField(max_length=100, null=True, blank=True,
-                             verbose_name=_('Cause'))
+                             verbose_name=_('cause'))
     description = models.TextField(null=True, blank=True,
-                                   verbose_name=_('Description'))
+                                   verbose_name=_('description'))
 
     def __unicode__(self):
         return '[%s] %s' % (self.code, self.enumeration)
 
     class Meta:
-        verbose_name = _("Hangupcause")
-        verbose_name_plural = _("Hangupcauses")
+        verbose_name = _("hangupcause")
+        verbose_name_plural = _("hangupcauses")
         db_table = "hangup_cause"

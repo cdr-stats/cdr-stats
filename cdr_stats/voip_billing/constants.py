@@ -27,6 +27,6 @@ class CONFIRMATION_TYPE(Choice):
 
 
 class RATE_COLUMN_NAME(Choice):
-    prefix = _('Prefix')
-    destination = _('Destination')
-    rate = _('Rate')
+    prefix = _('prefix')
+    destination = _('destination')
+    rate = _('rate')

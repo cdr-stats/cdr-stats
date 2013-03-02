@@ -25,8 +25,8 @@ from cdr_alert.models import AlertRemovePrefix, Alarm, AlarmReport, \
     Blacklist, Whitelist
 from cdr_alert.forms import BWCountryForm
 from common.app_label_renamer import AppLabelRenamer
-
-AppLabelRenamer(native_app_label=u'cdr_alert', app_label=_('CDR Alert')).main()
+APP_LABEL = _('CDR Alert')
+AppLabelRenamer(native_app_label=u'cdr_alert', app_label=APP_LABEL).main()
 
 
 # AlertRemovePrefix
@@ -88,7 +88,7 @@ class BlacklistAdmin(admin.ModelAdmin):
                 country = int(request.POST['country'])
                 prefix_list = \
                     Prefix.objects.values('prefix').filter(country_id=country)
-                msg = _("Successfully added prefix into blacklist")
+                msg = _("successfully added prefix into blacklist")
                 if request.POST.getlist('blacklist_country'):
                     # blacklist whole country
                     Blacklist.objects.create(
@@ -115,11 +115,11 @@ class BlacklistAdmin(admin.ModelAdmin):
                             reverse("admin:cdr_alert_blacklist_changelist"))
 
         ctx = RequestContext(request, {
-            'title': _('Blacklist by country'),
+            'title': _('blacklist by country'),
             'form': form,
             'opts': opts,
             'model_name': opts.object_name.lower(),
-            'app_label': _('cdr_alert'),
+            'app_label': APP_LABEL,
             'prefix_list': prefix_list,
         })
 
@@ -170,7 +170,7 @@ class WhitelistAdmin(admin.ModelAdmin):
                 country = int(request.POST['country'])
                 prefix_list = \
                     Prefix.objects.values('prefix').filter(country_id=country)
-                msg = _("Successfully added prefix into whitelist")
+                msg = _("successfully added prefix into whitelist")
                 if request.POST.getlist('whitelist_country'):
                     # whitelist whole country
                     Whitelist.objects.create(
@@ -197,11 +197,11 @@ class WhitelistAdmin(admin.ModelAdmin):
                             reverse("admin:cdr_alert_whitelist_changelist"))
 
         ctx = RequestContext(request, {
-            'title': _('Whitelist by country'),
+            'title': _('whitelist by country'),
             'form': form,
             'opts': opts,
             'model_name': opts.object_name.lower(),
-            'app_label': _('cdr_alert'),
+            'app_label': APP_LABEL,
             'prefix_list': prefix_list,
         })
 

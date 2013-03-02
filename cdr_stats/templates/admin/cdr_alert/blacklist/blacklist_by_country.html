@@ -3,7 +3,7 @@
 
 {% block breadcrumbs %}{% if not is_popup %}
 <div class="breadcrumbs">
-     <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+     <a href="../../../">{% trans "home"|capfirst %}</a> &rsaquo;
      <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
      <a href="/admin/{{ opts.app_label }}/{{ model_name }}">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
      {{ opts.verbose_name }}
@@ -19,14 +19,14 @@
     {{ form.as_table }}
     <tr>
         <td align=right colspan=2>
-            <input type="submit" class="button" name="submit" value="{% trans "Select country" %}" />&nbsp;
+            <input type="submit" class="button" name="submit" value="{% trans "select country"|capfirst %}" />&nbsp;
         </td>
     </tr>
 </table>
 <p>&nbsp;</p>
 {% if prefix_list %}
 <div class="action">
-    <input class="action-select" name="select_all" type="checkbox" onclick="toggleChecked(this.checked)" value="true">&nbsp;<b>{% trans "Select all prefixes" %}</b>
+    <input class="action-select" name="select_all" type="checkbox" onclick="toggleChecked(this.checked)" value="true">&nbsp;<b>{% trans "select all prefixes"|capfirst %}</b>
 </div>
 
 <table>
@@ -48,8 +48,8 @@
 
 <p>&nbsp;</p>
 <div class="submit-row">
-    <input type="submit" class="button" name="submit" value="{% trans "Blacklist the selected prefixes" %}" />&nbsp;
-    <input type="submit" class="button" name="blacklist_country" value="{% trans "Blacklist the selected country" %}">
+    <input type="submit" class="button" name="submit" value="{% trans "blacklist the selected prefixes"|capfirst %}" />&nbsp;
+    <input type="submit" class="button" name="blacklist_country" value="{% trans "blacklist the selected country"|capfirst %}">
 </div>
 {% endif %}
 

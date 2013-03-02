@@ -30,27 +30,27 @@ class VoipCallAPIPlayground(APIPlayground):
     end_uepoch = int(time.mktime(e_uepoch.timetuple()))
 
     schema = {
-        "title": _("To record CDRs and bill them"),
+        "title": _("to record CDRs and bill them"),
         "base_url": "http://localhost/api/v1/",
         "resources": [
             {
                 "name": "/voip_call/",
-                "description": _("This resource allows to record CDRs and bill them."),
+                "description": _("this resource allows to record CDRs and bill them."),
                 "endpoints": [
                     {
                         "method": "GET",
                         "url": "/api/v1/voip_call/",
-                        "description": _("Returns all CDRs")
+                        "description": _("returns all CDRs")
                     },
                     {
                         "method": "GET",
                         "url": "/api/v1/voip_call/{id}/",
-                        "description": _("Returns a specific cdr")
+                        "description": _("returns a specific cdr")
                     },
                     {
                         "method": "POST",
                         "url": "/api/v1/voip_call/",
-                        "description": _("Creates new billed voip call"),
+                        "description": _("creates new billed voip call"),
                         "parameters": [
                             {
                                 "name": "switch_id",

@@ -258,12 +258,12 @@ class SwitchAdmin(admin.ModelAdmin):
                                     cdr_record_count = cdr_record_count + 1
 
                                     msg =\
-                                        _('%(cdr_record_count)s Cdr(s) are uploaded, out of %(total_rows)s row(s) !!')\
+                                        _('%(cdr_record_count)s CDR(s) are uploaded, out of %(total_rows)s row(s) !!')\
                                         % {'cdr_record_count': cdr_record_count,
                                             'total_rows': total_rows}
                                     success_import_list.append(row)
                             except:
-                                msg = _("Error : invalid value for import")
+                                msg = _("error : invalid value for import")
                                 type_error_import_list.append(row)
 
                     # remaining record
@@ -276,12 +276,12 @@ class SwitchAdmin(admin.ModelAdmin):
                         # Apply index
                         apply_index(shell=True)
                 else:
-                    msg = _("Error : importing several times the same column")
+                    msg = _("error : importing several times the same column")
         else:
             form = CDR_FileImport(request.user)
 
         ctx = RequestContext(request, {
-            'title': _('Import CDR'),
+            'title': _('import CDR'),
             'form': form,
             'opts': opts,
             'model_name': opts.object_name.lower(),

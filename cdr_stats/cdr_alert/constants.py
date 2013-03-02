@@ -17,14 +17,14 @@ from common.utils import Choice
 
 
 class PERIOD(Choice):
-    DAY = 1, _('Day')
-    WEEK = 2, _('Week')
-    MONTH = 3, _('Month')
+    DAY = 1, _('day')
+    WEEK = 2, _('week')
+    MONTH = 3, _('month')
 
 
 class STATUS(Choice):
-    ACTIVE = 1, _('Active')
-    INACTIVE = 2, _('Inactive')
+    ACTIVE = 1, _('active')
+    INACTIVE = 2, _('inactive')
 
 
 class ALARM_TYPE(Choice):
@@ -44,29 +44,29 @@ class ALERT_CONDITION(Choice):
 #This condition only apply if PERIOD is "Day",
 #otherwise we will compare to previous week or previous month
 class ALERT_CONDITION_ADD_ON(Choice):
-    SAME_DAY = 1, _('Same day')
-    SAME_DAY_IN_PRE_WEEK = 2, _('Same day in the previous week')
+    SAME_DAY = 1, _('same day')
+    SAME_DAY_IN_PRE_WEEK = 2, _('same day in the previous week')
 
 
 class ALARM_REPROT_STATUS(Choice):
-    NO_ALARM_SENT = 1, _('No alarm sent')
-    ALARM_SENT = 2, _('Alarm Sent')
+    NO_ALARM_SENT = 1, _('no alarm sent')
+    ALARM_SENT = 2, _('alarm Sent')
 
 
 class ALARM_COLUMN_NAME(Choice):
-    id = _('Id')
-    name = _('Name')
-    period = _('Period')
-    type = _('Type')
-    alert_condition = _('Condition')
-    alert_value = _('Value')
-    status = _('Status')
-    updated_date = _('Date')
+    id = _('ID')
+    name = _('name')
+    period = _('period')
+    type = _('type')
+    alert_condition = _('condition')
+    alert_value = _('value')
+    status = _('status')
+    updated_date = _('date')
 
 
 class ALARM_REPORT_COLUMN_NAME(Choice):
-    id = _('Id')
-    alarm = _('Alarm')
-    calculatedvalue = _('Calculated value')
-    status = _('Status')
-    date = _('Date')
+    id = _('ID')
+    alarm = _('alarm')
+    calculatedvalue = _('calculated value')
+    status = _('status')
+    date = _('date')

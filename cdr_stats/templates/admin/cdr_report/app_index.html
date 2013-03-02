@@ -7,7 +7,7 @@
 {% block breadcrumbs %}
 {% if not is_popup %}
 <div class="breadcrumbs"><a href="../">
-{% trans "Home" %}</a> &rsaquo; 
+{% trans "home"|title %}</a> &rsaquo; 
 {% for app in app_list %}
 {% blocktrans with app.name as name %}VoIP Report{% endblocktrans %}
 {% endfor %}</div>
@@ -15,7 +15,7 @@
 {% endblock %}
 
  
-{% block content_title %}<h1>{% trans "VoIP Report Administration" %}</h1>{% endblock %}
+{% block content_title %}<h1>{% trans "VoIP report administration"|capfirst %}</h1>{% endblock %}
 
 {% block content %}
 <div id="content-main">
@@ -33,7 +33,7 @@
             {% endif %}
 
             {% if model.perms.add %}
-                <td><a href="{{ model.admin_url }}add/" class="addlink">{% trans 'Add' %}</a></td>
+                <td><a href="{{ model.admin_url }}add/" class="addlink">{% trans 'add'|title %}</a></td>
             {% else %}
                 <td>&nbsp;</td>
             {% endif %}
@@ -49,7 +49,7 @@
         </div>
     {% endfor %}
 {% else %}
-    <p>{% trans "You don't have permission to edit anything." %}</p>
+    <p>{% trans "you don't have permission to edit anything."|capfirst %}</p>
 {% endif %}
 </div>
 {% endblock %}

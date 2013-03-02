@@ -20,7 +20,7 @@ from cdr.functions_def import get_country_list
 
 class BWCountryForm(forms.Form):
     """Blacklist/Whitelist by country form"""
-    country = forms.ChoiceField(label=_('Country'), required=True,
+    country = forms.ChoiceField(label=_('country'), required=True,
                                 choices=get_country_list())
 
     def __init__(self, *args, **kwargs):
@@ -30,7 +30,7 @@ class BWCountryForm(forms.Form):
 
 class BWPrefixForm(forms.Form):
     """Blacklist/Whitelist by prefix form"""
-    prefix = forms.CharField(label=_('Prefix'), required=False)
+    prefix = forms.CharField(label=_('prefix'), required=False)
 
     def __init__(self, *args, **kwargs):
         super(BWPrefixForm, self).__init__(*args, **kwargs)
@@ -50,7 +50,7 @@ class AlarmForm(ModelForm):
 
 class AlarmReportForm(forms.Form):
     """alarm list form"""
-    alarm = forms.ChoiceField(label=_("Alert"), required=False)
+    alarm = forms.ChoiceField(label=_("alert"), required=False)
 
     def __init__(self, user, *args, **kwargs):
         super(AlarmReportForm, self).__init__(*args, **kwargs)

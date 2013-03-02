@@ -77,9 +77,9 @@ def customer_detail_change(request):
             if user_detail_form.is_valid() and user_detail_extened_form.is_valid():
                 user_detail_form.save()
                 user_detail_extened_form.save()
-                msg_detail = _('Detail has been changed.')
+                msg_detail = _('detail has been changed.')
             else:
-                error_detail = _('Please correct the errors below.')
+                error_detail = _('please correct the errors below.')
         else:
             # change-password
             user_password_form = PasswordChangeForm(user=request.user,
@@ -87,9 +87,9 @@ def customer_detail_change(request):
             action = 'tabs-2'
             if user_password_form.is_valid():
                 user_password_form.save()
-                msg_pass = _('Your password has been changed.')
+                msg_pass = _('your password has been changed.')
             else:
-                error_pass = _('Please correct the errors below.')
+                error_pass = _('please correct the errors below.')
 
     template = 'frontend/registration/user_detail_change.html'
     data = {

@@ -17,21 +17,21 @@ from common.utils import Choice
 
 
 class STRING_SEARCH_TYPE_LIST(Choice):
-    EQUALS = 1, _('Equals')
-    BEGINS_WITH = 2, _('Begins')
-    CONTAINS = 3, _('Contains')
-    ENDS_WITH = 4, _('Ends')
+    EQUALS = 1, _('equals')
+    BEGINS_WITH = 2, _('begins')
+    CONTAINS = 3, _('contains')
+    ENDS_WITH = 4, _('ends')
 
 
 class CDR_COLUMN_NAME(Choice):
-    call_date = _('Call-date')
+    call_date = _('call-date')
     clid = _('CLID')
-    destination = _('Destination')
-    duration = _('Duration')
-    bill = _('Bill')
-    hangup_cause = _('Hangup cause')
-    account = _('Account')
-    buy_rate = _('Buy rate')
-    buy_cost = _('Buy cost')
-    sell_rate = _('Sell rate')
-    sell_cost = _('Sell cost')
+    destination = _('destination')
+    duration = _('duration')
+    bill = _('bill')
+    hangup_cause = _('hangup cause')
+    account = _('account')
+    buy_rate = _('buy rate')
+    buy_cost = _('buy cost')
+    sell_rate = _('sell rate')
+    sell_cost = _('sell cost')

@@ -4,7 +4,7 @@
 {% block object-tools %}
       {% if has_add_permission %}
         <ul class="object-tools">
-          <li><a href="simulator/" class="addlink">{% trans "Simulator" %}</a></li>
+          <li><a href="simulator/" class="addlink">{% trans "simulator"|title %}</a></li>
           <li><a href="export/" class="addlink">{% blocktrans with cl.opts.verbose_name as name %}Export {{ name }}{% endblocktrans %}</a></li>
           <li>
             <a href="add/{% if is_popup %}?_popup=1{% endif %}" class="addlink">

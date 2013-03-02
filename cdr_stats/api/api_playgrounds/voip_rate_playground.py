@@ -18,27 +18,27 @@ from apiplayground import APIPlayground
 class VoipRateAPIPlayground(APIPlayground):
 
     schema = {
-        "title": _("Voip Rate API Playground"),
+        "title": _("VoIP rate"),
         "base_url": "http://localhost/api/v1/",
         "resources": [
             {
                 "name": "/voip_rate/",
-                "description": _("Resource to get voip rate."),
+                "description": _("resource to get voip rate."),
                 "endpoints": [
                     {
                         "method": "GET",
                         "url": "/api/v1/voip_rate/",
-                        "description": _("Returns all rates")
+                        "description": _("returns all rates")
                     },
                     {
                         "method": "GET",
                         "url": "/api/v1/voip_rate/?dialcode={dialcode}",
-                        "description": _("Returns a specific rate for prefix")
+                        "description": _("returns a specific rate for prefix")
                     },
                     {
                         "method": "GET",
                         "url": "/api/v1/voip_rate/?recipient_phone_no={recipient-phone-no}",
-                        "description": _("Returns a specific rate for recipient phone no")
+                        "description": _("returns a specific rate for recipient phone no")
                     },
 
                 ]

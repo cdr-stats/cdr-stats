@@ -109,11 +109,11 @@ def diagnostic(request):
         })
 
     if success_ip:
-        info_msg = _("CDR Backend %s connected successfully." % (str(success_ip)))
+        info_msg = _("CDR backend %s connected successfully." % (str(success_ip)))
 
     if error_ip:
-        error_msg = _("Please review the 'CDR_BACKEND' Settings in your file /usr/share/cdr-stats/settings_local.py make sure the settings, username, password are correct. Check also that the backend authorize a connection from your server")
-        info_msg = _("After changes in your 'CDR_BACKEND' settings, you will need to restart celery: $ /etc/init.d/newfies-celeryd restart")
+        error_msg = _("please review the 'CDR_BACKEND' Settings in your file /usr/share/cdr-stats/settings_local.py make sure the settings, username, password are correct. Check also that the backend authorize a connection from your server")
+        info_msg = _("after changes in your 'CDR_BACKEND' settings, you will need to restart celery: $ /etc/init.d/newfies-celeryd restart")
 
     data = {
         'backend_cdr_data': backend_cdr_data,
@@ -176,13 +176,13 @@ def login_view(request):
                     return HttpResponseRedirect('/dashboard/')
                 else:
                     # Return a 'disabled account' error message
-                    errorlogin = _('Disabled Account')
+                    errorlogin = _('disabled Account')
             else:
                 # Return an 'invalid login' error message.
-                errorlogin = _('Invalid Login.')
+                errorlogin = _('invalid Login.')
         else:
             # Return an 'Valid User Credentials' error message.
-            errorlogin = _('Enter Valid User Credentials.')
+            errorlogin = _('enter valid user credentials.')
     else:
         loginform = LoginForm()
 

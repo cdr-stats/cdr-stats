@@ -4,7 +4,7 @@
 
 {% block breadcrumbs %}{% if not is_popup %}
 <div class="breadcrumbs">
-     <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+     <a href="../../../">{% trans "home"|title %}</a> &rsaquo;
      <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
      <a href="/admin/{{ opts.app_label }}/{{ model_name }}">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
      Import {{ opts.verbose_name }}
@@ -16,7 +16,7 @@
 <br/>
 
 <table border=1>
-<caption>{% trans "Sample File" %}</caption>
+<caption>{% trans "sample file"|title %}</caption>
 <tr>
     <th>{% trans "prefix" %}</th>
     <th>{% trans "rate" %}</th>
@@ -40,8 +40,8 @@
 {{ form.as_table }}
 <tr>
     <td colspan=2 align=right>
-    <input type="submit" name="submit" class="l-1" value="{% trans "Submit" %}" />&nbsp;
-    <input type="reset" class="j-2" name="reset" value="{% trans "Reset" %}" />
+    <input type="submit" name="submit" class="l-1" value="{% trans "submit"|title %}" />&nbsp;
+    <input type="reset" class="j-2" name="reset" value="{% trans "reset"|title %}" />
     </td>
 </tr>
 </table>
@@ -64,7 +64,7 @@
 {% if cr_success_import_list %}
 <table border=1>
     <tr>
-        <th>{% trans "Carrier Record(s) Successfully Imported" %} :</th>
+        <th>{% trans "carrier record(s) are successfully imported"|capfirst %} :</th>
     </tr>
 {% for row in cr_success_import_list %}
     <tr class="{% cycle 'row1' 'row2' %}">
@@ -81,7 +81,7 @@
 <br>
 <table border=1>
     <tr>
-        <th>{% trans "Carrier Record(s) not Imported" %} :</th>
+        <th>{% trans "carrier record(s) are not imported"|capfirst %} :</th>
     </tr>
 {% for row in cr_error_import_list %}
     <tr class="{% cycle 'row1' 'row2' %}">
@@ -99,7 +99,7 @@
 {% if rr_success_import_list %}
 <table border=1>
     <tr>
-        <th>{% trans "Retail Record(s) Successfully Imported" %} :</th>
+        <th>{% trans "retail record(s) are successfully imported"|capfirst %} :</th>
     </tr>
 {% for row in rr_success_import_list %}
     <tr class="{% cycle 'row1' 'row2' %}">
@@ -116,7 +116,7 @@
 <br>
 <table border=1>
     <tr>
-        <th>{% trans "Retail Record(s) not Imported" %} :</th>
+        <th>{% trans "retail record(s) are not imported"|capfirst %} :</th>
     </tr>
 {% for row in rr_error_import_list %}
     <tr class="{% cycle 'row1' 'row2' %}">
@@ -136,7 +136,7 @@
 <br>
 <table border=1>
     <tr>
-        <th>{% trans "Field Type miss match" %} :</th>
+        <th>{% trans "field type miss match"|capfirst %} :</th>
     </tr>
 {% for row in type_error_import_list %}
     <tr class="{% cycle 'row1' 'row2' %}">

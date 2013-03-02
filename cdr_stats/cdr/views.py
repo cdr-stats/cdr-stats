@@ -62,17 +62,17 @@ def index(request):
 
     if request.GET.get('db_error'):
         if request.GET['db_error'] == 'closed':
-            errorlogin = _('Mongodb Database connection is closed!')
+            errorlogin = _('mongodb database connection is closed!')
         if request.GET['db_error'] == 'locked':
-            errorlogin = _('Mongodb Database is locked!')
+            errorlogin = _('mongodb database is locked!')
 
     if request.GET.get('acc_code_error'):
         if request.GET['acc_code_error'] == 'true':
-            errorlogin = _('Account code is not assigned!')
+            errorlogin = _('account code is not assigned!')
 
     if request.GET.get('voip_plan_error'):
         if request.GET['voip_plan_error'] == 'true':
-            errorlogin = _('Voip plan is not attached with login user!')
+            errorlogin = _('voip plan is not attached with login user!')
 
     data = {
         'module': current_view(request),
@@ -1198,7 +1198,7 @@ def mail_report(request):
                                instance=user_profile)
         if form.is_valid():
             form.save()
-            msg = _('Email ids are saved successfully.')
+            msg = _('email ids are saved successfully.')
 
     mail_data = get_cdr_mail_report()
     logging.debug('CDR mail report view end')

@@ -32,19 +32,19 @@ class AlertRemovePrefix(models.Model):
 
     **Name of DB table**: alarm
     """
-    label = models.CharField(max_length=100, verbose_name=_('Label'))
+    label = models.CharField(max_length=100, verbose_name=_('label'))
     prefix = models.CharField(max_length=100, unique=True,
-                              verbose_name=_('Prefix'))
+                              verbose_name=_('prefix'))
     created_date = models.DateTimeField(auto_now_add=True,
-                                    verbose_name=_('Date'))
+                                    verbose_name=_('date'))
     updated_date = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
         return '%s' % (self.label)
 
     class Meta:        
-        verbose_name = _("Alert Remove Prefix")
-        verbose_name_plural = _("Alert Remove Prefixes")
+        verbose_name = _("alert remove prefix")
+        verbose_name_plural = _("alert remove prefixes")
         db_table = "alert_remove_prefix"
 
 
@@ -66,28 +66,28 @@ class Alarm(models.Model):
     **Name of DB table**: alert
     """
     user = models.ForeignKey('auth.User', related_name='Alarm_owner')
-    name = models.CharField(max_length=100, verbose_name=_('Name'))
+    name = models.CharField(max_length=100, verbose_name=_('name'))
     period = models.PositiveIntegerField(choices=list(PERIOD), default=1,
-                                verbose_name=_('Period'),
-                                help_text=_('Interval to apply alarm'))
+                                verbose_name=_('period'),
+                                help_text=_('interval to apply alarm'))
     type = models.PositiveIntegerField(choices=list(ALARM_TYPE), default=1,
-                                verbose_name=_('Type'),
+                                verbose_name=_('type'),
                                 help_text=_('ALOC (average length of call) ; ASR (answer seize ratio) ; CIC (Consecutive Incomplete Calls) '))
     alert_condition = models.PositiveIntegerField(choices=list(ALERT_CONDITION),
                                                   default=1,
-                                                  verbose_name=_('Condition'))
-    alert_value = models.DecimalField(verbose_name=_('Value'), max_digits=5,
+                                                  verbose_name=_('condition'))
+    alert_value = models.DecimalField(verbose_name=_('value'), max_digits=5,
                                 decimal_places=2, blank=True, null=True,
-                                help_text=_('Input the value for the alert'))
+                                help_text=_('input the value for the alert'))
     alert_condition_add_on = models.PositiveIntegerField(choices=list(ALERT_CONDITION_ADD_ON),
                                                          default=1)
     status = models.PositiveIntegerField(choices=list(STATUS), default=1,
-                                         verbose_name=_('Status'))
+                                         verbose_name=_('status'))
 
     email_to_send_alarm = models.EmailField(max_length=100,
-                                    verbose_name=_('Email to send alarm'))
+                                    verbose_name=_('email to send alarm'))
     created_date = models.DateTimeField(auto_now_add=True,
-                                        verbose_name=_('Date'))
+                                        verbose_name=_('date'))
     updated_date = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
@@ -95,10 +95,10 @@ class Alarm(models.Model):
 
     class Meta:
         permissions = (
-            ("alert_settings", _('Can see alarms')),
+            ("alert_settings", _('can see alarms')),
         )
-        verbose_name = _("Alarm")
-        verbose_name_plural = _("Alarms")
+        verbose_name = _("alarm")
+        verbose_name_plural = _("alarms")
         db_table = "alert"
 
 
@@ -113,25 +113,25 @@ class AlarmReport(models.Model):
 
     **Name of DB table**: alert_report
     """
-    alarm = models.ForeignKey(Alarm, verbose_name=_('Alarm'),
-                              help_text=_("Select Alarm"))
-    calculatedvalue = models.DecimalField(verbose_name=_('Calculated value'),
+    alarm = models.ForeignKey(Alarm, verbose_name=_('alarm'),
+                              help_text=_("select Alarm"))
+    calculatedvalue = models.DecimalField(verbose_name=_('calculated value'),
                                           max_digits=10, decimal_places=3,
                                           blank=True, null=True)
     status = models.PositiveIntegerField(choices=list(ALARM_REPROT_STATUS),
-                        default=1, verbose_name=_('Status'))
+                        default=1, verbose_name=_('status'))
 
-    daterun = models.DateTimeField(auto_now=True, verbose_name=_('Date'))
+    daterun = models.DateTimeField(auto_now=True, verbose_name=_('date'))
 
     def __unicode__(self):
         return '%s' % (self.alarm)
 
     class Meta:
         permissions = (
-            ("alarm_report", _('Can see alarm report')),
+            ("alarm_report", _('can see alarm report')),
         )
-        verbose_name = _("Alarm Report")
-        verbose_name_plural = _("Alarms Report")
+        verbose_name = _("alarm report")
+        verbose_name_plural = _("alarms report")
         db_table = "alert_report"
 
 
@@ -149,18 +149,18 @@ class Blacklist(models.Model):
     user = models.ForeignKey('auth.User', related_name='Blacklist_owner')
     phonenumber_prefix = models.PositiveIntegerField(blank=False, null=False)
     country = models.ForeignKey(Country, null=True, blank=True,
-                                verbose_name=_("Country"),
-                                help_text=_("Select Country"))
+                                verbose_name=_("country"),
+                                help_text=_("select country"))
 
     def __unicode__(self):
         return '[%s] %s' % (self.id, self.phonenumber_prefix)
 
     class Meta:
         permissions = (
-            ("view_blacklist", _('Can see blacklist country/prefix')),
+            ("view_blacklist", _('can see blacklist country/prefix')),
         )
-        verbose_name = _("Blacklist")
-        verbose_name_plural = _("Blacklist")
+        verbose_name = _("blacklist")
+        verbose_name_plural = _("blacklist")
         db_table = "alert_blacklist"
 
 
@@ -178,16 +178,16 @@ class Whitelist(models.Model):
     user = models.ForeignKey('auth.User', related_name='whitelist_owner')
     phonenumber_prefix = models.PositiveIntegerField(blank=False, null=False)
     country = models.ForeignKey(Country, null=True, blank=True,
-                                verbose_name=_("Country"),
-                                help_text=_("Select Country"))
+                                verbose_name=_("country"),
+                                help_text=_("select country"))
 
     def __unicode__(self):
         return '[%s] %s' % (self.id, self.phonenumber_prefix)
 
     class Meta:
         permissions = (
-            ("view_whitelist", _('Can see whitelist country/prefix')),
+            ("view_whitelist", _('can see whitelist country/prefix')),
         )
-        verbose_name = _("Whitelist")
-        verbose_name_plural = _("Whitelist")
+        verbose_name = _("whitelist")
+        verbose_name_plural = _("whitelist")
         db_table = "alert_whitelist"
