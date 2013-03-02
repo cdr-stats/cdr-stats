@@ -6,7 +6,7 @@
 {% block extra_head %}
     {% include "frontend/custom_jquery_select_all.html" %}
     <center>
-        <h3>{% trans "alerts"|title %} <small>{% trans "list of alerts" %}</small></h3>
+        <h3>{% trans "alerts"|title %} <small>{% trans "list of alerts"|capfirst %}</small></h3>
     </center>
 {% endblock %}
 
@@ -26,18 +26,18 @@
 <div class="span12">
     <div class="row">
         <div class="btn-group">
-            <button class="btn">{% trans "Action" %}</button>
+            <button class="btn">{% trans "action"|title %}</button>
             <button class="btn dropdown-toggle" data-toggle="dropdown">
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
                 {% if perms.dialer_contact.delete_phonebook %}
-                    <li><a href="#" onclick="delete_button()">{% trans "Delete selected" %}</a></li>
+                    <li><a href="#" onclick="delete_button()">{% trans "delete selected"|capfirst %}</a></li>
                 {% endif %}
             </ul>
         </div>
         {% if perms.dialer_contact.add_phonebook %}
-            <a class="btn btn-info" href="#" onclick="add_button()">{% trans "Add" %}</a>
+            <a class="btn btn-info" href="#" onclick="add_button()">{% trans "add"|title %}</a>
         {% endif %}
     </div>
 </div>
@@ -49,15 +49,15 @@
             <thead>
             <tr>
                 <th><input type="checkbox" onclick="toggleChecked(this.checked)"></th>
-                <th>{% sort_link ALARM_COLUMN_NAME.id col_name_with_order.id  %}</th>
-                <th>{% sort_link ALARM_COLUMN_NAME.name col_name_with_order.name  %}</th>
-                <th>{% sort_link ALARM_COLUMN_NAME.period col_name_with_order.period  %}</th>
-                <th>{% sort_link ALARM_COLUMN_NAME.type col_name_with_order.type  %}</th>
-                <th>{% sort_link ALARM_COLUMN_NAME.alert_condition col_name_with_order.alert_condition  %}</th>
-                <th>{% sort_link ALARM_COLUMN_NAME.alert_value col_name_with_order.alert_value  %}</th>
-                <th>{% sort_link ALARM_COLUMN_NAME.status col_name_with_order.status  %}</th>
-                <th>{% sort_link ALARM_COLUMN_NAME.updated_date col_name_with_order.updated_date  %}</th>
-                <th>{% trans "Action" %}</th>
+                <th>{% sort_link ALARM_COLUMN_NAME.id|capfirst col_name_with_order.id  %}</th>
+                <th>{% sort_link ALARM_COLUMN_NAME.name|capfirst col_name_with_order.name  %}</th>
+                <th>{% sort_link ALARM_COLUMN_NAME.period|capfirst col_name_with_order.period  %}</th>
+                <th>{% sort_link ALARM_COLUMN_NAME.type|capfirst col_name_with_order.type  %}</th>
+                <th>{% sort_link ALARM_COLUMN_NAME.alert_condition|capfirst col_name_with_order.alert_condition  %}</th>
+                <th>{% sort_link ALARM_COLUMN_NAME.alert_value|capfirst col_name_with_order.alert_value  %}</th>
+                <th>{% sort_link ALARM_COLUMN_NAME.status|capfirst col_name_with_order.status  %}</th>
+                <th>{% sort_link ALARM_COLUMN_NAME.updated_date|capfirst col_name_with_order.updated_date  %}</th>
+                <th>{% trans "action"|capfirst %}</th>
             </tr>
             </thead>
             {% if rows %}
@@ -76,10 +76,10 @@
                 <td>{{ row.updated_date }}</td>
                 <td>
                     {% if perms.cdr_alert.change_alarm %}
-                        <a href="{{ row.id }}/" {% icon "page_edit" %} title="{% trans "Update alarm" %}"></a>
+                        <a href="{{ row.id }}/" {% icon "page_edit" %} title="{% trans "update alarm"|capfirst %}"></a>
                     {% endif %}
                     {% if perms.cdr_alert.delete_alarm %}
-                        <a id="id_delete_confirm" href="del/{{ row.id }}/" {% icon "delete" %} title="{% trans "Delete alarm" %}"></a>
+                        <a id="id_delete_confirm" href="del/{{ row.id }}/" {% icon "delete" %} title="{% trans "delete alarm"|capfirst %}"></a>
                     {% endif %}
                 </td>
             </tr>

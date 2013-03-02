@@ -5,16 +5,16 @@
 {% endblock %}
 
 {% block content_header %}
-    <h1>{% trans "Settings" %} <small>{% trans "User detail, Password and notifications" %}</small></h1>
+    <h1>{% trans "settings"|capfirst %} <small>{% trans "user detail, Password and notifications"|capfirst %}</small></h1>
 {% endblock %}
 
 {% block content %}
 
 <div class="tabbable">
 <ul class="nav nav-tabs">
-    <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "Account" %}</a></li>
-    <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "Password" %}</a></li>
-    <li {% if action == "tabs-3" %}class="active"{% endif %}><a href="#tabs-3" data-toggle="tab">{% trans "Change language " %}</a></li>
+    <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "account"|capfirst %}</a></li>
+    <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "password"|capfirst %}</a></li>
+    <li {% if action == "tabs-3" %}class="active"{% endif %}><a href="#tabs-3" data-toggle="tab">{% trans "change language"|capfirst %}</a></li>
 </ul>
 
 <div class="tab-content">
@@ -34,7 +34,7 @@
         <div class="span12">
             <form class="well" action="/i18n/setlang/" method="post">
                 {% csrf_token %}
-                {% trans "Select language" %} : <select name="language" id="language-container" class="input-small" onchange="this.form.submit();">
+                {% trans "select language"|capfirst %} : <select name="language" id="language-container" class="input-small" onchange="this.form.submit();">
                 {% for lang in LANGUAGES %}
                 <option value="{{ lang.0 }}" {% ifequal lang.0 LANGUAGE_CODE %}selected{% endifequal %}>{{ lang.1 }}</option>
                 {% endfor %}

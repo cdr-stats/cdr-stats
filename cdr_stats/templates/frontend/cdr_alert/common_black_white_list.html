@@ -1,7 +1,7 @@
 {% extends "frontend/master.html" %}
 {% load i18n common_tags dajaxice_templatetags %}
 
-{% block title %}{% trans "Trust control"|title %}{% endblock %}
+{% block title %}{% trans "trust control"|title %}{% endblock %}
 
 {% block extra_head %}
     {% dajaxice_js_import %}
@@ -28,7 +28,7 @@
                 e.preventDefault();
                 var prefix = $('#id_bl_prefix').val();
                 if (prefix == '') {
-                    msg = '{% trans "You must enter dialcode" %}';
+                    msg = '{% trans "you must enter dialcode"|capfirst %}';
                     bootbox.alert(msg);
                 } else{
                     Dajaxice.cdr_alert.add_blacklist_prefix(Dajax.process, {'prefix': prefix});
@@ -58,7 +58,7 @@
                 var prefix = $('#id_wl_prefix').val();
                 if (prefix == '')
                 {
-                    msg = '{% trans "You must enter dialcode" %}';
+                    msg = '{% trans "you must enter dialcode"|capfirst %}';
                     bootbox.alert(msg);
                 }
                 else{
@@ -127,14 +127,14 @@
         <h3>{% trans "blacklist"|title %}</h3>
 
         <div class="btn-group">
-            <button class="btn">{% trans "Action" %}</button>
+            <button class="btn">{% trans "action"|capfirst %}</button>
             <button class="btn dropdown-toggle" data-toggle="dropdown">
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
                 {% if perms.cdr_alert.delete_alert  %}
-                    <li><a href="#" onclick="delete_button('blacklist')">{% trans "Delete selected" %}</a></li>
-                    <li><a href="#" onclick="delete_all_button('blacklist')">{% trans "Delete all" %}</a></li>
+                    <li><a href="#" onclick="delete_button('blacklist')">{% trans "delete selected"|capfirst %}</a></li>
+                    <li><a href="#" onclick="delete_all_button('blacklist')">{% trans "delete all"|capfirst %}</a></li>
                 {% endif %}
             </ul>
         </div>
@@ -170,7 +170,7 @@
             {% csrf_token %}
             {% for field in bl_country_form %}
                 {{ field }}
-                <input id="add_bl_country" type="button" class="btn btn-info" value="{% trans "Blacklist this country" %}" />
+                <input id="add_bl_country" type="button" class="btn btn-info" value="{% trans "blacklist this country"|capfirst %}" />
             {% endfor %}
         </form>
 
@@ -178,7 +178,7 @@
         <form class="form-search" action="." id="id_bl_prefix_from" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <input id="id_bl_prefix" name="prefix"  type="text" data-provide="typeahead" data-items="10" data-source='{{ prefix_list }}'>
-            <input id="add_bl_prefix" type="button" class="btn btn-info" value="{% trans "Blacklist this dialcode" %}" />
+            <input id="add_bl_prefix" type="button" class="btn btn-info" value="{% trans "blacklist this dialcode"|capfirst %}" />
         </form>
     </div>
 </div>
@@ -189,14 +189,14 @@
         <h3>{% trans "whitelist"|title %}</h3>
 
         <div class="btn-group">
-            <button class="btn">{% trans "Action" %}</button>
+            <button class="btn">{% trans "action"|capfirst %}</button>
             <button class="btn dropdown-toggle" data-toggle="dropdown">
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
                 {% if perms.cdr_alert.delete_alert  %}
-                    <li><a href="#" onclick="delete_button('whitelist')">{% trans "Delete selected" %}</a></li>
-                    <li><a href="#" onclick="delete_all_button('whitelist')">{% trans "Delete all" %}</a></li>
+                    <li><a href="#" onclick="delete_button('whitelist')">{% trans "delete selected"|capfirst %}</a></li>
+                    <li><a href="#" onclick="delete_all_button('whitelist')">{% trans "delete all"|capfirst %}</a></li>
                 {% endif %}
             </ul>
         </div>
@@ -230,7 +230,7 @@
             {% csrf_token %}
             {% for field in wl_country_form %}
                 {{ field }}
-                <input id="add_wl_country" type="button" class="btn btn-info" value="{% trans "Whitelist this country" %}" />
+                <input id="add_wl_country" type="button" class="btn btn-info" value="{% trans "whitelist this country"|capfirst %}" />
             {% endfor %}
         </form>
 
@@ -238,7 +238,7 @@
         <form class="form-search" action="." id="id_wl_prefix_from" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <input id="id_wl_prefix" name="prefix"  type="text" data-provide="typeahead" data-items="10" data-source='{{ prefix_list }}'>
-            <input id="add_wl_prefix" type="button" class="btn btn-info" value="{% trans "Whitelist this dialcode" %}" />
+            <input id="add_wl_prefix" type="button" class="btn btn-info" value="{% trans "whitelist this dialcode"|capfirst %}" />
         </form>
     </div>
 </div>
