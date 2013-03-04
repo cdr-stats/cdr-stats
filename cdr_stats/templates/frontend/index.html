@@ -5,10 +5,10 @@
 
 <div class="hero-unit">
 
-	<img src="{{STATIC_URL}}cdr-stats/images/cdr-stats_600.png" alt="CDR-Stats" width="400px"/>
+	<img src="{{ STATIC_URL }}cdr-stats/images/cdr-stats_600.png" alt="CDR-Stats" width="400px"/>
 	<br/><br/>
 	<a href="http://www.cdr-stats.org/" target="_blank" >CDR-Stats</a> {% trans "is a multi-tenant application to browse, analyse and graph CDR (Call Detail Records) with automated threat alerts for multiple switches and PBX systems." %}<br/><br/>
-	{% trans "Call traffic analysis and threat alert tools include :" %}
+	{% trans "call traffic analysis and threat alert tools include :"|capfirst %}
   <div class="row">
     <div class="span5">
       <ul>
@@ -30,19 +30,19 @@
       </ul>
     </div>
   </div>
-	<p><a class="btn primary large" href="http://www.cdr-stats.org/">{% trans "Learn more" %} &raquo;</a></p>
+	<p><a class="btn primary large" href="http://www.cdr-stats.org/">{% trans "learn more"|capfirst %} &raquo;</a></p>
 </div>
 
 <div class="row">
   <div class="span6">
-    <h2>{% trans "Support" %}</h2>
+    <h2>{% trans "support"|title %}</h2>
     <p>{% trans "Star2Billing S.L. offers consultancy including installation, training and customisation on CDR-Stats." %}</p>
-    <p>{% trans "Contact us at" %} <a href="mailto:cdr-stats@star2billing.com">cdr-stats@star2billing.com</a> {% trans "for more information" %}<p>
-    <p><a class="btn" href="http://www.cdr-stats.org/support/">{% trans "Get Support" %} &raquo;</a></p>
+    <p>{% trans "contact us at"|capfirst %} <a href="mailto:cdr-stats@star2billing.com">cdr-stats@star2billing.com</a> {% trans "for more information" %}<p>
+    <p><a class="btn" href="http://www.cdr-stats.org/support/">{% trans "get support"|title %} &raquo;</a></p>
   </div>
 
   <div class="span6">
-    <h2>{% trans "Licensing" %}</h2>
+    <h2>{% trans "licensing"|capfirst %}</h2>
      <p>{% trans "CDR-Stats is licensed under" %} <a href="http://www.mozilla.org/MPL/2.0/" target="_blank">MPL V2</a>,
         {% trans "however an alternative license can be purchased if the MPL V2 license is not suitable for your requirements." %}</p>
     <p><a class="btn" href="http://www.cdr-stats.org/support/licensing/">{% trans "View Licensing details" %} &raquo;</a></p>

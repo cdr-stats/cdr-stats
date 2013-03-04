@@ -16,24 +16,24 @@
                 <div class="span12">
                     <div class="row">
                         <div class="span4">
-                            <label class="control-label" for="{{ form.from_date.auto_id }}">{{ form.from_date.label }}</label>
+                            <label class="control-label" for="{{ form.from_date.auto_id }}">{{ form.from_date.label|title }}</label>
                             <div class="input">
                                 {{ form.from_date }}
-                                <span class="help-block">{{ form.from_date.help_text|safe }} </span>
+                                <span class="help-block">{{ form.from_date.help_text|capfirst|safe }} </span>
                             </div>
                         </div>
                         <div class="span4">
-                            <label class="control-label" for="{{ form.to_date.auto_id }}">{{ form.to_date.label }}</label>
+                            <label class="control-label" for="{{ form.to_date.auto_id }}">{{ form.to_date.label|title }}</label>
                             <div class="input">
                                 {{ form.to_date }}
-                                <span class="help-block">{{ form.to_date.help_text|safe }} </span>
+                                <span class="help-block">{{ form.to_date.help_text|capfirst|safe }} </span>
                             </div>
                         </div>
                         <div class="span4">
-                            <label class="control-label" for="{{ form.switch.auto_id }}">{{ form.switch.label }}</label>
+                            <label class="control-label" for="{{ form.switch.auto_id }}">{{ form.switch.label|title }}</label>
                             <div class="input">
                                 {{ form.switch }}
-                                <span class="help-block">{{ form.switch.help_text|safe }} </span>
+                                <span class="help-block">{{ form.switch.help_text|capfirst|safe }} </span>
                             </div>
                         </div>
                     </div>
@@ -41,7 +41,7 @@
             </div>
             <label>&nbsp;</label>
             <div class="actions">
-                <input class="btn btn-primary" type=submit name=submit value={% trans "Search" %} />
+                <input class="btn btn-primary" type=submit name=submit value={% trans "search"|capfirst %} />
             </div>
         </form>
     </div>
@@ -51,45 +51,12 @@
         </a>
     </div>
     <script id="source" language="javascript" type="text/javascript">
-        $(function () {
-
-            function MonthName(m, type){
-                var short_month = new Array(
-                        "{% trans "Jan" %}",
-                        "{% trans "Feb" %}",
-                        "{% trans "Mar" %}",
-                        "{% trans "Apr" %}",
-                        "{% trans "May" %}",
-                        "{% trans "Jun" %}",
-                        "{% trans "Jul" %}",
-                        "{% trans "Aug" %}",
-                        "{% trans "Sep" %}",
-                        "{% trans "Oct" %}",
-                        "{% trans "Nov" %}",
-                        "{% trans "Dec" %}");
-                var month = new Array(
-                        "{% trans "January" %}",
-                        "{% trans "February" %}",
-                        "{% trans "March" %}",
-                        "{% trans "April" %}",
-                        "{% trans "May" %}",
-                        "{% trans "June" %}",
-                        "{% trans "July" %}",
-                        "{% trans "August" %}",
-                        "{% trans "September" %}",
-                        "{% trans "October" %}",
-                        "{% trans "November" %}",
-                        "{% trans "December" %}");
-                if (type == 0)
-                    return short_month[m-1];
-                else
-                    return month[m-1];
-            }
+        $(function () {            
 
             var data = [
                 {% if user.is_superuser %}
                     {
-                        label: '{% trans "Buy cost" %}',
+                        label: '{% trans "buy cost"|capfirst %}',
                         data: [
                             {% for data in total_data %}
                                 [{{ data.0 }}, {{ data.1.buy_cost_per_day }}],
@@ -99,7 +66,7 @@
                 {% endif %}
 
                 {
-                    label: '{% trans "Sell cost" %}',
+                    label: '{% trans "sell cost"|capfirst %}',
                     data: [
                         {% for data in total_data %}
                             [{{ data.0 }}, {{ data.1.sell_cost_per_day }}],

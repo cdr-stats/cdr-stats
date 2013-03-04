@@ -16,7 +16,7 @@ $(document).ready(function() {
         var $fields = $(this).find('input[name="select"]:checked');
 
         if (!$fields.length) {
-            msg = '{% trans "You must check at least one box!" %}';
+            msg = '{% trans "you must check at least one box!"|capfirst %}';
             bootbox.alert(msg);
             return false; // The form will *not* submit
         }
@@ -42,7 +42,7 @@ $(document).ready(function() {
     $('#id_delete_confirm').click(function(e) {
         e.preventDefault();
         var href = this.href;
-        confirm_string = '{% trans "Confirm deletion?" %}';
+        confirm_string = '{% trans "confirm deletion?"|capfirst %}';
         bootbox.confirm(confirm_string, function(result){
             if (result) {
                 window.location = href;

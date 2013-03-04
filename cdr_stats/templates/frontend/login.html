@@ -1,4 +1,4 @@
-
+{% load i18n %}
 <script type="text/javascript">
       $(function(){
 
@@ -23,7 +23,7 @@
                 {{ field.label_tag }}: {{ field }}
             </div>
             {% endfor %}d
-            <input type="submit" value="login" class="ui-state-default">
+            <input type="submit" value="{% trans 'login'|capfirst %}" class="ui-state-default">
         </form>
     </div>
 {% endblock login %}

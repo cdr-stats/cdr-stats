@@ -21,7 +21,7 @@
                         <tr class="error">
                             <td colspan="4">
                                 <center>
-                                <h5 class="text-error">{% trans "Connection error with" %} {{ ip }}</h5>
+                                <h5 class="text-error">{% trans "connection error with"|capfirst %} {{ ip }}</h5>
                                 </center>
                             </td>
                         </tr>
@@ -29,7 +29,7 @@
                         <tr class="success">
                             <td colspan="4">
                                 <center>
-                                <h5 class="text-success">{% trans "Connection successful with" %} {{ ip }}</h5>
+                                <h5 class="text-success">{% trans "connection successful with"|capfirst %} {{ ip }}</h5>
                                 </center>
                             </td>
                         </tr>
@@ -61,7 +61,7 @@
             </div>
             <div class="span6">
                 <h4>{% trans "MONGODB - CDRSTATS" %}</h4>
-                {% trans "MongoDB server used to store and centralize your CDRs and your reporting" %}
+                {% trans "MongoDB server used to store and centralize your CDRs and your reporting"|capfirst %}
                 <table class="table table-striped table-bordered table-condensed">
                 {% for key, value in settings.MONGO_CDRSTATS.items %}
                     <tr>

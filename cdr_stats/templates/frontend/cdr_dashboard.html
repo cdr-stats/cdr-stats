@@ -17,7 +17,7 @@
         <div class="controls">
             <label class="control-label" for="{{ form.switch.auto_id }}">{{ form.switch.label|title }} :</label>
                 {{ form.switch }}
-                <span class="help-block">{{ form.switch.help_text|cafirst|safe }} </span>
+                <span class="help-block">{{ form.switch.help_text|capfirst|safe }} </span>
         </div>
     </div>
 </form>
@@ -141,7 +141,7 @@ $(function () {
                 minute = minute < 10 ? '0'+minute : minute;
                 strTime = hour + ':' + minute + ' ' + ampm;
 
-                output += strTime + '</div><div class="graph_tooltip_info">{% trans "calls"|cafirst %}: ' + Info(time,1) + '<br>{% trans "duration"|cafirst %}: ' + Info(time,2) + ' {% trans "secs" %}';
+                output += strTime + '</div><div class="graph_tooltip_info">{% trans "calls"|capfirst %}: ' + Info(time,1) + '<br>{% trans "duration"|capfirst %}: ' + Info(time,2) + ' {% trans "secs" %}';
 
                 {% if user.is_superuser %}
                     output += '<br>{% trans "buy cost"|title %}: ' + Info(time,3) + '<br>{% trans "sell cost"|title %}: ' + Info(time,4) +'</div>' ;

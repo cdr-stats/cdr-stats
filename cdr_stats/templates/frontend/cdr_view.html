@@ -37,24 +37,24 @@
         <div class="span12">
             <div class="row">
                 <div class="span4">
-                    <label class="control-label" for="{{ form.from_date.auto_id }}">{{ form.from_date.label }}</label>
+                    <label class="control-label" for="{{ form.from_date.auto_id }}">{{ form.from_date.label|title }}</label>
                     <div class="input">
                         {{ form.from_date }}
-                        <span class="help-block">{{ form.from_date.help_text|safe }} </span>
+                        <span class="help-block">{{ form.from_date.help_text|capfirst|safe }} </span>
                     </div>
                 </div>
                 <div class="span4">
-                    <label class="control-label" for="{{ form.to_date.auto_id }}">{{ form.to_date.label }}</label>
+                    <label class="control-label" for="{{ form.to_date.auto_id }}">{{ form.to_date.label|title }}</label>
                     <div class="input">
                         {{ form.to_date }}
-                        <span class="help-block">{{ form.to_date.help_text|safe }} </span>
+                        <span class="help-block">{{ form.to_date.help_text|capfirst|safe }} </span>
                     </div>
                 </div>
                 <div class="span4">
-                    <label class="control-label" for="{{ form.switch.auto_id }}">{{ form.switch.label }}</label>
+                    <label class="control-label" for="{{ form.switch.auto_id }}">{{ form.switch.label|title }}</label>
                     <div class="input">
                         {{ form.switch }}
-                        <span class="help-block">{{ form.switch.help_text|safe }} </span>
+                        <span class="help-block">{{ form.switch.help_text|capfirst|safe }} </span>
                     </div>
                 </div>
             </div>
@@ -65,7 +65,7 @@
     <div class="span12">
       <div class="row">
           <div class="span4">
-            <label class="control-label" for="{{ form.destination.auto_id }}">{{ form.destination.label }}</label>
+            <label class="control-label" for="{{ form.destination.auto_id }}">{{ form.destination.label|title }}</label>
             <div class="input">
                 {{ form.destination }}&nbsp;&nbsp;{{ form.destination_type }}
             </div>
@@ -75,7 +75,7 @@
           </div>
           {% if user.is_superuser %}
           <div class="span4">
-            <label class="control-label" for="{{ form.accountcode.auto_id }}">{{ form.accountcode.label }}</label>
+            <label class="control-label" for="{{ form.accountcode.auto_id }}">{{ form.accountcode.label|title }}</label>
             <div class="input">
                 {{ form.accountcode }}&nbsp;&nbsp;{{ form.accountcode_type }}
             </div>
@@ -85,7 +85,7 @@
           </div>
           {% endif %}
           <div class="span4">
-            <label class="control-label" for="{{ form.caller.auto_id }}">{{ form.caller.label }}</label>
+            <label class="control-label" for="{{ form.caller.auto_id }}">{{ form.caller.label|title }}</label>
             <div class="input">
               {{ form.caller }}&nbsp;&nbsp;{{ form.caller_type }}
             </div>
@@ -101,19 +101,19 @@
     <div class="span12">
         <div class="row">
             <div class="span4">
-                <label class="control-label" for="{{ form.direction.auto_id }}">{{ form.direction.label }}</label>
+                <label class="control-label" for="{{ form.direction.auto_id }}">{{ form.direction.label|title }}</label>
                 <div class="input">
                     {{ form.direction }}
                 </div>
             </div>
             <div class="span4">
-                <label class="control-label" for="{{ form.hangup_cause.auto_id }}">{{ form.hangup_cause.label }}</label>
+                <label class="control-label" for="{{ form.hangup_cause.auto_id }}">{{ form.hangup_cause.label|title }}</label>
                 <div class="input">
                   {{ form.hangup_cause }}
                 </div>
             </div>
             <div class="span4">
-                <label class="control-label" for="{{ form.duration.auto_id }}">{{ form.duration.label }}</label>
+                <label class="control-label" for="{{ form.duration.auto_id }}">{{ form.duration.label|title }}</label>
                 <div class="input">
                     {{ form.duration }}&nbsp;&nbsp;{{ form.duration_type }}
                 </div>
@@ -128,14 +128,14 @@
      <div class="span12">
          <div class="row">
              <div class="span4">
-                 <label class="control-label" for="{{ form.country_id.auto_id }}">{{ form.country_id.label }}</label>
+                 <label class="control-label" for="{{ form.country_id.auto_id }}">{{ form.country_id.label|title }}</label>
                  <div class="input">
                      {{ form.country_id }}
-                     <span class="help-block">{{ form.country_id.help_text|safe }} </span>
+                     <span class="help-block">{{ form.country_id.help_text|capfirst|safe }} </span>
                  </div>
              </div>
              <div class="span4">
-                 <label class="control-label" for="{{ form.result.auto_id }}">{{ form.result.label }}</label>
+                 <label class="control-label" for="{{ form.result.auto_id }}">{{ form.result.label|title }}</label>
                  <div class="input">
                      {{ form.result|removetags:"ul li label"|safe }}
                  </div>
@@ -146,7 +146,7 @@
 
   <label></label>
   <div class="actions">
-      <input type="submit" class="btn btn-primary" name="search" value={% trans "Search" %} />
+      <input type="submit" class="btn btn-primary" name="search" value={% trans "search"|title %} />
   </div>
 </div>
 
@@ -171,13 +171,13 @@
         </div>
 
         <div class="btn-group">
-            <button class="btn">{% trans "Action" %}</button>
+            <button class="btn">{% trans "action"|title %}</button>
             <button class="btn dropdown-toggle" data-toggle="dropdown">
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
                 {% if perms.cdr.allow_cdr_view  %}
-                    <li><a href="/cdr_export_csv/">{% trans "Export CSV file" %}</a></li>
+                    <li><a href="/cdr_export_csv/">{% trans "export CSV file"|capfirst %}</a></li>
                 {% endif %}
             </ul>
         </div>
@@ -188,104 +188,104 @@
                 <th>
                     {% ifequal col_name_with_order.sort_field 'start_uepoch' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "start_uepoch"  %}
-                        {{ CDR_COLUMN_NAME.call_date }}
+                        {{ CDR_COLUMN_NAME.call_date|capfirst }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-start_uepoch"  %}
                     {% else %}
-                      {% sort_link CDR_COLUMN_NAME.call_date "-start_uepoch"  %}
+                      {% sort_link CDR_COLUMN_NAME.call_date|capfirst "-start_uepoch"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'caller_id_number' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "caller_id_number"  %}
-                        {{ CDR_COLUMN_NAME.clid }}
+                        {{ CDR_COLUMN_NAME.clid|capfirst }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-caller_id_number"  %}
                     {% else %}
-                      {% sort_link CDR_COLUMN_NAME.clid "-caller_id_number"  %}
+                      {% sort_link CDR_COLUMN_NAME.clid|capfirst "-caller_id_number"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'destination_number' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "destination_number"  %}
-                        {{ CDR_COLUMN_NAME.destination }}
+                        {{ CDR_COLUMN_NAME.destination|capfirst }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-destination_number"  %}
                     {% else %}
-                      {% sort_link CDR_COLUMN_NAME.destination "-destination_number"  %}
+                      {% sort_link CDR_COLUMN_NAME.destination|capfirst "-destination_number"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'duration' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "duration"  %}
-                        {{ CDR_COLUMN_NAME.duration }}
+                        {{ CDR_COLUMN_NAME.duration|capfirst }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-duration"  %}
                     {% else %}
-                      {% sort_link CDR_COLUMN_NAME.duration "-duration"  %}
+                      {% sort_link CDR_COLUMN_NAME.duration|capfirst "-duration"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'billsec' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "billsec"  %}
-                      <abbr title='{% trans "Bill Seconds" %}'>{{ CDR_COLUMN_NAME.bill }}</abbr>
+                      <abbr title='{% trans "bill seconds"|title %}'>{{ CDR_COLUMN_NAME.bill|capfirst }}</abbr>
                       {% sort_link "<i class='icon-chevron-down'></i>" "-billsec"  %}
                     {% else %}
-                        <abbr title={% trans 'Bill Seconds' %}>
-                        {% sort_link CDR_COLUMN_NAME.bill "-billsec"  %}
+                        <abbr title={% trans 'bill seconds'|title %}>
+                        {% sort_link CDR_COLUMN_NAME.bill|capfirst "-billsec"  %}
                         </abbr>
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'hangup_cause_id' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "hangup_cause_id"  %}
-                        {{ CDR_COLUMN_NAME.hangup_cause }}
+                        {{ CDR_COLUMN_NAME.hangup_cause|capfirst }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-hangup_cause_id"  %}
                     {% else %}
-                      {% sort_link CDR_COLUMN_NAME.hangup_cause "-hangup_cause_id"  %}
+                      {% sort_link CDR_COLUMN_NAME.hangup_cause|capfirst "-hangup_cause_id"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'accountcode' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "accountcode"  %}
-                        {{ CDR_COLUMN_NAME.account }}
+                        {{ CDR_COLUMN_NAME.account|capfirst }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-accountcode"  %}
                     {% else %}
-                      {% sort_link CDR_COLUMN_NAME.account "-accountcode"  %}
+                      {% sort_link CDR_COLUMN_NAME.account|capfirst "-accountcode"  %}
                     {% endifequal %}
                 </th>
                 {% if user.is_superuser %}
                     <th>
                         {% ifequal col_name_with_order.sort_field 'buy_rate' %}
                             {% sort_link "<i class='icon-chevron-up'></i>" "buy_rate"  %}
-                            {{ CDR_COLUMN_NAME.buy_rate }}
+                            {{ CDR_COLUMN_NAME.buy_rate|capfirst }}
                             {% sort_link "<i class='icon-chevron-down'></i>" "-buy_rate"  %}
                         {% else %}
-                            {% sort_link CDR_COLUMN_NAME.buy_rate "-buy_rate"  %}
+                            {% sort_link CDR_COLUMN_NAME.buy_rate|capfirst "-buy_rate"  %}
                         {% endifequal %}
                     </th>
                     <th>
                         {% ifequal col_name_with_order.sort_field 'buy_cost' %}
                             {% sort_link "<i class='icon-chevron-up'></i>" "buy_cost"  %}
-                            {{ CDR_COLUMN_NAME.buy_cost }}
+                            {{ CDR_COLUMN_NAME.buy_cost|capfirst }}
                             {% sort_link "<i class='icon-chevron-down'></i>" "-buy_cost"  %}
                         {% else %}
-                            {% sort_link CDR_COLUMN_NAME.buy_cost "-buy_cost"  %}
+                            {% sort_link CDR_COLUMN_NAME.buy_cost|capfirst "-buy_cost"  %}
                         {% endifequal %}
                     </th>
                 {% endif %}
                 <th>
                     {% ifequal col_name_with_order.sort_field 'sell_rate' %}
                         {% sort_link "<i class='icon-chevron-up'></i>" "sell_rate"  %}
-                        {{ CDR_COLUMN_NAME.sell_rate }}
+                        {{ CDR_COLUMN_NAME.sell_rate|capfirst }}
                         {% sort_link "<i class='icon-chevron-down'></i>" "-sell_rate"  %}
                     {% else %}
-                        {% sort_link CDR_COLUMN_NAME.sell_rate "-sell_rate"  %}
+                        {% sort_link CDR_COLUMN_NAME.sell_rate|capfirst "-sell_rate"  %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal col_name_with_order.sort_field 'sell_cost' %}
                         {% sort_link "<i class='icon-chevron-up'></i>" "sell_cost"  %}
-                        {{ CDR_COLUMN_NAME.sell_cost }}
+                        {{ CDR_COLUMN_NAME.sell_cost|capfirst }}
                         {% sort_link "<i class='icon-chevron-down'></i>" "-sell_cost"  %}
                     {% else %}
-                        {% sort_link CDR_COLUMN_NAME.sell_cost "-sell_cost"  %}
+                        {% sort_link CDR_COLUMN_NAME.sell_cost|capfirst "-sell_cost"  %}
                     {% endifequal %}
                 </th>
                 <th></th>
@@ -332,29 +332,29 @@
                     <div class="flag_icon">
                         {% if row.country_id %}
                             {% cache 1800 hcountry_flag row.country_id %}
-                                <img src="{{STATIC_URL}}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name }}">
+                                <img src="{{ STATIC_URL }}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name }}">
                             {% endcache %}
                         {% else %}
-                            <img src="{{STATIC_URL}}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World" %}">
+                            <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "world"|capfirst %}">
                         {% endif %}
                         {% if row.authorized == 1  %}
-                            <img src="{{STATIC_URL}}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans "Authorized call" %}"/>
+                            <img src="{{ STATIC_URL }}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans "authorized call"|capfirst %}"/>
                         {% else %}
-                            <img src="{{STATIC_URL}}cdr-stats/icons/flag_red.png" class="elemtooltip" title="{% trans "Unauthorized call" %}"/>
+                            <img src="{{ STATIC_URL }}cdr-stats/icons/flag_red.png" class="elemtooltip" title="{% trans "unauthorized call"|capfirst %}"/>
                         {% endif %}
                         {% ifequal row.direction 'inbound' %}
-                            <img src="{{STATIC_URL}}cdr-stats/icons/door_in.png" title="{{ row.direction|capfirst }} {% trans "call" %}" class="elemtooltip"/>
+                            <img src="{{ STATIC_URL }}cdr-stats/icons/door_in.png" title="{{ row.direction|capfirst }} {% trans "call" %}" class="elemtooltip"/>
                         {% else %}
                             {% ifequal row.direction 'outbound' %}
-                                <img src="{{STATIC_URL}}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
+                                <img src="{{ STATIC_URL }}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
                             {% else %}
-                                <img src="{{STATIC_URL}}cdr-stats/icons/door.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
+                                <img src="{{ STATIC_URL }}cdr-stats/icons/door.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
                             {% endifequal %}
                         {% endifequal %}
 
                         {% if "cdr_object_id" in row %}
                             {% if perms.user_profile.cdr_detail %}
-                                <a data-toggle="modal" href="#modal-create-{{ row.cdr_object_id }}" class="ajax-modal-{{ row.cdr_object_id }}" url='/cdr_detail/{{ row.cdr_object_id }}/{{ row.switch_id }}' data-controls-modal='modal-create-content-{{ row.cdr_object_id }}'><img src="{{STATIC_URL}}cdr-stats/icons/zoom.png" class="elemtooltip" title="{% trans "Show details" %}"/></a>
+                                <a data-toggle="modal" href="#modal-create-{{ row.cdr_object_id }}" class="ajax-modal-{{ row.cdr_object_id }}" url='/cdr_detail/{{ row.cdr_object_id }}/{{ row.switch_id }}' data-controls-modal='modal-create-content-{{ row.cdr_object_id }}'><img src="{{ STATIC_URL }}cdr-stats/icons/zoom.png" class="elemtooltip" title="{% trans "show details"|capfirst %}"/></a>
                             {% endif %}
                         {% endif %}
 
@@ -370,12 +370,12 @@
                         <div id="modal-create-{{ row.cdr_object_id }}" class="modal hide fade" >
                             <div class="modal-header">
                                 <a class="close" data-dismiss="modal" >&times;</a>
-                                <h3>{% trans "Call Details" %}</h3>
+                                <h3>{% trans "call details"|title %}</h3>
                             </div>
                             <div class="modal-body" id="modal-create-content-{{ row.cdr_object_id }}">
                             </div>
                             <div class="modal-footer">
-                                <a href="#" class="btn" data-dismiss="modal">{% trans "Close" %}</a>
+                                <a href="#" class="btn" data-dismiss="modal">{% trans "close"|capfirst %}</a>
                             </div>
                         </div>
                     </div>
@@ -419,13 +419,13 @@
             </caption>
             <thead>
             <tr>
-                <th>{% trans "Date"  %}</th>
-                <th>{% trans "Duration"  %}</th>
-                <th>{% trans "Graphic"  %}</th>
-                <th>{% trans "Calls"  %}</th>
-                <th><acronym title="{% trans "Average Connection Time"  %}">{% trans "ACT"  %}</acronym></th>
-                <th>{% trans "Buy cost" %}</th>
-                <th>{% trans "Sell cost" %}</th>
+                <th>{% trans "date"|capfirst  %}</th>
+                <th>{% trans "duration"|capfirst  %}</th>
+                <th>{% trans "graphic"|capfirst  %}</th>
+                <th>{% trans "calls"|capfirst  %}</th>
+                <th><acronym title="{% trans "average connection time"|title  %}">{% trans "ACT"  %}</acronym></th>
+                <th>{% trans "buy cost"|capfirst %}</th>
+                <th>{% trans "sell cost"|capfirst %}</th>
             </tr>
             </thead>
             {% for td in cdr_daily_data.total_data %}
@@ -452,7 +452,7 @@
             {% endfor %}
 
             <tr>
-                <th scope="row">{% trans "Total"  %}</th>
+                <th scope="row">{% trans "total"|capfirst  %}</th>
                 <td>{{ cdr_daily_data.total_duration|conv_min }}</td>
                 <td></td>
                 <td>{{ cdr_daily_data.total_calls }}</td>

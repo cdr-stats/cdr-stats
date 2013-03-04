@@ -17,50 +17,50 @@
     -->
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <title>{% block title %}CDR-Stats{% endblock %} | {% trans "Customer Interface" noop %}</title>
-    <link rel="shortcut icon" type="image/x-icon" href="{{STATIC_URL}}cdr-stats/images/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ STATIC_URL }}cdr-stats/images/favicon.ico">
 
     <!-- Javascript -->
-    <script type="text/javascript" src="{{STATIC_URL}}cdr-stats/js/jquery-1.8.2.min.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}cdr-stats/js/jquery-ui-1.9.1.custom.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}cdr-stats/js/jquery-1.8.2.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}cdr-stats/js/jquery-ui-1.9.1.custom.min.js"></script>
 
-	<script src="{{STATIC_URL}}cdr-stats/js/jquery.flot.js" type="text/javascript"></script>
-    <script src="{{STATIC_URL}}cdr-stats/js/jquery.flot.pie.js" type="text/javascript"></script>
+	<script src="{{ STATIC_URL }}cdr-stats/js/jquery.flot.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}cdr-stats/js/jquery.flot.pie.js" type="text/javascript"></script>
 
     <!-- flotr js -->
-    <script src="{{STATIC_URL}}cdr-stats/js/flotr/flotr.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}cdr-stats/js/flotr/flotr.js" type="text/javascript"></script>
     <!-- commented cause issue to display smoothies js -->
-    <!-- <script src="{{STATIC_URL}}cdr-stats/js/flotr/canvastext.js" type="text/javascript"></script> -->
-    <script src="{{STATIC_URL}}cdr-stats/js/jquery.flot.selection.js" type="text/javascript"></script>
+    <!-- <script src="{{ STATIC_URL }}cdr-stats/js/flotr/canvastext.js" type="text/javascript"></script> -->
+    <script src="{{ STATIC_URL }}cdr-stats/js/jquery.flot.selection.js" type="text/javascript"></script>
     <!--[if IE]>
-        <script type="text/javascript" src="{{STATIC_URL}}cdr-stats/js/flotr/excanvas.js"></script>
-        <script type="text/javascript" src="{{STATIC_URL}}cdr-stats/js/flotr/base64.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}cdr-stats/js/flotr/excanvas.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}cdr-stats/js/flotr/base64.js"></script>
     <![endif]-->
-    <script type="text/javascript" src="{{STATIC_URL}}cdr-stats/js/flotr/canvas2image.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}cdr-stats/js/flotr/canvas2image.js"></script>
 
 	{% block extra_header %}
     {{ extra_header }}
     {% endblock %}
-    <script src="{{STATIC_URL}}cdr-stats/bootstrap/js/bootstrap.js" type="text/javascript"></script>
-    <script src="{{STATIC_URL}}cdr-stats/js/bootstrap-datepicker.js" type="text/javascript"></script>
-    <script src="{{STATIC_URL}}cdr-stats/js/bootbox.min.js"></script>
+    <script src="{{ STATIC_URL }}cdr-stats/bootstrap/js/bootstrap.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}cdr-stats/js/bootstrap-datepicker.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}cdr-stats/js/bootbox.min.js"></script>
 
     <!-- stylesheets -->
-    <link href="{{STATIC_URL}}cdr-stats/bootstrap/css/bootstrap.css" rel="stylesheet">
-    <link href="{{STATIC_URL}}cdr-stats/css/datepicker.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}cdr-stats/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}cdr-stats/css/datepicker.css" rel="stylesheet">
     <!-- Change bootstrap style
-    <link href="{{STATIC_URL}}cdr-stats/css/bootswatch/superhero/bootstrap.css" rel="stylesheet"> -->
+    <link href="{{ STATIC_URL }}cdr-stats/css/bootswatch/superhero/bootstrap.css" rel="stylesheet"> -->
     <style type="text/css">
       body {
         padding-top: 90px;
         padding-bottom: 40px;
       }
     </style>
-    <link href="{{STATIC_URL}}cdr-stats/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}cdr-stats/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
     <!--Override bootstrap-->
-    <link href="{{STATIC_URL}}cdr-stats/css/override_bootstrap.css" rel="stylesheet">
-    <link href="{{STATIC_URL}}cdr-stats/css/cdr_stats.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}cdr-stats/css/override_bootstrap.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}cdr-stats/css/cdr_stats.css" rel="stylesheet">
     <!-- Include Print CSS -->
-    <link rel="stylesheet" href="{{STATIC_URL}}cdr-stats/css/cdr_stats_print.css" type="text/css" media="print" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}cdr-stats/css/cdr_stats_print.css" type="text/css" media="print" />
 
     <!-- Include cdr_stats.js code -->
     {% include "frontend/cdr_stats_js.html" %}
@@ -77,12 +77,12 @@
 
     {% if errorlogin %}
         <div class="alert alert-error">
-            <strong>{% trans "Alert"  %} : </strong>  {{ errorlogin }}
+            <strong>{% trans "alert"|capfirst %} : </strong>  {{ errorlogin|capfirst }}
         </div>
     {% else %}
         {% if notlogged %}
         <div class="alert alert-error">
-            <strong>{% trans "Alert"  %} : </strong>  {% trans "Please login by clicking on login button"  %}
+            <strong>{% trans "alert"|capfirst %} : </strong>  {% trans "please login by clicking on login button"|capfirst %}
         </div>
         {% endif %}
     {% endif %}
@@ -95,14 +95,14 @@
             {% for field in loginform %}
                 {{ field }}
             {% endfor %}
-            <button class="btn" type="submit">{% trans "Login" %}</button>
-            <a class="btn btn-info" href="/password_reset/">{% trans "Forgot password?" %}</a>
+            <button class="btn" type="submit">{% trans "login"|capfirst %}</button>
+            <a class="btn btn-info" href="/password_reset/">{% trans "forgot password?"|capfirst %}</a>
         </form>
     </div>
     <div class="span6">
         <form class="well form-inline" action="/i18n/setlang/" method="post">
             {% csrf_token %}
-            {% trans "Display language" %} : <select name="language" id="language-container" class="input-small" onchange="this.form.submit();">
+            {% trans "display language"|capfirst %} : <select name="language" id="language-container" class="input-small" onchange="this.form.submit();">
             {% for lang in LANGUAGES %}
                 <option value="{{ lang.0 }}" {% ifequal lang.0 LANGUAGE_CODE %}selected{% endifequal %}>{{ lang.1 }}</option>
             {% endfor %}
@@ -121,21 +121,21 @@
     <!--Success Message of view-->
     {% if msg %}
         <div class="alert alert-success">
-            <strong>{% trans "Alert" %} : </strong>  {{ msg }}
+            <strong>{% trans "alert"|capfirst %} : </strong>  {{ msg|capfirst }}
         </div>
     {% endif %}
 
     <!--Error Message of view-->
     {% if error_msg %}
         <div class="alert alert-error">
-            <strong>{% trans "Error" %} : </strong>  {{ error_msg }}
+            <strong>{% trans "error"|capfirst %} : </strong>  {{ error_msg|capfirst }}
         </div>
     {% endif %}
 
     <!--Info Message of view-->
     {% if info_msg %}
         <div class="alert alert-info">
-            <strong>{% trans "Info" %} : </strong>  {{ info_msg }}
+            <strong>{% trans "info"|capfirst %} : </strong>  {{ info_msg|capfirst }}
         </div>
     {% endif %}
 

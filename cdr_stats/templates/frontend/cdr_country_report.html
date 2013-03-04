@@ -22,14 +22,14 @@
                     <label class="control-label" for="{{ form.from_date.auto_id }}">{{ form.from_date.label|title }}</label>
                     <div class="input">
                         {{ form.from_date }}
-                        <span class="help-block">{{ form.from_date.help_text|cafirst|safe }} </span>
+                        <span class="help-block">{{ form.from_date.help_text|capfirst|safe }} </span>
                     </div>
                 </div>
                 <div class="span4">
                     <label class="control-label" for="id_{{ form.to_date.name }}">{{ form.to_date.label|title }}</label>
                     <div class="input">
                         {{ form.to_date }}
-                        <span class="help-block">{{ form.to_date.help_text|cafirst|safe }} </span>
+                        <span class="help-block">{{ form.to_date.help_text|capfirst|safe }} </span>
                     </div>
                 </div>
                 <div class="span4">
@@ -51,14 +51,14 @@
                     <label class="control-label" for="{{ form.country_id.auto_id }}">{{ form.country_id.label|title }}</label>
                     <div class="input">
                         {{ form.country_id }}
-                        <span class="help-block">{{ form.country_id.help_text|cafirst|safe }} </span>
+                        <span class="help-block">{{ form.country_id.help_text|capfirst|safe }} </span>
                     </div>
                 </div>
                 <div class="span4">
                     <label class="control-label" for="{{ form.switch.auto_id }}">{{ form.switch.label|title }}</label>
                     <div class="input">
                         {{ form.switch }}
-                        <span class="help-block">{{ form.switch.help_text|cafirst|safe }} </span>
+                        <span class="help-block">{{ form.switch.help_text|capfirst|safe }} </span>
                     </div>
                 </div>
             </div>
@@ -204,8 +204,8 @@ $(function () {
                 minute = minute < 10 ? '0'+minute : minute;
                 strTime = hour + ':' + minute + ' ' + ampm;
 
-                output += strTime + ' - ' + item.series.label + '</div><div class="graph_tooltip_info">{% trans "duration"|cafirst %}: '
-                        + Info(time, 1, item.series.data) + '{% trans "secs" %}<br>{% trans "calls"|cafirst %}: '
+                output += strTime + ' - ' + item.series.label + '</div><div class="graph_tooltip_info">{% trans "duration"|capfirst %}: '
+                        + Info(time, 1, item.series.data) + '{% trans "secs" %}<br>{% trans "calls"|capfirst %}: '
                         + Info(time, 2, item.series.data) + '</div>';
 
                 showTooltip(item.pageX, item.pageY, output);
@@ -373,7 +373,7 @@ $(function () {
                                     {% trans "world"|title  %}
                                 {% endif %}
                             </td>
-                            <td width="100">{{ country_data.1 }} {% trans "calls"|cafirst %}</td>
+                            <td width="100">{{ country_data.1 }} {% trans "calls"|capfirst %}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -383,8 +383,8 @@ $(function () {
                     <tbody>
                     <tr>
                         <td class="td-dashboard"></td>
-                        <td class="td-dashboard" width="100">{% trans "total"|cafirst %}</td>
-                        <td width="100">{{ total_calls }} {% trans "calls"|cafirst %}</td>
+                        <td class="td-dashboard" width="100">{% trans "total"|capfirst %}</td>
+                        <td width="100">{{ total_calls }} {% trans "calls"|capfirst %}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -428,7 +428,7 @@ $(function () {
                     <tbody>
                     <tr>
                         <td class="td-dashboard"></td>
-                        <td class="td-dashboard" width="100">{% trans "total"|cafirst %}</td>
+                        <td class="td-dashboard" width="100">{% trans "total"|capfirst %}</td>
                         <td>{{ total_duration|conv_min }} {% trans "minutes" %}</td>
                     </tr>
                     </tbody>

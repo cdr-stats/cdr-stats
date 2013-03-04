@@ -2,13 +2,13 @@
     
 <div id="openlogin" style="text-align: right;">
     {% if user.is_authenticated %}
-        <button id="buttonlogout" class="button-text-icon-unlocked">{% trans "Logout" %}</button>
+        <button id="buttonlogout" class="button-text-icon-unlocked">{% trans "logout"|capfirst %}</button>
         <form id="logout" action="/logout/" method="post">
         {% csrf_token %}
           <input type="hidden" name="action" value="logout" />
         </form>
     {% else %}
-        <button id="buttonlogin" class="button-text-icon-locked" title="{% trans "Login" %}">{% trans "Login" %}</button>
+        <button id="buttonlogin" class="button-text-icon-locked" title="{% trans "login"|capfirst %}">{% trans "login"|capfirst %}</button>
     {% endif %}
 </div>
 
