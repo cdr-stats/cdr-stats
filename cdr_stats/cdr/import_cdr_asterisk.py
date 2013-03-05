@@ -18,6 +18,7 @@ from cdr.import_cdr_freeswitch_mongodb import chk_ipaddress,\
 from cdr.functions_def import get_hangupcause_id
 from cdr_alert.functions_blacklist import chk_destination
 from datetime import datetime
+from mongodb_connection import mongodb
 import re
 import sys
 import random

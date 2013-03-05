@@ -27,7 +27,6 @@ INSTALL_TYPE='ASTERISK'
 INSTALLMODE='GENTLE' # Set to FULL to update Selinux, Firewall, etc if not Set to GENTLE
 
 echo ""
-echo ""
 echo "> > > This is only to be installed on a fresh new installation of CentOS 6.2 or Ubuntu LTS 10.04 / 12.04! < < <"
 echo ""
 echo "It will install CDR-Stats on your server"
@@ -40,7 +39,6 @@ read TEMP
 cd /usr/src/
 wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/bash-common-functions.sh -O bash-common-functions.sh
 wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
-
 
 #Include general functions
 source bash-common-functions.sh
