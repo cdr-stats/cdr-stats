@@ -1,7 +1,7 @@
 {% extends "frontend/master.html" %}
-{% load i18n pagination_tags cdr_extras common_tags icons %}
+{% load i18n pagination_tags cdr_tags common_tags icons %}
 
-{% block title %}{% trans "Alert" %}{% endblock %}
+{% block title %}{% trans "alert"|title %}{% endblock %}
 
 {% block extra_head %}
     {% include "frontend/custom_jquery_select_all.html" %}

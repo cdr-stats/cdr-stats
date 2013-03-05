@@ -12,31 +12,31 @@
     {% for field in form %}
         <div class="row">
             <div class="span4">
-                <label class="control-label" for="{{ field.auto_id }}">{{ field.label }}</label>
+                <label class="control-label" for="{{ field.auto_id }}">{{ field.label|title }}</label>
                 <div class="input">
                     {{ field }}
-                    <span class="help-block">{{ field.help_text|safe }} </span>
+                    <span class="help-block">{{ field.help_text|capfirst|safe }} </span>
                 </div>
             </div>
         </div>
     {% endfor %}
     <label></label>
     <div class="actions">
-        <input class="btn btn-primary" id="search_prefix" type="submit" value="{% trans "Search" %}" />
-        <a href="/rates/" class="btn btn-danger">{% trans "Clear" %}</a>
+        <input class="btn btn-primary" id="search_prefix" type="submit" value="{% trans "search"|capfirst %}" />
+        <a href="/rates/" class="btn btn-danger">{% trans "clear"|capfirst %}</a>
     </div>
 </form>
 <p>&nbsp;</p>
 <div class="span12">
     <div class="row">
         <div class="btn-group">
-            <button class="btn">{% trans "Action" %}</button>
+            <button class="btn">{% trans "action"|capfirst %}</button>
             <button class="btn dropdown-toggle" data-toggle="dropdown">
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
                 {% if perms.user_profile.export_call_rate %}
-                    <li><a href="/export_rate/">{% trans "Export csv" %}</a></li>
+                    <li><a href="/export_rate/">{% trans "export CSV"|capfirst %}</a></li>
                 {% endif %}
             </ul>
         </div>
@@ -51,28 +51,28 @@
                 <th>
                     {% ifequal sort_order 'prefix' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "prefix"  %}
-                        {{ RATE_COLUMN_NAME.prefix }}
+                        {{ RATE_COLUMN_NAME.prefix|capfirst }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-prefix"  %}
                     {% else %}                      
-                      {% sort_link RATE_COLUMN_NAME.prefix "-prefix" %}
+                      {% sort_link RATE_COLUMN_NAME.prefix|capfirst "-prefix" %}
                     {% endifequal %}
                 </th>
                 <th>
                     {% ifequal sort_order 'destination' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "destination"  %}
-                        {{ RATE_COLUMN_NAME.destination }}
+                        {{ RATE_COLUMN_NAME.destination|capfirst }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-destination"  %}
                     {% else %}                      
-                      {% sort_link RATE_COLUMN_NAME.destination "-destination" %}
+                      {% sort_link RATE_COLUMN_NAME.destination|capfirst "-destination" %}
                     {% endifequal %}                    
                 </th>
                 <th>
                     {% ifequal sort_order 'retail_rate' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "retail_rate"  %}
-                        {{ RATE_COLUMN_NAME.rate }}
+                        {{ RATE_COLUMN_NAME.rate|capfirst }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-retail_rate"  %}
                     {% else %}                      
-                      {% sort_link RATE_COLUMN_NAME.rate "-retail_rate" %}
+                      {% sort_link RATE_COLUMN_NAME.rate|capfirst "-retail_rate" %}
                     {% endifequal %}
                 </th>
             </tr>
@@ -88,7 +88,7 @@
                     </tr>
                 {% endfor %}
             {% else %}
-                <tr><td colspan="3">{% trans "No record found!!" %}</td></tr>
+                <tr><td colspan="3">{% trans "no record found!!"|capfirst %}</td></tr>
             {% endif %}
             </tbody>
         </table>

@@ -23,10 +23,10 @@
                             </div>
                         </div>
                         <div class="span4">
-                            <label class="control-label" for="{{ form.switch.auto_id }}">{{ form.switch.label }}</label>
+                            <label class="control-label" for="{{ form.switch.auto_id }}">{{ form.switch.label|title }}</label>
                             <div class="input">
                                 {{ form.switch }}
-                                <span class="help-block">{{ form.switch.help_text|safe }} </span>
+                                <span class="help-block">{{ form.switch.help_text|capfirst|safe }} </span>
                             </div>
                         </div>
                     </div>
@@ -34,7 +34,7 @@
             </div>
             <label>&nbsp;</label>
             <div class="actions">
-                <input class="btn btn-primary" type=submit name=submit value={% trans "Search" %} />
+                <input class="btn btn-primary" type=submit name=submit value={% trans "search"|capfirst %} />
             </div>
         </form>
     </div>
@@ -51,7 +51,7 @@
                 {% if user.is_superuser %}
                     {% for date, buy_cost in total_buy_record.items %}
                         {
-                            label: '{% trans "Buy cost" %}',
+                            label: '{% trans "buy cost"|capfirst %}',
                             data: [
                                 {% for hour, cost in buy_cost.items %}
                                     [{{ hour }}, {{ cost }}],
@@ -63,7 +63,7 @@
 
                 {% for date, sell_cost in total_sell_record.items %}
                     {
-                        label: '{% trans "Sell cost" %}',
+                        label: '{% trans "sell cost"|capfirst %}',
                         data: [
                             {% for hour, cost in sell_cost.items %}
                                 [{{ hour }}, {{ cost }}],
@@ -114,7 +114,7 @@
 
                         var time = parseInt(x);
                         var label = item.series.label;
-                        output = '<div class="graph_tooltip_header">' + label + ' : ' + y + '</div><div class="graph_tooltip_info">{% trans "Hour" %}: ' + String(time) + '</div>';
+                        output = '<div class="graph_tooltip_header">' + label + ' : ' + y + '</div><div class="graph_tooltip_info">{% trans "hour"|capfirst %}: ' + String(time) + '</div>';
                         showTooltip(item.pageX, item.pageY, output);
                     }
                 }
