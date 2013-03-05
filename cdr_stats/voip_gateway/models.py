@@ -25,36 +25,36 @@ class Gateway(Model):
     Each Gateway are route that support different protocol and different
     set of rules to alter the dialed number
     """
-    name = models.CharField(unique=True, max_length=255, verbose_name=_('Name'),
-                            help_text=_("Enter Gateway Name"))
-    description = models.TextField(verbose_name=_('Description'),
-                               help_text=_("Short description about Provider"))
+    name = models.CharField(unique=True, max_length=255, verbose_name=_('name'),
+                            help_text=_("enter gateway name"))
+    description = models.TextField(verbose_name=_('description'),
+                               help_text=_("short description about provider"))
     addprefix = models.CharField(max_length=60, blank=True)
     removeprefix = models.CharField(max_length=60, blank=True)
     protocol = models.CharField(max_length=60)
     hostname = models.CharField(max_length=240)
     secondused = models.IntegerField(null=True, blank=True)
 
-    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_('Date'))
+    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_('date'))
     updated_date = models.DateTimeField(auto_now=True)
 
     failover = models.ForeignKey('self', null=True, blank=True,
-                related_name="Failover", help_text=_("Select Gateway"))
+                related_name="Failover", help_text=_("select gateway"))
     addparameter = models.CharField(max_length=360, blank=True)
     count_call = models.IntegerField(null=True, blank=True)
     count_using = models.IntegerField(null=True, blank=True)
     maximum_call = models.IntegerField(null=True, blank=True)
     status = models.IntegerField(choices=list(GATEWAY_STATUS),
-        default=GATEWAY_STATUS.INACTIVE, verbose_name=_("Gateway Status"),
+        default=GATEWAY_STATUS.INACTIVE, verbose_name=_("gateway status"),
         blank=True, null=True)
     max_call_gateway = models.IntegerField(null=True, blank=True,
-        verbose_name=_("Max Call Gateway"),
-        help_text=_("Select Gateway to route the call if the maximum call is reached"))
+        verbose_name=_("max call gateway"),
+        help_text=_("select gateway to route the call if the maximum call is reached"))
 
     class Meta:
         db_table = u'voip_gateway'        
-        verbose_name = _("Gateway")
-        verbose_name_plural = _("Gateways")
+        verbose_name = _("gateway")
+        verbose_name_plural = _("gateways")
 
     def __unicode__(self):
             return u"%s" % self.name
@@ -67,21 +67,21 @@ class Provider(Model):
     This defines the Voip Provider you want to use to deliver your calls.
     Each provider will be associated to a Gateway.
     """
-    name = models.CharField(unique=True, max_length=255, verbose_name=_('Name'),
-                            help_text=_("Enter Provider Name"))
-    description = models.TextField(verbose_name=_('Description'),
-                               help_text=_("Short description about Provider"))
-    metric = models.IntegerField(default=10, verbose_name=_('Metric'),
-                                 help_text=_("Enter metric in digit"))
+    name = models.CharField(unique=True, max_length=255, verbose_name=_('name'),
+                            help_text=_("enter provider name"))
+    description = models.TextField(verbose_name=_('description'),
+                               help_text=_("short description about provider"))
+    metric = models.IntegerField(default=10, verbose_name=_('metric'),
+                                 help_text=_("enter metric in digit"))
     gateway = models.ForeignKey(Gateway, null=True, blank=True,
-                                help_text=_("Select Gateway"))
-    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_('Date'))
+                                help_text=_("select gateway"))
+    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_('date'))
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = u'voip_provider'        
-        verbose_name = _("Provider")
-        verbose_name_plural = _("Providers")
+        verbose_name = _("provider")
+        verbose_name_plural = _("providers")
 
     def __unicode__(self):
             return u"%s" % self.name

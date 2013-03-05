@@ -17,14 +17,14 @@ from common.utils import Choice
 
 
 class PERIOD(Choice):
-    DAY = 1, _('Day')
-    WEEK = 2, _('Week')
-    MONTH = 3, _('Month')
+    DAY = 1, _('day').capitalize()
+    WEEK = 2, _('week').capitalize()
+    MONTH = 3, _('month').capitalize()
 
 
 class STATUS(Choice):
-    ACTIVE = 1, _('Active')
-    INACTIVE = 2, _('Inactive')
+    ACTIVE = 1, _('active').capitalize()
+    INACTIVE = 2, _('inactive').capitalize()
 
 
 class ALARM_TYPE(Choice):
@@ -33,40 +33,40 @@ class ALARM_TYPE(Choice):
 
 
 class ALERT_CONDITION(Choice):
-    IS_LESS_THAN = 1, _('Is less than')
-    IS_GREATER_THAN = 2, _('Is greater than')
-    DECREASE_BY_MORE_THAN = 3, _('Decrease by more than')
-    INCREASE_BY_MORE_THAN = 4, _('Increase by more than')
-    PERCENTAGE_DECREASE_BY_MORE_THAN = 5, _('Percentage decrease by more than')
-    PERCENTAGE_INCREASE_BY_MORE_THAN = 6, _('Percentage increase by more than')
+    IS_LESS_THAN = 1, _('is less than').capitalize()
+    IS_GREATER_THAN = 2, _('is greater than').capitalize()
+    DECREASE_BY_MORE_THAN = 3, _('decrease by more than').capitalize()
+    INCREASE_BY_MORE_THAN = 4, _('increase by more than').capitalize()
+    PERCENTAGE_DECREASE_BY_MORE_THAN = 5, _('percentage decrease by more than').capitalize()
+    PERCENTAGE_INCREASE_BY_MORE_THAN = 6, _('percentage increase by more than').capitalize()
 
 
 #This condition only apply if PERIOD is "Day",
 #otherwise we will compare to previous week or previous month
 class ALERT_CONDITION_ADD_ON(Choice):
-    SAME_DAY = 1, _('Same day')
-    SAME_DAY_IN_PRE_WEEK = 2, _('Same day in the previous week')
+    SAME_DAY = 1, _('same day').capitalize()
+    SAME_DAY_IN_PRE_WEEK = 2, _('same day in the previous week').capitalize()
 
 
 class ALARM_REPROT_STATUS(Choice):
-    NO_ALARM_SENT = 1, _('No alarm sent')
-    ALARM_SENT = 2, _('Alarm Sent')
+    NO_ALARM_SENT = 1, _('no alarm sent').capitalize()
+    ALARM_SENT = 2, _('alarm sent').capitalize()
 
 
 class ALARM_COLUMN_NAME(Choice):
-    id = _('Id')
-    name = _('Name')
-    period = _('Period')
-    type = _('Type')
-    alert_condition = _('Condition')
-    alert_value = _('Value')
-    status = _('Status')
-    updated_date = _('Date')
+    id = _('ID')
+    name = _('name')
+    period = _('period')
+    type = _('type')
+    alert_condition = _('condition')
+    alert_value = _('value')
+    status = _('status')
+    updated_date = _('date')
 
 
 class ALARM_REPORT_COLUMN_NAME(Choice):
-    id = _('Id')
-    alarm = _('Alarm')
-    calculatedvalue = _('Calculated value')
-    status = _('Status')
-    date = _('Date')
+    id = _('ID')
+    alarm = _('alarm')
+    calculatedvalue = _('calculated value')
+    status = _('status')
+    date = _('date')

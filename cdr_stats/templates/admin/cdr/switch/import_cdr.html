@@ -4,7 +4,7 @@
 {% block breadcrumbs %}
     {% if not is_popup %}
     <div class="breadcrumbs">
-         <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+         <a href="../../../">{% trans "home"|capfirst %}</a> &rsaquo;
          <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
          <a href="/admin/{{ opts.app_label }}/{{ model_name }}">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
          Import {{ opts.verbose_name }}
@@ -18,7 +18,7 @@
 <br/>
 
 <table border=1>
-<caption>{% trans "Sample File" %}</caption>
+<caption>{% trans "sample file"|title %}</caption>
 <tr>
     <th>{% trans "caller_id_number" %}</th>
     <th>{% trans "caller_id_name" %}</th>
@@ -82,7 +82,7 @@
     {% get_fieldset switch,accountcode_csv,csv_file,import_asterisk as file_fields from form %}
     {% for field in file_fields %}
         <tr>
-            <td>{{ field.label }}</td>
+            <td>{{ field.label|title }}</td>
             <td>
                 {% if field.errors %}
                     <ul class="errorlist">
@@ -90,18 +90,18 @@
                     </ul>
                 {% endif %}
                 {{ field }}
-                <br/>{{ field.help_text }}
+                <br/>{{ field.help_text|capfirst }}
             </td>
         </tr>
     {% endfor %}
     </table>
 
     <table>
-        <tr class="row1"><td colspan="14"><b>{% trans "Mandatory fields to import" %}</b></td></tr>
+        <tr class="row1"><td colspan="14"><b>{% trans "mandatory fields to import"|capfirst %}</b></td></tr>
         <tr class="row2">
             {% get_fieldset caller_id_number,destination_number,start_uepoch,duration,billsec,hangup_cause_id,uuid as file_fields from form %}
             {% for field in file_fields %}
-                <td>{{ field.label }}</td>
+                <td>{{ field.label|title }}</td>
                 <td>
                     {% if field.errors %}
                         <ul class="errorlist">
@@ -109,16 +109,16 @@
                         </ul>
                     {% endif %}
                     {{ field }}
-                    <br/>{{ field.help_text }}
+                    <br/>{{ field.help_text|capfirst }}
                 </td>
             {% endfor %}
         </tr>
         <tr><td colspan="14"></td></tr>
-        <tr class="row1"><td colspan="14"><b>{% trans "Extra fields to import" %}</b></td></tr>
+        <tr class="row1"><td colspan="14"><b>{% trans "extra fields to import"|capfirst %}</b></td></tr>
         <tr class="row2">
             {% get_fieldset caller_id_name,direction,remote_media_ip,answer_uepoch,end_uepoch as file_fields from form %}
             {% for field in file_fields %}
-                <td>{{ field.label }}</td>
+                <td>{{ field.label|title }}</td>
                 <td>
                     {% if field.errors %}
                         <ul class="errorlist">
@@ -126,14 +126,14 @@
                         </ul>
                     {% endif %}
                     {{ field }}
-                    <br/>{{ field.help_text }}
+                    <br/>{{ field.help_text|capfirst }}
                 </td>
             {% endfor %}
         </tr>
         <tr class="row1">
             {% get_fieldset mduration,billmsec,read_codec,write_codec,accountcode as file_fields from form %}
             {% for field in file_fields %}
-                <td>{{ field.label }}</td>
+                <td>{{ field.label|title }}</td>
                 <td>
                     {% if field.errors %}
                         <ul class="errorlist">
@@ -141,7 +141,7 @@
                         </ul>
                     {% endif %}
                     {{ field }}
-                    <br/>{{ field.help_text }}
+                    <br/>{{ field.help_text|capfirst }}
                 </td>
             {% endfor %}
         </tr>
@@ -150,8 +150,8 @@
     <table>
     <tr>
         <td colspan=2 align=right>
-        <input type="submit" class="l-1" name="submit" value="{% trans "Submit" %}" />&nbsp;
-        <input type="reset" name="reset" class="j-2" value="{% trans "Reset" %}" />
+        <input type="submit" class="l-1" name="submit" value="{% trans "submit"|capfirst %}" />&nbsp;
+        <input type="reset" name="reset" class="j-2" value="{% trans "reset"|capfirst %}" />
         </td>
     </tr>
     </table>
@@ -176,7 +176,7 @@
 {% if success_import_list %}
     <table border=1>
     <tr>
-        <th>{% trans "Contact(s) imported" %} :</th>
+        <th>{% trans "contact(s) imported"|capfirst %} :</th>
     </tr>
     {% for row in success_import_list %}
     <tr class="{% cycle 'row1' 'row2' %}">
@@ -192,7 +192,7 @@
 <br>
     <table border=1>
     <tr>
-        <th>{% trans "Contact(s) not imported" %} :</th>
+        <th>{% trans "contact(s) not imported"|capfirst %} :</th>
     </tr>
     {% for row in error_import_list %}
     <tr class="{% cycle 'row1' 'row2' %}">
@@ -208,7 +208,7 @@
 <br>
     <table border=1>
     <tr>
-        <th>{% trans "Type mismatch" %} :</th>
+        <th>{% trans "type mismatch"|capfirst %} :</th>
     </tr>
     {% for row in type_error_import_list %}
     <tr class="{% cycle 'row1' 'row2' %}">

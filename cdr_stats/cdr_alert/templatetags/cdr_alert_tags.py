@@ -12,59 +12,10 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django import template
-from cdr.models import Switch
-from cdr.functions_def import get_hangupcause_name
 from cdr_alert.constants import PERIOD, ALARM_TYPE, STATUS,\
     ALARM_REPROT_STATUS, ALERT_CONDITION
-import re
 
 register = template.Library()
-
-
-@register.filter(name='get_switch_ip')
-def get_switch_ip(id):
-    """Tag is used to get switch name
-
-    >>> get_switch_ip(0)
-    u''
-    """
-    try:
-        obj = Switch.objects.get(pk=id)
-        return obj.name
-    except:
-        return u''
-
-
-@register.filter(name='hangupcause_name')
-def hangupcause_name(id):
-    """Tag is used to get hangupcause name"""
-    return get_hangupcause_name(id)
-
-
-@register.filter(name='hangupcause_name_with_title')
-def hangupcause_name_with_title(id):
-    """Tag is used to get hangupcause name with lowercase
-
-    >>> hangupcause_name_with_title(10000)
-    ''
-    """
-    try:
-        val = get_hangupcause_name(id)
-        t = re.sub("([a-z])'([A-Z])", lambda m: m.group(0).lower(), val.title())
-        return re.sub("\d([A-Z])", lambda m: m.group(0).lower(), t)
-    except:
-        return ''
-
-
-@register.filter(name='mongo_id')
-def mongo_id(value, sub_val):
-    """Tag is used to get mongo mapreduce _id.value"""
-    if isinstance(value, dict) and '_id' in value:
-        if sub_val in value['_id']:
-            value = int(value['_id'][sub_val])
-        else:
-            value = value['_id']
-    return value
 
 
 @register.filter(name='alarm_period')
@@ -149,11 +100,3 @@ def alarm_report_status(value):
 
     return str(status)
 
-
-@register.filter(name='get_cost')
-def get_cost(rate, billsec):
-    try:
-        cost = (float(rate) * float(float(billsec) / 60))
-    except:
-        cost = 0.0
-    return str(round(cost, 4))

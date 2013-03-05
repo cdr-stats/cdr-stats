@@ -90,10 +90,10 @@ def make_read(self, request, queryset):
     try:
         queryset.update(unseen=0)
         self.message_user(request,
-            _("Notifications are successfully marked as read."))
+            _("notifications are successfully marked as read."))
     except:
-        messages.error(request, _("Notifications are not marked as read."))
-make_read.short_description = _("Mark notification as seen")
+        messages.error(request, _("notifications are not marked as read."))
+make_read.short_description = _("mark notification as seen")
 
 
 class NoticeAdmin(NoticeAdmin):

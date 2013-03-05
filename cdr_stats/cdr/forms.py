@@ -40,7 +40,7 @@ PAGE_SIZE_LIST = ((10, '10'),
 def sw_list_with_all():
     """Switch list"""
     list_sw = []
-    list_sw.append((0, _('All Switches')))
+    list_sw.append((0, _('all switches').capitalize()))
     sw_list = get_switch_list()
     for i in sw_list:
         list_sw.append((i[0], i[1]))
@@ -50,7 +50,7 @@ def sw_list_with_all():
 def hc_list_with_all():
     """Hangup cause list"""
     list_hc = []
-    list_hc.append((0, _('All')))
+    list_hc.append((0, _('all').capitalize()))
     hc_list = get_hc_list()
     for i in hc_list:
         list_hc.append((i[0], i[1]))
@@ -60,8 +60,8 @@ def hc_list_with_all():
 def country_list_with_all():
     """Country list"""
     list_ct = []
-    list_ct.append((0, _('All')))
-    list_ct.append((999, _('Internal Call')))
+    list_ct.append((0, _('all').capitalize()))
+    list_ct.append((999, _('internal call').capitalize()))
     ct_list = get_country_list()
     for i in ct_list:
         list_ct.append((i[0], i[1]))
@@ -73,36 +73,36 @@ class SearchForm(forms.Form):
     Form used to search on general parameters in the Customer UI.
     """
 
-    caller = forms.CharField(label=_('CallerID Number'), required=False)
+    caller = forms.CharField(label=_('callerID number'), required=False)
     caller_type = forms.ChoiceField(label='', required=False,
                                     choices=list(STRING_SEARCH_TYPE_LIST))
     caller_type.widget.attrs['class'] = 'input-small'
 
-    destination = forms.CharField(label=_('Destination'),
+    destination = forms.CharField(label=_('destination'),
                                   required=False)
     destination_type = forms.ChoiceField(label='',
                                          required=False,
                                          choices=list(STRING_SEARCH_TYPE_LIST))
     destination_type.widget.attrs['class'] = 'input-small'
-    accountcode = forms.CharField(label=_('Account Code'),
+    accountcode = forms.CharField(label=_('account code'),
                                   required=False)
     accountcode_type = forms.ChoiceField(label='',
                                          required=False,
                                          choices=list(STRING_SEARCH_TYPE_LIST))
     accountcode_type.widget.attrs['class'] = 'input-small'
-    duration = forms.CharField(label=_('Duration (Secs)'),
+    duration = forms.CharField(label=_('duration (secs)'),
                                required=False)
     duration_type = forms.ChoiceField(label='',
                                       required=False,
                                       choices=COMPARE_LIST)
     duration_type.widget.attrs['class'] = 'input-small'
-    hangup_cause = forms.ChoiceField(label=_('Hangup cause'),
+    hangup_cause = forms.ChoiceField(label=_('hangup cause'),
                                      required=False,
                                      choices=hc_list_with_all())
-    switch = forms.ChoiceField(label=_('Switch'),
+    switch = forms.ChoiceField(label=_('switch'),
                                required=False,
                                choices=get_switch_list())
-    country_id = forms.MultipleChoiceField(label=_('Country'), required=False,
+    country_id = forms.MultipleChoiceField(label=_('country'), required=False,
                                            choices=country_list_with_all())
 
     def __init__(self, *args, **kwargs):
@@ -132,22 +132,22 @@ class CdrSearchForm(SearchForm):
     """
     Form used to search calls in the Customer UI.
     """
-    from_date = forms.CharField(label=_('From'),
+    from_date = forms.CharField(label=_('from'),
                                 required=True, max_length=10)
-    to_date = forms.CharField(label=_('To'),
+    to_date = forms.CharField(label=_('to'),
                               required=True, max_length=10)
-    direction = forms.TypedChoiceField(label=_('Direction'),
+    direction = forms.TypedChoiceField(label=_('direction'),
                                        required=False,
                                        coerce=bool,
-                                       choices=(('all', _('All')),
-                                       ('inbound', _('Inbound')),
-                                       ('outbound', _('Outbound')),
-                                       ('unknown', _('Unknown'))))
+                                       choices=(('all', _('all')),
+                                       ('inbound', _('inbound')),
+                                       ('outbound', _('outbound')),
+                                       ('unknown', _('unknown'))))
     result = forms.TypedChoiceField(label=_('Result'),
                                     required=False,
                                     coerce=bool,
-                                    choices=((1, _('Minutes')),
-                                    (2, _('Seconds'))),
+                                    choices=((1, _('minutes')),
+                                    (2, _('seconds'))),
                                     widget=forms.RadioSelect)
     records_per_page = forms.ChoiceField(label=_('CDR per page'),
                                          required=False,
@@ -184,18 +184,18 @@ class CompareCallSearchForm(SearchForm):
     """
     Form used to search calls for comparison in the Customer UI.
     """
-    from_date = forms.CharField(label=_('Select date'), required=True,
+    from_date = forms.CharField(label=_('select date'), required=True,
                                 max_length=10)
 
     comp_days = forms.ChoiceField(label='', required=False,
                                   choices=comp_day_range(6))
     comp_days.widget.attrs['class'] = 'input-small'
-    graph_view = forms.ChoiceField(label=_('Graph'), required=False,
-                                   choices=((1, _('Calls per Hour')), (2,
-                                   _('Minutes per Hour'))))
-    check_days = forms.TypedChoiceField(label=_('Check with'), required=False,
-            coerce=bool, choices=((1, _('Previous days')), (2,
-            _('Same day of the week'))), widget=forms.RadioSelect)
+    graph_view = forms.ChoiceField(label=_('graph'), required=False,
+                                   choices=((1, _('calls per Hour')), (2,
+                                   _('minutes per Hour'))))
+    check_days = forms.TypedChoiceField(label=_('check with'), required=False,
+            coerce=bool, choices=((1, _('previous days')), (2,
+            _('same day of the week'))), widget=forms.RadioSelect)
 
     def __init__(self, *args, **kwargs):
         super(CompareCallSearchForm, self).__init__(*args, **kwargs)
@@ -210,7 +210,7 @@ class ConcurrentCallForm(CdrSearchForm):
     def __init__(self, *args, **kwargs):
         super(ConcurrentCallForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['from_date', 'result', 'switch']
-        self.fields['from_date'].label = _('Select date')
+        self.fields['from_date'].label = _('select date')
 
 
 class SwitchForm(SearchForm):
@@ -271,16 +271,16 @@ class EmailReportForm(forms.ModelForm):
 class FileImport(forms.Form):
     """General Form : CSV file upload"""
 
-    csv_file = forms.FileField(label=_('Upload CSV File '), required=True,
-                               error_messages={'required': 'Please upload File'},
-                               help_text=_('Browse CSV file'))
+    csv_file = forms.FileField(label=_('upload CSV File '), required=True,
+                               error_messages={'required': 'please upload File'},
+                               help_text=_('browse CSV file'))
 
     def clean_csv_file(self):
         """Form Validation :  File extension Check"""
         filename = self.cleaned_data['csv_file']
         file_exts = ('csv', 'txt')
         if not str(filename).split('.')[1].lower() in file_exts:
-            raise forms.ValidationError(_(u'Document types accepted: %s'
+            raise forms.ValidationError(_(u'document types accepted: %s'
                     % """ """.join(file_exts)))
         else:
             return filename
@@ -318,9 +318,9 @@ ACCOUNTCODE_FIELD_LIST_NUM = sorted(ACCOUNTCODE_FIELD_LIST_NUM,
 class CDR_FileImport(FileImport):
     """Admin Form : Import CSV file with phonebook CDR_FIELD_LIST"""
 
-    switch = forms.ChoiceField(label=_('Switch'), choices=get_switch_list(),
-                               required=True, help_text=_('Select switch'))
-    accountcode_csv = forms.CharField(label=_('Account code'),
+    switch = forms.ChoiceField(label=_('switch'), choices=get_switch_list(),
+                               required=True, help_text=_('select switch'))
+    accountcode_csv = forms.CharField(label=_('account code'),
                                       required=False)
     caller_id_number = forms.ChoiceField(label=_('caller_id_number'),
                                          required=True,
@@ -361,9 +361,9 @@ class CDR_FileImport(FileImport):
                                     choices=ACCOUNTCODE_FIELD_LIST_NUM)
     accountcode = forms.ChoiceField(label=_('accountcode'), required=True,
                                     choices=ACCOUNTCODE_FIELD_LIST_NUM)
-    import_asterisk = forms.BooleanField(label=_('Asterisk Hangup format'),
+    import_asterisk = forms.BooleanField(label=_('asterisk hangup format'),
         required=False,
-        help_text='With this option on, the field hangup_cause_id will expect Asterisk Hangup Cause in the format : ANSWER, CANCEL, BUSY, CONGESTION, CHANUNAVAIL, etc..')
+        help_text=_('with this option on, the field hangup_cause_id will expect Asterisk Hangup Cause in the format : ANSWER, CANCEL, BUSY, CONGESTION, CHANUNAVAIL, etc..'))
 
     def __init__(self, user, *args, **kwargs):
         super(CDR_FileImport, self).__init__(*args, **kwargs)

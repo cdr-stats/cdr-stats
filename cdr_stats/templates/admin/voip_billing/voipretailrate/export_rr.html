@@ -7,7 +7,7 @@
      <a href="../../../">{% trans "Home" %}</a> &rsaquo;
      <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
      <a href="/admin/{{ opts.app_label }}/{{ model_name }}">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
-     {% trans "Export" %} {{ opts.verbose_name }}
+     {% trans "export"|title %} {{ opts.verbose_name }}
 </div>
 {% endif %}{% endblock %}
 
@@ -18,8 +18,8 @@
 <form method="post" action="" enctype="multipart/form-data" >{% csrf_token %}
 <table border=0>
 {{ form.as_table }}
-<tr><td colspan=2 align=right><input type="submit" class="l-1" name="submit" value="{% trans "Submit" %}" />&nbsp;
-    <input type="reset" class="j-2" name="reset" value="{% trans "Reset" %}" /></td></tr>
+<tr><td colspan=2 align=right><input type="submit" class="l-1" name="submit" value='{% trans "submit"|title %}' />&nbsp;
+    <input type="reset" class="j-2" name="reset" value='{% trans "reset"|title %}' /></td></tr>
 </table>
 </form>
 </div>

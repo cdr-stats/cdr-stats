@@ -17,5 +17,5 @@ from common.utils import Choice
 
 
 class GATEWAY_STATUS(Choice):
-    ACTIVE = 0, _('ACTIVE')
-    INACTIVE = 1, _('INACTIVE')
+    ACTIVE = 0, _('active').upper()
+    INACTIVE = 1, _('inactive').upper()

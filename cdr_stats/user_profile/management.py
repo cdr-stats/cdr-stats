@@ -23,19 +23,19 @@ if "notification" in settings.INSTALLED_APPS:
 
     def create_notice_types(app, created_models, verbosity, **kwargs):
         notification.create_notice_type("average_length_of_call",
-                                        _("ALOC (Average Length of Call)"),
-                                        _("Average Length of Call"),
+                                        _("ALOC (average length of call)"),
+                                        _("average length of call"),
                                         NOTICE_TYPE.average_length_of_call)
         notification.create_notice_type("answer_seize_ratio",
-                                        _("ASR (Answer Seize Ratio)"),
-                                        _("Answer Seize Ratio"),
+                                        _("ASR (answer seize ratio)"),
+                                        _("answer seize ratio"),
                                         NOTICE_TYPE.answer_seize_ratio)
         notification.create_notice_type("blacklist_prefix",
                                         _("Blacklist Prefix"),
-                                        _("Blacklist Prefix"),
+                                        _("blacklist prefix"),
                                         NOTICE_TYPE.blacklist_prefix)
         notification.create_notice_type("whitelist_prefix",
                                         _("Whitelist Prefix"),
-                                        _("Whitelist Prefix"),
+                                        _("whitelist prefix"),
                                         NOTICE_TYPE.whitelist_prefix)
     signals.post_syncdb.connect(create_notice_types, sender=notification)

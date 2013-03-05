@@ -17,16 +17,16 @@ from common.utils import Choice
 
 
 class LCR_TYPE(Choice):
-    LCR = 0, _('LCR')
-    LCD = 1, _('LCD')
+    LCR = 0, _('lcr').upper()
+    LCD = 1, _('lcd').upper()
 
 
 class CONFIRMATION_TYPE(Choice):
-    YES = 'YES', _('Yes')
-    NO = 'NO', _('No')
+    YES = 'YES', _('yes').capitalize()
+    NO = 'NO', _('no').capitalize()
 
 
 class RATE_COLUMN_NAME(Choice):
-    prefix = _('Prefix')
-    destination = _('Destination')
-    rate = _('Rate')
+    prefix = _('prefix')
+    destination = _('destination')
+    rate = _('rate')

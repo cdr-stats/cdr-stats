@@ -50,61 +50,61 @@ class UserProfile(models.Model):
     **Name of DB table**: user_profile
     """
     user = models.OneToOneField(User)
-    voipplan = models.ForeignKey(VoIPPlan, verbose_name=_('VoIP Plan'),
-        help_text=_("Select VoIP Plan"))
-    accountcode = models.CharField(max_length=50, verbose_name=_('Account code'))
+    voipplan = models.ForeignKey(VoIPPlan, verbose_name=_('VoIP plan'),
+        help_text=_("select VoIP Plan"))
+    accountcode = models.CharField(max_length=50, verbose_name=_('account code'))
     address = models.CharField(blank=True, null=True,
-            max_length=200, verbose_name=_('Address'))
+            max_length=200, verbose_name=_('address'))
     city = models.CharField(max_length=120, blank=True, null=True,
-            verbose_name=_('City'))
+            verbose_name=_('city'))
     state = models.CharField(max_length=120, blank=True, null=True,
-            verbose_name=_('State'))
-    country = CountryField(blank=True, null=True, verbose_name=_('Country'))
+            verbose_name=_('state'))
+    country = CountryField(blank=True, null=True, verbose_name=_('country'))
     zip_code = models.CharField(max_length=120, blank=True, null=True,
-            verbose_name=_('Zip code'))
+            verbose_name=_('zip code'))
     phone_no = models.CharField(max_length=90, blank=True, null=True,
-            verbose_name=_('Phone number'))
+            verbose_name=_('phone number'))
     fax = models.CharField(max_length=90, blank=True, null=True,
-            verbose_name=_('Fax Number'))
+            verbose_name=_('fax Number'))
     company_name = models.CharField(max_length=90, blank=True, null=True,
-            verbose_name=_('Company name'))
+            verbose_name=_('company name'))
     company_website = models.URLField(verify_exists=False,
             max_length=90, blank=True, null=True,
-            verbose_name=_('Company website'))
-    language = LanguageField(blank=True, null=True, verbose_name=_('Language'))
+            verbose_name=_('company website'))
+    language = LanguageField(blank=True, null=True, verbose_name=_('language'))
     note = models.CharField(max_length=250, blank=True, null=True,
-            verbose_name=_('Note'))
+            verbose_name=_('note'))
 
     multiple_email = models.TextField(blank=True, null=True,
-        verbose_name=_('Report mail list'),
-        help_text=_('Enter a valid e-mail address separated by commas.'))
+        verbose_name=_('report mail list'),
+        help_text=_('enter a valid e-mail address separated by commas.'))
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
         permissions = (
-            ("view_api_explorer", _('Can view API-Explorer')),
-            ("dashboard", _('Can view CDR dashboard')),
-            ("search", _('Can view CDR')),
-            ("cdr_detail", _('Can view CDR detail')),
-            ("daily_comparison", _('Can view CDR hourly report')),
-            ("overview", _('Can view CDR overview')),
-            ("concurrent_calls", _('Can view CDR concurrent calls')),
-            ("real_time_calls", _('Can view CDR realtime')),
-            ("by_country", _('Can view CDR country report')),
-            ("world_map", _('Can view CDR world map')),
-            ("mail_report", _('Can view CDR mail report')),
-            ("diagnostic", _('Can view diagnostic report')),
-            ("daily_billing", _('Can view daily billing report')),
-            ("hourly_billing", _('Can view hourly billing report')),
-            ("sumulator", _('Can view voip call simulator')),
-            ("call_rate", _('Can view voip call rate')),
-            ("export_call_rate", _('Can export voip call rate')),
+            ("view_api_explorer", _('can view API-Explorer')),
+            ("dashboard", _('can view CDR dashboard')),
+            ("search", _('can view CDR')),
+            ("cdr_detail", _('can view CDR detail')),
+            ("daily_comparison", _('can view CDR hourly report')),
+            ("overview", _('can view CDR overview')),
+            ("concurrent_calls", _('can view CDR concurrent calls')),
+            ("real_time_calls", _('can view CDR realtime')),
+            ("by_country", _('can view CDR country report')),
+            ("world_map", _('can view CDR world map')),
+            ("mail_report", _('can view CDR mail report')),
+            ("diagnostic", _('can view diagnostic report')),
+            ("daily_billing", _('can view daily billing report')),
+            ("hourly_billing", _('can view hourly billing report')),
+            ("sumulator", _('can view voip call simulator')),
+            ("call_rate", _('can view voip call rate')),
+            ("export_call_rate", _('can export voip call rate')),
         )
         db_table = 'user_profile'
-        verbose_name = _("User Profile")
-        verbose_name_plural = _("User Profile")
+        verbose_name = _("user profile")
+        verbose_name_plural = _("user profile")
 
 
 class Customer(User):
@@ -116,8 +116,8 @@ class Customer(User):
     class Meta:
         proxy = True
         app_label = 'auth'
-        verbose_name = _('Customer')
-        verbose_name_plural = _('Customers')
+        verbose_name = _('customer')
+        verbose_name_plural = _('customers')
 
 
 class Staff(User):
@@ -129,8 +129,8 @@ class Staff(User):
     class Meta:
         proxy = True
         app_label = 'auth'
-        verbose_name = _('Admin')
-        verbose_name_plural = _('Admins')
+        verbose_name = _('admin')
+        verbose_name_plural = _('admins')
 
     def save(self, **kwargs):
         if not self.pk:

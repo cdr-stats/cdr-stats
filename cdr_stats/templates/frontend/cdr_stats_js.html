@@ -47,4 +47,36 @@
     $(function() {
         $('.elemtooltip').tooltip('hide')
     });
+    function MonthName(m, type){
+        var short_month = new Array(
+            "{% trans "jan"|capfirst %}",
+                "{% trans "feb"|capfirst %}",
+                "{% trans "mar"|capfirst %}",
+                "{% trans "apr"|capfirst %}",
+                "{% trans "may"|capfirst %}",
+                "{% trans "jun"|capfirst %}",
+                "{% trans "jul"|capfirst %}",
+                "{% trans "aug"|capfirst %}",
+                "{% trans "sep"|capfirst %}",
+                "{% trans "oct"|capfirst %}",
+                "{% trans "nov"|capfirst %}",
+                "{% trans "dec"|capfirst %}");
+        var month = new Array(
+                "{% trans "january"|capfirst %}",
+                "{% trans "february"|capfirst %}",
+                "{% trans "march"|capfirst %}",
+                "{% trans "april"|capfirst %}",
+                "{% trans "may"|capfirst %}",
+                "{% trans "june"|capfirst %}",
+                "{% trans "july"|capfirst %}",
+                "{% trans "august"|capfirst %}",
+                "{% trans "september"|capfirst %}",
+                "{% trans "october"|capfirst %}",
+                "{% trans "november"|capfirst %}",
+                "{% trans "december"|capfirst %}");
+        if (type == 0)
+            return short_month[m-1];
+        else
+            return month[m-1];
+    }
 </script>

@@ -21,7 +21,7 @@ from user_profile.models import UserProfile
 
 class UserChangeDetailForm(ModelForm):
     """A form used to change the detail of a user in the Customer UI."""
-    email = forms.CharField(label=_('Email address'), required=True)
+    email = forms.CharField(label=_('email address'), required=True)
 
     class Meta:
         model = User

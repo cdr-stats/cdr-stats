@@ -18,27 +18,27 @@ from apiplayground import APIPlayground
 class SwitchAPIPlayground(APIPlayground):
 
     schema = {
-        "title": _("Switch API Playground"),
+        "title": _("switch"),
         "base_url": "http://localhost/api/v1/",
         "resources": [
             {
                 "name": "/switch/",
-                "description": _("Resource to manage switches."),
+                "description": _("resource to manage switches."),
                 "endpoints": [
                     {
                         "method": "GET",
                         "url": "/api/v1/switch/",
-                        "description": _("Returns all switches")
+                        "description": _("returns all switches")
                     },
                     {
                         "method": "GET",
                         "url": "/api/v1/switch/{switch-id}/",
-                        "description": _("Returns a specific switch")
+                        "description": _("returns a specific switch")
                     },
                     {
                         "method": "POST",
                         "url": "/api/v1/switch/",
-                        "description": _("Creates new switch"),
+                        "description": _("creates new switch"),
                         "parameters": [
                             {
                                 "name": "name",
@@ -56,7 +56,7 @@ class SwitchAPIPlayground(APIPlayground):
                     {
                         "method": "PUT",
                         "url": "/api/v1/switch/{switch-id}/",
-                        "description": _("Update switch"),
+                        "description": _("update switch"),
                         "parameters": [
                             {
                                 "name": "name",
@@ -74,7 +74,7 @@ class SwitchAPIPlayground(APIPlayground):
                     {
                         "method": "DELETE",
                         "url": "/api/v1/switch/{switch-id}/",
-                        "description": _("Delete switch"),
+                        "description": _("delete switch"),
                     }
                 ]
             },

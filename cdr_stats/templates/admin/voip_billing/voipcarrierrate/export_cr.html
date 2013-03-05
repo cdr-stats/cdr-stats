@@ -4,7 +4,7 @@
 
 {% block breadcrumbs %}{% if not is_popup %}
 <div class="breadcrumbs">
-     <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+     <a href="../../../">{% trans "home"|title %}</a> &rsaquo;
      <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
      <a href="/admin/{{ opts.app_label }}/{{ model_name }}">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
      Export {{ opts.verbose_name }}
@@ -18,8 +18,8 @@
 <form method="post" action="" enctype="multipart/form-data" >{% csrf_token %}
 <table border=0>
 {{ form.as_table }}
-<tr><td colspan=2 align=right><input type="submit" name="submit" class="l-1" value="{% trans "Submit" %}" />&nbsp;
-    <input type="reset" class="j-2" name="reset" value="{% trans "Reset" %}" /></td></tr>
+<tr><td colspan=2 align=right><input type="submit" name="submit" class="l-1" value="{% trans "submit"|title %}" />&nbsp;
+    <input type="reset" class="j-2" name="reset" value="{% trans "reset"|title %}" /></td></tr>
 </table>
 </form>
 </div>

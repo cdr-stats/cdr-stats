@@ -34,19 +34,19 @@ class VoIPPlan(Model):
 
     The LCR system will route the VoIP via the lowest cost carrier.
     """
-    name = models.CharField(unique=True, max_length=255, verbose_name=_('Name'),
-                            help_text=_("Enter Plan Name"))
-    pubname = models.CharField(max_length=255, verbose_name=_('Pub Name'),
-                               help_text=_("Enter Pub Name"))
-    lcrtype = models.IntegerField(choices=list(LCR_TYPE), verbose_name=_('LCR Type'),
-                                  help_text=_("Select LCR type"))
-    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_('Date'))
+    name = models.CharField(unique=True, max_length=255, verbose_name=_('name'),
+                            help_text=_("enter plan name"))
+    pubname = models.CharField(max_length=255, verbose_name=_('pub name'),
+                               help_text=_("Enter pub Name"))
+    lcrtype = models.IntegerField(choices=list(LCR_TYPE), verbose_name=_('LCR type'),
+                                  help_text=_("select LCR type"))
+    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_('date'))
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = u'voipbilling_voip_plan'        
-        verbose_name = _("VoIP Plan")
-        verbose_name_plural = _("VoIP Plans")
+        verbose_name = _("VoIP plan")
+        verbose_name_plural = _("VoIP plans")
 
     def __unicode__(self):
         return '[%s] %s' % (self.id, self.name)
@@ -58,16 +58,16 @@ class BanPlan(models.Model):
 
     List of Ban Plan which are linked to VoIP Plan
     """
-    name = models.CharField(unique=True, max_length=255, verbose_name=_('Name'),
-                            help_text=_("Enter Ban Plan Name"))
+    name = models.CharField(unique=True, max_length=255, verbose_name=_('name'),
+                            help_text=_("enter ban plan name"))
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
     voip_plan = models.ManyToManyField(VoIPPlan, through='VoIPPlan_BanPlan')
 
     class Meta:
         db_table = u'voipbilling_banplan'        
-        verbose_name = _("Ban Plan")
-        verbose_name_plural = _("Ban Plans")
+        verbose_name = _("ban plan")
+        verbose_name_plural = _("ban plans")
 
     def __unicode__(self):
         return "%s" % (self.name)
@@ -97,17 +97,17 @@ class BanPrefix(models.Model):
     Ban prefixes are linked to Ban plan & VoIP with these prefix
     will not be authorized to send.
     """
-    ban_plan = models.ForeignKey(BanPlan, verbose_name=_('Ban Plan'),
-        help_text=_("Select Ban Plan"))
-    prefix = models.ForeignKey(Prefix, verbose_name=_('Prefix'),
-       help_text=_("Select Prefix"))
+    ban_plan = models.ForeignKey(BanPlan, verbose_name=_('ban plan'),
+        help_text=_("select ban plan"))
+    prefix = models.ForeignKey(Prefix, verbose_name=_('prefix'),
+       help_text=_("select prefix"))
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = u'voipbilling_ban_prefix'        
-        verbose_name = _("Ban Prefix")
-        verbose_name_plural = _("Ban Prefixes")
+        verbose_name = _("ban prefix")
+        verbose_name_plural = _("ban prefixes")
 
     def __unicode__(self):
         return "%s" % (self.ban_plan)
@@ -121,7 +121,7 @@ class BanPrefix(models.Model):
             return ""
         else:
             return "[%d] - %s" % (self.prefix.prefix, self.prefix.destination)
-    prefix_with_name.short_description = _('Prefix')
+    prefix_with_name.short_description = _('prefix')
 
 
 class VoIPRetailPlan(Model):
@@ -137,20 +137,20 @@ class VoIPRetailPlan(Model):
     The system can have several VoIPRetailPlans, but only the ones associated to
     the VoIPplan will be used by the client.
     """
-    name = models.CharField(max_length=255, verbose_name=_('Name'),
-                            help_text=_("Enter Plan Name"))
-    description = models.TextField(verbose_name=_('Description'),
-                                   help_text=_("Short description about Plan"))
-    metric = models.IntegerField(default=10, verbose_name=_('Metric'),
-                                 help_text=_("Enter metric in digit"))
-    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_('Date'))
+    name = models.CharField(max_length=255, verbose_name=_('name'),
+                            help_text=_("enter plan name"))
+    description = models.TextField(verbose_name=_('description'),
+                                   help_text=_("short description about Plan"))
+    metric = models.IntegerField(default=10, verbose_name=_('metric'),
+                                 help_text=_("enter metric in digit"))
+    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_('date'))
     updated_date = models.DateTimeField(auto_now=True)
     voip_plan = models.ManyToManyField(VoIPPlan, through='VoIPPlan_VoIPRetailPlan')
 
     class Meta:
         db_table = u'voipbilling_voip_retail_plan'        
-        verbose_name = _("Retail Plan")
-        verbose_name_plural = _("Retail Plans")
+        verbose_name = _("retail plan")
+        verbose_name_plural = _("retail plans")
 
     def __unicode__(self):
         return "%s" % (self.name)
@@ -183,22 +183,22 @@ class VoIPRetailRate(models.Model):
     associated to a VoIPPlan
     """
     voip_retail_plan_id = models.ForeignKey(VoIPRetailPlan, db_column="voip_retail_plan_id",
-                                           verbose_name=_("Retail Plan"),
+                                           verbose_name=_("retail plan"),
                                            null=True, blank=True,
-                                           help_text=_("Select Retail Plan"))
+                                           help_text=_("select retail plan"))
     prefix = models.ForeignKey(Prefix, db_column="prefix",
-                               verbose_name=_("Prefix"), null=True, blank=True,
-                               help_text=_("Select Prefix"))
+                               verbose_name=_("prefix"), null=True, blank=True,
+                               help_text=_("select prefix"))
     retail_rate = models.DecimalField(max_digits=10, decimal_places=4,
-                                      default=0, verbose_name=_("Rate"),
-                                      help_text=_("Enter Rate"))
-    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_("Date"))
+                                      default=0, verbose_name=_("rate"),
+                                      help_text=_("enter Rate"))
+    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_("date"))
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = u'voipbilling_voip_retail_rate'        
-        verbose_name = _("Retail Rate")
-        verbose_name_plural = _("Retail Rates")
+        verbose_name = _("retail rate")
+        verbose_name_plural = _("retail rates")
 
     def voip_retail_plan_name(self):
         """
@@ -209,7 +209,7 @@ class VoIPRetailRate(models.Model):
             return ""
         else:
             return self.voip_retail_plan_id.name
-    voip_retail_plan_name.short_description = _("Retail Plan")
+    voip_retail_plan_name.short_description = _("retail plan")
 
     def prefix_with_name(self):
         """
@@ -220,7 +220,7 @@ class VoIPRetailRate(models.Model):
             return ""
         else:
             return "[%d] - %s" % (self.prefix.prefix, self.prefix.destination)
-    prefix_with_name.short_description = _('Prefix')
+    prefix_with_name.short_description = _('prefix')
 
 
 class VoIPCarrierPlan(Model):
@@ -239,24 +239,24 @@ class VoIPCarrierPlan(Model):
     the VoIPRetailPlan-VoIPPlan will be used to connect the VoIP of
     the client.
     """
-    name = models.CharField(max_length=255, verbose_name=_("Name"),
-                            help_text=_("Enter Plan Name"))
-    description = models.TextField(blank=True, verbose_name=_("Description"),
-                                   help_text=_("Short description about Plan"))
-    metric = models.IntegerField(default=10, verbose_name=_("Metric"),
-                                 help_text=_("Enter metric in digit"))
+    name = models.CharField(max_length=255, verbose_name=_("name"),
+                            help_text=_("enter plan name"))
+    description = models.TextField(blank=True, verbose_name=_("description"),
+                                   help_text=_("short description about Plan"))
+    metric = models.IntegerField(default=10, verbose_name=_("metric"),
+                                 help_text=_("enter metric in digit"))
     callsent = models.IntegerField(null=True, blank=True,
-                                   verbose_name=_("Message Sent"))
+                                   verbose_name=_("message sent"))
     voip_provider_id = models.ForeignKey(Provider, db_column="voip_provider_id",
-                                         verbose_name=_("Provider"),
-                                         help_text=_("Select Provider"))
-    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_("Date"))
+                                         verbose_name=_("provider"),
+                                         help_text=_("select provider"))
+    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_("date"))
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = u'voipbilling_voip_carrier_plan'        
-        verbose_name = _("Carrier Plan")
-        verbose_name_plural = _("Carrier Plans")
+        verbose_name = _("carrier plan")
+        verbose_name_plural = _("carrier plans")
 
     def __unicode__(self):
         return "%s" % (self.name)
@@ -273,22 +273,22 @@ class VoIPCarrierRate(models.Model):
     """
     voip_carrier_plan_id = models.ForeignKey(VoIPCarrierPlan,
                                            db_column="voip_carrier_plan_id",
-                                           verbose_name=_("Carrier Plan"),
+                                           verbose_name=_("carrier plan"),
                                            null=True, blank=True,
-                                           help_text=_("Select Carrier Plan"))
+                                           help_text=_("select carrier plan"))
     prefix = models.ForeignKey(Prefix, db_column="prefix",
-                               verbose_name=_("Prefix"), null=True, blank=True,
-                               help_text=_("Select Prefix"))
+                               verbose_name=_("prefix"), null=True, blank=True,
+                               help_text=_("select prefix"))
     carrier_rate = models.DecimalField(max_digits=10, decimal_places=4,
-                                       default=0, verbose_name=_("Rate"),
-                                       help_text=_("Enter Rate"))
-    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_("Date"))
+                                       default=0, verbose_name=_("rate"),
+                                       help_text=_("enter rate"))
+    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_("date"))
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = u'voipbilling_voip_carrier_rate'        
-        verbose_name = _("Carrier Rate")
-        verbose_name_plural = _("Carrier Rates")
+        verbose_name = _("carrier rate")
+        verbose_name_plural = _("carrier rates")
 
     def voip_carrier_plan_name(self):
         """
@@ -299,7 +299,7 @@ class VoIPCarrierRate(models.Model):
             return ""
         else:
             return self.voip_carrier_plan_id.name
-    voip_carrier_plan_name.short_description = _("Carrier Plan")
+    voip_carrier_plan_name.short_description = _("carrier plan")
 
     def prefix_with_name(self):
         """
@@ -310,7 +310,7 @@ class VoIPCarrierRate(models.Model):
             return ""
         else:
             return "[%d] - %s" % (self.prefix.prefix, self.prefix.destination)
-    prefix_with_name.short_description = _("Prefix")
+    prefix_with_name.short_description = _("prefix")
 
 
 class VoIPPlan_VoIPCarrierPlan(models.Model):

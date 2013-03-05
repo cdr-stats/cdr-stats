@@ -6,8 +6,8 @@
 
   {% if has_add_permission %}
     <ul class="object-tools">
-      <li><a href="import_cr/" class="addlink">{% trans "Import Carrier Rate" %}</a></li>
-      <li><a href="export_cr/" class="addlink">{% trans "Export Carrier Rate" %}</a></li>
+      <li><a href="import_cr/" class="addlink">{% trans "import carrier rate"|title %}</a></li>
+      <li><a href="export_cr/" class="addlink">{% trans "export carrier rate"|title %}</a></li>
       <li>
         <a href="add/{% if is_popup %}?_popup=1{% endif %}" class="addlink">
           {% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}
@@ -23,7 +23,7 @@
       <div id="changelist-filter">
         <h2>{% trans 'Filter' %}</h2>
         {% for spec in cl.filter_specs %}{% admin_list_filter cl spec %}{% endfor %}
-        <h3>By Rate</h3>
+        <h3>{% trans "by rate"|title %}</h3>
         <div align="right">
         <form action="" method="POST" name="rate_filter" id="id_rate_filter">{% csrf_token %}
         {{ form.rate_range }}&nbsp;{{ form.rate }}

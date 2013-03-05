@@ -5,8 +5,8 @@
 
   {% if has_add_permission %}
     <ul class="object-tools">
-      <li><a href="import_rr/" class="addlink">{% trans "Import Retail Rate" %}</a></li>
-      <li><a href="export_rr/" class="addlink">{% trans "Export Retail Rate" %}</a></li>
+      <li><a href="import_rr/" class="addlink">{% trans "import retail rate"|title %}</a></li>
+      <li><a href="export_rr/" class="addlink">{% trans "export retail rate"|title %}</a></li>
       <li>
         <a href="add/{% if is_popup %}?_popup=1{% endif %}" class="addlink">
           {% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}
