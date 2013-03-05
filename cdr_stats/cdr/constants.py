@@ -17,10 +17,10 @@ from common.utils import Choice
 
 
 class STRING_SEARCH_TYPE_LIST(Choice):
-    EQUALS = 1, _('equals')
-    BEGINS_WITH = 2, _('begins')
-    CONTAINS = 3, _('contains')
-    ENDS_WITH = 4, _('ends')
+    EQUALS = 1, _('equals').capitalize()
+    BEGINS_WITH = 2, _('begins').capitalize()
+    CONTAINS = 3, _('contains').capitalize()
+    ENDS_WITH = 4, _('ends').capitalize()
 
 
 class CDR_COLUMN_NAME(Choice):

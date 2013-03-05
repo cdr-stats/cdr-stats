@@ -40,7 +40,7 @@ PAGE_SIZE_LIST = ((10, '10'),
 def sw_list_with_all():
     """Switch list"""
     list_sw = []
-    list_sw.append((0, _('all switches')))
+    list_sw.append((0, _('all switches').capitalize()))
     sw_list = get_switch_list()
     for i in sw_list:
         list_sw.append((i[0], i[1]))
@@ -50,7 +50,7 @@ def sw_list_with_all():
 def hc_list_with_all():
     """Hangup cause list"""
     list_hc = []
-    list_hc.append((0, _('all')))
+    list_hc.append((0, _('all').capitalize()))
     hc_list = get_hc_list()
     for i in hc_list:
         list_hc.append((i[0], i[1]))
@@ -60,8 +60,8 @@ def hc_list_with_all():
 def country_list_with_all():
     """Country list"""
     list_ct = []
-    list_ct.append((0, _('all')))
-    list_ct.append((999, _('internal call')))
+    list_ct.append((0, _('all').capitalize()))
+    list_ct.append((999, _('internal call').capitalize()))
     ct_list = get_country_list()
     for i in ct_list:
         list_ct.append((i[0], i[1]))

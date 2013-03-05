@@ -17,7 +17,7 @@ from common.utils import Choice
 
 
 class NOTICE_TYPE(Choice):
-    average_length_of_call = 1, _('average length of call')
-    answer_seize_ratio = 2, _('answer seize ratio')
-    blacklist_prefix = 3, _('blacklist prefix')
-    whitelist_prefix = 4, _('whitelist prefix')
+    average_length_of_call = 1, _('average length of call').capitalize()
+    answer_seize_ratio = 2, _('answer seize ratio').capitalize()
+    blacklist_prefix = 3, _('blacklist prefix').capitalize()
+    whitelist_prefix = 4, _('whitelist prefix').capitalize()
