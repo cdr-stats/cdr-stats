@@ -59,15 +59,15 @@ class CustomIndexDashboard(Dashboard):
             display="tabs",
             children=[
                 modules.AppList(
-                    title='User',
+                    title=_('user').capitalize(),
                     models=('django.contrib.*', 'user_profile.*'),
                 ),
                 modules.AppList(
-                    _('Task Manager'),
+                    _('task manager').title(),
                     models=('djcelery.*', ),
                 ),
                 modules.AppList(
-                    _('Dashboard Stats'),
+                    _('dashboard stats').title(),
                     models=('admin_tools_stats.*', ),
                 ),
                 modules.RecentActions(_('Recent Actions'), 5),
@@ -80,37 +80,37 @@ class CustomIndexDashboard(Dashboard):
         ))
 
         self.children.append(modules.AppList(
-            _('Alert'),
+            _('alert').title(),
             models=('cdr_alert.*', ),
         ))
 
         self.children.append(modules.AppList(
-            _('Country Dialcode'),
+            _('country dialcode').title(),
             models=('country_dialcode.*', ),
         ))
 
         self.children.append(modules.AppList(
-            _('Voip gateway'),
+            _('Voip gateway').title(),
             models=('voip_gateway.*', ),
         ))
 
         self.children.append(modules.AppList(
-            _('Voip billing'),
+            _('Voip billing').title(),
             models=('voip_billing.*', ),
         ))
 
         # append a link list module for "quick links"
         self.children.append(modules.LinkList(
-            _('Quick links'),
+            _('quick links').capitalize(),
             layout='inline',
             draggable=True,
             deletable=True,
             collapsible=True,
             children=[
                 [_('Go to CDR-Stats.org'), 'http://www.cdr-stats.org/'],
-                [_('Change password'),
+                [_('change password').capitalize(),
                  reverse('%s:password_change' % site_name)],
-                [_('Log out'), reverse('%s:logout' % site_name)],
+                [_('log out').capitalize(), reverse('%s:logout' % site_name)],
             ]
         ))
 
@@ -128,14 +128,14 @@ class CustomAppIndexDashboard(AppIndexDashboard):
     """
     # we disable title because its redundant with the model list module
     title = ''
-    
 
-    def __init__(self, *args, **kwargs):        
+
+    def __init__(self, *args, **kwargs):
         AppIndexDashboard.__init__(self, *args, **kwargs)
-        
-        #TODO: Find out better way 
+
+        #TODO: Find out better way
         if str(self.app_title) == 'Voip_Gateway':
-            app_title = _('Voip Gateway')
+            app_title = _('voip gateway')
             models = ['voip_gateway.*']
         elif str(self.app_title) == 'Voip_Billing':
             app_title = _('Voip Billing')
@@ -152,7 +152,7 @@ class CustomAppIndexDashboard(AppIndexDashboard):
             #modules.ModelList(self.app_title, self.models),
             modules.ModelList(app_title, models),
             modules.RecentActions(
-                _('Recent Actions'),
+                _('recent actions').title(),
                 include_list=self.get_app_content_types(),
                 limit=5
             )
@@ -161,5 +161,5 @@ class CustomAppIndexDashboard(AppIndexDashboard):
     def init_with_context(self, context):
         """
         Use this method if you need to access the request context.
-        """            
+        """
         return super(CustomAppIndexDashboard, self).init_with_context(context)
