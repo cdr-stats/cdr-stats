@@ -106,11 +106,12 @@
           {% endif %}
 
           {% if user.is_authenticated %}
+          {% get_notice_count user as notice_count %}
             <ul class="nav pull-right">
               <li id="fat-menu-VI" class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username|capfirst }}
 
-                    <span class="label label-warning">{% get_notice_count user %}</span>
+                    <span class="label label-warning">{{ notice_count }}</span>
                   <b class="caret"></b>
                 </a>
                 <ul class="dropdown-menu">
@@ -119,7 +120,7 @@
                   </li>
                   <li>
                     <a href="/user_notification/">{% trans "notifications"|title %}
-                      <span class="label label-warning">{% get_notice_count user %}</span>
+                      <span class="label label-warning">{{ notice_count }}</span>
                     </a>
                   </li>
                   <li {% ifequal module 'detail_change' %}class="active"{% endifequal %}><a href="/user_detail_change/?action=tabs-3">
