@@ -109,11 +109,8 @@
             <ul class="nav pull-right">
               <li id="fat-menu-VI" class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username|capfirst }}
-                  {% if notice_count or notice_count == 0 %}
-                    <span class="label label-warning">{{ notice_count }}</span>
-                  {% elif "/api-explorer/" in request.get_full_path %}
-                    <span class="label label-warning">{% get_notice_count request %}</span>
-                  {% endif %}
+
+                    <span class="label label-warning">{% get_notice_count user %}</span>
                   <b class="caret"></b>
                 </a>
                 <ul class="dropdown-menu">
@@ -122,11 +119,7 @@
                   </li>
                   <li>
                     <a href="/user_notification/">{% trans "notifications"|title %}
-                      {% if notice_count or notice_count == 0 %}
-                        <span class="label label-warning">{{ notice_count }}</span>
-                      {% elif "/api-explorer/" in request.get_full_path %}
-                        <span class="label label-warning">{% get_notice_count request %}</span>
-                      {% endif %}
+                      <span class="label label-warning">{% get_notice_count user %}</span>
                     </a>
                   </li>
                   <li {% ifequal module 'detail_change' %}class="active"{% endifequal %}><a href="/user_detail_change/?action=tabs-3">

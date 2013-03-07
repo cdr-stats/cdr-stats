@@ -24,7 +24,6 @@ from cdr_alert.models import Alarm, Blacklist, Whitelist, AlarmReport
 from cdr_alert.constants import ALARM_COLUMN_NAME, ALARM_REPORT_COLUMN_NAME
 from cdr_alert.forms import AlarmForm, BWCountryForm, BWPrefixForm,\
     AlarmReportForm
-from frontend_notification.views import notice_count
 from common.common_functions import current_view, get_pagination_vars,\
     validate_days
 from country_dialcode.models import Prefix
@@ -69,7 +68,6 @@ def alarm_list(request):
         'PAGE_SIZE': PAGE_SIZE,
         'ALARM_COLUMN_NAME': ALARM_COLUMN_NAME,
         'col_name_with_order': pagination_data['col_name_with_order'],
-        'notice_count': notice_count(request),
     }
     request.session['msg'] = ''
     request.session['error_msg'] = ''
@@ -98,7 +96,7 @@ def alarm_add(request):
         if form.is_valid():
             obj = form.save(commit=False)
             obj.user = request.user
-            obj.save()            
+            obj.save()
             request.session["msg"] = _('"%(name)s" added.') %\
                 {'name': request.POST['name']}
             return HttpResponseRedirect('/alert/')
@@ -107,7 +105,6 @@ def alarm_add(request):
         'module': current_view(request),
         'form': form,
         'action': 'add',
-        'notice_count': notice_count(request),
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))
@@ -190,7 +187,6 @@ def alarm_change(request, object_id):
         'module': current_view(request),
         'form': form,
         'action': 'update',
-        'notice_count': notice_count(request),
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))
@@ -329,7 +325,6 @@ def alert_report(request):
         'PAGE_SIZE': PAGE_SIZE,
         'ALARM_REPORT_COLUMN_NAME': ALARM_REPORT_COLUMN_NAME,
         'col_name_with_order': pagination_data['col_name_with_order'],
-        'notice_count': notice_count(request),
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))
@@ -366,7 +361,6 @@ def trust_control(request):
         'wl_prefix_form': wl_prefix_form,
         'blacklist': blacklist,
         'whitelist': whitelist,
-        'notice_count': notice_count(request),
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))

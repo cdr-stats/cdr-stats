@@ -38,7 +38,6 @@ from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_hourly_report, pipeline_country_hourly_report,\
     pipeline_mail_report
 from cdr.constants import CDR_COLUMN_NAME
-from frontend_notification.views import notice_count
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -395,7 +394,6 @@ def cdr_view(request):
                 'end_date': end_date,
                 'action': action,
                 'result': result,
-                'notice_count': notice_count(request),
                 'CDR_COLUMN_NAME': CDR_COLUMN_NAME,
             }
             logging.debug('CDR View End')
@@ -573,7 +571,6 @@ def cdr_view(request):
         'end_date': end_date,
         'action': action,
         'result': int(result),
-        'notice_count': notice_count(request),
         'CDR_COLUMN_NAME': CDR_COLUMN_NAME,
     }
     logging.debug('CDR View End')
@@ -914,7 +911,6 @@ def cdr_dashboard(request):
         'hangup_analytic': hangup_analytic,
         'form': form,
         'search_tag': search_tag,
-        'notice_count': notice_count(request),
         'total_country_data': total_country_data[0:5],
     }
 
@@ -986,7 +982,6 @@ def cdr_concurrent_calls(request):
             'form': form,
             'final_data': final_data,
             'start_date': start_date,
-            'notice_count': notice_count(request),
         }
 
     return render_to_response('frontend/cdr_graph_concurrent_calls.html', variables,
@@ -1056,7 +1051,6 @@ def cdr_realtime(request):
             'realtime_graph_maxcall': settings.REALTIME_Y_AXIS_LIMIT,
             'socketio_host': settings.SOCKETIO_HOST,
             'socketio_port': settings.SOCKETIO_PORT,
-            'notice_count': notice_count(request),
         }
 
     return render_to_response('frontend/cdr_graph_realtime.html', variables,
@@ -1165,7 +1159,7 @@ def get_cdr_mail_report():
         'hangup_analytic_array': hangup_analytic_array,
     }
     return mail_data
-    
+
 
 @permission_required('user_profile.mail_report', login_url='/')
 @check_cdr_exists
@@ -1216,7 +1210,6 @@ def mail_report(request):
         'country_analytic_array': mail_data['country_analytic_array'],
         'hangup_analytic_array': mail_data['hangup_analytic_array'],
         'msg': msg,
-        'notice_count': notice_count(request),
     }
     return render_to_response(template, data,
            context_instance=RequestContext(request))
@@ -1357,7 +1350,6 @@ def cdr_report_by_hour(request):
                 'from_date': from_date,
                 'comp_days': comp_days,
                 'total_record': total_record,
-                'notice_count': notice_count(request),
             }
 
             return render_to_response(template_name, variables,
@@ -1410,7 +1402,6 @@ def cdr_report_by_hour(request):
             'from_date': from_date,
             'comp_days': comp_days,
             'total_record': total_record,
-            'notice_count': notice_count(request),
         }
 
         return render_to_response(template_name, variables,
@@ -1500,7 +1491,6 @@ def cdr_overview(request):
                 'start_date': start_date,
                 'end_date': end_date,
                 'TOTAL_GRAPH_COLOR': settings.TOTAL_GRAPH_COLOR,
-                'notice_count': notice_count(request),
             }
 
             return render_to_response(
@@ -1703,7 +1693,6 @@ def cdr_overview(request):
             'start_date': start_date,
             'end_date': end_date,
             'TOTAL_GRAPH_COLOR': settings.TOTAL_GRAPH_COLOR,
-            'notice_count': notice_count(request),
         }
         return render_to_response(template_name, variables,
             context_instance=RequestContext(request))
@@ -1883,7 +1872,6 @@ def cdr_country_report(request):
         'form': form,
         'search_tag': search_tag,
         'NUM_COUNTRY': settings.NUM_COUNTRY,
-        'notice_count': notice_count(request),
     }
     return render_to_response(template_name, variables,
         context_instance=RequestContext(request))
@@ -1952,7 +1940,6 @@ def world_map_view(request):
                 'end_date': end_date,
                 'world_analytic_array': world_analytic_array,
                 'action': action,
-                'notice_count': notice_count(request),
             }
 
             return render_to_response(template_name, variables,
@@ -1996,7 +1983,6 @@ def world_map_view(request):
         'end_date': end_date,
         'world_analytic_array': world_analytic_array,
         'action': action,
-        'notice_count': notice_count(request),
     }
     return render_to_response(template_name, variables,
         context_instance=RequestContext(request))
