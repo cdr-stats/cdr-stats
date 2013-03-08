@@ -27,6 +27,9 @@ from common.utils import BaseAuthenticatedClient
 
 class UserProfileAdminView(BaseAuthenticatedClient):
     """Test Function to check UserProfile Admin pages"""
+    fixtures = ['auth_user.json', 'notice_type.json', 'notification.json',
+                'country_dialcode.json', 'voip_gateway.json', 'voip_provider.json',
+                'voip_billing.json', 'user_profile.json']
 
     def test_admin_staff_view_list(self):
         """Test Function to check admin staff list"""
@@ -53,7 +56,8 @@ class UserProfileCustomerView(BaseAuthenticatedClient):
     """Test Function to check UserProfile Customer pages"""
 
     fixtures = ['auth_user.json', 'notice_type.json', 'notification.json',
-                'voip_gateway.json', 'voip_provider.json', 'user_profile.json']
+                'country_dialcode.json', 'voip_gateway.json', 'voip_provider.json',
+                'voip_billing.json', 'user_profile.json']
 
     def test_user_settings(self):
         """Test Function to check User settings"""
@@ -97,7 +101,7 @@ class UserProfileModel(TestCase):
         self.user = User.objects.get(username='admin')
         self.user_profile = UserProfile.objects.get(
             user=self.user,
-        )        
+        )
 
     def test_user_profile_forms(self):
         self.assertEqual(self.user_profile.user, self.user)
