@@ -36,7 +36,8 @@ import csv
 import logging
 from mongodb_connection import mongodb
 from common.app_label_renamer import AppLabelRenamer
-AppLabelRenamer(native_app_label=u'cdr', app_label=_('CDR')).main()
+APP_LABEL = _('CDR')
+AppLabelRenamer(native_app_label=u'cdr', app_label=APP_LABEL).main()
 
 
 def get_value_from_uni(j, row, field_name):
@@ -442,7 +443,7 @@ class SwitchAdmin(admin.ModelAdmin):
                     'CDR_COLUMN_NAME': CDR_COLUMN_NAME,
                     'opts': opts,
                     'model_name': opts.object_name.lower(),
-                    'app_label': _('Cdr'),
+                    'app_label': APP_LABEL,
                 })
                 logging.debug('CDR View End')
                 return render_to_response(template_name, context_instance=template_data)
@@ -619,7 +620,7 @@ class SwitchAdmin(admin.ModelAdmin):
             'CDR_COLUMN_NAME': CDR_COLUMN_NAME,
             'opts': opts,
             'model_name': opts.object_name.lower(),
-            'app_label': _('Cdr'),
+            'app_label': APP_LABEL,
         })
         logging.debug('CDR View End')
         return render_to_response(template_name, context_instance=template_data)

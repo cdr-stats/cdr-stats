@@ -23,7 +23,7 @@ from cdr_alert.models import Whitelist, Blacklist
 from country_dialcode.models import Country, Prefix
 
 
-alert = _('Alert')
+alert = _('alert').capitalize()
 
 blacklist_word = _('blacklist')
 whitelist_word = _('whitelist')
