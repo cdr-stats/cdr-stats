@@ -92,7 +92,8 @@ text-decoration:none;
 
 {% block userlinks %}
     {% if user.is_active and user.is_staff %}
-        <a href="/admin/notification/notice/">({% get_notice_count user %})</a> /
+        {% get_notice_count user as notice_count %}
+        <a href="/admin/notification/notice/">({{ notice_count }})</a> /
     {% endif %}
     {{ block.super }}
 {% endblock %}
