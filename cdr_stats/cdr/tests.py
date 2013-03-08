@@ -29,8 +29,7 @@ from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
 
 from cdr.functions_def import get_switch_list, get_hangupcause_name,\
     get_hangupcause_id, get_hc_list, get_country_id
-from cdr.templatetags.cdr_tags import hangupcause_name_with_title,\
-    mongo_id
+from cdr.templatetags.cdr_tags import hangupcause_name_with_title, mongo_id
 from bson.objectid import ObjectId
 from datetime import datetime
 
@@ -109,18 +108,18 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
                 'voip_gateway.json', 'voip_provider.json'
                 'voip_billing.json', 'user_profile.json',]
 
-    #def test_mgt_command(self):
-    #    # Test mgt command
-    #    call_command('generate_cdr',
-    #        '--number-cdr=10', '--delta-day=1', '--duration=10')
-    #    call_command('generate_cdr',
-    #        '--number-cdr=10', '--delta-day=0', '--duration=0')
-    #    call_command('generate_cdr', '--number-cdr=10', '--delta-day=0')
-    #    call_command('generate_cdr', '--number-cdr=10')
-    #    call_command('sync_cdr_freeswitch', '--apply-index')
-    #    call_command('sync_cdr_freeswitch')
-    #    #call_command('sync_cdr_asterisk', '--apply-index')
-    #    #call_command('sync_cdr_asterisk')
+    def test_mgt_command(self):
+        # Test mgt command
+        call_command('generate_cdr',
+            '--number-cdr=10', '--delta-day=1', '--duration=10')
+        call_command('generate_cdr',
+            '--number-cdr=10', '--delta-day=0', '--duration=0')
+        call_command('generate_cdr', '--number-cdr=10', '--delta-day=0')
+        call_command('generate_cdr', '--number-cdr=10')
+        call_command('sync_cdr_freeswitch', '--apply-index')
+        call_command('sync_cdr_freeswitch')
+        #call_command('sync_cdr_asterisk', '--apply-index')
+        #call_command('sync_cdr_asterisk')
 
     def test_index(self):
         """Test Function to check customer index page"""
