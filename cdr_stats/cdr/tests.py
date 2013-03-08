@@ -26,7 +26,6 @@ from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
     cdr_report_by_hour, cdr_concurrent_calls,\
     cdr_realtime, cdr_country_report, mail_report,\
     world_map_view, index, cdr_detail, cdr_export_to_csv
-
 from cdr.functions_def import get_switch_list, get_hangupcause_name,\
     get_hangupcause_id, get_hc_list, get_country_id
 from cdr.templatetags.cdr_tags import hangupcause_name_with_title, mongo_id
@@ -437,10 +436,10 @@ class CdrStatsTaskTestCase(TestCase):
                 'voip_gateway.json', 'voip_provider.json'
                 'voip_billing.json', 'user_profile.json',]
 
-    def test_get_channels_info(self):
-        """Test task : get_channels_info"""
-        result = get_channels_info().run()
-        self.assertEqual(result, True)
+    #def test_get_channels_info(self):
+    #    """Test task : get_channels_info"""
+    #    result = get_channels_info().run()
+    #    self.assertEqual(result, True)
 
     #def test_sync_cdr_pending(self):
     #    """Test task : sync_cdr_pending"""
