@@ -103,8 +103,10 @@ class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
 class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Customer Interface."""
 
-    fixtures = ['auth_user.json', 'switch.json', 'country_dialcode.json', 'hangup_cause.json',
-                'voip_gateway.json', 'voip_provider.json'
+    fixtures = ['auth_user.json', 'switch.json',
+                'country_dialcode.json', 'hangup_cause.json',
+                'notice_type.json', 'notification.json',
+                'voip_gateway.json', 'voip_provider.json',
                 'voip_billing.json', 'user_profile.json',]
 
     #def test_mgt_command(self):
