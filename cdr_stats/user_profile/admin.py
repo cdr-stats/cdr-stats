@@ -33,7 +33,7 @@ class UserProfileInline(admin.StackedInline):
 
 class StaffAdmin(UserAdmin):
     """
-    To differentiate staff from all system users 
+    To differentiate staff from all system users
     """
     inlines = [UserProfileInline]
 
@@ -83,7 +83,7 @@ admin.site.register(Customer, CustomerAdmin)
 
 
 def make_read(self, request, queryset):
-    """    
+    """
     To mark all notifications as read
     It is being used on notification listing as django custom actions
     """
