@@ -68,8 +68,7 @@ class UserProfile(models.Model):
             verbose_name=_('fax Number'))
     company_name = models.CharField(max_length=90, blank=True, null=True,
             verbose_name=_('company name'))
-    company_website = models.URLField(verify_exists=False,
-            max_length=90, blank=True, null=True,
+    company_website = models.URLField(max_length=90, blank=True, null=True,
             verbose_name=_('company website'))
     language = LanguageField(blank=True, null=True, verbose_name=_('language'))
     note = models.CharField(max_length=250, blank=True, null=True,

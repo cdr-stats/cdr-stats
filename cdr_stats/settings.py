@@ -181,7 +181,7 @@ INSTALLED_APPS = (
     'cdr',
     'cdr_alert',
     'user_profile',
-    'frontend',    
+    'frontend',
     'dateutil',
     'south',
     'linaro_django_pagination',
@@ -198,7 +198,7 @@ INSTALLED_APPS = (
     'dajaxice',
     'dajax',
     'voip_gateway',
-    'voip_billing',    
+    'voip_billing',
 )
 
 # Debug Toolbar
@@ -261,12 +261,13 @@ except ImportError:
 else:
     INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
 
-
-AUTH_PROFILE_MODULE = 'user_profile.UserProfile'
-
 LOG_COLORSQL_ENABLE = True
 LOG_COLORSQL_VERBOSE = True
 
+# AUTH MODULE SETTINGS
+#AUTH_PROFILE_MODULE = 'user_profile.UserProfile'
+#AUTH_USER_MODEL = 'user_profile.UserProfile'
+LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/pleaselog/'
 
 #DILLA SETTINGS
