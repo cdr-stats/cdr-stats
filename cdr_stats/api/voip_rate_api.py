@@ -94,8 +94,8 @@ class VoipRateResource(ModelResource):
         detail_allowed_methods = ['get']
         throttle = BaseThrottle(throttle_at=1000, timeframe=3600)  # default 1000 calls / hour
 
-    def override_urls(self):
-        """Override urls"""
+    def prepend_urls(self):
+        """prepend urls"""
         return [
             url(r'^(?P<resource_name>%s)/$' % (self._meta.resource_name),
                 self.wrap_view('read'), name="api_read"),
@@ -111,7 +111,7 @@ class VoipRateResource(ModelResource):
         if voipplan_id is None:
             error_msg = "User is not attached with voip plan \n"
             logger.error(error_msg)
-            raise BadRequest(error_msg)        
+            raise BadRequest(error_msg)
 
         dialcode = ''
         recipient_phone_no = ''
