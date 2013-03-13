@@ -14,12 +14,12 @@
 
 from common.utils import BaseAuthenticatedClient
 #from tastypie.test import ResourceTestCase
-import simplejson
+import json
 
 
 class ApiTestCase(BaseAuthenticatedClient):
     """Test cases for CDR-Stats API."""
-    fixtures = ['auth_user.json', 'country_dialcode.json', 
+    fixtures = ['auth_user.json', 'country_dialcode.json',
                 'hangup_cause.json', 'switch.json',
                 'voip_gateway.json', 'voip_provider.json',
                 'user_profile.json', 'voip_billing.json']
@@ -27,7 +27,7 @@ class ApiTestCase(BaseAuthenticatedClient):
     def test_switch(self):
         """Test Function to create a switch"""
         # Create
-        data = simplejson.dumps({"name": "local", "ipaddress": "127.0.0.2"})
+        data = json.dumps({"name": "local", "ipaddress": "127.0.0.2"})
         response = self.client.post('/api/v1/switch/', data,
             content_type='application/json', **self.extra)
         self.assertEqual(response.status_code, 201)
@@ -37,7 +37,7 @@ class ApiTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
         # Update
-        data = simplejson.dumps({"name": "localhost", "ipaddress": "127.0.0.1"})
+        data = json.dumps({"name": "localhost", "ipaddress": "127.0.0.1"})
         response = self.client.put('/api/v1/switch/1/', data,
             content_type='application/json', **self.extra)
         self.assertEqual(response.status_code, 204)
@@ -59,17 +59,17 @@ class ApiTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
     def test_voip_call(self):
-        """Test Function to create a switch"""        
+        """Test Function to create a switch"""
         # Read
-        response = self.client.get('/api/v1/voip_call/?format=json', **self.extra)
-        self.assertEqual(response.status_code, 200)
+        response = self.client.get('/api/v1/voip_call/?format=json')
+        self.assertEqual(response.status_code, 401)
 
         # Create
-        data = simplejson.dumps({"accountcode":"1000", "answer_uepoch":"1359403221", "billmsec":"12960", 
-            "billsec":"104", "caller_id_name":"29914046", "caller_id_number":"29914046", 
-            "destination_number":"032287971777", "direction":"inbound", "duration":"154.0", 
-            "end_uepoch":"1359403221", "hangup_cause_id":"16", "mduration":"12960", 
-            "read_codec":"G711", "remote_media_ip":"192.168.1.21", "resource_uri":"", 
+        data = json.dumps({"accountcode":"1000", "answer_uepoch":"1359403221", "billmsec":"12960",
+            "billsec":"104", "caller_id_name":"29914046", "caller_id_number":"29914046",
+            "destination_number":"032287971777", "direction":"inbound", "duration":"154.0",
+            "end_uepoch":"1359403221", "hangup_cause_id":"16", "mduration":"12960",
+            "read_codec":"G711", "remote_media_ip":"192.168.1.21", "resource_uri":"",
             "start_uepoch":"1359403221", "switch_id":"1", "write_codec":"G711"})
         response = self.client.post('/api/v1/voip_call/', data,
             content_type='application/json', **self.extra)
