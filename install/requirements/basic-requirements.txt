@@ -3,7 +3,6 @@ ordereddict==1.1
 psycopg2==2.4.6
 amqplib==1.0.2
 anyjson==0.3.3
-simplejson==3.0.7
 python-dateutil==2.1
 yolk==0.4.3
 feedparser==5.1.3
