@@ -15,6 +15,7 @@
 #
 from bson import ObjectId
 from django.core.exceptions import ImproperlyConfigured
+from django.core.urlresolvers import reverse
 from django.conf import settings
 from tastypie.bundle import Bundle
 from tastypie.resources import Resource
@@ -84,10 +85,11 @@ class MongoDBResource(Resource):
         """
         self.get_collection().remove()
 
-    def get_resource_uri(self, bundle_or_obj):
-        """
+    """
+    def get_resource_uri(self, bundle_or_ob, url_name='api_dispatch_list'):
+
         Returns resource URI for bundle or object.
-        """
+
         kwargs = {
             'resource_name': self._meta.resource_name,
         }
@@ -103,7 +105,25 @@ class MongoDBResource(Resource):
         if self._meta.api_name is not None:
             kwargs['api_name'] = self._meta.api_name
 
-        return self._build_reverse_url("api_dispatch_detail", kwargs=kwargs)
+        #return self._build_reverse_url("api_dispatch_detail", kwargs=kwargs)
+        return reverse("api_dispatch_detail", kwargs={
+            "resource_name": self._meta.resource_name,
+            "pk": pk
+        })
+    """
+
+    def get_resource_uri(self, item, url_name='api_dispatch_list'):
+        """
+        Returns resource URI for bundle or object.
+        """
+        if isinstance(item, Bundle):
+            pk = item.obj._id
+        else:
+            pk = item._id
+        return reverse("api_dispatch_detail", kwargs={
+            "resource_name": self._meta.resource_name,
+            "pk": pk
+        })
 
 
 class CDRMongoDBResource(MongoDBResource):
