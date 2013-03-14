@@ -199,12 +199,18 @@ LOGGING = {
             'format': '%(asctime)s %(levelname)s || %(message)s'
         },
     },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
     'handlers': {
         # Include the default Django email handler for errors
         # This is what you'd get without configuring logging at all.
         'mail_admins': {
             'class': 'django.utils.log.AdminEmailHandler',
             'level': 'ERROR',
+            'filters': ['require_debug_false'],
             'include_html': True,
         },
         'default': {
