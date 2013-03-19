@@ -176,7 +176,7 @@
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-                {% if perms.cdr.allow_cdr_view  %}
+                {% if perms.cdr.search %}
                     <li><a href="/cdr_export_csv/">{% trans "export CSV file"|capfirst %}</a></li>
                 {% endif %}
             </ul>
