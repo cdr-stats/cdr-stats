@@ -24,6 +24,25 @@ class Gateway(Model):
     This defines the trunk to deliver the Voip Calls.
     Each Gateway are route that support different protocol and different
     set of rules to alter the dialed number
+
+    **Attributes**:
+
+        * ``name`` - Gateway name
+        * ``description`` - description
+        * ``addprefix`` -
+        * ``removeprefix`` -
+        * ``protocol`` -
+        * ``hostname`` -
+        * ``secondused`` -
+        * ``failover`` -
+        * ``addparameter`` -
+        * ``count_call`` -
+        * ``count_using`` -
+        * ``maximum_call`` -
+        * ``status`` -
+        * ``max_call_gateway`` -
+
+    **Name of DB table**: voip_gateway
     """
     name = models.CharField(unique=True, max_length=255, verbose_name=_('name'),
                             help_text=_("enter gateway name"))
@@ -52,7 +71,7 @@ class Gateway(Model):
         help_text=_("select gateway to route the call if the maximum call is reached"))
 
     class Meta:
-        db_table = u'voip_gateway'        
+        db_table = u'voip_gateway'
         verbose_name = _("gateway")
         verbose_name_plural = _("gateways")
 
@@ -66,6 +85,15 @@ class Provider(Model):
 
     This defines the Voip Provider you want to use to deliver your calls.
     Each provider will be associated to a Gateway.
+
+    **Attributes**:
+
+        * ``name`` - Provider name
+        * ``description`` - description
+        * ``metric`` - metric
+        * ``gateway`` - FK
+
+    **Name of DB table**: voip_provider
     """
     name = models.CharField(unique=True, max_length=255, verbose_name=_('name'),
                             help_text=_("enter provider name"))
@@ -79,7 +107,7 @@ class Provider(Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = u'voip_provider'        
+        db_table = u'voip_provider'
         verbose_name = _("provider")
         verbose_name_plural = _("providers")
 
