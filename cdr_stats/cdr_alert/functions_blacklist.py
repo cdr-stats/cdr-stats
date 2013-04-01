@@ -106,7 +106,8 @@ def chk_destination(destination_number):
             # not allowed destination
             authorized = 0
 
-    if len(sanitized_destination) < settings.PN_MIN_DIGITS:
+    if (len(sanitized_destination) < settings.PN_MIN_DIGITS
+       or sanitized_destination[:1].isalpha()):
         # It might be an extension
         country_id = 0
     elif (len(sanitized_destination) >= settings.PN_MIN_DIGITS
