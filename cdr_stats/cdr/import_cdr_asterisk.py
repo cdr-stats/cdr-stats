@@ -183,7 +183,8 @@ def import_cdr_asterisk(shell=False):
 
             # Check Destination number
             destination_number = row[0]
-            if len(destination_number) <= settings.INTERNAL_CALL:
+            if (len(destination_number) <= settings.INTERNAL_CALL
+               or destination_number[:1].isalpha()):
                 authorized = 1
                 country_id = 999
             else:
