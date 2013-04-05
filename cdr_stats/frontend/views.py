@@ -113,7 +113,7 @@ def diagnostic(request):
 
     if error_ip:
         error_msg = _("please review the 'CDR_BACKEND' Settings in your file /usr/share/cdr-stats/settings_local.py make sure the settings, username, password are correct. Check also that the backend authorize a connection from your server")
-        info_msg = _("after changes in your 'CDR_BACKEND' settings, you will need to restart celery: $ /etc/init.d/newfies-celeryd restart")
+        info_msg = _("after changes in your 'CDR_BACKEND' settings, you will need to restart celery: $ /etc/init.d/cdr-stats-celeryd restart")
 
     data = {
         'backend_cdr_data': backend_cdr_data,
