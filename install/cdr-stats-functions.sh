@@ -263,9 +263,12 @@ func_prepare_system_frontend(){
         # Create the Database
         echo "We will remove existing Database"
         echo "Press Enter to continue"
-        read TEMP
+        echo ""
         echo "sudo -u postgres dropdb $DATABASENAME"
-        # echo "Remove Existing Database if exists..."
+        echo "Remove Existing Database if exists..."
+        echo "Press Enter to continue"
+        read TEMP
+        sudo -u postgres dropdb $DATABASENAME
         # if [ `sudo -u postgres psql -qAt --list | egrep $DATABASENAME | wc -l` -eq 1 ]; then
         #     echo "sudo -u postgres dropdb $DATABASENAME"
         #     sudo -u postgres dropdb $DATABASENAME
