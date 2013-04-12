@@ -290,6 +290,10 @@ LANGUAGES = (
     ('ru', gettext('Russian')),
 )
 
+LOCALE_PATHS = (
+    os.path.join(APPLICATION_DIR, 'locale'),
+)
+
 # News URL
 NEWS_URL = 'http://www.cdr-stats.org/news.php'
 
