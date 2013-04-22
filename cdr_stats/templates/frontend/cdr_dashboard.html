@@ -27,144 +27,7 @@
 </form>
 </div>
 
-<script id="source" language="javascript" type="text/javascript">
-$(function () {
-    var data = [
-        {% for data in total_record %}
-            [{{ data.0 }}, {{ data.1.count_call }}, {{ data.1.duration_sum }}, {% if user.is_superuser %}{{ data.1.buy_cost_sum }},{% endif %} {{ data.1.sell_cost_sum }}],
-        {% endfor %}
-    ];
 
-    function Info(time,info){
-        for(var i in data){
-            if (data[i][0] == parseInt(time)){
-                switch(info){
-                    case 0:
-                        return data[i][0];
-                    break;
-                    case 1:
-                        return data[i][1];
-                    break;
-                    case 2:
-                        return data[i][2];
-                    break;
-                    {% if user.is_superuser %}
-                        case 3:
-                            return data[i][3];
-                        break;
-                        case 4:
-                            return data[i][4];
-                        break;
-                    {% else %}
-                        case 3:
-                            return data[i][3];
-                        break;
-                    {% endif %}
-
-                    default:
-                        return data[i][0];
-                }
-            }
-        }
-    }
-
-    function formTicks(val) {
-
-        var dt = new Date(parseInt(val));
-        var hour = dt.getHours();
-        var minute = dt.getMinutes();
-        var ampm = hour >= 12 ? 'pm' : 'am';
-        var hour = hour % 12;
-        hour = hour ? hour : 12; // the hour '0' should be '12'
-        minute = minute < 10 ? '0' + minute : minute;
-        strTime = hour + ':' + minute + ' ' + ampm;
-        return strTime
-    }
-
-    var options = {
-        xaxis: { mode: "time",
-                 tickLength: 5,
-                 tickFormatter: function(val) { return formTicks(val) }
-        },
-        yaxis: { min: 0, tickDecimals: false },
-        selection: { mode: "x" },
-        grid: {
-                hoverable: true,
-                xaxis: false
-              }
-    };
-
-    var plot = $.plot($("#graph_responsive"), [data], options);
-
-    var overview = $.plot($("#overview"), [data], {
-        legend: {show: false},
-        series: {
-            lines: { show: true, lineWidth: 1 },
-            shadowSize: 0
-        },
-        xaxis: { ticks: [], mode: "time" },
-        yaxis: { ticks: [], min: 0, autoscaleMargin: 0.1 },
-        selection: { mode: "x" }
-    });
-
-    // now connect the two
-    $("#graph_responsive").bind("plotselected", function (event, ranges) {
-        // do the zooming
-        plot = $.plot($("#graph_responsive"), [data],
-                      $.extend(true, {}, options, {
-                          xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to }
-                      }));
-
-        // don't fire event on the overview to prevent eternal loop
-        overview.setSelection(ranges, true);
-    });
-
-    $("#overview").bind("plotselected", function (event, ranges) {
-        plot.setSelection(ranges);
-    });
-
-    $("#graph_responsive").bind("plothover", function (event, pos, item) {
-        if (item) {
-            if (previousPoint != item.dataIndex) {
-                previousPoint = item.dataIndex;
-
-                $("#tooltip").remove();
-                var x = item.datapoint[0].toFixed(2),
-                    y = item.datapoint[1].toFixed(2);
-
-                var time = x;
-                var dt = new Date(parseInt(time));
-                var hour = dt.getHours();//(time.toString().split("."))[0];
-                var minute = dt.getMinutes();//Math.round(time * 60 - (hour * 60));
-                var output = '';
-                output += '<div class="graph_tooltip_header">';
-
-                var ampm = hour >= 12 ? 'pm' : 'am';
-                var hour = hour % 12;
-                hour = hour ? hour : 12; // the hour '0' should be '12'
-                minute = minute < 10 ? '0'+minute : minute;
-                strTime = hour + ':' + minute + ' ' + ampm;
-
-                output += strTime + '</div><div class="graph_tooltip_info">{% trans "calls"|capfirst %}: ' + Info(time,1) + '<br>{% trans "duration"|capfirst %}: ' + Info(time,2) + ' {% trans "secs" %}';
-
-                {% if user.is_superuser %}
-                    output += '<br>{% trans "buy cost"|title %}: ' + Info(time,3) + '<br>{% trans "sell cost"|title %}: ' + Info(time,4) +'</div>' ;
-                {% else %}
-                    output += '<br>{% trans "sell cost"|title %}: ' + Info(time,4) ;
-                {% endif %}
-                output += '</div>';
-
-
-                showTooltip(item.pageX, item.pageY, output);
-            }
-        }
-        else {
-            $("#tooltip").remove();
-            previousPoint = null;
-        }
-    });
-});
-</script>
 
 <div class="row">
     <div class="span12">
@@ -174,151 +37,18 @@ $(function () {
     </div>
 </div>
 
-<!--<div class="row">
-    <div class="span12">
-        <div id="graph_responsive" style="margin:auto;"></div>
-    </div>
-</div>
-<div class="row">
-    <div class="span12">
-        <div id="overview" style="margin:auto;margin-bottom:20px;margin-top:20px;width:400px;height:50px"></div>
-    </div>
-</div>-->
 <div class="row">
     <div class="span12">
         {% include_container "final_container" 400 1200 %}
     </div>
 </div>
-{% if hangup_analytic %}
 
-    <script type="text/javascript">
-    function pieHover(event, pos, obj){
-        if (!obj)
-            return;
-        percent = parseFloat(obj.series.percent).toFixed(2);
-        $("#hover").html('<span style="font-weight: bold; color: '+obj.series.color+'">'+obj.series.label+' ('+percent+'%)</span>');
-    }
-
-    function pieClick(event, pos, obj){
-        if (!obj)
-           return;
-        percent = parseFloat(obj.series.percent).toFixed(2);
-        alert(''+obj.series.label+': '+percent+'%');
-    }
-
-    $(function () {
-
-        var data = [
-            {% for td in hangup_analytic %}
-                {% cache 1800 hangup_cause_id td.0 %}
-                    {
-                        label: '{{ td.0|hangupcause_name_with_title }}',
-                        data: [[1, {{ td.1 }}]]
-                    },
-                {% endcache %}
-            {% endfor %}
-        ];
-        /*
-        var data = [
-            { label: 'ANSWER' , data: [[1, {{ total_answered }}]], color: '{{ answered_color }}' },
-            { label: 'FORBIDDEN' , data: [[1, {{ total_forbiden }}]], color: '{{ forbiden_color }}' },
-        ];*/
-        var options = {
-            series: {
-                pie: {
-                    show: true,
-                    innerRadius: 0.35,
-                    radius: 1,
-                    label: {
-                        show: true,
-                        radius: 3/4,
-                        formatter: function(label, series){
-                            return '<div style="font-size:8pt;text-align:center;color:white;">'+label+'<br/>'+Math.round(series.percent)+'%</div>';
-                            }
-                        },
-                    background: { opacity: 0.5 }
-                }
-            },
-            legend: {
-                show: false
-            },
-            grid: {
-                hoverable: true,
-                clickable: true
-            }
-        };
-        $("#camp_pie").bind("plothover", pieHover);
-        $("#camp_pie").bind("plotclick", pieClick);
-        var plot = $.plot($("#camp_pie"), data, options);
-    });
-
-    </script>
-{% endif %}
-
-{% if total_country_data %}
-
-    <script type="text/javascript">
-    //country pi
-    function pieHoverCountry(event, pos, obj){
-        if (!obj)
-            return;
-        percent = parseFloat(obj.series.percent).toFixed(2);
-        $("#country_hover").html('<span style="font-weight: bold; color: '+obj.series.color+'">'+obj.series.label+' ('+percent+'%)</span>');
-    }
-
-    function pieClickCountry(event, pos, obj){
-        if (!obj)
-           return;
-        percent = parseFloat(obj.series.percent).toFixed(2);
-        alert(''+obj.series.label+': '+percent+'%');
-    }
-
-    $(function () {
-
-        var data = [
-            {% for td in total_country_data %}
-                { label: '{{ td.0|country_name|title }}' , data: [[1, {{ td.1.call_count }}]]},
-            {% endfor %}
-        ];
-
-        var options = {
-            series: {
-                pie: {
-                    show: true,
-                    innerRadius: 0.35,
-                    radius: 1,
-                    label: {
-                        show: true,
-                        radius: 3/4,
-                        formatter: function(label, series){
-                            return '<div style="font-size:8pt;text-align:center;padding-bottom:2px;color:white;">'+label+'<br/>'+Math.round(series.percent)+'%</div>';
-                            }
-                        },
-                    background: { opacity: 0.5 }
-                }
-            },
-            legend: {
-                show: false
-            },
-            grid: {
-                hoverable: true,
-                clickable: true
-            }
-        };
-        $("#country_pie").bind("plothover", pieHoverCountry);
-        $("#country_pie").bind("plotclick", pieClickCountry);
-        var plot = $.plot($("#country_pie"), data, options);
-    });
-    </script>
-{% endif %}
 
 <div class="row">
     <div class="span6 welldashboard">
         <h2 align="center">{% trans "call totals report"|title %}</h2>
         <hr/>
         {% if hangup_analytic %}
-            <!--<div id="camp_pie" style="width:350px;height:350px;margin:auto;"></div>
-            <div id="hover"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>-->
             {% include_container "hangup_analytic_container" 400 500 %}
         {% endif %}
         <br/>
@@ -360,8 +90,6 @@ $(function () {
         <h2 align="center">{% trans "countries report"|title %}</h2>
         <hr/>
         {% if total_country_data %}
-            <!--<div id="country_pie" style="width:350px;height:350px;margin:auto;"></div>
-            <div id="country_hover"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>-->
             {% include_container "country_analytic_container" 400 500 %}
         {% endif %}
         <br/>
