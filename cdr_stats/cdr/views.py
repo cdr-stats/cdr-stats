@@ -26,7 +26,7 @@ from common.common_functions import current_view, get_news, \
     variable_value, mongodb_str_filter, mongodb_int_filter, \
     int_convert_to_minute, validate_days, ceil_strdate
 from cdr.models import Switch
-from cdr.functions_def import get_country_name, get_hangupcause_name
+from cdr.functions_def import get_country_name, get_hangupcause_name, percentage
 from cdr.forms import CdrSearchForm, \
     CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
     ConcurrentCallForm, SwitchForm, WorldForm, EmailReportForm
@@ -884,11 +884,12 @@ def cdr_dashboard(request):
 
     xdata = []
     ydata = []
+
     for i in hangup_analytic:
         xdata.append(str(get_hangupcause_name(i[0])))
-        ydata.append(i[1])
+        ydata.append(percentage(i[1], total_calls))
 
-    extra_serie = {"tooltip": {"y_start": "", "y_end": ""}}
+    extra_serie = {"tooltip": {"y_start": "", "y_end": " %"}}
     hangup_analytic_chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
     hangup_analytic_charttype = "pieChart"
 
@@ -902,9 +903,9 @@ def cdr_dashboard(request):
     ydata = []
     for i in total_country_data:
         xdata.append(str(get_country_name(i[0])))
-        ydata.append(i[1]['call_count'])
+        ydata.append(percentage(i[1]['call_count'], total_calls))
 
-    extra_serie = {"tooltip": {"y_start": "", "y_end": ""}}
+    extra_serie = {"tooltip": {"y_start": "", "y_end": " %"}}
     country_analytic_chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
     country_analytic_charttype = "pieChart"
 

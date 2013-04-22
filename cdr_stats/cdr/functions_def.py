@@ -21,6 +21,11 @@ from django.utils.translation import gettext as _
 import re
 
 
+def percentage(value, total_sum):
+    """To calculate percentage"""
+    return round(100 * float(value)/float(total_sum))
+
+
 def get_switch_list():
     """Switch list used in form"""
     list = Switch.objects.all()
