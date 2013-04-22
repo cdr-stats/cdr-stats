@@ -38,6 +38,7 @@ from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_hourly_report, pipeline_country_hourly_report,\
     pipeline_mail_report
 from cdr.constants import CDR_COLUMN_NAME
+from voip_billing.function_def import get_rounded_value
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -1304,7 +1305,7 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
                         day_hours[int(key)] += float(value) / 60
 
                 total_record[str(called_time)[:10]] = \
-                    ["%.2f" % round(value, 2) for key, value in day_hours.iteritems()]
+                    [get_rounded_value(value) for key, value in day_hours.iteritems()]
 
     logging.debug('After Aggregate')
 
@@ -1936,6 +1937,22 @@ def cdr_country_report(request):
             total_calls += int(doc['call_per_day'])
             total_duration += int(doc['duration_per_day'])
 
+        # country analytic pie chart data
+        xdata = []
+        ydata = []
+        ydata2 = []
+        for i in country_analytic_array:
+            xdata.append(str(i[0]))
+            #call_per_day - i[1]
+            ydata.append(percentage(i[1], total_calls))
+            #duration_per_day - i[2]
+            ydata2.append(percentage(i[2], total_duration))
+
+        extra_serie = {"tooltip": {"y_start": "", "y_end": " %"}}
+        country_call_chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
+        country_duration_chartdata = {'x': xdata, 'y1': ydata2, 'extra1': extra_serie}
+        country_call_charttype = "pieChart"
+
     logging.debug('CDR country report view end')
     variables = {
         'module': current_view(request),
@@ -1946,6 +1963,9 @@ def cdr_country_report(request):
         'form': form,
         'search_tag': search_tag,
         'NUM_COUNTRY': settings.NUM_COUNTRY,
+        'country_call_chartdata': country_call_chartdata,
+        'country_call_charttype': country_call_charttype,
+        'country_duration_chartdata': country_duration_chartdata,
     }
     return render_to_response(template_name, variables,
         context_instance=RequestContext(request))

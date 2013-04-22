@@ -1,5 +1,5 @@
 {% extends "frontend/master.html" %}
-{% load i18n country_dialcode_tags common_tags %}
+{% load i18n country_dialcode_tags common_tags nvd3_tags %}
 {% load cache %}
 
 {% block extra_head %}
@@ -9,6 +9,9 @@
         });
     </script>
     {% include "frontend/common_datepicker.html" %}
+    {% include_nvd3jscss %}
+    {% load_chart country_call_charttype country_call_chartdata "country_call_container" %}
+    {% load_chart country_call_charttype country_duration_chartdata "country_duration_container" %}
 {% endblock %}
 
 
@@ -219,137 +222,30 @@ $(function () {
 });
 </script>
 
-<div class="row">
-    <div class="span12">
-        <div class="graph_header">
-            <h2>{% trans "country call statistics"|title %}</h2>
+    <div class="row">
+        <div class="span12">
+            <div class="graph_header">
+                <h2>{% trans "country call statistics"|title %}</h2>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="span12">
-        <div id="graph_responsive" style="margin:auto;"></div>
+    <div class="row">
+        <div class="span12">
+            <div id="graph_responsive" style="margin:auto;"></div>
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="span12">
-        <div id="overview" style="margin:auto;margin-bottom:20px;margin-top:20px;width:400px;height:50px"></div>
+    <div class="row">
+        <div class="span12">
+            <div id="overview" style="margin:auto;margin-bottom:20px;margin-top:20px;width:400px;height:50px"></div>
+        </div>
     </div>
-</div>
-
-<script type="text/javascript">
-    //country pi
-    function pieHoverCountrycalls(event, pos, obj){
-        if (!obj)
-            return;
-        percent = parseFloat(obj.series.percent).toFixed(2);
-        $("#country_hover_calls").html('<span style="font-weight: bold; color: '+obj.series.color+'">'+obj.series.label+' ('+percent+'%)</span>');
-    }
-
-    function pieClickCountrycalls(event, pos, obj){
-        if (!obj)
-           return;
-        percent = parseFloat(obj.series.percent).toFixed(2);
-        alert(''+obj.series.label+': '+percent+'%');
-    }
-
-    $(function () {
-
-        var data = [
-            {% for td in country_analytic %}
-                { label: '{{ td.0 }}' , data: [[1, {{ td.1 }}]]},
-            {% endfor %}
-        ];
-
-        var options = {
-            series: {
-                pie: {
-                    show: true,
-                    innerRadius: 0.35,
-                    radius: 1,
-                    label: {
-                        show: true,
-                        radius: 3/4,
-                        formatter: function(label, series){
-                            return '<div style="font-size:8pt;text-align:center;padding-bottom:2px;color:white;">'+label+'<br/>'+Math.round(series.percent)+'%</div>';
-                            }
-                        },
-                    background: { opacity: 0.5 }
-                }
-            },
-            legend: {
-                show: false
-            },
-            grid: {
-                hoverable: true,
-                clickable: true
-            }
-        };
-        $("#country_pie_calls").bind("plothover", pieHoverCountrycalls);
-        $("#country_pie_calls").bind("plotclick", pieClickCountrycalls);
-        var plot = $.plot($("#country_pie_calls"), data, options);
-    });
-
-    function pieHoverCountryduration(event, pos, obj){
-        if (!obj)
-            return;
-        percent = parseFloat(obj.series.percent).toFixed(2);
-        $("#country_hover_duration").html('<span style="font-weight: bold; color: '+obj.series.color+'">'+obj.series.label+' ('+percent+'%)</span>');
-    }
-
-    function pieClickCountryduration(event, pos, obj){
-        if (!obj)
-            return;
-        percent = parseFloat(obj.series.percent).toFixed(2);
-        alert(''+obj.series.label+': '+percent+'%');
-    }
-
-    $(function () {
-
-        var data = [
-            {% for td in country_analytic %}
-                { label: '{{ td.0 }}' , data: [[1, {{ td.2 }}]]},
-            {% endfor %}
-        ];
-
-        var options = {
-            series: {
-                pie: {
-                    show: true,
-                    innerRadius: 0.35,
-                    radius: 1,
-                    label: {
-                        show: true,
-                        radius: 3/4,
-                        formatter: function(label, series){
-                            return '<div style="font-size:8pt;text-align:center;padding-bottom:2px;color:white;">'+label+'<br/>'+Math.round(series.percent)+'%</div>';
-                        }
-                    },
-                    background: { opacity: 0.5 }
-                }
-            },
-            legend: {
-                show: false
-            },
-            grid: {
-                hoverable: true,
-                clickable: true
-            }
-        };
-        $("#country_pie_duration").bind("plothover", pieHoverCountryduration);
-        $("#country_pie_duration").bind("plotclick", pieClickCountryduration);
-        var plot = $.plot($("#country_pie_duration"), data, options);
-    });
-</script>
 
     <div class="row">
         <div class="span6 welldashboard">
             <h2 align="center">{% trans "calls by country"|title %}</h2>
             <hr/>
-            <div id="country_pie_calls" style="width:350px;height:350px;margin:auto;"></div>
-            <div id="country_hover_calls"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
-
+            {% include_container "country_call_container" 400 500 %}
             <br/>
             <div class="span6">
                 <h3 align="left">{% trans "top"|title %} {{ NUM_COUNTRY }} {% trans "calls by country"|title %}</h3>
@@ -393,8 +289,7 @@ $(function () {
         <div class="span6 welldashboard">
             <h2 align="center">{% trans "duration by bountry"|title %}</h2>
             <hr/>
-            <div id="country_pie_duration" style="width:350px;height:350px;margin:auto;"></div>
-            <div id="country_hover_duration"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
+            {% include_container "country_duration_container" 400 500 %}
             <br/>
             <div class="span6">
                 <h3 align="left">{% trans "top"|title %} {{ NUM_COUNTRY }} {% trans "duration by country"|title %}</h3>
