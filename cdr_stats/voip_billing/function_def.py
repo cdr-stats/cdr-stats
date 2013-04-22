@@ -18,6 +18,11 @@ from cdr.functions_def import prefix_list_string
 import os
 
 
+def get_rounded_value(value):
+    """get rounded value"""
+    return "%.2f" % round(value, 2)
+
+
 def rate_filter_range_field_chk(rate, rate_range, field_name):
     """
     Rate range fileds (e.g. >,>=,=,<=,<)

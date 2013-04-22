@@ -1,10 +1,12 @@
 {% extends "frontend/master.html" %}
-{% load i18n common_tags icons %}
+{% load i18n common_tags icons nvd3_tags %}
 
 {% block title %}{% trans "Billing Report" %}{% endblock %}
 
 {% block extra_head %}
     {% include "frontend/common_datepicker.html" %}
+    {% include_nvd3jscss %}
+    {% load_chart charttype chartdata "hourly_container" %}
 {% endblock %}
 
 {% block content %}
@@ -44,87 +46,6 @@
         </a>
     </div>
 
-    <script id="source" language="javascript" type="text/javascript">
-        $(function () {
-
-            var data = [
-                {% if user.is_superuser %}
-                    {% for date, buy_cost in total_buy_record.items %}
-                        {
-                            label: '{% trans "buy cost"|capfirst %}',
-                            data: [
-                                {% for hour, cost in buy_cost.items %}
-                                    [{{ hour }}, {{ cost }}],
-                                {% endfor %}
-                            ],
-                        },
-                    {% endfor %}
-                {% endif %}
-
-                {% for date, sell_cost in total_sell_record.items %}
-                    {
-                        label: '{% trans "sell cost"|capfirst %}',
-                        data: [
-                            {% for hour, cost in sell_cost.items %}
-                                [{{ hour }}, {{ cost }}],
-                            {% endfor %}
-                        ],
-                    },
-                {% endfor %}
-
-            ];
-
-
-            var options = {
-                legend: {
-                    position: "ne",
-                    margin: [-10, 0],
-                    backgroundOpacity: 0
-                },
-                series: {
-                    lines: { show: true },
-                    points: { show: true }
-                },
-                yaxis: {
-                    min: 0,
-                    tickDecimals: false
-                },
-                xaxis: {
-                    min: 0,
-                    max: 23,
-                    tickSize: 1,
-                    tickDecimals: false,
-                },
-                grid: {
-                    hoverable: true,
-                    xaxis: false
-                }
-            };
-            var plot = $.plot($("#graph_responsive"), data, options);
-
-            $("#graph_responsive").bind("plothover", function (event, pos, item) {
-
-                if (item) {
-                    if (previousPoint != item.dataIndex) {
-                        previousPoint = item.dataIndex;
-
-                        $("#tooltip").remove();
-                        var x = item.datapoint[0].toFixed(2),
-                            y = item.datapoint[1].toFixed(2);
-
-                        var time = parseInt(x);
-                        var label = item.series.label;
-                        output = '<div class="graph_tooltip_header">' + label + ' : ' + y + '</div><div class="graph_tooltip_info">{% trans "hour"|capfirst %}: ' + String(time) + '</div>';
-                        showTooltip(item.pageX, item.pageY, output);
-                    }
-                }
-                else {
-                    $("#tooltip").remove();
-                    previousPoint = null;
-                }
-            });
-        });
-    </script>
     <div class="graph_header">
         {% trans "hourly billing report"|title  %} -
         <b>
@@ -134,6 +55,10 @@
         </b>
     </div>
 
-    <div id="graph_responsive"></div>
+    <div class="row">
+        <div class="span12">
+            {% include_container "hourly_container" 400 '100%' %}
+        </div>
+    </div>
 
 {% endblock %}

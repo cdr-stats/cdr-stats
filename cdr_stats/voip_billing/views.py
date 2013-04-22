@@ -20,7 +20,7 @@ from django.template.context import RequestContext
 from voip_billing.models import VoIPRetailRate
 from voip_billing.forms import PrefixRetailRrateForm, SimulatorForm, DailyBillingForm,\
     HourlyBillingForm
-from voip_billing.function_def import prefix_allowed_to_call
+from voip_billing.function_def import prefix_allowed_to_call, get_rounded_value
 from voip_billing.rate_engine import rate_engine
 from voip_billing.constants import RATE_COLUMN_NAME
 from mongodb_connection import mongodb
@@ -195,6 +195,7 @@ def simulator(request):
         context_instance=RequestContext(request))
 
 
+
 @permission_required('user_profile.daily_billing', login_url='/')
 @check_cdr_exists
 @check_user_accountcode
@@ -260,6 +261,8 @@ def daily_billing_report(request):
     logging.debug('After Aggregate')
     daily_data = dict()
     total_data = []
+    charttype = "lineWithFocusChart"
+    chartdata = {"x": []}
     if list_data:
         for doc in list_data['result']:
             # Get date from aggregate result array
@@ -285,6 +288,22 @@ def daily_billing_report(request):
             total_data = daily_data.items()
             total_data = sorted(total_data, key=lambda k: k[0])
 
+            xdata = []
+            ydata = []
+            ydata2 = []
+            for i in total_data:
+                xdata.append(i[0])
+                ydata.append(get_rounded_value(i[1]['buy_cost_per_day']))
+                ydata2.append(get_rounded_value(i[1]['sell_cost_per_day']))
+
+            extra_serie = {"tooltip": {"y_start": "", "y_end": ""}}
+            chartdata = {
+                'x': xdata,
+                'name1': 'Buy cost', 'y1': ydata, 'extra1': extra_serie,
+                'name2': 'Sell cost', 'y2': ydata2, 'extra2': extra_serie,
+            }
+
+
     data = {
         'module': current_view(request),
         'form': form,
@@ -292,6 +311,8 @@ def daily_billing_report(request):
         'total_data': total_data,
         'start_date': start_date,
         'end_date': end_date,
+        'charttype': charttype,
+        'chartdata': chartdata,
     }
     return render_to_response(template, data, context_instance=RequestContext(request))
 
@@ -362,6 +383,8 @@ def hourly_billing_report(request):
 
     total_buy_record = {}
     total_sell_record = {}
+    charttype = "lineChart"
+    chartdata = { "x": []}
     if list_data:
         for doc in list_data['result']:
             # Get called_time from aggregate result array
@@ -388,15 +411,23 @@ def hourly_billing_report(request):
             # Assign buy_hours/sell_hours variables to another
             # total_buy_record/total_sell_record variables which will
             # store per day data
-            total_buy_record[str(called_time)[:10]] = buy_hours
-            total_sell_record[str(called_time)[:10]] = sell_hours
+
+            xdata = [i for i in range(0, 24)]
+            y1 = [get_rounded_value(value) for key, value in buy_hours.iteritems()]
+            y2 = [get_rounded_value(value) for key, value in sell_hours.iteritems()]
+            extra_serie = {"tooltip": {"y_start": "$ ", "y_end": ""}}
+            chartdata = {
+                'x': xdata,
+                "name1": ("buy cost").capitalize(), "y1": y1, "extra1": extra_serie,
+                "name2": ("sell cost").capitalize(), "y2": y2, "extra2": extra_serie,
+            }
 
     data = {
         'module': current_view(request),
         'form': form,
         'search_tag': search_tag,
-        'total_buy_record': total_buy_record,
-        'total_sell_record': total_sell_record,
         'start_date': start_date,
+        'chartdata': chartdata,
+        'charttype': charttype,
     }
     return render_to_response(template, data, context_instance=RequestContext(request))
