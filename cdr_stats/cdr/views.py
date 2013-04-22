@@ -886,7 +886,7 @@ def cdr_dashboard(request):
     ydata3 = []
     ydata4 = []
     for i in final_record:
-        xdata.append(str(i[0]))
+        xdata.append(i[0])
         ydata.append(i[1]['count_call'])
         ydata2.append(i[1]['duration_sum'])
         ydata3.append(i[1]['buy_cost_sum'])
