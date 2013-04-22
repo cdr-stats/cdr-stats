@@ -898,6 +898,17 @@ def cdr_dashboard(request):
     ACT = act_acd_array['ACT']
     ACD = act_acd_array['ACD']
 
+    # Sample code for django-nvd3
+    xdata = []
+    ydata = []
+    for i in hangup_analytic:
+        xdata.append(str(get_hangupcause_name(i[0])))
+        ydata.append(i[1])
+
+    extra_serie = {"tooltip": {"y_start": "", "y_end": ""}}
+    chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
+    charttype = "pieChart"
+
     logging.debug('CDR dashboard view end')
     variables = {
         'module': current_view(request),
@@ -912,6 +923,8 @@ def cdr_dashboard(request):
         'form': form,
         'search_tag': search_tag,
         'total_country_data': total_country_data[0:5],
+        'charttype': charttype,
+        'chartdata': chartdata,
     }
 
     return render_to_response('frontend/cdr_dashboard.html', variables,

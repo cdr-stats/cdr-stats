@@ -199,6 +199,7 @@ INSTALLED_APPS = (
     'dajax',
     'voip_gateway',
     'voip_billing',
+    'django_nvd3',
 )
 
 # Debug Toolbar

@@ -1,5 +1,5 @@
 {% extends "frontend/master.html" %}
-{% load i18n cdr_tags country_dialcode_tags common_tags %}
+{% load i18n cdr_tags country_dialcode_tags common_tags nvd3_tags %}
 {% load cache %}
 
 {% block extra_head %}
@@ -8,6 +8,8 @@
     $("#accordion").accordion({ autoHeight: false,  clearStyle: true  });
   });
   </script>
+  {% include_nvd3jscss %}
+  {% load_chart charttype chartdata "piechart_container" %}
 {% endblock %}
 
 {% block content %}
@@ -388,6 +390,11 @@ $(function () {
         {% endif %}
     <div>
 
+    </div>
+</div>
+<div class="row">
+    <div class="span12">
+    {% include_container "piechart_container" 400 500 %}
     </div>
 </div>
 {% endblock %}
