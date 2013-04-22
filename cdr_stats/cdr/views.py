@@ -26,7 +26,7 @@ from common.common_functions import current_view, get_news, \
     variable_value, mongodb_str_filter, mongodb_int_filter, \
     int_convert_to_minute, validate_days, ceil_strdate
 from cdr.models import Switch
-from cdr.functions_def import get_country_name, get_hangupcause_name
+from cdr.functions_def import get_country_name, get_hangupcause_name, percentage
 from cdr.forms import CdrSearchForm, \
     CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
     ConcurrentCallForm, SwitchForm, WorldForm, EmailReportForm
@@ -882,12 +882,32 @@ def cdr_dashboard(request):
 
     hangup_analytic = hangup_analytic.items()
 
+    xdata = []
+    ydata = []
+
+    for i in hangup_analytic:
+        xdata.append(str(get_hangupcause_name(i[0])))
+        ydata.append(percentage(i[1], total_calls))
+
+    extra_serie = {"tooltip": {"y_start": "", "y_end": " %"}}
+    hangup_analytic_chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
+    hangup_analytic_charttype = "pieChart"
+
     # sorting on call_count, duration_sum col
     total_country_data = country_all_data.items()
     total_country_data = sorted(total_country_data,
                                 key=lambda k: (k[1]['call_count'],
                                                k[1]['duration_sum']),
                                 reverse=True)
+    xdata = []
+    ydata = []
+    for i in total_country_data:
+        xdata.append(str(get_country_name(i[0])))
+        ydata.append(percentage(i[1]['call_count'], total_calls))
+
+    extra_serie = {"tooltip": {"y_start": "", "y_end": " %"}}
+    country_analytic_chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
+    country_analytic_charttype = "pieChart"
 
     logging.debug("Result total_record_final %d" % len(final_record))
     logging.debug("Result hangup_analytic %d" % len(hangup_analytic))
@@ -897,17 +917,6 @@ def cdr_dashboard(request):
     act_acd_array = calculate_act_and_acd(total_calls, total_duration)
     ACT = act_acd_array['ACT']
     ACD = act_acd_array['ACD']
-
-    # Sample code for django-nvd3
-    xdata = []
-    ydata = []
-    for i in hangup_analytic:
-        xdata.append(str(get_hangupcause_name(i[0])))
-        ydata.append(i[1])
-
-    extra_serie = {"tooltip": {"y_start": "", "y_end": ""}}
-    chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
-    charttype = "pieChart"
 
     logging.debug('CDR dashboard view end')
     variables = {
@@ -923,8 +932,11 @@ def cdr_dashboard(request):
         'form': form,
         'search_tag': search_tag,
         'total_country_data': total_country_data[0:5],
-        'charttype': charttype,
-        'chartdata': chartdata,
+
+        'hangup_analytic_charttype': hangup_analytic_charttype,
+        'hangup_analytic_chartdata': hangup_analytic_chartdata,
+        'country_analytic_charttype': country_analytic_charttype,
+        'country_analytic_chartdata': country_analytic_chartdata,
     }
 
     return render_to_response('frontend/cdr_dashboard.html', variables,
