@@ -906,7 +906,7 @@ def cdr_dashboard(request):
     }
     final_charttype = "lineWithFocusChart"
 
-
+    # hangup analytic pie chart data
     hangup_analytic = hangup_analytic.items()
     xdata = []
     ydata = []
@@ -924,6 +924,7 @@ def cdr_dashboard(request):
                                 key=lambda k: (k[1]['call_count'],
                                                k[1]['duration_sum']),
                                 reverse=True)
+    # country analytic pie chart data
     xdata = []
     ydata = []
     for i in total_country_data:
@@ -1293,7 +1294,8 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
                     for key, value in dict_in_list.iteritems():
                         day_hours[int(key)] += int(value)
 
-                total_record[str(called_time)[:10]] = day_hours
+                total_record[str(called_time)[:10]] = [value for key, value in day_hours.iteritems()]
+
 
             if graph_view == 2:  # Min per hour
                 for dict_in_list in doc['duration_per_hour']:
@@ -1301,7 +1303,8 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
                     for key, value in dict_in_list.iteritems():
                         day_hours[int(key)] += float(value) / 60
 
-                total_record[str(called_time)[:10]] = day_hours
+                total_record[str(called_time)[:10]] = ["%.2f" % round(value, 2) for key, value in day_hours.iteritems()]
+
 
     logging.debug('After Aggregate')
 
@@ -1444,6 +1447,26 @@ def cdr_report_by_hour(request):
                                            query_var, graph_view)
             total_record.append((result_data['total_record']))
 
+
+        charttype = "lineChart"
+        xdata = [i for i in range(0, 24)]
+        y_count = 1
+
+        y_end = " calls"
+        if graph_view == 2:
+            y_end = " mins"
+
+        extra_serie = {"tooltip": {"y_start": "There are ", "y_end": y_end}}
+        chartdata = {
+            'x': xdata,
+        }
+        for i in result_data['total_record']:
+            chartdata['name'+ str(y_count)] = i
+            chartdata['y' + str(y_count)] = result_data['total_record'][i]
+            chartdata['extra' + str(y_count)] = extra_serie
+            y_count += 1
+
+
         logging.debug('CDR hourly view end')
         variables = {
             'module': current_view(request),
@@ -1454,6 +1477,8 @@ def cdr_report_by_hour(request):
             'from_date': from_date,
             'comp_days': comp_days,
             'total_record': total_record,
+            'chartdata': chartdata,
+            'charttype': charttype,
         }
 
         return render_to_response(template_name, variables,
