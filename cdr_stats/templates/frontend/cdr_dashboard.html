@@ -9,7 +9,9 @@
   });
   </script>
   {% include_nvd3jscss %}
-  {% load_chart charttype chartdata "hangup_analytic_container" %}
+  {% load_chart hangup_analytic_charttype hangup_analytic_chartdata "hangup_analytic_container" %}
+  {% load_chart country_analytic_charttype country_analytic_chartdata "country_analytic_container" %}
+
 {% endblock %}
 
 {% block content %}
@@ -311,8 +313,9 @@ $(function () {
         <h2 align="center">{% trans "call totals report"|title %}</h2>
         <hr/>
         {% if hangup_analytic %}
-            <div id="camp_pie" style="width:350px;height:350px;margin:auto;"></div>
-            <div id="hover"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
+            <!--<div id="camp_pie" style="width:350px;height:350px;margin:auto;"></div>
+            <div id="hover"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>-->
+            {% include_container "hangup_analytic_container" 400 500 %}
         {% endif %}
         <br/>
         <div class="dashboard_summary_header span6">{% trans "total calls"|title %}</div>
@@ -353,8 +356,9 @@ $(function () {
         <h2 align="center">{% trans "countries report"|title %}</h2>
         <hr/>
         {% if total_country_data %}
-            <div id="country_pie" style="width:350px;height:350px;margin:auto;"></div>
-            <div id="country_hover"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>
+            <!--<div id="country_pie" style="width:350px;height:350px;margin:auto;"></div>
+            <div id="country_hover"><span style="font-weight: bold; color: rgb(148, 64, 237);"></span></div>-->
+            {% include_container "country_analytic_container" 400 500 %}
         {% endif %}
         <br/>
         <div class="dashboard_summary_header span6">{% trans "5 most called countries"|title %}</div>
@@ -391,9 +395,5 @@ $(function () {
     <div>
     </div>
 </div>
-<div class="row">
-    <div class="span12">
-    {% include_container "hangup_analytic_container" 400 500 %}
-    </div>
-</div>
+
 {% endblock %}
