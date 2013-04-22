@@ -1,10 +1,12 @@
 {% extends "frontend/master.html" %}
-{% load i18n common_tags icons %}
+{% load i18n common_tags icons nvd3_tags %}
 
-{% block title %}{% trans "Billing Report" %}{% endblock %}
+{% block title %}{% trans "billing report"|title %}{% endblock %}
 
 {% block extra_head %}
     {% include "frontend/common_datepicker.html" %}
+    {% include_nvd3jscss %}
+    {% load_chart charttype chartdata "daily_container" True %}
 {% endblock %}
 
 {% block content %}
@@ -50,142 +52,7 @@
             <i class="icon-search"></i> <span>{% trans "advanced search"|title %}</span>
         </a>
     </div>
-    <script id="source" language="javascript" type="text/javascript">
-        $(function () {            
 
-            var data = [
-                {% if user.is_superuser %}
-                    {
-                        label: '{% trans "buy cost"|capfirst %}',
-                        data: [
-                            {% for data in total_data %}
-                                [{{ data.0 }}, {{ data.1.buy_cost_per_day }}],
-                            {% endfor %}
-                        ]
-                    },
-                {% endif %}
-
-                {
-                    label: '{% trans "sell cost"|capfirst %}',
-                    data: [
-                        {% for data in total_data %}
-                            [{{ data.0 }}, {{ data.1.sell_cost_per_day }}],
-                        {% endfor %}
-                    ]
-                }
-
-            ];
-
-            function formTicks(val) {
-
-                var dt = new Date(parseInt(val));
-                var Year = dt.getFullYear();
-                var Month = dt.getMonth() + 1;
-                var Day = dt.getDate();
-                var hour = dt.getHours();
-                var minute = dt.getMinutes();
-                var ampm = hour >= 12 ? 'pm' : 'am';
-                var hour = hour % 12;
-                Month = Month < 10 ? '0' + Month : Month;
-                Day = Day < 10 ? '0' + Day : Day;
-                month_name = MonthName(Month, 0);
-                hour = hour ? hour : 12; // the hour '0' should be '12'
-                minute = minute < 10 ? '0' + minute : minute;
-
-                //strTime = hour + ':' + minute + ' ' + ampm;
-                //return strTime
-                strTime = Day + ', ' + month_name + ' ' + Year ;//+ '<br/>' + hour + ':' + minute + ' ' + ampm;
-                return strTime
-            }
-
-            var options = {
-                series: {
-                    lines: { show: true},
-                    points: { show: true }
-                },
-                xaxis: { mode: "time",
-                    tickLength: 5,
-                    tickFormatter: function(val) { return formTicks(val) }
-                },
-                yaxis: { min: 0, tickDecimals: false },
-                selection: { mode: "x" },
-                grid: {
-                    hoverable: true,
-                    xaxis: false
-                }
-            };
-
-            var plot = $.plot($("#graph_responsive"), data, options);
-
-            var overview = $.plot($("#overview"), data, {
-                legend: {show: false},
-                series: {
-                    lines: { show: true, lineWidth: 1 },
-                    shadowSize: 0
-                },
-                xaxis: { ticks: [], mode: "time" },
-                yaxis: { ticks: [], min: 0, autoscaleMargin: 0.1 },
-                selection: { mode: "x" }
-            });
-
-            // now connect the two
-            $("#graph_responsive").bind("plotselected", function (event, ranges) {
-                // do the zooming
-                plot = $.plot($("#graph_responsive"), data,
-                        $.extend(true, {}, options, {
-                            xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to }
-                        }));
-
-                // don't fire event on the overview to prevent eternal loop
-                overview.setSelection(ranges, true);
-            });
-
-            $("#overview").bind("plotselected", function (event, ranges) {
-                plot.setSelection(ranges);
-            });
-
-            $("#graph_responsive").bind("plothover", function (event, pos, item) {
-                if (item) {
-                    if (previousPoint != item.dataIndex) {
-                        previousPoint = item.dataIndex;
-
-                        $("#tooltip").remove();
-                        var x = item.datapoint[0].toFixed(2),
-                            y = item.datapoint[1].toFixed(2);
-
-                        var time = x;
-                        var dt = new Date(parseInt(time));
-
-                        var Year = dt.getFullYear();
-                        var Month = dt.getMonth() + 1;
-                        var Day = dt.getDate();
-                        Month = Month < 10 ? '0' + Month : Month;
-                        Day = Day < 10 ? '0' + Day : Day;
-                        month_name = MonthName(Month, 0);
-
-                        var hour = dt.getHours();//(time.toString().split("."))[0];
-                        var minute = dt.getMinutes();//Math.round(time * 60 - (hour * 60));
-                        var output = '';
-                        output += '<div class="graph_tooltip_header">';
-
-                        var ampm = hour >= 12 ? 'pm' : 'am';
-                        var hour = hour % 12;
-                        hour = hour ? hour : 12; // the hour '0' should be '12'
-                        minute = minute < 10 ? '0'+minute : minute;
-
-                        strTime = Day + ', ' + month_name + ' ' + Year ;//+ ' ' + hour + ':' + minute + ' ' + ampm;
-                        output += strTime + '</div><div class="graph_tooltip_info">' + item.series.label + ' : ' + y + '</div>';
-
-                        showTooltip(item.pageX, item.pageY, output);
-                    }
-                }
-                else {
-                    $("#tooltip").remove();
-                    previousPoint = null;
-                }
-            });
-        });
-    </script>
     <div class="graph_header">
         {% trans "daily report"|title  %} -
         <b>
@@ -198,9 +65,10 @@
         </b>
     </div>
 
-    <div id="graph_responsive" style="margin:auto;"></div>
-
-    <div id="overview" style="margin:auto;margin-bottom:20px;margin-top:20px;width:400px;height:50px"></div>
-
+    <div class="row">
+        <div class="span12">
+            {% include_container "daily_container" 400 '100%' %}
+        </div>
+    </div>
 
 {% endblock %}
