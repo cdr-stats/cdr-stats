@@ -882,6 +882,16 @@ def cdr_dashboard(request):
 
     hangup_analytic = hangup_analytic.items()
 
+    xdata = []
+    ydata = []
+    for i in hangup_analytic:
+        xdata.append(str(get_hangupcause_name(i[0])))
+        ydata.append(i[1])
+
+    extra_serie = {"tooltip": {"y_start": "", "y_end": ""}}
+    chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
+    charttype = "pieChart"
+
     # sorting on call_count, duration_sum col
     total_country_data = country_all_data.items()
     total_country_data = sorted(total_country_data,
@@ -912,6 +922,8 @@ def cdr_dashboard(request):
         'form': form,
         'search_tag': search_tag,
         'total_country_data': total_country_data[0:5],
+        'charttype': charttype,
+        'chartdata': chartdata,
     }
 
     return render_to_response('frontend/cdr_dashboard.html', variables,
