@@ -9,6 +9,7 @@
   });
   </script>
   {% include_nvd3jscss %}
+  {% load_chart final_charttype final_chartdata "final_container" True %}
   {% load_chart hangup_analytic_charttype hangup_analytic_chartdata "hangup_analytic_container" %}
   {% load_chart country_analytic_charttype country_analytic_chartdata "country_analytic_container" %}
 {% endblock %}
@@ -173,7 +174,7 @@ $(function () {
     </div>
 </div>
 
-<div class="row">
+<!--<div class="row">
     <div class="span12">
         <div id="graph_responsive" style="margin:auto;"></div>
     </div>
@@ -182,8 +183,12 @@ $(function () {
     <div class="span12">
         <div id="overview" style="margin:auto;margin-bottom:20px;margin-top:20px;width:400px;height:50px"></div>
     </div>
+</div>-->
+<div class="row">
+    <div class="span12">
+        {% include_container "final_container" 400 1200 %}
+    </div>
 </div>
-
 {% if hangup_analytic %}
 
     <script type="text/javascript">

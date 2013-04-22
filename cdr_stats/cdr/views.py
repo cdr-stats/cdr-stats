@@ -880,11 +880,36 @@ def cdr_dashboard(request):
     final_record = final_record.items()
     final_record = sorted(final_record, key=lambda k: k[0])
 
-    hangup_analytic = hangup_analytic.items()
-
     xdata = []
     ydata = []
+    ydata2 = []
+    ydata3 = []
+    ydata4 = []
+    for i in final_record:
+        xdata.append(str(i[0]))
+        ydata.append(i[1]['count_call'])
+        ydata2.append(i[1]['duration_sum'])
+        ydata3.append(i[1]['buy_cost_sum'])
+        ydata4.append(i[1]['sell_cost_sum'])
 
+    extra_serie1 = {"tooltip": {"y_start": "", "y_end": " calls"}}
+    extra_serie2 = {"tooltip": {"y_start": "", "y_end": " sec"}}
+    extra_serie3 = {"tooltip": {"y_start": "", "y_end": ""}}
+    extra_serie4 = {"tooltip": {"y_start": "", "y_end": ""}}
+
+    final_chartdata = {
+        'x': xdata,
+        'name1': 'Calls', 'y1': ydata, 'extra1': extra_serie1,
+        'name2': 'Duration', 'y2': ydata2, 'extra2': extra_serie2,
+        'name3': 'Buy cost', 'y3': ydata3, 'extra3': extra_serie3,
+        'name4': 'Sell cost', 'y4': ydata4, 'extra4': extra_serie4,
+    }
+    final_charttype = "lineWithFocusChart"
+
+
+    hangup_analytic = hangup_analytic.items()
+    xdata = []
+    ydata = []
     for i in hangup_analytic:
         xdata.append(str(get_hangupcause_name(i[0])))
         ydata.append(percentage(i[1], total_calls))
@@ -933,6 +958,8 @@ def cdr_dashboard(request):
         'search_tag': search_tag,
         'total_country_data': total_country_data[0:5],
 
+        'final_chartdata': final_chartdata,
+        'final_charttype': final_charttype,
         'hangup_analytic_charttype': hangup_analytic_charttype,
         'hangup_analytic_chartdata': hangup_analytic_chartdata,
         'country_analytic_charttype': country_analytic_charttype,
