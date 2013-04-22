@@ -1319,7 +1319,7 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
 @check_cdr_exists
 @check_user_accountcode
 @login_required
-def cdr_report_by_hour(request):
+def cdr_daily_comparison(request):
     """CDR graph by hourly basis
 
     **Attributes**:

@@ -33,7 +33,7 @@
                     <li {% ifequal module 'search' %}class="active"{% endifequal %}><a href="/cdr_view/">{% trans "search"|title %}</a></li>
                   {% endif %}
                   {% if perms.user_profile.daily_comparison %}
-                    <li {% ifequal module 'cdr_report_by_hour' %}class="active"{% endifequal %}><a href="/hourly_report/">{% trans "daily comparison"|title %}</a></li>
+                    <li {% ifequal module 'cdr_daily_comparison' %}class="active"{% endifequal %}><a href="/daily_comparison/">{% trans "daily comparison"|title %}</a></li>
                   {% endif %}
                  </ul>
               </li>
