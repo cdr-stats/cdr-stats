@@ -388,15 +388,24 @@ def hourly_billing_report(request):
             # Assign buy_hours/sell_hours variables to another
             # total_buy_record/total_sell_record variables which will
             # store per day data
-            total_buy_record[str(called_time)[:10]] = buy_hours
-            total_sell_record[str(called_time)[:10]] = sell_hours
+
+            charttype = "lineChart"
+            xdata = [i for i in range(0, 24)]
+            y1 = ["%.2f" % round(value, 2) for key, value in buy_hours.iteritems()]
+            y2 = ["%.2f" % round(value, 2) for key, value in sell_hours.iteritems()]
+            extra_serie = {"tooltip": {"y_start": "$ ", "y_end": ""}}
+            chartdata = {
+                'x': xdata,
+                "name1": ("buy cost").capitalize(), "y1": y1, "extra1": extra_serie,
+                "name2": ("sell cost").capitalize(), "y2": y2, "extra2": extra_serie,
+            }
 
     data = {
         'module': current_view(request),
         'form': form,
         'search_tag': search_tag,
-        'total_buy_record': total_buy_record,
-        'total_sell_record': total_sell_record,
         'start_date': start_date,
+        'chartdata': chartdata,
+        'charttype': charttype,
     }
     return render_to_response(template, data, context_instance=RequestContext(request))
