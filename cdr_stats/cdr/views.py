@@ -1294,8 +1294,8 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
                     for key, value in dict_in_list.iteritems():
                         day_hours[int(key)] += int(value)
 
-                total_record[str(called_time)[:10]] = [value for key, value in day_hours.iteritems()]
-
+                total_record[str(called_time)[:10]] = \
+                    [value for key, value in day_hours.iteritems()]
 
             if graph_view == 2:  # Min per hour
                 for dict_in_list in doc['duration_per_hour']:
@@ -1303,8 +1303,8 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
                     for key, value in dict_in_list.iteritems():
                         day_hours[int(key)] += float(value) / 60
 
-                total_record[str(called_time)[:10]] = ["%.2f" % round(value, 2) for key, value in day_hours.iteritems()]
-
+                total_record[str(called_time)[:10]] = \
+                    ["%.2f" % round(value, 2) for key, value in day_hours.iteritems()]
 
     logging.debug('After Aggregate')
 
@@ -1395,7 +1395,6 @@ def cdr_report_by_hour(request):
         else:
             # form is not valid
             logging.debug('Error : CDR hourly search form')
-            total_record = []
             variables = {
                 'module': current_view(request),
                 'form': form,
@@ -1404,7 +1403,8 @@ def cdr_report_by_hour(request):
                 'search_tag': search_tag,
                 'from_date': from_date,
                 'comp_days': comp_days,
-                'total_record': total_record,
+                'chartdata': {},
+                'charttype': "lineChart",
             }
 
             return render_to_response(template_name, variables,
@@ -1438,14 +1438,12 @@ def cdr_report_by_hour(request):
                 result_data = \
                     get_hourly_report_for_date(s_date, e_date,
                                                query_var, graph_view)
-                total_record.append((result_data['total_record']))
 
         # Same day of the week
         if check_days == 1:
             result_data = \
                 get_hourly_report_for_date(start_date, end_date,
                                            query_var, graph_view)
-            total_record.append((result_data['total_record']))
 
 
         charttype = "lineChart"
@@ -1476,7 +1474,6 @@ def cdr_report_by_hour(request):
             'search_tag': search_tag,
             'from_date': from_date,
             'comp_days': comp_days,
-            'total_record': total_record,
             'chartdata': chartdata,
             'charttype': charttype,
         }
