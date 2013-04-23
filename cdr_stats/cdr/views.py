@@ -1626,12 +1626,16 @@ def cdr_overview(request):
         logging.debug('After Aggregate')
 
         hour_data = dict()
+        xdata = []
+        hourly_call_charttype = "lineWithFocusChart"
+        hourly_call_count_res = dict()
         if list_data:
             for doc in list_data['result']:
                 a_Year = int(doc['_id'][0:4])
                 b_Month = int(doc['_id'][4:6])
                 c_Day = int(doc['_id'][6:8])
                 day_hours = dict()
+                hourly_data = dict()
 
                 for dict_in_list in doc['call_per_hour']:
                     for key, value in dict_in_list.iteritems():
@@ -1665,6 +1669,9 @@ def cdr_overview(request):
                     temp_dt = day_hours[hr]['dt']
                     temp_call_count = int(day_hours[hr]['calldate__count'])
                     temp_duration_sum = day_hours[hr]['duration__sum']
+
+                    xdata.append(temp_dt)
+
                     if temp_dt in hour_data:
                         hour_data[temp_dt]['call_count'] += temp_call_count
                         hour_data[temp_dt]['duration_sum'] += temp_duration_sum
@@ -1674,11 +1681,54 @@ def cdr_overview(request):
                             'duration_sum': temp_duration_sum
                         }
 
+                    sw_id = day_hours[hr]['switch_id']
+                    if sw_id in hourly_call_count_res:
+                        hourly_call_count_res[sw_id].append(day_hours[hr]['calldate__count'])
+                    else:
+                        # create a new array in this slot
+                        hourly_call_count_res[sw_id] = [day_hours[hr]['calldate__count']]
+
+
         # apply sorting on timestamp value
         total_hour_record = sorted(total_hour_record, key=lambda k: k['dt'])
 
+        total_hourly_dict = dict()
+        hourly_data = hourly_data.items()
+        hourly_data = sorted(hourly_data, key=lambda k: k[0])
+
+        for i in total_hour_record:
+            if i['dt'] in total_hourly_dict:
+                total_hourly_dict[i['dt']]['call_count'] += i['calldate__count']
+            else:
+                total_hourly_dict[i['dt']] = {'call_count': i['calldate__count']}
+
+        total_hourly_dict = total_hourly_dict.items()
+        total_hourly_dict = sorted(total_hourly_dict, key=lambda k: k[0])
+
+        total_hourly_data = [i[1]['call_count'] for i in total_hourly_dict]
+
+
         total_hour_data = hour_data.items()
         total_hour_data = sorted(total_hour_data, key=lambda k: k[0])
+
+        xdata = list(set([i for i in xdata]))
+        xdata = sorted(xdata)
+        hourly_call_chartdata = {
+            'x': xdata,
+        }
+
+        int_count = 1
+        extra_serie = {"tooltip": {"y_start": "", "y_end": " calls"}}
+
+        for i in hourly_call_count_res:
+            hourly_call_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
+            hourly_call_chartdata['y' + str(int_count)] = hourly_call_count_res[i]
+            hourly_call_chartdata['extra' + str(int_count)] = extra_serie
+            int_count += 1
+
+        hourly_call_chartdata['name' + str(int_count)] = 'Total calls'
+        hourly_call_chartdata['y' + str(int_count)] = total_hourly_data
+        hourly_call_chartdata['extra' + str(int_count)] = extra_serie
 
         # Collect daily data
         logging.debug('Aggregate cdr daily analytic')
@@ -1787,6 +1837,9 @@ def cdr_overview(request):
             'start_date': start_date,
             'end_date': end_date,
             'TOTAL_GRAPH_COLOR': settings.TOTAL_GRAPH_COLOR,
+
+            'hourly_call_chartdata': hourly_call_chartdata,
+            'hourly_call_charttype': hourly_call_charttype,
         }
         return render_to_response(template_name, variables,
             context_instance=RequestContext(request))

@@ -1,5 +1,5 @@
 {% extends "frontend/master.html" %}
-{% load i18n cdr_tags cache %}
+{% load i18n cdr_tags cache nvd3_tags %}
 
 {% block extra_header %}
     {% include "frontend/common_datepicker.html" %}
@@ -9,6 +9,7 @@
             margin-right: -70px;
         }
     </style>
+    {% include_nvd3jscss %}
 {% endblock %}
 
 {% block content %}
@@ -53,7 +54,7 @@
 </a>
 
 <script id="source" language="javascript" type="text/javascript">
-$(function () {    
+$(function () {
 
     var hour_call_count = [
         {% regroup total_hour_record|dictsort:"switch_id" by switch_id as switch_list %}
@@ -527,6 +528,13 @@ $(function () {
 <div class="row">
     <div class="span12">
         <div id="overview_analytic" style="margin:auto;margin-top:20px;height:50px"></div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+        {% load_chart hourly_call_charttype hourly_call_chartdata "hourly_call_container" True %}
+        {% include_container "hourly_call_container" 400 '100%' %}
     </div>
 </div>
 {% endblock %}
