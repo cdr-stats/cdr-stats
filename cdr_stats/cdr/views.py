@@ -1872,7 +1872,10 @@ def cdr_country_report(request):
                                       settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
                                       pipeline=pipeline)
     total_record_final = []
-
+    xdata = []
+    from collections import defaultdict
+    call_count_res = defaultdict(list)
+    call_duration_res = defaultdict(list)
     if list_data:
         for doc in list_data['result']:
             # Get date from aggregate result array
@@ -1893,6 +1896,7 @@ def cdr_country_report(request):
                     if key in day_hours:
                         day_hours[key]['calldate__count'] += int(value)
                     else:
+                        xdata.append(dt)
                         day_hours[key] = {
                             'dt': dt,
                             'calldate__count': int(value),
@@ -1909,10 +1913,42 @@ def cdr_country_report(request):
 
             # hours of day data append to total_record_final array
             for hr in day_hours:
+                #print day_hours[hr]
                 total_record_final.append(day_hours[hr])
+                call_count_res[day_hours[hr]['country_id']].append(day_hours[hr]['calldate__count'])
+                call_duration_res[day_hours[hr]['country_id']].append(day_hours[hr]['duration__sum'])
 
         # apply sorting on timestamp value
         total_record_final = sorted(total_record_final, key=lambda k: k['dt'])
+
+        country_list = list(set([i['country_id'] for i in total_record_final]))
+
+        xdata = list(set([i for i in xdata]))
+        xdata = sorted(xdata)
+        final_call_chartdata = {
+            'x': xdata,
+        }
+        final_duration_chartdata = {
+            'x': xdata,
+        }
+        int_count = 1
+        extra_serie = {"tooltip": {"y_start": "", "y_end": " calls"}}
+        for i in call_count_res:
+            final_call_chartdata['name' + str(int_count)] = str(get_country_name(int(i)))
+            final_call_chartdata['y' + str(int_count)] = call_count_res[i]
+            final_call_chartdata['extra' + str(int_count)] = extra_serie
+            int_count += 1
+
+
+        int_count = 1
+        extra_serie = {"tooltip": {"y_start": "", "y_end": " mins"}}
+        for i in call_duration_res:
+            final_duration_chartdata['name' + str(int_count)] = str(get_country_name(int(i)))
+            final_duration_chartdata['y' + str(int_count)] = call_duration_res[i]
+            final_duration_chartdata['extra' + str(int_count)] = extra_serie
+            int_count += 1
+
+        final_call_charttype = final_duration_charttype = "lineWithFocusChart"
 
     # World report
     logging.debug('Aggregate world report')
@@ -1955,6 +1991,7 @@ def cdr_country_report(request):
 
     logging.debug('CDR country report view end')
     variables = {
+        'action': 'tabs-1',
         'module': current_view(request),
         'total_calls': total_calls,
         'total_duration': total_duration,
@@ -1966,6 +2003,11 @@ def cdr_country_report(request):
         'country_call_chartdata': country_call_chartdata,
         'country_call_charttype': country_call_charttype,
         'country_duration_chartdata': country_duration_chartdata,
+
+        'final_call_chartdata': final_call_chartdata,
+        'final_call_charttype': final_call_charttype,
+        'final_duration_chartdata': final_duration_chartdata,
+        'final_duration_charttype': final_duration_charttype,
     }
     return render_to_response(template_name, variables,
         context_instance=RequestContext(request))
