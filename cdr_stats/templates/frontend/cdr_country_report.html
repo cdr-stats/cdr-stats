@@ -9,11 +9,13 @@
         });
     </script>
     {% include "frontend/common_datepicker.html" %}
-    {% include_nvd3jscss %}
-    {% load_chart country_call_charttype country_call_chartdata "country_call_container" %}
-    {% load_chart country_call_charttype country_duration_chartdata "country_duration_container" %}
-    {% load_chart final_call_charttype final_call_chartdata "final_call_container" True %}
-    {% load_chart final_duration_charttype final_duration_chartdata "final_duration_container" True %}
+    {% if country_analytic %}
+        {% include_nvd3jscss %}
+        {% load_chart country_call_charttype country_call_chartdata "country_call_container" %}
+        {% load_chart country_call_charttype country_duration_chartdata "country_duration_container" %}
+        {% load_chart final_call_charttype final_call_chartdata "final_call_container" True %}
+        {% load_chart final_duration_charttype final_duration_chartdata "final_duration_container" True %}
+    {% endif %}
     <style type="text/css">
         .tab-content{ width: 100%;}
     </style>
@@ -112,17 +114,20 @@
     </div>
 </div>
 -->
-    <div class="row">
-        <div class="span12">
-            {% include_container "final_call_container" 400 '100%' %}
-        </div>
-    </div>
+    {% if country_analytic %}
+        <div class="row">
+            <div class="span12">
 
-    <div class="row">
-        <div class="span12">
-            {% include_container "final_duration_container" 400 '100%' %}
+                {% include_container "final_call_container" 400 '100%' %}
+            </div>
         </div>
-    </div>
+
+        <div class="row">
+            <div class="span12">
+                {% include_container "final_duration_container" 400 '100%' %}
+            </div>
+        </div>
+    {% endif %}
 
     <div class="row">
         <div class="span6 welldashboard">

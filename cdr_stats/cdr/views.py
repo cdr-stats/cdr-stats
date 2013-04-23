@@ -42,6 +42,7 @@ from voip_billing.function_def import get_rounded_value
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
+from collections import defaultdict
 import math
 import csv
 import time
@@ -1846,6 +1847,7 @@ def cdr_country_report(request):
             country_analytic_array = []
             logging.debug('Error : CDR country report form')
             variables = {
+                'action': 'tabs-1',
                 'module': current_view(request),
                 'total_calls': total_calls,
                 'total_duration': total_duration,
@@ -1871,9 +1873,8 @@ def cdr_country_report(request):
     list_data = mongodb.DBCON.command('aggregate',
                                       settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
                                       pipeline=pipeline)
-    total_record_final = []
+    #total_record_final = []
     xdata = []
-    from collections import defaultdict
     call_count_res = defaultdict(list)
     call_duration_res = defaultdict(list)
     if list_data:
@@ -1913,15 +1914,12 @@ def cdr_country_report(request):
 
             # hours of day data append to total_record_final array
             for hr in day_hours:
-                #print day_hours[hr]
-                total_record_final.append(day_hours[hr])
+                #total_record_final.append(day_hours[hr])
                 call_count_res[day_hours[hr]['country_id']].append(day_hours[hr]['calldate__count'])
                 call_duration_res[day_hours[hr]['country_id']].append(day_hours[hr]['duration__sum'])
 
         # apply sorting on timestamp value
-        total_record_final = sorted(total_record_final, key=lambda k: k['dt'])
-
-        country_list = list(set([i['country_id'] for i in total_record_final]))
+        #total_record_final = sorted(total_record_final, key=lambda k: k['dt'])
 
         xdata = list(set([i for i in xdata]))
         xdata = sorted(xdata)
@@ -1938,7 +1936,6 @@ def cdr_country_report(request):
             final_call_chartdata['y' + str(int_count)] = call_count_res[i]
             final_call_chartdata['extra' + str(int_count)] = extra_serie
             int_count += 1
-
 
         int_count = 1
         extra_serie = {"tooltip": {"y_start": "", "y_end": " mins"}}
@@ -1995,15 +1992,13 @@ def cdr_country_report(request):
         'module': current_view(request),
         'total_calls': total_calls,
         'total_duration': total_duration,
-        'total_record': total_record_final,
         'country_analytic': country_analytic_array,
         'form': form,
         'search_tag': search_tag,
         'NUM_COUNTRY': settings.NUM_COUNTRY,
-        'country_call_chartdata': country_call_chartdata,
         'country_call_charttype': country_call_charttype,
+        'country_call_chartdata': country_call_chartdata,
         'country_duration_chartdata': country_duration_chartdata,
-
         'final_call_chartdata': final_call_chartdata,
         'final_call_charttype': final_call_charttype,
         'final_duration_chartdata': final_duration_chartdata,
