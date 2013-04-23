@@ -82,7 +82,7 @@
 <a class="btn btn-small" id="toggle_btn" href="#" data-toggle="collapse" data-target="#form_collapse">
   <i class="icon-search"></i> <span>{% trans "advanced search"|title %}</span>
 </a>
-<!--
+
 <div class="tabbable">
     <ul class="nav nav-tabs">
         <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "country call"|title %}</a></li>
@@ -94,6 +94,8 @@
                 <div class="span12">
                     <div class="graph_header">
                         <h2>{% trans "country call statistics"|title %}</h2>
+
+                        {% include_container "final_call_container" 400 '100%' %}
                     </div>
                 </div>
             </div>
@@ -104,6 +106,8 @@
                 <div class="span12">
                     <div class="graph_header">
                         <h2>{% trans "country duration statistics"|title %}</h2>
+
+                        {% include_container "final_duration_container" 400 '100%' %}
                     </div>
                 </div>
             </div>
@@ -111,110 +115,97 @@
         </div>
     </div>
 </div>
--->
 
-    <div class="row">
-        <div class="span12">
 
-            {% include_container "final_call_container" 400 '100%' %}
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="span12">
-            {% include_container "final_duration_container" 400 '100%' %}
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="span6 welldashboard">
-            <h2 align="center">{% trans "calls by country"|title %}</h2>
-            <hr/>
-            {% include_container "country_call_container" 400 500 %}
-            <br/>
-            <div class="span6">
-                <h3 align="left">{% trans "top"|title %} {{ NUM_COUNTRY }} {% trans "calls by country"|title %}</h3>
-                <table>
-                    <tbody>
-                    {% for country_data in country_analytic %}
-                        <tr>
-                            <td class="td-dashboard">
-                                {% if country_data.3 %}
-                                    {% cache 1800 hcountry_flag country_data.3 %}
-                                        <img src="{{ STATIC_URL }}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name|title }}">
-                                    {% endcache %}
-                                {% else %}
-                                    <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World" %}">
-                                {% endif %}
-                            </td>
-                            <td class="td-dashboard" width="100">
-                                {% if country_data.0 %}
-                                    {{ country_data.0 }}
-                                {% else %}
-                                    {% trans "world"|title  %}
-                                {% endif %}
-                            </td>
-                            <td width="100">{{ country_data.1 }} {% trans "calls"|capfirst %}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-                <hr style="width:400px;"/>
-                <table>
-                    <tbody>
+<div class="row">
+    <div class="span6 welldashboard">
+        <h2 align="center">{% trans "calls by country"|title %}</h2>
+        <hr/>
+        {% include_container "country_call_container" 400 500 %}
+        <br/>
+        <div class="span6">
+            <h3 align="left">{% trans "top"|title %} {{ NUM_COUNTRY }} {% trans "calls by country"|title %}</h3>
+            <table>
+                <tbody>
+                {% for country_data in country_analytic %}
                     <tr>
-                        <td class="td-dashboard"></td>
-                        <td class="td-dashboard" width="100">{% trans "total"|capfirst %}</td>
-                        <td width="100">{{ total_calls }} {% trans "calls"|capfirst %}</td>
+                        <td class="td-dashboard">
+                            {% if country_data.3 %}
+                                {% cache 1800 hcountry_flag country_data.3 %}
+                                    <img src="{{ STATIC_URL }}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name|title }}">
+                                {% endcache %}
+                            {% else %}
+                                <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World" %}">
+                            {% endif %}
+                        </td>
+                        <td class="td-dashboard" width="100">
+                            {% if country_data.0 %}
+                                {{ country_data.0 }}
+                            {% else %}
+                                {% trans "world"|title  %}
+                            {% endif %}
+                        </td>
+                        <td width="100">{{ country_data.1 }} {% trans "calls"|capfirst %}</td>
                     </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="span6 welldashboard">
-            <h2 align="center">{% trans "duration by bountry"|title %}</h2>
-            <hr/>
-            {% include_container "country_duration_container" 400 500 %}
-            <br/>
-            <div class="span6">
-                <h3 align="left">{% trans "top"|title %} {{ NUM_COUNTRY }} {% trans "duration by country"|title %}</h3>
-                <table>
-                    <tbody>
-                    {% for country_data in country_analytic %}
-                        <tr>
-                            <td class="td-dashboard">
-                                {% if country_data.3 %}
-                                    {% cache 1800 hcountry_flag country_data.3 %}
-                                        <img src="{{ STATIC_URL }}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name|title }}">
-                                    {% endcache %}
-                                {% else %}
-                                    <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World" %}">
-                                {% endif %}
-                            </td>
-                            <td class="td-dashboard" width="100">
-                                {% if country_data.0 %}
-                                    {{ country_data.0 }}
-                                {% else %}
-                                    {% trans "world"|title  %}
-                                {% endif %}
-                            </td>
-                            <td>{{ country_data.2|conv_min }} {% trans "minutes" %}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-                <hr style="width:400px;"/>
-                <table>
-                    <tbody>
-                    <tr>
-                        <td class="td-dashboard"></td>
-                        <td class="td-dashboard" width="100">{% trans "total"|capfirst %}</td>
-                        <td>{{ total_duration|conv_min }} {% trans "minutes" %}</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+                {% endfor %}
+                </tbody>
+            </table>
+            <hr style="width:400px;"/>
+            <table>
+                <tbody>
+                <tr>
+                    <td class="td-dashboard"></td>
+                    <td class="td-dashboard" width="100">{% trans "total"|capfirst %}</td>
+                    <td width="100">{{ total_calls }} {% trans "calls"|capfirst %}</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
+    <div class="span6 welldashboard">
+        <h2 align="center">{% trans "duration by bountry"|title %}</h2>
+        <hr/>
+        {% include_container "country_duration_container" 400 500 %}
+        <br/>
+        <div class="span6">
+            <h3 align="left">{% trans "top"|title %} {{ NUM_COUNTRY }} {% trans "duration by country"|title %}</h3>
+            <table>
+                <tbody>
+                {% for country_data in country_analytic %}
+                    <tr>
+                        <td class="td-dashboard">
+                            {% if country_data.3 %}
+                                {% cache 1800 hcountry_flag country_data.3 %}
+                                    <img src="{{ STATIC_URL }}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name|title }}">
+                                {% endcache %}
+                            {% else %}
+                                <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World" %}">
+                            {% endif %}
+                        </td>
+                        <td class="td-dashboard" width="100">
+                            {% if country_data.0 %}
+                                {{ country_data.0 }}
+                            {% else %}
+                                {% trans "world"|title  %}
+                            {% endif %}
+                        </td>
+                        <td>{{ country_data.2|conv_min }} {% trans "minutes" %}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <hr style="width:400px;"/>
+            <table>
+                <tbody>
+                <tr>
+                    <td class="td-dashboard"></td>
+                    <td class="td-dashboard" width="100">{% trans "total"|capfirst %}</td>
+                    <td>{{ total_duration|conv_min }} {% trans "minutes" %}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
