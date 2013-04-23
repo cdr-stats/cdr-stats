@@ -26,7 +26,8 @@ from common.common_functions import current_view, get_news, \
     variable_value, mongodb_str_filter, mongodb_int_filter, \
     int_convert_to_minute, validate_days, ceil_strdate
 from cdr.models import Switch
-from cdr.functions_def import get_country_name, get_hangupcause_name, percentage
+from cdr.functions_def import get_country_name, get_hangupcause_name, percentage,\
+    get_switch_ip_addr
 from cdr.forms import CdrSearchForm, \
     CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
     ConcurrentCallForm, SwitchForm, WorldForm, EmailReportForm
@@ -1019,6 +1020,10 @@ def cdr_concurrent_calls(request):
         query_var['accountcode'] = request.user.get_profile().accountcode
 
     final_data = []
+    xdata = []
+    charttype = "stackedAreaChart"
+    call_count_res = defaultdict(list)
+
     if query_var:
         if not mongodb.conc_call_agg:
             raise Http404
@@ -1028,15 +1033,28 @@ def cdr_concurrent_calls(request):
             # convert date into timestamp value
             ts = time.mktime(d['date'].timetuple())
             tsint = int(ts * 1000)
-            final_data.append({'today_minute': tsint,
-                               'call__count': int(d['numbercall']),
-                               'switch_id': int(d['switch_id'])})
+            xdata.append(str(tsint))
+            call_count_res[d['switch_id']].append(d['numbercall'])
+
+        chartdata = {
+            'x': xdata,
+        }
+
+        int_count = 1
+        extra_serie = {"tooltip": {"y_start": "", "y_end": " concurrent calls"}}
+        for i in call_count_res:
+            chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
+            chartdata['y' + str(int_count)] = call_count_res[i]
+            chartdata['extra' + str(int_count)] = extra_serie
+            int_count += 1
+
         logging.debug('CDR concurrent view end')
         variables = {
             'module': current_view(request),
             'form': form,
-            'final_data': final_data,
             'start_date': start_date,
+            'chartdata': chartdata,
+            'charttype': charttype,
         }
 
     return render_to_response('frontend/cdr_graph_concurrent_calls.html', variables,

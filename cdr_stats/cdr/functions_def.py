@@ -21,6 +21,19 @@ from django.utils.translation import gettext as _
 import re
 
 
+def get_switch_ip_addr(id):
+    """Tag is used to get switch name
+
+    >>> get_switch_ip_addr(0)
+    u''
+    """
+    try:
+        obj = Switch.objects.get(pk=id)
+        return obj.name
+    except:
+        return u''
+
+
 def percentage(value, total_sum):
     """To calculate percentage"""
     return round(100 * float(value)/float(total_sum))

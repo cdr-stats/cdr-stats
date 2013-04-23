@@ -13,7 +13,7 @@
 #
 from django import template
 from cdr.models import Switch
-from cdr.functions_def import get_hangupcause_name
+from cdr.functions_def import get_hangupcause_name, get_switch_ip_addr
 import re
 
 register = template.Library()
@@ -21,16 +21,8 @@ register = template.Library()
 
 @register.filter(name='get_switch_ip')
 def get_switch_ip(id):
-    """Tag is used to get switch name
-
-    >>> get_switch_ip(0)
-    u''
-    """
-    try:
-        obj = Switch.objects.get(pk=id)
-        return obj.name
-    except:
-        return u''
+    """Tag is used to get switch name"""
+    return get_switch_ip_addr(id)
 
 
 @register.filter(name='hangupcause_name')
