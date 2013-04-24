@@ -1877,6 +1877,275 @@ def cdr_overview(request):
             context_instance=RequestContext(request))
 
 
+@check_cdr_exists
+@check_user_accountcode
+@login_required
+def cdr_overview_new(request):
+    """CDR graph by hourly/daily/monthly basis
+
+    **Attributes**:
+
+        * ``template`` - frontend/cdr_overview.html.html
+        * ``form`` - CdrOverviewForm
+        * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
+
+    **Logic Description**:
+
+        get all call records from mongodb collection for
+        all monthly, daily, hourly analytics
+    """
+    template_name = 'frontend/cdr_overview_new.html'
+    logging.debug('CDR overview start')
+    # initialize variables
+    query_var = {}
+    tday = datetime.today()
+    search_tag = 0
+    total_hour_record = []
+    total_hour_data = []
+    action = 'tabs-1'
+    if request.method == 'POST':
+        logging.debug('CDR overview with search option')
+        search_tag = 1
+        form = CdrOverviewForm(request.POST)
+        if form.is_valid():
+            if "from_date" in request.POST:
+                from_date = request.POST['from_date']
+                start_date = ceil_strdate(from_date, 'start')
+            else:
+                from_date = tday.strftime('%Y-%m-%d')
+
+            if "to_date" in request.POST:
+                to_date = request.POST['to_date']
+                end_date = ceil_strdate(to_date, 'end')
+            else:
+                to_date = tday.strftime('%Y-%m-%d')
+
+            switch_id = form.cleaned_data.get('switch')
+            if switch_id and int(switch_id) != 0:
+                query_var['metadata.switch_id'] = int(switch_id)
+
+            if from_date != '' and to_date != '':
+                start_date = ceil_strdate(from_date, 'start')
+                end_date = ceil_strdate(to_date, 'end')
+                query_var['metadata.date'] = {
+                    '$gte': start_date,
+                    '$lt': end_date
+                }
+
+                month_start_date = datetime(start_date.year, start_date.month,
+                    1, 0, 0, 0, 0)
+                month_end_date = datetime(end_date.year, end_date.month,
+                    end_date.day, 23, 59, 59, 999999)
+        else:
+            # form is not valid
+            logging.debug('Error : CDR overview search form')
+            tday = datetime.today()
+            start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
+            end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
+
+            variables = {
+                'action': action,
+                'module': current_view(request),
+                'form': form,
+                'search_tag': search_tag,
+                'total_hour_record': total_hour_record,
+                'total_hour_data': total_hour_data,
+                'start_date': start_date,
+                'end_date': end_date,
+                'TOTAL_GRAPH_COLOR': settings.TOTAL_GRAPH_COLOR,
+            }
+
+            return render_to_response(
+                template_name, variables,
+                context_instance=RequestContext(request)
+            )
+
+    if len(query_var) == 0:
+        tday = datetime.today()
+        switch_id = 0
+        # assign initial value in form fields
+        form = CdrOverviewForm(initial={'from_date': tday.strftime('%Y-%m-%d'),
+                                        'to_date': tday.strftime('%Y-%m-%d'),
+                                        'switch': switch_id})
+
+        start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
+        end_date = datetime(tday.year, tday.month,
+                            tday.day, 23, 59, 59, 999999)
+        month_start_date = datetime(start_date.year,
+                                    start_date.month, 1, 0, 0, 0, 0)
+        month_end_date = datetime(end_date.year, end_date.month,
+                                  end_date.day, 23, 59, 59, 999999)
+
+        query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+
+    if not request.user.is_superuser:  # not superuser
+        query_var['metadata.accountcode'] = request.user.get_profile().accountcode
+
+    if query_var:
+        logging.debug('Map-reduce cdr overview analytic')
+        # Collect Hourly data
+        logging.debug('Aggregate cdr hourly overview')
+        pipeline = pipeline_hourly_overview(query_var)
+
+        logging.debug('Before Aggregate')
+        list_data = mongodb.DBCON.command('aggregate',
+                                          settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+                                          pipeline=pipeline)
+        logging.debug('After Aggregate')
+
+        hour_data = dict()
+        xdata = []
+        hourly_duration_charttype = hourly_call_charttype = "lineWithFocusChart"
+        hourly_call_count_res = dict()
+        hourly_call_duration_res = dict()
+
+        if list_data:
+            for doc in list_data['result']:
+                a_Year = int(doc['_id'][0:4])
+                b_Month = int(doc['_id'][4:6])
+                c_Day = int(doc['_id'][6:8])
+                day_hours = dict()
+                hourly_data = dict()
+
+                for dict_in_list in doc['call_per_hour']:
+                    for key, value in dict_in_list.iteritems():
+                        key = int(key)
+                        # Get date from aggregate result array
+                        graph_day = datetime(a_Year, b_Month, c_Day, key)
+
+                        # convert date into timestamp value
+                        dt = int(1000 * time.mktime(graph_day.timetuple()))
+
+                        # prepare day_hours dict var with hour key
+                        # and values are like call count, duration sum, switch id
+                        if key in day_hours:
+                            day_hours[key]['calldate__count'] += int(value)
+                        else:
+                            day_hours[key] = {
+                                'dt': dt,
+                                'calldate__count': int(value),
+                                'duration__sum': 0,
+                                'switch_id': int(doc['switch_id'])
+                            }
+
+                # update day_hours for duration
+                for dict_in_list in doc['duration_per_hour']:
+                    for key, value in dict_in_list.iteritems():
+                        day_hours[int(key)]['duration__sum'] += int(value)
+
+                for hr in day_hours:
+                    total_hour_record.append(day_hours[hr])
+
+                    # All switches hourly data
+                    temp_dt = day_hours[hr]['dt']
+                    temp_call_count = int(day_hours[hr]['calldate__count'])
+                    temp_duration_sum = day_hours[hr]['duration__sum']
+
+                    xdata.append(temp_dt)
+
+                    if temp_dt in hour_data:
+                        hour_data[temp_dt]['call_count'] += temp_call_count
+                        hour_data[temp_dt]['duration_sum'] += temp_duration_sum
+                    else:
+                        hour_data[temp_dt] = {
+                            'call_count': temp_call_count,
+                            'duration_sum': temp_duration_sum
+                        }
+
+                    sw_id = day_hours[hr]['switch_id']
+                    if sw_id in hourly_call_count_res:
+                        hourly_call_count_res[sw_id].append(temp_call_count)
+                    else:
+                        hourly_call_count_res[sw_id] = [temp_call_count]
+
+                    if sw_id in hourly_call_duration_res:
+                        hourly_call_duration_res[sw_id].append(convert_to_minute(temp_duration_sum))
+                    else:
+                        hourly_call_duration_res[sw_id] = [convert_to_minute(temp_duration_sum)]
+
+        # apply sorting on timestamp value
+        total_hour_record = sorted(total_hour_record, key=lambda k: k['dt'])
+
+        total_hourly_dict = dict()
+        hourly_data = hourly_data.items()
+        hourly_data = sorted(hourly_data, key=lambda k: k[0])
+
+        for i in total_hour_record:
+            if i['dt'] in total_hourly_dict:
+                total_hourly_dict[i['dt']]['call_count'] += i['calldate__count']
+                total_hourly_dict[i['dt']]['duration_sum'] += i['duration__sum']
+            else:
+                total_hourly_dict[i['dt']] = {
+                    'call_count': i['calldate__count'],
+                    'duration_sum': i['duration__sum'],
+                }
+
+        total_hourly_dict = total_hourly_dict.items()
+        total_hourly_dict = sorted(total_hourly_dict, key=lambda k: k[0])
+
+        total_hourly_call_count = [i[1]['call_count'] for i in total_hourly_dict]
+        total_hourly_call_duration = [convert_to_minute(i[1]['duration_sum']) for i in total_hourly_dict]
+
+        xdata = list(set([i for i in xdata]))
+        xdata = sorted(xdata)
+        hourly_call_chartdata = {
+            'x': xdata,
+        }
+        hourly_duration_chartdata = {
+            'x': xdata,
+        }
+
+        int_count = 1
+        extra_serie = {"tooltip": {"y_start": "", "y_end": " calls"},
+                       "date_format": "%d %b %Y %H:%M:%S %p"}
+
+        for i in hourly_call_count_res:
+            hourly_call_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
+            hourly_call_chartdata['y' + str(int_count)] = hourly_call_count_res[i]
+            hourly_call_chartdata['extra' + str(int_count)] = extra_serie
+            int_count += 1
+
+        hourly_call_chartdata['name' + str(int_count)] = 'Total calls'
+        hourly_call_chartdata['y' + str(int_count)] = total_hourly_call_count
+        hourly_call_chartdata['extra' + str(int_count)] = extra_serie
+
+
+        int_count = 1
+        extra_serie = {"tooltip": {"y_start": "", "y_end": " mins"},
+                       "date_format": "%d %b %Y %H:%M:%S %p"}
+
+        for i in hourly_call_duration_res:
+            hourly_duration_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
+            hourly_duration_chartdata['y' + str(int_count)] = hourly_call_duration_res[i]
+            hourly_duration_chartdata['extra' + str(int_count)] = extra_serie
+            int_count += 1
+
+        hourly_duration_chartdata['name' + str(int_count)] = 'Total duration'
+        hourly_duration_chartdata['y' + str(int_count)] = total_hourly_call_duration
+        hourly_duration_chartdata['extra' + str(int_count)] = extra_serie
+
+
+        logging.debug('CDR daily view end')
+        variables = {
+            'action': action,
+            'module': current_view(request),
+            'form': form,
+            'search_tag': search_tag,
+            'total_hour_record': total_hour_record,
+            'total_hour_data': total_hour_data,
+
+            'start_date': start_date,
+            'end_date': end_date,
+            'TOTAL_GRAPH_COLOR': settings.TOTAL_GRAPH_COLOR,
+
+            'hourly_call_chartdata': hourly_call_chartdata,
+            'hourly_call_charttype': hourly_call_charttype,
+            'hourly_duration_chartdata': hourly_duration_chartdata,
+            'hourly_duration_charttype': hourly_duration_charttype,
+        }
+        return render_to_response(template_name, variables,
+            context_instance=RequestContext(request))
+
 @permission_required('user_profile.by_country', login_url='/')
 @check_cdr_exists
 @check_user_accountcode

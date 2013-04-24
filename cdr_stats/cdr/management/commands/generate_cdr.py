@@ -127,6 +127,7 @@ class Command(BaseCommand):
         """
         Note that subscriber created this way are only for devel purposes
         """
+
         no_of_record = 1  # default
         if options.get('number-cdr'):
             try:
