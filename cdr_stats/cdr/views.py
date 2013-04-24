@@ -1041,7 +1041,8 @@ def cdr_concurrent_calls(request):
         }
 
         int_count = 1
-        extra_serie = {"tooltip": {"y_start": "", "y_end": " concurrent calls"}}
+        extra_serie = {"tooltip": {"y_start": "", "y_end": " concurrent calls"},
+                       "date_format": "%d %b %Y %I:%M:%S %p"}
         for i in call_count_res:
             chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
             chartdata['y' + str(int_count)] = call_count_res[i]
