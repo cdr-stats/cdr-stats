@@ -220,6 +220,8 @@ def last_seven_days_report(request, kwargs):
 
     total_data = {}
     total_alert = 0
+    charttype = "lineWithFocusChart"
+    chartdata = {"x": []}
     for doc in alarm_data:
         daterun = str(doc['daterun'])
 
@@ -242,11 +244,27 @@ def last_seven_days_report(request, kwargs):
     total_data = total_data.items()
     total_data = sorted(total_data, key=lambda k: k[0])
 
+    xdata = []
+    ydata = []
+    for i in total_data:
+        xdata.append(str(i[0]))
+        ydata.append(i[1]['alert_count'])
+
+    tooltip_date = "%d %b %Y"
+    extra_serie = {"tooltip": {"y_start": "", "y_end": ""},
+                   "date_format": tooltip_date}
+    chartdata = {
+        'x': xdata,
+        'name1': 'Alert', 'y1': ydata, 'extra1': extra_serie,
+    }
+
     data = {
         'start_date': start_date,
         'end_date': end_date,
         'total_data': total_data,
         'total_alert': total_alert,
+        'charttype': charttype,
+        'chartdata': chartdata,
     }
     return data
 
@@ -312,6 +330,7 @@ def alert_report(request):
     start_date = days_report['start_date']
     end_date = days_report['end_date']
 
+
     template = 'frontend/cdr_alert/alarm_report.html'
     data = {
         'module': current_view(request),
@@ -325,6 +344,8 @@ def alert_report(request):
         'PAGE_SIZE': PAGE_SIZE,
         'ALARM_REPORT_COLUMN_NAME': ALARM_REPORT_COLUMN_NAME,
         'col_name_with_order': pagination_data['col_name_with_order'],
+        'charttype': days_report['charttype'],
+        'chartdata': days_report['chartdata'],
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))

@@ -20,7 +20,7 @@ import os
 
 def get_rounded_value(value):
     """get rounded value"""
-    return "%.2f" % round(value, 2)
+    return round(value, 2)
 
 
 def rate_filter_range_field_chk(rate, rate_range, field_name):
