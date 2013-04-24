@@ -284,25 +284,26 @@ def daily_billing_report(request):
                     'sell_cost_per_day': float(doc['sell_cost_per_day']),
                 }
 
-            # apply sorting on timestamp value
-            total_data = daily_data.items()
-            total_data = sorted(total_data, key=lambda k: k[0])
+        # apply sorting on timestamp value
+        total_data = daily_data.items()
+        total_data = sorted(total_data, key=lambda k: k[0])
 
-            xdata = []
-            ydata = []
-            ydata2 = []
-            for i in total_data:
-                xdata.append(i[0])
-                ydata.append(get_rounded_value(i[1]['buy_cost_per_day']))
-                ydata2.append(get_rounded_value(i[1]['sell_cost_per_day']))
+        xdata = []
+        ydata = []
+        ydata2 = []
+        for i in total_data:
+            xdata.append(i[0])
+            ydata.append(get_rounded_value(i[1]['buy_cost_per_day']))
+            ydata2.append(get_rounded_value(i[1]['sell_cost_per_day']))
 
-            extra_serie = {"tooltip": {"y_start": "", "y_end": ""}}
-            chartdata = {
-                'x': xdata,
-                'name1': 'Buy cost', 'y1': ydata, 'extra1': extra_serie,
-                'name2': 'Sell cost', 'y2': ydata2, 'extra2': extra_serie,
-            }
-
+        tooltip_date = "%d %b %Y"
+        extra_serie = {"tooltip": {"y_start": "$ ", "y_end": ""},
+                       "date_format": tooltip_date}
+        chartdata = {
+            'x': xdata,
+            'name1': 'Buy cost', 'y1': ydata, 'extra1': extra_serie,
+            'name2': 'Sell cost', 'y2': ydata2, 'extra2': extra_serie,
+        }
 
     data = {
         'module': current_view(request),
