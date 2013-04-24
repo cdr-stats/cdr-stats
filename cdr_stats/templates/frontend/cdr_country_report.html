@@ -18,7 +18,7 @@
         $(function () {
             $('a[data-toggle="tab"]').on('shown', function (e) {
                 if (e.target.hash == '#tabs-2') {
-                    {% load_chart final_duration_charttype final_duration_chartdata "final_duration_container" True False %}
+                    {% load_chart final_duration_charttype final_duration_chartdata "final_duration_container" "%d %b %Y" True False %}
                 }
             })
         })
