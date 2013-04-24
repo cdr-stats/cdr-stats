@@ -209,7 +209,7 @@ def pipeline_hourly_overview(query_var):
         {'$unwind': '$switch_id'},
         {
             '$sort': {
-                '_id': -1,
+                '_id': 1,
                 'switch_id': 1,
             }
         }

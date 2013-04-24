@@ -27,7 +27,7 @@ from common.common_functions import current_view, get_news, \
     int_convert_to_minute, validate_days, ceil_strdate
 from cdr.models import Switch
 from cdr.functions_def import get_country_name, get_hangupcause_name, percentage,\
-    get_switch_ip_addr
+    get_switch_ip_addr, convert_to_minute
 from cdr.forms import CdrSearchForm, \
     CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
     ConcurrentCallForm, SwitchForm, WorldForm, EmailReportForm
@@ -1629,8 +1629,10 @@ def cdr_overview(request):
 
         hour_data = dict()
         xdata = []
-        hourly_call_charttype = "lineWithFocusChart"
+        hourly_duration_charttype = hourly_call_charttype = "lineWithFocusChart"
         hourly_call_count_res = dict()
+        hourly_call_duration_res = dict()
+
         if list_data:
             for doc in list_data['result']:
                 a_Year = int(doc['_id'][0:4])
@@ -1644,6 +1646,7 @@ def cdr_overview(request):
                         key = int(key)
                         # Get date from aggregate result array
                         graph_day = datetime(a_Year, b_Month, c_Day, key)
+
                         # convert date into timestamp value
                         dt = int(1000 * time.mktime(graph_day.timetuple()))
 
@@ -1685,11 +1688,14 @@ def cdr_overview(request):
 
                     sw_id = day_hours[hr]['switch_id']
                     if sw_id in hourly_call_count_res:
-                        hourly_call_count_res[sw_id].append(day_hours[hr]['calldate__count'])
+                        hourly_call_count_res[sw_id].append(temp_call_count)
                     else:
-                        # create a new array in this slot
-                        hourly_call_count_res[sw_id] = [day_hours[hr]['calldate__count']]
+                        hourly_call_count_res[sw_id] = [temp_call_count]
 
+                    if sw_id in hourly_call_duration_res:
+                        hourly_call_duration_res[sw_id].append(convert_to_minute(temp_duration_sum))
+                    else:
+                        hourly_call_duration_res[sw_id] = [convert_to_minute(temp_duration_sum)]
 
         # apply sorting on timestamp value
         total_hour_record = sorted(total_hour_record, key=lambda k: k['dt'])
@@ -1701,26 +1707,31 @@ def cdr_overview(request):
         for i in total_hour_record:
             if i['dt'] in total_hourly_dict:
                 total_hourly_dict[i['dt']]['call_count'] += i['calldate__count']
+                total_hourly_dict[i['dt']]['duration_sum'] += i['duration__sum']
             else:
-                total_hourly_dict[i['dt']] = {'call_count': i['calldate__count']}
+                total_hourly_dict[i['dt']] = {
+                    'call_count': i['calldate__count'],
+                    'duration_sum': i['duration__sum'],
+                }
 
         total_hourly_dict = total_hourly_dict.items()
         total_hourly_dict = sorted(total_hourly_dict, key=lambda k: k[0])
 
-        total_hourly_data = [i[1]['call_count'] for i in total_hourly_dict]
-
-
-        total_hour_data = hour_data.items()
-        total_hour_data = sorted(total_hour_data, key=lambda k: k[0])
+        total_hourly_call_count = [i[1]['call_count'] for i in total_hourly_dict]
+        total_hourly_call_duration = [convert_to_minute(i[1]['duration_sum']) for i in total_hourly_dict]
 
         xdata = list(set([i for i in xdata]))
         xdata = sorted(xdata)
         hourly_call_chartdata = {
             'x': xdata,
         }
+        hourly_duration_chartdata = {
+            'x': xdata,
+        }
 
         int_count = 1
-        extra_serie = {"tooltip": {"y_start": "", "y_end": " calls"}}
+        extra_serie = {"tooltip": {"y_start": "", "y_end": " calls"},
+                       "date_format": "%d %b %Y %H:%M:%S %p"}
 
         for i in hourly_call_count_res:
             hourly_call_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
@@ -1729,8 +1740,25 @@ def cdr_overview(request):
             int_count += 1
 
         hourly_call_chartdata['name' + str(int_count)] = 'Total calls'
-        hourly_call_chartdata['y' + str(int_count)] = total_hourly_data
+        hourly_call_chartdata['y' + str(int_count)] = total_hourly_call_count
         hourly_call_chartdata['extra' + str(int_count)] = extra_serie
+
+
+        int_count = 1
+        extra_serie = {"tooltip": {"y_start": "", "y_end": " mins"},
+                       "date_format": "%d %b %Y %H:%M:%S %p"}
+
+        for i in hourly_call_duration_res:
+            hourly_duration_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
+            hourly_duration_chartdata['y' + str(int_count)] = hourly_call_duration_res[i]
+            hourly_duration_chartdata['extra' + str(int_count)] = extra_serie
+            int_count += 1
+
+        hourly_duration_chartdata['name' + str(int_count)] = 'Total duration'
+        hourly_duration_chartdata['y' + str(int_count)] = total_hourly_call_duration
+        hourly_duration_chartdata['extra' + str(int_count)] = extra_serie
+
+
 
         # Collect daily data
         logging.debug('Aggregate cdr daily analytic')
@@ -1842,6 +1870,8 @@ def cdr_overview(request):
 
             'hourly_call_chartdata': hourly_call_chartdata,
             'hourly_call_charttype': hourly_call_charttype,
+            'hourly_duration_chartdata': hourly_duration_chartdata,
+            'hourly_duration_charttype': hourly_duration_charttype,
         }
         return render_to_response(template_name, variables,
             context_instance=RequestContext(request))

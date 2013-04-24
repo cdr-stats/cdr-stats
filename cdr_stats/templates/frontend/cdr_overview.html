@@ -533,8 +533,14 @@ $(function () {
 
 <div class="row">
     <div class="span12">
-        {% load_chart hourly_call_charttype hourly_call_chartdata "hourly_call_container" True %}
+        {% load_chart hourly_call_charttype hourly_call_chartdata "hourly_call_container" True "%d %b %H" %}
         {% include_container "hourly_call_container" 400 '100%' %}
+    </div>
+</div>
+<div class="row">
+    <div class="span12">
+        {% load_chart hourly_duration_charttype hourly_duration_chartdata "hourly_duration_container" True "%d %b %H" %}
+        {% include_container "hourly_duration_container" 400 '100%' %}
     </div>
 </div>
 {% endblock %}
