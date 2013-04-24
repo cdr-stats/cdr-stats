@@ -9,7 +9,7 @@
   });
   </script>
   {% include_nvd3jscss %}
-  {% load_chart final_charttype final_chartdata "final_container" True %}
+  {% load_chart final_charttype final_chartdata "final_container" True "%d %b %Y %H" %}
   {% load_chart hangup_analytic_charttype hangup_analytic_chartdata "hangup_analytic_container" %}
   {% load_chart country_analytic_charttype country_analytic_chartdata "country_analytic_container" %}
 {% endblock %}
