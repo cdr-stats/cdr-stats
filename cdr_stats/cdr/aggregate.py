@@ -420,7 +420,7 @@ def pipeline_daily_billing_report(query_var):
         {
             '$sort':
             {
-                '_id': -1
+                '_id': 1
             }
         }
     ]

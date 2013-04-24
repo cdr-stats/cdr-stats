@@ -292,9 +292,9 @@ def daily_billing_report(request):
         ydata = []
         ydata2 = []
         for i in total_data:
-            xdata.append(i[0])
-            ydata.append(get_rounded_value(i[1]['buy_cost_per_day']))
-            ydata2.append(get_rounded_value(i[1]['sell_cost_per_day']))
+            xdata.append(str(i[0]))
+            ydata.append(float(get_rounded_value(i[1]['buy_cost_per_day'])))
+            ydata2.append(float(get_rounded_value(i[1]['sell_cost_per_day'])))
 
         tooltip_date = "%d %b %Y"
         extra_serie = {"tooltip": {"y_start": "$ ", "y_end": ""},
