@@ -226,8 +226,8 @@ def pipeline_daily_overview(query_var):
     pipeline = [
         {'$match': query_var},
         {'$group': {
-            '_id': {'$substr': ["$_id", 0, 8]},
-            'switch_id': {'$addToSet': '$metadata.switch_id'},
+            '_id': {'date': {'$substr': ["$_id", 0, 8]},
+                    'switch_id': '$metadata.switch_id'},
             'call_per_day': {'$sum': '$call_daily'},
             'duration_per_day': {'$sum': '$duration_daily'}
         }
@@ -240,7 +240,6 @@ def pipeline_daily_overview(query_var):
                 'avg_duration_per_day': {'$divide': ["$duration_per_day", "$call_per_day"]}
             }
         },
-        {'$unwind': '$switch_id'},
         {
             '$sort': {
                 '_id': -1,

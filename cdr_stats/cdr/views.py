@@ -1901,8 +1901,7 @@ def cdr_overview_new(request):
     query_var = {}
     tday = datetime.today()
     search_tag = 0
-    total_hour_record = []
-    total_hour_data = []
+
     action = 'tabs-1'
     if request.method == 'POST':
         logging.debug('CDR overview with search option')
@@ -1949,8 +1948,6 @@ def cdr_overview_new(request):
                 'module': current_view(request),
                 'form': form,
                 'search_tag': search_tag,
-                'total_hour_record': total_hour_record,
-                'total_hour_data': total_hour_data,
                 'start_date': start_date,
                 'end_date': end_date,
                 'TOTAL_GRAPH_COLOR': settings.TOTAL_GRAPH_COLOR,
@@ -1984,6 +1981,7 @@ def cdr_overview_new(request):
 
     if query_var:
         logging.debug('Map-reduce cdr overview analytic')
+
         # Collect Hourly data
         logging.debug('Aggregate cdr hourly overview')
         pipeline = pipeline_hourly_overview(query_var)
@@ -2105,6 +2103,95 @@ def cdr_overview_new(request):
                 hourly_duration_chartdata['extra' + str(int_count)] = extra_serie
 
 
+        # Collect daily data
+        logging.debug('Aggregate cdr daily analytic')
+        pipeline = pipeline_daily_overview(query_var)
+
+        logging.debug('Before Aggregate')
+        list_data = mongodb.DBCON.command('aggregate',
+                                          settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+                                          pipeline=pipeline)
+        logging.debug('After Aggregate')
+        total_day_record = []
+        xdata = []
+        daily_duration_charttype = daily_call_charttype = "lineWithFocusChart"
+        daily_call_count_res = dict()
+        daily_call_duration_res = dict()
+        daily_call_chartdata = {'x': []}
+        daily_duration_chartdata = {'x': []}
+        if list_data:
+            day_data = dict()
+            for doc in list_data['result']:
+                # Get date from aggregate result array
+                graph_day = datetime(int(doc['_id']['date'][0:4]),
+                                     int(doc['_id']['date'][4:6]),
+                                     int(doc['_id']['date'][6:8]),
+                                     0, 0, 0, 0)
+                # convert date into timestamp value
+                dt = int(1000 * time.mktime(graph_day.timetuple()))
+
+                xdata.append(dt)
+                sw_id = doc['_id']['switch_id']
+                if sw_id in daily_call_count_res:
+                    daily_call_count_res[sw_id].append(int(doc['call_per_day']))
+                else:
+                    daily_call_count_res[sw_id] = [int(doc['call_per_day'])]
+
+                if sw_id in daily_call_duration_res:
+                    daily_call_duration_res[sw_id].append(convert_to_minute(doc['duration_per_day']))
+                else:
+                    daily_call_duration_res[sw_id] = [convert_to_minute(doc['duration_per_day'])]
+
+            if int(switch_id) == 0:
+                daily_total_call_list = []
+                for i in daily_call_count_res:
+                    daily_total_call_list.append(daily_call_count_res[i])
+
+                daily_total_duration_list = []
+                for i in daily_call_duration_res:
+                    daily_total_duration_list.append(daily_call_duration_res[i])
+
+                total_daily_call_count = [sum(x) for x in itertools.izip_longest(*daily_total_call_list, fillvalue=0)]
+                total_daily_call_duration = [sum(x) for x in itertools.izip_longest(*daily_total_duration_list, fillvalue=0)]
+
+            xdata = list(set([i for i in xdata]))
+            xdata = sorted(xdata)
+            daily_call_chartdata = {
+                'x': xdata,
+            }
+            daily_duration_chartdata = {
+                'x': xdata,
+            }
+
+            int_count = 1
+            extra_serie = {"tooltip": {"y_start": "", "y_end": " calls"},
+                           "date_format": "%d %b %Y"}
+            for i in daily_call_count_res:
+                daily_call_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
+                daily_call_chartdata['y' + str(int_count)] = daily_call_count_res[i]
+                daily_call_chartdata['extra' + str(int_count)] = extra_serie
+                int_count += 1
+
+            if int(switch_id) == 0:
+                daily_call_chartdata['name' + str(int_count)] = 'Total calls'
+                daily_call_chartdata['y' + str(int_count)] = total_daily_call_count
+                daily_call_chartdata['extra' + str(int_count)] = extra_serie
+
+            int_count = 1
+            extra_serie = {"tooltip": {"y_start": "", "y_end": " mins"},
+                           "date_format": "%d %b %Y %H:%M:%S %p"}
+            for i in daily_call_duration_res:
+                daily_duration_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
+                daily_duration_chartdata['y' + str(int_count)] = daily_call_duration_res[i]
+                daily_duration_chartdata['extra' + str(int_count)] = extra_serie
+                int_count += 1
+
+            if int(switch_id) == 0:
+                daily_duration_chartdata['name' + str(int_count)] = 'Total duration'
+                daily_duration_chartdata['y' + str(int_count)] = total_daily_call_duration
+                daily_duration_chartdata['extra' + str(int_count)] = extra_serie
+
+
         logging.debug('CDR daily view end')
         variables = {
             'action': action,
@@ -2119,6 +2206,11 @@ def cdr_overview_new(request):
             'hourly_call_charttype': hourly_call_charttype,
             'hourly_duration_chartdata': hourly_duration_chartdata,
             'hourly_duration_charttype': hourly_duration_charttype,
+
+            'daily_call_chartdata': daily_call_chartdata,
+            'daily_call_charttype': daily_call_charttype,
+            'daily_duration_chartdata': daily_duration_chartdata,
+            'daily_duration_charttype': daily_duration_charttype,
         }
         return render_to_response(template_name, variables,
             context_instance=RequestContext(request))
