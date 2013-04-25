@@ -84,11 +84,13 @@ class Command(BaseCommand):
             delta_call = random.randint(-2, 2)
             calculatedvalue = calculatedvalue + delta_call
 
-            AlarmReport.objects.create(
+            currentalert = AlarmReport.objects.create(
                 alarm=alarm[0],
                 calculatedvalue=calculatedvalue,
-                status=random.randint(1, 2),
-                daterun=daterun)
+                status=random.randint(1, 2))
+            #daterun is auto_now=True, so we need to overwrite the daterun
+            currentalert.daterun = daterun
+            currentalert.save()
             print "alarm_report -> alarm:%s, daterun=%s, calculatedvalue=%d" % \
                 (alarm[0], daterun, calculatedvalue)
 

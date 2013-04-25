@@ -42,7 +42,7 @@ class AlertRemovePrefix(models.Model):
     def __unicode__(self):
         return '%s' % (self.label)
 
-    class Meta:        
+    class Meta:
         verbose_name = _("alert remove prefix")
         verbose_name_plural = _("alert remove prefixes")
         db_table = "alert_remove_prefix"
@@ -121,7 +121,7 @@ class AlarmReport(models.Model):
     status = models.PositiveIntegerField(choices=list(ALARM_REPROT_STATUS),
                         default=1, verbose_name=_('status'))
 
-    daterun = models.DateTimeField(auto_now=True, verbose_name=_('date'))
+    daterun = models.DateTimeField(auto_now_add=True, verbose_name=_('date'))
 
     def __unicode__(self):
         return '%s' % (self.alarm)
