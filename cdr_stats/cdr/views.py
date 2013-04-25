@@ -1994,7 +1994,6 @@ def cdr_overview_new(request):
                                           pipeline=pipeline)
         logging.debug('After Aggregate')
 
-
         xdata = []
         hourly_duration_charttype = hourly_call_charttype = "lineWithFocusChart"
         hourly_call_count_res = dict()
@@ -2004,9 +2003,9 @@ def cdr_overview_new(request):
 
         if list_data:
             for doc in list_data['result']:
-                a_Year = int(doc['_id']['_id'][0:4])
-                b_Month = int(doc['_id']['_id'][4:6])
-                c_Day = int(doc['_id']['_id'][6:8])
+                a_Year = int(doc['_id']['date'][0:4])
+                b_Month = int(doc['_id']['date'][4:6])
+                c_Day = int(doc['_id']['date'][6:8])
                 day_hours = dict()
                 hourly_data = dict()
 
@@ -2055,17 +2054,17 @@ def cdr_overview_new(request):
                     else:
                         hourly_call_duration_res[sw_id] = [convert_to_minute(temp_duration_sum)]
 
-            total_call_list = []
-            for i in hourly_call_count_res:
-                total_call_list.append(hourly_call_count_res[i])
+            if int(switch_id) == 0:
+                total_call_list = []
+                for i in hourly_call_count_res:
+                    total_call_list.append(hourly_call_count_res[i])
 
-            total_duration_list = []
-            for i in hourly_call_duration_res:
-                total_duration_list.append(hourly_call_duration_res[i])
+                total_duration_list = []
+                for i in hourly_call_duration_res:
+                    total_duration_list.append(hourly_call_duration_res[i])
 
-
-            total_hourly_call_count = [sum(x) for x in itertools.izip_longest(*total_call_list, fillvalue=0)]
-            total_hourly_call_duration = [sum(x) for x in itertools.izip_longest(*total_duration_list, fillvalue=0)]
+                total_hourly_call_count = [sum(x) for x in itertools.izip_longest(*total_call_list, fillvalue=0)]
+                total_hourly_call_duration = [sum(x) for x in itertools.izip_longest(*total_duration_list, fillvalue=0)]
 
 
             xdata = list(set([i for i in xdata]))
@@ -2080,30 +2079,30 @@ def cdr_overview_new(request):
             int_count = 1
             extra_serie = {"tooltip": {"y_start": "", "y_end": " calls"},
                            "date_format": "%d %b %Y %H:%M:%S %p"}
-
             for i in hourly_call_count_res:
                 hourly_call_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
                 hourly_call_chartdata['y' + str(int_count)] = hourly_call_count_res[i]
                 hourly_call_chartdata['extra' + str(int_count)] = extra_serie
                 int_count += 1
 
-            hourly_call_chartdata['name' + str(int_count)] = 'Total calls'
-            hourly_call_chartdata['y' + str(int_count)] = total_hourly_call_count
-            hourly_call_chartdata['extra' + str(int_count)] = extra_serie
+            if int(switch_id) == 0:
+                hourly_call_chartdata['name' + str(int_count)] = 'Total calls'
+                hourly_call_chartdata['y' + str(int_count)] = total_hourly_call_count
+                hourly_call_chartdata['extra' + str(int_count)] = extra_serie
 
             int_count = 1
             extra_serie = {"tooltip": {"y_start": "", "y_end": " mins"},
                            "date_format": "%d %b %Y %H:%M:%S %p"}
-
             for i in hourly_call_duration_res:
                 hourly_duration_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
                 hourly_duration_chartdata['y' + str(int_count)] = hourly_call_duration_res[i]
                 hourly_duration_chartdata['extra' + str(int_count)] = extra_serie
                 int_count += 1
 
-            hourly_duration_chartdata['name' + str(int_count)] = 'Total duration'
-            hourly_duration_chartdata['y' + str(int_count)] = total_hourly_call_duration
-            hourly_duration_chartdata['extra' + str(int_count)] = extra_serie
+            if int(switch_id) == 0:
+                hourly_duration_chartdata['name' + str(int_count)] = 'Total duration'
+                hourly_duration_chartdata['y' + str(int_count)] = total_hourly_call_duration
+                hourly_duration_chartdata['extra' + str(int_count)] = extra_serie
 
 
         logging.debug('CDR daily view end')
