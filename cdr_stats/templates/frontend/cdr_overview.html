@@ -76,7 +76,20 @@
 </a>
 
 <div class="row"><div class="span6">&nbsp;</div></div>
-
+<div class="row">
+    <div class="span12">
+        <div class="graph_header">
+            <b>
+                {% if start_date  %}
+                    {{ start_date|date:"jS N Y" }}
+                {% endif %}
+                {% if end_date  %}
+                    {% trans "to" %} {{ end_date|date:"jS N Y" }}
+                {% endif %}
+            </b>
+        </div>
+    </div>
+</div>
 <div class="tabbable">
     <ul class="nav nav-tabs">
         <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "hourly call"|title %}</a></li>
@@ -92,43 +105,12 @@
         <div id="tabs-1" class="tab-pane {% if action == "tabs-1" or action == "" %}active{% endif %}">
             <div class="row">
                 <div class="span12">
-                    <div class="graph_header">
-                        <span id="id_title_span">{% trans "load by hour"|title %}</span> -
-                        <b>
-                            {% if start_date  %}
-                                {{ start_date|date:"jS N Y" }}
-                            {% endif %}
-                            {% if end_date  %}
-                                {% trans "to" %} {{ end_date|date:"jS N Y" }}
-                            {% endif %}
-                        </b>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="span12">
                     {% load_chart hourly_call_charttype hourly_call_chartdata "hourly_call_container" True "%d %b %y %H" %}
                     {% include_container "hourly_call_container" 400 '100%' %}
                 </div>
             </div>
         </div>
         <div id="tabs-2" class="tab-pane {% if action == "tabs-2" or action == "" %}active{% endif %}">
-            <div class="row">
-                <div class="span12">
-                    <div class="graph_header">
-                        <span id="id_title_span">{% trans "load by hour"|title %}</span> -
-                        <b>
-                            {% if start_date  %}
-                                {{ start_date|date:"jS N Y" }}
-                            {% endif %}
-                            {% if end_date  %}
-                                {% trans "to" %} {{ end_date|date:"jS N Y" }}
-                            {% endif %}
-                        </b>
-                    </div>
-                </div>
-            </div>
             <div class="row">
                 <div class="span12">
                     {% include_container "hourly_duration_container" 400 '100%' %}
@@ -139,42 +121,12 @@
         <div id="tabs-3" class="tab-pane {% if action == "tabs-3" or action == "" %}active{% endif %}">
             <div class="row">
                 <div class="span12">
-                    <div class="graph_header">
-                        <span id="id_title_span">{% trans "load by day"|title %}</span> -
-                        <b>
-                            {% if start_date  %}
-                                {{ start_date|date:"jS N Y" }}
-                            {% endif %}
-                            {% if end_date  %}
-                                {% trans "to" %} {{ end_date|date:"jS N Y" }}
-                            {% endif %}
-                        </b>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="span12">
                     {% include_container "daily_call_container" 400 '100%' %}
                 </div>
             </div>
         </div>
 
         <div id="tabs-4" class="tab-pane {% if action == "tabs-4" or action == "" %}active{% endif %}">
-            <div class="row">
-                <div class="span12">
-                    <div class="graph_header">
-                        <span id="id_title_span">{% trans "load by day"|title %}</span> -
-                        <b>
-                            {% if start_date  %}
-                                {{ start_date|date:"jS N Y" }}
-                            {% endif %}
-                            {% if end_date  %}
-                                {% trans "to" %} {{ end_date|date:"jS N Y" }}
-                            {% endif %}
-                        </b>
-                    </div>
-                </div>
-            </div>
             <div class="row">
                 <div class="span12">
                     {% include_container "daily_duration_container" 400 '100%' %}
@@ -184,41 +136,11 @@
         <div id="tabs-5" class="tab-pane {% if action == "tabs-5" or action == "" %}active{% endif %}">
             <div class="row">
                 <div class="span12">
-                    <div class="graph_header">
-                        <span id="id_title_span">{% trans "load by month"|title %}</span> -
-                        <b>
-                            {% if start_date  %}
-                                {{ start_date|date:"jS N Y" }}
-                            {% endif %}
-                            {% if end_date  %}
-                                {% trans "to" %} {{ end_date|date:"jS N Y" }}
-                            {% endif %}
-                        </b>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="span12">
                     {% include_container "monthly_call_container" 400 '100%' %}
                 </div>
             </div>
         </div>
         <div id="tabs-6" class="tab-pane {% if action == "tabs-6" or action == "" %}active{% endif %}">
-            <div class="row">
-                <div class="span12">
-                    <div class="graph_header">
-                        <span id="id_title_span">{% trans "load by month"|title %}</span> -
-                        <b>
-                            {% if start_date  %}
-                                {{ start_date|date:"jS N Y" }}
-                            {% endif %}
-                            {% if end_date  %}
-                                {% trans "to" %} {{ end_date|date:"jS N Y" }}
-                            {% endif %}
-                        </b>
-                    </div>
-                </div>
-            </div>
             <div class="row">
                 <div class="span12">
                     {% include_container "monthly_duration_container" 400 '100%' %}

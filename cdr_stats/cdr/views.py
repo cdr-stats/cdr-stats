@@ -1529,6 +1529,16 @@ def cdr_overview(request):
     tday = datetime.today()
     search_tag = 0
 
+    hourly_duration_charttype = hourly_call_charttype = "lineWithFocusChart"
+    daily_duration_charttype = daily_call_charttype = "lineWithFocusChart"
+    monthly_duration_charttype = monthly_call_charttype = "lineWithFocusChart"
+    hourly_call_chartdata = {'x': []}
+    hourly_duration_chartdata = {'x': []}
+    daily_call_chartdata = {'x': []}
+    daily_duration_chartdata = {'x': []}
+    monthly_call_chartdata = {'x': []}
+    monthly_duration_chartdata = {'x': []}
+
     action = 'tabs-1'
     if request.method == 'POST':
         logging.debug('CDR overview with search option')
@@ -1577,13 +1587,22 @@ def cdr_overview(request):
                 'search_tag': search_tag,
                 'start_date': start_date,
                 'end_date': end_date,
-                'TOTAL_GRAPH_COLOR': settings.TOTAL_GRAPH_COLOR,
+                'hourly_call_chartdata': hourly_call_chartdata,
+                'hourly_call_charttype': hourly_call_charttype,
+                'hourly_duration_chartdata': hourly_duration_chartdata,
+                'hourly_duration_charttype': hourly_duration_charttype,
+                'daily_call_chartdata': daily_call_chartdata,
+                'daily_call_charttype': daily_call_charttype,
+                'daily_duration_chartdata': daily_duration_chartdata,
+                'daily_duration_charttype': daily_duration_charttype,
+                'monthly_call_chartdata': monthly_call_chartdata,
+                'monthly_call_charttype': monthly_call_charttype,
+                'monthly_duration_chartdata': monthly_duration_chartdata,
+                'monthly_duration_charttype': monthly_duration_charttype,
             }
 
-            return render_to_response(
-                template_name, variables,
-                context_instance=RequestContext(request)
-            )
+            return render_to_response(template_name, variables,
+                context_instance=RequestContext(request))
 
     if len(query_var) == 0:
         tday = datetime.today()
@@ -1620,19 +1639,14 @@ def cdr_overview(request):
         logging.debug('After Aggregate')
 
         xdata = []
-        hourly_duration_charttype = hourly_call_charttype = "lineWithFocusChart"
         hourly_call_count_res = dict()
         hourly_call_duration_res = dict()
-        hourly_call_chartdata = {'x': []}
-        hourly_duration_chartdata = {'x': []}
-
         if list_data:
             for doc in list_data['result']:
                 a_Year = int(doc['_id']['date'][0:4])
                 b_Month = int(doc['_id']['date'][4:6])
                 c_Day = int(doc['_id']['date'][6:8])
                 day_hours = dict()
-                hourly_data = dict()
 
                 for dict_in_list in doc['call_per_hour']:
                     for key, value in dict_in_list.iteritems():
@@ -1681,6 +1695,7 @@ def cdr_overview(request):
 
             switch_count = len(hourly_call_duration_res.keys())
             if int(switch_id) == 0 and switch_count > 1:
+                # get total of no of switch
                 total_call_list = []
                 for i in hourly_call_count_res:
                     total_call_list.append(hourly_call_count_res[i])
@@ -1692,7 +1707,7 @@ def cdr_overview(request):
                 total_hourly_call_count = [sum(x) for x in itertools.izip_longest(*total_call_list, fillvalue=0)]
                 total_hourly_call_duration = [sum(x) for x in itertools.izip_longest(*total_duration_list, fillvalue=0)]
 
-
+            # get unique data for x-axis
             xdata = list(set([i for i in xdata]))
             xdata = sorted(xdata)
             hourly_call_chartdata = {
@@ -1704,7 +1719,7 @@ def cdr_overview(request):
 
             int_count = 1
             extra_serie = {"tooltip": {"y_start": "", "y_end": " calls"},
-                           "date_format": "%d %b %y %H:%M:%S %p"}
+                           "date_format": "%d %b %y %H:%M %p"}
             for i in hourly_call_count_res:
                 hourly_call_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
                 hourly_call_chartdata['y' + str(int_count)] = hourly_call_count_res[i]
@@ -1718,7 +1733,7 @@ def cdr_overview(request):
 
             int_count = 1
             extra_serie = {"tooltip": {"y_start": "", "y_end": " mins"},
-                           "date_format": "%d %b %y %H:%M:%S %p"}
+                           "date_format": "%d %b %y %H:%M %p"}
             for i in hourly_call_duration_res:
                 hourly_duration_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
                 hourly_duration_chartdata['y' + str(int_count)] = hourly_call_duration_res[i]
@@ -1740,13 +1755,10 @@ def cdr_overview(request):
                                           settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
                                           pipeline=pipeline)
         logging.debug('After Aggregate')
-        total_day_record = []
+
         xdata = []
-        daily_duration_charttype = daily_call_charttype = "lineWithFocusChart"
         daily_call_count_res = dict()
         daily_call_duration_res = dict()
-        daily_call_chartdata = {'x': []}
-        daily_duration_chartdata = {'x': []}
         if list_data:
             day_data = dict()
             for doc in list_data['result']:
@@ -1778,12 +1790,12 @@ def cdr_overview(request):
                 daily_total_duration_list = []
                 for i in daily_call_duration_res:
                     daily_total_duration_list.append(daily_call_duration_res[i])
+
                 total_daily_call_count = [sum(x) for x in itertools.izip_longest(*daily_total_call_list, fillvalue=0)]
                 total_daily_call_duration = [sum(x) for x in itertools.izip_longest(*daily_total_duration_list, fillvalue=0)]
 
             xdata = list(set([i for i in xdata]))
             xdata = sorted(xdata)
-
             daily_call_chartdata = {
                 'x': xdata,
             }
@@ -1834,15 +1846,11 @@ def cdr_overview(request):
         logging.debug('After Aggregate')
 
         xdata = []
-        monthly_duration_charttype = monthly_call_charttype = "lineWithFocusChart"
         monthly_call_count_res = dict()
         monthly_call_duration_res = dict()
-        monthly_call_chartdata = {'x': []}
-        monthly_duration_chartdata = {'x': []}
         if list_data:
             month_data = dict()
             for doc in list_data['result']:
-
                 # Get date from aggregate result array
                 graph_month = datetime(int(doc['_id']['date'][0:4]),
                                        int(doc['_id']['date'][4:6]),
@@ -1919,18 +1927,15 @@ def cdr_overview(request):
             'search_tag': search_tag,
             'start_date': start_date,
             'end_date': end_date,
-            'TOTAL_GRAPH_COLOR': settings.TOTAL_GRAPH_COLOR,
 
             'hourly_call_chartdata': hourly_call_chartdata,
             'hourly_call_charttype': hourly_call_charttype,
             'hourly_duration_chartdata': hourly_duration_chartdata,
             'hourly_duration_charttype': hourly_duration_charttype,
-
             'daily_call_chartdata': daily_call_chartdata,
             'daily_call_charttype': daily_call_charttype,
             'daily_duration_chartdata': daily_duration_chartdata,
             'daily_duration_charttype': daily_duration_charttype,
-
             'monthly_call_chartdata': monthly_call_chartdata,
             'monthly_call_charttype': monthly_call_charttype,
             'monthly_duration_chartdata': monthly_duration_chartdata,
