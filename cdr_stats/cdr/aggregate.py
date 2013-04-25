@@ -234,7 +234,6 @@ def pipeline_daily_overview(query_var):
         },
         {
             '$project': {
-                'switch_id': 1,
                 'call_per_day': 1,
                 'duration_per_day': 1,
                 'avg_duration_per_day': {'$divide': ["$duration_per_day", "$call_per_day"]}
@@ -242,8 +241,7 @@ def pipeline_daily_overview(query_var):
         },
         {
             '$sort': {
-                '_id': -1,
-                'switch_id': 1,
+                '_id': 1,
             }
         }
     ]
@@ -261,26 +259,23 @@ def pipeline_monthly_overview(query_var):
     pipeline = [
         {'$match': query_var},
         {'$group': {
-            '_id': {'$substr': ['$_id', 0, 6]},
-            'switch_id': {'$addToSet': '$metadata.switch_id'},
+            '_id': {'date': {'$substr': ["$_id", 0, 6]},
+                    'switch_id': '$metadata.switch_id'},
             'call_per_month': {'$sum': '$call_monthly'},
             'duration_per_month': {'$sum': '$duration_monthly'}
         }
         },
         {
             '$project': {
-                'switch_id': 1,
                 'call_per_month': 1,
                 'duration_per_month': 1,
                 'avg_duration_per_month': {'$divide': ['$duration_per_month',
                                                        '$call_per_month']},
             }
         },
-        {'$unwind': '$switch_id'},
         {
             '$sort': {
-                '_id': -1,
-                'switch_id': 1,
+                '_id': 1,
             }
         }
     ]

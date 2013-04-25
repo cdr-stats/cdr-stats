@@ -28,6 +28,4 @@ urlpatterns = patterns('cdr.views',
     (r'^mail_report/$', 'mail_report'),
     (r'^country_report/$', 'cdr_country_report'),
     (r'^world_map/$', 'world_map_view'),
-
-    (r'^cdr_overview_new/$', 'cdr_overview_new'),
 )
