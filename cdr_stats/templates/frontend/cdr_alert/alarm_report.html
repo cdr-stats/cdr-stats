@@ -15,7 +15,7 @@
         $(function () {
             $('a[data-toggle="tab"]').on('shown', function (e) {
                 if (e.target.hash == '#tabs-2') {
-                    {% load_chart charttype chartdata "alert_report_container" True "%d %b %Y" False %}
+                    {% load_chart charttype chartdata "alert_report_container" True "%d %b %y" False %}
                 }
             })
         })

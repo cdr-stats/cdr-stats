@@ -247,10 +247,10 @@ def last_seven_days_report(request, kwargs):
     xdata = []
     ydata = []
     for i in total_data:
-        xdata.append(str(i[0]))
+        xdata.append(i[0])
         ydata.append(i[1]['alert_count'])
 
-    tooltip_date = "%d %b %Y"
+    tooltip_date = "%d %b %Y %H:%M %p"
     extra_serie = {"tooltip": {"y_start": "", "y_end": ""},
                    "date_format": tooltip_date}
     chartdata = {
