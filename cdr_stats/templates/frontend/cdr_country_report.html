@@ -9,7 +9,7 @@
         });
     </script>
     {% include "frontend/common_datepicker.html" %}
-    {% include_nvd3jscss %}
+    {% include_nvd3jscss False %}
     {% load_chart country_call_charttype country_call_chartdata "country_call_container" %}
     {% load_chart country_call_charttype country_duration_chartdata "country_duration_container" %}
     {% load_chart final_call_charttype final_call_chartdata "final_call_container" True "%d %b %Y" %}
