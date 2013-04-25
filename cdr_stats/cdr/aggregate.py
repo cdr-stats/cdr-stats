@@ -193,20 +193,19 @@ def pipeline_hourly_overview(query_var):
         {'$match': query_var},
         {
             '$group': {
-                '_id': {'$substr': ["$_id", 0, 8]},
-                'switch_id': {'$addToSet': '$metadata.switch_id'},
+                '_id': {'_id': {'$substr': ["$_id", 0, 8]},
+                        'switch_id': '$metadata.switch_id'},
                 'call_per_hour': {'$push': '$call_hourly'},
                 'duration_per_hour': {'$push': '$duration_hourly'}
             }
         },
         {
             '$project': {
-                'switch_id': 1,
+                #'switch_id': 1,
                 'call_per_hour': 1,
                 'duration_per_hour': 1,
             }
         },
-        {'$unwind': '$switch_id'},
         {
             '$sort': {
                 '_id': 1,

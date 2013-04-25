@@ -48,6 +48,7 @@ import math
 import csv
 import time
 import logging
+import itertools
 
 
 def index(request):
@@ -1993,7 +1994,7 @@ def cdr_overview_new(request):
                                           pipeline=pipeline)
         logging.debug('After Aggregate')
 
-        hour_data = dict()
+
         xdata = []
         hourly_duration_charttype = hourly_call_charttype = "lineWithFocusChart"
         hourly_call_count_res = dict()
@@ -2003,9 +2004,9 @@ def cdr_overview_new(request):
 
         if list_data:
             for doc in list_data['result']:
-                a_Year = int(doc['_id'][0:4])
-                b_Month = int(doc['_id'][4:6])
-                c_Day = int(doc['_id'][6:8])
+                a_Year = int(doc['_id']['_id'][0:4])
+                b_Month = int(doc['_id']['_id'][4:6])
+                c_Day = int(doc['_id']['_id'][6:8])
                 day_hours = dict()
                 hourly_data = dict()
 
@@ -2027,7 +2028,7 @@ def cdr_overview_new(request):
                                 'dt': dt,
                                 'calldate__count': int(value),
                                 'duration__sum': 0,
-                                'switch_id': int(doc['switch_id'])
+                                'switch_id': int(doc['_id']['switch_id'])
                             }
 
                 # update day_hours for duration
@@ -2036,8 +2037,6 @@ def cdr_overview_new(request):
                         day_hours[int(key)]['duration__sum'] += int(value)
 
                 for hr in day_hours:
-                    total_hour_record.append(day_hours[hr])
-
                     # All switches hourly data
                     temp_dt = day_hours[hr]['dt']
                     temp_call_count = int(day_hours[hr]['calldate__count'])
@@ -2056,25 +2055,18 @@ def cdr_overview_new(request):
                     else:
                         hourly_call_duration_res[sw_id] = [convert_to_minute(temp_duration_sum)]
 
-            # apply sorting on timestamp value
-            total_hour_record = sorted(total_hour_record, key=lambda k: k['dt'])
+            total_call_list = []
+            for i in hourly_call_count_res:
+                total_call_list.append(hourly_call_count_res[i])
 
-            total_hourly_dict = dict()
-            for i in total_hour_record:
-                if i['dt'] in total_hourly_dict:
-                    total_hourly_dict[i['dt']]['call_count'] += i['calldate__count']
-                    total_hourly_dict[i['dt']]['duration_sum'] += i['duration__sum']
-                else:
-                    total_hourly_dict[i['dt']] = {
-                        'call_count': i['calldate__count'],
-                        'duration_sum': i['duration__sum'],
-                    }
+            total_duration_list = []
+            for i in hourly_call_duration_res:
+                total_duration_list.append(hourly_call_duration_res[i])
 
-            total_hourly_dict = total_hourly_dict.items()
-            total_hourly_dict = sorted(total_hourly_dict, key=lambda k: k[0])
 
-            total_hourly_call_count = [i[1]['call_count'] for i in total_hourly_dict]
-            total_hourly_call_duration = [convert_to_minute(i[1]['duration_sum']) for i in total_hourly_dict]
+            total_hourly_call_count = [sum(x) for x in itertools.izip_longest(*total_call_list, fillvalue=0)]
+            total_hourly_call_duration = [sum(x) for x in itertools.izip_longest(*total_duration_list, fillvalue=0)]
+
 
             xdata = list(set([i for i in xdata]))
             xdata = sorted(xdata)
@@ -2120,9 +2112,6 @@ def cdr_overview_new(request):
             'module': current_view(request),
             'form': form,
             'search_tag': search_tag,
-            'total_hour_record': total_hour_record,
-            'total_hour_data': total_hour_data,
-
             'start_date': start_date,
             'end_date': end_date,
             'TOTAL_GRAPH_COLOR': settings.TOTAL_GRAPH_COLOR,
