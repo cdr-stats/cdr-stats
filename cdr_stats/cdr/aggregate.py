@@ -207,7 +207,7 @@ def pipeline_hourly_overview(query_var):
         },
         {
             '$sort': {
-                '_id': 1,
+                '_id': -1,
                 'switch_id': 1,
             }
         }
@@ -241,7 +241,7 @@ def pipeline_daily_overview(query_var):
         },
         {
             '$sort': {
-                '_id': 1,
+                '_id': -1,
             }
         }
     ]
@@ -275,7 +275,7 @@ def pipeline_monthly_overview(query_var):
         },
         {
             '$sort': {
-                '_id': 1,
+                '_id': -1,
             }
         }
     ]
