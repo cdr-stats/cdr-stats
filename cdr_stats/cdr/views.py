@@ -896,7 +896,7 @@ def cdr_dashboard(request):
         ydata3.append(i[1]['buy_cost_sum'])
         ydata4.append(i[1]['sell_cost_sum'])
 
-    tooltip_date = "%d %b %Y %H:%M:%S %p"
+    tooltip_date = "%d %b %y %H:%M %p"
     extra_serie1 = {"tooltip": {"y_start": "", "y_end": " calls"}, "date_format": tooltip_date}
     extra_serie2 = {"tooltip": {"y_start": "", "y_end": " sec"}, "date_format": tooltip_date}
     extra_serie3 = {"tooltip": {"y_start": "", "y_end": ""}, "date_format": tooltip_date}
