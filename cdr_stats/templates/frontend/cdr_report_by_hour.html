@@ -9,6 +9,15 @@
         });
     </script>
     {% include_nvd3jscss False %}
+    <script>
+        $(function () {
+            $('a[data-toggle="tab"]').on('shown', function (e) {
+                if (e.target.hash == '#tabs-2') {
+                    {% load_chart min_charttype min_chartdata "min_container" False "" False %}
+                }
+            })
+        })
+    </script>
 {% endblock %}
 
 {% block content %}
@@ -37,12 +46,6 @@
         <div class="row">
             <div class="span12">
                 <div class="row">
-                    <div class="span6">
-                        <label class="control-label" for="{{ form.graph_view.auto_id }}">{{ form.graph_view.label|title }}</label>
-                        <div class="input">
-                            {{ form.graph_view }}
-                        </div>
-                    </div>
                     <div class="span4">
                         <label class="control-label" for="{{ form.switch.auto_id }}">{{ form.switch.label|title }}</label>
                         <div class="input">
@@ -75,12 +78,27 @@
         </div>
         </div>
     </div>
-
-    <div class="row">
-        <div class="span12">
-            {% load_chart charttype chartdata "hourly_container" %}
-            {% include_container "hourly_container" 400 '100%' %}
+<div class="tabbable">
+    <ul class="nav nav-tabs">
+        <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "calls per hour"|title %}</a></li>
+        <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "minutes per hour"|title %}</a></li>
+    </ul>
+    <div class="tab-content">
+        <div id="tabs-1" class="tab-pane {% if action == "tabs-1" or action == "" %}active{% endif %}">
+            <div class="row">
+                <div class="span12">
+                    {% load_chart call_charttype call_chartdata "call_container" %}
+                    {% include_container "call_container" 400 '100%' %}
+                </div>
+            </div>
+        </div>
+        <div id="tabs-2" class="tab-pane {% if action == "tabs-2" or action == "" %}active{% endif %}">
+            <div class="row">
+                <div class="span12">
+                    {% include_container "min_container" 400 '100%' %}
+                </div>
+            </div>
         </div>
     </div>
-
+</div>
 {% endblock %}

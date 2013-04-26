@@ -1361,17 +1361,18 @@ def cdr_daily_comparison(request):
     query_var = {}
     total_record = []
     #default
+    min_charttype = call_charttype = "lineChart"
+    min_chartdata = call_chartdata = {'x': []}
     comp_days = 2
-    graph_view = 1
     check_days = 1
     search_tag = 0
+    action = 'tabs-1'
     tday = datetime.today()
     from_date = tday.strftime('%Y-%m-%d')
     form = CompareCallSearchForm(initial={'from_date': from_date,
                                           'comp_days': comp_days,
                                           'check_days': check_days,
-                                          'switch': 0,
-                                          'graph_view': graph_view})
+                                          'switch': 0})
     if request.method == 'POST':
         logging.debug('CDR hourly view with search option')
         search_tag = 1
@@ -1387,7 +1388,6 @@ def cdr_daily_comparison(request):
                 select_date = tday
 
             comp_days = int(variable_value(request, 'comp_days'))
-            graph_view = int(variable_value(request, 'graph_view'))
             check_days = int(variable_value(request, 'check_days'))
             # check previous days
             if check_days == 2:
@@ -1419,15 +1419,16 @@ def cdr_daily_comparison(request):
             # form is not valid
             logging.debug('Error : CDR hourly search form')
             variables = {
+                'action': action,
                 'module': current_view(request),
                 'form': form,
-                'result': 'min',
-                'graph_view': graph_view,
                 'search_tag': search_tag,
                 'from_date': from_date,
                 'comp_days': comp_days,
-                'chartdata': {},
-                'charttype': "lineChart",
+                'call_chartdata': call_chartdata,
+                'call_charttype': call_charttype,
+                'min_chartdata': min_chartdata,
+                'min_charttype': min_charttype,
             }
 
             return render_to_response(template_name, variables,
@@ -1435,9 +1436,7 @@ def cdr_daily_comparison(request):
 
     if len(query_var) == 0:
         from_date = datetime.today()
-        from_day = validate_days(from_date.year,
-                                 from_date.month,
-                                 from_date.day)
+        from_day = validate_days(from_date.year, from_date.month, from_date.day)
         from_year = from_date.year
         from_month = from_date.month
         end_date = datetime(from_year, from_month, from_day)
@@ -1458,47 +1457,59 @@ def cdr_daily_comparison(request):
                 s_date = datetime(i.year, i.month, i.day, 0, 0, 0, 0)
                 e_date = datetime(i.year, i.month, i.day, 23, 59, 59, 999999)
                 query_var['metadata.date'] = {'$gte': s_date, '$lt': e_date}
-                result_data = \
+
+                call_per_hr_data = \
                     get_hourly_report_for_date(s_date, e_date,
-                                               query_var, graph_view)
+                                               query_var, 1)
+                min_per_hr_data = \
+                    get_hourly_report_for_date(s_date, e_date,
+                                               query_var, 2)
 
         # Same day of the week
         if check_days == 1:
-            result_data = \
+            call_per_hr_data = \
                 get_hourly_report_for_date(start_date, end_date,
-                                           query_var, graph_view)
+                                           query_var, 1)
+            min_per_hr_data = \
+                get_hourly_report_for_date(start_date, end_date,
+                                           query_var, 2)
 
-
-        charttype = "lineChart"
         xdata = [i for i in range(0, 24)]
-        y_count = 1
-
-        y_end = " calls"
-        if graph_view == 2:
-            y_end = " mins"
-
-        extra_serie = {"tooltip": {"y_start": "There are ", "y_end": y_end}}
-        chartdata = {
+        extra_serie = {"tooltip": {"y_start": "There are ", "y_end": " calls"}}
+        call_chartdata = {
             'x': xdata,
         }
-        for i in result_data['total_record']:
-            chartdata['name'+ str(y_count)] = i
-            chartdata['y' + str(y_count)] = result_data['total_record'][i]
-            chartdata['extra' + str(y_count)] = extra_serie
+        y_count = 1
+        for i in call_per_hr_data['total_record']:
+            call_chartdata['name'+ str(y_count)] = i
+            call_chartdata['y' + str(y_count)] = call_per_hr_data['total_record'][i]
+            call_chartdata['extra' + str(y_count)] = extra_serie
             y_count += 1
 
+        extra_serie = {"tooltip": {"y_start": "There are ", "y_end": " mins"}}
+        min_chartdata = {
+            'x': xdata,
+        }
+        y_count = 1
+        for i in min_per_hr_data['total_record']:
+            min_chartdata['name'+ str(y_count)] = i
+            min_chartdata['y' + str(y_count)] = min_per_hr_data['total_record'][i]
+            min_chartdata['extra' + str(y_count)] = extra_serie
+            y_count += 1
 
         logging.debug('CDR hourly view end')
+
         variables = {
+            'action': action,
             'module': current_view(request),
             'form': form,
-            'result': 'min',
-            'graph_view': graph_view,
             'search_tag': search_tag,
             'from_date': from_date,
             'comp_days': comp_days,
-            'chartdata': chartdata,
-            'charttype': charttype,
+            'call_chartdata': call_chartdata,
+            'call_charttype': call_charttype,
+            'min_chartdata': min_chartdata,
+            'min_charttype': min_charttype,
         }
 
         return render_to_response(template_name, variables,

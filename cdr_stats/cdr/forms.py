@@ -190,17 +190,13 @@ class CompareCallSearchForm(SearchForm):
     comp_days = forms.ChoiceField(label='', required=False,
                                   choices=comp_day_range(6))
     comp_days.widget.attrs['class'] = 'input-small'
-    graph_view = forms.ChoiceField(label=_('graph'), required=False,
-                                   choices=((1, _('calls per Hour')), (2,
-                                   _('minutes per Hour'))))
     check_days = forms.TypedChoiceField(label=_('check with'), required=False,
             coerce=bool, choices=((1, _('previous days')), (2,
             _('same day of the week'))), widget=forms.RadioSelect)
 
     def __init__(self, *args, **kwargs):
         super(CompareCallSearchForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['from_date', 'comp_days', 'check_days',
-                                'graph_view', 'switch']
+        self.fields.keyOrder = ['from_date', 'comp_days', 'check_days', 'switch']
 
 
 class ConcurrentCallForm(CdrSearchForm):
