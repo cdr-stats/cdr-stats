@@ -1291,7 +1291,7 @@ def mail_report(request):
            context_instance=RequestContext(request))
 
 
-def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
+def get_hourly_report_for_date(start_date, end_date, query_var):
     """Get Hourly report for date"""
     logging.debug('Aggregate cdr hourly report')
     pipeline = pipeline_hourly_report(query_var)
@@ -1300,39 +1300,43 @@ def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
                                       settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
                                       pipeline=pipeline)
 
-    total_record = {}
+    call_total_record = {}
+    min_total_record = {}
     if list_data:
         for doc in list_data['result']:
             called_time = datetime(int(doc['_id'][0:4]),
                                    int(doc['_id'][4:6]),
                                    int(doc['_id'][6:8]))
             # assign 0 to 23 as key hours to day_hours with initial value 0
-            day_hours = {}
+            call_day_hours = {}
+            min_day_hours = {}
             for hr in range(0, 24):
-                day_hours[hr] = 0
+                call_day_hours[hr] = 0
+                min_day_hours[hr] = 0
 
-            if graph_view == 1:  # Calls per hour
-                for dict_in_list in doc['call_per_hour']:
-                    # update day_hours via key
-                    for key, value in dict_in_list.iteritems():
-                        day_hours[int(key)] += int(value)
+            # Calls per hour
+            for dict_in_list in doc['call_per_hour']:
+                # update day_hours via key
+                for key, value in dict_in_list.iteritems():
+                    call_day_hours[int(key)] += int(value)
 
-                total_record[str(called_time)[:10]] = \
-                    [value for key, value in day_hours.iteritems()]
+            call_total_record[str(called_time)[:10]] = \
+                [value for key, value in call_day_hours.iteritems()]
 
-            if graph_view == 2:  # Min per hour
-                for dict_in_list in doc['duration_per_hour']:
-                    # update day_hours via key
-                    for key, value in dict_in_list.iteritems():
-                        day_hours[int(key)] += float(value) / 60
+            # Min per hour
+            for dict_in_list in doc['duration_per_hour']:
+                # update day_hours via key
+                for key, value in dict_in_list.iteritems():
+                    min_day_hours[int(key)] += float(value) / 60
 
-                total_record[str(called_time)[:10]] = \
-                    [get_rounded_value(value) for key, value in day_hours.iteritems()]
+            min_total_record[str(called_time)[:10]] = \
+                [get_rounded_value(value) for key, value in min_day_hours.iteritems()]
 
     logging.debug('After Aggregate')
 
     variables = {
-        'total_record': total_record,
+        'call_total_record': call_total_record,
+        'min_total_record': min_total_record,
     }
     return variables
 
@@ -1458,21 +1462,17 @@ def cdr_daily_comparison(request):
                 e_date = datetime(i.year, i.month, i.day, 23, 59, 59, 999999)
                 query_var['metadata.date'] = {'$gte': s_date, '$lt': e_date}
 
-                call_per_hr_data = \
-                    get_hourly_report_for_date(s_date, e_date,
-                                               query_var, 1)
-                min_per_hr_data = \
-                    get_hourly_report_for_date(s_date, e_date,
-                                               query_var, 2)
+                call_min_data = get_hourly_report_for_date(s_date, e_date, query_var)
+                call_per_hr_data = call_min_data['call_total_record']
+                min_per_hr_data = call_min_data['min_total_record']
 
         # Same day of the week
         if check_days == 1:
-            call_per_hr_data = \
-                get_hourly_report_for_date(start_date, end_date,
-                                           query_var, 1)
-            min_per_hr_data = \
-                get_hourly_report_for_date(start_date, end_date,
-                                           query_var, 2)
+            call_min_data = get_hourly_report_for_date(start_date, end_date,
+                                           query_var)
+            call_per_hr_data = call_min_data['call_total_record']
+            min_per_hr_data = call_min_data['min_total_record']
+
 
         xdata = [i for i in range(0, 24)]
         extra_serie = {"tooltip": {"y_start": "There are ", "y_end": " calls"}}
@@ -1480,9 +1480,9 @@ def cdr_daily_comparison(request):
             'x': xdata,
         }
         y_count = 1
-        for i in call_per_hr_data['total_record']:
+        for i in call_per_hr_data:
             call_chartdata['name'+ str(y_count)] = i
-            call_chartdata['y' + str(y_count)] = call_per_hr_data['total_record'][i]
+            call_chartdata['y' + str(y_count)] = call_per_hr_data[i]
             call_chartdata['extra' + str(y_count)] = extra_serie
             y_count += 1
 
@@ -1491,9 +1491,9 @@ def cdr_daily_comparison(request):
             'x': xdata,
         }
         y_count = 1
-        for i in min_per_hr_data['total_record']:
+        for i in min_per_hr_data:
             min_chartdata['name'+ str(y_count)] = i
-            min_chartdata['y' + str(y_count)] = min_per_hr_data['total_record'][i]
+            min_chartdata['y' + str(y_count)] = min_per_hr_data[i]
             min_chartdata['extra' + str(y_count)] = extra_serie
             y_count += 1
 
