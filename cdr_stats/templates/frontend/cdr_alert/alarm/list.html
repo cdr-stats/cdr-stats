@@ -81,8 +81,9 @@
                     {% if perms.cdr_alert.delete_alarm %}
                         <a id="id_delete_confirm" href="del/{{ row.id }}/" {% icon "delete" %} title="{% trans "delete alarm"|capfirst %}"></a>
                     {% endif %}
+
                     {% if perms.cdr_alert.alert_test %}
-                        <a id="id_test_alert" href="test/{{ row.id }}/" {% icon "link_go" %} title="{% trans "test alarm"|capfirst %}"></a>
+                        <a href="#alarm-test" class="alarm-test" url="test/{{ row.id }}/" data-toggle="modal" data-controls-modal="alarm-test" title="{% trans "alarm test"|title %}" {% icon "link_go" %}>hi</a>
                     {% endif %}
                 </td>
             </tr>
@@ -104,6 +105,18 @@
             {% paginate %}
         {% endif %}
         </form>
+
+        <!--Alarm test modal-->
+        <script type="text/javascript" charset="utf-8">
+            $(".alarm-test").live('click', function() {
+                var url = $(this).attr('url');
+                var modal_id = $(this).attr('data-controls-modal');
+                $("#" + modal_id).load(url);
+            });
+        </script>
+
+        <!-- modal content-->
+        <div id="alarm-test" class="modal modal hide fade"></div>
     </div>
 </div>
 {% endblock %}

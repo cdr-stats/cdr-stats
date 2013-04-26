@@ -126,17 +126,18 @@ def alarm_test(request, object_id):
 
         * Test selected the alarm from the alarm list
     """
-    if int(object_id) != 0:
-        # When object_id is not 0
-        alarm = get_object_or_404(
-            Alarm, pk=object_id, user=request.user)
-        if run_alarm(alarm, logging):
-            request.session["msg"] = _('"%(name)s" is tested successfully.')\
-                % {'name': alarm.name}
-        else:
-            request.session["error_msg"] = _('"%(name)s" is not working.')\
-                % {'name': alarm.name}
-    return HttpResponseRedirect('/alert/')
+    try:
+        alarm_report = AlarmReport.objects.filter(alarm_id=object_id)
+    except:
+        alarm_report = []
+
+    template = 'frontend/cdr_alert/alarm/test_alert.html'
+    data = {
+        'alarm_report': alarm_report,
+    }
+    request.session['err_msg'] = ''
+    return render_to_response(template, data,
+        context_instance=RequestContext(request))
 
 
 @permission_required('cdr_alert.delete_alarm', login_url='/')

@@ -1,0 +1,79 @@
+{% extends "frontend/master.html" %}
+{% load i18n cdr_alert_tags %}
+
+{% block title %}{% trans "alert test"|title %}{% endblock %}
+
+{% block menu %}
+{% endblock %}
+
+{% block container %}
+
+    {% block content %}
+        {% if err_msg %}
+
+            <script type="text/javascript" charset="utf-8">
+                $(window).load(function(){
+                    $('#alarm_test_modal').modal('show');
+                });
+                var url = '/alert/';
+                $(".close").live('click', function() {
+                    $(location).attr('href', url);
+                });
+                var KEYCODE_ESC = 27;
+                $(document).keyup(function(e) {
+                    if (e.keyCode == KEYCODE_ESC) { $(location).attr('href', url); }
+                });
+            </script>
+            <!-- modal content-->
+            <div class="modal hide fade" id="alarm_test_modal">
+
+        {% endif %}
+
+        <div class="modal-header">
+            <a class="close" data-dismiss="modal" >&times;</a>
+            <h3>{% trans "alarm test"|title %}</h3>
+        </div>
+        <div class="modal-body">
+            <table class="table table-striped table-bordered table-condensed">
+            <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            {% if rows %}
+                {% for row in alarm_report %}
+                <tr>
+                    <td>{{ row.id }}</td>
+                    <td>{{ row.alarm.name }}</td>
+                    <td>{{ row.calculatedvalue }}</td>
+                    <td>{{ row.status|alarm_report_status }}</td>
+                    <td>{{ row.daterun }}</td>
+                </tr>
+                {% endfor %}
+
+            {% else %}
+                <tr>
+                    <td colspan="5" align="center">
+                        {% trans "no records found"|title %}
+                    </td>
+                </tr>
+            {% endif %}
+            </table>
+        </div>
+        <div class="modal-footer">
+            <input type="submit" class="btn btn-primary" name="submit" value="{% trans "submit"|title %}" />
+            <a href="#" class="close btn" data-dismiss="modal">{% trans "close"|title %}</a>
+        </div>
+        {% if err_msg %}
+            </div>
+        {% endif %}
+
+    {% endblock %}
+
+    {% block footer %}
+    {% endblock %}
+
+{% endblock %}
