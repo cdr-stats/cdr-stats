@@ -130,7 +130,7 @@ def alarm_test(request, object_id):
         # When object_id is not 0
         alarm = get_object_or_404(
             Alarm, pk=object_id, user=request.user)
-        if not run_alarm(alarm, logging):
+        if run_alarm(alarm, logging):
             request.session["msg"] = _('"%(name)s" is tested successfully.')\
                 % {'name': alarm.name}
         else:
