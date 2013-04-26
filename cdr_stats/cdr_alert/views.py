@@ -24,12 +24,14 @@ from cdr_alert.models import Alarm, Blacklist, Whitelist, AlarmReport
 from cdr_alert.constants import ALARM_COLUMN_NAME, ALARM_REPORT_COLUMN_NAME
 from cdr_alert.forms import AlarmForm, BWCountryForm, BWPrefixForm,\
     AlarmReportForm
+from cdr_alert.tasks import run_alarm
 from common.common_functions import current_view, get_pagination_vars,\
     validate_days
 from country_dialcode.models import Prefix
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import time
+import logging
 
 
 @permission_required('cdr_alert.alert_settings', login_url='/')
@@ -63,6 +65,7 @@ def alarm_list(request):
     template_data = {
         'module': current_view(request),
         'msg': request.session.get('msg'),
+        'error_msg': request.session.get('error_msg'),
         'rows': alarm_list,
         'total_count': alarm_list.count(),
         'PAGE_SIZE': PAGE_SIZE,
@@ -108,6 +111,32 @@ def alarm_add(request):
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))
+
+
+@permission_required('cdr_alert.alert_test', login_url='/')
+@login_required
+def alarm_test(request, object_id):
+    """Test a alarm for a logged in user
+
+    **Attributes**:
+
+        * ``object_id`` - Selected alarm object
+
+    **Logic Description**:
+
+        * Test selected the alarm from the alarm list
+    """
+    if int(object_id) != 0:
+        # When object_id is not 0
+        alarm = get_object_or_404(
+            Alarm, pk=object_id, user=request.user)
+        if not run_alarm(alarm, logging):
+            request.session["msg"] = _('"%(name)s" is tested successfully.')\
+                % {'name': alarm.name}
+        else:
+            request.session["error_msg"] = _('"%(name)s" is not working.')\
+                % {'name': alarm.name}
+    return HttpResponseRedirect('/alert/')
 
 
 @permission_required('cdr_alert.delete_alarm', login_url='/')
