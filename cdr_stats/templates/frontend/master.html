@@ -18,14 +18,11 @@
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <title>{% block title %}CDR-Stats{% endblock %} | {% trans "Customer Interface" noop %}</title>
     <link rel="shortcut icon" type="image/x-icon" href="{{ STATIC_URL }}cdr-stats/images/favicon.ico">
-
+    {% block header_files %}
     <!-- Javascript -->
     <script type="text/javascript" src="{{ STATIC_URL }}cdr-stats/js/jquery-1.8.2.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}cdr-stats/js/jquery-ui-1.9.1.custom.min.js"></script>
 
-	{% block extra_header %}
-    {{ extra_header }}
-    {% endblock %}
     <script src="{{ STATIC_URL }}cdr-stats/bootstrap/js/bootstrap.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}cdr-stats/js/bootstrap-datepicker.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}cdr-stats/js/bootbox.min.js"></script>
@@ -47,6 +44,11 @@
     <link href="{{ STATIC_URL }}cdr-stats/css/cdr_stats.css" rel="stylesheet">
     <!-- Include Print CSS -->
     <link rel="stylesheet" href="{{ STATIC_URL }}cdr-stats/css/cdr_stats_print.css" type="text/css" media="print" />
+    {% endblock %}
+
+	{% block extra_header %}
+    {{ extra_header }}
+    {% endblock %}
 
     <!-- Include cdr_stats.js code -->
     {% include "frontend/cdr_stats_js.html" %}
@@ -58,7 +60,7 @@
         {% include "frontend/bootstrap_menu.html" %}
     {% endifnotequal %}
 {% endblock %}
-
+{% block container %}
 <div class="container">
 
     {% if errorlogin %}
@@ -134,7 +136,7 @@
     {% endifnotequal %}
 
 </div>
-
+{% endblock %}
 </body>
 </html>
 

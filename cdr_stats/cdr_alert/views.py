@@ -127,15 +127,15 @@ def alarm_test(request, object_id):
         * Test selected the alarm from the alarm list
     """
     try:
-        alarm_report = AlarmReport.objects.filter(alarm_id=object_id)
+        alarm_report = AlarmReport.objects.filter(alarm_id=object_id).order_by('-daterun')
     except:
         alarm_report = []
 
     template = 'frontend/cdr_alert/alarm/test_alert.html'
     data = {
         'alarm_report': alarm_report,
+        'ALARM_REPORT_COLUMN_NAME': ALARM_REPORT_COLUMN_NAME,
     }
-    request.session['err_msg'] = ''
     return render_to_response(template, data,
         context_instance=RequestContext(request))
 
