@@ -127,7 +127,8 @@ def alarm_test(request, object_id):
         * Test selected the alarm from the alarm list
     """
     try:
-        alarm_report = AlarmReport.objects.filter(alarm_id=object_id).order_by('-daterun')
+        # last 10 records
+        alarm_report = AlarmReport.objects.filter(alarm_id=object_id).order_by('-daterun')[0:10]
     except:
         alarm_report = []
 
