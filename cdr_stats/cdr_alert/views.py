@@ -11,7 +11,6 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required,\
     permission_required
 from django.http import HttpResponseRedirect, Http404
@@ -31,7 +30,6 @@ from country_dialcode.models import Prefix
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import time
-import logging
 
 
 @permission_required('cdr_alert.alert_settings', login_url='/')
@@ -360,7 +358,6 @@ def alert_report(request):
     total_data = days_report['total_data']
     start_date = days_report['start_date']
     end_date = days_report['end_date']
-
 
     template = 'frontend/cdr_alert/alarm_report.html'
     data = {
