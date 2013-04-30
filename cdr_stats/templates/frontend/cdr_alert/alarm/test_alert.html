@@ -17,11 +17,14 @@
             <h3>{% trans "alarm test"|title %}</h3>
         </div>
         <div class="modal-body">
-
             {% if alarm_status %}
-                {% trans "alarm tested successfully"%}
+                <div class="alert alert-success">
+                    {% trans "alarm tested successfully" %}
+                </div>
             {% else %}
-                {% trans "alarm test failed"%}
+                <div class="alert alert-error">
+                    {% trans "alarm test failed" %}
+                </div>
             {% endif %}
 
 

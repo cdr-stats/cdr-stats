@@ -268,6 +268,8 @@ def run_alarm(alarm_obj, logger):
         else:
             return chk_alert_value(alarm_obj, current_asr, previous_asr)
 
+    return True
+
 
 class chk_alarm(PeriodicTask):
     """A periodic task to determine unusual call patterns.
