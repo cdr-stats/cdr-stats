@@ -24,6 +24,8 @@ from cdr_alert.constants import ALARM_COLUMN_NAME, ALARM_REPORT_COLUMN_NAME
 from cdr_alert.forms import AlarmForm, BWCountryForm, BWPrefixForm,\
     AlarmReportForm
 from cdr_alert.tasks import run_alarm
+from cdr_alert.constants import PERIOD, ALARM_TYPE,\
+    ALERT_CONDITION, ALERT_CONDITION_ADD_ON, ALARM_REPROT_STATUS
 from common.common_functions import current_view, get_pagination_vars,\
     validate_days
 from country_dialcode.models import Prefix
@@ -125,23 +127,30 @@ def alarm_test(request, object_id):
 
         * Test selected the alarm from the alarm list
     """
-    try:
-        # last 10 records
-        alarm_report = AlarmReport.objects.filter(alarm_id=object_id).order_by('-daterun')[0:10]
-    except:
-        alarm_report = []
 
     try:
-        obj = Alarm.objects.get(pk=object_id)
-        alarm_status = run_alarm(obj, logging)
+        alarm_obj = Alarm.objects.get(pk=object_id)
+        alarm_data = run_alarm(alarm_obj, logging)
+        print alarm_data
+        if alarm_obj.alert_condition != ALERT_CONDITION.IS_LESS_THAN or \
+            alarm_obj.alert_condition != ALERT_CONDITION.IS_GREATER_THAN:
+            alarm_data['diff'] = round(abs(alarm_data['current_value'] - alarm_data['previous_value']), 2)
+
+        if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_DECREASE_BY_MORE_THAN or \
+            alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_INCREASE_BY_MORE_THAN:
+            avg = (alarm_data['current_value'] + alarm_data['previous_value']) / 2
+            alarm_data['percentage'] = round(alarm_data['diff'] / avg * 100, 2)
+
+        alarm_status = True
     except:
         alarm_status = False
 
     template = 'frontend/cdr_alert/alarm/test_alert.html'
     data = {
-        'alarm_report': alarm_report,
-        'ALARM_REPORT_COLUMN_NAME': ALARM_REPORT_COLUMN_NAME,
         'alarm_status': alarm_status,
+        'alarm_obj': alarm_obj,
+        'ALERT_CONDITION': ALERT_CONDITION,
+        'alarm_data': alarm_data,
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))

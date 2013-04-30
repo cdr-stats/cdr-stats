@@ -119,35 +119,35 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
         if alarm_obj.alert_value < current_value:
             notify_admin_with_mail(alarm_obj.type,
                                    alarm_obj.email_to_send_alarm)
-            return create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
         else:
-            return create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
 
     if alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN:  # Is greater than
         if alarm_obj.alert_value > current_value:
             notify_admin_with_mail(alarm_obj.type,
                                    alarm_obj.email_to_send_alarm)
-            return create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
         else:
-            return create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
 
     if alarm_obj.alert_condition == ALERT_CONDITION.DECREASE_BY_MORE_THAN:  # Decrease by more than
         diff = abs(current_value - previous_value)
         if diff < alarm_obj.alert_value:
             notify_admin_with_mail(alarm_obj.type,
                                    alarm_obj.email_to_send_alarm)
-            return create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
         else:
-            return create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
 
     if alarm_obj.alert_condition == ALERT_CONDITION.INCREASE_BY_MORE_THAN:  # Increase by more than
         diff = abs(current_value - previous_value)
         if diff > alarm_obj.alert_value:
             notify_admin_with_mail(alarm_obj.type,
                                    alarm_obj.email_to_send_alarm)
-            return create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
         else:
-            return create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
 
     # http://www.mathsisfun.com/percentage-difference.html
     if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_DECREASE_BY_MORE_THAN:  # % decrease by more than
@@ -157,9 +157,9 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
         if percentage < alarm_obj.alert_value:
             notify_admin_with_mail(alarm_obj.type,
                                    alarm_obj.email_to_send_alarm)
-            return create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
         else:
-            return create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
 
     if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_INCREASE_BY_MORE_THAN:  # % Increase by more than
         diff = abs(current_value - previous_value)
@@ -168,9 +168,9 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
         if percentage > alarm_obj.alert_value:
             notify_admin_with_mail(alarm_obj.type,
                                    alarm_obj.email_to_send_alarm)
-            return create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
         else:
-            return create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
+            create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
 
     return True
 
@@ -179,12 +179,15 @@ def run_alarm(alarm_obj, logger):
     """
     Perform Alarm Check
     """
+    runnint_alarm_test_data = {'running_alarm_status': True}
+
     if not mongodb.cdr_common:
         logger.error('Error MongoDB connection')
         return False
 
     if alarm_obj.type == ALARM_TYPE.ALOC:  # ALOC (average length of call)
         logger.debug('ALOC (average length of call)')
+
         # return start and end date of previous/current day
         dt_list = get_start_end_date(alarm_obj.alert_condition_add_on)
 
@@ -203,7 +206,8 @@ def run_alarm(alarm_obj, logger):
             pre_day_data[pre_date.strftime('%Y-%m-%d')] = doc['duration_avg']
             if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or \
                     alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN:
-                return chk_alert_value(alarm_obj, doc['duration_avg'])
+                runnint_alarm_test_data['previous_value'] = doc['duration_avg']
+                chk_alert_value(alarm_obj, doc['duration_avg'])
             else:
                 previous_date_duration = doc['duration_avg']
 
@@ -222,10 +226,13 @@ def run_alarm(alarm_obj, logger):
             cur_day_data[cur_date.strftime('%Y-%m-%d')] = doc['duration_avg']
             if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or \
                     alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN:
-                return chk_alert_value(alarm_obj, doc['duration_avg'])
+                runnint_alarm_test_data['current_value'] = doc['duration_avg']
+                chk_alert_value(alarm_obj, doc['duration_avg'])
             else:
                 current_date_duration = doc['duration_avg']
-                return chk_alert_value(alarm_obj, current_date_duration, previous_date_duration)
+                runnint_alarm_test_data['current_value'] = doc['duration_avg']
+                runnint_alarm_test_data['previous_value'] = previous_date_duration
+                chk_alert_value(alarm_obj, current_date_duration, previous_date_duration)
 
     if alarm_obj.type == ALARM_TYPE.ASR:  # ASR (Answer Seize Ratio)
         logger.debug('ASR (Answer Seize Ratio)')
@@ -247,7 +254,8 @@ def run_alarm(alarm_obj, logger):
 
         if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or \
                 alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN:
-            return chk_alert_value(alarm_obj, previous_asr)
+            runnint_alarm_test_data['previous_value'] = previous_asr
+            chk_alert_value(alarm_obj, previous_asr)
         else:
             previous_asr = previous_asr
 
@@ -264,11 +272,14 @@ def run_alarm(alarm_obj, logger):
 
         if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or \
                 alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN:
-            return chk_alert_value(alarm_obj, current_asr)
+            runnint_alarm_test_data['current_value'] = current_asr
+            chk_alert_value(alarm_obj, current_asr)
         else:
-            return chk_alert_value(alarm_obj, current_asr, previous_asr)
+            runnint_alarm_test_data['current_value'] = current_asr
+            runnint_alarm_test_data['previous_value'] = previous_asr
+            chk_alert_value(alarm_obj, current_asr, previous_asr)
 
-    return True
+    return runnint_alarm_test_data
 
 
 class chk_alarm(PeriodicTask):
@@ -318,7 +329,7 @@ class chk_alarm(PeriodicTask):
                         calculatedvalue=alarm_obj.alert_value, status=1)
 
         logger.debug('TASK :: chk_alarm finished')
-        return run_alarm_status
+        return run_alarm_status['running_alarm_status']
 
 
 def notify_admin_without_mail(notice_id, email_id):

@@ -13,7 +13,7 @@
 #
 from django import template
 from cdr_alert.constants import PERIOD, ALARM_TYPE, STATUS,\
-    ALARM_REPROT_STATUS, ALERT_CONDITION
+    ALARM_REPROT_STATUS, ALERT_CONDITION, ALERT_CONDITION_ADD_ON
 
 register = template.Library()
 
@@ -84,6 +84,21 @@ def alarm_condition(value):
         alarm_condition = ''
 
     return str(alarm_condition)
+
+
+@register.filter(name='alarm_condition_add_on')
+def alarm_condition_add_on(value):
+    """alarm condition add_on
+    """
+    if not value:
+        return ''
+    alarm_condition_add_on = dict(ALERT_CONDITION_ADD_ON)
+    try:
+        alarm_condition_add_on = alarm_condition_add_on[value]
+    except:
+        alarm_condition_add_on = ''
+
+    return str(alarm_condition_add_on)
 
 
 @register.filter(name='alarm_report_status')

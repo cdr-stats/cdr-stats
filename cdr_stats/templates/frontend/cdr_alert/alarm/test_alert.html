@@ -29,31 +29,38 @@
 
 
             <table class="table table-striped table-bordered table-condensed">
-            <thead>
-            <tr>
-                <th>{{ ALARM_REPORT_COLUMN_NAME.calculatedvalue|capfirst }}</th>
-                <th>{{ ALARM_REPORT_COLUMN_NAME.status|capfirst }}</th>
-                <th>{{ ALARM_REPORT_COLUMN_NAME.date|capfirst }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% if alarm_report %}
-                {% for row in alarm_report %}
-                <tr>
-                    <td>{{ row.calculatedvalue }}</td>
-                    <td>{{ row.status|alarm_report_status }}</td>
-                    <td>{{ row.daterun }}</td>
-                </tr>
-                {% endfor %}
 
-            {% else %}
-                <tr>
-                    <td colspan="3" align="center">
-                        {% trans "no records found"|title %}
-                    </td>
-                </tr>
+            <tr>
+                <th>{% trans "alarm type"|capfirst %}</th>
+                <td>{{ alarm_obj.type|alarm_type }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "alarm condition addon"|capfirst %}</th>
+                <td>{{ alarm_obj.alert_condition_add_on|alarm_condition_add_on }}</td>
+            </tr>
+
+            {% if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN  %}
+            <tr>
+                <th>{% trans "alarm condition"|capfirst %}</th>
+                <td>{{ alarm_obj.alert_value }} {{ alarm_obj.alert_condition|alarm_condition }} {{ alarm_data.previous_value }}</td>
+            </tr>
             {% endif %}
-            </tbody>
+
+            {% if alarm_obj.alert_condition == ALERT_CONDITION.DECREASE_BY_MORE_THAN or alarm_obj.alert_condition == ALERT_CONDITION.INCREASE_BY_MORE_THAN  %}
+            <tr>
+                <th>{% trans "alarm condition"|capfirst %}</th>
+                <td>{{ alarm_data.diff }} {{ alarm_obj.alert_condition|alarm_condition }} {{ alarm_obj.alert_value }}</td>
+            </tr>
+            {% endif %}
+
+            {% if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_DECREASE_BY_MORE_THAN or alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_INCREASE_BY_MORE_THAN  %}
+            <tr>
+                <th>{% trans "alarm condition"|capfirst %}</th>
+                <td>{{ alarm_data.percentage }} {{ alarm_obj.alert_condition|alarm_condition }} {{ alarm_obj.alert_value }}</td>
+            </tr>
+            {% endif %}
+
+
             </table>
         </div>
         <div class="modal-footer">
