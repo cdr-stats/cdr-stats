@@ -138,6 +138,7 @@ def alarm_test(request, object_id):
             alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_INCREASE_BY_MORE_THAN:
             avg = (alarm_data['current_value'] + alarm_data['previous_value']) / 2
             alarm_data['percentage'] = round(alarm_data['diff'] / avg * 100, 2)
+
         alarm_status = True
     except:
         alarm_status = False
