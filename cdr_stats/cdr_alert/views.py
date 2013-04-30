@@ -30,6 +30,7 @@ from country_dialcode.models import Prefix
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import time
+import logging
 
 
 @permission_required('cdr_alert.alert_settings', login_url='/')
@@ -130,10 +131,17 @@ def alarm_test(request, object_id):
     except:
         alarm_report = []
 
+    try:
+        obj = Alarm.objects.get(pk=object_id)
+        alarm_status = run_alarm(obj, logging)
+    except:
+        alarm_status = False
+
     template = 'frontend/cdr_alert/alarm/test_alert.html'
     data = {
         'alarm_report': alarm_report,
         'ALARM_REPORT_COLUMN_NAME': ALARM_REPORT_COLUMN_NAME,
+        'alarm_status': alarm_status,
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))
