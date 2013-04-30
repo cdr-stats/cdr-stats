@@ -32,6 +32,26 @@
                 <th>{% trans "alarm condition"|capfirst %}</th>
                 <td>{{ alarm_obj.alert_value }} {{ alarm_obj.alert_condition|alarm_condition }} {{ alarm_data.previous_value }}</td>
             </tr>
+            <tr>
+                <th>{% trans "alarm will trigger"|capfirst %}</th>
+                <td>
+                    {% if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN %}
+                        {% if alarm_data.alert_value < alarm_obj.previous_value %}
+                            {% trans "True" %}
+                        {% else %}
+                            {% trans "False" %}
+                        {% endif %}
+                    {% endif %}
+
+                    {% if alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN %}
+                        {% if alarm_data.alert_value > alarm_obj.previous_value %}
+                            {% trans "True" %}
+                        {% else %}
+                            {% trans "False" %}
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
             {% endif %}
 
             {% if alarm_obj.alert_condition == ALERT_CONDITION.DECREASE_BY_MORE_THAN or alarm_obj.alert_condition == ALERT_CONDITION.INCREASE_BY_MORE_THAN  %}
@@ -39,12 +59,52 @@
                 <th>{% trans "alarm condition"|capfirst %}</th>
                 <td>{{ alarm_data.diff }} {{ alarm_obj.alert_condition|alarm_condition }} {{ alarm_obj.alert_value }}</td>
             </tr>
+            <tr>
+                <th>{% trans "alarm will trigger"|capfirst %}</th>
+                <td>
+                    {% if alarm_obj.alert_condition == ALERT_CONDITION.DECREASE_BY_MORE_THAN %}
+                        {% if alarm_data.diff < alarm_obj.alert_value %}
+                            {% trans "True" %}
+                        {% else %}
+                            {% trans "False" %}
+                        {% endif %}
+                    {% endif %}
+
+                    {% if alarm_obj.alert_condition == ALERT_CONDITION.INCREASE_BY_MORE_THAN %}
+                        {% if alarm_data.diff > alarm_obj.alert_value %}
+                            {% trans "True" %}
+                        {% else %}
+                            {% trans "False" %}
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
             {% endif %}
 
             {% if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_DECREASE_BY_MORE_THAN or alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_INCREASE_BY_MORE_THAN  %}
             <tr>
                 <th>{% trans "alarm condition"|capfirst %}</th>
                 <td>{{ alarm_data.percentage }} {{ alarm_obj.alert_condition|alarm_condition }} {{ alarm_obj.alert_value }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "alarm will trigger"|capfirst %}</th>
+                <td>
+                    {% if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_DECREASE_BY_MORE_THAN %}
+                        {% if alarm_data.percentage < alarm_obj.alert_value %}
+                            {% trans "True" %}
+                        {% else %}
+                            {% trans "False" %}
+                        {% endif %}
+                    {% endif %}
+
+                    {% if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_INCREASE_BY_MORE_THAN %}
+                        {% if alarm_data.percentage > alarm_obj.alert_value %}
+                            {% trans "True" %}
+                        {% else %}
+                            {% trans "False" %}
+                        {% endif %}
+                    {% endif %}
+                </td>
             </tr>
             {% endif %}
 
