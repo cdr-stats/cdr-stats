@@ -434,7 +434,6 @@ func_prepare_settings(){
 
     #Set Timezone in settings_local.py
     sed -i "s@Europe/Madrid@$ZONE@g" $INSTALL_DIR/settings_local.py
-    sed -i "s@Europe/Madrid@$ZONE@g" $INSTALL_DIR/celeryconfig.py
 
     IFCONFIG=`which ifconfig 2>/dev/null||echo /sbin/ifconfig`
     IPADDR=`$IFCONFIG eth0|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'`
@@ -832,6 +831,7 @@ func_prepare_logger() {
     touch /var/log/cdr-stats/err-apache-cdr-stats.log
     chown -R $APACHE_USER:$APACHE_USER /var/log/cdr-stats
 
+    rm /etc/logrotate.d/cdr_stats
     touch /etc/logrotate.d/cdr_stats
     echo '
 /var/log/cdr-stats/*.log {
