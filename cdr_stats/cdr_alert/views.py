@@ -126,6 +126,7 @@ def alarm_test(request, object_id):
 
         * Test selected the alarm from the alarm list
     """
+    alarm_data = {}
     try:
         alarm_obj = Alarm.objects.get(pk=object_id)
         alarm_data = run_alarm(alarm_obj, logging)
