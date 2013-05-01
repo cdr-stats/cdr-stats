@@ -33,7 +33,7 @@ import logging
 import time
 import requests
 import ast
-import csv
+import tablib
 
 
 @permission_required('user_profile.call_rate', login_url='/')
@@ -129,24 +129,37 @@ def export_rate(request):
         get the prifix rates  from voip rate API
         according to search parameters & store into csv file
     """
+    format = request.GET['format']
     # get the response object, this can be used as a stream
-    response = HttpResponse(mimetype='text/csv')
+    response = HttpResponse(mimetype='text/' + format)
     # force download
-    response['Content-Disposition'] = 'attachment;filename=call_rate.csv'
-    # the csv writer
+    response['Content-Disposition'] = 'attachment;filename=call_rate.' + format
 
-    writer = csv.writer(response, dialect=csv.excel_tab)
-    writer.writerow(['prefix', 'destination', 'retail_rate'])
+    headers = ('prefix', 'destination', 'retail_rate')
+
     final_result = []
     if request.session.get('final_rate_list'):
         final_result = request.session['final_rate_list']
 
+    list_val = []
     for row in final_result:
-        writer.writerow([
+        list_val.append((
             row['prefix'],
             row['prefix__destination'],
             row['retail_rate'],
-        ])
+        ))
+
+    data = tablib.Dataset(*list_val, headers=headers)
+
+    if format == 'xls':
+        response.write(data.xls)
+
+    if format == 'csv':
+        response.write(data.csv)
+
+    if format == 'json':
+        response.write(data.json)
+
     return response
 
 

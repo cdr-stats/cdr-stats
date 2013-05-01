@@ -36,7 +36,9 @@
             </button>
             <ul class="dropdown-menu">
                 {% if perms.user_profile.export_call_rate %}
-                    <li><a href="/export_rate/">{% trans "export CSV"|capfirst %}</a></li>
+                    <li><a href="/export_rate/?format=csv">{% trans "export to CSV"|capfirst %}</a></li>
+                    <li><a href="/export_rate/?format=xls">{% trans "export to XLS"|capfirst %}</a></li>
+                    <li><a href="/export_rate/?format=json">{% trans "export to JSON"|capfirst %}</a></li>
                 {% endif %}
             </ul>
         </div>
@@ -53,7 +55,7 @@
                       {% sort_link "<i class='icon-chevron-up'></i>" "prefix"  %}
                         {{ RATE_COLUMN_NAME.prefix|capfirst }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-prefix"  %}
-                    {% else %}                      
+                    {% else %}
                       {% sort_link RATE_COLUMN_NAME.prefix|capfirst "-prefix" %}
                     {% endifequal %}
                 </th>
@@ -62,16 +64,16 @@
                       {% sort_link "<i class='icon-chevron-up'></i>" "destination"  %}
                         {{ RATE_COLUMN_NAME.destination|capfirst }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-destination"  %}
-                    {% else %}                      
+                    {% else %}
                       {% sort_link RATE_COLUMN_NAME.destination|capfirst "-destination" %}
-                    {% endifequal %}                    
+                    {% endifequal %}
                 </th>
                 <th>
                     {% ifequal sort_order 'retail_rate' %}
                       {% sort_link "<i class='icon-chevron-up'></i>" "retail_rate"  %}
                         {{ RATE_COLUMN_NAME.rate|capfirst }}
                       {% sort_link "<i class='icon-chevron-down'></i>" "-retail_rate"  %}
-                    {% else %}                      
+                    {% else %}
                       {% sort_link RATE_COLUMN_NAME.rate|capfirst "-retail_rate" %}
                     {% endifequal %}
                 </th>
@@ -92,7 +94,7 @@
             {% endif %}
             </tbody>
         </table>
-        <div align="right" class="show-rows">            
+        <div align="right" class="show-rows">
             {% trans "total records"|title %} : {{ rate_list_count }}
         </div>
 
