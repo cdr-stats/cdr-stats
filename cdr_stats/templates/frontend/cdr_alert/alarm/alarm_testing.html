@@ -23,6 +23,10 @@
                 <td>{{ alarm_obj.type|alarm_type }}</td>
             </tr>
             <tr>
+                <th>{% trans "alarm period"|capfirst %}</th>
+                <td>{{ alarm_obj.period|alarm_period }}</td>
+            </tr>
+            <tr>
                 <th>{% trans "alarm condition addon"|capfirst %}</th>
                 <td>{{ alarm_obj.alert_condition_add_on|alarm_condition_add_on }}</td>
             </tr>

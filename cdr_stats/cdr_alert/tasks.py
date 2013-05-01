@@ -179,7 +179,7 @@ def run_alarm(alarm_obj, logger):
     """
     Perform Alarm Check
     """
-    runnint_alarm_test_data = {'running_alarm_status': True}
+    running_alarm_test_data = {'running_alarm_status': True}
 
     if not mongodb.cdr_common:
         logger.error('Error MongoDB connection')
@@ -206,7 +206,7 @@ def run_alarm(alarm_obj, logger):
             pre_day_data[pre_date.strftime('%Y-%m-%d')] = doc['duration_avg']
             if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or \
                     alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN:
-                runnint_alarm_test_data['previous_value'] = doc['duration_avg']
+                running_alarm_test_data['previous_value'] = doc['duration_avg']
                 chk_alert_value(alarm_obj, doc['duration_avg'])
             else:
                 previous_date_duration = doc['duration_avg']
@@ -226,12 +226,12 @@ def run_alarm(alarm_obj, logger):
             cur_day_data[cur_date.strftime('%Y-%m-%d')] = doc['duration_avg']
             if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or \
                     alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN:
-                runnint_alarm_test_data['current_value'] = doc['duration_avg']
+                running_alarm_test_data['current_value'] = doc['duration_avg']
                 chk_alert_value(alarm_obj, doc['duration_avg'])
             else:
                 current_date_duration = doc['duration_avg']
-                runnint_alarm_test_data['current_value'] = doc['duration_avg']
-                runnint_alarm_test_data['previous_value'] = previous_date_duration
+                running_alarm_test_data['current_value'] = doc['duration_avg']
+                running_alarm_test_data['previous_value'] = previous_date_duration
                 chk_alert_value(alarm_obj, current_date_duration, previous_date_duration)
 
     if alarm_obj.type == ALARM_TYPE.ASR:  # ASR (Answer Seize Ratio)
@@ -254,7 +254,7 @@ def run_alarm(alarm_obj, logger):
 
         if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or \
                 alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN:
-            runnint_alarm_test_data['previous_value'] = previous_asr
+            running_alarm_test_data['previous_value'] = previous_asr
             chk_alert_value(alarm_obj, previous_asr)
         else:
             previous_asr = previous_asr
@@ -272,14 +272,14 @@ def run_alarm(alarm_obj, logger):
 
         if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or \
                 alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN:
-            runnint_alarm_test_data['current_value'] = current_asr
+            running_alarm_test_data['current_value'] = current_asr
             chk_alert_value(alarm_obj, current_asr)
         else:
-            runnint_alarm_test_data['current_value'] = current_asr
-            runnint_alarm_test_data['previous_value'] = previous_asr
+            running_alarm_test_data['current_value'] = current_asr
+            running_alarm_test_data['previous_value'] = previous_asr
             chk_alert_value(alarm_obj, current_asr, previous_asr)
 
-    return runnint_alarm_test_data
+    return running_alarm_test_data
 
 
 class chk_alarm(PeriodicTask):
