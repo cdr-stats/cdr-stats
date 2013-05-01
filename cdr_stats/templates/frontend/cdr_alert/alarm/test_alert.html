@@ -37,17 +37,17 @@
                 <td>
                     {% if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN %}
                         {% if alarm_obj.alert_value < alarm_data.current_value %}
-                            {% trans "True" %}
+                            <font class="text-success"><strong>{% trans "true"|capfirst %}</strong></font>
                         {% else %}
-                            {% trans "False" %}
+                            <font class="text-error"><strong>{% trans "false"|capfirst %}</strong></font>
                         {% endif %}
                     {% endif %}
 
                     {% if alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN %}
                         {% if alarm_obj.alert_value > alarm_data.current_value %}
-                            {% trans "True" %}
+                            <font class="text-success"><strong>{% trans "true"|capfirst %}</strong></font>
                         {% else %}
-                            {% trans "False" %}
+                            <font class="text-error"><strong>{% trans "false"|capfirst %}</strong></font>
                         {% endif %}
                     {% endif %}
                 </td>
@@ -64,17 +64,17 @@
                 <td>
                     {% if alarm_obj.alert_condition == ALERT_CONDITION.DECREASE_BY_MORE_THAN %}
                         {% if alarm_data.diff < alarm_obj.alert_value %}
-                            {% trans "True" %}
+                            <font class="text-success"><strong>{% trans "true"|capfirst %}</strong></font>
                         {% else %}
-                            {% trans "False" %}
+                            <font class="text-error"><strong>{% trans "false"|capfirst %}</strong></font>
                         {% endif %}
                     {% endif %}
 
                     {% if alarm_obj.alert_condition == ALERT_CONDITION.INCREASE_BY_MORE_THAN %}
                         {% if alarm_data.diff > alarm_obj.alert_value %}
-                            {% trans "True" %}
+                            <font class="text-success"><strong>{% trans "true"|capfirst %}</strong></font>
                         {% else %}
-                            {% trans "False" %}
+                            <font class="text-error"><strong>{% trans "false"|capfirst %}</strong></font>
                         {% endif %}
                     {% endif %}
                 </td>
@@ -91,23 +91,22 @@
                 <td>
                     {% if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_DECREASE_BY_MORE_THAN %}
                         {% if alarm_data.percentage < alarm_obj.alert_value %}
-                            {% trans "True" %}
+                            <font class="text-success"><strong>{% trans "true"|capfirst %}</strong></font>
                         {% else %}
-                            {% trans "False" %}
+                            <font class="text-error"><strong>{% trans "false"|capfirst %}</strong></font>
                         {% endif %}
                     {% endif %}
 
                     {% if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_INCREASE_BY_MORE_THAN %}
                         {% if alarm_data.percentage > alarm_obj.alert_value %}
-                            {% trans "True" %}
+                            <font class="text-success"><strong>{% trans "true"|capfirst %}</strong></font>
                         {% else %}
-                            {% trans "False" %}
+                            <font class="text-error"><strong>{% trans "false"|capfirst %}</strong></font>
                         {% endif %}
                     {% endif %}
                 </td>
             </tr>
             {% endif %}
-
 
             </table>
         </div>

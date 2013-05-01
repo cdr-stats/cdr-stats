@@ -127,22 +127,17 @@ def alarm_test(request, object_id):
         * Test selected the alarm from the alarm list
     """
     alarm_data = {}
-    try:
-        alarm_obj = Alarm.objects.get(pk=object_id)
-        alarm_data = run_alarm(alarm_obj, logging)
+    alarm_obj = get_object_or_404(Alarm, pk=object_id, user=request.user)
 
-        if alarm_obj.alert_condition != ALERT_CONDITION.IS_LESS_THAN or \
-            alarm_obj.alert_condition != ALERT_CONDITION.IS_GREATER_THAN:
-            alarm_data['diff'] = round(abs(alarm_data['current_value'] - alarm_data['previous_value']), 2)
+    alarm_data = run_alarm(alarm_obj, logging)
+    if alarm_obj.alert_condition != ALERT_CONDITION.IS_LESS_THAN or \
+        alarm_obj.alert_condition != ALERT_CONDITION.IS_GREATER_THAN:
+        alarm_data['diff'] = round(abs(alarm_data['current_value'] - alarm_data['previous_value']), 2)
 
-        if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_DECREASE_BY_MORE_THAN or \
-            alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_INCREASE_BY_MORE_THAN:
-            avg = (alarm_data['current_value'] + alarm_data['previous_value']) / 2
-            alarm_data['percentage'] = round(alarm_data['diff'] / avg * 100, 2)
-
-        alarm_status = True
-    except:
-        alarm_status = False
+    if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_DECREASE_BY_MORE_THAN or \
+        alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_INCREASE_BY_MORE_THAN:
+        avg = (alarm_data['current_value'] + alarm_data['previous_value']) / 2
+        alarm_data['percentage'] = round(alarm_data['diff'] / avg * 100, 2)
 
     template = 'frontend/cdr_alert/alarm/test_alert.html'
     data = {
