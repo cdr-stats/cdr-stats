@@ -24,7 +24,7 @@ from cdr_alert.constants import ALARM_COLUMN_NAME, ALARM_REPORT_COLUMN_NAME
 from cdr_alert.forms import AlarmForm, BWCountryForm, BWPrefixForm,\
     AlarmReportForm
 from cdr_alert.tasks import run_alarm
-from cdr_alert.constants import ALERT_CONDITION
+from cdr_alert.constants import ALERT_CONDITION, PERIOD
 from common.common_functions import current_view, get_pagination_vars,\
     validate_days
 from country_dialcode.models import Prefix
@@ -144,6 +144,7 @@ def alarm_test(request, object_id):
         'alarm_obj': alarm_obj,
         'alarm_data': alarm_data,
         'ALERT_CONDITION': ALERT_CONDITION,
+        'PERIOD': PERIOD,
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))

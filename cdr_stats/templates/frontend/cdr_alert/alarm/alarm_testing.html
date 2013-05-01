@@ -26,10 +26,14 @@
                 <th>{% trans "alarm period"|capfirst %}</th>
                 <td>{{ alarm_obj.period|alarm_period }}</td>
             </tr>
+
+            {# This condition only apply if PERIOD is "Day" #}
+            {% if alarm_obj.period == PERIOD.DAY %}
             <tr>
                 <th>{% trans "alarm condition addon"|capfirst %}</th>
                 <td>{{ alarm_obj.alert_condition_add_on|alarm_condition_add_on }}</td>
             </tr>
+            {% endif %}
 
             {% if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN  %}
             <tr>
