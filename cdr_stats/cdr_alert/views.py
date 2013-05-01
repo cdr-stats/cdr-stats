@@ -139,11 +139,11 @@ def alarm_test(request, object_id):
         avg = (alarm_data['current_value'] + alarm_data['previous_value']) / 2
         alarm_data['percentage'] = round(alarm_data['diff'] / avg * 100, 2)
 
-    template = 'frontend/cdr_alert/alarm/test_alert.html'
+    template = 'frontend/cdr_alert/alarm/alarm_testing.html'
     data = {
         'alarm_obj': alarm_obj,
-        'ALERT_CONDITION': ALERT_CONDITION,
         'alarm_data': alarm_data,
+        'ALERT_CONDITION': ALERT_CONDITION,
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))
