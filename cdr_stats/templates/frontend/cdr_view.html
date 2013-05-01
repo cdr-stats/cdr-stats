@@ -177,7 +177,9 @@
             </button>
             <ul class="dropdown-menu">
                 {% if perms.cdr.search %}
-                    <li><a href="/cdr_export_csv/">{% trans "export CSV file"|capfirst %}</a></li>
+                    <li><a href="/cdr_export_csv/?format=csv">{% trans "export to CSV"|capfirst %}</a></li>
+                    <li><a href="/cdr_export_csv/?format=xls">{% trans "export to XLS"|capfirst %}</a></li>
+                    <li><a href="/cdr_export_csv/?format=json">{% trans "export to JSON"|capfirst %}</a></li>
                 {% endif %}
             </ul>
         </div>

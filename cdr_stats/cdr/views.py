@@ -45,7 +45,7 @@ from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
 from collections import defaultdict
 import math
-import csv
+import tablib
 import time
 import logging
 import itertools
@@ -590,11 +590,11 @@ def cdr_export_to_csv(request):
         get the call records  from mongodb collection
         according to search parameters & store into csv file
     """
+    format = request.GET['format']
     # get the response object, this can be used as a stream
-    response = HttpResponse(mimetype='text/csv')
+    response = HttpResponse(mimetype='text/' + format)
     # force download
-    response['Content-Disposition'] = 'attachment;filename=export.csv'
-    # the csv writer
+    response['Content-Disposition'] = 'attachment;filename=export.' + format
 
     # get query_var from request.session
     query_var = request.session['query_var']
@@ -612,21 +612,35 @@ def cdr_export_to_csv(request):
         }
     )
 
-    writer = csv.writer(response, dialect=csv.excel_tab)
-    writer.writerow(['Call-date', 'CLID', 'Destination', 'Duration',
-                     'Bill sec', 'Hangup cause', 'AccountCode', 'Direction'])
+    headers = ('Call-date', 'CLID', 'Destination', 'Duration',
+               'Bill sec', 'Hangup cause', 'AccountCode', 'Direction')
 
+    list_val = []
     for cdr in final_result:
-        writer.writerow([
-            cdr['start_uepoch'],
-            cdr['caller_id_number'] + '-' + cdr['caller_id_name'],
-            cdr['destination_number'],
-            cdr['duration'],
-            cdr['billsec'],
-            get_hangupcause_name(cdr['hangup_cause_id']),
-            cdr['accountcode'],
-            cdr['direction']
-        ])
+        starting_date = cdr['start_uepoch']
+        if format == 'json':
+            starting_date = str(cdr['start_uepoch'])
+
+        list_val.append((starting_date,
+                         cdr['caller_id_number'] + '-' + cdr['caller_id_name'],
+                         cdr['destination_number'],
+                         cdr['duration'],
+                         cdr['billsec'],
+                         get_hangupcause_name(cdr['hangup_cause_id']),
+                         cdr['accountcode'],
+                         cdr['direction'],
+                        ))
+    data = tablib.Dataset(*list_val, headers=headers)
+
+    if format == 'xls':
+        response.write(data.xls)
+
+    if format == 'csv':
+        response.write(data.csv)
+
+    if format == 'json':
+        response.write(data.json)
+
     return response
 
 
