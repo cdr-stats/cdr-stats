@@ -83,7 +83,7 @@
                     {% endif %}
 
                     {% if perms.cdr_alert.alert_test %}
-                        <a href="#alarm-test" class="alarm-test" url="test/{{ row.id }}/" data-toggle="modal" data-controls-modal="alarm-test" title="{% trans "alarm test"|title %}" {% icon "link_go" %}>hi</a>
+                        <a href="#alarm-test" class="alarm-test icon" url="test/{{ row.id }}/" data-toggle="modal" data-controls-modal="alarm-test" title="{% trans "alarm test"|title %}" {% icon "lightbulb" %}></a>
                     {% endif %}
                 </td>
             </tr>
