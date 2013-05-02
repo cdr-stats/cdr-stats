@@ -207,16 +207,28 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         response = cdr_view(request)
         self.assertEqual(response.status_code, 200)
 
-        request = self.factory.get('/cdr_export_csv/')
-        request.user = self.user
-        request.session = {}
-
         now = datetime.today()
         start_date = datetime(now.year, now.month, 1, 0, 0, 0, 0)
         end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 99999)
         request.session['query_var'] = {
             'start_uepoch': {'$gte': start_date, '$lt': end_date}
         }
+
+        request = self.factory.get('/cdr_export_csv/?format=csv')
+        request.user = self.user
+        request.session = {}
+        response = cdr_export_to_csv(request)
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.get('/cdr_export_csv/?format=xls')
+        request.user = self.user
+        request.session = {}
+        response = cdr_export_to_csv(request)
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.get('/cdr_export_csv/?format=json')
+        request.user = self.user
+        request.session = {}
         response = cdr_export_to_csv(request)
         self.assertEqual(response.status_code, 200)
 

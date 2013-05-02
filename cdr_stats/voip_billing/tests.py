@@ -15,7 +15,7 @@
 from common.utils import BaseAuthenticatedClient
 from voip_billing.forms import HourlyBillingForm, DailyBillingForm, \
     PrefixRetailRrateForm
-from voip_billing.views import daily_billing_report, hourly_billing_report
+from voip_billing.views import daily_billing_report, hourly_billing_report, export_rate
 from voip_billing.tasks import RebillingTask, ReaggregateTask
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
@@ -75,14 +75,28 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
                 'country_dialcode.json', 'voip_gateway.json', 'voip_provider.json',
                 'voip_billing.json', 'user_profile.json']
 
-    #def test_rates_view(self):
-    #    """
-    #    Test Function to check rate for VoIP Call
-    #    """
-    #    response = self.client.get('/rates/')
-    #    self.assertTrue(response.context['form'], PrefixRetailRrateForm())
-    #    self.assertEqual(response.status_code, 200)
-    #    self.assertTemplateUsed(response, 'voip_billing/rates.html')
+    def test_rates_export_view(self):
+        """
+        Test Function to check rate for VoIP Call
+        """
+        request = self.factory.post('/export_rate/?format=csv')
+        request.user = self.user
+        request.session = {}
+        response = export_rate(request)
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.post('/export_rate/?format=json')
+        request.user = self.user
+        request.session = {}
+        response = export_rate(request)
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.post('/export_rate/?format=xls')
+        request.user = self.user
+        request.session = {}
+        response = export_rate(request)
+        self.assertEqual(response.status_code, 200)
+
 
     def test_simulator(self):
         """
