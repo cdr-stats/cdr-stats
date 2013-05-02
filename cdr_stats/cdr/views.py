@@ -24,9 +24,9 @@ from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 from common.common_functions import current_view, get_news, \
     variable_value, mongodb_str_filter, mongodb_int_filter, \
-    int_convert_to_minute, validate_days, ceil_strdate
+    int_convert_to_minute, validate_days, ceil_strdate, percentage
 from cdr.models import Switch
-from cdr.functions_def import get_country_name, get_hangupcause_name, percentage,\
+from cdr.functions_def import get_country_name, get_hangupcause_name,\
     get_switch_ip_addr, convert_to_minute
 from cdr.forms import CdrSearchForm, \
     CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \

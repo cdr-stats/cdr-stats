@@ -39,11 +39,6 @@ def get_switch_ip_addr(id):
         return u''
 
 
-def percentage(value, total_sum):
-    """To calculate percentage"""
-    return round(100 * float(value)/float(total_sum))
-
-
 def get_switch_list():
     """Switch list used in form"""
     list = Switch.objects.all()
