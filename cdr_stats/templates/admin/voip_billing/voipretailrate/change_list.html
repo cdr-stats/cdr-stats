@@ -1,5 +1,5 @@
 {% extends "admin/change_list.html" %}
-{% load adminmedia admin_list i18n %}
+{% load admin_list i18n %}
 
 {% block object-tools %}
 
@@ -15,7 +15,7 @@
     </ul>
   {% endif %}
 {% endblock %}
-    
+
 {% block filters %}
     {% if cl.has_filters %}
       <div id="changelist-filter">
@@ -30,5 +30,5 @@
       </div>
     {% endif %}
 {% endblock %}
-      
-     
+
+
