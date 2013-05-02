@@ -1,6 +1,6 @@
 {% extends "admin/change_list.html" %}
 {% load i18n pagination_tags cdr_tags common_tags %}
-{% load country_dialcode_tags adminmedia admin_list %}
+{% load country_dialcode_tags admin_list %}
 {% load cache %}
 {% block breadcrumbs %}{% if not is_popup %}
 <div class="breadcrumbs">
@@ -93,7 +93,9 @@
     <div id="tabs-1">
     <p>&nbsp;</p>
     <ul class="object-tools">
-      <li><a href="../export_cdr/" class="addlink">{% trans "export CSV file"|capfirst %}</a></li>
+      <li><a href="../export_cdr/?format=csv" class="addlink">{% trans "export to CSV"|capfirst %}</a></li>
+      <li><a href="../export_cdr/?format=xls" class="addlink">{% trans "export to XLS"|capfirst %}</a></li>
+      <li><a href="../export_cdr/?format=json" class="addlink">{% trans "export to JSON"|capfirst %}</a></li>
       <li><a href="../import_cdr/" class="addlink">{% trans "import CDR"|capfirst %}</a></li>
       <li><a href="/admin/voip_billing/voipplan/rebilling/" class="addlink">{% trans "rebilling"|capfirst %}</a></li>
     </ul>
