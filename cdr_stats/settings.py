@@ -11,6 +11,7 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
+
 import os
 import djcelery
 djcelery.setup_loader()
@@ -222,7 +223,7 @@ except ImportError:
     pass
 else:
     INSTALLED_APPS = INSTALLED_APPS + ('django_nose',)
-    TEST_RUNNER = 'utils.test_runner.MyRunner'
+    TEST_RUNNER = 'django_nose.run_tests'
 
 # Debug Toolbar mongo
 
