@@ -199,16 +199,14 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response['Location'], '/alert/')
         self.assertEqual(response.status_code, 302)
 
-    def test_alarm_status(self):
-        """Test Function to check alarm status"""
-        #response = self.client.get('/alert/test/1/')
-        #self.assertEqual(response.status_code, 200)
-
-        request = self.factory.post('/alert/test/1/')
-        request.user = self.user
-        request.session = {}
-        response = alarm_test(request, 1)
-        self.assertEqual(response.status_code, 200)
+    #def test_alarm_status(self):
+    #    """Test Function to check alarm status"""
+    #
+    #    request = self.factory.post('/alert/test/1/')
+    #    request.user = self.user
+    #    request.session = {}
+    #    response = alarm_test(request, 1)
+    #    self.assertEqual(response.status_code, 200)
 
     def test_alarm_view_delete(self):
         """Test Function to check delete alarm"""
