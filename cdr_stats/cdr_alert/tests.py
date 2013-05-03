@@ -125,7 +125,7 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
             {'country': 198,
              'blacklist_country': [1],
              'select': [34]})
-        self.failUnlessEqual(response.status_code, 200)
+        self.failUnlessEqual(response.status_code, 302)
 
 
 class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
@@ -201,14 +201,14 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
     def test_alarm_status(self):
         """Test Function to check alarm status"""
-        response = self.client.get('/alert/test/1/')
-        self.assertEqual(response.status_code, 200)
+        #response = self.client.get('/alert/test/1/')
+        #self.assertEqual(response.status_code, 200)
 
         request = self.factory.post('/alert/test/1/')
         request.user = self.user
         request.session = {}
         response = alarm_test(request, 1)
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
 
     def test_alarm_view_delete(self):
         """Test Function to check delete alarm"""
