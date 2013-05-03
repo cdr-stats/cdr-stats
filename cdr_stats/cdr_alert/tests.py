@@ -22,7 +22,7 @@ from cdr_alert.tasks import send_cdr_report, \
 from cdr_alert.forms import BWCountryForm
 from cdr_alert.functions_blacklist import chk_destination
 from cdr_alert.views import alarm_list, alarm_add, alarm_del, alarm_change,\
-    trust_control, alert_report
+    trust_control, alert_report, alarm_test
 from user_profile.constants import NOTICE_TYPE
 from country_dialcode.models import Country
 from cdr_alert.ajax import add_whitelist_country, add_whitelist_prefix, \
@@ -203,6 +203,12 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         """Test Function to check alarm status"""
         response = self.client.get('/alert/test/1/')
         self.assertEqual(response.status_code, 200)
+
+        request = self.factory.post('/alert/test/1/')
+        request.user = self.user
+        request.session = {}
+        response = alarm_test(request, 1)
+        self.assertEqual(response.status_code, 302)
 
     def test_alarm_view_delete(self):
         """Test Function to check delete alarm"""

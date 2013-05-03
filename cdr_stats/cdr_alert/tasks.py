@@ -299,7 +299,8 @@ class chk_alarm(PeriodicTask):
         logger.info('TASK :: chk_alarm called')
 
         alarm_objs = Alarm.objects.filter(status=1)  # all active alarms
-        run_alarm_status = True
+        alarm_status = {}
+        alarm_status['running_alarm_status'] = True
         for alarm_obj in alarm_objs:
             try:
                 alarm_report = AlarmReport.objects.filter(alarm=alarm_obj).\
@@ -310,26 +311,26 @@ class chk_alarm(PeriodicTask):
                     if diff_run == 1:  # every day
                         # Run alert task
                         logger.debug('Run alarm')
-                        run_alarm_status = run_alarm(alarm_obj, logger)
+                        alarm_status = run_alarm(alarm_obj, logger)
 
                 if alarm_obj.period == PERIOD.WEEK:  # Week
                     if diff_run == 7:  # every week
                         # Run alert task
                         logger.debug('Run alarm')
-                        run_alarm_status = run_alarm(alarm_obj, logger)
+                        alarm_status = run_alarm(alarm_obj, logger)
 
                 if alarm_obj.period == PERIOD.MONTH:  # Month
                     if diff_run == 30:  # every month
                         # Run alert task
                         logger.debug('Run alarm')
-                        run_alarm_status = run_alarm(alarm_obj, logger)
+                        alarm_status = run_alarm(alarm_obj, logger)
             except:
                 # create alarm report
                 AlarmReport.objects.create(alarm=alarm_obj,
                         calculatedvalue=alarm_obj.alert_value, status=1)
 
         logger.debug('TASK :: chk_alarm finished')
-        return run_alarm_status['running_alarm_status']
+        return alarm_status['running_alarm_status']
 
 
 def notify_admin_without_mail(notice_id, email_id):
