@@ -23,7 +23,7 @@ from cdr.forms import CdrSearchForm, CountryReportForm,\
     WorldForm, EmailReportForm
 from cdr.tasks import sync_cdr_pending, get_channels_info
 from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
-    cdr_report_by_hour, cdr_concurrent_calls,\
+    cdr_daily_comparison, cdr_concurrent_calls,\
     cdr_realtime, cdr_country_report, mail_report,\
     world_map_view, index, cdr_detail, cdr_export_to_csv
 from cdr.functions_def import get_switch_list, get_hangupcause_name,\
@@ -97,7 +97,7 @@ class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
                 "code": "1",
                 "enumeration": "UNALLOCATED_NUMBER",
             })
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
 
 
 class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
@@ -217,18 +217,21 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         request = self.factory.get('/cdr_export_csv/?format=csv')
         request.user = self.user
         request.session = {}
+        request.session['query_var'] = ''
         response = cdr_export_to_csv(request)
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.get('/cdr_export_csv/?format=xls')
         request.user = self.user
         request.session = {}
+        request.session['query_var'] = ''
         response = cdr_export_to_csv(request)
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.get('/cdr_export_csv/?format=json')
         request.user = self.user
         request.session = {}
+        request.session['query_var'] = ''
         response = cdr_export_to_csv(request)
         self.assertEqual(response.status_code, 200)
 
@@ -266,7 +269,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         response = cdr_overview(request)
         self.assertEqual(response.status_code, 200)
 
-        data = {'switch_id': -1,
+        data = {'switch_id': 0,
                 'from_date': '',
                 'to_date': ''}
         request = self.factory.post('/cdr_overview/', data)
@@ -277,15 +280,14 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
     def test_cdr_hourly_report(self):
         """Test Function to check cdr hourly report"""
-        response = self.client.get('/hourly_report/')
-        self.assertTrue(response.context['form'], CompareCallSearchForm())
+        response = self.client.get('/daily_comparison/')
         self.assertTemplateUsed(response, 'frontend/cdr_report_by_hour.html')
         self.assertEqual(response.status_code, 200)
 
-        request = self.factory.get('/hourly_report/')
+        request = self.factory.get('/daily_comparison/')
         request.user = self.user
         request.session = {}
-        response = cdr_report_by_hour(request)
+        response = cdr_daily_comparison(request)
         self.assertEqual(response.status_code, 200)
 
         data = {'switch_id': 0,
@@ -293,7 +295,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
                 'comp_days': 2,
                 'graph_view': 1,
                 'check_days': 1}
-        response = self.client.post('/hourly_report/', data)
+        response = self.client.post('/daily_comparison/', data)
         self.assertTrue(response.context['form'], CompareCallSearchForm(data))
         self.assertEqual(response.status_code, 200)
 
@@ -302,10 +304,10 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
                 'comp_days': 2,
                 'graph_view': 2,
                 'check_days': 2}
-        request = self.factory.post('/hourly_report/', data)
+        request = self.factory.post('/daily_comparison/', data)
         request.user = self.user
         request.session = {}
-        response = cdr_report_by_hour(request)
+        response = cdr_daily_comparison(request)
         self.assertEqual(response.status_code, 200)
 
         data = {'switch_id': 0,
@@ -313,10 +315,10 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
                 'comp_days': 10,
                 'graph_view': 3,
                 'check_days': 7}
-        request = self.factory.post('/hourly_report/', data)
+        request = self.factory.post('/daily_comparison/', data)
         request.user = self.user
         request.session = {}
-        response = cdr_report_by_hour(request)
+        response = cdr_daily_comparison(request)
         self.assertEqual(response.status_code, 200)
 
     def test_cdr_concurrent_calls(self):
@@ -391,14 +393,6 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertTrue(response.context['form'], CountryReportForm(data))
         self.assertEqual(response.status_code, 200)
 
-        data = {'switch_id': -1,
-                'from_date': '',
-                'to_date': ''}
-        request = self.factory.post('/country_report/', data)
-        request.user = self.user
-        request.session = {}
-        response = cdr_country_report(request)
-        self.assertEqual(response.status_code, 200)
 
     def test_cdr_mail_report(self):
         """Test Function to check mail report"""

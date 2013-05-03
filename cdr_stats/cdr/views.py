@@ -597,7 +597,7 @@ def cdr_export_to_csv(request):
     response['Content-Disposition'] = 'attachment;filename=export.' + format
 
     # get query_var from request.session
-    query_var = request.session['query_var']
+    query_var = request.session.get('query_var')
 
     final_result = mongodb.cdr_common.find(query_var,
         {
@@ -608,7 +608,7 @@ def cdr_export_to_csv(request):
             "billmsec": 0,
             "read_codec": 0,
             "write_codec": 0,
-            "remote_media_ip": 0
+            "remote_media_ip": 0,
         }
     )
 
@@ -1719,7 +1719,7 @@ def cdr_overview(request):
                         hourly_call_duration_res[sw_id] = [convert_to_minute(temp_duration_sum)]
 
             switch_count = len(hourly_call_duration_res.keys())
-            if int(switch_id) == 0 and switch_count > 1:
+            if switch_id == 0 and switch_count > 1:
                 # get total of no of switch
                 total_call_list = []
                 for i in hourly_call_count_res:
@@ -1751,7 +1751,7 @@ def cdr_overview(request):
                 hourly_call_chartdata['extra' + str(int_count)] = extra_serie
                 int_count += 1
 
-            if int(switch_id) == 0 and switch_count > 1:
+            if switch_id == 0 and switch_count > 1:
                 hourly_call_chartdata['name' + str(int_count)] = 'Total calls'
                 hourly_call_chartdata['y' + str(int_count)] = total_hourly_call_count
                 hourly_call_chartdata['extra' + str(int_count)] = extra_serie
@@ -1765,7 +1765,7 @@ def cdr_overview(request):
                 hourly_duration_chartdata['extra' + str(int_count)] = extra_serie
                 int_count += 1
 
-            if int(switch_id) == 0 and switch_count > 1:
+            if switch_id == 0 and switch_count > 1:
                 hourly_duration_chartdata['name' + str(int_count)] = 'Total duration'
                 hourly_duration_chartdata['y' + str(int_count)] = total_hourly_call_duration
                 hourly_duration_chartdata['extra' + str(int_count)] = extra_serie
@@ -1807,7 +1807,7 @@ def cdr_overview(request):
                 else:
                     daily_call_duration_res[sw_id] = [convert_to_minute(doc['duration_per_day'])]
 
-            if int(switch_id) == 0 and switch_count > 1:
+            if switch_id == 0 and switch_count > 1:
                 daily_total_call_list = []
                 for i in daily_call_count_res:
                     daily_total_call_list.append(daily_call_count_res[i])
@@ -1837,7 +1837,7 @@ def cdr_overview(request):
                 daily_call_chartdata['extra' + str(int_count)] = extra_serie
                 int_count += 1
 
-            if int(switch_id) == 0 and switch_count > 1:
+            if switch_id == 0 and switch_count > 1:
                 daily_call_chartdata['name' + str(int_count)] = 'Total calls'
                 daily_call_chartdata['y' + str(int_count)] = total_daily_call_count
                 daily_call_chartdata['extra' + str(int_count)] = extra_serie
@@ -1851,7 +1851,7 @@ def cdr_overview(request):
                 daily_duration_chartdata['extra' + str(int_count)] = extra_serie
                 int_count += 1
 
-            if int(switch_id) == 0 and switch_count > 1:
+            if switch_id == 0 and switch_count > 1:
                 daily_duration_chartdata['name' + str(int_count)] = 'Total duration'
                 daily_duration_chartdata['y' + str(int_count)] = total_daily_call_duration
                 daily_duration_chartdata['extra' + str(int_count)] = extra_serie
@@ -1895,7 +1895,7 @@ def cdr_overview(request):
                 else:
                     monthly_call_duration_res[sw_id] = [convert_to_minute(doc['duration_per_month'])]
 
-            if int(switch_id) == 0 and switch_count > 1:
+            if switch_id == 0 and switch_count > 1:
                 monthly_total_call_list = []
                 for i in monthly_call_count_res:
                     monthly_total_call_list.append(monthly_call_count_res[i])
@@ -1925,7 +1925,7 @@ def cdr_overview(request):
                 monthly_call_chartdata['extra' + str(int_count)] = extra_serie
                 int_count += 1
 
-            if int(switch_id) == 0 and switch_count > 1:
+            if switch_id == 0 and switch_count > 1:
                 monthly_call_chartdata['name' + str(int_count)] = 'Total calls'
                 monthly_call_chartdata['y' + str(int_count)] = total_monthly_call_count
                 monthly_call_chartdata['extra' + str(int_count)] = extra_serie
@@ -1939,7 +1939,7 @@ def cdr_overview(request):
                 monthly_duration_chartdata['extra' + str(int_count)] = extra_serie
                 int_count += 1
 
-            if int(switch_id) == 0 and switch_count > 1:
+            if switch_id == 0 and switch_count > 1:
                 monthly_duration_chartdata['name' + str(int_count)] = 'Total duration'
                 monthly_duration_chartdata['y' + str(int_count)] = total_monthly_call_duration
                 monthly_duration_chartdata['extra' + str(int_count)] = extra_serie
@@ -2026,7 +2026,7 @@ def cdr_country_report(request):
                 query_var['metadata.country_id'] = {'$in': country_id}
 
             switch_id = form.cleaned_data.get('switch')
-            if switch_id and int(switch_id) != 0:
+            if switch_id and switch_id != 0:
                 query_var['metadata.switch_id'] = int(switch_id)
 
             duration = form.cleaned_data.get('duration')
