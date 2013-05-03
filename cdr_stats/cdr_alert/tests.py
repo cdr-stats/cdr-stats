@@ -475,12 +475,12 @@ class CdrAlertModelTestCase(TestCase):
         result = blacklist_whitelist_notification.delay(NOTICE_TYPE.whitelist_prefix)
         self.assertEquals(result.get(), True)
 
-    def test_chk_alarm(self):
-        """Test task : chk_alarm"""
-        result = chk_alarm.delay()
-        self.assertEqual(result.get(), True)
+    #def test_chk_alarm(self):
+    #    """Test task : chk_alarm"""
+    #    result = chk_alarm.delay()
+    #    self.assertTrue(result.get())
 
-    def test_send_cdr_report(self):
-        """Test task : send_cdr_report"""
-        result = send_cdr_report.delay()
-        self.assertEqual(result.get(), True)
+    #def test_send_cdr_report(self):
+    #    """Test task : send_cdr_report"""
+    #    result = send_cdr_report.delay()
+    #    self.assertTrue(result.get())

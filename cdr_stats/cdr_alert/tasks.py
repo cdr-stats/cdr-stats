@@ -250,6 +250,9 @@ def run_alarm(alarm_obj, logger):
         pre_total_record = mongodb.cdr_common.find(query_var).count()
         query_var['hangup_cause_id'] = get_hangupcause_id(hangup_cause_q850)
         pre_total_answered_record = mongodb.cdr_common.find(query_var).count()
+
+        # pre_total_record should not be 0
+        pre_total_record = 1 if pre_total_record == 0 else pre_total_record
         previous_asr = pre_total_answered_record / pre_total_record
 
         if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or \
@@ -268,6 +271,9 @@ def run_alarm(alarm_obj, logger):
         query_var['hangup_cause_id'] = get_hangupcause_id(hangup_cause_q850)
 
         cur_total_answered_record = mongodb.cdr_common.find(query_var).count()
+
+        # cur_total_record should not be 0
+        cur_total_record = 1 if cur_total_record == 0 else cur_total_record
         current_asr = cur_total_answered_record / cur_total_record
 
         if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or \
