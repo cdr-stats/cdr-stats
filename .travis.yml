@@ -23,7 +23,7 @@ before_script:
   # - pyflakes -x W cdr_stats
 script:
   #- python cdr_stats/manage.py test --settings=settings_travis -s -x --with-xtraceback --with-color
-  - python newfies/manage.py test --settings=settings_travis -s -x --with-xtraceback --with-color --ignore-files=api_tests.py
+  - python cdr_stats/manage.py test --settings=settings_travis -s -x --with-xtraceback --with-color --ignore-files=api/tests.py
   #- python cdr_stats/manage.py test --settings=settings_travis -s --with-progressive
 # whitelist
 branches:
