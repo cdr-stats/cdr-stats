@@ -12,13 +12,23 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django import forms
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from common.common_functions import isint
 from voip_billing.function_def import rate_range
 from voip_billing.models import VoIPPlan, VoIPRetailPlan,\
     VoIPCarrierPlan
-from voip_billing.constants import CONFIRMATION_TYPE
+from voip_billing.constants import CONFIRMATION_TYPE, EXPORT_CHOICE
 from cdr.forms import sw_list_with_all, CdrSearchForm
+
+
+class HorizRadioRenderer(forms.RadioSelect.renderer):
+    """This overrides widget method to put radio buttons horizontally
+       instead of vertically.
+    """
+    def render(self):
+            """Outputs radios"""
+            return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
 
 
 def voip_plan_list():
@@ -95,29 +105,52 @@ class CarrierRate_fileImport(FileImport):
                 return p_p
 
 
-class Carrier_Rate_fileExport(forms.Form):
+class Exportfile(forms.Form):
+    """
+    Abstract Form : export file in various format e.g. XLS, CSV, JSON
+    """
+    export_to = forms.TypedChoiceField(label=_('Export to'), required=True,
+                                       choices=list(EXPORT_CHOICE),
+                                       widget=forms.RadioSelect(renderer=HorizRadioRenderer))
+
+
+class Carrier_Rate_fileExport(Exportfile):
     """
     Admin Form : Carrier Rate Export
     """
     plan_id = forms.ChoiceField(label=_("carrier plan"),
                                 choices=carrier_plan_list(), required=False)
 
+    def __init__(self, *args, **kwargs):
+        super(Carrier_Rate_fileExport, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['plan_id', 'export_to', ]
 
-class Retail_Rate_fileExport(forms.Form):
+
+class Retail_Rate_fileExport(Exportfile):
     """
     Admin Form : Retail Rate Export
     """
     plan_id = forms.ChoiceField(label=_("retail plan"),
                                 choices=retail_plan_list(), required=False)
 
+    def __init__(self, *args, **kwargs):
+        super(Retail_Rate_fileExport, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['plan_id', 'export_to', ]
 
-class VoIPPlan_fileExport(forms.Form):
+
+class VoIPPlan_fileExport(Exportfile):
     """
     Admin Form : VoIP Plan Export
     """
     plan_id = forms.ChoiceField(label=_("VoIP plan"),
         choices=voip_plan_list(), required=False,
         help_text=_('this will export the VoIPPlan using LCR on each prefix-rate tuple'))
+
+    def __init__(self, *args, **kwargs):
+        super(VoIPPlan_fileExport, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['plan_id', 'export_to', ]
+
+
 
 
 class PrefixRetailRrateForm(forms.Form):

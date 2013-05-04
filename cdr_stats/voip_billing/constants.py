@@ -30,3 +30,9 @@ class RATE_COLUMN_NAME(Choice):
     prefix = _('prefix')
     destination = _('destination')
     rate = _('rate')
+
+
+class EXPORT_CHOICE(Choice):
+    CSV = 'csv', _('csv').upper()
+    XLS = 'xls', _('xls').upper()
+    JSON = 'json', _('json').upper()

@@ -28,7 +28,7 @@ from voip_billing.models import VoIPRetailRate, VoIPPlan, BanPlan,\
 from voip_billing.forms import RetailRate_fileImport, CarrierRate_fileImport,\
     Carrier_Rate_fileExport, SimulatorForm, VoIPPlan_fileExport, CustomRateFilterForm,\
     Retail_Rate_fileExport, RebillForm
-from voip_billing.constants import CONFIRMATION_TYPE
+from voip_billing.constants import CONFIRMATION_TYPE, EXPORT_CHOICE
 from voip_billing.widgets import AutocompleteModelAdmin
 from voip_billing.function_def import rate_filter_range_field_chk
 from voip_billing.rate_engine import rate_engine
@@ -38,7 +38,8 @@ from common.app_label_renamer import AppLabelRenamer
 from common.admin_custom_actions import export_as_csv_action
 from mongodb_connection import mongodb
 from datetime import datetime
-import csv
+import tablib
+
 
 APP_LABEL = _('VoIP Billing')
 AppLabelRenamer(native_app_label=u'voip_billing', app_label=APP_LABEL).main()
@@ -113,13 +114,13 @@ class VoIPPlanAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(VoIPPlanAdmin, self).get_urls()
-        my_urls = patterns('',                
+        my_urls = patterns('',
             (r'^simulator/$', self.admin_site.admin_view(self.simulator)),
             (r'^export/$', self.admin_site.admin_view(self.export)),
             (r'^rebilling/$', self.admin_site.admin_view(self.rebilling)),
         )
         return my_urls + urls
-    
+
     def simulator(self, request):
         """
         Admin Simulator
@@ -168,15 +169,15 @@ class VoIPPlanAdmin(admin.ModelAdmin):
         Export Carrier Rate into CSV file
         """
         opts = VoIPPlan._meta
-        form = VoIPPlan_fileExport()
+        form = VoIPPlan_fileExport(initial={'export_to': EXPORT_CHOICE.CSV})
         if request.method == 'POST':
             form = VoIPPlan_fileExport(request.POST)
             if form.is_valid():
                 if "plan_id" in request.POST:
-                    response = HttpResponse(mimetype='text/csv')
+                    format = request.POST.get('export_to')
+                    response = HttpResponse(mimetype='text/' + format)
                     response['Content-Disposition'] = \
-                        'attachment;filename=export_voipplan.csv'
-                    writer = csv.writer(response)
+                        'attachment;filename=export_voipplan.' + format
 
                     voipplan_id = request.POST['plan_id']
                     sql_statement = (
@@ -197,10 +198,29 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                     row = cursor.fetchall()
 
                     # Content writing in file
-                    writer.writerow(['prefix', 'rate', 'destination'])
-
+                    headers = ('prefix', 'rate', 'destination')
+                    list_val = []
                     for record in row:
-                        writer.writerow([record[0], record[1], record[2]])
+                        rate = record[1]
+                        if format == 'json':
+                            rate = str(record[1])
+
+                        list_val.append((
+                            record[0],
+                            rate,
+                            record[2],
+                        ))
+                    data = tablib.Dataset(*list_val, headers=headers)
+
+                    if format == 'xls':
+                        response.write(data.xls)
+
+                    if format == 'csv':
+                        response.write(data.csv)
+
+                    if format == 'json':
+                        response.write(data.json)
+
                     return response
 
         ctx = RequestContext(request, {
@@ -243,8 +263,8 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                                                  '$lt': end_date.strftime('%Y-%m-%d')}
                 monthly_kwargs['metadata.date'] = {'$gte': start_date.strftime('%Y-%m'),
                                                    '$lt': end_date.strftime('%Y-%m')}
-            
-            user_profile = request.user.get_profile()            
+
+            user_profile = request.user.get_profile()
             if not request.user.is_superuser:  # not superuser
                 call_kwargs['accountcode'] = user_profile.accountcode
                 monthly_kwargs['metadata.accountcode'] =\
@@ -328,7 +348,7 @@ class BanPrefixAdmin(AutocompleteModelAdmin):
 
     def get_urls(self):
         urls = super(BanPrefixAdmin, self).get_urls()
-        my_urls = patterns('',            
+        my_urls = patterns('',
             (r'^search/$', self.admin_site.admin_view(self.search)),
         )
         return my_urls + urls
@@ -389,7 +409,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
     def get_urls(self):
         urls = super(VoIPRetailRateAdmin, self).get_urls()
         my_urls = patterns('',
-            (r'^$', self.admin_site.admin_view(self.changelist_view)),            
+            (r'^$', self.admin_site.admin_view(self.changelist_view)),
             (r'^import_rr/$', self.admin_site.admin_view(self.import_rr)),
             (r'^export_rr/$', self.admin_site.admin_view(self.export_rr)),
             (r'^search/$', self.admin_site.admin_view(self.search)),
@@ -426,33 +446,48 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
             # Custom Rate Filter Form
             form = CustomRateFilterForm(initial={"rate": rate,
                                                  "rate_range": rate_range})
-        ctx = {            
+        ctx = {
             'title': _('Select VoIP Retail Rate to Change'),
             'form': form,
         }
-        return super(VoIPRetailRateAdmin, self).changelist_view(request, extra_context=ctx)    
+        return super(VoIPRetailRateAdmin, self).changelist_view(request, extra_context=ctx)
 
     def export_rr(self, request):
         """
         Export Retail Rate into CSV file
         """
         opts = VoIPRetailRate._meta
-        form = Retail_Rate_fileExport()
+        form = Retail_Rate_fileExport(initial={'export_to': EXPORT_CHOICE.CSV})
         if request.method == 'POST':
             form = Retail_Rate_fileExport(request.POST)
             if form.is_valid():
                 if "plan_id" in request.POST:
+                    format = request.POST.get('export_to')
+                    response = HttpResponse(mimetype='text/' + format)
+                    response['Content-Disposition'] = \
+                        'attachment;filename=export_retail_rate.' + format
 
-                    response = HttpResponse(mimetype='text/csv')
-                    response['Content-Disposition'] = 'attachment;filename=export_retail_rate.csv'
-
-                    writer = csv.writer(response)
-                    qs = VoIPRetailRate.objects.filter(voip_retail_plan_id=request.POST['plan_id'])
+                    qs = VoIPRetailRate.objects.values('prefix', 'retail_rate').filter(voip_retail_plan_id=request.POST['plan_id'])
 
                     # Content writing in file
-                    writer.writerow(['prefix', 'rate'])
+                    headers = ('prefix', 'rate')
+                    list_val = []
                     for row in qs:
-                        writer.writerow([row.prefix, row.retail_rate])
+                        rate = row['retail_rate']
+                        if format == 'json':
+                            rate = str(row['retail_rate'])
+
+                        list_val.append((row['prefix'], rate))
+
+                    data = tablib.Dataset(*list_val, headers=headers)
+                    if format == EXPORT_CHOICE.XLS:
+                        response.write(data.xls)
+
+                    if format == EXPORT_CHOICE.CSV:
+                        response.write(data.csv)
+
+                    if format == EXPORT_CHOICE.JSON:
+                        response.write(data.json)
                     return response
 
         ctx = RequestContext(request, {
@@ -611,7 +646,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
     def get_urls(self):
         urls = super(VoIPCarrierRateAdmin, self).get_urls()
         my_urls = patterns('',
-            (r'^$', self.admin_site.admin_view(self.changelist_view)),            
+            (r'^$', self.admin_site.admin_view(self.changelist_view)),
             (r'^import_cr/$', self.admin_site.admin_view(self.import_cr)),
             (r'^export_cr/$', self.admin_site.admin_view(self.export_cr)),
             (r'^search/$', self.admin_site.admin_view(self.search)),
@@ -649,7 +684,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
             # Custom Rate Filter Form
             form = CustomRateFilterForm(initial={"rate": rate,
                                                  "rate_range": rate_range})
-        ctx = {            
+        ctx = {
             'title': _('Select VoIP Carrier Rate to Change'),
             'form': form,
         }
@@ -660,22 +695,37 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
         Export Carrier Rate into CSV file
         """
         opts = VoIPCarrierRate._meta
-        form = Carrier_Rate_fileExport()
+        form = Carrier_Rate_fileExport(initial={'export_to': EXPORT_CHOICE.CSV})
         if request.method == 'POST':
             form = Carrier_Rate_fileExport(request.POST)
             if form.is_valid():
                 if "plan_id" in request.POST:
-                    response = HttpResponse(mimetype='text/csv')
-                    response['Content-Disposition'] = 'attachment;filename=export_carrier_rate.csv'
-                    writer = csv.writer(response)
+                    format = request.POST.get('export_to')
+                    response = HttpResponse(mimetype='text/' + format)
+                    response['Content-Disposition'] = \
+                        'attachment;filename=export_carrier_rate.' + format
 
-                    qs = VoIPCarrierRate.objects.filter(
+                    qs = VoIPCarrierRate.objects.values('prefix', 'carrier_rate').filter(
                         voip_carrier_plan_id=request.POST['plan_id'])
 
                     # Content writing in file
-                    writer.writerow(['prefix', 'rate'])
+                    headers = ('prefix', 'rate')
+                    list_val = []
                     for row in qs:
-                        writer.writerow([row.prefix, row.carrier_rate])
+                        rate = row['carrier_rate']
+                        if format == 'json':
+                            rate = str(row['carrier_rate'])
+                        list_val.append((row['prefix'], rate))
+
+                    data = tablib.Dataset(*list_val, headers=headers)
+                    if format == EXPORT_CHOICE.XLS:
+                        response.write(data.xls)
+
+                    if format == EXPORT_CHOICE.CSV:
+                        response.write(data.csv)
+
+                    if format == EXPORT_CHOICE.JSON:
+                        response.write(data.json)
                     return response
 
         ctx = RequestContext(request, {
