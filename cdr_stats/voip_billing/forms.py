@@ -109,7 +109,7 @@ class Exportfile(forms.Form):
     """
     Abstract Form : export file in various format e.g. XLS, CSV, JSON
     """
-    export_to = forms.TypedChoiceField(label=_('Export to'), required=True,
+    export_to = forms.TypedChoiceField(label=_('export to').capitalize(), required=True,
                                        choices=list(EXPORT_CHOICE),
                                        widget=forms.RadioSelect(renderer=HorizRadioRenderer))
 
@@ -118,7 +118,7 @@ class Carrier_Rate_fileExport(Exportfile):
     """
     Admin Form : Carrier Rate Export
     """
-    plan_id = forms.ChoiceField(label=_("carrier plan"),
+    plan_id = forms.ChoiceField(label=_("carrier plan").capitalize(),
                                 choices=carrier_plan_list(), required=False)
 
     def __init__(self, *args, **kwargs):
@@ -130,7 +130,7 @@ class Retail_Rate_fileExport(Exportfile):
     """
     Admin Form : Retail Rate Export
     """
-    plan_id = forms.ChoiceField(label=_("retail plan"),
+    plan_id = forms.ChoiceField(label=_("retail plan").capitalize(),
                                 choices=retail_plan_list(), required=False)
 
     def __init__(self, *args, **kwargs):
@@ -157,7 +157,7 @@ class PrefixRetailRrateForm(forms.Form):
     """
     Client Form : To know Retail Rate for prefix
     """
-    prefix = forms.CharField(label=_("enter prefix"),
+    prefix = forms.CharField(label=_("enter prefix").capitalize(),
                    widget=forms.TextInput(attrs={'size': 15}), required=False)
 
 
@@ -165,9 +165,9 @@ class SendVoIPForm(forms.Form):
     """
     Client Form : To Send VoIP
     """
-    destination_no = forms.CharField(label=_("destination"), required=True,
+    destination_no = forms.CharField(label=_("destination").capitalize(), required=True,
                                      help_text=_('enter digit only'))
-    txt_msg = forms.CharField(label=_("message"),
+    txt_msg = forms.CharField(label=_("message").capitalize(),
                               widget=forms.Textarea,
                               help_text=_('not more than 120 characters'),
                               required=True)
