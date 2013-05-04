@@ -22,7 +22,7 @@ from voip_billing.forms import PrefixRetailRrateForm, SimulatorForm, DailyBillin
     HourlyBillingForm
 from voip_billing.function_def import prefix_allowed_to_call, get_rounded_value
 from voip_billing.rate_engine import rate_engine
-from voip_billing.constants import RATE_COLUMN_NAME
+from voip_billing.constants import RATE_COLUMN_NAME, EXPORT_CHOICE
 from mongodb_connection import mongodb
 from user_profile.models import UserProfile
 from cdr.views import check_user_accountcode, check_cdr_exists, check_user_voipplan
@@ -151,13 +151,13 @@ def export_rate(request):
 
     data = tablib.Dataset(*list_val, headers=headers)
 
-    if format == 'xls':
+    if format == EXPORT_CHOICE.XLS:
         response.write(data.xls)
 
-    if format == 'csv':
+    if format == EXPORT_CHOICE.CSV:
         response.write(data.csv)
 
-    if format == 'json':
+    if format == EXPORT_CHOICE.JSON:
         response.write(data.json)
 
     return response
