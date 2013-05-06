@@ -40,7 +40,7 @@ csv_file = open(
 class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Admin Interface."""
 
-    fixtures = ['auth_user.json', 'switch.json']
+    #fixtures = ['auth_user.json', 'switch.json']
 
     def test_admin_switch_list(self):
         """Test Function to check admin switch list"""
@@ -86,18 +86,17 @@ class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
         response = self.client.get('/admin/cdr/hangupcause/')
         self.failUnlessEqual(response.status_code, 200)
 
-    #def test_admin_hangupcause_add(self):
-    #    """Test Function to check admin hangupcause add"""
-    #    response = self.client.get('/admin/cdr/hangupcause/add/')
-    #    self.failUnlessEqual(response.status_code, 200)
-
-    #    response = self.client.post(
-    #        '/admin/cdr/hangupcause/add/',
-    #        data={
-    #            "code": "1",
-    #            "enumeration": "UNALLOCATED_NUMBER",
-    #        })
-    #    self.assertEqual(response.status_code, 200)
+    def test_admin_hangupcause_add(self):
+        """Test Function to check admin hangupcause add"""
+        response = self.client.get('/admin/cdr/hangupcause/add/')
+        self.failUnlessEqual(response.status_code, 200)
+        response = self.client.post(
+            '/admin/cdr/hangupcause/add/',
+            data={
+                "code": "1",
+                "enumeration": "UNALLOCATED_NUMBER",
+            })
+        self.assertEqual(response.status_code, 200)
 
 
 class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):

@@ -115,7 +115,7 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
     def test_daily_billing_report(self):
         """
-        Test Function to check VoIP Call simulator
+        Test Function to check VoIP daily billing report
         """
         response = self.client.get('/daily_billing_report/')
         self.assertTrue(response.context['form'], DailyBillingForm())
@@ -145,7 +145,7 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
     def test_hourly_billing_report(self):
         """
-        Test Function to check VoIP Call simulator
+        Test Function to check VoIP hourly billing report
         """
         response = self.client.get('/hourly_billing_report/')
         self.assertTrue(response.context['form'], HourlyBillingForm())
