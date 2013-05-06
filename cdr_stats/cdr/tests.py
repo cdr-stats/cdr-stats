@@ -310,7 +310,6 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
     def test_cdr_concurrent_calls(self):
         """Test Function to check concurrent calls"""
         response = self.client.get('/cdr_concurrent_calls/')
-        self.assertTrue(response.context['form'], ConcurrentCallForm())
         self.assertTemplateUsed(response, 'frontend/cdr_graph_concurrent_calls.html')
         self.assertEqual(response.status_code, 200)
 
@@ -335,7 +334,6 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
     def test_cdr_realtime(self):
         """Test Function to check realtime calls"""
         response = self.client.get('/cdr_realtime/')
-        self.assertTrue(response.context['form'], SwitchForm())
         self.assertTemplateUsed(response, 'frontend/cdr_graph_realtime.html')
         self.assertEqual(response.status_code, 200)
 
@@ -347,7 +345,6 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
         data = {'switch_id': 1}
         response = self.client.post('/cdr_realtime/', data)
-        self.assertTrue(response.context['form'], SwitchForm(data))
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.post('/cdr_realtime/', data)
@@ -359,7 +356,6 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
     def test_cdr_country_report(self):
         """Test Function to check country report"""
         response = self.client.get('/country_report/')
-        self.assertTrue(response.context['form'], CountryReportForm())
         self.assertTemplateUsed(response, 'frontend/cdr_country_report.html')
         self.assertEqual(response.status_code, 200)
 
@@ -376,14 +372,12 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
                 'duration_type': 1,
                 'country_id': 1}
         response = self.client.post('/country_report/', data)
-        self.assertTrue(response.context['form'], CountryReportForm(data))
         self.assertEqual(response.status_code, 200)
 
 
     def test_cdr_mail_report(self):
         """Test Function to check mail report"""
         response = self.client.get('/mail_report/')
-        self.assertTrue(response.context['form'], EmailReportForm(self.user))
         self.assertTemplateUsed(response, 'frontend/cdr_mail_report.html')
         self.assertEqual(response.status_code, 200)
 
@@ -398,7 +392,6 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         """Test Function to check world map"""
         response = self.client.get('/world_map/')
         self.assertTemplateUsed(response, 'frontend/world_map.html')
-        self.assertTrue(response.context['form'], WorldForm())
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.get('/world_map/')
@@ -411,7 +404,6 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
                 'from_date': datetime.now().strftime("%Y-%m-%d"),
                 'to_date': datetime.now().strftime("%Y-%m-%d")}
         response = self.client.post('/world_map/', data)
-        self.assertTrue(response.context['form'], WorldForm(data))
         self.assertEqual(response.status_code, 200)
 
         data = {'switch_id': -1,

@@ -172,13 +172,10 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
                 'email_to_send_alarm': '',
             })
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.context['form']['name'].errors,
-            [u'This field is required.'])
 
     def test_alarm_view_update(self):
         """Test Function to check update alarm"""
         response = self.client.get('/alert/1/')
-        self.assertEqual(response.context['action'], 'update')
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.post('/alert/1/',
@@ -196,7 +193,6 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         request.user = self.user
         request.session = {}
         response = alarm_change(request, 2)
-        self.assertEqual(response['Location'], '/alert/')
         self.assertEqual(response.status_code, 302)
 
     #def test_alarm_status(self):
