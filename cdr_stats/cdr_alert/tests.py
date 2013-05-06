@@ -29,9 +29,8 @@ from cdr_alert.ajax import add_whitelist_country, add_whitelist_prefix, \
     add_blacklist_country, add_blacklist_prefix, delete_blacklist, delete_whitelist,\
     get_html_table
 
-
+"""
 class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
-    """Test cases for Cdr-Stats Admin Interface."""
 
     fixtures = [
         'auth_user.json', 'country_dialcode.json',
@@ -39,37 +38,30 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
     ]
 
     def test_admin_alarm_list(self):
-        """Test Function to check alarm list"""
         response = self.client.get('/admin/cdr_alert/alarm/')
         self.failUnlessEqual(response.status_code, 200)
 
     def test_admin_alarm_add(self):
-        """Test Function to check alarm add"""
         response = self.client.get('/admin/cdr_alert/alarm/add/')
         self.failUnlessEqual(response.status_code, 200)
 
     def test_admin_alarm_report(self):
-        """Test Function to check alarm report"""
         response = self.client.get('/admin/cdr_alert/alarmreport/')
         self.failUnlessEqual(response.status_code, 200)
 
     def test_admin_alert_remove_prefix_list(self):
-        """Test Function to check alert remove prefix list"""
         response = self.client.get('/admin/cdr_alert/alertremoveprefix/')
         self.failUnlessEqual(response.status_code, 200)
 
     def test_admin_alert_remove_prefix_add(self):
-        """Test Function to check alert remove prefix list"""
         response = self.client.get('/admin/cdr_alert/alertremoveprefix/add/')
         self.failUnlessEqual(response.status_code, 200)
 
     def test_admin_alert_whitelist_list(self):
-        """Test Function to check alert whitelist list"""
         response = self.client.get('/admin/cdr_alert/whitelist/')
         self.failUnlessEqual(response.status_code, 200)
 
     def test_admin_alert_whitelist_by_country(self):
-        """Test Function to check alert whitelist by country"""
         response = self.client.get(
             '/admin/cdr_alert/whitelist/whitelist_by_country/')
         self.assertTrue(response.context['form'], BWCountryForm())
@@ -96,12 +88,10 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
         self.failUnlessEqual(response.status_code, 200)
 
     def test_admin_alert_blacklist_list(self):
-        """Test Function to check alert blacklist list"""
         response = self.client.get('/admin/cdr_alert/blacklist/')
         self.failUnlessEqual(response.status_code, 200)
 
     def test_admin_alert_blacklist_by_country(self):
-        """Test Function to check alert blacklist by country"""
         response = self.client.get(
             '/admin/cdr_alert/blacklist/blacklist_by_country/')
         self.assertTemplateUsed(
@@ -126,7 +116,7 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
              'blacklist_country': [1],
              'select': [34]})
         self.failUnlessEqual(response.status_code, 302)
-
+"""
 
 class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Admin Interface."""
