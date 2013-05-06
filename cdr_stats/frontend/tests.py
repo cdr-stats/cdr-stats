@@ -156,8 +156,8 @@ class FrontendForgotPassword(TestCase):
                                      'new_password2': 'admin'})
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get('/reset/done/')
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(
-            response,
-            'frontend/registration/password_reset_complete.html')
+        #response = self.client.get('/reset/done/')
+        #self.assertEqual(response.status_code, 200)
+        #self.assertTemplateUsed(
+        #    response,
+        #    'frontend/registration/password_reset_complete.html')
