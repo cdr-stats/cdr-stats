@@ -24,7 +24,9 @@ SOUTH_TESTS_MIGRATE = False
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
+        #'NAME': ':memory:',
+        'NAME': '/tmp/db.sqlite',
+        'TEST_NAME': '/tmp/test.sqlite'
     }
 }
 
