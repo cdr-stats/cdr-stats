@@ -20,7 +20,7 @@ from voip_billing.tasks import RebillingTask, ReaggregateTask
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
 
-"""
+
 class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):
 
     fixtures = ['auth_user.json', 'notice_type.json', 'notification.json',
@@ -60,7 +60,7 @@ class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):
         self.failUnlessEqual(response.status_code, 200)
         response = self.client.get('/admin/voip_billing/voipretailrate/export_rr/')
         self.failUnlessEqual(response.status_code, 200)
-"""
+
 
 class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
     """

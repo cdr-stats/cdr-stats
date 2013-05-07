@@ -158,5 +158,5 @@ class FrontendForgotPassword(TestCase):
 
         response = self.client.get('/reset/done/')
         self.assertEqual(response.status_code, 200)
-        #self.assertTemplateUsed(response,
-        #    'frontend/registration/password_reset_complete.html')
+        self.assertTemplateUsed(response,
+            'frontend/registration/password_reset_complete.html')
