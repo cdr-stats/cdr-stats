@@ -33,7 +33,7 @@ class GatewayAdmin(admin.ModelAdmin):
     list_display_links = ('name', )
     list_filter = ['protocol', 'hostname']
     ordering = ('id', )
-    
+
 admin.site.register(Gateway, GatewayAdmin)
 
 
