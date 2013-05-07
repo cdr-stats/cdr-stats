@@ -20,7 +20,7 @@ from voip_billing.tasks import RebillingTask, ReaggregateTask
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
 
-"""
+
 class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):
 
     fixtures = ['auth_user.json', 'notice_type.json', 'notification.json',
@@ -60,7 +60,7 @@ class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):
         self.failUnlessEqual(response.status_code, 200)
         response = self.client.get('/admin/voip_billing/voipretailrate/export_rr/')
         self.failUnlessEqual(response.status_code, 200)
-"""
+
 
 class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
     """
@@ -176,7 +176,7 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         start_date = end_date + relativedelta(days=-1)
         call_kwargs = {}
         call_kwargs['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
-        #result = RebillingTask.delay(call_kwargs, voipplan_id)
+        result = RebillingTask.delay(call_kwargs, voipplan_id)
         #self.assertEqual(result.get(), True)
 
     def test_reaggregate(self):
@@ -195,5 +195,5 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
                                             '$lt': end_date.strftime('%Y-%m-%d')}
         monthly_query_var['metadata.date'] = {'$gte': start_date.strftime('%Y-%m'),
                                               '$lt': end_date.strftime('%Y-%m')}
-        #result = ReaggregateTask.delay(daily_query_var, monthly_query_var, call_kwargs)
+        result = ReaggregateTask.delay(daily_query_var, monthly_query_var, call_kwargs)
         #self.assertEqual(result.get(), True)

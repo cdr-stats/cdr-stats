@@ -24,7 +24,7 @@ from common.utils import BaseAuthenticatedClient
 #from django.contrib import admin
 #admin.site.register(User)
 
-"""
+
 class UserProfileAdminView(BaseAuthenticatedClient):
     fixtures = ['auth_user.json', 'notice_type.json', 'notification.json',
                 'country_dialcode.json', 'voip_gateway.json', 'voip_provider.json',
@@ -45,7 +45,7 @@ class UserProfileAdminView(BaseAuthenticatedClient):
     def test_admin_customer_view_add(self):
         response = self.client.get("/admin/auth/customer/add/")
         self.assertEqual(response.status_code, 200)
-"""
+
 
 class UserProfileCustomerView(BaseAuthenticatedClient):
     """Test Function to check UserProfile Customer pages"""

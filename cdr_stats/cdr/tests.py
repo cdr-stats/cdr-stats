@@ -40,61 +40,61 @@ csv_file = open(
 class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
     """Test cases for Cdr-Stats Admin Interface."""
 
-    #fixtures = ['auth_user.json', 'switch.json']
+    fixtures = ['auth_user.json', 'switch.json']
 
-    #def test_admin_switch_list(self):
-    #    """Test Function to check admin switch list"""
-    #    response = self.client.get('/admin/cdr/switch/')
-    #    self.failUnlessEqual(response.status_code, 200)
-    #    response = self.client.get('/admin/cdr/switch/cdr_view/')
-    #    self.failUnlessEqual(response.status_code, 200)
+    def test_admin_switch_list(self):
+        """Test Function to check admin switch list"""
+        response = self.client.get('/admin/cdr/switch/')
+        self.failUnlessEqual(response.status_code, 200)
+        response = self.client.get('/admin/cdr/switch/cdr_view/')
+        self.failUnlessEqual(response.status_code, 200)
 
-    #def test_admin_switch_add(self):
-    #    """Test Function to check admin switch add"""
-    #    response = self.client.get('/admin/cdr/switch/add/')
-    #    self.failUnlessEqual(response.status_code, 200)
-    #    response = self.client.post(
-    #        '/admin/cdr/switch/add/',
-    #        data={
-    #            "name": "localhost",
-    #            "ipaddress": "127.0.0.1",
-    #        },
-    #        follow=True)
-    #    self.assertEqual(response.status_code, 200)
+    def test_admin_switch_add(self):
+        """Test Function to check admin switch add"""
+        response = self.client.get('/admin/cdr/switch/add/')
+        self.failUnlessEqual(response.status_code, 200)
+        response = self.client.post(
+            '/admin/cdr/switch/add/',
+            data={
+                "name": "localhost",
+                "ipaddress": "127.0.0.1",
+            },
+            follow=True)
+        self.assertEqual(response.status_code, 200)
 
-    #def test_admin_switch_import_cdr(self):
-    #    """Test Function to check admin cdr import"""
-    #    response = self.client.post('/admin/cdr/switch/import_cdr/',
-    #            {'switch': 1,
-    #             'csv_file': csv_file,
-    #             'accountcode_csv': '12345',
-    #             'caller_id_number': 1,
-    #             'destination_number': 3,
-    #             'duration': 4,
-    #             'billsec': 5,
-    #             'hangup_cause_id': 6,
-    #             'uuid': 8,
-    #             'start_uepoch': 10})
-    #    self.failUnlessEqual(response.status_code, 200)
-    #    self.assertEqual(response.status_code, 200)
-    #    self.assertTemplateUsed(response, 'admin/cdr/switch/import_cdr.html')
+    def test_admin_switch_import_cdr(self):
+        """Test Function to check admin cdr import"""
+        response = self.client.post('/admin/cdr/switch/import_cdr/',
+                {'switch': 1,
+                 'csv_file': csv_file,
+                 'accountcode_csv': '12345',
+                 'caller_id_number': 1,
+                 'destination_number': 3,
+                 'duration': 4,
+                 'billsec': 5,
+                 'hangup_cause_id': 6,
+                 'uuid': 8,
+                 'start_uepoch': 10})
+        self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'admin/cdr/switch/import_cdr.html')
 
-    #def test_admin_hangupcause_list(self):
-    #    """Test Function to check admin hangupcause list"""
-    #    response = self.client.get('/admin/cdr/hangupcause/')
-    #    self.failUnlessEqual(response.status_code, 200)
+    def test_admin_hangupcause_list(self):
+        """Test Function to check admin hangupcause list"""
+        response = self.client.get('/admin/cdr/hangupcause/')
+        self.failUnlessEqual(response.status_code, 200)
 
-    #def test_admin_hangupcause_add(self):
-    #    """Test Function to check admin hangupcause add"""
-    #    response = self.client.get('/admin/cdr/hangupcause/add/')
-    #    self.failUnlessEqual(response.status_code, 200)
-    #    response = self.client.post(
-    #        '/admin/cdr/hangupcause/add/',
-    #        data={
-    #            "code": "1",
-    #            "enumeration": "UNALLOCATED_NUMBER",
-    #        })
-    #    self.assertEqual(response.status_code, 200)
+    def test_admin_hangupcause_add(self):
+        """Test Function to check admin hangupcause add"""
+        response = self.client.get('/admin/cdr/hangupcause/add/')
+        self.failUnlessEqual(response.status_code, 200)
+        response = self.client.post(
+            '/admin/cdr/hangupcause/add/',
+            data={
+                "code": "1",
+                "enumeration": "UNALLOCATED_NUMBER",
+            })
+        self.assertEqual(response.status_code, 302)
 
 
 class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
@@ -122,8 +122,8 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
     def test_index(self):
         """Test Function to check customer index page"""
         response = self.client.get('/')
-        self.assertEqual(response.status_code, 200)
         #self.assertTemplateUsed(response, 'frontend/index.html')
+        self.assertEqual(response.status_code, 200)
 
         request = self.factory.get('/')
         request.user = self.user
@@ -373,7 +373,6 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         response = self.client.post('/country_report/', data)
         self.assertEqual(response.status_code, 200)
 
-
     def test_cdr_mail_report(self):
         """Test Function to check mail report"""
         response = self.client.get('/mail_report/')
@@ -417,19 +416,20 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
 class CdrStatsTaskTestCase(TestCase):
 
-    fixtures = ['auth_user.json', 'switch.json', 'country_dialcode.json', 'hangup_cause.json',
+    fixtures = ['auth_user.json', 'switch.json',
+                'country_dialcode.json', 'hangup_cause.json',
                 'voip_gateway.json', 'voip_provider.json'
                 'voip_billing.json', 'user_profile.json',]
 
-    #def test_get_channels_info(self):
-    #    """Test task : get_channels_info"""
-    #    result = get_channels_info().run()
-    #    self.assertEqual(result, True)
+    def test_get_channels_info(self):
+        """Test task : get_channels_info"""
+        #result = get_channels_info().run()
+        #self.assertTrue(result)
 
-    #def test_sync_cdr_pending(self):
-    #    """Test task : sync_cdr_pending"""
-    #    result = sync_cdr_pending().run()
-    #   self.assertEqual(result, True)
+    def test_sync_cdr_pending(self):
+        """Test task : sync_cdr_pending"""
+        #result = sync_cdr_pending().run()
+        #self.assertTrue(result)
 
 
 class CdrModelTestCase(BaseAuthenticatedClient):

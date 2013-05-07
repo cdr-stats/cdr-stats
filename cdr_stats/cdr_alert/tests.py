@@ -460,20 +460,20 @@ class CdrAlertModelTestCase(TestCase):
         self.blacklist.delete()
         self.whitelist.delete()
 
-    #def test_blacklist_whitelist_notification(self):
-    #    """Test task : blacklist_whitelist_notification"""
-    #    # notice_type = 3 blacklist
-    #    result = blacklist_whitelist_notification.delay(NOTICE_TYPE.blacklist_prefix)
-    #    self.assertEquals(result.get(), True)
-    #    result = blacklist_whitelist_notification.delay(NOTICE_TYPE.whitelist_prefix)
-    #    self.assertEquals(result.get(), True)
+    def test_blacklist_whitelist_notification(self):
+        """Test task : blacklist_whitelist_notification"""
+        # notice_type = 3 blacklist
+        result = blacklist_whitelist_notification.delay(NOTICE_TYPE.blacklist_prefix)
+        self.assertTrue(result.get())
+        result = blacklist_whitelist_notification.delay(NOTICE_TYPE.whitelist_prefix)
+        self.assertTrue(result.get())
 
     #def test_chk_alarm(self):
     #    """Test task : chk_alarm"""
     #    result = chk_alarm.delay()
     #    self.assertTrue(result.get())
 
-    #def test_send_cdr_report(self):
-    #    """Test task : send_cdr_report"""
-    #    result = send_cdr_report.delay()
-    #    self.assertTrue(result.get())
+    def test_send_cdr_report(self):
+        """Test task : send_cdr_report"""
+        result = send_cdr_report.delay()
+        self.assertTrue(result.get())
