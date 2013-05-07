@@ -22,7 +22,7 @@ from cdr_alert.tasks import send_cdr_report, \
 from cdr_alert.forms import BWCountryForm
 from cdr_alert.functions_blacklist import chk_destination
 from cdr_alert.views import alarm_list, alarm_add, alarm_del, alarm_change,\
-    trust_control, alert_report, alarm_test
+    trust_control, alert_report#, alarm_test
 from user_profile.constants import NOTICE_TYPE
 from country_dialcode.models import Country
 from cdr_alert.ajax import add_whitelist_country, add_whitelist_prefix, \
