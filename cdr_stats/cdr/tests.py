@@ -94,7 +94,7 @@ class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
                 "code": "1",
                 "enumeration": "UNALLOCATED_NUMBER",
             })
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
 
 
 class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
