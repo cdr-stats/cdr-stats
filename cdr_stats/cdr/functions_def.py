@@ -20,11 +20,13 @@ from cache_utils.decorators import cached
 from django.utils.translation import gettext as _
 import re
 
+
 def convert_to_minute(value):
     """convert to min"""
     min = int(int(value) / 60)
     sec = int(int(value) % 60)
     return round(float(str(min) + "." + str(sec)), 2)
+
 
 def get_switch_ip_addr(id):
     """Tag is used to get switch name

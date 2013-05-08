@@ -25,7 +25,7 @@ from cdr.tasks import sync_cdr_pending, get_channels_info
 from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
     cdr_daily_comparison, cdr_concurrent_calls,\
     cdr_realtime, cdr_country_report, mail_report,\
-    world_map_view, index, cdr_detail, cdr_export_to_csv
+    world_map_view, index, cdr_detail
 from cdr.functions_def import get_switch_list, get_hangupcause_name,\
     get_hangupcause_id, get_hc_list, get_country_id
 from cdr.templatetags.cdr_tags import hangupcause_name_with_title, mongo_id
@@ -104,7 +104,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
                 'country_dialcode.json', 'hangup_cause.json',
                 'notice_type.json', 'notification.json',
                 'voip_gateway.json', 'voip_provider.json',
-                'voip_billing.json', 'user_profile.json',]
+                'voip_billing.json', 'user_profile.json']
 
     #def test_mgt_command(self):
     #    # Test mgt command
@@ -218,7 +218,6 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
         response = self.client.get('/cdr_export_csv/?format=json')
         self.assertEqual(response.status_code, 200)
-
 
     def test_cdr_detail(self):
         """Test Function to check cdr_detail"""
@@ -419,7 +418,7 @@ class CdrStatsTaskTestCase(TestCase):
     fixtures = ['auth_user.json', 'switch.json',
                 'country_dialcode.json', 'hangup_cause.json',
                 'voip_gateway.json', 'voip_provider.json'
-                'voip_billing.json', 'user_profile.json',]
+                'voip_billing.json', 'user_profile.json']
 
     def test_get_channels_info(self):
         """Test task : get_channels_info"""

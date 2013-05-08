@@ -11,7 +11,6 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required,\
     permission_required
 from django.http import HttpResponseRedirect, HttpResponse, Http404
@@ -32,7 +31,6 @@ from cdr.forms import CdrSearchForm, \
     CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
     ConcurrentCallForm, SwitchForm, WorldForm, EmailReportForm
 from frontend.forms import LoginForm
-from user_profile.models import UserProfile
 from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_monthly_overview, pipeline_daily_overview,\
     pipeline_hourly_overview, pipeline_country_report,\
@@ -621,15 +619,16 @@ def cdr_export_to_csv(request):
         if format == 'json':
             starting_date = str(cdr['start_uepoch'])
 
-        list_val.append((starting_date,
-                         cdr['caller_id_number'] + '-' + cdr['caller_id_name'],
-                         cdr['destination_number'],
-                         cdr['duration'],
-                         cdr['billsec'],
-                         get_hangupcause_name(cdr['hangup_cause_id']),
-                         cdr['accountcode'],
-                         cdr['direction'],
-                        ))
+        list_val.append((
+            starting_date,
+            cdr['caller_id_number'] + '-' + cdr['caller_id_name'],
+            cdr['destination_number'],
+            cdr['duration'],
+            cdr['billsec'],
+            get_hangupcause_name(cdr['hangup_cause_id']),
+            cdr['accountcode'],
+            cdr['direction'],
+        ))
     data = tablib.Dataset(*list_val, headers=headers)
 
     if format == 'xls':
@@ -1035,7 +1034,6 @@ def cdr_concurrent_calls(request):
     if not request.user.is_superuser:  # not superuser
         query_var['accountcode'] = request.user.get_profile().accountcode
 
-    final_data = []
     xdata = []
     charttype = "stackedAreaChart"
     call_count_res = defaultdict(list)
@@ -1487,7 +1485,6 @@ def cdr_daily_comparison(request):
             call_per_hr_data = call_min_data['call_total_record']
             min_per_hr_data = call_min_data['min_total_record']
 
-
         xdata = [i for i in range(0, 24)]
         extra_serie = {"tooltip": {"y_start": "There are ", "y_end": " calls"}}
         call_chartdata = {
@@ -1495,7 +1492,7 @@ def cdr_daily_comparison(request):
         }
         y_count = 1
         for i in call_per_hr_data:
-            call_chartdata['name'+ str(y_count)] = i
+            call_chartdata['name' + str(y_count)] = i
             call_chartdata['y' + str(y_count)] = call_per_hr_data[i]
             call_chartdata['extra' + str(y_count)] = extra_serie
             y_count += 1
@@ -1506,7 +1503,7 @@ def cdr_daily_comparison(request):
         }
         y_count = 1
         for i in min_per_hr_data:
-            min_chartdata['name'+ str(y_count)] = i
+            min_chartdata['name' + str(y_count)] = i
             min_chartdata['y' + str(y_count)] = min_per_hr_data[i]
             min_chartdata['extra' + str(y_count)] = extra_serie
             y_count += 1
@@ -1770,7 +1767,6 @@ def cdr_overview(request):
                 hourly_duration_chartdata['y' + str(int_count)] = total_hourly_call_duration
                 hourly_duration_chartdata['extra' + str(int_count)] = extra_serie
 
-
         # Collect daily data
         logging.debug('Aggregate cdr daily analytic')
         pipeline = pipeline_daily_overview(query_var)
@@ -1785,7 +1781,6 @@ def cdr_overview(request):
         daily_call_count_res = dict()
         daily_call_duration_res = dict()
         if list_data:
-            day_data = dict()
             for doc in list_data['result']:
                 # Get date from aggregate result array
                 graph_day = datetime(int(doc['_id']['date'][0:4]),
@@ -1874,7 +1869,6 @@ def cdr_overview(request):
         monthly_call_count_res = dict()
         monthly_call_duration_res = dict()
         if list_data:
-            month_data = dict()
             for doc in list_data['result']:
                 # Get date from aggregate result array
                 graph_month = datetime(int(doc['_id']['date'][0:4]),
@@ -1968,6 +1962,7 @@ def cdr_overview(request):
         }
         return render_to_response(template_name, variables,
             context_instance=RequestContext(request))
+
 
 @permission_required('user_profile.by_country', login_url='/')
 @check_cdr_exists
