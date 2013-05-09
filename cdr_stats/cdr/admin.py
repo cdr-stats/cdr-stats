@@ -659,15 +659,16 @@ class SwitchAdmin(admin.ModelAdmin):
             if format == 'json':
                 starting_date = str(cdr['start_uepoch'])
 
-            list_val.append((starting_date,
-                         cdr['caller_id_number'] + '-' + cdr['caller_id_name'],
-                         cdr['destination_number'],
-                         cdr['duration'],
-                         cdr['billsec'],
-                         get_hangupcause_name(cdr['hangup_cause_id']),
-                         cdr['accountcode'],
-                         cdr['direction'],
-                        ))
+            list_val.append((
+                starting_date,
+                cdr['caller_id_number'] + '-' + cdr['caller_id_name'],
+                cdr['destination_number'],
+                cdr['duration'],
+                cdr['billsec'],
+                get_hangupcause_name(cdr['hangup_cause_id']),
+                cdr['accountcode'],
+                cdr['direction'],
+            ))
         data = tablib.Dataset(*list_val, headers=headers)
 
         if format == 'xls':

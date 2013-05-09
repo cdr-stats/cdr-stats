@@ -44,7 +44,7 @@ class VoIPPlan(Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = u'voipbilling_voip_plan'        
+        db_table = u'voipbilling_voip_plan'
         verbose_name = _("VoIP plan")
         verbose_name_plural = _("VoIP plans")
 
@@ -65,7 +65,7 @@ class BanPlan(models.Model):
     voip_plan = models.ManyToManyField(VoIPPlan, through='VoIPPlan_BanPlan')
 
     class Meta:
-        db_table = u'voipbilling_banplan'        
+        db_table = u'voipbilling_banplan'
         verbose_name = _("ban plan")
         verbose_name_plural = _("ban plans")
 
@@ -105,7 +105,7 @@ class BanPrefix(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = u'voipbilling_ban_prefix'        
+        db_table = u'voipbilling_ban_prefix'
         verbose_name = _("ban prefix")
         verbose_name_plural = _("ban prefixes")
 
@@ -148,7 +148,7 @@ class VoIPRetailPlan(Model):
     voip_plan = models.ManyToManyField(VoIPPlan, through='VoIPPlan_VoIPRetailPlan')
 
     class Meta:
-        db_table = u'voipbilling_voip_retail_plan'        
+        db_table = u'voipbilling_voip_retail_plan'
         verbose_name = _("retail plan")
         verbose_name_plural = _("retail plans")
 
@@ -196,7 +196,7 @@ class VoIPRetailRate(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = u'voipbilling_voip_retail_rate'        
+        db_table = u'voipbilling_voip_retail_rate'
         verbose_name = _("retail rate")
         verbose_name_plural = _("retail rates")
 
@@ -254,7 +254,7 @@ class VoIPCarrierPlan(Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = u'voipbilling_voip_carrier_plan'        
+        db_table = u'voipbilling_voip_carrier_plan'
         verbose_name = _("carrier plan")
         verbose_name_plural = _("carrier plans")
 
@@ -286,7 +286,7 @@ class VoIPCarrierRate(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = u'voipbilling_voip_carrier_rate'        
+        db_table = u'voipbilling_voip_carrier_rate'
         verbose_name = _("carrier rate")
         verbose_name_plural = _("carrier rates")
 

@@ -107,7 +107,6 @@ def create_alarm_report_object(alarm_obj, status):
         return False
 
 
-
 def chk_alert_value(alarm_obj, current_value, previous_value=None):
     """ compare values with following conditions against alarm alert value
 

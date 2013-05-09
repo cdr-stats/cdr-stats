@@ -24,7 +24,6 @@ from voip_billing.function_def import prefix_allowed_to_call, get_rounded_value
 from voip_billing.rate_engine import rate_engine
 from voip_billing.constants import RATE_COLUMN_NAME, EXPORT_CHOICE
 from mongodb_connection import mongodb
-from user_profile.models import UserProfile
 from cdr.views import check_user_accountcode, check_cdr_exists, check_user_voipplan
 from cdr.aggregate import pipeline_daily_billing_report, pipeline_hourly_billing_report
 from common.common_functions import current_view, ceil_strdate, get_pagination_vars
@@ -39,7 +38,7 @@ import tablib
 @permission_required('user_profile.call_rate', login_url='/')
 @login_required
 @check_user_voipplan
-#@cache_page(60 * 5)
+@cache_page(60 * 5)
 def voip_rates(request):
     """List voip call rates according to country prefix
 
@@ -206,7 +205,6 @@ def simulator(request):
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))
-
 
 
 @permission_required('user_profile.daily_billing', login_url='/')
@@ -395,17 +393,10 @@ def hourly_billing_report(request):
 
     logging.debug('After Aggregate')
 
-    total_buy_record = {}
-    total_sell_record = {}
     charttype = "lineChart"
-    chartdata = { "x": []}
+    chartdata = {"x": []}
     if list_data:
         for doc in list_data['result']:
-            # Get called_time from aggregate result array
-            called_time = datetime(int(doc['_id'][0:4]),
-                                   int(doc['_id'][4:6]),
-                                   int(doc['_id'][6:8]))
-
             buy_hours = {}
             sell_hours = {}
             # Assign 0 - 23 hrs in dict variable and initialize them with 0
@@ -423,8 +414,6 @@ def hourly_billing_report(request):
                     sell_hours[int(key)] += float(value)
 
             # Assign buy_hours/sell_hours variables to another
-            # total_buy_record/total_sell_record variables which will
-            # store per day data
 
             xdata = [i for i in range(0, 24)]
             y1 = [get_rounded_value(value) for key, value in buy_hours.iteritems()]

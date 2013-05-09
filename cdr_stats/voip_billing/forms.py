@@ -151,8 +151,6 @@ class VoIPPlan_fileExport(Exportfile):
         self.fields.keyOrder = ['plan_id', 'export_to', ]
 
 
-
-
 class PrefixRetailRrateForm(forms.Form):
     """
     Client Form : To know Retail Rate for prefix

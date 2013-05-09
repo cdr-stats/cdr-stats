@@ -92,7 +92,6 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         response = export_rate(request)
         self.assertEqual(response.status_code, 200)
 
-
     def test_simulator(self):
         """
         Test Function to check VoIP Call simulator
