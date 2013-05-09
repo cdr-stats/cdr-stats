@@ -41,11 +41,18 @@ LOCK_EXPIRE = 60 * 30
 
 
 def get_start_end_date(alert_condition_add_on):
-    """Get start and end date according to alert_condition_add_on"""
+    """Get start and end date according to alert_condition
+
+    return a list with
+        * p_start_date
+        * p_end_date
+        * c_start_date
+        * c_end_date
+    """
     dt_list = {}
     # yesterday's date
     end_date = datetime.today() + relativedelta(days=-1)
-    if alert_condition_add_on == ALERT_CONDITION_ADD_ON.SAME_DAY:  # same day
+    if alert_condition_add_on == ALERT_CONDITION_ADD_ON.SAME_DAY:  # Same day
         comp_days = 1
     if alert_condition_add_on == ALERT_CONDITION_ADD_ON.SAME_DAY_IN_PRE_WEEK:  # Same day in the previous week
         comp_days = 7

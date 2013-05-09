@@ -170,8 +170,7 @@ def alarm_del(request, object_id):
             Alarm, pk=object_id, user=request.user)
 
         # 1) delete alarm
-        request.session["msg"] = _('"%(name)s" is deleted.')\
-            % {'name': alarm.name}
+        request.session["msg"] = _('"%(name)s" is deleted.') % {'name': alarm.name}
         alarm.delete()
     else:
         # When object_id is 0 (Multiple records delete)
@@ -182,8 +181,7 @@ def alarm_del(request, object_id):
             alarm_list = Alarm.objects.filter(user=request.user)\
                 .extra(where=['id IN (%s)' % values])
             if alarm_list:
-                request.session["msg"] =\
-                    _('%(count)s alarm(s) are deleted.')\
+                request.session["msg"] = _('%(count)s alarm(s) are deleted.')\
                     % {'count': alarm_list.count()}
                 alarm_list.delete()
         except:
