@@ -1100,8 +1100,8 @@ def get_cdr_mail_report():
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
     # find result from cdr_common collection
-    final_result =\
-        mongodb.cdr_common.find(query_var).sort([('start_uepoch', -1)]).limit(10)
+    final_result = mongodb.cdr_common\
+        .find(query_var).sort([('start_uepoch', -1)]).limit(10)
 
     # Collect analytics
     logging.debug('Aggregate cdr mail report')
@@ -1317,7 +1317,6 @@ def cdr_daily_comparison(request):
     logging.debug('CDR hourly view start')
     template_name = 'frontend/cdr_report_by_hour.html'
     query_var = {}
-    total_record = []
     #default
     min_charttype = call_charttype = "lineChart"
     min_chartdata = call_chartdata = {'x': []}

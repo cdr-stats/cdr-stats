@@ -308,19 +308,26 @@ ADMIN_TOOLS_APP_INDEX_DASHBOARD = \
     'cdr_stats.custom_admin_tools.dashboard.CustomAppIndexDashboard'
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
-#CELERY
-#======
-CARROT_BACKEND = 'redis'
-
-BROKER_HOST = 'localhost'  # Maps to redis host
-BROKER_PORT = 6379         # Maps to redis port
-BROKER_VHOST = 0           # Maps to database number
-
-CELERY_RESULT_BACKEND = 'redis'
+#CELERY SETTINGS
+#===============
+## Broker settings
+BROKER_URL = "redis://localhost:6379/0"
+#BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 REDIS_DB = 0
 #REDIS_CONNECT_RETRY = True
+
+## Using the database to store task state and results.
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+CELERY_TASK_RESULT_EXPIRES = 18000  # 5 hours.
+
+#CELERY_REDIS_CONNECT_RETRY = True
+CELERY_TIMEZONE = 'Europe/Madrid'
+CELERY_ENABLE_UTC = True
+
+REDIS_DB = 0
+# REDIS_CONNECT_RETRY = True
 
 CELERY_DEFAULT_QUEUE = 'cdrstats'
 CELERY_DEFAULT_EXCHANGE = "cdrstats_tasks"
