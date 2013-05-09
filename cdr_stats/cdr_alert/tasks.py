@@ -152,6 +152,7 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
     if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_DECREASE_BY_MORE_THAN:  # % decrease by more than
         diff = abs(current_value - previous_value)
         avg = (current_value + previous_value) / 2
+        avg = avg if avg != 0 else 1
         percentage = diff / avg * 100
         if percentage < alarm_obj.alert_value:
             notify_admin_with_mail(alarm_obj.type,
@@ -163,6 +164,7 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
     if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_INCREASE_BY_MORE_THAN:  # % Increase by more than
         diff = abs(current_value - previous_value)
         avg = (current_value + previous_value) / 2
+        avg = avg if avg != 0 else 1
         percentage = diff / avg * 100
         if percentage > alarm_obj.alert_value:
             notify_admin_with_mail(alarm_obj.type,
@@ -178,7 +180,11 @@ def run_alarm(alarm_obj, logger):
     """
     Perform Alarm Check
     """
-    running_alarm_test_data = {'running_alarm_status': True}
+    running_alarm_test_data = {
+        'running_alarm_status': True,
+        'current_value': None,
+        'previous_value': None,
+    }
 
     if not mongodb.cdr_common:
         logger.error('Error MongoDB connection')
