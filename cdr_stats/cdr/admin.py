@@ -32,8 +32,9 @@ from cdr.views import cdr_view_daily_report, unset_session_var, get_pagination_v
 from cdr_alert.functions_blacklist import chk_destination
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-import tablib
 import logging
+import tablib
+import csv
 from mongodb_connection import mongodb
 from common.app_label_renamer import AppLabelRenamer
 APP_LABEL = _('CDR')
