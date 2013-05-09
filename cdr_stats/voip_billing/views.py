@@ -24,7 +24,8 @@ from voip_billing.function_def import prefix_allowed_to_call, get_rounded_value
 from voip_billing.rate_engine import rate_engine
 from voip_billing.constants import RATE_COLUMN_NAME, EXPORT_CHOICE
 from mongodb_connection import mongodb
-from cdr.views import check_user_accountcode, check_cdr_exists, check_user_voipplan
+from cdr.decorators import check_cdr_exists, check_user_accountcode, \
+    check_user_voipplan
 from cdr.aggregate import pipeline_daily_billing_report, pipeline_hourly_billing_report
 from common.common_functions import current_view, ceil_strdate, get_pagination_vars
 from datetime import datetime

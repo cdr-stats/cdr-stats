@@ -13,7 +13,7 @@
 #
 from django.contrib.auth.decorators import login_required,\
     permission_required
-from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.utils.translation import gettext as _
@@ -36,6 +36,8 @@ from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_hourly_overview, pipeline_country_report,\
     pipeline_hourly_report, pipeline_country_hourly_report,\
     pipeline_mail_report
+from cdr.decorators import check_cdr_exists, check_user_accountcode, \
+    check_user_voipplan
 from cdr.constants import CDR_COLUMN_NAME
 from voip_billing.function_def import get_rounded_value
 from bson.objectid import ObjectId
@@ -73,7 +75,7 @@ def index(request):
 
     if request.GET.get('voip_plan_error'):
         if request.GET['voip_plan_error'] == 'true':
-            errorlogin = _('voip plan is not attached with login user!')
+            errorlogin = _('voip plan is not attached to user!')
 
     data = {
         'module': current_view(request),
@@ -83,66 +85,6 @@ def index(request):
     }
     return render_to_response(template, data,
         context_instance=RequestContext(request))
-
-
-def check_cdr_exists(function=None):
-    """
-    decorator check if cdr exists if not go to error page
-    """
-    def _dec(run_func):
-        """Decorator"""
-        def _caller(request, *args, **kwargs):
-            """Caller."""
-            if not mongodb.cdr_common:
-                raise Http404
-            doc = mongodb.cdr_common.find_one()
-            if not doc:
-                return render_to_response('frontend/error_import.html',
-                    context_instance=RequestContext(request))
-            else:
-                return run_func(request, *args, **kwargs)
-        return _caller
-    return _dec(function) if function is not None else _dec
-
-
-def check_user_accountcode(function=None):
-    """
-    decorator check if account code exists for user
-    if not go to error page
-    """
-    def _dec(run_func):
-        """Decorator"""
-        def _caller(request, *args, **kwargs):
-            """Caller."""
-            if not request.user.is_superuser:
-                if not request.user.get_profile().accountcode:
-                    return HttpResponseRedirect('/?acc_code_error=true')
-                else:
-                    return run_func(request, *args, **kwargs)
-            else:
-                return run_func(request, *args, **kwargs)
-        return _caller
-    return _dec(function) if function is not None else _dec
-
-
-def check_user_voipplan(function=None):
-    """
-    decorator check if voip plan exists for user
-    if not go to error page
-    """
-    def _dec(run_func):
-        """Decorator"""
-        def _caller(request, *args, **kwargs):
-            """Caller."""
-            if not request.user.is_superuser:
-                if not request.user.get_profile().voipplan_id:
-                    return HttpResponseRedirect('/?voipplan_error=true')
-                else:
-                    return run_func(request, *args, **kwargs)
-            else:
-                return run_func(request, *args, **kwargs)
-        return _caller
-    return _dec(function) if function is not None else _dec
 
 
 def show_menu(request):
