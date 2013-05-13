@@ -185,11 +185,7 @@ def get_pagination_vars(request, default_sort_field='start_uepoch'):
     return data
 
 
-def unset_session_var(request, field_list):
-    """Unset session variables witch are used in cdr_view"""
-    for field in field_list:
-        request.session['session_' + field] = ''
-    return True
+
 
 
 @permission_required('user_profile.search', login_url='/')

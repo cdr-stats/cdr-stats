@@ -28,7 +28,7 @@ from cdr.import_cdr_freeswitch_mongodb import apply_index, \
 from cdr.functions_def import get_hangupcause_name
 from cdr.forms import CdrSearchForm
 from cdr.constants import CDR_COLUMN_NAME
-from cdr.views import cdr_view_daily_report, unset_session_var, get_pagination_vars
+from cdr.views import cdr_view_daily_report, get_pagination_vars
 from cdr_alert.functions_blacklist import chk_destination
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -36,7 +36,7 @@ import logging
 import tablib
 import csv
 from mongodb_connection import mongodb
-from common.common_functions import getvar
+from common.common_functions import getvar, unset_session_var
 from common.app_label_renamer import AppLabelRenamer
 APP_LABEL = _('CDR')
 AppLabelRenamer(native_app_label=u'cdr', app_label=APP_LABEL).main()
