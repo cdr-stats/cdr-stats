@@ -65,7 +65,7 @@ class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
     def test_admin_switch_import_cdr(self):
         """Test Function to check admin cdr import"""
         response = self.client.post('/admin/cdr/switch/import_cdr/',
-                {'switch': 1,
+                {'switch_id': 1,
                  'csv_file': csv_file,
                  'accountcode_csv': '12345',
                  'caller_id_number': 1,
@@ -180,7 +180,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
             'duration': '30',
             'duration_type': '>',
             'direction': 'INBOUND',
-            'hangup_cause': 1,
+            'hangup_cause_id': 1,
             'result': 1,
             'records_per_page': 10
         }

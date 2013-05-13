@@ -279,11 +279,11 @@ def cdr_view(request):
 
             direction = getvar(request, 'direction', setsession=True)
 
-            switch_id = variable_value(request, 'switch')
+            switch_id = variable_value(request, 'switch_id')
             if switch_id:
                 request.session['session_switch_id'] = switch_id
 
-            hangup_cause_id = variable_value(request, 'hangup_cause')
+            hangup_cause_id = variable_value(request, 'hangup_cause_id')
             if hangup_cause_id:
                 request.session['session_hangup_cause_id'] = hangup_cause_id
 
@@ -455,8 +455,8 @@ def cdr_view(request):
             'duration_type': duration_type,
             'result': result,
             'direction': direction,
-            'hangup_cause': hangup_cause_id,
-            'switch': switch_id,
+            'hangup_cause_id': hangup_cause_id,
+            'switch_id': switch_id,
             'country_id': country_id,
             'records_per_page': records_per_page
         }
@@ -707,7 +707,7 @@ def cdr_dashboard(request):
         search_tag = 1
         form = SwitchForm(request.POST)
         if form.is_valid():
-            switch_id = form.cleaned_data.get('switch')
+            switch_id = form.cleaned_data.get('switch_id')
             if switch_id and int(switch_id) != 0:
                 query_var['metadata.switch_id'] = int(switch_id)
 
@@ -948,7 +948,7 @@ def cdr_concurrent_calls(request):
                 start_date = ceil_strdate(from_date, 'start')
                 end_date = ceil_strdate(from_date, 'end')
 
-            switch_id = form.cleaned_data.get('switch')
+            switch_id = form.cleaned_data.get('switch_id')
             if switch_id and int(switch_id) != 0:
                 query_var['switch_id'] = int(switch_id)
     else:
@@ -1029,7 +1029,7 @@ def cdr_realtime(request):
         logging.debug('CDR realtime view with search option')
         form = SwitchForm(request.POST)
         if form.is_valid():
-            switch_id = form.cleaned_data.get('switch')
+            switch_id = form.cleaned_data.get('switch_id')
             if switch_id and int(switch_id) != 0:
                 query_var['value.switch_id'] = int(switch_id)
     else:
@@ -1316,7 +1316,7 @@ def cdr_daily_comparison(request):
     form = CompareCallSearchForm(initial={'from_date': from_date,
                                           'comp_days': comp_days,
                                           'check_days': check_days,
-                                          'switch': 0})
+                                          'switch_id': 0})
     if request.method == 'POST':
         logging.debug('CDR hourly view with search option')
         search_tag = 1
@@ -1343,7 +1343,7 @@ def cdr_daily_comparison(request):
                     interval_date = select_date + relativedelta(weeks=-i)
                     compare_date_list.append(interval_date)
 
-            switch_id = form.cleaned_data.get('switch')
+            switch_id = form.cleaned_data.get('switch_id')
             if switch_id and int(switch_id) != 0:
                 query_var['metadata.switch_id'] = int(switch_id)
 
@@ -1507,7 +1507,7 @@ def cdr_overview(request):
             else:
                 to_date = tday.strftime('%Y-%m-%d')
 
-            switch_id = form.cleaned_data.get('switch')
+            switch_id = form.cleaned_data.get('switch_id')
             if switch_id and int(switch_id) != 0:
                 query_var['metadata.switch_id'] = int(switch_id)
 
@@ -1560,7 +1560,7 @@ def cdr_overview(request):
         # assign initial value in form fields
         form = CdrOverviewForm(initial={'from_date': tday.strftime('%Y-%m-%d'),
                                         'to_date': tday.strftime('%Y-%m-%d'),
-                                        'switch': switch_id})
+                                        'switch_id': switch_id})
 
         start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
         end_date = datetime(tday.year, tday.month,
@@ -1948,7 +1948,7 @@ def cdr_country_report(request):
             if len(country_id) >= 1 and country_id[0] != 0:
                 query_var['metadata.country_id'] = {'$in': country_id}
 
-            switch_id = form.cleaned_data.get('switch')
+            switch_id = form.cleaned_data.get('switch_id')
             if switch_id and switch_id != 0:
                 query_var['metadata.switch_id'] = int(switch_id)
 
@@ -2174,7 +2174,7 @@ def world_map_view(request):
                 to_date = form.cleaned_data.get('to_date')
                 end_date = ceil_strdate(to_date, 'end')
 
-            switch_id = form.cleaned_data.get('switch')
+            switch_id = form.cleaned_data.get('switch_id')
             if switch_id and int(switch_id) != 0:
                 query_var['metadata.switch_id'] = int(switch_id)
 

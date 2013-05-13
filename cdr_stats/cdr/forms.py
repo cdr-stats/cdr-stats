@@ -96,18 +96,18 @@ class SearchForm(forms.Form):
                                       required=False,
                                       choices=COMPARE_LIST)
     duration_type.widget.attrs['class'] = 'input-small'
-    hangup_cause = forms.ChoiceField(label=_('hangup cause'),
-                                     required=False,
-                                     choices=hc_list_with_all())
-    switch = forms.ChoiceField(label=_('switch'),
-                               required=False,
-                               choices=get_switch_list())
+    hangup_cause_id = forms.ChoiceField(label=_('hangup cause'),
+                                        required=False,
+                                        choices=hc_list_with_all())
+    switch_id = forms.ChoiceField(label=_('switch'),
+                                  required=False,
+                                  choices=get_switch_list())
     country_id = forms.MultipleChoiceField(label=_('country'), required=False,
                                            choices=country_list_with_all())
 
     def __init__(self, *args, **kwargs):
         super(SearchForm, self).__init__(*args, **kwargs)
-        self.fields['switch'].choices = sw_list_with_all()
+        self.fields['switch_id'].choices = sw_list_with_all()
 
     def clean_duration(self):
         """Retrieve valid duration & it should be integer
@@ -168,7 +168,7 @@ class CountryReportForm(CdrSearchForm):
     def __init__(self, *args, **kwargs):
         super(CountryReportForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['from_date', 'to_date', 'country_id',
-                                'duration', 'duration_type', 'switch']
+                                'duration', 'duration_type', 'switch_id']
 
 
 class CdrOverviewForm(CdrSearchForm):
@@ -177,7 +177,7 @@ class CdrOverviewForm(CdrSearchForm):
     """
     def __init__(self, *args, **kwargs):
         super(CdrOverviewForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['from_date', 'to_date', 'switch']
+        self.fields.keyOrder = ['from_date', 'to_date', 'switch_id']
 
 
 class CompareCallSearchForm(SearchForm):
@@ -196,7 +196,7 @@ class CompareCallSearchForm(SearchForm):
 
     def __init__(self, *args, **kwargs):
         super(CompareCallSearchForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['from_date', 'comp_days', 'check_days', 'switch']
+        self.fields.keyOrder = ['from_date', 'comp_days', 'check_days', 'switch_id']
 
 
 class ConcurrentCallForm(CdrSearchForm):
@@ -205,7 +205,7 @@ class ConcurrentCallForm(CdrSearchForm):
     """
     def __init__(self, *args, **kwargs):
         super(ConcurrentCallForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['from_date', 'result', 'switch']
+        self.fields.keyOrder = ['from_date', 'result', 'switch_id']
         self.fields['from_date'].label = _('select date')
 
 
@@ -215,8 +215,8 @@ class SwitchForm(SearchForm):
     """
     def __init__(self, *args, **kwargs):
         super(SwitchForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['switch']
-        self.fields['switch'].widget.attrs['onchange'] = 'this.form.submit();'
+        self.fields.keyOrder = ['switch_id']
+        self.fields['switch_id'].widget.attrs['onchange'] = 'this.form.submit();'
 
 
 class WorldForm(CdrSearchForm):
@@ -225,7 +225,7 @@ class WorldForm(CdrSearchForm):
     """
     def __init__(self, *args, **kwargs):
         super(WorldForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['from_date', 'to_date', 'switch']
+        self.fields.keyOrder = ['from_date', 'to_date', 'switch_id']
 
 
 class EmailReportForm(forms.ModelForm):
@@ -314,8 +314,8 @@ ACCOUNTCODE_FIELD_LIST_NUM = sorted(ACCOUNTCODE_FIELD_LIST_NUM,
 class CDR_FileImport(FileImport):
     """Admin Form : Import CSV file with phonebook CDR_FIELD_LIST"""
 
-    switch = forms.ChoiceField(label=_('switch'), choices=get_switch_list(),
-                               required=True, help_text=_('select switch'))
+    switch_id = forms.ChoiceField(label=_('switch'), choices=get_switch_list(),
+                                  required=True, help_text=_('select switch'))
     accountcode_csv = forms.CharField(label=_('account code'),
                                       required=False)
     caller_id_number = forms.ChoiceField(label=_('caller_id_number'),

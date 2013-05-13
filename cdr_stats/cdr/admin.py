@@ -190,7 +190,7 @@ class SwitchAdmin(admin.ModelAdmin):
                                     accountcode = get_cdr_from_row['accountcode']
 
                                 # Mandatory fields to import
-                                switch_id = int(request.POST['switch'])
+                                switch_id = int(request.POST['switch_id'])
                                 caller_id_number = get_cdr_from_row['caller_id_number']
                                 duration = int(get_cdr_from_row['duration'])
                                 billsec = int(get_cdr_from_row['billsec'])
@@ -396,11 +396,11 @@ class SwitchAdmin(admin.ModelAdmin):
                 if direction and direction != 'all':
                     request.session['session_direction'] = str(direction)
 
-                switch_id = variable_value(request, 'switch')
+                switch_id = variable_value(request, 'switch_id')
                 if switch_id:
                     request.session['session_switch_id'] = switch_id
 
-                hangup_cause_id = variable_value(request, 'hangup_cause')
+                hangup_cause_id = variable_value(request, 'hangup_cause_id')
                 if hangup_cause_id:
                     request.session['session_hangup_cause_id'] = hangup_cause_id
 
@@ -573,8 +573,8 @@ class SwitchAdmin(admin.ModelAdmin):
                 'duration_type': duration_type,
                 'result': result,
                 'direction': direction,
-                'hangup_cause': hangup_cause_id,
-                'switch': switch_id,
+                'hangup_cause_id': hangup_cause_id,
+                'switch_id': switch_id,
                 'country_id': country_id,
                 'records_per_page': records_per_page
             }
