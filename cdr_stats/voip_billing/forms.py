@@ -227,18 +227,18 @@ class DailyBillingForm(forms.Form):
     """Daily Billing Form"""
     from_date = forms.CharField(label=_('from'), required=True, max_length=10)
     to_date = forms.CharField(label=_('to'), required=True, max_length=10)
-    switch = forms.ChoiceField(label=_('switch'), required=False, choices=sw_list_with_all())
+    switch_id = forms.ChoiceField(label=_('switch'), required=False, choices=sw_list_with_all())
 
     def __init__(self, *args, **kwargs):
         super(DailyBillingForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['from_date', 'to_date', 'switch']
+        self.fields.keyOrder = ['from_date', 'to_date', 'switch_id']
 
 
 class HourlyBillingForm(DailyBillingForm):
     """Hourly Billing Form"""
     def __init__(self, *args, **kwargs):
         super(HourlyBillingForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['from_date', 'switch']
+        self.fields.keyOrder = ['from_date', 'switch_id']
 
 
 class RebillForm(CdrSearchForm):
