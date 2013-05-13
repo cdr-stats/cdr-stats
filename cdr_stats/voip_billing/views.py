@@ -248,8 +248,8 @@ def daily_billing_report(request):
             to_date = request.POST['to_date']
             end_date = ceil_strdate(to_date, 'end')
 
-        if "switch" in request.POST:
-            switch_id = request.POST['switch']
+        if "switch_id" in request.POST:
+            switch_id = request.POST['switch_id']
     else:
         start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
         end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
@@ -370,8 +370,8 @@ def hourly_billing_report(request):
             end_date = datetime(start_date.year, start_date.month,
                 start_date.day, 23, 59, 59, 999999)
 
-        if "switch" in request.POST:
-            switch_id = request.POST['switch']
+        if "switch_id" in request.POST:
+            switch_id = request.POST['switch_id']
     else:
         start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
         end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
