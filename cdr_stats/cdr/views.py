@@ -23,7 +23,8 @@ from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 from common.common_functions import current_view, get_news, \
     variable_value, mongodb_str_filter, mongodb_int_filter, \
-    int_convert_to_minute, validate_days, ceil_strdate, percentage
+    int_convert_to_minute, validate_days, ceil_strdate, percentage, \
+    getvar
 from cdr.models import Switch
 from cdr.functions_def import get_country_name, get_hangupcause_name,\
     get_switch_ip_addr, convert_to_minute
@@ -264,33 +265,19 @@ def cdr_view(request):
             if result:
                 request.session['session_result'] = int(result)
 
-            destination = variable_value(request, 'destination')
-            destination_type = variable_value(request, 'destination_type')
-            if destination:
-                request.session['session_destination'] = destination
-                request.session['session_destination_type'] = destination_type
+            destination = getvar(request, 'destination', setsession=True)
+            destination_type = getvar(request, 'destination_type', setsession=True)
 
-            accountcode = variable_value(request, 'accountcode')
-            accountcode_type = variable_value(request, 'accountcode_type')
-            if accountcode:
-                request.session['session_accountcode'] = accountcode
-                request.session['session_accountcode_type'] = accountcode_type
+            accountcode = getvar(request, 'accountcode', setsession=True)
+            accountcode_type = getvar(request, 'accountcode_type', setsession=True)
 
-            caller = variable_value(request, 'caller')
-            caller_type = variable_value(request, 'caller_type')
-            if caller:
-                request.session['session_caller'] = caller
-                request.session['session_accountcode_type'] = caller_type
+            caller = getvar(request, 'caller', setsession=True)
+            caller_type = getvar(request, 'caller_type', setsession=True)
 
-            duration = variable_value(request, 'duration')
-            duration_type = variable_value(request, 'duration_type')
-            if duration:
-                request.session['session_duration'] = duration
-                request.session['session_duration_type'] = duration_type
+            duration = getvar(request, 'duration', setsession=True)
+            duration_type = getvar(request, 'duration_type', setsession=True)
 
-            direction = variable_value(request, 'direction')
-            if direction and direction != 'all':
-                request.session['session_direction'] = str(direction)
+            direction = getvar(request, 'direction', setsession=True)
 
             switch_id = variable_value(request, 'switch')
             if switch_id:

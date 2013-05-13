@@ -25,6 +25,7 @@ from cdr_alert.models import AlertRemovePrefix, Alarm, AlarmReport, \
     Blacklist, Whitelist
 from cdr_alert.forms import BWCountryForm
 from common.app_label_renamer import AppLabelRenamer
+
 APP_LABEL = _('CDR Alert')
 AppLabelRenamer(native_app_label=u'cdr_alert', app_label=APP_LABEL).main()
 
@@ -103,7 +104,6 @@ class BlacklistAdmin(admin.ModelAdmin):
                 else:
                     values = request.POST.getlist('select')
                     if values:
-                        #blacklist_prefix = ", ".join(["%s" % el for el in values])
                         for i in values:
                             Blacklist.objects.create(
                                 phonenumber_prefix=int(i),
@@ -185,7 +185,6 @@ class WhitelistAdmin(admin.ModelAdmin):
                 else:
                     values = request.POST.getlist('select')
                     if values:
-                        #blacklist_prefix = ", ".join(["%s" % el for el in values])
                         for i in values:
                             Whitelist.objects.create(
                                 phonenumber_prefix=int(i),
