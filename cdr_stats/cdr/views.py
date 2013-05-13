@@ -248,42 +248,23 @@ def cdr_view(request):
             unset_session_var(request, field_list)
 
             request.session['session_cdr_view_daily_data'] = {}
-
-            if "from_date" in request.POST:
-                # From
-                from_date = request.POST['from_date']
-                start_date = ceil_strdate(from_date, 'start')
-                request.session['session_from_date'] = from_date
-
-            if "to_date" in request.POST:
-                # To
-                to_date = request.POST['to_date']
-                end_date = ceil_strdate(to_date, 'end')
-                request.session['session_to_date'] = to_date
-
-            result = request.POST['result']
-            if result:
-                request.session['session_result'] = int(result)
-
+            from_date = getvar(request, 'from_date', setsession=True)
+            to_date = getvar(request, 'to_date', setsession=True)
+            result = getvar(request, 'result', setsession=True)
             destination = getvar(request, 'destination', setsession=True)
             destination_type = getvar(request, 'destination_type', setsession=True)
-
             accountcode = getvar(request, 'accountcode', setsession=True)
             accountcode_type = getvar(request, 'accountcode_type', setsession=True)
-
             caller = getvar(request, 'caller', setsession=True)
             caller_type = getvar(request, 'caller_type', setsession=True)
-
             duration = getvar(request, 'duration', setsession=True)
             duration_type = getvar(request, 'duration_type', setsession=True)
-
             direction = getvar(request, 'direction', setsession=True)
             if direction and direction != 'all':
                 request.session['session_direction'] = str(direction)
 
             switch_id = getvar(request, 'switch_id', setsession=True)
             hangup_cause_id = getvar(request, 'hangup_cause_id', setsession=True)
-
             records_per_page = getvar(request, 'records_per_page', setsession=True)
 
             country_id = form.cleaned_data.get('country_id')
