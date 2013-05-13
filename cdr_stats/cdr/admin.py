@@ -36,6 +36,7 @@ import logging
 import tablib
 import csv
 from mongodb_connection import mongodb
+from common.common_functions import getvar
 from common.app_label_renamer import AppLabelRenamer
 APP_LABEL = _('CDR')
 AppLabelRenamer(native_app_label=u'cdr', app_label=APP_LABEL).main()
@@ -368,45 +369,29 @@ class SwitchAdmin(admin.ModelAdmin):
                 if result:
                     request.session['session_result'] = int(result)
 
-                destination = variable_value(request, 'destination')
-                destination_type = variable_value(request, 'destination_type')
-                if destination:
-                    request.session['session_destination'] = destination
-                    request.session['session_destination_type'] = destination_type
+                destination = getvar(request, 'destination', setsession=True)
+                destination_type = getvar(request, 'destination_type', setsession=True)
 
-                accountcode = variable_value(request, 'accountcode')
-                accountcode_type = variable_value(request, 'accountcode_type')
-                if accountcode:
-                    request.session['session_accountcode'] = accountcode
-                    request.session['session_accountcode_type'] = accountcode_type
+                accountcode = getvar(request, 'accountcode', setsession=True)
+                accountcode_type = getvar(request, 'accountcode_type', setsession=True)
 
-                caller = variable_value(request, 'caller')
-                caller_type = variable_value(request, 'caller_type')
-                if caller:
-                    request.session['session_caller'] = caller
-                    request.session['session_accountcode_type'] = caller_type
+                caller = getvar(request, 'caller', setsession=True)
+                caller_type = getvar(request, 'caller_type', setsession=True)
 
-                duration = variable_value(request, 'duration')
-                duration_type = variable_value(request, 'duration_type')
-                if duration:
-                    request.session['session_duration'] = duration
-                    request.session['session_duration_type'] = duration_type
+                duration = getvar(request, 'duration', setsession=True)
+                duration_type = getvar(request, 'duration_type', setsession=True)
 
-                direction = variable_value(request, 'direction')
+                direction = getvar(request, 'direction', setsession=True)
                 if direction and direction != 'all':
                     request.session['session_direction'] = str(direction)
 
-                switch_id = variable_value(request, 'switch_id')
-                if switch_id:
-                    request.session['session_switch_id'] = switch_id
+                switch_id = getvar(request, 'switch_id', setsession=True)
+                hangup_cause_id = getvar(request, 'hangup_cause_id', setsession=True)
 
-                hangup_cause_id = variable_value(request, 'hangup_cause_id')
-                if hangup_cause_id:
-                    request.session['session_hangup_cause_id'] = hangup_cause_id
+                switch_id = getvar(request, 'switch_id', setsession=True)
+                hangup_cause_id = getvar(request, 'hangup_cause_id', setsession=True)
 
-                records_per_page = variable_value(request, 'records_per_page')
-                if records_per_page:
-                    request.session['session_records_per_page'] = records_per_page
+                records_per_page = getvar(request, 'records_per_page', setsession=True)
 
                 country_id = form.cleaned_data.get('country_id')
                 # convert list value in int

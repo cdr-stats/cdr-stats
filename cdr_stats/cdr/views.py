@@ -278,18 +278,13 @@ def cdr_view(request):
             duration_type = getvar(request, 'duration_type', setsession=True)
 
             direction = getvar(request, 'direction', setsession=True)
+            if direction and direction != 'all':
+                request.session['session_direction'] = str(direction)
 
-            switch_id = variable_value(request, 'switch_id')
-            if switch_id:
-                request.session['session_switch_id'] = switch_id
+            switch_id = getvar(request, 'switch_id', setsession=True)
+            hangup_cause_id = getvar(request, 'hangup_cause_id', setsession=True)
 
-            hangup_cause_id = variable_value(request, 'hangup_cause_id')
-            if hangup_cause_id:
-                request.session['session_hangup_cause_id'] = hangup_cause_id
-
-            records_per_page = variable_value(request, 'records_per_page')
-            if records_per_page:
-                request.session['session_records_per_page'] = records_per_page
+            records_per_page = getvar(request, 'records_per_page', setsession=True)
 
             country_id = form.cleaned_data.get('country_id')
             # convert list value in int
