@@ -116,7 +116,7 @@ ASTERISK_PRIMARY_KEY = 'acctid'  # acctid, _id
 #list of CDR Backends to import
 CDR_BACKEND = {
     'MYSQL_IMPORT_CDR_HOST': {
-        'db_engine': 'mysql',  # mysql, pgsql, mongo
+        'db_engine': 'mysql',  # mysql, pgsql, mongodb
         'cdr_type': 'asterisk',  # asterisk or freeswitch
         'db_name': 'MYSQL_IMPORT_CDR_DBNAME',
         'table_name': 'MYSQL_IMPORT_CDR_TABLENAME',
