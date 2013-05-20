@@ -114,7 +114,8 @@ def chk_destination(destination_number):
          and len(sanitized_destination) <= settings.PN_MAX_DIGITS):
         # It might be an local call
         # Need to add coma for get_country_id to eval correctly
-        country_id = get_country_id(str(settings.LOCAL_DIALCODE) + ',')
+        prefix_list = prefix_list_string(str(settings.LOCAL_DIALCODE) + sanitized_destination)
+        country_id = get_country_id(prefix_list)
     else:
         # International call
         country_id = get_country_id(prefix_list)
