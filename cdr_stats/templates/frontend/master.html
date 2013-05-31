@@ -24,12 +24,13 @@
     <script type="text/javascript" src="{{ STATIC_URL }}cdr-stats/js/jquery-ui-1.9.1.custom.min.js"></script>
 
     <script src="{{ STATIC_URL }}cdr-stats/bootstrap/js/bootstrap.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}cdr-stats/js/bootstrap-datepicker.js" type="text/javascript"></script>
+    <!--<script src="{{ STATIC_URL }}cdr-stats/js/bootstrap-datepicker.js" type="text/javascript"></script>-->
     <script src="{{ STATIC_URL }}cdr-stats/js/bootbox.min.js"></script>
 
     <!-- stylesheets -->
     <link href="{{ STATIC_URL }}cdr-stats/bootstrap/css/bootstrap.css" rel="stylesheet">
-    <link href="{{ STATIC_URL }}cdr-stats/css/datepicker.css" rel="stylesheet">
+    {{ form.media }}
+    <!--<link href="{{ STATIC_URL }}cdr-stats/css/datepicker.css" rel="stylesheet">-->
     <!-- Change bootstrap style
     <link href="{{ STATIC_URL }}cdr-stats/css/bootswatch/superhero/bootstrap.css" rel="stylesheet"> -->
     <style type="text/css">
@@ -44,6 +45,7 @@
     <link href="{{ STATIC_URL }}cdr-stats/css/cdr_stats.css" rel="stylesheet">
     <!-- Include Print CSS -->
     <link rel="stylesheet" href="{{ STATIC_URL }}cdr-stats/css/cdr_stats_print.css" type="text/css" media="print" />
+
     {% endblock %}
 
 	{% block extra_header %}

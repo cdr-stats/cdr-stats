@@ -18,6 +18,7 @@ from django.conf import settings
 from django.core.validators import validate_email
 from django.utils.translation import ugettext_lazy as _
 from common.common_functions import comp_day_range
+from datetimewidget.widgets import DateTimeWidget
 from cdr.functions_def import get_switch_list, get_country_list, get_hc_list
 from cdr.constants import STRING_SEARCH_TYPE_LIST
 from user_profile.models import UserProfile
@@ -127,15 +128,24 @@ class SearchForm(forms.Form):
         accountcode = self.cleaned_data['accountcode']
         return accountcode
 
+dateTimeOptions = {
+    'format': 'yyyy-mm-dd',
+    'autoclose': 'true',
+    #'showMeridian' : 'true'
+    'minView': 2,
+    'maxView': 2,
+}
 
 class CdrSearchForm(SearchForm):
     """
     Form used to search calls in the Customer UI.
     """
     from_date = forms.CharField(label=_('from'),
-                                required=True, max_length=10)
+                                required=True, max_length=10,
+                                widget=DateTimeWidget(options=dateTimeOptions))
     to_date = forms.CharField(label=_('to'),
-                              required=True, max_length=10)
+                              required=True, max_length=10,
+                              widget=DateTimeWidget(options=dateTimeOptions))
     direction = forms.TypedChoiceField(label=_('direction'),
                                        required=False,
                                        coerce=bool,
