@@ -22,12 +22,13 @@ from voip_billing.forms import PrefixRetailRrateForm, SimulatorForm, DailyBillin
     HourlyBillingForm
 from voip_billing.function_def import prefix_allowed_to_call, get_rounded_value
 from voip_billing.rate_engine import rate_engine
-from voip_billing.constants import RATE_COLUMN_NAME, EXPORT_CHOICE
+from voip_billing.constants import RATE_COLUMN_NAME
 from mongodb_connection import mongodb
 from cdr.decorators import check_cdr_exists, check_user_accountcode, \
     check_user_voipplan
 from cdr.aggregate import pipeline_daily_billing_report, pipeline_hourly_billing_report
 from common.common_functions import current_view, ceil_strdate, get_pagination_vars
+from common.common_constants import EXPORT_CHOICE
 from datetime import datetime
 import logging
 import time

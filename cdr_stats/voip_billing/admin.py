@@ -28,7 +28,7 @@ from voip_billing.models import VoIPRetailRate, VoIPPlan, BanPlan,\
 from voip_billing.forms import RetailRate_fileImport, CarrierRate_fileImport,\
     Carrier_Rate_fileExport, SimulatorForm, VoIPPlan_fileExport, CustomRateFilterForm,\
     Retail_Rate_fileExport, RebillForm
-from voip_billing.constants import CONFIRMATION_TYPE, EXPORT_CHOICE
+from voip_billing.constants import CONFIRMATION_TYPE
 from voip_billing.widgets import AutocompleteModelAdmin
 from voip_billing.function_def import rate_filter_range_field_chk
 from voip_billing.rate_engine import rate_engine
@@ -36,6 +36,7 @@ from voip_billing.tasks import RebillingTask, ReaggregateTask
 from common.common_functions import variable_value, ceil_strdate
 from common.app_label_renamer import AppLabelRenamer
 from common.admin_custom_actions import export_as_csv_action
+from common.common_constants import EXPORT_CHOICE
 from mongodb_connection import mongodb
 from datetime import datetime
 import tablib

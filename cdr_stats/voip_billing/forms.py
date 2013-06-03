@@ -15,20 +15,13 @@ from django import forms
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from common.common_functions import isint
+from common.common_constants import EXPORT_CHOICE
+from common.common_forms import Exportfile
 from voip_billing.function_def import rate_range
 from voip_billing.models import VoIPPlan, VoIPRetailPlan,\
     VoIPCarrierPlan
 from voip_billing.constants import CONFIRMATION_TYPE, EXPORT_CHOICE
 from cdr.forms import sw_list_with_all, CdrSearchForm
-
-
-class HorizRadioRenderer(forms.RadioSelect.renderer):
-    """This overrides widget method to put radio buttons horizontally
-       instead of vertically.
-    """
-    def render(self):
-            """Outputs radios"""
-            return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
 
 
 def voip_plan_list():
@@ -103,15 +96,6 @@ class CarrierRate_fileImport(FileImport):
                 raise forms.ValidationError(_("please enter int/float value"))
             else:
                 return p_p
-
-
-class Exportfile(forms.Form):
-    """
-    Abstract Form : export file in various format e.g. XLS, CSV, JSON
-    """
-    export_to = forms.TypedChoiceField(label=_('export to').capitalize(), required=True,
-                                       choices=list(EXPORT_CHOICE),
-                                       widget=forms.RadioSelect(renderer=HorizRadioRenderer))
 
 
 class Carrier_Rate_fileExport(Exportfile):
