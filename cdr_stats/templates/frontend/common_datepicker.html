@@ -1,5 +1,5 @@
 <script type="text/javascript">
-/*
+
 $(function() {
     var today = new Date();
     var last_day_of_month = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
@@ -7,7 +7,7 @@ $(function() {
     var fromDate = new Date(today.getFullYear(), today.getMonth(), 1);
     var toDate = new Date(today.getFullYear(), today.getMonth(), last_day_of_month);
 
-    $('#id_from_date_0').datepicker({
+    $('#id_from_date').datepicker({
         format: 'yyyy-mm-dd'
     }).on('changeDate', function(selectedDate){
         if (selectedDate.date.valueOf() > toDate.valueOf()){
@@ -17,7 +17,7 @@ $(function() {
         }
     });
 
-    $('#id_to_date_0').datepicker({
+    $('#id_to_date').datepicker({
         format: 'yyyy-mm-dd'
     }).on('changeDate', function(selectedDate){
         if (selectedDate.date.valueOf() < fromDate.valueOf()){
@@ -26,5 +26,5 @@ $(function() {
             toDate = new Date(selectedDate.date);
         }
     });
-});*/
+});
 </script>

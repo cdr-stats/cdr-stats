@@ -129,11 +129,11 @@ class SearchForm(forms.Form):
         return accountcode
 
 dateTimeOptions = {
-    'format': 'yyyy-mm-dd',
+    'format': 'yyyy-mm-dd hh:ii',
     'autoclose': 'true',
-    #'showMeridian' : 'true'
-    'minView': 2,
-    'maxView': 2,
+    'showMeridian' : 'true'
+    #'minView': 2,
+    #'maxView': 4,
 }
 
 class CdrSearchForm(SearchForm):

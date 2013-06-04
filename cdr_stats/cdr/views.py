@@ -230,6 +230,7 @@ def cdr_view(request):
     action = 'tabs-1'
     menu = 'on'
     cdr_view_daily_data = {}
+
     if request.method == 'POST':
         logging.debug('CDR Search View')
         search_tag = 1
