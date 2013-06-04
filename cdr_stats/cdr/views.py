@@ -302,7 +302,6 @@ def cdr_view(request):
                 context_instance=RequestContext(request))
 
     menu = show_menu(request)
-
     try:
         if request.GET.get('page') or request.GET.get('sort_by'):
             from_date = request.session.get('session_from_date')
@@ -351,8 +350,8 @@ def cdr_view(request):
         request.session['session_country_id'] = ''
         request.session['session_cdr_view_daily_data'] = {}
 
-    start_date = ceil_strdate(from_date, 'start')
-    end_date = ceil_strdate(to_date, 'end')
+    start_date = ceil_strdate(from_date, 'start', True)
+    end_date = ceil_strdate(to_date, 'end', True)
 
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
