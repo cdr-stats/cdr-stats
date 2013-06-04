@@ -23,4 +23,3 @@ django-frontend-notification==0.1.6
 git+git://github.com/jschrewe/django-genericadmin.git
 git+git://github.com/areski/Django-API-Playground.git
 django-nvd3==0.1.9
-django-datetime-widget==0.5.3a

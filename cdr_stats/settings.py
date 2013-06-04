@@ -201,7 +201,6 @@ INSTALLED_APPS = (
     'voip_gateway',
     'voip_billing',
     'django_nvd3',
-    'datetimewidget',
 )
 
 # Debug Toolbar
