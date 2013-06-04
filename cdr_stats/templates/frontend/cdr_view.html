@@ -292,7 +292,7 @@
                 <th></th>
             </tr>
             </thead>
-            {% if cdr_daily_data.total_calls %}
+            {% if rows %}
             {% autopaginate rows PAGE_SIZE %}
             {% for row in rows %}
             <tr>
@@ -386,7 +386,7 @@
 
             {% else %}
             <tr>
-                <td colspan="8" align="center">
+                <td colspan="12" align="center">
                     {% trans "no records found"|title %}
                 </td>
             </tr>
