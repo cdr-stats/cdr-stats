@@ -233,7 +233,6 @@ def cdr_view(request):
         search_tag = 1
         request.session['session_search_tag'] = search_tag
         form = CdrSearchForm(request.POST)
-
         if form.is_valid():
             # set session var value
             field_list = ['destination', 'result', 'destination_type', 'accountcode',
@@ -1468,23 +1467,23 @@ def cdr_overview(request):
         if form.is_valid():
             if "from_date" in request.POST:
                 from_date = request.POST['from_date']
-                start_date = ceil_strdate(from_date, 'start')
+                start_date = ceil_strdate(from_date, 'start', hour_min=True)
             else:
-                from_date = tday.strftime('%Y-%m-%d')
+                from_date = tday.strftime('%Y-%m-%d %H:%M')
 
             if "to_date" in request.POST:
                 to_date = request.POST['to_date']
-                end_date = ceil_strdate(to_date, 'end')
+                end_date = ceil_strdate(to_date, 'end', hour_min=True)
             else:
-                to_date = tday.strftime('%Y-%m-%d')
+                to_date = tday.strftime('%Y-%m-%d 23:55')
 
             switch_id = form.cleaned_data.get('switch_id')
             if switch_id and int(switch_id) != 0:
                 query_var['metadata.switch_id'] = int(switch_id)
 
             if from_date != '' and to_date != '':
-                start_date = ceil_strdate(from_date, 'start')
-                end_date = ceil_strdate(to_date, 'end')
+                start_date = ceil_strdate(from_date, 'start', hour_min=True)
+                end_date = ceil_strdate(to_date, 'end', hour_min=True)
                 query_var['metadata.date'] = {
                     '$gte': start_date,
                     '$lt': end_date
@@ -1498,8 +1497,8 @@ def cdr_overview(request):
             # form is not valid
             logging.debug('Error : CDR overview search form')
             tday = datetime.today()
-            start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
-            end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
+            start_date = datetime(tday.year, tday.month, tday.day, tday.hour, tday.minute, 0, 0)
+            end_date = datetime(tday.year, tday.month, tday.day, tday.hour, 59, 59, 999999)
 
             variables = {
                 'action': action,
@@ -1529,11 +1528,11 @@ def cdr_overview(request):
         tday = datetime.today()
         switch_id = 0
         # assign initial value in form fields
-        form = CdrOverviewForm(initial={'from_date': tday.strftime('%Y-%m-%d'),
-                                        'to_date': tday.strftime('%Y-%m-%d'),
+        form = CdrOverviewForm(initial={'from_date': tday.strftime('%Y-%m-%d %H:%M'),
+                                        'to_date': tday.strftime('%Y-%m-%d 23:55'),
                                         'switch_id': switch_id})
 
-        start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
+        start_date = datetime(tday.year, tday.month, tday.day, tday.hour, tday.minute, 0, 0)
         end_date = datetime(tday.year, tday.month,
                             tday.day, 23, 59, 59, 999999)
         month_start_date = datetime(start_date.year,
