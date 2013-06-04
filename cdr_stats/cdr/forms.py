@@ -133,9 +133,9 @@ class CdrSearchForm(SearchForm):
     Form used to search calls in the Customer UI.
     """
     from_date = forms.CharField(label=_('from'),
-                                required=True, max_length=10)
+                                required=True, max_length=17)
     to_date = forms.CharField(label=_('to'),
-                              required=True, max_length=10)
+                              required=True, max_length=17)
     direction = forms.TypedChoiceField(label=_('direction'),
                                        required=False,
                                        coerce=bool,

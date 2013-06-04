@@ -4,8 +4,8 @@ $(function() {
     var today = new Date();
     var last_day_of_month = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
 
-    var fromDate = new Date(today.getFullYear(), today.getMonth(), 1);
-    var toDate = new Date(today.getFullYear(), today.getMonth(), last_day_of_month);
+    var fromDate = new Date(today.getFullYear(), today.getMonth(), 1, 0, 0);
+    var toDate = new Date(today.getFullYear(), today.getMonth(), last_day_of_month, 23, 59);
 
     $('#id_from_date').datetimepicker({
         format: 'yyyy-mm-dd hh:ii',

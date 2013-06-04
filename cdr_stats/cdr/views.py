@@ -185,9 +185,6 @@ def get_pagination_vars(request, default_sort_field='start_uepoch'):
     return data
 
 
-
-
-
 @permission_required('user_profile.search', login_url='/')
 @check_cdr_exists
 @check_user_accountcode
@@ -236,6 +233,7 @@ def cdr_view(request):
         search_tag = 1
         request.session['session_search_tag'] = search_tag
         form = CdrSearchForm(request.POST)
+
         if form.is_valid():
             # set session var value
             field_list = ['destination', 'result', 'destination_type', 'accountcode',
@@ -330,11 +328,11 @@ def cdr_view(request):
             from_date
     except NameError:
         tday = datetime.today()
-        from_date = tday.strftime('%Y-%m-01')
+        from_date = tday.strftime('%Y-%m-01 00:00')
         last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) +
                     relativedelta(months=1)) -
                     relativedelta(days=1)).strftime('%d')
-        to_date = tday.strftime('%Y-%m-' + last_day)
+        to_date = tday.strftime('%Y-%m-' + last_day + ' 23:59')
         search_tag = 0
         country_id = ''
         records_per_page = settings.PAGE_SIZE
