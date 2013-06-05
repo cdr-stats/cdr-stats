@@ -1466,13 +1466,15 @@ def cdr_overview(request):
         if form.is_valid():
             if "from_date" in request.POST:
                 from_date = request.POST['from_date']
-                start_date = ceil_strdate(from_date, 'start', hour_min=True)
+                start_date = ceil_strdate(from_date, 'start')
+                start_hour_date = ceil_strdate(from_date, 'start', hour_min=True)
             else:
                 from_date = tday.strftime('%Y-%m-%d %H:%M')
 
             if "to_date" in request.POST:
                 to_date = request.POST['to_date']
-                end_date = ceil_strdate(to_date, 'end', hour_min=True)
+                end_date = ceil_strdate(to_date, 'end')
+                end_hour_date = ceil_strdate(to_date, 'end', hour_min=True)
             else:
                 to_date = tday.strftime('%Y-%m-%d 23:55')
 
@@ -1480,9 +1482,7 @@ def cdr_overview(request):
             if switch_id and int(switch_id) != 0:
                 query_var['metadata.switch_id'] = int(switch_id)
 
-            if from_date != '' and to_date != '':
-                start_date = ceil_strdate(from_date, 'start', hour_min=True)
-                end_date = ceil_strdate(to_date, 'end', hour_min=True)
+            if from_date and to_date:
                 query_var['metadata.date'] = {
                     '$gte': start_date,
                     '$lt': end_date
@@ -1496,8 +1496,8 @@ def cdr_overview(request):
             # form is not valid
             logging.debug('Error : CDR overview search form')
             tday = datetime.today()
-            start_date = datetime(tday.year, tday.month, tday.day, tday.hour, tday.minute, 0, 0)
-            end_date = datetime(tday.year, tday.month, tday.day, tday.hour, 59, 59, 999999)
+            start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
+            end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
 
             variables = {
                 'action': action,
@@ -1531,13 +1531,12 @@ def cdr_overview(request):
                                         'to_date': tday.strftime('%Y-%m-%d 23:55'),
                                         'switch_id': switch_id})
 
-        start_date = datetime(tday.year, tday.month, tday.day, tday.hour, tday.minute, 0, 0)
-        end_date = datetime(tday.year, tday.month,
-                            tday.day, 23, 59, 59, 999999)
-        month_start_date = datetime(start_date.year,
-                                    start_date.month, 1, 0, 0, 0, 0)
-        month_end_date = datetime(end_date.year, end_date.month,
-                                  end_date.day, 23, 59, 59, 999999)
+        start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
+        end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
+        month_start_date = datetime(start_date.year, start_date.month, 1,
+                                    0, 0, 0, 0)
+        month_end_date = datetime(end_date.year, end_date.month, end_date.day,
+                                  23, 59, 59, 999999)
 
         query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
@@ -1573,25 +1572,30 @@ def cdr_overview(request):
                         # Get date from aggregate result array
                         graph_day = datetime(a_Year, b_Month, c_Day, key)
 
-                        # convert date into timestamp value
-                        dt = int(1000 * time.mktime(graph_day.timetuple()))
+                        if graph_day >= start_hour_date and graph_day <= end_hour_date:
+                            # convert date into timestamp value
+                            dt = int(1000 * time.mktime(graph_day.timetuple()))
 
-                        # prepare day_hours dict var with hour key
-                        # and values are like call count, duration sum, switch id
-                        if key in day_hours:
-                            day_hours[key]['calldate__count'] += int(value)
-                        else:
-                            day_hours[key] = {
-                                'dt': dt,
-                                'calldate__count': int(value),
-                                'duration__sum': 0,
-                                'switch_id': int(doc['_id']['switch_id'])
-                            }
+                            # prepare day_hours dict var with hour key
+                            # and values are like call count, duration sum, switch id
+                            if key in day_hours:
+                                day_hours[key]['calldate__count'] += int(value)
+                            else:
+                                day_hours[key] = {
+                                    'dt': dt,
+                                    'calldate__count': int(value),
+                                    'duration__sum': 0,
+                                    'switch_id': int(doc['_id']['switch_id'])
+                                }
 
                 # update day_hours for duration
                 for dict_in_list in doc['duration_per_hour']:
                     for key, value in dict_in_list.iteritems():
-                        day_hours[int(key)]['duration__sum'] += int(value)
+                        key = int(key)
+                        # Get date from aggregate result array
+                        graph_day = datetime(a_Year, b_Month, c_Day, key)
+                        if graph_day >= start_hour_date and graph_day <= end_hour_date:
+                            day_hours[int(key)]['duration__sum'] += int(value)
 
                 for hr in day_hours:
                     # All switches hourly data
@@ -1917,9 +1921,9 @@ def cdr_country_report(request):
             if len(country_id) >= 1 and country_id[0] != 0:
                 query_var['metadata.country_id'] = {'$in': country_id}
 
-            switch_id = form.cleaned_data.get('switch_id')
+            switch_id = int(form.cleaned_data.get('switch_id'))
             if switch_id and switch_id != 0:
-                query_var['metadata.switch_id'] = int(switch_id)
+                query_var['metadata.switch_id'] = switch_id
 
             duration = form.cleaned_data.get('duration')
             duration_type = form.cleaned_data.get('duration_type')
@@ -1960,10 +1964,10 @@ def cdr_country_report(request):
     list_data = mongodb.DBCON.command('aggregate',
                                       settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
                                       pipeline=pipeline)
-    #total_record_final = []
     xdata = []
     call_count_res = defaultdict(list)
     call_duration_res = defaultdict(list)
+
     if list_data:
         for doc in list_data['result']:
             # Get date from aggregate result array
@@ -2001,12 +2005,8 @@ def cdr_country_report(request):
 
             # hours of day data append to total_record_final array
             for hr in day_hours:
-                #total_record_final.append(day_hours[hr])
                 call_count_res[day_hours[hr]['country_id']].append(day_hours[hr]['calldate__count'])
                 call_duration_res[day_hours[hr]['country_id']].append(day_hours[hr]['duration__sum'])
-
-        # apply sorting on timestamp value
-        #total_record_final = sorted(total_record_final, key=lambda k: k['dt'])
 
         xdata = list(set([i for i in xdata]))
         xdata = sorted(xdata)
