@@ -1527,12 +1527,14 @@ def cdr_overview(request):
         tday = datetime.today()
         switch_id = 0
         # assign initial value in form fields
-        form = CdrOverviewForm(initial={'from_date': tday.strftime('%Y-%m-%d %H:%M'),
+        form = CdrOverviewForm(initial={'from_date': tday.strftime('%Y-%m-%d 00:00'),
                                         'to_date': tday.strftime('%Y-%m-%d 23:55'),
                                         'switch_id': switch_id})
 
         start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
         end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
+        start_hour_date = ceil_strdate(tday.strftime('%Y-%m-%d 00:00'), 'start', hour_min=True)
+        end_hour_date = ceil_strdate(tday.strftime('%Y-%m-%d 23:55'), 'end', hour_min=True)
         month_start_date = datetime(start_date.year, start_date.month, 1,
                                     0, 0, 0, 0)
         month_end_date = datetime(end_date.year, end_date.month, end_date.day,
