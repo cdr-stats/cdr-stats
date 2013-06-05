@@ -13,7 +13,7 @@
         $(function () {
             $('a[data-toggle="tab"]').on('shown', function (e) {
                 if (e.target.hash == '#tabs-2') {
-                    {% load_chart min_charttype min_chartdata "min_container" False "" False %}
+                    {% load_chart min_charttype min_chartdata "min_container" False "AM_PM" False %}
                 }
             })
         })
@@ -87,7 +87,7 @@
         <div id="tabs-1" class="tab-pane {% if action == "tabs-1" or action == "" %}active{% endif %}">
             <div class="row">
                 <div class="span12">
-                    {% load_chart call_charttype call_chartdata "call_container" %}
+                    {% load_chart call_charttype call_chartdata "call_container" False "AM_PM" True %}
                     {% include_container "call_container" 400 '100%' %}
                 </div>
             </div>

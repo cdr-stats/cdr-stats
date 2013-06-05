@@ -6,7 +6,7 @@
 {% block extra_head %}
     {% include "frontend/common_datepicker.html" %}
     {% include_nvd3jscss False %}
-    {% load_chart charttype chartdata "hourly_container" %}
+    {% load_chart charttype chartdata "hourly_container" False "AM_PM" True %}
 {% endblock %}
 
 {% block content %}
