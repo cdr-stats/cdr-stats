@@ -1377,8 +1377,7 @@ def cdr_daily_comparison(request):
 
         # Same day of the week
         if check_days == 1:
-            call_min_data = get_hourly_report_for_date(start_date, end_date,
-                                           query_var)
+            call_min_data = get_hourly_report_for_date(start_date, end_date, query_var)
             call_per_hr_data = call_min_data['call_total_record']
             min_per_hr_data = call_min_data['min_total_record']
 
@@ -1644,7 +1643,7 @@ def cdr_overview(request):
 
             int_count = 1
             extra_serie = {"tooltip": {"y_start": "", "y_end": " calls"},
-                           "date_format": "%d %b %y %H:%M %p"}
+                           "date_format": "%d %b %y %H:%M%p"}
             for i in hourly_call_count_res:
                 hourly_call_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
                 hourly_call_chartdata['y' + str(int_count)] = hourly_call_count_res[i]
@@ -1658,7 +1657,7 @@ def cdr_overview(request):
 
             int_count = 1
             extra_serie = {"tooltip": {"y_start": "", "y_end": " mins"},
-                           "date_format": "%d %b %y %H:%M %p"}
+                           "date_format": "%d %b %y %H:%M%p"}
             for i in hourly_call_duration_res:
                 hourly_duration_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
                 hourly_duration_chartdata['y' + str(int_count)] = hourly_call_duration_res[i]
@@ -1728,7 +1727,7 @@ def cdr_overview(request):
 
             int_count = 1
             extra_serie = {"tooltip": {"y_start": "", "y_end": " calls"},
-                           "date_format": "%d %b %y"}
+                           "date_format": "%d %b %Y"}
             for i in daily_call_count_res:
                 daily_call_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
                 daily_call_chartdata['y' + str(int_count)] = daily_call_count_res[i]
@@ -1742,7 +1741,7 @@ def cdr_overview(request):
 
             int_count = 1
             extra_serie = {"tooltip": {"y_start": "", "y_end": " mins"},
-                           "date_format": "%d %b %y"}
+                           "date_format": "%d %b %Y"}
             for i in daily_call_duration_res:
                 daily_duration_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
                 daily_duration_chartdata['y' + str(int_count)] = daily_call_duration_res[i]
@@ -1815,7 +1814,7 @@ def cdr_overview(request):
 
             int_count = 1
             extra_serie = {"tooltip": {"y_start": "", "y_end": " calls"},
-                           "date_format": "%b %y"}
+                           "date_format": "%b %Y"}
             for i in monthly_call_count_res:
                 monthly_call_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
                 monthly_call_chartdata['y' + str(int_count)] = monthly_call_count_res[i]
@@ -1829,7 +1828,7 @@ def cdr_overview(request):
 
             int_count = 1
             extra_serie = {"tooltip": {"y_start": "", "y_end": " mins"},
-                           "date_format": "%b %y"}
+                           "date_format": "%b %Y"}
             for i in monthly_call_duration_res:
                 monthly_duration_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
                 monthly_duration_chartdata['y' + str(int_count)] = monthly_call_duration_res[i]

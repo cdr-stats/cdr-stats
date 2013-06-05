@@ -15,19 +15,19 @@
         $(function () {
             $('a[data-toggle="tab"]').on('shown', function (e) {
                 if (e.target.hash == '#tabs-2') {
-                    {% load_chart hourly_duration_charttype hourly_duration_chartdata "hourly_duration_container" True "%d %b %y %H" False %}
+                    {% load_chart hourly_duration_charttype hourly_duration_chartdata "hourly_duration_container" True "%d %b %y %H %p" False %}
                 }
                 if (e.target.hash == '#tabs-3') {
-                    {% load_chart daily_call_charttype daily_call_chartdata "daily_call_container" True "%d %b %y" False %}
+                    {% load_chart daily_call_charttype daily_call_chartdata "daily_call_container" True "%d %b %Y" False %}
                 }
                 if (e.target.hash == '#tabs-4') {
-                    {% load_chart daily_duration_charttype daily_duration_chartdata "daily_duration_container" True "%d %b %y" False %}
+                    {% load_chart daily_duration_charttype daily_duration_chartdata "daily_duration_container" True "%d %b %Y" False %}
                 }
                 if (e.target.hash == '#tabs-5') {
-                    {% load_chart monthly_call_charttype monthly_call_chartdata "monthly_call_container" True "%b %y" False %}
+                    {% load_chart monthly_call_charttype monthly_call_chartdata "monthly_call_container" True "%b %Y" False %}
                 }
                 if (e.target.hash == '#tabs-6') {
-                    {% load_chart monthly_duration_charttype monthly_duration_chartdata "monthly_duration_container" True "%b %y" False %}
+                    {% load_chart monthly_duration_charttype monthly_duration_chartdata "monthly_duration_container" True "%b %Y" False %}
                 }
             })
         })
@@ -105,7 +105,7 @@
         <div id="tabs-1" class="tab-pane {% if action == "tabs-1" or action == "" %}active{% endif %}">
             <div class="row">
                 <div class="span12">
-                    {% load_chart hourly_call_charttype hourly_call_chartdata "hourly_call_container" True "%d %b %y %H" %}
+                    {% load_chart hourly_call_charttype hourly_call_chartdata "hourly_call_container" True "%d %b %y %H%p" %}
                     {% include_container "hourly_call_container" 400 '100%' %}
                 </div>
             </div>
