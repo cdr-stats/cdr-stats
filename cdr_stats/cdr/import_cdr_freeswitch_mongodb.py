@@ -246,18 +246,19 @@ def calculate_call_cost(voipplan_id, destination_number, billsec):
     sell_rate = 0.0
     sell_cost = 0.0
 
-    for i in query:
-        buy_rate = float(i.carrier_rate)
-        sell_rate = float(i.retail_rate)
+    if query:
+        for i in query:
+            buy_rate = float(i.carrier_rate)
+            sell_rate = float(i.retail_rate)
 
-        try:
-            buy_cost = (float(buy_rate) * float(float(billsec) / 60))
-        except:
-            buy_cost = 0.0
-        try:
-            sell_cost = (float(sell_rate) * float(float(billsec) / 60))
-        except:
-            sell_cost = 0.0
+            try:
+                buy_cost = (float(buy_rate) * float(float(billsec) / 60))
+            except:
+                buy_cost = 0.0
+            try:
+                sell_cost = (float(sell_rate) * float(float(billsec) / 60))
+            except:
+                sell_cost = 0.0
 
     data = {
         'buy_rate': buy_rate,
@@ -427,7 +428,8 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         try:
             voipplan_id = UserProfile.objects.get(accountcode=accountcode).voipplan_id
         except:
-            voipplan_id = 1
+            voipplan_id = False
+            print_shell(shell, "No VoipPlan created for this user/accountcode")
 
         call_rate = calculate_call_cost(voipplan_id, destination_number, billsec)
         buy_rate = call_rate['buy_rate']

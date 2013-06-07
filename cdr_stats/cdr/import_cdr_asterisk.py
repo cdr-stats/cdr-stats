@@ -17,6 +17,7 @@ from cdr.import_cdr_freeswitch_mongodb import chk_ipaddress,\
     create_analytic, set_int_default, calculate_call_cost
 from cdr.functions_def import get_hangupcause_id
 from cdr_alert.functions_blacklist import chk_destination
+from user_profile.models import UserProfile
 from datetime import datetime
 from mongodb_connection import mongodb
 import re
@@ -204,7 +205,12 @@ def import_cdr_asterisk(shell=False):
             #Option to get the direction from user_field
             direction = "unknown"
 
-            voipplan_id = 1
+            try:
+                voipplan_id = UserProfile.objects.get(accountcode=accountcode).voipplan_id
+            except:
+                voipplan_id = False
+                print_shell(shell, "No VoipPlan created for this user/accountcode")
+
             call_rate = calculate_call_cost(voipplan_id, destination_number, billsec)
             buy_rate = call_rate['buy_rate']
             buy_cost = call_rate['buy_cost']
@@ -284,14 +290,14 @@ def import_cdr_asterisk(shell=False):
                                     authorized,
                                     start_uepoch.strftime('%Y-%m-%d %M:%S'),))
             """
-            daily_date = datetime.fromtimestamp(int(row[1]))
-            create_analytic(daily_date, start_uepoch, switch.id,
+            date_start_uepoch = str(row[1])
+            create_analytic(date_start_uepoch, start_uepoch, switch.id,
                 country_id, accountcode, hangup_cause_id, duration,
                 buy_cost, sell_cost)
 
             acctid_list += "%s, " % str(acctid)
             if batch_count == 100:
-                acctid_list = acctid_list[-1]  # trim last comma (,) from string
+                acctid_list = acctid_list[:-1]  # trim last comma (,) from string
                 #Postgresql
                 #select * from table_name where id in (1,2,3);
                 cursor_updated.execute(

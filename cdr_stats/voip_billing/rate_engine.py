@@ -16,11 +16,15 @@ from voip_billing.models import VoIPRetailPlan
 from voip_billing.function_def import prefix_list_string
 
 
-def rate_engine(voipplan_id=None, destination_no=None):
+def rate_engine(voipplan_id, destination_no):
     """
     To determine the cost of the voip call and get provider/gateway
     to use to deliver the call.
     """
+
+    if not voipplan_id or not destination_no:
+        return False
+
     destination_prefix_list = prefix_list_string(str(destination_no))
 
     #destination_prefix_list = '34, 346, 3465, 34650'
