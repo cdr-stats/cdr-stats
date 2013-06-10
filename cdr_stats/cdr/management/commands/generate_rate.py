@@ -47,17 +47,11 @@ class Command(BaseCommand):
         """
         no_of_record = 1  # default
         if options.get('number-rate'):
-            try:
-                no_of_record = int(options.get('number-rate'))
-            except ValueError:
-                no_of_record = 1
+            no_of_record = int(options.get('number-rate', 1))
 
         voip_plan_id = 1  # default
         if options.get('call-plan'):
-            try:
-                voip_plan_id = int(options.get('call-plan'))
-            except ValueError:
-                voip_plan_id = 1
+            voip_plan_id = int(options.get('call-plan'), 1)
 
         try:
             voip_plan = VoIPPlan.objects.get(pk=int(voip_plan_id))

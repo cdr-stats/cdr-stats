@@ -130,17 +130,13 @@ class Command(BaseCommand):
 
         no_of_record = 1  # default
         if options.get('number-cdr'):
-            try:
-                no_of_record = int(options.get('number-cdr'))
-            except ValueError:
-                no_of_record = 1
+            no_of_record = int(options.get('number-cdr', 1))
+
 
         day_delta_int = 30  # default
         if options.get('delta-day'):
-            try:
-                day_delta_int = int(options.get('delta-day'))
-            except ValueError:
-                day_delta_int = 30
+            day_delta_int = int(options.get('delta-day', 30))
+
 
         arg_duration = False  # default
         if options.get('duration'):

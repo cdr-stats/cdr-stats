@@ -40,6 +40,7 @@ from cdr.aggregate import pipeline_cdr_view_daily_report,\
 from cdr.decorators import check_cdr_exists, check_user_accountcode, \
     check_user_voipplan
 from cdr.constants import CDR_COLUMN_NAME
+from common.common_constants import EXPORT_CHOICE
 from voip_billing.function_def import get_rounded_value
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
@@ -511,7 +512,7 @@ def cdr_export_to_csv(request):
     list_val = []
     for cdr in final_result:
         starting_date = cdr['start_uepoch']
-        if format == 'json':
+        if format == EXPORT_CHOICE.JSON:
             starting_date = str(cdr['start_uepoch'])
 
         list_val.append((
@@ -526,13 +527,13 @@ def cdr_export_to_csv(request):
         ))
     data = tablib.Dataset(*list_val, headers=headers)
 
-    if format == 'xls':
+    if format == EXPORT_CHOICE.XLS:
         response.write(data.xls)
 
-    if format == 'csv':
+    if format == EXPORT_CHOICE.CSV:
         response.write(data.csv)
 
-    if format == 'json':
+    if format == EXPORT_CHOICE.JSON:
         response.write(data.json)
 
     return response
@@ -1845,7 +1846,6 @@ def cdr_overview(request):
             'search_tag': search_tag,
             'start_date': start_date,
             'end_date': end_date,
-
             'hourly_call_chartdata': hourly_call_chartdata,
             'hourly_call_charttype': hourly_call_charttype,
             'hourly_duration_chartdata': hourly_duration_chartdata,
