@@ -154,10 +154,7 @@ def cdr_view_daily_report(query_var):
 
 def get_pagination_vars(request, default_sort_field='start_uepoch'):
     """Pagination data for mongodb cdr_common collection"""
-    try:
-        PAGE_NUMBER = int(request.GET['page'])
-    except:
-        PAGE_NUMBER = 1
+    PAGE_NUMBER = int(request.GET.get('page', 1))
 
     # get sorting field and sorting order
     col_name_with_order = {}
