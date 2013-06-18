@@ -297,12 +297,12 @@ def import_cdr_asterisk(shell=False):
 
             acctid_list += "%s, " % str(acctid)
             if batch_count == 100:
-                acctid_list = acctid_list[:-1]  # trim last comma (,) from string
+                acctid_list = acctid_list[:-2]  # trim last comma (,) from string
                 #Postgresql
                 #select * from table_name where id in (1,2,3);
-                cursor_updated.execute(
-                    "UPDATE %s SET import_cdr=1 WHERE %s in (%s)" %
-                    (table_name, settings.ASTERISK_PRIMARY_KEY, acctid_list))
+                update_cdr = "UPDATE %s SET import_cdr=1 WHERE %s in (%s)" % \
+                    (table_name, settings.ASTERISK_PRIMARY_KEY, acctid_list)
+                cursor_updated.execute(update_cdr)
 
                 batch_count = 0
                 acctid_list = ''
