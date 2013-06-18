@@ -88,21 +88,22 @@ def voip_rates(request):
             request.session['dialcode'] = ''
             request.session['final_rate_list'] = ''
             dialcode = ''
-
+    full_url = request.build_absolute_uri('/')
     if dialcode:
-        response = requests.get('http://localhost:8000/api/v1/voip_rate/?dialcode=%s&sort_field=%s&sort_order=%s' % (dialcode, sort_order, order),
-            auth=(request.user, request.user))
+        api_url = full_url + 'api/v1/voip_rate/?dialcode=%s&sort_field=%s&sort_order=%s' % (dialcode, sort_order, order)
+        response = requests.get(api_url, auth=(request.user, request.user))
     else:
         # Default listing or rate
-        response = requests.get('http://localhost:8000/api/v1/voip_rate/?sort_field=%s&sort_order=%s' % (sort_order, order),
-            auth=(request.user, request.user))
+        api_url = full_url + 'api/v1/voip_rate/?sort_field=%s&sort_order=%s' % (sort_order, order)
+        response = requests.get(api_url, auth=(request.user, request.user))
 
-    rate_list = response.content
-    # due to string response of API, we need to convert response in to array
-    rate_list = rate_list.replace('[', '').replace(']', '').replace('}, {', '}|{').split('|')
-    for i in rate_list:
-        # convert string into dict
-        final_rate_list.append(ast.literal_eval(i))
+    if response.status_code == 200:
+        rate_list = response.content
+        # due to string response of API, we need to convert response in to array
+        rate_list = rate_list.replace('[', '').replace(']', '').replace('}, {', '}|{').split('|')
+        for i in rate_list:
+            # convert string into dict
+            final_rate_list.append(ast.literal_eval(i))
 
     request.session['final_rate_list'] = final_rate_list
 
