@@ -45,10 +45,7 @@ class Command(BaseCommand):
         no_of_record = 86400  # second in one day
 
         if options.get('delta-day'):
-            try:
-                day_delta_int = int(options.get('delta-day'))
-            except ValueError:
-                day_delta_int = 1
+            day_delta_int = int(options.get('delta-day', 1))
         else:
             day_delta_int = 1
 

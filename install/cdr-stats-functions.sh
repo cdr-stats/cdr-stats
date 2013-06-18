@@ -165,8 +165,6 @@ func_prepare_system_common(){
             #We need both Postgresql and Mysql for the Connectors
             apt-get -y install postgresql-client-9.1 libmysqlclient-dev mysql-client-core-5.5
             apt-get -y install git-core mercurial gawk
-            #for audiofile convertion
-            apt-get -y install libsox-fmt-mp3 libsox-fmt-all mpg321 ffmpeg
             #PostgreSQL
             apt-get -y install libpq-dev
         ;;
@@ -365,6 +363,7 @@ func_install_pip_deps(){
 
     #Install CDR-Stats depencencies
     easy_install -U distribute
+    pip install MySQL-python
     echo "Install basic requirements..."
     for line in $(cat /usr/src/cdr-stats/install/requirements/basic-requirements.txt | grep -v \#)
     do
