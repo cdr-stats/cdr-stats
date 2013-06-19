@@ -290,6 +290,7 @@ LANGUAGES = (
     ('pt', gettext('Portuguese')),
     ('de', gettext('German')),
     ('ru', gettext('Russian')),
+    ('it', gettext('Italian')),
 )
 
 LOCALE_PATHS = (
