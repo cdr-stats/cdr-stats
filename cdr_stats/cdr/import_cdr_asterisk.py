@@ -162,7 +162,7 @@ def import_cdr_asterisk(shell=False):
         cdr_bulk_record = []
         local_count_import = 0
         batch_count = 0
-        acctid_list = ""
+        acctid_list = ''
 
         while row is not None:
             acctid = row[9]
@@ -309,6 +309,14 @@ def import_cdr_asterisk(shell=False):
 
             #Fetch a other record
             row = cursor.fetchone()
+
+        if len(acctid_list) > 0:
+            acctid_list = acctid_list[:-2]  # trim last comma (,) from string
+            #Postgresql
+            #select * from table_name where id in (1,2,3);
+            update_cdr = "UPDATE %s SET import_cdr=1 WHERE %s in (%s)" % \
+                (table_name, settings.ASTERISK_PRIMARY_KEY, acctid_list)
+            cursor_updated.execute(update_cdr)
 
         cursor_updated.close()
         cursor.close()

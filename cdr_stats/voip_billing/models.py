@@ -36,8 +36,8 @@ class VoIPPlan(Model):
     """
     name = models.CharField(unique=True, max_length=255, verbose_name=_('name'),
                             help_text=_("enter plan name"))
-    pubname = models.CharField(max_length=255, verbose_name=_('pub name'),
-                               help_text=_("Enter pub Name"))
+    pubname = models.CharField(max_length=255, verbose_name=_('publish name'),
+                               help_text=_("enter publish name"))
     lcrtype = models.IntegerField(choices=list(LCR_TYPE), verbose_name=_('LCR type'),
                                   help_text=_("select LCR type"))
     created_date = models.DateTimeField(auto_now_add=True, verbose_name=_('date'))
@@ -140,6 +140,7 @@ class VoIPRetailPlan(Model):
     name = models.CharField(max_length=255, verbose_name=_('name'),
                             help_text=_("enter plan name"))
     description = models.TextField(verbose_name=_('description'),
+                                   null=True, blank=True,
                                    help_text=_("short description about Plan"))
     metric = models.IntegerField(default=10, verbose_name=_('metric'),
                                  help_text=_("enter metric in digit"))
@@ -241,7 +242,8 @@ class VoIPCarrierPlan(Model):
     """
     name = models.CharField(max_length=255, verbose_name=_("name"),
                             help_text=_("enter plan name"))
-    description = models.TextField(blank=True, verbose_name=_("description"),
+    description = models.TextField(verbose_name=_("description"),
+                                   null=True, blank=True,
                                    help_text=_("short description about Plan"))
     metric = models.IntegerField(default=10, verbose_name=_("metric"),
                                  help_text=_("enter metric in digit"))
