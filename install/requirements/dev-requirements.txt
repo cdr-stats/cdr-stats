@@ -5,3 +5,4 @@ ipython==0.13.1
 pip-tools==0.2.1
 pygraphviz==1.1
 git+git://github.com/hmarr/django-debug-toolbar-mongo.git
+django-debug-toolbar-template-timings

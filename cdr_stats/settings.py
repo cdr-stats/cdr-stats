@@ -209,12 +209,39 @@ try:
 except ImportError:
     pass
 else:
-    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar',)
+    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', 'template_timings_panel',)
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + \
         ('debug_toolbar.middleware.DebugToolbarMiddleware',)
+    DEBUG_TOOLBAR_PANELS = (
+        'debug_toolbar.panels.version.VersionDebugPanel',
+        'debug_toolbar.panels.timer.TimerDebugPanel',
+        #Warning: If you run profiling this will duplicate the view execution
+        #'debug_toolbar.panels.profiling.ProfilingDebugPanel',
+        'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
+        'debug_toolbar.panels.headers.HeaderDebugPanel',
+        'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
+        'debug_toolbar.panels.template.TemplateDebugPanel',
+        'debug_toolbar.panels.sql.SQLDebugPanel',
+        'debug_toolbar.panels.signals.SignalDebugPanel',
+        'debug_toolbar.panels.logger.LoggingPanel',
+        'template_timings_panel.panels.TemplateTimings.TemplateTimings',
+    )
     DEBUG_TOOLBAR_CONFIG = {
         'INTERCEPT_REDIRECTS': False,
+        'HIDE_DJANGO_SQL': False,
+        'ENABLE_STACKTRACES': True,
     }
+
+try:
+    import debug_toolbar
+    import debug_toolbar_mongo
+except ImportError:
+    pass
+else:
+    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar_mongo',)
+    DEBUG_TOOLBAR_MONGO_STACKTRACES = True
+    DEBUG_TOOLBAR_PANELS = DEBUG_TOOLBAR_PANELS + \
+        ('debug_toolbar_mongo.panel.MongoDebugPanel',)
 
 # Nose
 try:
@@ -229,30 +256,6 @@ else:
 
 # commented cause this module doesn't work at the moment
 # https://groups.google.com/forum/?fromgroups#!topic/mongoengine-users/cwIdHSNPCwY
-
-try:
-    import debug_toolbar_mongo
-except ImportError:
-    pass
-else:
-    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar_mongo',)
-
-    DEBUG_TOOLBAR_MONGO_STACKTRACES = True
-    DEBUG_TOOLBAR_PANELS = (
-        'debug_toolbar.panels.version.VersionDebugPanel',
-        'debug_toolbar.panels.timer.TimerDebugPanel',
-        #Warning: If you run profiling this will duplicate the view execution
-        #'debug_toolbar.panels.profiling.ProfilingDebugPanel',
-        'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
-        'debug_toolbar.panels.headers.HeaderDebugPanel',
-        'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-        'debug_toolbar.panels.template.TemplateDebugPanel',
-        'debug_toolbar.panels.sql.SQLDebugPanel',
-        'debug_toolbar.panels.signals.SignalDebugPanel',
-        'debug_toolbar.panels.logger.LoggingPanel',
-    )
-    DEBUG_TOOLBAR_PANELS = DEBUG_TOOLBAR_PANELS + \
-        ('debug_toolbar_mongo.panel.MongoDebugPanel',)
 
 
 # Django extensions
