@@ -1,5 +1,5 @@
 django-nose==1.1
-nose==1.2.1
+nose==1.3.0
 nose-cov==1.6
 nose-progressive==1.4
 xtraceback==0.3.3
