@@ -150,6 +150,10 @@ def prefix_list_string(phone_number):
     >>> prefix_list_string(phone_no)
     False
     """
+    #Extra number, this is used in case phonenumber is followed by chars
+    #ie 34650123456*234
+    m = re.search('(\d*)', phone_number)
+    phone_number = m.group(0)
     try:
         int(phone_number)
     except ValueError:
