@@ -127,14 +127,21 @@ func_check_dependencies() {
 
 #Fuction to create the virtual env
 func_setup_virtualenv() {
-
-    echo ""
-    echo ""
     echo "This will install virtualenv & virtualenvwrapper"
-    echo "and create a new virtualenv : $CDRSTATS_ENV"
+    echo "and create a new virtualenv : $NEWFIES_ENV"
 
-    easy_install virtualenv
-    easy_install virtualenvwrapper
+    pip install virtualenv
+    pip install virtualenvwrapper
+
+    #Prepare settings for installation
+    case $DIST in
+        'DEBIAN')
+            SCRIPT_VIRTUALENVWRAPPER="/usr/local/bin/virtualenvwrapper.sh"
+        ;;
+        'CENTOS')
+            SCRIPT_VIRTUALENVWRAPPER="/usr/bin/virtualenvwrapper.sh"
+        ;;
+    esac
 
     # Enable virtualenvwrapper
     chk=`grep "virtualenvwrapper" ~/.bashrc|wc -l`
@@ -153,6 +160,7 @@ func_setup_virtualenv() {
 
     echo "Virtualenv $CDRSTATS_ENV created and activated"
 }
+
 
 func_prepare_system_common(){
     #Create CDRStats User
