@@ -372,6 +372,9 @@ func_install_pip_deps(){
     #Install CDR-Stats depencencies
     easy_install -U distribute
     pip install MySQL-python
+    #pip now only installs stable versions by default, so we need to use --pre option
+    pip install --pre pytz
+
     echo "Install basic requirements..."
     for line in $(cat /usr/src/cdr-stats/install/requirements/basic-requirements.txt | grep -v \#)
     do
