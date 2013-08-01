@@ -371,6 +371,10 @@ func_install_source(){
 #Function to install Python dependencies
 func_install_pip_deps(){
 
+    #Create and enable virtualenv
+    #We moved this here cause func_setup_virtualenv also active the virtualenv
+    func_setup_virtualenv
+
     #Install CDR-Stats depencencies
     easy_install -U distribute
     #pip now only installs stable versions by default, so we need to use --pre option
@@ -642,9 +646,6 @@ func_install_frontend(){
     #Backup
     func_backup_prev_install
 
-    #Create and enable virtualenv
-    func_setup_virtualenv
-
     #Install Code Source
     func_install_source
 
@@ -771,9 +772,6 @@ func_install_standalone_backend(){
     read TEMP
 
     func_prepare_system_common
-
-    #Create and enable virtualenv
-    func_setup_virtualenv
 
     #Install Code Source
     func_install_source
