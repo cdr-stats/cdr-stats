@@ -618,6 +618,11 @@ func_django_newfies_install(){
     #Collect static files from apps and other locations in a single location.
     python manage.py collectstatic --noinput
 
+    #Install Celery & redis-server
+    echo "Install Redis-server ..."
+    func_install_redis_server
+    #Redis is needed to load countries
+
     #Load Countries Dialcode
     python manage.py load_country_dialcode
 }
