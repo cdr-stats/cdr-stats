@@ -379,7 +379,7 @@ class send_cdr_report(PeriodicTask):
 
     run_every = timedelta(seconds=86400)  # every day
 
-    @only_one(key="send_cdr_report", timeout=LOCK_EXPIRE)
+    @only_one(ikey="send_cdr_report", timeout=LOCK_EXPIRE)
     def run(self, **kwargs):
         logger = self.get_logger()
         logger.info('TASK :: send_cdr_report')
