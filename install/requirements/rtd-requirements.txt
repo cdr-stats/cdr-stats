@@ -1,0 +1,2 @@
+-r basic-requirements.txt
+-r django-requirements.txt
