@@ -165,6 +165,10 @@ def import_cdr_asterisk(shell=False):
         acctid_list = ''
 
         while row is not None:
+            destination_number = row[0]
+            if not destination_number:
+                continue
+
             acctid = row[9]
             callerid = row[2]
             try:
@@ -192,7 +196,6 @@ def import_cdr_asterisk(shell=False):
             start_uepoch = datetime.fromtimestamp(int(row[1]))
 
             # Check Destination number
-            destination_number = row[0]
             if (len(destination_number) <= settings.INTERNAL_CALL
                or destination_number[:1].isalpha()):
                 authorized = 1
