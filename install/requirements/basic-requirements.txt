@@ -8,7 +8,7 @@ simplejson==2.6.2
 python-dateutil==2.1
 yolk==0.4.3
 feedparser==5.1.2
-celery==3.0.12
+celery==3.0.24
 redis==2.7.1
 kombu==2.4.8
 pymongo==2.3
