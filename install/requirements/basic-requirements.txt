@@ -6,7 +6,7 @@ anyjson==0.3.3
 python-dateutil==2.1
 yolk==0.4.3
 feedparser==5.1.3
-celery==3.0.19
+celery==3.0.24
 redis==2.7.2
 kombu==2.5.10
 pymongo==2.3
