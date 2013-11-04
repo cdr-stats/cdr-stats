@@ -166,6 +166,8 @@ def import_cdr_asterisk(shell=False):
                 callerid_number = callerid
 
             channel = row[3]
+            if not channel:
+                channel = ''  # Set empty string for channel in case is None
             duration = set_int_default(row[4], 0)
             billsec = set_int_default(row[5], 0)
             ast_disposition = row[6]
