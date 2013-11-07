@@ -85,11 +85,11 @@ msgstr "И заканчивается с"
 
 #: cdr/constants.py:27
 msgid "Call-date"
-msgstr "Call Дата"
+msgstr "Время звонка"
 
 #: cdr/constants.py:28
 msgid "CLID"
-msgstr "CLID"
+msgstr "CallerID"
 
 #: cdr/constants.py:29 cdr/forms.py:80
 #: templates/frontend/mail_report_template.html:14
@@ -114,16 +114,16 @@ msgstr "Билл"
 #: cdr/constants.py:32 cdr/forms.py:98
 #: templates/frontend/mail_report_template.html:17
 msgid "Hangup cause"
-msgstr "Отбой причины"
+msgstr "Статус"
 
 #: cdr/constants.py:33 templates/frontend/mail_report_template.html:18
 #: templates/frontend/registration/user_detail_change.html:16
 msgid "Account"
-msgstr "Счет"
+msgstr "Код"
 
 #: cdr/forms.py:43
 msgid "All Switches"
-msgstr "Все коммутаторы"
+msgstr "Все АТС"
 
 #: cdr/forms.py:53 cdr/forms.py:63 cdr/forms.py:142
 msgid "All"
@@ -135,7 +135,7 @@ msgstr "Caller ID"
 
 #: cdr/forms.py:86
 msgid "Account Code"
-msgstr "Номер счета"
+msgstr "Код"
 
 #: cdr/forms.py:92
 #, fuzzy
@@ -145,7 +145,7 @@ msgstr "Продолжительность"
 #: cdr/forms.py:101 cdr/forms.py:322 cdr/models.py:71
 #: templates/frontend/cdr_graph_realtime.html:89
 msgid "Switch"
-msgstr "Переключение"
+msgstr "АТС"
 
 #: cdr/forms.py:104 cdr_alert/forms.py:21 cdr_alert/models.py:142
 #: cdr_alert/models.py:166 templates/frontend/world_map.html:145
@@ -241,11 +241,11 @@ msgstr "Типы документов принимаются: %s"
 
 #: cdr/forms.py:323
 msgid "Select switch"
-msgstr "Выберите переключатель"
+msgstr "Выберите АТС"
 
 #: cdr/forms.py:324
 msgid "Account code"
-msgstr "Код счета"
+msgstr "Код"
 
 #: cdr/forms.py:326 templates/admin/cdr/switch/import_cdr.html:23
 msgid "caller_id_number"
@@ -322,7 +322,7 @@ msgstr "Всего звонков"
 
 #: cdr/models.py:29
 msgid "ANSWER"
-msgstr "Ответили"
+msgstr "ОК"
 
 #: cdr/models.py:30
 msgid "BUSY"
@@ -330,7 +330,7 @@ msgstr "Занято"
 
 #: cdr/models.py:31
 msgid "NOANSWER"
-msgstr "Не ответили"
+msgstr "Нет ответа"
 
 #: cdr/models.py:32
 msgid "CANCEL"
@@ -362,11 +362,11 @@ msgstr "FreeSWITCH"
 
 #: cdr/models.py:42
 msgid "Asterisk"
-msgstr "Звездочка"
+msgstr "Asterisk"
 
 #: cdr/models.py:72
 msgid "Switches"
-msgstr "Коммутаторы"
+msgstr "АТС"
 
 #: cdr/models.py:88
 msgid "Code"
@@ -834,7 +834,7 @@ msgstr "API браузера"
 
 #: templates/frontend/bootstrap_menu.html:22
 msgid "Dashboard"
-msgstr "Приборная панель"
+msgstr "Главная"
 
 #: templates/frontend/bootstrap_menu.html:25
 #: templates/frontend/cdr_country_report.html:69
@@ -1009,7 +1009,7 @@ msgstr "Средняя звонков в час"
 #: templates/frontend/cdr_overview.html:248
 #: templates/frontend/mail_report_template.html:91
 msgid "Total Duration"
-msgstr "Продолжительность всего"
+msgstr "Общая продолжительность"
 
 #: templates/frontend/cdr_dashboard.html:317
 #: templates/frontend/mail_report_template.html:95
@@ -1018,7 +1018,7 @@ msgstr ""
 
 #: templates/frontend/cdr_dashboard.html:324
 msgid "countries report"
-msgstr "страны сообщают"
+msgstr "отчёт по странам"
 
 #: templates/frontend/cdr_dashboard.html:331
 #: templates/frontend/mail_report_template.html:105
@@ -1091,7 +1091,7 @@ msgstr "Апрель"
 #: templates/frontend/cdr_overview.html:63
 #: templates/frontend/cdr_overview.html:76
 msgid "May"
-msgstr "Может"
+msgstr "Май"
 
 #: templates/frontend/cdr_overview.html:64
 msgid "Jun"
@@ -1131,7 +1131,7 @@ msgstr "Февраль"
 
 #: templates/frontend/cdr_overview.html:74
 msgid "March"
-msgstr "Марш"
+msgstr "Март"
 
 #: templates/frontend/cdr_overview.html:75
 msgid "April"
@@ -1203,7 +1203,7 @@ msgstr "Точки включены"
 
 #: templates/frontend/cdr_overview.html:521
 msgid "Count"
-msgstr "Считать"
+msgstr "Количество"
 
 #: templates/frontend/cdr_overview.html:546
 #: templates/frontend/cdr_view.html:164 templates/frontend/cdr_view.html:362
@@ -2469,11 +2469,11 @@ msgstr "Внимание"
 
 #: user_profile/models.py:75
 msgid "Report mail list"
-msgstr "Доклад рассылку"
+msgstr "Список e-mail для отчёта"
 
 #: user_profile/models.py:76
 msgid "Enter a valid e-mail address separated by commas."
-msgstr "Введите действительный адрес электронной почты, разделенных запятыми."
+msgstr "Введите действительные адреса e-mail, разделенные запятыми."
 
 #: user_profile/models.py:83
 #, fuzzy
