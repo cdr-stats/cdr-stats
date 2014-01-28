@@ -388,7 +388,7 @@ func_install_pip_deps(){
     echo "Install Django requirements..."
     for line in $(cat /usr/src/cdr-stats/install/requirements/django-requirements.txt | grep -v \#)
     do
-        pip install $line
+        pip install $line --allow-all-external --allow-unverified django-admin-tools
     done
 
     #Check Python dependencies
