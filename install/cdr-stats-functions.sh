@@ -169,16 +169,21 @@ func_prepare_system_common(){
 
     case $DIST in
         'DEBIAN')
+            apt-get update
+
             export LANGUAGE=en_US.UTF-8
             export LANG=en_US.UTF-8
             export LC_ALL=en_US.UTF-8
             locale-gen en_US.UTF-8
             dpkg-reconfigure locales
             apt-get -y install --reinstall language-pack-en
-            
+
+            apt-get -y install postgresql postgresql-contrib
+            pg_createcluster 9.1 main --start
+
             apt-get -y install python-setuptools python-dev build-essential libevent-dev python-pip
             #We need both Postgresql and Mysql for the Connectors
-            apt-get -y install postgresql-client-9.1 libmysqlclient-dev mysql-client-core-5.5
+            apt-get -y install libmysqlclient-dev mysql-client-core-5.5
             apt-get -y install git-core mercurial gawk
             #for audiofile convertion
             apt-get -y install libsox-fmt-mp3 libsox-fmt-all mpg321 ffmpeg
