@@ -169,6 +169,13 @@ func_prepare_system_common(){
 
     case $DIST in
         'DEBIAN')
+            export LANGUAGE=en_US.UTF-8
+            export LANG=en_US.UTF-8
+            export LC_ALL=en_US.UTF-8
+            locale-gen en_US.UTF-8
+            dpkg-reconfigure locales
+            apt-get -y install --reinstall language-pack-en
+            
             apt-get -y install python-setuptools python-dev build-essential libevent-dev python-pip
             #We need both Postgresql and Mysql for the Connectors
             apt-get -y install postgresql-client-9.1 libmysqlclient-dev mysql-client-core-5.5
