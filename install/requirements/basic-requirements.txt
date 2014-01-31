@@ -1,7 +1,7 @@
 docutils==0.9.1
 ordereddict==1.1
 psycopg2==2.4.5
-MySQL-python==1.2.4c1
+MySQL-python==1.2.5
 amqplib==1.0.2
 anyjson==0.3.3
 simplejson==2.6.2
