@@ -304,7 +304,13 @@
                     {% endif %}
                     {{ row.caller_id_name }}
                 </td>
-                <td>{{ row.destination_number }}</td>
+                <td>
+                    {{ row.destination_number }}
+                    {% if row.destination_number and row.callee_id_name %}
+                       -
+                    {% endif %}
+                    {{ row.callee_id_name }}
+                </td>
                 <td>{% if result == 1 %}
                         {{ row.duration|conv_min }}
                     {% else %}
