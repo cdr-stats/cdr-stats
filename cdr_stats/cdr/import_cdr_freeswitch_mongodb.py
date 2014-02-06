@@ -113,12 +113,19 @@ def get_element(cdr):
         write_codec = cdr['variables']['write_codec']
     else:
         write_codec = ''
+    # Get callee_id_name
+    if 'variables' in cdr and 'callee_id_name' in cdr['variables']:
+        callee_id_name = cdr['variables']['callee_id_name'].lstrip()
+    else:
+        callee_id_name = ''
+
 
     data_element = {
         'accountcode': accountcode,
         'remote_media_ip': remote_media_ip,
         'caller_id_number': caller_id_number,
         'caller_id_name': caller_id_name,
+        'callee_id_name': callee_id_name,
         'duration': duration,
         'billsec': billsec,
         'direction': direction,
@@ -270,7 +277,7 @@ def calculate_call_cost(voipplan_id, destination_number, billsec):
 
 
 def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, destination_number,
-                               duration, billsec, hangup_cause_id, accountcode, direction,
+                               callee_id_name, duration, billsec, hangup_cause_id, accountcode, direction,
                                uuid, remote_media_ip, start_uepoch, answer_uepoch, end_uepoch,
                                mduration, billmsec, read_codec, write_codec, cdr_type,
                                cdr_object_id, country_id, authorized,
@@ -284,6 +291,7 @@ def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest
         'caller_id_number': caller_id_number,
         'caller_id_name': caller_id_name,
         'destination_number': destination_number,
+        'callee_id_name': callee_id_name,
         'duration': duration,
         'billsec': billsec,
         'hangup_cause_id': hangup_cause_id,
@@ -374,6 +382,7 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             "variables.billmsec": 1,
             "variables.read_codec": 1,
             "variables.write_codec": 1,
+            "variables.callee_id_name": 1,
             "import_cdr_monthly": 1,
             "import_cdr_daily": 1,
             "import_cdr_hourly": 1,
@@ -424,6 +433,7 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         billmsec = data_element['billmsec']
         read_codec = data_element['read_codec']
         write_codec = data_element['write_codec']
+        callee_id_name = data_element['callee_id_name']
 
         try:
             voipplan_id = UserProfile.objects.get(accountcode=accountcode).voipplan_id
@@ -439,7 +449,7 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
 
         # Prepare global CDR
         cdr_record = generate_global_cdr_record(switch.id, caller_id_number,
-            caller_id_name, destination_number, duration, billsec, hangup_cause_id,
+            caller_id_name, destination_number, callee_id_name, duration, billsec, hangup_cause_id,
             accountcode, direction, uuid, remote_media_ip, start_uepoch, answer_uepoch,
             end_uepoch, mduration, billmsec, read_codec, write_codec,
             CDR_TYPE["freeswitch"], cdr['_id'], country_id, authorized,
