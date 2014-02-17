@@ -79,6 +79,7 @@ def diagnostic(request):
             elif db_engine == 'mongodb':
                 connection = Connection(host, port)
                 DBCON = connection[db_name]
+                DBCON.autentificate(user, password)
                 CDR = DBCON[table_name]
                 CDR_COUNT = CDR.find().count()
 
