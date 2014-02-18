@@ -157,8 +157,8 @@ class Command(BaseCommand):
         table_name = settings.CDR_BACKEND[ipaddress]['table_name']
         db_engine = settings.CDR_BACKEND[ipaddress]['db_engine']
         cdr_type = settings.CDR_BACKEND[ipaddress]['cdr_type']
-        # user = settings.CDR_BACKEND[ipaddress]['user']
-        # password = settings.CDR_BACKEND[ipaddress]['password']
+        user = settings.CDR_BACKEND[ipaddress]['user']
+        password = settings.CDR_BACKEND[ipaddress]['password']
         host = settings.CDR_BACKEND[ipaddress]['host']
         port = settings.CDR_BACKEND[ipaddress]['port']
 
@@ -169,6 +169,7 @@ class Command(BaseCommand):
         try:
             connection = Connection(host, port)
             DBCON = connection[db_name]
+            DBCON.autentificate(user, password)
         except ConnectionFailure, e:
             sys.stderr.write('Could not connect to MongoDB: %s - %s' % (e,
                              ipaddress))

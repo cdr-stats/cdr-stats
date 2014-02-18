@@ -395,6 +395,8 @@ MONGO_CDRSTATS = {
     'DB_NAME': 'cdr-stats',
     'HOST': 'localhost',
     'PORT': 27017,
+    'USER': '',
+    'PASSWORD': '',
     'CDR_COMMON': 'cdr_common',
     'DAILY_ANALYTIC': 'daily_analytic',
     'MONTHLY_ANALYTIC': 'monthly_analytic',
@@ -528,6 +530,7 @@ import sys
 try:
     connection = Connection(MONGO_CDRSTATS['HOST'], MONGO_CDRSTATS['PORT'])
     DBCON = connection[MONGO_CDRSTATS['DB_NAME']]
+    DBCON.autentificate(MONGO_CDRSTATS['USER'], MONGO_CDRSTATS['PASSWORD'])
 except ConnectionFailure, e:
     sys.stderr.write("Could not connect to MongoDB: %s" % e)
     sys.exit(1)

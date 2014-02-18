@@ -617,11 +617,14 @@ def cdr_detail(request, id, switch_id):
         #Connect on MongoDB Database
         host = settings.CDR_BACKEND[ipaddress]['host']
         port = settings.CDR_BACKEND[ipaddress]['port']
+        user = settings.CDR_BACKEND[ipaddress]['user']
+        password = settings.CDR_BACKEND[ipaddress]['password']
         db_name = settings.CDR_BACKEND[ipaddress]['db_name']
         table_name = settings.CDR_BACKEND[ipaddress]['table_name']
         try:
             connection = Connection(host, port)
             DBCON = connection[db_name]
+            DBCON.autentificate(user, password)
         except ConnectionFailure:
             raise Http404
 

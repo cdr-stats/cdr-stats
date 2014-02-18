@@ -471,6 +471,8 @@ def import_cdr_freeswitch_mongodb(shell=False):
         cdr_type = settings.CDR_BACKEND[ipaddress]['cdr_type']
         host = settings.CDR_BACKEND[ipaddress]['host']
         port = settings.CDR_BACKEND[ipaddress]['port']
+        user = settings.CDR_BACKEND[ipaddress]['user']
+        password = settings.CDR_BACKEND[ipaddress]['password']
 
         if db_engine != 'mongodb' or cdr_type != 'freeswitch':
             sys.stderr.write('This function is intended for mongodb and freeswitch')
@@ -484,6 +486,7 @@ def import_cdr_freeswitch_mongodb(shell=False):
         try:
             connection = Connection(host, port)
             DBCON = connection[db_name]
+            DBCON.autentificate(user, password)
         except ConnectionFailure, e:
             sys.stderr.write("Could not connect to MongoDB: %s - %s" %
                 (e, ipaddress))
