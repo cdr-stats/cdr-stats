@@ -418,6 +418,8 @@ MONGO_CDRSTATS = {
     'DB_NAME': 'cdr-stats',
     'HOST': 'localhost',
     'PORT': 27017,
+    'USER': '',
+    'PASSWORD': '',
     'CDR_COMMON': 'cdr_common',
     'DAILY_ANALYTIC': 'daily_analytic',
     'MONTHLY_ANALYTIC': 'monthly_analytic',
