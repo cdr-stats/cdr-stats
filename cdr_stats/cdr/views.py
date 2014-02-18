@@ -973,8 +973,6 @@ def cdr_realtime(request):
             'colorgraph2': '0, 180, 0',
             'colorgraph3': '0, 0, 180',
             'realtime_graph_maxcall': settings.REALTIME_Y_AXIS_LIMIT,
-            'socketio_host': settings.SOCKETIO_HOST,
-            'socketio_port': settings.SOCKETIO_PORT,
             'notice_count': notice_count(request),
         }
 

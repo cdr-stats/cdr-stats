@@ -190,7 +190,6 @@ INSTALLED_APPS = (
     'linaro_django_pagination',
     'djcelery',
     'tastypie',
-    'django_socketio',
     'common',
     'notification',
     'country_dialcode',
@@ -326,12 +325,6 @@ CELERY_QUEUES = {
         'binding_key': '#',
     },
 }
-
-#SOCKETIO
-#========
-SOCKETIO_HOST = 'localhost'
-SOCKETIO_PORT = 9000
-SOCKETIO_CALLNUM_DEFAULT = 0
 
 #GENERAL
 #=======

@@ -1,9 +1,12 @@
 {% extends "frontend/master.html" %}
-{% load i18n cdr_extras %}
-{% load socketio_tags %}
+{% load i18n cdr_extras dajaxice_templatetags %}
+
 
 {% block extra_header %}
-{% socketio %}
+{% dajaxice_js_import %}
+<script src="{{ STATIC_URL }}cdr-stats/js/jquery.dajax.core.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}cdr-stats/js/jquery.ba-serializeobject.js" type="text/javascript"></script>
+
 <script src="{{STATIC_URL}}cdr-stats/js/smoothie.js" type="text/javascript"></script>
 
 {% for c_switch in list_switch %}
@@ -15,6 +18,7 @@ $(function() {
     var max_call = {{ realtime_graph_maxcall }}
     // Randomly add a data point every 500ms
     var dataSet1 = new TimeSeries(); // dataSet2 = new TimeSeries(), dataSet3 = new TimeSeries();
+    var numbercall = 0;
 
     function createTimeline{{ c_switch.id }}() {
         var chart = new SmoothieChart({
@@ -34,37 +38,13 @@ $(function() {
     }
     createTimeline{{ c_switch.id }}();
 
-    var socket{{ c_switch.id }} = new io.Socket('{{ socketio_host }}',{port: {{ socketio_port }} });
-
     setInterval(function() {
-        data = {voipswitch: voipswitchname, user : {{ user_id }}, message: "get-stats"};
-        socket{{ c_switch.id }}.send(data);
-        console.log('we just sent to '+voipswitchname);
-    }, 5000);
-
-    var connected = function() {
-        //socket.subscribe('switch-' + voipswitch);
-        socket{{ c_switch.id }}.send({voipswitch: voipswitchname, user : {{ user_id }}, message: "get-stats"});
-    };
-
-    var disconnected = function() {
-        setTimeout(start{{ c_switch.id }}, 2000);
-    };
-
-    var messaged = function(data) {
-        //console.log(data);
+        Dajaxice.cdr.get_realtime_json(function(d){numbercall = d.numbercall;}, {'key_uuid': '{{ c_switch.key_uuid }}' })
         var now = new Date().getTime();
-        dataSet1.append(now, data[voipswitchname]);
-        $("#numbercall-"+voipswitchname).text(data[voipswitchname]);
-    };
+        dataSet1.append(now, numbercall);
+        $("#numbercall-"+voipswitchname).text(numbercall);
+    }, 2000);
 
-    var start{{ c_switch.id }} = function() {
-        socket{{ c_switch.id }}.connect();
-        socket{{ c_switch.id }}.on('connect', connected);
-        socket{{ c_switch.id }}.on('disconnect', disconnected);
-        socket{{ c_switch.id }}.on('message', messaged);
-    };
-    start{{ c_switch.id }}();
 });
 </script>
 

@@ -35,7 +35,6 @@ To get started with CDR-Stats the following must be installed:
 - switch2bill-common - Common libs reused in different projects
 - django-country-dialcode - Django reusable application to manage Dial code of Countries
 - django-countries - List of world countries
-- django-socketio - A Django app providing the features required to use websockets with Django via Socket.IO
 
 
 The requirements are installed into a virtual environement so that the dependencies of the application do not interfere with other applications on the server. More information can be found about virtualenv at : http://pypi.python.org/pypi/virtualenv

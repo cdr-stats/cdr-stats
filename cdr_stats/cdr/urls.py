@@ -28,4 +28,5 @@ urlpatterns = patterns('cdr.views',
     (r'^mail_report/$', 'mail_report'),
     (r'^country_report/$', 'cdr_country_report'),
     (r'^world_map/$', 'world_map_view'),
+    # (r'^get_realtime_json/$', 'cdr.ajax.get_realtime_json'),
 )

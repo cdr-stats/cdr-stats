@@ -77,7 +77,3 @@ urlpatterns += urlpatterns_user_profile
 urlpatterns += urlpatterns_frontend
 urlpatterns += urlpatterns_api_playgrounds
 urlpatterns += urlpatterns_frontend_notification
-
-urlpatterns += patterns('',
-    url("", include('django_socketio.urls')),
-)

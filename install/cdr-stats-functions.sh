@@ -534,15 +534,12 @@ func_configure_selinux(){
                 #add HTTP port
                 iptables -I INPUT 2 -p tcp -m state --state NEW -m tcp --dport $HTTP_PORT -j ACCEPT
                 iptables -I INPUT 3 -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
-                #Add port for websocket
-                iptables -I INPUT 4 -p tcp -m state --state NEW -m tcp --dport 9000 -j ACCEPT
                 service iptables save
 
                 #Selinux to allow apache to access this directory
                 chcon -Rv --type=httpd_sys_content_t /usr/share/virtualenvs/cdr-stats/
                 chcon -Rv --type=httpd_sys_content_t $INSTALL_DIR/usermedia
                 semanage port -a -t http_port_t -p tcp $HTTP_PORT
-                semanage port -a -t http_port_t -p tcp 9000
                 #Allowing Apache to access Redis and MongoDB port
                 semanage port -a -t http_port_t -p tcp 6379
                 semanage port -a -t http_port_t -p tcp 27017
@@ -592,27 +589,6 @@ func_configure_http_server(){
 
     #Restart HTTP Server
     service $APACHE_SERVICE restart
-}
-
-#Install SocketIO Service
-func_install_socketio(){
-    #add service for socketio server
-    echo "Add service for socketio server..."
-    cp /usr/src/cdr-stats/install/cdr-stats-socketio /etc/init.d/cdr-stats-socketio
-    chmod +x /etc/init.d/cdr-stats-socketio
-    case $DIST in
-        'DEBIAN')
-            #Add SocketIO to Service
-            cd /etc/init.d; update-rc.d cdr-stats-socketio defaults 99
-            /etc/init.d/cdr-stats-socketio start
-        ;;
-        'CENTOS')
-            #Add SocketIO to Service
-            chkconfig --add cdr-stats-socketio
-            chkconfig --level 2345 cdr-stats-socketio on
-            /etc/init.d/cdr-stats-socketio start
-        ;;
-    esac
 }
 
 #Install Django Newfies
@@ -681,10 +657,6 @@ func_install_frontend(){
 
     #Configure Apache
     func_configure_http_server
-
-    #Install SocketIO Service
-    func_install_socketio
-
 
     echo ""
     echo "**************************************************************"
@@ -780,7 +752,7 @@ func_install_backend() {
 func_install_standalone_backend(){
 
     echo ""
-    echo "This will install the CDR-backend without configuring Apache, SocketIO Services, etc..."
+    echo "This will install the CDR-backend without configuring Apache, etc..."
     read TEMP
 
     func_prepare_system_common
