@@ -53,7 +53,7 @@ def get_realtime_json(request, key_uuid):
     if not numbercall:
         numbercall = 0
 
-    import random
-    numbercall = random.randint(1, 300)
-    logging.debug('numbercall :::> %d' % numbercall)
+    # import random
+    # numbercall = random.randint(1, 300)
+    # logging.debug('numbercall :::> %d' % numbercall)
     return simplejson.dumps({'numbercall': numbercall})
