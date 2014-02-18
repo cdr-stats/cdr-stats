@@ -14,7 +14,6 @@ django-dajaxice==0.5.5
 django-country-dialcode==0.4.8
 django-admin-tools-stats==0.4.4
 switch2bill-common==2.8.1
-django-socketio==0.3.5
 django-cache-machine==0.6
 django-redis-cache==0.9.6
 django-extensions==1.0.3

@@ -41,13 +41,6 @@ LOGGING = {
 INSTALLED_APPS += ('django_nose', )
 TEST_RUNNER = 'django_nose.run_tests'
 
-
-#SOCKETIO
-#========
-SOCKETIO_HOST = 'localhost'
-SOCKETIO_PORT = 9000
-SOCKETIO_CALLNUM_DEFAULT = 100
-
 #GENERAL
 #=======
 # PREFIX_LIMIT_MIN & PREFIX_LIMIT_MAX are used to know

@@ -12,11 +12,11 @@ Getting Started
 --
 
 
-CDR-Stats is free and open source call detail record analysis and reporting software for Freeswitch, 
-Asterisk and other type of VoIP Switch. It allows you to interrogate your CDR to provide reports 
+CDR-Stats is free and open source call detail record analysis and reporting software for Freeswitch,
+Asterisk and other type of VoIP Switch. It allows you to interrogate your CDR to provide reports
 and statistics via a simple to use, yet powerful, web interface.
 
-It is based on the Django Python Framework, Celery, SocketIO, Gevent and MongoDB.
+It is based on the Django Python Framework, Celery, Gevent and MongoDB.
 
 .. _`Freeswitch`: http://www.freeswitch.org/
 .. _`Asterisk`: http://www.asterisk.org/
@@ -49,9 +49,9 @@ Different reporting tools are provided:
 - Threat Control: Detect abnormal call patterns
 - Destination Alerts: Unexpected destination alerts
 
-CDR Stats uses MongoDB, a scalable, high performance database system used to analyse 
-large quantities of CDR data. MongoDB is an open source, document-oriented database 
-designed with both scalability and developer agility in mind. 
+CDR Stats uses MongoDB, a scalable, high performance database system used to analyse
+large quantities of CDR data. MongoDB is an open source, document-oriented database
+designed with both scalability and developer agility in mind.
 
 CDR-Stats supports Freeswitch and Asterisk using connectors that get the CDR. Connectors
 for other switch systems can be built. Additionally CDR-Stats features a CSV upload facility so that
@@ -73,8 +73,8 @@ User Dashboard provides realtime monitoring of the most relevant metrics of conn
 Admin Panel
 -----------
 
-The Admin Panel allows the administrators to configure the entire reporting platform, 
-import CDR in csv format, configure users, switch connections and automatic alarms. 
+The Admin Panel allows the administrators to configure the entire reporting platform,
+import CDR in csv format, configure users, switch connections and automatic alarms.
 
 .. image:: ./_static/images/admin/admin_dashboard.png
     :width: 750
@@ -85,18 +85,18 @@ import CDR in csv format, configure users, switch connections and automatic alar
 
 Architecture
 ------------
- 
+
 CDR-Stats uses MongoDB as the underlying CDR store. MongoDB allows querying and analysis of many
 millions of records without noticeable loss of performance, and can easily be scaled as demand increases.
 
 Postgresql is used for managing CDR-Stats in terms of users and managing the web framework, Django.
 
 Celery, a task manager runs in the background, and monitors the CDR coming into the system, and alerts
-the systems administrator when unusual behaviour is discovered. What is determined as unusual 
+the systems administrator when unusual behaviour is discovered. What is determined as unusual
 behaviour is determined by the administrator who can configure alerts for increases in dropped calls,
 average length of calls, or calls to unusual destinations.
 
-At the moment Freeswitch and Asterisk are supported, for other switches such as OpenSIPs or Kamailio, 
+At the moment Freeswitch and Asterisk are supported, for other switches such as OpenSIPs or Kamailio,
 connectors can be built to connect to the CDR database store and import them in realtime to CDR-Stats.
 
 
@@ -109,9 +109,9 @@ connectors can be built to connect to the CDR database store and import them in 
 
 Features
 --------
- 
-Many features are provided on CDR-Stats, from browsing millions of CDRs, providing 
-efficient search facilities to build reporting such as monthly reports, concurrent calls 
+
+Many features are provided on CDR-Stats, from browsing millions of CDRs, providing
+efficient search facilities to build reporting such as monthly reports, concurrent calls
 view, and comparing call traffic with previous days.
 
     +-----------------------+----------------------------------------------------+
@@ -160,8 +160,8 @@ view, and comparing call traffic with previous days.
 Utility
 -------
 
-CDR-Stats is a simple-to-use tool to provide easy analysis of calls. It is a recommended addition to 
-telephony servers, whether it be a simple in-house PBX or large capacity VoIP switch. It shows in 
+CDR-Stats is a simple-to-use tool to provide easy analysis of calls. It is a recommended addition to
+telephony servers, whether it be a simple in-house PBX or large capacity VoIP switch. It shows in
 in near realtime what calls are going through, can detect errors and failures, and alert the systems
 administrator is unexpected traffic is noted.
 
