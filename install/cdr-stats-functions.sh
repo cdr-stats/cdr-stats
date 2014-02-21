@@ -596,8 +596,8 @@ func_configure_http_server(){
     service $APACHE_SERVICE restart
 }
 
-#Install Django Newfies
-func_django_newfies_install(){
+#Install Django CDR-stats
+func_django_cdrstats_install(){
     cd $INSTALL_DIR/
     #Fix permission on python-egg
     mkdir $INSTALL_DIR/.python-eggs
@@ -654,8 +654,8 @@ func_install_frontend(){
     #Configure Logs files and logrotate
     func_prepare_logger
 
-    #Install Django Newfies
-    func_django_newfies_install
+    #Install Django cdr-stats
+    func_django_cdrstats_install
 
     #Configure SELinux
     func_configure_selinux
