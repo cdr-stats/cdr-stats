@@ -1,13 +1,4 @@
 
-/* Page header in content wrapper */
-.page-header {
-    padding: 10px 20px 10px;  /* affected width & height of Page header */
-}
-
-#language-container {
-    width: 110px; /* language selection box */
-}
-
 footer {
     padding: 40px 20px 10px;
     text-align: center; /* center align it with the container */
@@ -20,78 +11,6 @@ footer {
     padding-bottom: 2px;
 }
 
-.graph_header {
-    clear: both;
-}
-
-#toggle_btn_search {
-    float: right;
-    height: 15px;
-    margin-bottom: 20px;
-    margin-top: 5px;
-}
-
-.well {
-    margin-bottom: 0px;
-    padding: 15px;
-}
-
-.control-label {
-  font-size: 15px;
-}
-
-.navbar-fixed-top .brand {
-  font-size: 30px;
-  font-weight: bold;
-}
-
-.navbar-inner ul.nav {
-    padding-top: 10px;
-}
-
-.help-block {
-  margin-top: 5px;
-}
-
-.input {
-  margin-bottom: 10px;
-}
-
-label {
-  font-size: 15px;
-}
-
-.hero-unit {
-    background-color: #EEEEEE;
-    border-radius: 6px 6px 6px 6px;
-    margin-bottom: 30px;
-    padding: 40px;
-    margin-top: 15px;
-}
-
-.placeholder_graph_realtime {
-    width: 1050px; height:300px;
-}
-
-.welldashboard {
-    min-height: 20px;
-    background-color: whiteSmoke;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-}
-
-
-/* To change form label text-align */
-.form-horizontal .control-label {
-    text-align: left;
-}
-.form-horizontal .controls {
-    margin-left: 100px;
-}
 
 /* * * Responsive * * */
 
