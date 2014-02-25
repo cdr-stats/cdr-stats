@@ -14,3 +14,4 @@ build
 _build
 output.html
 *.ipynb
+bower_components

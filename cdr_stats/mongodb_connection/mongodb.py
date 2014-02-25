@@ -21,7 +21,8 @@ from pymongo.errors import ConnectionFailure
 try:
     connection = Connection(settings.MONGO_CDRSTATS['HOST'], settings.MONGO_CDRSTATS['PORT'])
     DBCON = connection[settings.MONGO_CDRSTATS['DB_NAME']]
-    DBCON.autentificate(settings.MONGO_CDRSTATS['USER'], settings.MONGO_CDRSTATS['password'])
+    if settings.MONGO_CDRSTATS['USER'] and settings.MONGO_CDRSTATS['PASSWORD']:
+        DBCON.autentificate(settings.MONGO_CDRSTATS['USER'], settings.MONGO_CDRSTATS['PASSWORD'])
 
     cdr_common = DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
     daily_analytic = DBCON[settings.MONGO_CDRSTATS['DAILY_ANALYTIC']]

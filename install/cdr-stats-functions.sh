@@ -612,6 +612,9 @@ func_django_cdrstats_install(){
     echo "Create a super admin user..."
     python manage.py createsuperuser
 
+    echo "Install Bower deps"
+    python manage.py bower_install -- --allow-root
+
     #Collect static files from apps and other locations in a single location.
     python manage.py collectstatic --noinput
 
