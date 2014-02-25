@@ -1,29 +1,27 @@
-{% load i18n cdr_tags frontend_notification_tags %}
+{% load i18n cdr_tags frontend_notification_tags activelink common_tags %}
 
-<div class="navbar navbar-fixed-top">
-  <div class="navbar-inner">
-    <div class="container">
-
-      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+<!-- Static navbar -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
-      </a>
+      </button>
+      <a class="navbar-brand cornerlogo" href="/"><img src="{{STATIC_URL}}cdr-stats/images/cdr-stats.png"/></a>
+    </div>
 
-      <a class="brand" href="/">
-        <img src="{{STATIC_URL}}cdr-stats/images/cdr-stats.png" />
-        <span class="menu-label">{% trans "CDR-Stats" %}</span>
-      </a>
-
-      <div class="nav-collapse">
-          {% if user.is_authenticated %}
-            <ul class="nav">
+    <div class="navbar-collapse collapse">
+        {% if user.is_authenticated %}
+            <ul class="nav navbar-nav">
               {% if perms.user_profile.dashboard %}
                 <li {% ifequal module 'dashboard' %}class="active"{% endifequal %}><a href="/dashboard/">{% trans "dashboard"|title %}</a></li>
               {% endif %}
             </ul>
-            <ul class="nav pull-left">
-              <li id="fat-menu-I" class="dropdown">
+            <ul class="nav navbar-nav">
+              <li class="{% ifactive '/dashboard/' %}active{% endifactive %}{% ifactive '/sms_dashboard/' %}active{% endifactive %}">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "analytics"|title %}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   {% if perms.user_profile.overview %}
@@ -38,8 +36,9 @@
                  </ul>
               </li>
             </ul>
-            <ul class="nav pull-left">
-              <li id="fat-menu-II" class="dropdown">
+
+                        <ul class="nav navbar-nav">
+              <li class="{% ifactive '/dashboard/' %}active{% endifactive %}{% ifactive '/sms_dashboard/' %}active{% endifactive %}">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "real-time"|title %}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   {% if perms.user_profile.real_time_calls %}
@@ -51,8 +50,8 @@
                  </ul>
               </li>
             </ul>
-            <ul class="nav pull-left">
-              <li id="fat-menu-III" class="dropdown">
+            <ul class="nav navbar-nav">
+              <li class="{% ifactive '/dashboard/' %}active{% endifactive %}{% ifactive '/sms_dashboard/' %}active{% endifactive %}">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "reports"|title %}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   {% if perms.user_profile.by_country %}
@@ -67,8 +66,8 @@
                 </ul>
               </li>
             </ul>
-            <ul class="nav pull-left">
-              <li id="fat-menu-IV" class="dropdown">
+            <ul class="nav navbar-nav">
+              <li class="{% ifactive '/dashboard/' %}active{% endifactive %}{% ifactive '/sms_dashboard/' %}active{% endifactive %}">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "threat control"|title %}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   {% if perms.cdr_alert.alert_settings %}
@@ -84,8 +83,8 @@
               </li>
             </ul>
 
-              <ul class="nav pull-left">
-                  <li id="fat-menu-V" class="dropdown">
+              <ul class="nav navbar-nav">
+                  <li class="{% ifactive '/dashboard/' %}active{% endifactive %}{% ifactive '/sms_dashboard/' %}active{% endifactive %}">
                       <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "billing"|title %}<b class="caret"></b></a>
                       <ul class="dropdown-menu">
                           {% if perms.user_profile.call_rate %}
@@ -107,12 +106,11 @@
 
           {% if user.is_authenticated %}
           {% get_notice_count user as notice_count %}
-            <ul class="nav pull-right">
-              <li id="fat-menu-VI" class="dropdown">
+            <ul class="nav navbar-nav navbar-right">
+              <li class="{% ifactive '/dashboard/' %}active{% endifactive %}{% ifactive '/sms_dashboard/' %}active{% endifactive %}">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username|capfirst }}
-
-                    <span class="label label-warning">{{ notice_count }}</span>
-                  <b class="caret"></b>
+                    <span class="badge">{{ notice_unseen_count }}</span>
+                    <b class="caret"></b>
                 </a>
                 <ul class="dropdown-menu">
                   <li {% ifequal module 'detail_change' %}class="active"{% endifequal %}><a href="/user_detail_change/?action=tabs-1">
@@ -144,7 +142,6 @@
             </ul>
           {% endif %}
 
-      </div><!--/.nav-collapse -->
-    </div>
+    </div><!--/.nav-collapse -->
   </div>
-</div>
+</nav>
