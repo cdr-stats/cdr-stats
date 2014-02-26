@@ -8,10 +8,6 @@
     $("#accordion").accordion({autoHeight: false,  clearStyle: true});
   });
   </script>
-  <link media="all" href="{% static 'nvd3/src/nv.d3.css' %}" type="text/css" rel="stylesheet" />
-  <script src="{% static 'nvd3/lib/d3.v2.js' %}" type="text/javascript"></script>
-  <script src="{% static 'nvd3/nv.d3.js'%}" type="text/javascript"></script>
-
   {% load_chart final_charttype final_chartdata final_chartcontainer final_extra %}
   {% load_chart hangup_analytic_charttype hangup_analytic_chartdata hangup_chartcontainer hangup_extra %}
   {% load_chart country_analytic_charttype country_analytic_chartdata country_chartcontainer country_extra %}
