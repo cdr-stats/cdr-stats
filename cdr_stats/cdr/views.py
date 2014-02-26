@@ -667,18 +667,15 @@ def cdr_dashboard(request):
     """
     logging.debug('CDR dashboard view start')
     now = datetime.now()
-    form = SwitchForm()
+    form = SwitchForm(request.POST or None)
     switch_id = 0
     query_var = {}
-    search_tag = 0
-    if request.method == 'POST':
+
+    if form.is_valid():
         logging.debug('CDR dashboard view with search option')
-        search_tag = 1
-        form = SwitchForm(request.POST)
-        if form.is_valid():
-            switch_id = form.cleaned_data.get('switch_id')
-            if switch_id and int(switch_id) != 0:
-                query_var['metadata.switch_id'] = int(switch_id)
+        switch_id = form.cleaned_data.get('switch_id')
+        if switch_id and int(switch_id) != 0:
+            query_var['metadata.switch_id'] = int(switch_id)
 
     end_date = datetime(now.year, now.month, now.day,
                         now.hour, now.minute, now.second, now.microsecond)
@@ -872,19 +869,38 @@ def cdr_dashboard(request):
         'total_record': final_record,
         'hangup_analytic': hangup_analytic,
         'form': form,
-        'search_tag': search_tag,
         'total_country_data': total_country_data[0:5],
 
         'final_chartdata': final_chartdata,
         'final_charttype': final_charttype,
+        'final_chartcontainer': 'final_container',
+        'final_extra': {
+            'x_is_date': True,
+            'x_axis_format': '%H:%M',
+            'tag_script_js': True,
+            'jquery_on_ready': True,
+        },
         'hangup_analytic_charttype': hangup_analytic_charttype,
         'hangup_analytic_chartdata': hangup_analytic_chartdata,
+        'hangup_chartcontainer': 'hangup_piechart_container',
+        'hangup_extra': {
+            'x_is_date': False,
+            'x_axis_format': '',
+            'tag_script_js': True,
+            'jquery_on_ready': True,
+        },
         'country_analytic_charttype': country_analytic_charttype,
         'country_analytic_chartdata': country_analytic_chartdata,
+        'country_chartcontainer': 'country_piechart_container',
+        'country_extra': {
+            'x_is_date': False,
+            'x_axis_format': '',
+            'tag_script_js': True,
+            'jquery_on_ready': True,
+        },
     }
 
-    return render_to_response('frontend/cdr_dashboard.html', variables,
-           context_instance=RequestContext(request))
+    return render_to_response('frontend/cdr_dashboard.html', variables, context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.concurrent_calls', login_url='/')

@@ -21,6 +21,9 @@ from django_lets_go.common_functions import comp_day_range
 from cdr.functions_def import get_switch_list, get_country_list, get_hc_list
 from cdr.constants import STRING_SEARCH_TYPE_LIST
 from user_profile.models import UserProfile
+#from mod_utils.forms import common_submit_buttons
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Div  # , Fieldset, Field, HTML
 
 COMPARE_LIST = ((2, '>'),
     (3, '>='),
@@ -118,8 +121,7 @@ class SearchForm(forms.Form):
             try:
                 int(duration)
             except:
-                raise forms.ValidationError('%s is not a valid duration.'
-                    % duration)
+                raise forms.ValidationError('%s is not a valid duration.' % duration)
         return duration
 
     def clean_accountcode(self):
@@ -184,11 +186,8 @@ class CompareCallSearchForm(SearchForm):
     """
     Form used to search calls for comparison in the Customer UI.
     """
-    from_date = forms.CharField(label=_('select date'), required=True,
-                                max_length=10)
-
-    comp_days = forms.ChoiceField(label='', required=False,
-                                  choices=comp_day_range(6))
+    from_date = forms.CharField(label=_('select date'), required=True, max_length=10)
+    comp_days = forms.ChoiceField(label='', required=False, choices=comp_day_range(6))
     comp_days.widget.attrs['class'] = 'input-small'
     check_days = forms.TypedChoiceField(label=_('check with'), required=False,
             coerce=bool, choices=((1, _('previous days')), (2,
@@ -215,7 +214,15 @@ class SwitchForm(SearchForm):
     """
     def __init__(self, *args, **kwargs):
         super(SwitchForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['switch_id']
+        self.helper = FormHelper()
+        self.helper.form_class = 'well'
+        css_class = 'col-md-3'
+        self.helper.layout = Layout(
+            Div(
+                Div('switch_id', css_class=css_class),
+                css_class='row'
+            ),
+        )
         self.fields['switch_id'].widget.attrs['onchange'] = 'this.form.submit();'
 
 

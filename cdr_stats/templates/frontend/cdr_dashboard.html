@@ -1,34 +1,28 @@
 {% extends "frontend/master.html" %}
-{% load i18n cdr_tags country_dialcode_tags common_tags nvd3_tags %}
-{% load cache %}
+{% load i18n cdr_tags country_dialcode_tags common_tags nvd3_tags static %}
+{% load cache crispy_forms_tags %}
 
 {% block extra_head %}
   <script type="text/javascript">
   $(document).ready(function() {
-    $("#accordion").accordion({ autoHeight: false,  clearStyle: true  });
+    $("#accordion").accordion({autoHeight: false,  clearStyle: true});
   });
   </script>
-  {% include_nvd3jscss False %}
-  {% load_chart final_charttype final_chartdata "final_container" True "%H:%M" %}
-  {% load_chart hangup_analytic_charttype hangup_analytic_chartdata "hangup_analytic_container" %}
-  {% load_chart country_analytic_charttype country_analytic_chartdata "country_analytic_container" %}
+  <link media="all" href="{% static 'nvd3/src/nv.d3.css' %}" type="text/css" rel="stylesheet" />
+  <script src="{% static 'nvd3/lib/d3.v2.js' %}" type="text/javascript"></script>
+  <script src="{% static 'nvd3/nv.d3.js'%}" type="text/javascript"></script>
+
+  {% load_chart final_charttype final_chartdata final_chartcontainer final_extra %}
+  {% load_chart hangup_analytic_charttype hangup_analytic_chartdata hangup_chartcontainer hangup_extra %}
+  {% load_chart country_analytic_charttype country_analytic_chartdata country_chartcontainer country_extra %}
 {% endblock %}
 
 {% block content %}
-<div class="row-fluid">
-<form class="well form-inline span12" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
-    <div class="control-group">
-        <div class="controls">
-            <label class="control-label" for="{{ form.switch_id.auto_id }}">{{ form.switch_id.label|title }} :</label>
-                {{ form.switch_id }}
-                <span class="help-block">{{ form.switch.help_text|capfirst|safe }} </span>
-        </div>
-    </div>
-</form>
-</div>
+
+{% crispy form form.helper %}
 
 <div class="row">
-    <div class="span12">
+    <div class="col-md-12">
         <div class="graph_header">
             <h2>{% trans "call statistics"|title %} : {% now "jS F Y" %}</h2>
         </div>
@@ -36,22 +30,22 @@
 </div>
 
 <div class="row">
-    <div class="span12">
-        {% include_container "final_container" 400 1200 %}
+    <div class="col-md-12">
+        {% include_container final_chartcontainer 400 1200 %}
     </div>
 </div>
 
 <br/><br/>
 
 <div class="row">
-    <div class="span6 welldashboard">
+    <div class="col-md-6 welldashboard">
         <h2 align="center">{% trans "call totals report"|title %}</h2>
         <hr/>
         {% if hangup_analytic %}
-            {% include_container "hangup_analytic_container" 400 500 %}
+            {% include_container hangup_chartcontainer 400 500 %}
         {% endif %}
         <br/>
-        <div class="dashboard_summary_header span6">{% trans "total calls"|title %}</div>
+        <div class="dashboard_summary_header col-md-6">{% trans "total calls"|title %}</div>
         <div class="span6">
             <table>
                 <tbody>
@@ -85,14 +79,14 @@
             </table>
         </div>
     </div>
-    <div class="span6 welldashboard">
+    <div class="col-md-6 welldashboard">
         <h2 align="center">{% trans "countries report"|title %}</h2>
         <hr/>
         {% if total_country_data %}
-            {% include_container "country_analytic_container" 400 500 %}
+            {% include_container country_chartcontainer 400 500 %}
         {% endif %}
         <br/>
-        <div class="dashboard_summary_header span6">{% trans "5 most called countries"|title %}</div>
+        <div class="dashboard_summary_header col-md-6">{% trans "5 most called countries"|title %}</div>
         {% if total_country_data %}
             <div class="span6">
                 <table>
@@ -121,7 +115,7 @@
                 </table>
             </div>
         {% else %}
-            <div class="span5">{% trans "No record found" %}</div>
+            <div class="col-md-5">{% trans "No record found" %}</div>
         {% endif %}
     <div>
     </div>
