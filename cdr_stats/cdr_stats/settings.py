@@ -211,6 +211,8 @@ INSTALLED_APPS = (
     'crispy_forms',
 )
 
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
 # Debug Toolbar
 try:
     import debug_toolbar

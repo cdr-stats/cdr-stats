@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n crispy_forms_tags %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <head xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}">
     <!--
@@ -24,15 +24,17 @@
 
     <!-- CSS -->
     <link href="{{ STATIC_URL }}bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}cdr-stats/css/sidebar-offcanvas.css" rel="stylesheet">
     <link href="{{ STATIC_URL }}jquery-ui/themes/flick/jquery-ui.min.css" type="text/css" rel="stylesheet" media="all"/>
     <link href="{{ STATIC_URL }}components-font-awesome/css/font-awesome.min.css" type="text/css" rel="stylesheet" media="all"/>
-    <link href="{{ STATIC_URL }}newfies/css/newfies_custom.css" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{{ STATIC_URL }}cdr-stats/css/cdr_stats_custom.css" rel="stylesheet" type="text/css" media="screen" />
 
     <!-- javascript -->
-    <script type="text/javascript" src="/jsi18n/"></script>
+    <!--<script type="text/javascript" src="/jsi18n/"></script>-->
     <script src="{{ STATIC_URL }}jquery-ui/ui/minified/jquery-ui.min.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}bootstrap/dist/js/bootstrap.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}bootbox/bootbox.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}cdr-stats/js/sidebar-offcanvas.js" type="text/javascript"></script>
 
     {% block bootstrap_switch_js %}
     <link href="{{ STATIC_URL }}bootstrap-switch/build/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet" />
@@ -47,11 +49,6 @@
     <link href="{{ STATIC_URL }}cdr-stats/css/datepicker.css" rel="stylesheet">
     <link href="{{ STATIC_URL }}cdr-stats/css/datetimepicker.css" rel="stylesheet">
 
-
-    <!--Override bootstrap-->
-    <!-- TODO: to merge in one? -->
-    <link href="{{ STATIC_URL }}cdr-stats/css/override_bootstrap.css" rel="stylesheet">
-    <link href="{{ STATIC_URL }}cdr-stats/css/cdr_stats.css" rel="stylesheet">
     <!-- TODO: TO REVIEW? -->
     <!-- Include Print CSS -->
     <link rel="stylesheet" href="{{ STATIC_URL }}cdr-stats/css/cdr_stats_print.css" type="text/css" media="print" />
@@ -59,7 +56,7 @@
     {% endblock %}
 
 	{% block extra_header %}
-    {{ extra_header }}
+        {{ extra_header }}
     {% endblock %}
 
     <!-- Include cdr_stats.js code -->
@@ -68,86 +65,94 @@
 
 <body>
 {% block menu %}
-    {% ifnotequal menu 'off' %}
-        {% include "frontend/bootstrap_menu.html" %}
-    {% endifnotequal %}
+    {% include "frontend/bootstrap_menu.html" %}
 {% endblock %}
+
 {% block container %}
 <div class="container">
+    <div class="row row-offcanvas row-offcanvas-right">
 
-    {% if errorlogin %}
-        <div class="alert alert-error">
-            <strong>{% trans "alert"|capfirst %} : </strong>  {{ errorlogin|capfirst }}
-        </div>
-    {% else %}
-        {% if notlogged %}
-        <div class="alert alert-error">
-            <strong>{% trans "alert"|capfirst %} : </strong>  {% trans "please login by clicking on login button"|capfirst %}
-        </div>
+    <div class="col-xs-12 col-sm-12">
+        <!--offcanvas side menu toggle button-->
+        <p class="pull-right visible-xs">
+            <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">{% trans "side menu"|title %}</button>
+        </p>
+
+        {% if errorlogin %}
+            <div class="alert alert-danger">
+                <strong>{% trans "alert"|capfirst %} : </strong>  {{ errorlogin|capfirst }}
+            </div>
+        {% else %}
+            {% if notlogged %}
+            <div class="alert alert-danger">
+                <strong>{% trans "alert"|capfirst %} : </strong>  {% trans "please login by clicking on login button"|capfirst %}
+            </div>
+            {% endif %}
         {% endif %}
-    {% endif %}
 
-    <div class="row-fluid">
-    {% if not user.is_authenticated %}
-    <div class="span6">
-        <form class="well form-inline" action="/login/" class="pull-right" method="post">
-            {% csrf_token %}
-            {% for field in loginform %}
-                {{ field }}
-            {% endfor %}
-            <button class="btn" type="submit">{% trans "login"|capfirst %}</button>
-            <a class="btn btn-info" href="/password_reset/">{% trans "forgot password?"|capfirst %}</a>
-        </form>
-    </div>
-    <div class="span6">
-        <form class="well form-inline" action="/i18n/setlang/" method="post">
-            {% csrf_token %}
-            {% trans "display language"|capfirst %} : <select name="language" id="language-container" class="input-small" onchange="this.form.submit();">
-            {% for lang in LANGUAGES %}
-                <option value="{{ lang.0 }}" {% ifequal lang.0 LANGUAGE_CODE %}selected{% endifequal %}>{{ lang.1 }}</option>
-            {% endfor %}
-            </select>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-        </form>
-    </div>
-    {% endif %}
-    </div>
+        {% block row_fluid %}
+            <div class="row">
+                {% if not user.is_authenticated %}
+                <div class="col-6 col-sm-6 col-lg-6">
+                    {% crispy loginform loginform.helper %}
+                </div>
+                <div class="col-6 col-sm-6 col-lg-6">
+                    <form class="form-inline well" role="form" action="/i18n/setlang/" method="post">
+                        {% csrf_token %}
+                        {% trans "display language"|capfirst %} :
+                        <div class="checkbox">
+                            <label>
+                                <select name="language" id="language-container" class="form-control">
+                                    {% for lang in LANGUAGES %}
+                                    <option value="{{ lang.0 }}" {% ifequal lang.0 LANGUAGE_CODE %}selected{% endifequal %}>{{ lang.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        {% endblock %}
 
+        {% block extra_head %}
+            {{ extra_head }}
+        {% endblock %}
 
-    {% block extra_head %}
-        {{ extra_head }}
-    {% endblock %}
+        <!--Success Message of view-->
+        {% if msg %}
+            <div class="alert alert-success">
+                <strong>{% trans "alert"|capfirst %} : </strong>  {{ msg|capfirst }}
+            </div>
+        {% endif %}
 
-    <!--Success Message of view-->
-    {% if msg %}
-        <div class="alert alert-success">
-            <strong>{% trans "alert"|capfirst %} : </strong>  {{ msg|capfirst }}
-        </div>
-    {% endif %}
+        <!--Error Message of view-->
+        {% if error_msg %}
+            <div class="alert alert-danger">
+                <strong>{% trans "error"|capfirst %} : </strong>  {{ error_msg|capfirst }}
+            </div>
+        {% endif %}
 
-    <!--Error Message of view-->
-    {% if error_msg %}
-        <div class="alert alert-error">
-            <strong>{% trans "error"|capfirst %} : </strong>  {{ error_msg|capfirst }}
-        </div>
-    {% endif %}
+        <!--Info Message of view-->
+        {% if info_msg %}
+            <div class="alert alert-info">
+                <strong>{% trans "info"|capfirst %} : </strong>  {{ info_msg|capfirst }}
+            </div>
+        {% endif %}
 
-    <!--Info Message of view-->
-    {% if info_msg %}
-        <div class="alert alert-info">
-            <strong>{% trans "info"|capfirst %} : </strong>  {{ info_msg|capfirst }}
-        </div>
-    {% endif %}
+        {% block content %}
+            {{ content }}
+        {% endblock %}
 
-    {% block content %}
-        {{ content }}
-    {% endblock %}
+    </div><!--end right side-->
+
+    </div><!--div row row-offcanvas row-offcanvas-right-->
 
     {% ifnotequal menu 'off' %}
         {% include "frontend/footer.html" %}
     {% endifnotequal %}
 
-</div>
+</div><!-- div container -->
 {% endblock %}
 </body>
 </html>

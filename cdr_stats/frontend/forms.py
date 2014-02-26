@@ -13,15 +13,32 @@
 #
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Div, Submit, HTML
+from crispy_forms.bootstrap import FormActions
 
 
 class LoginForm(forms.Form):
     """Client Login Form"""
     user = forms.CharField(max_length=30, label=_('username'), required=True)
-    user.widget.attrs['class'] = 'input-small'
     user.widget.attrs['placeholder'] = 'Username'
-    password = forms.CharField(max_length=30, label=_('password'),
-                               required=True,
+    password = forms.CharField(max_length=30, label=_('password'), required=True,
                                widget=forms.PasswordInput())
-    password.widget.attrs['class'] = 'input-small'
     password.widget.attrs['placeholder'] = 'Password'
+
+    def __init__(self, *args, **kwargs):
+        super(LoginForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_action = '/login/'
+        self.helper.form_show_labels = False
+        self.helper.form_class = 'form-inline well'
+        self.helper.layout = Layout(
+            Div(
+                Div('user', css_class='col-xs-3'),
+                Div('password', css_class='col-xs-3'),
+            ),
+            FormActions(
+                Submit('submit', 'Login'),
+                HTML('<a class="btn btn-warning" href="/password_reset/">%s?</a>' % _('forgot password').capitalize()),
+            ),
+        )
