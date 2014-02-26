@@ -166,7 +166,7 @@ class Command(BaseCommand):
         try:
             connection = Connection(host, port)
             DBCON = connection[db_name]
-            DBCON.autentificate(user, password)
+            DBCON.authenticate(user, password)
         except ConnectionFailure, e:
             sys.stderr.write('Could not connect to MongoDB: %s - %s' % (e,
                              ipaddress))

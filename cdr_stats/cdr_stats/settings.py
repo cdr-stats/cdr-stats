@@ -401,8 +401,8 @@ CDR_BACKEND = {
         'table_name': 'cdr',  # collection if mongodb
         'host': 'localhost',
         'port': 27017,  # 3306 mysql, 5432 pgsql, 27017 mongodb
-        'user': '',
-        'password': '',
+        'user': 'mongodb',
+        'password': 'mongodb',
     },
 }
 

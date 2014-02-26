@@ -67,20 +67,18 @@ def diagnostic(request):
         try:
             if db_engine == 'mysql':
                 import MySQLdb as Database
-                connection = Database.connect(user=user, passwd=password,
-                    db=db_name, host=host, port=port, connect_timeout=4)
+                connection = Database.connect(user=user, passwd=password, db=db_name, host=host, port=port, connect_timeout=4)
                 connection.autocommit(True)
                 cursor = connection.cursor()
             elif db_engine == 'pgsql':
                 import psycopg2 as Database
-                connection = Database.connect(user=user, password=password,
-                    database=db_name, host=host, port=port)
+                connection = Database.connect(user=user, password=password, database=db_name, host=host, port=port)
                 connection.autocommit(True)
                 cursor = connection.cursor()
             elif db_engine == 'mongodb':
                 connection = Connection(host, port)
                 DBCON = connection[db_name]
-                DBCON.autentificate(user, password)
+                DBCON.authenticate(user, password)
                 CDR = DBCON[table_name]
                 CDR_COUNT = CDR.find().count()
 
