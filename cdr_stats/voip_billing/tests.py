@@ -12,7 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-from common.utils import BaseAuthenticatedClient
+from django_lets_go.utils import BaseAuthenticatedClient
 from voip_billing.forms import HourlyBillingForm, DailyBillingForm, \
     PrefixRetailRrateForm
 from voip_billing.views import daily_billing_report, hourly_billing_report, export_rate

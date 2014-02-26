@@ -27,8 +27,8 @@ from mongodb_connection import mongodb
 from cdr.decorators import check_cdr_exists, check_user_accountcode, \
     check_user_voipplan
 from cdr.aggregate import pipeline_daily_billing_report, pipeline_hourly_billing_report
-from common.common_functions import current_view, ceil_strdate, get_pagination_vars
-from common.common_constants import EXPORT_CHOICE
+from cdr.constants import Export_choice
+from django_lets_go.common_functions import current_view, ceil_strdate, get_pagination_vars
 from datetime import datetime
 import logging
 import time
@@ -153,13 +153,13 @@ def export_rate(request):
 
     data = tablib.Dataset(*list_val, headers=headers)
 
-    if format == EXPORT_CHOICE.XLS:
+    if format == Export_choice.XLS:
         response.write(data.xls)
 
-    if format == EXPORT_CHOICE.CSV:
+    if format == Export_choice.CSV:
         response.write(data.csv)
 
-    if format == EXPORT_CHOICE.JSON:
+    if format == Export_choice.JSON:
         response.write(data.json)
 
     return response

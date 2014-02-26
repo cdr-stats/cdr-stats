@@ -25,7 +25,7 @@ from cdr_alert.forms import AlarmForm, BWCountryForm, BWPrefixForm,\
     AlarmReportForm
 from cdr_alert.tasks import run_alarm
 from cdr_alert.constants import ALERT_CONDITION, PERIOD
-from common.common_functions import current_view, get_pagination_vars,\
+from django_lets_go.common_functions import current_view, get_pagination_vars,\
     validate_days
 from country_dialcode.models import Prefix
 from datetime import datetime

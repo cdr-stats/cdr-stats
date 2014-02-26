@@ -13,7 +13,7 @@
 #
 
 from django.test import TestCase
-from common.utils import BaseAuthenticatedClient
+from django_lets_go.utils import BaseAuthenticatedClient
 from frontend.views import login_view, logout_view, diagnostic
 
 

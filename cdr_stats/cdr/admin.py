@@ -18,7 +18,7 @@ from django.http import HttpResponse, Http404
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.conf import settings
-from common.common_functions import variable_value, mongodb_str_filter, \
+from django_lets_go.common_functions import variable_value, mongodb_str_filter, \
     mongodb_int_filter, ceil_strdate, striplist
 from cdr.models import Switch, HangupCause, CDR_TYPE
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
@@ -36,8 +36,8 @@ import logging
 import tablib
 import csv
 from mongodb_connection import mongodb
-from common.common_functions import getvar, unset_session_var
-from common.app_label_renamer import AppLabelRenamer
+from django_lets_go.common_functions import getvar, unset_session_var
+from django_lets_go.app_label_renamer import AppLabelRenamer
 APP_LABEL = _('CDR')
 AppLabelRenamer(native_app_label=u'cdr', app_label=APP_LABEL).main()
 

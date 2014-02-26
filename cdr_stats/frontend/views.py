@@ -22,7 +22,7 @@ from django.conf import settings
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 from pymongo.connection import Connection
-from common.common_functions import current_view, get_news
+from django_lets_go.common_functions import current_view, get_news
 from frontend.forms import LoginForm
 from cdr.import_cdr_freeswitch_mongodb import chk_ipaddress
 from mongodb_connection import mongodb

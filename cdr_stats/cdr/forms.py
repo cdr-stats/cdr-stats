@@ -17,7 +17,7 @@ from django import forms
 from django.conf import settings
 from django.core.validators import validate_email
 from django.utils.translation import ugettext_lazy as _
-from common.common_functions import comp_day_range
+from django_lets_go.common_functions import comp_day_range
 from cdr.functions_def import get_switch_list, get_country_list, get_hc_list
 from cdr.constants import STRING_SEARCH_TYPE_LIST
 from user_profile.models import UserProfile

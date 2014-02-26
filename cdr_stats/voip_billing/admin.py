@@ -22,6 +22,7 @@ from django.conf import settings
 from django.contrib import messages
 
 from country_dialcode.models import Prefix
+from cdr.constants import Export_choice
 from voip_billing.models import VoIPRetailRate, VoIPPlan, BanPlan,\
     VoIPPlan_BanPlan, BanPrefix, VoIPRetailPlan, VoIPPlan_VoIPRetailPlan,\
     VoIPCarrierPlan, VoIPCarrierRate, VoIPPlan_VoIPCarrierPlan
@@ -33,10 +34,9 @@ from voip_billing.widgets import AutocompleteModelAdmin
 from voip_billing.function_def import rate_filter_range_field_chk
 from voip_billing.rate_engine import rate_engine
 from voip_billing.tasks import RebillingTask, ReaggregateTask
-from common.common_functions import variable_value, ceil_strdate
-from common.app_label_renamer import AppLabelRenamer
-from common.admin_custom_actions import export_as_csv_action
-from common.common_constants import EXPORT_CHOICE
+from django_lets_go.common_functions import variable_value, ceil_strdate
+from django_lets_go.app_label_renamer import AppLabelRenamer
+from django_lets_go.admin_custom_actions import export_as_csv_action
 from mongodb_connection import mongodb
 from datetime import datetime
 import tablib
@@ -170,7 +170,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
         Export Carrier Rate into CSV file
         """
         opts = VoIPPlan._meta
-        form = VoIPPlan_fileExport(initial={'export_to': EXPORT_CHOICE.CSV})
+        form = VoIPPlan_fileExport(initial={'export_to': Export_choice.CSV})
         if request.method == 'POST':
             form = VoIPPlan_fileExport(request.POST)
             if form.is_valid():
@@ -458,7 +458,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
         Export Retail Rate into CSV file
         """
         opts = VoIPRetailRate._meta
-        form = Retail_Rate_fileExport(initial={'export_to': EXPORT_CHOICE.CSV})
+        form = Retail_Rate_fileExport(initial={'export_to': Export_choice.CSV})
         if request.method == 'POST':
             form = Retail_Rate_fileExport(request.POST)
             if form.is_valid():
@@ -481,13 +481,13 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
                         list_val.append((row['prefix'], rate))
 
                     data = tablib.Dataset(*list_val, headers=headers)
-                    if format == EXPORT_CHOICE.XLS:
+                    if format == Export_choice.XLS:
                         response.write(data.xls)
 
-                    if format == EXPORT_CHOICE.CSV:
+                    if format == Export_choice.CSV:
                         response.write(data.csv)
 
-                    if format == EXPORT_CHOICE.JSON:
+                    if format == Export_choice.JSON:
                         response.write(data.json)
                     return response
 
@@ -696,7 +696,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
         Export Carrier Rate into CSV file
         """
         opts = VoIPCarrierRate._meta
-        form = Carrier_Rate_fileExport(initial={'export_to': EXPORT_CHOICE.CSV})
+        form = Carrier_Rate_fileExport(initial={'export_to': Export_choice.CSV})
         if request.method == 'POST':
             form = Carrier_Rate_fileExport(request.POST)
             if form.is_valid():
@@ -719,13 +719,13 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                         list_val.append((row['prefix'], rate))
 
                     data = tablib.Dataset(*list_val, headers=headers)
-                    if format == EXPORT_CHOICE.XLS:
+                    if format == Export_choice.XLS:
                         response.write(data.xls)
 
-                    if format == EXPORT_CHOICE.CSV:
+                    if format == Export_choice.CSV:
                         response.write(data.csv)
 
-                    if format == EXPORT_CHOICE.JSON:
+                    if format == Export_choice.JSON:
                         response.write(data.json)
                     return response
 

@@ -14,29 +14,48 @@
 from django import forms
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from common.common_functions import isint
-from common.common_constants import EXPORT_CHOICE
-from common.common_forms import Exportfile
+from django_lets_go.common_functions import isint
 from voip_billing.function_def import rate_range
-from voip_billing.models import VoIPPlan, VoIPRetailPlan,\
-    VoIPCarrierPlan
-from voip_billing.constants import CONFIRMATION_TYPE, EXPORT_CHOICE
+from voip_billing.models import VoIPPlan, VoIPRetailPlan, VoIPCarrierPlan
+from voip_billing.constants import CONFIRMATION_TYPE
 from cdr.forms import sw_list_with_all, CdrSearchForm
+from cdr.constants import Export_choice
+
+
+class HorizRadioRenderer(forms.RadioSelect.renderer):
+    """This overrides widget method to put radio buttons horizontally
+    instead of vertically.
+    """
+    def render(self):
+        """Outputs radios"""
+        return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
+
+
+class Exportfile(forms.Form):
+    """
+    Abstract Form : export file in various format e.g. XLS, CSV, JSON
+    """
+    export_to = forms.TypedChoiceField(label=_('export to').capitalize(), required=True,
+                                       choices=list(Export_choice),
+                                       widget=forms.RadioSelect(renderer=HorizRadioRenderer))
 
 
 def voip_plan_list():
     """Return List of VoIP Plans"""
-    return VoIPPlan.objects.values_list('id', 'name').all()
+    #return VoIPPlan.objects.values_list('id', 'name').all()
+    return []
 
 
 def carrier_plan_list():
     """List all carrier plan"""
-    return VoIPCarrierPlan.objects.values_list('id', 'name').all()
+    #return VoIPCarrierPlan.objects.values_list('id', 'name').all()
+    return []
 
 
 def retail_plan_list():
     """List all retail plan"""
-    return VoIPRetailPlan.objects.values_list('id', 'name').all()
+    #return VoIPRetailPlan.objects.values_list('id', 'name').all()
+    return []
 
 
 class FileImport(forms.Form):

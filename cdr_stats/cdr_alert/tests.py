@@ -14,7 +14,7 @@
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.test import TestCase
-from common.utils import BaseAuthenticatedClient
+from django_lets_go.utils import BaseAuthenticatedClient
 from cdr_alert.models import AlertRemovePrefix, \
     Alarm, AlarmReport, Blacklist, Whitelist
 from cdr_alert.tasks import send_cdr_report, \

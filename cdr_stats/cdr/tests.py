@@ -15,7 +15,7 @@ from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.conf import settings
 from django.test import TestCase
-from common.utils import BaseAuthenticatedClient
+from django_lets_go.utils import BaseAuthenticatedClient
 from cdr.models import Switch, HangupCause
 from cdr.forms import CdrSearchForm, CountryReportForm,\
     CdrOverviewForm, CompareCallSearchForm,\

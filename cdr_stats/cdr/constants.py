@@ -13,7 +13,7 @@
 #
 
 from django.utils.translation import ugettext_lazy as _
-from common.utils import Choice
+from django_lets_go.utils import Choice
 
 
 class STRING_SEARCH_TYPE_LIST(Choice):
@@ -35,3 +35,9 @@ class CDR_COLUMN_NAME(Choice):
     buy_cost = _('buy cost')
     sell_rate = _('sell rate')
     sell_cost = _('sell cost')
+
+
+class Export_choice(Choice):
+    CSV = 'csv', _('csv').upper()
+    XLS = 'xls', _('xls').upper()
+    JSON = 'json', _('json').upper()

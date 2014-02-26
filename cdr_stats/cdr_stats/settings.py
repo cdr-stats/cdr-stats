@@ -27,7 +27,7 @@ MANAGERS = ADMINS
 
 SERVER_EMAIL = 'cdr-stats@localhost.com'
 
-APPLICATION_DIR = os.path.dirname(globals()['__file__'])
+APPLICATION_DIR = os.path.dirname(globals()['__file__']) + '/../'
 
 DATABASES = {
     'default': {
@@ -110,7 +110,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'dajaxice.finders.DajaxiceFinder',
-    'djangobower.finders.BowerFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -131,7 +130,7 @@ MIDDLEWARE_CLASSES = (
     #'geordi.VisorMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'linaro_django_pagination.middleware.PaginationMiddleware',
-    'common.filter_persist_middleware.FilterPersistMiddleware',
+    'django_lets_go.filter_persist_middleware.FilterPersistMiddleware',
     'mongodb_connection_middleware.MongodbConnectionMiddleware',
 )
 
@@ -178,7 +177,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'django.contrib.markup',
+    #'django.contrib.markup',
     'api',
     'cdr',
     'cdr_alert',
@@ -189,7 +188,7 @@ INSTALLED_APPS = (
     'linaro_django_pagination',
     'djcelery',
     'tastypie',
-    'common',
+    'django_lets_go',
     'notification',
     'country_dialcode',
     #'geordi',
@@ -220,20 +219,20 @@ else:
     INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', 'template_timings_panel',)
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + \
         ('debug_toolbar.middleware.DebugToolbarMiddleware',)
-    DEBUG_TOOLBAR_PANELS = (
-        'debug_toolbar.panels.version.VersionDebugPanel',
-        'debug_toolbar.panels.timer.TimerDebugPanel',
-        #Warning: If you run profiling this will duplicate the view execution
-        #'debug_toolbar.panels.profiling.ProfilingDebugPanel',
-        'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
-        'debug_toolbar.panels.headers.HeaderDebugPanel',
-        'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-        'debug_toolbar.panels.template.TemplateDebugPanel',
-        'debug_toolbar.panels.sql.SQLDebugPanel',
-        'debug_toolbar.panels.signals.SignalDebugPanel',
-        'debug_toolbar.panels.logger.LoggingPanel',
-        'template_timings_panel.panels.TemplateTimings.TemplateTimings',
-    )
+    DEBUG_TOOLBAR_PANELS = [
+        'debug_toolbar.panels.versions.VersionsPanel',
+        'debug_toolbar.panels.timer.TimerPanel',
+        'debug_toolbar.panels.settings.SettingsPanel',
+        'debug_toolbar.panels.headers.HeadersPanel',
+        'debug_toolbar.panels.request.RequestPanel',
+        'debug_toolbar.panels.sql.SQLPanel',
+        'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+        'debug_toolbar.panels.templates.TemplatesPanel',
+        'debug_toolbar.panels.cache.CachePanel',
+        'debug_toolbar.panels.signals.SignalsPanel',
+        'debug_toolbar.panels.logging.LoggingPanel',
+        'debug_toolbar.panels.redirects.RedirectsPanel',
+    ]
     DEBUG_TOOLBAR_CONFIG = {
         'INTERCEPT_REDIRECTS': False,
         'HIDE_DJANGO_SQL': False,
@@ -314,10 +313,8 @@ NEWS_URL = 'http://www.cdr-stats.org/news.php'
 #DJANGO-ADMIN-TOOL
 #=================
 ADMIN_TOOLS_MENU = 'cdr_stats.custom_admin_tools.menu.CustomMenu'
-ADMIN_TOOLS_INDEX_DASHBOARD = \
-    'cdr_stats.custom_admin_tools.dashboard.CustomIndexDashboard'
-ADMIN_TOOLS_APP_INDEX_DASHBOARD = \
-    'cdr_stats.custom_admin_tools.dashboard.CustomAppIndexDashboard'
+ADMIN_TOOLS_INDEX_DASHBOARD = 'cdr_stats.custom_admin_tools.dashboard.CustomIndexDashboard'
+ADMIN_TOOLS_APP_INDEX_DASHBOARD = 'cdr_stats.custom_admin_tools.dashboard.CustomAppIndexDashboard'
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 #CELERY SETTINGS

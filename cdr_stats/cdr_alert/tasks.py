@@ -23,7 +23,7 @@ from django.template.loader import get_template
 from django.template import Context
 from celery.task import PeriodicTask, task
 from notification import models as notification
-from common.only_one_task import only_one
+from django_lets_go.only_one_task import only_one
 from cdr.aggregate import pipeline_cdr_alert_task
 from cdr_alert.constants import PERIOD, ALARM_TYPE,\
     ALERT_CONDITION, ALERT_CONDITION_ADD_ON, ALARM_REPROT_STATUS

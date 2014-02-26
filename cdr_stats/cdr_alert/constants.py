@@ -13,7 +13,7 @@
 #
 
 from django.utils.translation import gettext as _
-from common.utils import Choice
+from django_lets_go.utils import Choice
 
 
 class PERIOD(Choice):

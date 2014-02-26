@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 #
 # CDR-Stats License
 # http://www.cdr-stats.org
@@ -12,10 +14,12 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-from django.utils.translation import ugettext as _
-from django_lets_go.utils import Choice
+# :copyright: (c) 2011-2013 by Arezqui Belaid.
+# :license: MPL 2.0, see COPYING for more details.
 
-
-class GATEWAY_STATUS(Choice):
-    ACTIVE = 0, _('active').upper()
-    INACTIVE = 1, _('inactive').upper()
+VERSION = (2, 0, 16, "")
+__version__ = ".".join(map(str, VERSION[0:3])) + "".join(VERSION[3:])
+__author__ = "Arezqui Belaid"
+__contact__ = "info@star2billing.com"
+__homepage__ = "http://www.cdr-stats.org"
+__docformat__ = "restructuredtext"

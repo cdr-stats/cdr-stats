@@ -13,7 +13,7 @@
 #
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from common.intermediate_model_base_class import Model
+from django_lets_go.intermediate_model_base_class import Model
 from voip_gateway.constants import GATEWAY_STATUS
 
 

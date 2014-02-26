@@ -21,7 +21,7 @@ from django.conf import settings
 from mongodb_connection import mongodb
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
-from common.common_functions import current_view, get_news, \
+from django_lets_go.common_functions import current_view, get_news, \
     variable_value, mongodb_str_filter, mongodb_int_filter, \
     int_convert_to_minute, validate_days, ceil_strdate, percentage, \
     getvar, unset_session_var
@@ -39,8 +39,7 @@ from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_mail_report
 from cdr.decorators import check_cdr_exists, check_user_accountcode, \
     check_user_voipplan
-from cdr.constants import CDR_COLUMN_NAME
-from common.common_constants import EXPORT_CHOICE
+from cdr.constants import CDR_COLUMN_NAME, Export_choice
 from voip_billing.function_def import get_rounded_value
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
@@ -512,7 +511,7 @@ def cdr_export_to_csv(request):
     list_val = []
     for cdr in final_result:
         starting_date = cdr['start_uepoch']
-        if format == EXPORT_CHOICE.JSON:
+        if format == Export_choice.JSON:
             starting_date = str(cdr['start_uepoch'])
 
         list_val.append((
@@ -527,13 +526,13 @@ def cdr_export_to_csv(request):
         ))
     data = tablib.Dataset(*list_val, headers=headers)
 
-    if format == EXPORT_CHOICE.XLS:
+    if format == Export_choice.XLS:
         response.write(data.xls)
 
-    if format == EXPORT_CHOICE.CSV:
+    if format == Export_choice.CSV:
         response.write(data.csv)
 
-    if format == EXPORT_CHOICE.JSON:
+    if format == Export_choice.JSON:
         response.write(data.json)
 
     return response

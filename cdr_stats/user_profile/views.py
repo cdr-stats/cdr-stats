@@ -22,7 +22,7 @@ from django.utils.translation import ugettext_lazy as _
 from user_profile.models import UserProfile
 from user_profile.forms import UserChangeDetailForm, \
     UserChangeDetailExtendForm
-from common.common_functions import current_view
+from django_lets_go.common_functions import current_view
 
 
 @login_required

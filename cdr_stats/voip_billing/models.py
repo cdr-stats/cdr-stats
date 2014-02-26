@@ -16,7 +16,7 @@ from django.utils.translation import ugettext as _
 from country_dialcode.models import Prefix
 from voip_gateway.models import Provider
 from voip_billing.constants import LCR_TYPE
-from common.intermediate_model_base_class import Model
+from django_lets_go.intermediate_model_base_class import Model
 
 
 class VoIPPlan(Model):
