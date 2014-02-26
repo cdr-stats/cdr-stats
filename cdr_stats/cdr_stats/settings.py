@@ -218,6 +218,7 @@ try:
     import debug_toolbar
 except ImportError:
     pass
+"""
 else:
     INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', 'template_timings_panel',)
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + \
@@ -241,7 +242,7 @@ else:
         'HIDE_DJANGO_SQL': False,
         'ENABLE_STACKTRACES': True,
     }
-
+"""
 try:
     import debug_toolbar
     import debug_toolbar_mongo

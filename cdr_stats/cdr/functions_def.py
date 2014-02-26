@@ -44,15 +44,13 @@ def get_switch_ip_addr(id):
 def get_switch_list():
     """Switch list used in form"""
     list = Switch.objects.all()
-    #return ((l.id, l.name) for l in list)
-    return []
+    return ((l.id, l.name) for l in list)
 
 
 def get_country_list():
     """Country list used in form"""
     list = Country.objects.all()
-    #return ((l.id, l.countryname) for l in list)
-    return []
+    return ((l.id, l.countryname) for l in list)
 
 
 @cached(3600)
@@ -60,13 +58,12 @@ def get_hc_list():
     """hangupcause list used in form"""
     list = HangupCause.objects.all()
     result = []
-    #for l in list:
-    #    if len(l.enumeration) > 0:
-    #        result.append((l.id, l.enumeration))
-    #    else:
-    #        result.append((l.id, l.cause[:25].upper() + '...'))
-    #return result
-    return []
+    for l in list:
+        if len(l.enumeration) > 0:
+            result.append((l.id, l.enumeration))
+        else:
+            result.append((l.id, l.cause[:25].upper() + '...'))
+    return result
 
 
 @cached(3600)

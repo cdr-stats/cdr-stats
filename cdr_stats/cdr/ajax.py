@@ -19,7 +19,7 @@ from django.core.cache import cache
 from cdr.views import check_user_accountcode
 import logging
 from dajaxice.decorators import dajaxice_register
-from django.utils import simplejson
+import json
 
 
 @permission_required('user_profile.real_time_calls', login_url='/')
@@ -56,4 +56,4 @@ def get_realtime_json(request, key_uuid):
     # import random
     # numbercall = random.randint(1, 300)
     # logging.debug('numbercall :::> %d' % numbercall)
-    return simplejson.dumps({'numbercall': numbercall})
+    return json.dumps({'numbercall': numbercall})
