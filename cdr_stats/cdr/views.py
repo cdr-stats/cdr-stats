@@ -295,8 +295,7 @@ def cdr_view(request):
                 'CDR_COLUMN_NAME': CDR_COLUMN_NAME,
             }
             logging.debug('CDR View End')
-            return render_to_response(template_name, template_data,
-                context_instance=RequestContext(request))
+            return render_to_response('frontend/cdr_view.html', template_data, context_instance=RequestContext(request))
 
     menu = show_menu(request)
     try:
@@ -443,8 +442,7 @@ def cdr_view(request):
     SKIP_NO = PAGE_SIZE * (PAGE_NUMBER - 1)
     record_count = final_result.count()
     # perform pagination on cdr_common collection via skip() and limit()
-    rows = final_result.skip(SKIP_NO).limit(PAGE_SIZE)\
-        .sort([(sort_field, default_order)])
+    rows = final_result.skip(SKIP_NO).limit(PAGE_SIZE).sort([(sort_field, default_order)])
 
     # Get daily report from session while using pagination & sorting
     if request.GET.get('page') or request.GET.get('sort_by'):
@@ -470,9 +468,9 @@ def cdr_view(request):
         'result': int(result),
         'CDR_COLUMN_NAME': CDR_COLUMN_NAME,
     }
+
     logging.debug('CDR View End')
-    return render_to_response(template_name, template_data,
-                              context_instance=RequestContext(request))
+    return render_to_response('frontend/cdr_view.html', template_data, context_instance=RequestContext(request))
 
 
 @login_required
@@ -1454,7 +1452,6 @@ def cdr_overview(request):
         get all call records from mongodb collection for
         all monthly, daily, hourly analytics
     """
-    template_name = 'frontend/cdr_overview.html'
     logging.debug('CDR overview start')
     # initialize variables
     query_var = {}
@@ -1501,10 +1498,8 @@ def cdr_overview(request):
                     '$lt': end_date
                 }
 
-                month_start_date = datetime(start_date.year, start_date.month,
-                    1, 0, 0, 0, 0)
-                month_end_date = datetime(end_date.year, end_date.month,
-                    end_date.day, 23, 59, 59, 999999)
+                month_start_date = datetime(start_date.year, start_date.month, 1, 0, 0, 0, 0)
+                month_end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
         else:
             # form is not valid
             logging.debug('Error : CDR overview search form')
@@ -1533,8 +1528,7 @@ def cdr_overview(request):
                 'monthly_duration_charttype': monthly_duration_charttype,
             }
 
-            return render_to_response(template_name, variables,
-                context_instance=RequestContext(request))
+            return render_to_response('frontend/cdr_overview.html', variables, context_instance=RequestContext(request))
 
     if len(query_var) == 0:
         tday = datetime.today()
@@ -1864,19 +1858,60 @@ def cdr_overview(request):
             'end_date': end_date,
             'hourly_call_chartdata': hourly_call_chartdata,
             'hourly_call_charttype': hourly_call_charttype,
+            'hourly_call_chartcontainer': 'hourly_call_container',
+            'hourly_call_extra': {
+                'x_is_date': True,
+                'x_axis_format': '%d %b %y %H%p',
+                'tag_script_js': True,
+                'jquery_on_ready': False,
+            },
             'hourly_duration_chartdata': hourly_duration_chartdata,
             'hourly_duration_charttype': hourly_duration_charttype,
+            'hourly_duration_chartcontainer': 'hourly_duration_container',
+            'hourly_duration_extra': {
+                'x_is_date': True,
+                'x_axis_format': '%d %b %y %H %p',
+                'tag_script_js': False,
+                'jquery_on_ready': False,
+            },
             'daily_call_chartdata': daily_call_chartdata,
             'daily_call_charttype': daily_call_charttype,
+            'daily_call_chartcontainer': 'daily_call_container',
+            'daily_call_extra': {
+                'x_is_date': True,
+                'x_axis_format': '%d %b %Y',
+                'tag_script_js': False,
+                'jquery_on_ready': False,
+            },
             'daily_duration_chartdata': daily_duration_chartdata,
             'daily_duration_charttype': daily_duration_charttype,
+            'daily_duration_chartcontainer': 'daily_duration_container',
+            'daily_duration_extra': {
+                'x_is_date': True,
+                'x_axis_format': '%d %b %Y',
+                'tag_script_js': False,
+                'jquery_on_ready': False,
+            },
             'monthly_call_chartdata': monthly_call_chartdata,
             'monthly_call_charttype': monthly_call_charttype,
+            'monthly_call_chartcontainer': 'monthly_call_container',
+            'monthly_call_extra': {
+                'x_is_date': True,
+                'x_axis_format': '%b %Y',
+                'tag_script_js': False,
+                'jquery_on_ready': False,
+            },
             'monthly_duration_chartdata': monthly_duration_chartdata,
             'monthly_duration_charttype': monthly_duration_charttype,
+            'monthly_duration_chartcontainer': 'monthly_duration_container',
+            'monthly_duration_extra': {
+                'x_is_date': True,
+                'x_axis_format': '%b %Y',
+                'tag_script_js': False,
+                'jquery_on_ready': False,
+            },
         }
-        return render_to_response(template_name, variables,
-            context_instance=RequestContext(request))
+        return render_to_response('frontend/cdr_overview.html', variables, context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.by_country', login_url='/')

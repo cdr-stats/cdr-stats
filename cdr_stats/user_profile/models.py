@@ -50,8 +50,7 @@ class UserProfile(models.Model):
     **Name of DB table**: user_profile
     """
     user = models.OneToOneField(User)
-    voipplan = models.ForeignKey(VoIPPlan, verbose_name=_('VoIP plan'),
-        help_text=_("select VoIP Plan"))
+    voipplan = models.ForeignKey(VoIPPlan, verbose_name=_('VoIP plan'), help_text=_("select VoIP Plan"))
     accountcode = models.CharField(max_length=50, verbose_name=_('account code'))
     address = models.CharField(blank=True, null=True,
             max_length=200, verbose_name=_('address'))

@@ -21,7 +21,8 @@ from django_lets_go.common_functions import comp_day_range
 from cdr.functions_def import get_switch_list, get_country_list, get_hc_list
 from cdr.constants import STRING_SEARCH_TYPE_LIST
 from user_profile.models import UserProfile
-#from mod_utils.forms import common_submit_buttons
+from bootstrap3_datetime.widgets import DateTimePicker
+from mod_utils.forms import common_submit_buttons
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div  # , Fieldset, Field, HTML
 
@@ -134,22 +135,20 @@ class CdrSearchForm(SearchForm):
     """
     Form used to search calls in the Customer UI.
     """
-    from_date = forms.CharField(label=_('from'),
-                                required=True, max_length=17)
-    to_date = forms.CharField(label=_('to'),
-                              required=True, max_length=17)
-    direction = forms.TypedChoiceField(label=_('direction'),
-                                       required=False,
+    from_date = forms.CharField(label=_('from').capitalize(), required=False, max_length=17,
+        widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
+    to_date = forms.CharField(label=_('to').capitalize(), required=False, max_length=17,
+        widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
+    from_date = forms.CharField(label=_('from'), required=True, max_length=17)
+    to_date = forms.CharField(label=_('to'), required=True, max_length=17)
+    direction = forms.TypedChoiceField(label=_('direction'), required=False,
                                        coerce=bool,
                                        choices=(('all', _('all')),
                                        ('inbound', _('inbound')),
                                        ('outbound', _('outbound')),
                                        ('unknown', _('unknown'))))
-    result = forms.TypedChoiceField(label=_('Result'),
-                                    required=False,
-                                    coerce=bool,
-                                    choices=((1, _('minutes')),
-                                    (2, _('seconds'))),
+    result = forms.TypedChoiceField(label=_('Result'), required=False,
+                                    coerce=bool, choices=((1, _('minutes')), (2, _('seconds'))),
                                     widget=forms.RadioSelect)
     records_per_page = forms.ChoiceField(label=_('CDR per page'),
                                          required=False,
@@ -159,8 +158,7 @@ class CdrSearchForm(SearchForm):
 
     def __init__(self, *args, **kwargs):
         super(CdrSearchForm, self).__init__(*args, **kwargs)
-        self.fields['records_per_page'].widget.attrs['onchange'] = \
-            'this.form.submit();'
+        self.fields['records_per_page'].widget.attrs['onchange'] = 'this.form.submit();'
 
 
 class CountryReportForm(CdrSearchForm):
@@ -180,6 +178,18 @@ class CdrOverviewForm(CdrSearchForm):
     def __init__(self, *args, **kwargs):
         super(CdrOverviewForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['from_date', 'to_date', 'switch_id']
+        self.helper = FormHelper()
+        self.helper.form_class = 'well'
+        css_class = 'col-md-4'
+        self.helper.layout = Layout(
+            Div(
+                Div('from_date', css_class=css_class),
+                Div('to_date', css_class=css_class),
+                Div('switch_id', css_class=css_class),
+                css_class='row'
+            ),
+        )
+        common_submit_buttons(self.helper.layout, 'search')
 
 
 class CompareCallSearchForm(SearchForm):
