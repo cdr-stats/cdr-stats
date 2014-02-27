@@ -217,11 +217,13 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 # Debug Toolbar
 try:
     import debug_toolbar
+    import debug_toolbar_mongo
 except ImportError:
     pass
-"""
 else:
-    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', 'template_timings_panel',)
+    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', )
+    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar_mongo',)
+    #INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', 'template_timings_panel',)
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + \
         ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     DEBUG_TOOLBAR_PANELS = [
@@ -231,29 +233,34 @@ else:
         'debug_toolbar.panels.headers.HeadersPanel',
         'debug_toolbar.panels.request.RequestPanel',
         'debug_toolbar.panels.sql.SQLPanel',
-        'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+        # StaticFilesPanel broken https://github.com/django-debug-toolbar/django-debug-toolbar/issues/503
+        # 'debug_toolbar.panels.staticfiles.StaticFilesPanel',
         'debug_toolbar.panels.templates.TemplatesPanel',
         'debug_toolbar.panels.cache.CachePanel',
         'debug_toolbar.panels.signals.SignalsPanel',
         'debug_toolbar.panels.logging.LoggingPanel',
         'debug_toolbar.panels.redirects.RedirectsPanel',
+        #'template_timings_panel.panels.TemplateTimings.TemplateTimings',
+        'debug_toolbar_mongo.panel.MongoDebugPanel',
     ]
     DEBUG_TOOLBAR_CONFIG = {
         'INTERCEPT_REDIRECTS': False,
         'HIDE_DJANGO_SQL': False,
         'ENABLE_STACKTRACES': True,
+        'SQL_WARNING_THRESHOLD': 100,   # milliseconds
     }
-"""
+    DEBUG_TOOLBAR_PATCH_SETTINGS = False
+
+# commented cause this module doesn't work at the moment
+# https://groups.google.com/forum/?fromgroups#!topic/mongoengine-users/cwIdHSNPCwY
+
+# Django extensions
 try:
-    import debug_toolbar
-    import debug_toolbar_mongo
+    import django_extensions
 except ImportError:
     pass
 else:
-    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar_mongo',)
-    DEBUG_TOOLBAR_MONGO_STACKTRACES = True
-    DEBUG_TOOLBAR_PANELS = DEBUG_TOOLBAR_PANELS + \
-        ('debug_toolbar_mongo.panel.MongoDebugPanel',)
+    INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
 
 # Nose
 try:
@@ -264,22 +271,6 @@ else:
     INSTALLED_APPS = INSTALLED_APPS + ('django_nose',)
     TEST_RUNNER = 'django_nose.run_tests'
 
-# Debug Toolbar mongo
-
-# commented cause this module doesn't work at the moment
-# https://groups.google.com/forum/?fromgroups#!topic/mongoengine-users/cwIdHSNPCwY
-
-
-# Django extensions
-try:
-    import django_extensions
-except ImportError:
-    pass
-else:
-    INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
-
-LOG_COLORSQL_ENABLE = True
-LOG_COLORSQL_VERBOSE = True
 
 # AUTH MODULE SETTINGS
 AUTH_PROFILE_MODULE = 'user_profile.UserProfile'

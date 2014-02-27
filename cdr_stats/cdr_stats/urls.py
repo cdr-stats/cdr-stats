@@ -67,6 +67,9 @@ urlpatterns = patterns('',
     (r'^%s/' % settings.DAJAXICE_MEDIA_PREFIX, include('dajaxice.urls')),
 )
 
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += patterns('', url(r'^__debug__/', include(debug_toolbar.urls)),)
 
 urlpatterns += urlpatterns_cdr
 urlpatterns += urlpatterns_cdr_alert
