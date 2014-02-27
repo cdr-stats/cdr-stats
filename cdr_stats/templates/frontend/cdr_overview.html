@@ -2,17 +2,10 @@
 {% load i18n cdr_tags cache nvd3_tags crispy_forms_tags %}
 
 {% block extra_header %}
-    {% include "frontend/common_datetimepicker.html" %}
-    <style type="text/css">
-        #placeholder_cdr_analytic div.legend table {
-            width: 5%;
-            margin-right: -70px;
-        }
-    </style>
-
-    <script>
+    
+    <script type="text/javascript">
         $(function () {
-            $('a[data-toggle="tab"]').on('shown', function (e) {
+            $('a[data-toggle="tab"]').on('click', function (e) {
                 if (e.target.hash == '#tabs-2') {
                     {% load_chart hourly_duration_charttype hourly_duration_chartdata hourly_duration_chartcontainer hourly_duration_extra %}
                 }
@@ -28,15 +21,15 @@
                 if (e.target.hash == '#tabs-6') {
                     {% load_chart monthly_duration_charttype monthly_duration_chartdata monthly_duration_chartcontainer monthly_duration_extra %}
                 }
-            })
-        })
+            });
+        });
     </script>
+    {{ form.media }}
 {% endblock %}
 
 {% block content %}
 <div id="form_collapse" class="collapse">
-{% crispy form form.helper %}
-
+    {% crispy form form.helper %}
 </div>
 
 <a id="toggle_btn_search" class="btn" href="#" data-toggle="collapse" data-target="#form_collapse">
