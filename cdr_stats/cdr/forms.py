@@ -163,10 +163,34 @@ class CountryReportForm(CdrSearchForm):
     """
     Form used to get country vise calls report in the Customer UI.
     """
+    widgets = {
+        #'from_date': DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}),
+        #'to_date': DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}),
+    }
+
     def __init__(self, *args, **kwargs):
         super(CountryReportForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['from_date', 'to_date', 'country_id',
-                                'duration', 'duration_type', 'switch_id']
+        self.fields['duration_type'].label = _('type').title()
+        self.fields['from_date'].widgets = DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False})
+        self.fields['to_date'].widgets = DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False})
+        self.helper = FormHelper()
+        self.helper.form_class = 'well'
+        css_class = 'col-md-4'
+        self.helper.layout = Layout(
+            Div(
+                Div('from_date', css_class=css_class),
+                Div('to_date', css_class=css_class),
+                Div('switch_id', css_class=css_class),
+                css_class='row'
+            ),
+            Div(
+                Div('duration', css_class='col-md-3'),
+                Div('duration_type', css_class='col-md-1'),
+                Div('country_id', css_class=css_class),
+                css_class='row'
+            ),
+        )
+        common_submit_buttons(self.helper.layout, 'search')
 
 
 class CdrOverviewForm(CdrSearchForm):

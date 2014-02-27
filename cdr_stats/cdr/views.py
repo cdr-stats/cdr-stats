@@ -989,7 +989,6 @@ def cdr_concurrent_calls(request):
                 'tag_script_js': True,
                 'jquery_on_ready': True,
             },
-
         }
     return render_to_response('frontend/cdr_graph_concurrent_calls.html', data, context_instance=RequestContext(request))
 
@@ -1069,8 +1068,7 @@ def get_cdr_mail_report():
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
     # find result from cdr_common collection
-    final_result = mongodb.cdr_common\
-        .find(query_var).sort([('start_uepoch', -1)]).limit(10)
+    final_result = mongodb.cdr_common.find(query_var).sort([('start_uepoch', -1)]).limit(10)
 
     # Collect analytics
     logging.debug('Aggregate cdr mail report')
@@ -1897,7 +1895,6 @@ def cdr_country_report(request):
         to create country call
     """
     logging.debug('CDR country report view start')
-    template_name = 'frontend/cdr_country_report.html'
     switch_id = 0
     query_var = {}
     search_tag = 0
@@ -1907,63 +1904,43 @@ def cdr_country_report(request):
     from_date = start_date.strftime("%Y-%m-%d")
     to_date = end_date.strftime("%Y-%m-%d")
     # assign initial value in form fields
-    form = CountryReportForm(initial={'from_date': from_date,
-                                      'to_date': to_date})
     total_calls = 0
     total_duration = 0
     total_record_final = []
-
-    if request.method == 'POST':
+    form = CountryReportForm(request.POST or None, initial={'from_date': from_date,
+                                                            'to_date': to_date})
+    if form.is_valid():
         logging.debug('CDR country report view with search option')
         search_tag = 1
-        form = CountryReportForm(request.POST)
-        if form.is_valid():
-            if "from_date" in request.POST:
-                # From
-                from_date = form.cleaned_data.get('from_date')
-                start_date = ceil_strdate(from_date, 'start')
+        if "from_date" in request.POST:
+            # From
+            from_date = form.cleaned_data.get('from_date')
+            start_date = ceil_strdate(from_date, 'start')
 
-            if "to_date" in request.POST:
-                # To
-                to_date = form.cleaned_data.get('to_date')
-                end_date = ceil_strdate(to_date, 'end')
+        if "to_date" in request.POST:
+            # To
+            to_date = form.cleaned_data.get('to_date')
+            end_date = ceil_strdate(to_date, 'end')
 
-            country_id = form.cleaned_data.get('country_id')
-            # convert list value in int
-            country_id = [int(row) for row in country_id]
-            if len(country_id) >= 1 and country_id[0] != 0:
-                query_var['metadata.country_id'] = {'$in': country_id}
+        country_id = form.cleaned_data.get('country_id')
+        # convert list value in int
+        country_id = [int(row) for row in country_id]
+        if len(country_id) >= 1 and country_id[0] != 0:
+            query_var['metadata.country_id'] = {'$in': country_id}
 
-            switch_id = int(form.cleaned_data.get('switch_id'))
-            if switch_id and switch_id != 0:
-                query_var['metadata.switch_id'] = switch_id
+        switch_id = int(form.cleaned_data.get('switch_id'))
+        if switch_id and switch_id != 0:
+            query_var['metadata.switch_id'] = switch_id
 
-            duration = form.cleaned_data.get('duration')
-            duration_type = form.cleaned_data.get('duration_type')
-            if duration:
-                due = mongodb_int_filter(duration, duration_type)
-                temp = []
-                if due:
-                    for i in range(0, 24):
-                        temp.append({'duration_hourly.%d' % (i): due})
-                    query_var['$or'] = temp
-        else:
-            country_analytic_array = []
-            logging.debug('Error : CDR country report form')
-            variables = {
-                'action': 'tabs-1',
-                'module': current_view(request),
-                'total_calls': total_calls,
-                'total_duration': total_duration,
-                'total_record': total_record_final,
-                'country_final': country_analytic_array,
-                'form': form,
-                'search_tag': search_tag,
-                'NUM_COUNTRY': settings.NUM_COUNTRY,
-            }
-
-            return render_to_response(template_name, variables,
-                context_instance=RequestContext(request))
+        duration = form.cleaned_data.get('duration')
+        duration_type = form.cleaned_data.get('duration_type')
+        if duration:
+            due = mongodb_int_filter(duration, duration_type)
+            temp = []
+            if due:
+                for i in range(0, 24):
+                    temp.append({'duration_hourly.%d' % (i): due})
+                query_var['$or'] = temp
 
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
@@ -2087,7 +2064,7 @@ def cdr_country_report(request):
         country_call_charttype = "pieChart"
 
     logging.debug('CDR country report view end')
-    variables = {
+    data = {
         'action': 'tabs-1',
         'module': current_view(request),
         'total_calls': total_calls,
@@ -2098,14 +2075,41 @@ def cdr_country_report(request):
         'NUM_COUNTRY': settings.NUM_COUNTRY,
         'country_call_charttype': country_call_charttype,
         'country_call_chartdata': country_call_chartdata,
+        'country_call_chartcontainer': 'country_call_container',
+        'country_call_extra': {
+            'x_is_date': False,
+            'x_axis_format': '',
+            'tag_script_js': True,
+            'jquery_on_ready': False,
+        },
         'country_duration_chartdata': country_duration_chartdata,
+        'country_duration_chartcontainer': 'country_duration_container',
+        'country_duration_extra': {
+            'x_is_date': False,
+            'x_axis_format': '',
+            'tag_script_js': True,
+            'jquery_on_ready': False,
+        },
         'final_call_chartdata': final_call_chartdata,
         'final_call_charttype': final_call_charttype,
+        'final_call_chartcontainer': 'final_call_container',
+        'final_call_extra': {
+            'x_is_date': True,
+            'x_axis_format': '%d %b %Y',
+            'tag_script_js': True,
+            'jquery_on_ready': False,
+        },
         'final_duration_chartdata': final_duration_chartdata,
         'final_duration_charttype': final_duration_charttype,
+        'final_duration_chartcontainer': 'final_duration_container',
+        'final_duration_extra': {
+            'x_is_date': True,
+            'x_axis_format': '%d %b %Y',
+            'tag_script_js': False,
+            'jquery_on_ready': False,
+        },
     }
-    return render_to_response(template_name, variables,
-        context_instance=RequestContext(request))
+    return render_to_response('frontend/cdr_country_report.html', data, context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.world_map', login_url='/')
