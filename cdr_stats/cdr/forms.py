@@ -103,7 +103,7 @@ class SearchForm(forms.Form):
     hangup_cause_id = forms.ChoiceField(label=_('hangup cause'),
                                         required=False,
                                         choices=hc_list_with_all())
-    switch_id = forms.ChoiceField(label=_('switch'),
+    switch_id = forms.ChoiceField(label=_('switch').capitalize(),
                                   required=False,
                                   choices=get_switch_list())
     country_id = forms.MultipleChoiceField(label=_('country'), required=False,
@@ -135,12 +135,10 @@ class CdrSearchForm(SearchForm):
     """
     Form used to search calls in the Customer UI.
     """
-    from_date = forms.CharField(label=_('from').capitalize(), required=False, max_length=17,
-        widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
-    to_date = forms.CharField(label=_('to').capitalize(), required=False, max_length=17,
-        widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
-    from_date = forms.CharField(label=_('from'), required=True, max_length=17)
-    to_date = forms.CharField(label=_('to'), required=True, max_length=17)
+    from_date = forms.DateTimeField(label=_('from').capitalize(), required=False,
+        widget=DateTimePicker(options={"format": "YYYY-MM-DD HH:mm", "pickSeconds": False}))
+    to_date = forms.DateTimeField(label=_('to').capitalize(), required=False,
+        widget=DateTimePicker(options={"format": "YYYY-MM-DD HH:mm", "pickSeconds": False}))
     direction = forms.TypedChoiceField(label=_('direction'), required=False,
                                        coerce=bool,
                                        choices=(('all', _('all')),

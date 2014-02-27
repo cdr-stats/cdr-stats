@@ -19,29 +19,15 @@
     // toggle event for forms
     $(function() {
 
-        {% if search_tag == 1 %}
-            $(".collapse").collapse();
-        {% endif %}
-
-        $(".collapse").on('show', function () {
-            $('#toggle_btn_search span').text('{% trans "Hide search" %}');
-            $('#toggle_btn_search i').toggleClass('icon-search');
-            $('#toggle_btn_search i').toggleClass('icon-zoom-out');
+        $("#form_collapse").on('hidden.bs.collapse', function() {
+            $('#toggle_btn_i_span').text(gettext('advanced search'));
+            $('#toggle_btn_i').attr('class', 'glyphicon glyphicon-zoom-in');
         });
 
-        $(".collapse").on('shown', function () {
-            $('#toggle_btn_search span').text('{% trans "Hide search" %}');
+        $("#form_collapse").on('shown.bs.collapse', function() {
+            $('#toggle_btn_i_span').text(gettext('hide search'));
+            $('#toggle_btn_i').attr('class', 'glyphicon glyphicon-zoom-out');
         });
-
-        $(".collapse").on('hide', function () {
-            $('#toggle_btn_search span').text('{% trans "advanced search"|title %}');
-            $('#toggle_btn_search i').toggleClass('icon-search');
-            $('#toggle_btn_search i').toggleClass('icon-zoom-out');
-        });
-
-        {% if search_tag == 0 %}
-            $(".collapse").collapse('hide');
-        {% endif %}
     });
 
     $(function() {
