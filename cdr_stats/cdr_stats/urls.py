@@ -12,8 +12,7 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.conf.urls import handler404, handler500,\
-    url, patterns, include
+from django.conf.urls import handler404, handler500, url, patterns, include
 from django.conf import settings
 from tastypie.api import Api
 from api.user_api import UserResource
@@ -56,20 +55,15 @@ urlpatterns = patterns('',
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
     # to INSTALLED_APPS to enable admin documentation:
     #(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
     (r'^admin/', include(admin.site.urls)),
-
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
-
     (r'^admin_tools/', include('admin_tools.urls')),
-
     (r'^api/', include(tastypie_api.urls)),
 
     # Serve static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
         {'document_root': settings.STATIC_ROOT}),
-
     (r'^%s/' % settings.DAJAXICE_MEDIA_PREFIX, include('dajaxice.urls')),
 )
 

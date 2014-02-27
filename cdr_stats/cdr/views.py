@@ -1469,66 +1469,36 @@ def cdr_overview(request):
     monthly_duration_chartdata = {'x': []}
 
     action = 'tabs-1'
-    if request.method == 'POST':
-        logging.debug('CDR overview with search option')
+    form = CdrOverviewForm(request.POST or None)
+    logging.debug('CDR overview with search option')
+    if form.is_valid():
         search_tag = 1
-        form = CdrOverviewForm(request.POST)
-        if form.is_valid():
-            if "from_date" in request.POST:
-                from_date = request.POST['from_date']
-                start_date = ceil_strdate(from_date, 'start')
-                start_hour_date = ceil_strdate(from_date, 'start', hour_min=True)
-            else:
-                from_date = tday.strftime('%Y-%m-%d %H:%M')
-
-            if "to_date" in request.POST:
-                to_date = request.POST['to_date']
-                end_date = ceil_strdate(to_date, 'end')
-                end_hour_date = ceil_strdate(to_date, 'end', hour_min=True)
-            else:
-                to_date = tday.strftime('%Y-%m-%d 23:55')
-
-            switch_id = form.cleaned_data.get('switch_id')
-            if switch_id and int(switch_id) != 0:
-                query_var['metadata.switch_id'] = int(switch_id)
-
-            if from_date and to_date:
-                query_var['metadata.date'] = {
-                    '$gte': start_date,
-                    '$lt': end_date
-                }
-
-                month_start_date = datetime(start_date.year, start_date.month, 1, 0, 0, 0, 0)
-                month_end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
+        if "from_date" in request.POST:
+            from_date = request.POST['from_date']
+            start_date = ceil_strdate(from_date, 'start')
+            start_hour_date = ceil_strdate(from_date, 'start', hour_min=True)
         else:
-            # form is not valid
-            logging.debug('Error : CDR overview search form')
-            tday = datetime.today()
-            start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
-            end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
+            from_date = tday.strftime('%Y-%m-%d %H:%M')
 
-            variables = {
-                'action': action,
-                'module': current_view(request),
-                'form': form,
-                'search_tag': search_tag,
-                'start_date': start_date,
-                'end_date': end_date,
-                'hourly_call_chartdata': hourly_call_chartdata,
-                'hourly_call_charttype': hourly_call_charttype,
-                'hourly_duration_chartdata': hourly_duration_chartdata,
-                'hourly_duration_charttype': hourly_duration_charttype,
-                'daily_call_chartdata': daily_call_chartdata,
-                'daily_call_charttype': daily_call_charttype,
-                'daily_duration_chartdata': daily_duration_chartdata,
-                'daily_duration_charttype': daily_duration_charttype,
-                'monthly_call_chartdata': monthly_call_chartdata,
-                'monthly_call_charttype': monthly_call_charttype,
-                'monthly_duration_chartdata': monthly_duration_chartdata,
-                'monthly_duration_charttype': monthly_duration_charttype,
+        if "to_date" in request.POST:
+            to_date = request.POST['to_date']
+            end_date = ceil_strdate(to_date, 'end')
+            end_hour_date = ceil_strdate(to_date, 'end', hour_min=True)
+        else:
+            to_date = tday.strftime('%Y-%m-%d 23:55')
+
+        switch_id = form.cleaned_data.get('switch_id')
+        if switch_id and int(switch_id) != 0:
+            query_var['metadata.switch_id'] = int(switch_id)
+
+        if from_date and to_date:
+            query_var['metadata.date'] = {
+                '$gte': start_date,
+                '$lt': end_date
             }
 
-            return render_to_response('frontend/cdr_overview.html', variables, context_instance=RequestContext(request))
+            month_start_date = datetime(start_date.year, start_date.month, 1, 0, 0, 0, 0)
+            month_end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
 
     if len(query_var) == 0:
         tday = datetime.today()
