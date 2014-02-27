@@ -41,3 +41,8 @@ class Export_choice(Choice):
     CSV = 'csv', _('csv').upper()
     XLS = 'xls', _('xls').upper()
     JSON = 'json', _('json').upper()
+
+
+class CheckWith(Choice):
+    previous_days = 1, _('previous days').title()
+    same_day_of_the_week = 2, _('same day of the week').title()

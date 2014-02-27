@@ -1051,8 +1051,7 @@ def cdr_realtime(request):
             'realtime_graph_maxcall': settings.REALTIME_Y_AXIS_LIMIT,
         }
 
-    return render_to_response('frontend/cdr_graph_realtime.html', variables,
-           context_instance=RequestContext(request))
+    return render_to_response('frontend/cdr_graph_realtime.html', variables, context_instance=RequestContext(request))
 
 
 def get_cdr_mail_report():
@@ -1283,7 +1282,6 @@ def cdr_daily_comparison(request):
         hourly analytics for given date
     """
     logging.debug('CDR hourly view start')
-    template_name = 'frontend/cdr_report_by_hour.html'
     query_var = {}
     #default
     min_charttype = call_charttype = "lineChart"
@@ -1294,70 +1292,52 @@ def cdr_daily_comparison(request):
     action = 'tabs-1'
     tday = datetime.today()
     from_date = tday.strftime('%Y-%m-%d')
-    form = CompareCallSearchForm(initial={'from_date': from_date,
+    form = CompareCallSearchForm(request.POST or None,
+                                 initial={'from_date': from_date,
                                           'comp_days': comp_days,
                                           'check_days': check_days,
                                           'switch_id': 0})
-    if request.method == 'POST':
-        logging.debug('CDR hourly view with search option')
+
+    logging.debug('CDR hourly view with search option')
+    if form.is_valid():
         search_tag = 1
-        form = CompareCallSearchForm(request.POST)
-        if form.is_valid():
-            if "from_date" in request.POST:
-                from_date = request.POST['from_date']
-                select_date = datetime(int(from_date[0:4]),
-                                       int(from_date[5:7]),
-                                       int(from_date[8:10]), 0, 0, 0, 0)
-            else:
-                from_date = tday.strftime('%Y-%m-%d')
-                select_date = tday
-
-            comp_days = int(variable_value(request, 'comp_days'))
-            check_days = int(variable_value(request, 'check_days'))
-            # check previous days
-            if check_days == 2:
-                compare_date_list = []
-                compare_date_list.append(select_date)
-
-                for i in range(1, int(comp_days) + 1):
-                    #select_date+relativedelta(weeks=-i)
-                    interval_date = select_date + relativedelta(weeks=-i)
-                    compare_date_list.append(interval_date)
-
-            switch_id = form.cleaned_data.get('switch_id')
-            if switch_id and int(switch_id) != 0:
-                query_var['metadata.switch_id'] = int(switch_id)
-
-            if from_date != '':
-                end_date = from_date = select_date
-                start_date = end_date + relativedelta(days=-int(comp_days))
-                start_date = datetime(start_date.year, start_date.month,
-                                      start_date.day, 0, 0, 0, 0)
-                end_date = datetime(end_date.year, end_date.month,
-                                    end_date.day, 23, 59, 59, 999999)
-                if check_days == 1:
-                    query_var['metadata.date'] = {
-                        '$gte': start_date,
-                        '$lt': end_date
-                    }
+        if "from_date" in request.POST:
+            from_date = request.POST['from_date']
+            select_date = datetime(int(from_date[0:4]),
+                                   int(from_date[5:7]),
+                                   int(from_date[8:10]), 0, 0, 0, 0)
         else:
-            # form is not valid
-            logging.debug('Error : CDR hourly search form')
-            variables = {
-                'action': action,
-                'module': current_view(request),
-                'form': form,
-                'search_tag': search_tag,
-                'from_date': from_date,
-                'comp_days': comp_days,
-                'call_chartdata': call_chartdata,
-                'call_charttype': call_charttype,
-                'min_chartdata': min_chartdata,
-                'min_charttype': min_charttype,
-            }
+            from_date = tday.strftime('%Y-%m-%d')
+            select_date = tday
 
-            return render_to_response(template_name, variables,
-                            context_instance=RequestContext(request))
+        comp_days = int(variable_value(request, 'comp_days'))
+        check_days = int(variable_value(request, 'check_days'))
+        # check previous days
+        if check_days == 2:
+            compare_date_list = []
+            compare_date_list.append(select_date)
+
+            for i in range(1, int(comp_days) + 1):
+                #select_date+relativedelta(weeks=-i)
+                interval_date = select_date + relativedelta(weeks=-i)
+                compare_date_list.append(interval_date)
+
+        switch_id = form.cleaned_data.get('switch_id')
+        if switch_id and int(switch_id) != 0:
+            query_var['metadata.switch_id'] = int(switch_id)
+
+        if from_date != '':
+            end_date = from_date = select_date
+            start_date = end_date + relativedelta(days=-int(comp_days))
+            start_date = datetime(start_date.year, start_date.month,
+                                  start_date.day, 0, 0, 0, 0)
+            end_date = datetime(end_date.year, end_date.month,
+                                end_date.day, 23, 59, 59, 999999)
+            if check_days == 1:
+                query_var['metadata.date'] = {
+                    '$gte': start_date,
+                    '$lt': end_date
+                }
 
     if len(query_var) == 0:
         from_date = datetime.today()
@@ -1425,14 +1405,26 @@ def cdr_daily_comparison(request):
             'search_tag': search_tag,
             'from_date': from_date,
             'comp_days': comp_days,
-            'call_chartdata': call_chartdata,
             'call_charttype': call_charttype,
-            'min_chartdata': min_chartdata,
+            'call_chartdata': call_chartdata,
+            'call_chartcontainer': 'call_chartcontainer',
+            'call_extra': {
+                'x_is_date': False,
+                'x_axis_format': 'AM_PM',
+                'tag_script_js': True,
+                'jquery_on_ready': True,
+            },
             'min_charttype': min_charttype,
+            'min_chartdata': min_chartdata,
+            'min_chartcontainer': 'min_chartcontainer',
+            'min_extra': {
+                'x_is_date': False,
+                'x_axis_format': 'AM_PM',
+                'tag_script_js': False,
+                'jquery_on_ready': True,
+            },
         }
-
-        return render_to_response(template_name, variables,
-                                context_instance=RequestContext(request))
+        return render_to_response('frontend/cdr_report_by_hour.html', variables, context_instance=RequestContext(request))
 
 
 @check_cdr_exists

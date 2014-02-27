@@ -19,25 +19,7 @@ from voip_billing.function_def import rate_range
 from voip_billing.models import VoIPPlan, VoIPRetailPlan, VoIPCarrierPlan
 from voip_billing.constants import CONFIRMATION_TYPE
 from cdr.forms import sw_list_with_all, CdrSearchForm
-from cdr.constants import Export_choice
-
-
-class HorizRadioRenderer(forms.RadioSelect.renderer):
-    """This overrides widget method to put radio buttons horizontally
-    instead of vertically.
-    """
-    def render(self):
-        """Outputs radios"""
-        return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
-
-
-class Exportfile(forms.Form):
-    """
-    Abstract Form : export file in various format e.g. XLS, CSV, JSON
-    """
-    export_to = forms.TypedChoiceField(label=_('export to').capitalize(), required=True,
-                                       choices=list(Export_choice),
-                                       widget=forms.RadioSelect(renderer=HorizRadioRenderer))
+from mod_utils.forms import Exportfile
 
 
 def voip_plan_list():

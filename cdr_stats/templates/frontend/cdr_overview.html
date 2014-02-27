@@ -30,11 +30,7 @@
 <div id="form_collapse" class="collapse">
     {% crispy form form.helper %}
 </div>
-
-<button id="toggle_btn" type="button" class="btn btn-default btn-sm" data-toggle="collapse" data-target="#form_collapse">
-    <i id="toggle_btn_i" class="glyphicon glyphicon-zoom-in"></i>
-    <span id="toggle_btn_i_span">{% trans "open search"|title %}</span>
-</button>
+{% include "frontend/common_search_toggle_button.html" %}
 
 <div class="row">
     <div class="col-md-12 col-xs-12 col-sm-12">

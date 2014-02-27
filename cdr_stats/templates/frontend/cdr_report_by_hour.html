@@ -1,81 +1,35 @@
 {% extends "frontend/master.html" %}
-{% load i18n cdr_tags nvd3_tags %}
+{% load i18n cdr_tags nvd3_tags crispy_forms_tags %}
 
 {% block extra_header %}
-
     <script type="text/javascript">
-        $(function() {
-            $("#id_from_date").datepicker({ format: 'yyyy-mm-dd' });
+        $(function () {
+            $('a[data-toggle="tab"]').on('click', function (e) {
+                if (e.target.hash == '#tabs-2') {
+                    {% load_chart min_charttype min_chartdata min_chartcontainer min_extra %}
+                }
+            });
         });
     </script>
-    {% include_nvd3jscss False %}
-    <script>
-        $(function () {
-            $('a[data-toggle="tab"]').on('shown', function (e) {
-                if (e.target.hash == '#tabs-2') {
-                    {% load_chart min_charttype min_chartdata "min_container" False "AM_PM" False %}
-                }
-            })
-        })
-    </script>
+    {{ form.media }}
 {% endblock %}
 
 {% block content %}
     <div id="form_collapse" class="collapse">
-        <form class="form-search well" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
-        <div class="row">
-            <div class="span12">
-                <div class="row">
-                    <div class="span6">
-                        <label class="control-label" for="{{ form.from_date.auto_id }}">{{ form.from_date.label|title }}</label>
-                        <div class="input">
-                            {{ form.from_date }}&nbsp;&nbsp;{{ form.comp_days }}
-                            <span class="help-block">{{ form.from_date.help_text|capfirst|safe }} </span>
-                        </div>
-                    </div>
-                    <div class="span4">
-                        <label class="control-label" for="{{ form.check_days.auto_id }}">{{ form.check_days.label|title }}</label>
-                        <div class="input">
-                            {{ form.check_days|removetags:"ul li label"|safe }}
-                            <span class="help-block">{{ form.check_days.help_text|capfirst|safe }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="span12">
-                <div class="row">
-                    <div class="span4">
-                        <label class="control-label" for="{{ form.switch_id.auto_id }}">{{ form.switch_id.label|title }}</label>
-                        <div class="input">
-                            {{ form.switch_id }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <label>&nbsp;</label>
-        <div class="actions">
-            <input class="btn btn-primary" type=submit name=submit value={% trans "search"|title %} />
-        </div>
-        </form>
+        {% crispy form form.helper %}
     </div>
-
-    <a id="toggle_btn_search" class="btn" href="#" data-toggle="collapse" data-target="#form_collapse">
-        <i class="icon-search"></i> <span>{% trans "advanced search"|title %}</span>
-    </a>
+    {% include "frontend/common_search_toggle_button.html" %}
 
     <div class="row">
-        <div class="span12">
-        <div class="graph_header">
-            {% trans "Call Statistics" %} -
-            <b>
-                {% if from_date  %}
-                    {{ from_date|date:"jS N Y" }} {% trans "with previous" %} {{ comp_days|cut:"-" }} {% trans "days" %}
-                {% endif %}
-            </b>
-        </div>
+        <div class="col-md-12 col-xs-12 col-sm-12">
+            <div class="graph_header">
+                {% trans "Call Statistics" %} -
+                <b>
+                    {% if from_date  %}
+                        {{ from_date|date:"jS N Y" }} {% trans "with previous" %} {{ comp_days|cut:"-" }} {% trans "days" %}
+                    {% endif %}
+                </b>
+            </div>
         </div>
     </div>
 <div class="tabbable">
@@ -84,18 +38,18 @@
         <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "minutes per hour"|title %}</a></li>
     </ul>
     <div class="tab-content">
-        <div id="tabs-1" class="tab-pane {% if action == "tabs-1" or action == "" %}active{% endif %}">
+        <div id="tabs-1" class="tab-pane {% if action == 'tabs-1' or action == '' %}active{% endif %}">
             <div class="row">
-                <div class="span12">
-                    {% load_chart call_charttype call_chartdata "call_container" False "AM_PM" True %}
-                    {% include_container "call_container" 400 '100%' %}
+                <div class="col-md-12 col-xs-12 col-sm-12">
+                    {% load_chart call_charttype call_chartdata call_chartcontainer call_extra %}
+                    {% include_container call_chartcontainer 400 '100%' %}
                 </div>
             </div>
         </div>
-        <div id="tabs-2" class="tab-pane {% if action == "tabs-2" or action == "" %}active{% endif %}">
+        <div id="tabs-2" class="tab-pane {% if action == 'tabs-2' or action == '' %}active{% endif %}">
             <div class="row">
-                <div class="span12">
-                    {% include_container "min_container" 400 '100%' %}
+                <div class="col-md-12 col-xs-12 col-sm-12">
+                    {% include_container min_chartcontainer 400 '100%' %}
                 </div>
             </div>
         </div>
