@@ -1008,15 +1008,12 @@ def cdr_realtime(request):
     logging.debug('CDR realtime view start')
     query_var = {}
     switch_id = 0
-    if request.method == 'POST':
-        logging.debug('CDR realtime view with search option')
-        form = SwitchForm(request.POST)
-        if form.is_valid():
-            switch_id = form.cleaned_data.get('switch_id')
-            if switch_id and int(switch_id) != 0:
-                query_var['value.switch_id'] = int(switch_id)
-    else:
-        form = SwitchForm()
+    form = SwitchForm(request.POST or None)
+    if form.is_valid():
+        switch_id = form.cleaned_data.get('switch_id')
+        if switch_id and int(switch_id) != 0:
+            query_var['value.switch_id'] = int(switch_id)
+
     now = datetime.now()
     start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
     end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
@@ -1029,8 +1026,7 @@ def cdr_realtime(request):
     if query_var:
         if not mongodb.conc_call_agg:
             raise mongodb.conc_call_agg
-        calls_in_day = mongodb.conc_call_agg.find(query_var).\
-            sort([('_id.g_Millisec', -1)])
+        calls_in_day = mongodb.conc_call_agg.find(query_var).sort([('_id.g_Millisec', -1)])
 
         final_data = []
         for d in calls_in_day:

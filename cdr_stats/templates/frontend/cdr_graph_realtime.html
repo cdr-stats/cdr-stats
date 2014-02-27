@@ -1,6 +1,5 @@
 {% extends "frontend/master.html" %}
-{% load i18n cdr_extras dajaxice_templatetags %}
-
+{% load i18n dajaxice_templatetags crispy_forms_tags %}
 
 {% block extra_header %}
 {% dajaxice_js_import %}
@@ -51,18 +50,9 @@ $(function() {
 {% endfor %}
 {% endblock %}
 
-
 {% block content %}
 <div class="row-fluid">
-<form class="well form-inline span12" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
-    <div class="control-group">
-        <div class="controls">
-            <label class="control-label" for="{{ form.switch_id.auto_id }}">{{ form.switch_id.label|title }} :</label>
-                {{ form.switch_id }}
-                <span class="help-block">{{ form.switch_id.help_text|capfirst|safe }} </span>
-        </div>
-    </div>
-</form>
+    {% crispy form form.helper %}
 </div>
 
 {% for c_switch in list_switch %}
@@ -74,12 +64,12 @@ $(function() {
         </center>
     </div>
     <div class="span2 offset1">
-      <div class="well">
-        <center>
-        <h1># {% trans "calls"|title %}</h1>
-        <hr/>
-        <h1 id="numbercall-{{ c_switch.key_uuid }}">0</h1>
-        </center>
+        <div class="well">
+            <center>
+                <h1># {% trans "calls"|title %}</h1>
+                <hr/>
+                <h1 id="numbercall-{{ c_switch.key_uuid }}">0</h1>
+            </center>
       </div>
     </div>
 </div>
