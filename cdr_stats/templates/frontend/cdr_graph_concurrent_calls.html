@@ -1,37 +1,14 @@
 {% extends "frontend/master.html" %}
-{% load i18n cdr_tags nvd3_tags %}
+{% load i18n cdr_tags nvd3_tags crispy_forms_tags %}
 
 {% block extra_header %}
-    <script type="text/javascript">
-    $(function() {
-        $("#id_from_date").datepicker({ format: 'yyyy-mm-dd' });
-    });
-    </script>
-    {% include_nvd3jscss False %}
+    {{ form.media }}
 {% endblock %}
 
 
 {% block content %}
 
-<form class="well form-search" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
-<div class="row">
-    <div class="span12">
-        <div class="row">
-            <div class="span4">
-                <label class="control-label" for="{{ form.from_date.auto_id }}">{{ form.from_date.label|title }}</label>
-                {{ form.from_date }}
-            </div>
-            <div class="span4">
-                <label class="control-label" for="{{ form.switch_id.auto_id }}">{{ form.switch_id.label|title }}</label>
-                {{ form.switch_id }}
-            </div>
-            <div class="span4">
-                <input type="submit" class="btn btn-primary" name="search" value={% trans "search"|title %} />
-            </div>
-        </div>
-    </div>
-</div>
-</form>
+{% crispy form form.helper %}
 
 <div class="row">
     <div class="span12">
@@ -43,8 +20,8 @@
             {% endif %}
             </b>
         </div>
-        {% load_chart charttype chartdata "concurrentcall_container" True "%d %b %Y %H:%S" %}
-        {% include_container "concurrentcall_container" 400 '100%' %}
+        {% load_chart charttype chartdata chartcontainer chart_extra %}
+        {% include_container chartcontainer 400 '100%' %}
     </div>
 </div>
 

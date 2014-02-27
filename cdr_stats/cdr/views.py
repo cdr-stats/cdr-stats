@@ -922,18 +922,18 @@ def cdr_concurrent_calls(request):
     logging.debug('CDR concurrent view start')
     query_var = {}
     switch_id = 0
-    if request.method == 'POST':
-        logging.debug('CDR concurrent view with search option')
-        form = ConcurrentCallForm(request.POST)
-        if form.is_valid():
-            if "from_date" in request.POST and request.POST['from_date'] != '':
-                from_date = request.POST['from_date']
-                start_date = ceil_strdate(from_date, 'start')
-                end_date = ceil_strdate(from_date, 'end')
+    form = ConcurrentCallForm(request.POST or None)
+    logging.debug('CDR concurrent view with search option')
 
-            switch_id = form.cleaned_data.get('switch_id')
-            if switch_id and int(switch_id) != 0:
-                query_var['switch_id'] = int(switch_id)
+    if form.is_valid():
+        if "from_date" in request.POST and request.POST['from_date'] != '':
+            from_date = request.POST['from_date']
+            start_date = ceil_strdate(from_date, 'start')
+            end_date = ceil_strdate(from_date, 'end')
+
+        switch_id = form.cleaned_data.get('switch_id')
+        if switch_id and int(switch_id) != 0:
+            query_var['switch_id'] = int(switch_id)
     else:
         now = datetime.today()
         from_date = now.strftime('%Y-%m-%d')
@@ -976,16 +976,22 @@ def cdr_concurrent_calls(request):
             int_count += 1
 
         logging.debug('CDR concurrent view end')
-        variables = {
+        data = {
             'module': current_view(request),
             'form': form,
             'start_date': start_date,
             'chartdata': chartdata,
             'charttype': charttype,
-        }
+            'chartcontainer': 'stacked_area_container',
+            'chart_extra': {
+                'x_is_date': True,
+                'x_axis_format': '%d %b %Y %H:%S',
+                'tag_script_js': True,
+                'jquery_on_ready': True,
+            },
 
-    return render_to_response('frontend/cdr_graph_concurrent_calls.html', variables,
-           context_instance=RequestContext(request))
+        }
+    return render_to_response('frontend/cdr_graph_concurrent_calls.html', data, context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.real_time_calls', login_url='/')

@@ -232,8 +232,28 @@ class ConcurrentCallForm(CdrSearchForm):
     """
     def __init__(self, *args, **kwargs):
         super(ConcurrentCallForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['from_date', 'result', 'switch_id']
         self.fields['from_date'].label = _('select date')
+        self.helper = FormHelper()
+        self.helper.form_class = 'well'
+        css_class = 'col-md-4'
+        self.helper.layout = Layout(
+            Div(
+                Div('from_date', css_class=css_class),
+                Div('switch_id', css_class=css_class),
+                Div(HTML("""
+                    <b>Result : </b><br/>
+                    <div class="btn-group" data-toggle="buttons">
+                        {% for choice in form.result.field.choices %}
+                        <label class="btn btn-default">
+                            <input name='{{ form.result.name }}' type='radio' value='{{ choice.0 }}'/> {{ choice.1 }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                   """), css_class=css_class),
+                css_class='row'
+            ),
+        )
+        common_submit_buttons(self.helper.layout, 'search')
 
 
 class SwitchForm(SearchForm):
