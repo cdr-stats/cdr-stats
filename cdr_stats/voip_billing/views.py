@@ -54,29 +54,22 @@ def voip_rates(request):
         get all call rates from voip rate API and list them in template
         with pagination & sorting column
     """
-    template = 'voip_billing/rates.html'
-    form = PrefixRetailRrateForm()
+    form = PrefixRetailRrateForm(request.POST or None)
     final_rate_list = []
     # Get pagination data
     sort_col_field_list = ['prefix', 'retail_rate', 'destination']
-    default_sort_field = 'prefix'
-    pagination_data =\
-        get_pagination_vars(request, sort_col_field_list, default_sort_field)
+    pagination_data = get_pagination_vars(request, sort_col_field_list, default_sort_field='prefix')
 
-    PAGE_SIZE = pagination_data['PAGE_SIZE']
     sort_order = pagination_data['sort_order']
-
     order = 'ASC'
     if "-" in sort_order:
         order = 'DESC'
         sort_order = sort_order[1:]
 
     dialcode = ''
-    if request.method == 'POST':
-        form = PrefixRetailRrateForm(request.POST)
-        if form.is_valid():
-            dialcode = request.POST.get('prefix')
-            request.session['dialcode'] = dialcode
+    if form.is_valid():
+        dialcode = request.POST.get('prefix')
+        request.session['dialcode'] = dialcode
     else:
         # pagination with prefix code
         if (request.session.get('dialcode') and
@@ -114,12 +107,11 @@ def voip_rates(request):
         'rate_list': final_rate_list,
         'rate_list_count': len(final_rate_list),
         'col_name_with_order': pagination_data['col_name_with_order'],
-        'PAGE_SIZE': PAGE_SIZE,
+        'PAGE_SIZE': pagination_data['PAGE_SIZE'],
         'RATE_COLUMN_NAME': RATE_COLUMN_NAME,
         'sort_order': sort_order,
     })
-    return render_to_response(template, variables,
-           context_instance=RequestContext(request))
+    return render_to_response('voip_billing/rates.html', variables, context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.export_call_rate', login_url='/')
@@ -181,33 +173,28 @@ def simulator(request):
 
         get min call rates for destination from rate_engine and display them in template
     """
-    template = 'voip_billing/simulator.html'
     data = []
-    form = SimulatorForm(request.user)
+    form = SimulatorForm(request.user, request.POST or None)
     # Get Voip Plan ID according to USER
     voipplan_id = request.user.get_profile().voipplan_id
-
-    if request.method == 'POST':
-        form = SimulatorForm(request.user, request.POST)
-        if form.is_valid():
-            # IS recipient_phone_no/destination no is valid prefix
-            # (Not banned Prefix) ?
-            destination_no = request.POST.get("destination_no")
-            allowed = prefix_allowed_to_call(destination_no, voipplan_id)
-            if allowed:
-                query = rate_engine(destination_no=destination_no, voipplan_id=voipplan_id)
-                for i in query:
-                    r_r_plan = VoIPRetailRate.objects.get(id=i.rrid)
-                    data.append((voipplan_id,
-                                 r_r_plan.voip_retail_plan_id.name,
-                                 i.retail_rate))
+    if form.is_valid():
+        # IS recipient_phone_no/destination no is valid prefix
+        # (Not banned Prefix) ?
+        destination_no = request.POST.get("destination_no")
+        allowed = prefix_allowed_to_call(destination_no, voipplan_id)
+        if allowed:
+            query = rate_engine(destination_no=destination_no, voipplan_id=voipplan_id)
+            for i in query:
+                r_r_plan = VoIPRetailRate.objects.get(id=i.rrid)
+                data.append((voipplan_id,
+                             r_r_plan.voip_retail_plan_id.name,
+                             i.retail_rate))
     data = {
         'module': current_view(request),
         'form': form,
         'data': data,
     }
-    return render_to_response(template, data,
-        context_instance=RequestContext(request))
+    return render_to_response('voip_billing/simulator.html', data, context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.daily_billing', login_url='/')
@@ -230,18 +217,16 @@ def daily_billing_report(request):
         get all call records from mongodb collection for
         daily billing analytics for given date
     """
-    template = 'voip_billing/daily_billing_report.html'
     search_tag = 0
     switch_id = 0
     start_date = ''
     end_date = ''
     tday = datetime.today()
     # assign initial value in form fields
-    form = DailyBillingForm(initial={'from_date': tday.strftime('%Y-%m-%d'),
-                                     'to_date': tday.strftime('%Y-%m-%d')})
-    if request.method == 'POST':
+    form = DailyBillingForm(request.POST or None, initial={'from_date': tday.strftime('%Y-%m-%d'),
+                                                           'to_date': tday.strftime('%Y-%m-%d')})
+    if form.is_valid():
         search_tag = 1
-        form = DailyBillingForm(request.POST)
         if "from_date" in request.POST:
             from_date = request.POST['from_date']
             start_date = ceil_strdate(from_date, 'start')
@@ -329,7 +314,7 @@ def daily_billing_report(request):
         'charttype': charttype,
         'chartdata': chartdata,
     }
-    return render_to_response(template, data, context_instance=RequestContext(request))
+    return render_to_response('voip_billing/daily_billing_report.html', data, context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.hourly_billing', login_url='/')
@@ -352,25 +337,21 @@ def hourly_billing_report(request):
         get all call records from mongodb collection for
         hourly billing analytics for given date
     """
-    template = 'voip_billing/hourly_billing_report.html'
     search_tag = 0
     switch_id = 0
     start_date = ''
     end_date = ''
     tday = datetime.today()
     # assign initial value in form fields
-    form = HourlyBillingForm(initial={'from_date': tday.strftime('%Y-%m-%d')})
-    if request.method == 'POST':
+    form = HourlyBillingForm(request.POST or None, initial={'from_date': tday.strftime('%Y-%m-%d')})
+    if form.is_valid():
         search_tag = 1
-        form = HourlyBillingForm(request.POST)
         if "from_date" in request.POST:
             from_date = request.POST['from_date']
             start_date = ceil_strdate(from_date, 'start')
 
-            start_date = datetime(start_date.year, start_date.month,
-                start_date.day, 0, 0, 0, 0)
-            end_date = datetime(start_date.year, start_date.month,
-                start_date.day, 23, 59, 59, 999999)
+            start_date = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, 0)
+            end_date = datetime(start_date.year, start_date.month, start_date.day, 23, 59, 59, 999999)
 
         if "switch_id" in request.POST:
             switch_id = request.POST['switch_id']
@@ -436,4 +417,4 @@ def hourly_billing_report(request):
         'chartdata': chartdata,
         'charttype': charttype,
     }
-    return render_to_response(template, data, context_instance=RequestContext(request))
+    return render_to_response('voip_billing/hourly_billing_report.html', data, context_instance=RequestContext(request))
