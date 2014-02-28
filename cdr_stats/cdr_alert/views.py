@@ -41,7 +41,7 @@ def alarm_list(request):
 
     **Attributes**:
 
-        * ``template`` - frontend/cdr_alert/alert_list.html
+        * ``template`` - cdr_alert/alert_list.html
 
     **Logic Description**:
 
@@ -49,33 +49,21 @@ def alarm_list(request):
     """
     sort_col_field_list = ['id', 'name', 'period', 'type', 'alert_condition',
                            'alert_value', 'status', 'updated_date']
-    default_sort_field = 'id'
-    pagination_data =\
-        get_pagination_vars(request, sort_col_field_list, default_sort_field)
-
-    PAGE_SIZE = pagination_data['PAGE_SIZE']
-    sort_order = pagination_data['sort_order']
-
-    alarm_list = Alarm.objects\
-        .filter(user=request.user).order_by(sort_order)
-
-    template_name = 'frontend/cdr_alert/alarm/list.html'
-
-    PAGE_SIZE = settings.PAGE_SIZE
+    pagination_data = get_pagination_vars(request, sort_col_field_list, default_sort_field='id')
+    alarm_list = Alarm.objects.filter(user=request.user).order_by(pagination_data['sort_order'])
     template_data = {
         'module': current_view(request),
         'msg': request.session.get('msg'),
         'error_msg': request.session.get('error_msg'),
         'rows': alarm_list,
         'total_count': alarm_list.count(),
-        'PAGE_SIZE': PAGE_SIZE,
+        'PAGE_SIZE': settings.PAGE_SIZE,
         'ALARM_COLUMN_NAME': ALARM_COLUMN_NAME,
         'col_name_with_order': pagination_data['col_name_with_order'],
     }
     request.session['msg'] = ''
     request.session['error_msg'] = ''
-    return render_to_response(template_name, template_data,
-        context_instance=RequestContext(request))
+    return render_to_response('cdr_alert/alarm/list.html', template_data, context_instance=RequestContext(request))
 
 
 @permission_required('cdr_alert.add_alarm', login_url='/')
@@ -86,31 +74,27 @@ def alarm_add(request):
     **Attributes**:
 
         * ``form`` - AlarmForm
-        * ``template`` - frontend/cdr_alert/alarm/change.html
+        * ``template`` - cdr_alert/alarm/change.html
 
     **Logic Description**:
 
         * Add a new Alarm which will belong to the logged in user
           via the AlarmForm & get redirected to the Alarm list
     """
-    form = AlarmForm()
-    if request.method == 'POST':
-        form = AlarmForm(request.POST)
-        if form.is_valid():
-            obj = form.save(commit=False)
-            obj.user = request.user
-            obj.save()
-            request.session["msg"] = _('"%(name)s" added.') %\
-                {'name': request.POST['name']}
-            return HttpResponseRedirect('/alert/')
-    template = 'frontend/cdr_alert/alarm/change.html'
+    form = AlarmForm(request.POST or None)
+    if form.is_valid():
+        obj = form.save(commit=False)
+        obj.user = request.user
+        obj.save()
+        request.session["msg"] = _('"%(name)s" added.') % {'name': request.POST['name']}
+        return HttpResponseRedirect('/alert/')
+
     data = {
         'module': current_view(request),
         'form': form,
         'action': 'add',
     }
-    return render_to_response(template, data,
-        context_instance=RequestContext(request))
+    return render_to_response('cdr_alert/alarm/change.html', data, context_instance=RequestContext(request))
 
 
 @permission_required('cdr_alert.alert_test', login_url='/')
@@ -141,15 +125,13 @@ def alarm_test(request, object_id):
             avg = avg if avg != 0 else 1
             alarm_data['percentage'] = round(alarm_data['diff'] / avg * 100, 2)
 
-    template = 'frontend/cdr_alert/alarm/alarm_testing.html'
     data = {
         'alarm_obj': alarm_obj,
         'alarm_data': alarm_data,
         'ALERT_CONDITION': ALERT_CONDITION,
         'PERIOD': PERIOD,
     }
-    return render_to_response(template, data,
-        context_instance=RequestContext(request))
+    return render_to_response('cdr_alert/alarm/alarm_testing.html', data, context_instance=RequestContext(request))
 
 
 @permission_required('cdr_alert.delete_alarm', login_url='/')
@@ -168,8 +150,7 @@ def alarm_del(request, object_id):
     """
     if int(object_id) != 0:
         # When object_id is not 0
-        alarm = get_object_or_404(
-            Alarm, pk=object_id, user=request.user)
+        alarm = get_object_or_404(Alarm, pk=object_id, user=request.user)
 
         # 1) delete alarm
         request.session["msg"] = _('"%(name)s" is deleted.') % {'name': alarm.name}
@@ -180,11 +161,9 @@ def alarm_del(request, object_id):
         values = ", ".join(["%s" % el for el in values])
         try:
             # 1) delete alarm
-            alarm_list = Alarm.objects.filter(user=request.user)\
-                .extra(where=['id IN (%s)' % values])
+            alarm_list = Alarm.objects.filter(user=request.user).extra(where=['id IN (%s)' % values])
             if alarm_list:
-                request.session["msg"] = _('%(count)s alarm(s) are deleted.')\
-                    % {'count': alarm_list.count()}
+                request.session["msg"] = _('%(count)s alarm(s) are deleted.') % {'count': alarm_list.count()}
                 alarm_list.delete()
         except:
             raise Http404
@@ -209,35 +188,28 @@ def alarm_change(request, object_id):
           via alarmForm & get redirected to alarm list
     """
     alarm = get_object_or_404(Alarm, pk=object_id, user=request.user)
-    form = AlarmForm(instance=alarm)
+    form = AlarmForm(request.POST or None, instance=alarm)
     if request.method == 'POST':
         if request.POST.get('delete'):
             alarm_del(request, object_id)
             return HttpResponseRedirect('/alert/')
         else:
-            form = AlarmForm(request.POST, instance=alarm)
             if form.is_valid():
                 form.save()
-                request.session["msg"] = _('"%(name)s" is updated.')\
-                    % {'name': request.POST['name']}
+                request.session["msg"] = _('"%(name)s" is updated.') % {'name': request.POST['name']}
                 return HttpResponseRedirect('/alert/')
-
-    template = 'frontend/cdr_alert/alarm/change.html'
     data = {
         'module': current_view(request),
         'form': form,
         'action': 'update',
     }
-    return render_to_response(template, data,
-        context_instance=RequestContext(request))
+    return render_to_response('cdr_alert/alarm/change.html', data, context_instance=RequestContext(request))
 
 
 def last_seven_days_report(request, kwargs):
     comp_days = 7
     from_date = datetime.today()
-    from_day = validate_days(from_date.year,
-        from_date.month,
-        from_date.day)
+    from_day = validate_days(from_date.year, from_date.month, from_date.day)
     from_year = from_date.year
     from_month = from_date.month
     end_date = datetime(from_year, from_month, from_day)
@@ -320,38 +292,24 @@ def alert_report(request):
         * ``form`` - AlarmReportForm
         * ``template`` - frontend/cdr_alert/alarm_report.html
     """
-    form = AlarmReportForm(request.user, initial={'alarm': 0})
+    form = AlarmReportForm(request.user, request.POST or None, initial={'alarm': 0})
     sort_col_field_list = ['id', 'alarm', 'calculatedvalue', 'status', 'daterun']
-    default_sort_field = 'id'
-    pagination_data =\
-        get_pagination_vars(request, sort_col_field_list, default_sort_field)
+    pagination_data = get_pagination_vars(request, sort_col_field_list, default_sort_field='id')
 
-    PAGE_SIZE = pagination_data['PAGE_SIZE']
-    sort_order = pagination_data['sort_order']
     alert_id = ''
     action = 'tabs-1'
 
-    if request.method == 'POST':
-        form = AlarmReportForm(request.user, request.POST)
-        if form.is_valid():
-            request.session['session_alarm'] = ''
-
-            if request.POST.get('alarm'):
-                alert_id = request.POST.get('alarm')
-                request.session['session_alarm'] = alert_id
+    if form.is_valid():
+        request.session['session_alarm'] = ''
+        if request.POST.get('alarm'):
+            alert_id = request.POST.get('alarm')
+            request.session['session_alarm'] = alert_id
 
     post_var_with_page = 0
-    try:
-        if request.GET.get('page') or request.GET.get('sort_by'):
-            post_var_with_page = 1
-            alert_id = request.session.get('session_alarm')
-            form = AlarmReportForm(request.user, initial={'alarm': alert_id})
-        else:
-            post_var_with_page = 1
-            if request.method == 'GET':
-                post_var_with_page = 0
-    except:
-        pass
+    if request.GET.get('page') or request.GET.get('sort_by'):
+        post_var_with_page = 1
+        alert_id = request.session.get('session_alarm')
+        form = AlarmReportForm(request.user, initial={'alarm': alert_id})
 
     if post_var_with_page == 0:
         # default
@@ -363,14 +321,13 @@ def alert_report(request):
         kwargs['alarm_id'] = alert_id
     kwargs['alarm__user'] = request.user
 
-    alarm_report_list = AlarmReport.objects.filter(**kwargs).order_by(sort_order)
+    alarm_report_list = AlarmReport.objects.filter(**kwargs).order_by(pagination_data['sort_order'])
     days_report = last_seven_days_report(request, kwargs)
 
     total_data = days_report['total_data']
     start_date = days_report['start_date']
     end_date = days_report['end_date']
 
-    template = 'frontend/cdr_alert/alarm_report.html'
     data = {
         'module': current_view(request),
         'form': form,
@@ -380,14 +337,13 @@ def alert_report(request):
         'end_date': end_date,
         'rows': alarm_report_list,
         'total_count': alarm_report_list.count(),
-        'PAGE_SIZE': PAGE_SIZE,
+        'PAGE_SIZE': pagination_data['PAGE_SIZE'],
         'ALARM_REPORT_COLUMN_NAME': ALARM_REPORT_COLUMN_NAME,
         'col_name_with_order': pagination_data['col_name_with_order'],
         'charttype': days_report['charttype'],
         'chartdata': days_report['chartdata'],
     }
-    return render_to_response(template, data,
-        context_instance=RequestContext(request))
+    return render_to_response('cdr_alert/alarm_report.html', data, context_instance=RequestContext(request))
 
 
 @permission_required('cdr_alert.view_whitelist', login_url='/')
@@ -395,8 +351,7 @@ def alert_report(request):
 @login_required
 def trust_control(request):
     #Blacklist, Whitelist
-    prefix_list = \
-        map(str, Prefix.objects.values_list("prefix", flat=True).all().order_by('prefix'))
+    prefix_list = map(str, Prefix.objects.values_list("prefix", flat=True).all().order_by('prefix'))
     prefix_list = (','.join('"' + item + '"' for item in prefix_list))
     prefix_list = "[" + str(prefix_list) + "]"
 
@@ -411,7 +366,6 @@ def trust_control(request):
     wl_country_form = BWCountryForm()
     wl_prefix_form = BWPrefixForm()
 
-    template = 'frontend/cdr_alert/common_black_white_list.html'
     data = {
         'module': current_view(request),
         'prefix_list': prefix_list,
@@ -422,5 +376,4 @@ def trust_control(request):
         'blacklist': blacklist,
         'whitelist': whitelist,
     }
-    return render_to_response(template, data,
-        context_instance=RequestContext(request))
+    return render_to_response('cdr_alert/common_black_white_list.html', data, context_instance=RequestContext(request))
