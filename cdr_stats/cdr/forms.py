@@ -76,37 +76,23 @@ class SearchForm(forms.Form):
     """
     Form used to search on general parameters in the Customer UI.
     """
-
-    caller = forms.CharField(label=_('callerID number'), required=False)
-    caller_type = forms.ChoiceField(label='', required=False,
+    caller = forms.CharField(label=_('callerID number').capitalize(), required=False)
+    caller_type = forms.ChoiceField(label=_('type').capitalize(), required=False,
                                     choices=list(STRING_SEARCH_TYPE_LIST))
-    caller_type.widget.attrs['class'] = 'input-small'
-
-    destination = forms.CharField(label=_('destination'),
-                                  required=False)
-    destination_type = forms.ChoiceField(label='',
-                                         required=False,
+    destination = forms.CharField(label=_('destination').capitalize(), required=False)
+    destination_type = forms.ChoiceField(label=_('type').capitalize(), required=False,
                                          choices=list(STRING_SEARCH_TYPE_LIST))
-    destination_type.widget.attrs['class'] = 'input-small'
-    accountcode = forms.CharField(label=_('account code'),
-                                  required=False)
-    accountcode_type = forms.ChoiceField(label='',
-                                         required=False,
+    accountcode = forms.CharField(label=_('account code').capitalize(), required=False)
+    accountcode_type = forms.ChoiceField(label=_('type').capitalize(), required=False,
                                          choices=list(STRING_SEARCH_TYPE_LIST))
-    accountcode_type.widget.attrs['class'] = 'input-small'
-    duration = forms.CharField(label=_('duration (secs)'),
-                               required=False)
-    duration_type = forms.ChoiceField(label='',
-                                      required=False,
+    duration = forms.CharField(label=_('duration (secs)').capitalize(), required=False)
+    duration_type = forms.ChoiceField(label=_('type').capitalize(), required=False,
                                       choices=COMPARE_LIST)
-    duration_type.widget.attrs['class'] = 'input-small'
-    hangup_cause_id = forms.ChoiceField(label=_('hangup cause'),
-                                        required=False,
+    hangup_cause_id = forms.ChoiceField(label=_('hangup cause').capitalize(), required=False,
                                         choices=hc_list_with_all())
-    switch_id = forms.ChoiceField(label=_('switch').capitalize(),
-                                  required=False,
+    switch_id = forms.ChoiceField(label=_('switch').capitalize(), required=False,
                                   choices=get_switch_list())
-    country_id = forms.MultipleChoiceField(label=_('country'), required=False,
+    country_id = forms.MultipleChoiceField(label=_('country').capitalize(), required=False,
                                            choices=country_list_with_all())
 
     def __init__(self, *args, **kwargs):
@@ -139,24 +125,61 @@ class CdrSearchForm(SearchForm):
         widget=DateTimePicker(options={"format": "YYYY-MM-DD HH:mm", "pickSeconds": False}))
     to_date = forms.DateTimeField(label=_('to').capitalize(), required=False,
         widget=DateTimePicker(options={"format": "YYYY-MM-DD HH:mm", "pickSeconds": False}))
-    direction = forms.TypedChoiceField(label=_('direction'), required=False,
-                                       coerce=bool,
-                                       choices=(('all', _('all')),
-                                       ('inbound', _('inbound')),
-                                       ('outbound', _('outbound')),
-                                       ('unknown', _('unknown'))))
-    result = forms.TypedChoiceField(label=_('Result'), required=False,
+    direction = forms.TypedChoiceField(label=_('direction').capitalize(), required=False,
+                                       coerce=bool, choices=(('all', _('all')),
+                                                             ('inbound', _('inbound')),
+                                                             ('outbound', _('outbound')),
+                                                             ('unknown', _('unknown'))))
+    result = forms.TypedChoiceField(label=_('result').capitalize(), required=False,
                                     coerce=bool, choices=((1, _('minutes')), (2, _('seconds'))),
-                                    widget=forms.RadioSelect)
-    records_per_page = forms.ChoiceField(label=_('CDR per page'),
-                                         required=False,
-                                         initial=settings.PAGE_SIZE,
-                                         choices=PAGE_SIZE_LIST)
-    records_per_page.widget.attrs['class'] = 'input-mini'
+                                    widget=forms.RadioSelect(renderer=HorizRadioRenderer))
+    records_per_page = forms.ChoiceField(label=_('CDR per page'), required=False,
+                                         initial=settings.PAGE_SIZE, choices=PAGE_SIZE_LIST)
 
     def __init__(self, *args, **kwargs):
         super(CdrSearchForm, self).__init__(*args, **kwargs)
         self.fields['records_per_page'].widget.attrs['onchange'] = 'this.form.submit();'
+        self.helper = FormHelper()
+        self.helper.form_class = 'well'
+        css_class = 'col-md-4'
+        self.helper.layout = Layout(
+            Div(
+                Div('from_date', css_class=css_class),
+                Div('to_date', css_class=css_class),
+                Div('switch_id', css_class=css_class),
+                css_class='row'
+            ),
+            Div(
+                Div('destination', css_class='col-md-2'),
+                Div('destination_type', css_class='col-md-2'),
+                Div('accountcode', css_class='col-md-2'),
+                Div('accountcode_type', css_class='col-md-2'),
+                Div('caller', css_class='col-md-2'),
+                Div('caller_type', css_class='col-md-2'),
+                css_class='row'
+            ),
+            Div(
+                Div('direction', css_class=css_class),
+                Div('duration', css_class='col-md-2'),
+                Div('duration_type', css_class='col-md-2'),
+                Div(HTML("""
+                    <b>Result : </b><br/>
+                    <div class="btn-group" data-toggle="buttons">
+                        {% for choice in form.result.field.choices %}
+                        <label class="btn btn-default {% if choice.0 == 1 %}active{% endif %}">
+                            <input name='{{ form.result.name }}' type='radio' value='{{ choice.0 }}'/> {{ choice.1 }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                   """), css_class=css_class),
+                css_class='row'
+            ),
+            Div(
+                Div('country_id', css_class=css_class),
+                css_class='row'
+            ),
+        )
+        common_submit_buttons(self.helper.layout, 'search')
 
 
 class CountryReportForm(CdrSearchForm):
@@ -218,7 +241,6 @@ class CompareCallSearchForm(SearchForm):
     from_date = forms.DateTimeField(label=_('select date').capitalize(), required=True,
         widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
     comp_days = forms.ChoiceField(label=_('compare'), required=False, choices=comp_day_range(6))
-    comp_days.widget.attrs['class'] = 'input-small'
     check_days = forms.TypedChoiceField(label=_('check with').capitalize(),
                                         choices=list(CheckWith), widget=forms.RadioSelect(renderer=HorizRadioRenderer))
 

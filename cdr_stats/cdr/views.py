@@ -344,8 +344,8 @@ def cdr_view(request):
         request.session['session_country_id'] = ''
         request.session['session_cdr_view_daily_data'] = {}
 
-    start_date = ceil_strdate(from_date, 'start', True)
-    end_date = ceil_strdate(to_date, 'end', True)
+    start_date = from_date  # ceil_strdate(from_date, 'start', True)
+    end_date = to_date  #  ceil_strdate(to_date, 'end', True)
 
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
