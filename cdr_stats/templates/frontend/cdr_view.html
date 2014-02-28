@@ -1,5 +1,5 @@
 {% extends "frontend/master.html" %}
-{% load i18n pagination_tags cdr_tags common_tags crispy_forms_tags %}
+{% load i18n pagination_tags cdr_tags common_tags crispy_forms_tags  %}
 {% load country_dialcode_tags %}
 {% load cache %}
 
@@ -32,11 +32,14 @@
     <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "report by day"|title %}</a></li>
 </ul>
 
-  <div id="form_collapse" class="collapse">
-      {% crispy form form.helper %}
-  </div>
+<div id="form_collapse" class="collapse">
+    <form class="well" method="POST" action="." enctype="multipart/form-data">
+    {% crispy form form.helper %}
+</div>
 
-    {% include "frontend/common_search_toggle_button.html" %}
+    <a id="toggle_btn_search" class="btn" href="#" data-toggle="collapse" data-target="#form_collapse">
+      <i class="icon-zoom-out"></i> <span>{% trans "advanced search"|title %}</span>
+    </a>
 
     <div class="tab-content">
     <div id="tabs-1" class="tab-pane {% if action == "tabs-1" or action == "" %}active{% endif %}">
@@ -281,7 +284,7 @@
             {{ form.records_per_page }}
             {% trans "total calls"|title %} : {{ record_count }}
         </div>
-        </form>
+    </form><!-- complete search form tag-->
 
         {% if rows %}
             {% paginate %}

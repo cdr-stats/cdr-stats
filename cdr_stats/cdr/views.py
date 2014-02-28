@@ -23,7 +23,7 @@ from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 from django_lets_go.common_functions import current_view, get_news, \
     variable_value, mongodb_str_filter, mongodb_int_filter, \
-    int_convert_to_minute, validate_days, ceil_strdate, percentage, \
+    int_convert_to_minute, validate_days, percentage, \
     getvar, unset_session_var
 from cdr.models import Switch
 from cdr.functions_def import get_country_name, get_hangupcause_name,\
@@ -50,6 +50,21 @@ import tablib
 import time
 import logging
 import itertools
+
+
+def ceil_strdate(str_date, start, hour_min=False):
+    """convert a string date to either a start or end day date"""
+    if start == 'start':
+        if hour_min:
+            return datetime(int(str_date[0:4]), int(str_date[5:7]),
+                int(str_date[8:10]), int(str_date[11:13]), int(str_date[14:16]), 0, 0)
+        else:
+            return datetime(int(str_date[0:4]), int(str_date[5:7]), int(str_date[8:10]), 0, 0, 0, 0)
+    else:
+        if hour_min:
+            return datetime(int(str_date[0:4]), int(str_date[5:7]), int(str_date[8:10]), int(str_date[11:13]), int(str_date[14:16]), 0, 0)
+        else:
+            return datetime(int(str_date[0:4]), int(str_date[5:7]), int(str_date[8:10]), 23, 59, 59, 999999)
 
 
 def index(request):
@@ -222,78 +237,44 @@ def cdr_view(request):
     action = 'tabs-1'
     menu = 'on'
     cdr_view_daily_data = {}
-
-    if request.method == 'POST':
+    form = CdrSearchForm(request.POST or None)
+    if form.is_valid():
         logging.debug('CDR Search View')
         search_tag = 1
         request.session['session_search_tag'] = search_tag
-        form = CdrSearchForm(request.POST)
-        if form.is_valid():
-            # set session var value
-            field_list = ['destination', 'result', 'destination_type', 'accountcode',
-                          'accountcode_type', 'caller', 'caller_type', 'duration',
-                          'duration_type', 'hangup_cause_id', 'switch_id', 'direction',
-                          'country_id']
-            unset_session_var(request, field_list)
+        # set session var value
+        field_list = ['destination', 'result', 'destination_type', 'accountcode',
+                      'accountcode_type', 'caller', 'caller_type', 'duration',
+                      'duration_type', 'hangup_cause_id', 'switch_id', 'direction',
+                      'country_id']
+        unset_session_var(request, field_list)
 
-            request.session['session_cdr_view_daily_data'] = {}
-            from_date = getvar(request, 'from_date', setsession=True)
-            to_date = getvar(request, 'to_date', setsession=True)
-            result = getvar(request, 'result', setsession=True)
-            destination = getvar(request, 'destination', setsession=True)
-            destination_type = getvar(request, 'destination_type', setsession=True)
-            accountcode = getvar(request, 'accountcode', setsession=True)
-            accountcode_type = getvar(request, 'accountcode_type', setsession=True)
-            caller = getvar(request, 'caller', setsession=True)
-            caller_type = getvar(request, 'caller_type', setsession=True)
-            duration = getvar(request, 'duration', setsession=True)
-            duration_type = getvar(request, 'duration_type', setsession=True)
-            direction = getvar(request, 'direction', setsession=True)
-            if direction and direction != 'all':
-                request.session['session_direction'] = str(direction)
+        request.session['session_cdr_view_daily_data'] = {}
 
-            switch_id = getvar(request, 'switch_id', setsession=True)
-            hangup_cause_id = getvar(request, 'hangup_cause_id', setsession=True)
-            records_per_page = getvar(request, 'records_per_page', setsession=True)
+        from_date = str(getvar(request, 'from_date', setsession=True))
+        to_date = str(getvar(request, 'to_date', setsession=True))
+        result = getvar(request, 'result', setsession=True)
+        destination = getvar(request, 'destination', setsession=True)
+        destination_type = getvar(request, 'destination_type', setsession=True)
+        accountcode = getvar(request, 'accountcode', setsession=True)
+        accountcode_type = getvar(request, 'accountcode_type', setsession=True)
+        caller = getvar(request, 'caller', setsession=True)
+        caller_type = getvar(request, 'caller_type', setsession=True)
+        duration = getvar(request, 'duration', setsession=True)
+        duration_type = getvar(request, 'duration_type', setsession=True)
+        direction = getvar(request, 'direction', setsession=True)
+        if direction and direction != 'all':
+            request.session['session_direction'] = str(direction)
 
-            country_id = form.cleaned_data.get('country_id')
-            # convert list value in int
-            country_id = [int(row) for row in country_id]
-            if len(country_id) >= 1:
-                request.session['session_country_id'] = country_id
-        else:
-            # form is not valid
-            logging.debug('Error : CDR search form')
-            tday = datetime.today()
-            start_date = datetime(tday.year, tday.month, 1)
-            last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999)
-                + relativedelta(months=1))
-                - relativedelta(days=1)).strftime('%d')
-            end_date = datetime(tday.year, tday.month, int(last_day))
-            cdr_view_daily_data = {
-                'total_data': [],
-                'total_duration': 0,
-                'total_calls': 0,
-                'total_avg_duration': 0,
-                'max_duration': 0,
-            }
-            template_data = {
-                'module': current_view(request),
-                'rows': [],
-                'form': form,
-                'PAGE_SIZE': settings.PAGE_SIZE,
-                'cdr_daily_data': cdr_view_daily_data,
-                'search_tag': search_tag,
-                'col_name_with_order': [],
-                'menu': menu,
-                'start_date': start_date,
-                'end_date': end_date,
-                'action': action,
-                'result': result,
-                'CDR_COLUMN_NAME': CDR_COLUMN_NAME,
-            }
-            logging.debug('CDR View End')
-            return render_to_response('frontend/cdr_view.html', template_data, context_instance=RequestContext(request))
+        switch_id = getvar(request, 'switch_id', setsession=True)
+        hangup_cause_id = getvar(request, 'hangup_cause_id', setsession=True)
+        records_per_page = getvar(request, 'records_per_page', setsession=True)
+
+        country_id = form.cleaned_data.get('country_id')
+        # convert list value in int
+        country_id = [int(row) for row in country_id]
+        if len(country_id) >= 1:
+            request.session['session_country_id'] = country_id
 
     menu = show_menu(request)
     try:
@@ -344,8 +325,8 @@ def cdr_view(request):
         request.session['session_country_id'] = ''
         request.session['session_cdr_view_daily_data'] = {}
 
-    start_date = from_date  # ceil_strdate(from_date, 'start', True)
-    end_date = to_date  #  ceil_strdate(to_date, 'end', True)
+    start_date = ceil_strdate(from_date, 'start', True)  # .strftime('%Y-%m-%d %H:%M')
+    end_date = ceil_strdate(to_date, 'end', True)
 
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
@@ -463,7 +444,7 @@ def cdr_view(request):
         'start_date': start_date,
         'end_date': end_date,
         'action': action,
-        'result': int(result),
+        'result': result,
         'CDR_COLUMN_NAME': CDR_COLUMN_NAME,
     }
 
@@ -1904,7 +1885,6 @@ def cdr_country_report(request):
     # assign initial value in form fields
     total_calls = 0
     total_duration = 0
-    total_record_final = []
     form = CountryReportForm(request.POST or None, initial={'from_date': from_date,
                                                             'to_date': to_date})
     if form.is_valid():

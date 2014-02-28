@@ -126,13 +126,13 @@ class CdrSearchForm(SearchForm):
     to_date = forms.DateTimeField(label=_('to').capitalize(), required=False,
         widget=DateTimePicker(options={"format": "YYYY-MM-DD HH:mm", "pickSeconds": False}))
     direction = forms.TypedChoiceField(label=_('direction').capitalize(), required=False,
-                                       coerce=bool, choices=(('all', _('all')),
-                                                             ('inbound', _('inbound')),
-                                                             ('outbound', _('outbound')),
-                                                             ('unknown', _('unknown'))))
-    result = forms.TypedChoiceField(label=_('result').capitalize(), required=False,
-                                    coerce=bool, choices=((1, _('minutes')), (2, _('seconds'))),
-                                    widget=forms.RadioSelect(renderer=HorizRadioRenderer))
+                                       choices=(('all', _('all')),
+                                                ('inbound', _('inbound')),
+                                                ('outbound', _('outbound')),
+                                                ('unknown', _('unknown'))))
+    result = forms.ChoiceField(label=_('result').capitalize(), required=False,
+                               choices=((1, _('minutes')), (2, _('seconds'))),
+                               widget=forms.RadioSelect(renderer=HorizRadioRenderer))
     records_per_page = forms.ChoiceField(label=_('CDR per page'), required=False,
                                          initial=settings.PAGE_SIZE, choices=PAGE_SIZE_LIST)
 
@@ -140,8 +140,10 @@ class CdrSearchForm(SearchForm):
         super(CdrSearchForm, self).__init__(*args, **kwargs)
         self.fields['records_per_page'].widget.attrs['onchange'] = 'this.form.submit();'
         self.helper = FormHelper()
+        self.helper.form_tag = False
         self.helper.form_class = 'well'
         css_class = 'col-md-4'
+        self.fields['result'].initial = 1
         self.helper.layout = Layout(
             Div(
                 Div('from_date', css_class=css_class),
@@ -163,10 +165,10 @@ class CdrSearchForm(SearchForm):
                 Div('duration', css_class='col-md-2'),
                 Div('duration_type', css_class='col-md-2'),
                 Div(HTML("""
-                    <b>Result : </b><br/>
+                    <b>Result : {{form.result.value}}</b><br/>
                     <div class="btn-group" data-toggle="buttons">
                         {% for choice in form.result.field.choices %}
-                        <label class="btn btn-default {% if choice.0 == 1 %}active{% endif %}">
+                        <label class="btn btn-default {% if choice.0 == form.result.value %}active{% endif %}">
                             <input name='{{ form.result.name }}' type='radio' value='{{ choice.0 }}'/> {{ choice.1 }}
                         </label>
                         {% endfor %}
