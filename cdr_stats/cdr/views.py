@@ -84,8 +84,7 @@ def index(request):
         'errorlogin': errorlogin,
         'news': get_news(settings.NEWS_URL),
     }
-    return render_to_response(template, data,
-        context_instance=RequestContext(request))
+    return render_to_response(template, data, context_instance=RequestContext(request))
 
 
 def show_menu(request):
@@ -201,7 +200,6 @@ def cdr_view(request):
         get the call records as well as daily call analytics
         from mongodb collection according to search parameters
     """
-    template_name = 'frontend/cdr_view.html'
     logging.debug('CDR View Start')
     query_var = {}
     result = 1  # default min
@@ -1914,13 +1912,11 @@ def cdr_country_report(request):
         search_tag = 1
         if "from_date" in request.POST:
             # From
-            from_date = form.cleaned_data.get('from_date')
-            start_date = ceil_strdate(from_date, 'start')
+            start_date = from_date = form.cleaned_data.get('from_date')
 
         if "to_date" in request.POST:
             # To
-            to_date = form.cleaned_data.get('to_date')
-            end_date = ceil_strdate(to_date, 'end')
+            end_date = to_date = form.cleaned_data.get('to_date')
 
         country_id = form.cleaned_data.get('country_id')
         # convert list value in int
