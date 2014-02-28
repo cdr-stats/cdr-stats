@@ -528,6 +528,7 @@ BOWER_INSTALLED_APPS = (
     'd3#3.3.6',
     'nvd3#1.1.12-beta',
     'components-font-awesome#4.0.3',
+    'bower-jvectormap',
 )
 
 #IMPORT LOCAL SETTINGS
