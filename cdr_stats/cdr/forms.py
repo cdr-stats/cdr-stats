@@ -324,9 +324,26 @@ class WorldForm(CdrSearchForm):
     """
     Form used to get world overview of calls in the Customer UI.
     """
+    from_date = forms.DateTimeField(label=_('from').capitalize(), required=True,
+        widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
+    to_date = forms.DateTimeField(label=_('to').capitalize(), required=True,
+        widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
+
     def __init__(self, *args, **kwargs):
         super(WorldForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['from_date', 'to_date', 'switch_id']
+        self.helper = FormHelper()
+        self.helper.form_class = 'well'
+        css_class = 'col-md-4'
+        self.helper.layout = Layout(
+            Div(
+                Div('from_date', css_class=css_class),
+                Div('to_date', css_class=css_class),
+                Div('switch_id', css_class=css_class),
+                css_class='row'
+            ),
+        )
+        self.fields['switch_id'].widget.attrs['onchange'] = 'this.form.submit();'
 
 
 class EmailReportForm(forms.ModelForm):

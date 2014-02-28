@@ -18,9 +18,6 @@
             {% endif %}
         });
     </script>
-    <style type="text/css">
-        .tab-content{ width: 100%;}
-    </style>
     {{ form.media }}
 {% endblock %}
 
@@ -37,9 +34,8 @@
     {% crispy form form.helper %}
 </div>
 
-    <a id="toggle_btn_search" class="btn" href="#" data-toggle="collapse" data-target="#form_collapse">
-      <i class="icon-zoom-out"></i> <span>{% trans "advanced search"|title %}</span>
-    </a>
+    {% include "frontend/common_search_toggle_button.html" %}
+
 
     <div class="tab-content">
     <div id="tabs-1" class="tab-pane {% if action == "tabs-1" or action == "" %}active{% endif %}">

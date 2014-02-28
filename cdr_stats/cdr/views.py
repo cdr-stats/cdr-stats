@@ -2119,42 +2119,24 @@ def world_map_view(request):
     from_date = start_date.strftime("%Y-%m-%d")
     to_date = end_date.strftime("%Y-%m-%d")
     # assign initial value in form fields
-    form = WorldForm(initial={'from_date': from_date, 'to_date': to_date})
+    form = WorldForm(request.POST or None, initial={'from_date': from_date, 'to_date': to_date})
 
-    if request.method == 'POST':
+    if form.is_valid():
         logging.debug('CDR world report view with search option')
         search_tag = 1
-        form = WorldForm(request.POST)
-        if form.is_valid():
-            if "from_date" in request.POST:
-                # From
-                from_date = form.cleaned_data.get('from_date')
-                start_date = ceil_strdate(from_date, 'start')
+        if "from_date" in request.POST:
+            # From
+            from_date = form.cleaned_data.get('from_date')
+            start_date = ceil_strdate(from_date, 'start')
 
-            if "to_date" in request.POST:
-                # To
-                to_date = form.cleaned_data.get('to_date')
-                end_date = ceil_strdate(to_date, 'end')
+        if "to_date" in request.POST:
+            # To
+            to_date = form.cleaned_data.get('to_date')
+            end_date = ceil_strdate(to_date, 'end')
 
-            switch_id = form.cleaned_data.get('switch_id')
-            if switch_id and int(switch_id) != 0:
-                query_var['metadata.switch_id'] = int(switch_id)
-
-        else:
-            world_analytic_array = []
-            logging.debug('Error : CDR world report form')
-            variables = {
-                'module': current_view(request),
-                'form': form,
-                'search_tag': search_tag,
-                'start_date': start_date,
-                'end_date': end_date,
-                'world_analytic_array': world_analytic_array,
-                'action': action,
-            }
-
-            return render_to_response(template_name, variables,
-                context_instance=RequestContext(request))
+        switch_id = form.cleaned_data.get('switch_id')
+        if switch_id and int(switch_id) != 0:
+            query_var['metadata.switch_id'] = int(switch_id)
 
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
