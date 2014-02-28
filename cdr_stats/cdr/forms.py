@@ -331,7 +331,7 @@ class WorldForm(CdrSearchForm):
 
     def __init__(self, *args, **kwargs):
         super(WorldForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['from_date', 'to_date', 'switch_id']
+        #self.fields.keyOrder = ['from_date', 'to_date', 'switch_id']
         self.helper = FormHelper()
         self.helper.form_class = 'well'
         css_class = 'col-md-4'
@@ -350,9 +350,7 @@ class EmailReportForm(forms.ModelForm):
     """
     Form used to change the detail of a user in the Customer UI.
     """
-    multiple_email = forms.CharField(max_length=300, required=False,
-        label=_('Email to send the report'))
-    multiple_email.widget.attrs['class'] = 'span6'
+    multiple_email = forms.CharField(max_length=300, required=False, label=_('Email to send the report'))
 
     class Meta:
         model = UserProfile
@@ -361,6 +359,16 @@ class EmailReportForm(forms.ModelForm):
     def __init__(self, user, *args, **kwargs):
         self.user = user
         super(EmailReportForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_class = 'well'
+        css_class = 'col-md-4'
+        self.helper.layout = Layout(
+            Div(
+                Div('multiple_email', css_class=css_class),
+                css_class='row'
+            ),
+        )
+        common_submit_buttons(self.helper.layout, 'add')
 
     def clean_multiple_email(self):
         """Check that the field contains one or more comma-separated emails

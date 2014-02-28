@@ -82,10 +82,10 @@
 <p>&nbsp;</p>
 
 <div class="row">
-    <div class="span6">
+    <div class="col-md-6">
         <div class="show-grid overlay">
-            <div class="dashboard_summary_header span6">{% trans "total calls"|title %}</div>
-            <div class="span6">
+            <div class="dashboard_summary_header col-md-6">{% trans "total calls"|title %}</div>
+            <div class="col-md-6">
                 <table>
                     <tbody>
                     <tr>
@@ -119,12 +119,12 @@
             </div>
         </div>
     </div>
-    <div class="span6">
+    <div class="col-md-6">
         <div class="show-grid overlay">
             <div class="show-grid overlay">
-                <div class="dashboard_summary_header span6">{% trans "5 most called countries"|title %}</div>
+                <div class="dashboard_summary_header col-md-6">{% trans "5 most called countries"|title %}</div>
                 {% if country_analytic_array %}
-                    <div class="span6">
+                    <div class="col-md-6">
                         <table>
                             <tbody>
                             {% for country_data in country_analytic_array %}
@@ -151,7 +151,7 @@
                         </table>
                     </div>
                 {% else %}
-                    <div class="span5">{% trans "no record found"|title %}</div>
+                    <div class="col-md-6">{% trans "no record found"|title %}</div>
                 {% endif %}
             </div>
         </div>
@@ -161,12 +161,12 @@
 <p>&nbsp;</p>
 
 <div class="row">
-    <div class="span6">
+    <div class="col-md-6">
         <div class="show-grid overlay">
             <div class="show-grid overlay">
-                <div class="dashboard_summary_header span6">{% trans "calls status"|title %}</div>
+                <div class="dashboard_summary_header col-md-6">{% trans "calls status"|title %}</div>
                 {% if hangup_analytic_array %}
-                    <div class="span6">
+                    <div class="col-md-6">
                         <table>
                             <tbody>
                             {% for hangup in hangup_analytic_array %}
@@ -179,7 +179,7 @@
                         </table>
                     </div>
                 {% else %}
-                    <div class="span6">{% trans "no record found"|title %}</div>
+                    <div class="col-md-6">{% trans "no record found"|title %}</div>
                 {% endif %}
             </div>
         </div>
