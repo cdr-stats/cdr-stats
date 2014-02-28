@@ -343,7 +343,7 @@ class WorldForm(CdrSearchForm):
                 css_class='row'
             ),
         )
-        self.fields['switch_id'].widget.attrs['onchange'] = 'this.form.submit();'
+        common_submit_buttons(self.helper.layout, 'search')
 
 
 class EmailReportForm(forms.ModelForm):
