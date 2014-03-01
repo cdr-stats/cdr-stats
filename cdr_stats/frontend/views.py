@@ -30,6 +30,41 @@ from mongodb_connection import mongodb
 news_url = settings.NEWS_URL
 
 
+def index(request):
+    """Index Page of CDR-Stats
+
+    **Attributes**:
+
+        * ``template`` - frontend/index.html
+        * ``form`` - loginForm
+    """
+    template = 'frontend/index.html'
+    errorlogin = ''
+    loginform = LoginForm()
+
+    if request.GET.get('db_error'):
+        if request.GET['db_error'] == 'closed':
+            errorlogin = _('mongodb database connection is closed!')
+        if request.GET['db_error'] == 'locked':
+            errorlogin = _('mongodb database is locked!')
+
+    if request.GET.get('acc_code_error'):
+        if request.GET['acc_code_error'] == 'true':
+            errorlogin = _('account code is not assigned!')
+
+    if request.GET.get('voip_plan_error'):
+        if request.GET['voip_plan_error'] == 'true':
+            errorlogin = _('voip plan is not attached to user!')
+
+    data = {
+        'module': current_view(request),
+        'loginform': loginform,
+        'errorlogin': errorlogin,
+        'news': get_news(settings.NEWS_URL),
+    }
+    return render_to_response(template, data, context_instance=RequestContext(request))
+
+
 @permission_required('user_profile.diagnostic', login_url='/')
 @login_required
 def diagnostic(request):
@@ -158,9 +193,7 @@ def login_view(request):
         * If submitted user credentials are valid then system will redirect to
           the dashboard.
     """
-    template = 'frontend/index.html'
     errorlogin = ''
-
     if request.method == 'POST':
         loginform = LoginForm(request.POST)
         if loginform.is_valid():
@@ -193,8 +226,7 @@ def login_view(request):
         'is_authenticated': request.user.is_authenticated(),
     }
 
-    return render_to_response(template, data,
-           context_instance=RequestContext(request))
+    return render_to_response('frontend/index.html', data, context_instance=RequestContext(request))
 
 
 def pleaselog(request):

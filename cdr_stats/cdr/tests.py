@@ -25,7 +25,7 @@ from cdr.tasks import sync_cdr_pending, get_channels_info
 from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
     cdr_daily_comparison, cdr_concurrent_calls,\
     cdr_realtime, cdr_country_report, mail_report,\
-    world_map_view, index, cdr_detail
+    world_map_view, cdr_detail
 from cdr.functions_def import get_switch_list, get_hangupcause_name,\
     get_hangupcause_id, get_hc_list, get_country_id
 from cdr.templatetags.cdr_tags import hangupcause_name_with_title, mongo_id
@@ -118,18 +118,6 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
     #    call_command('sync_cdr_freeswitch')
     #    #call_command('sync_cdr_asterisk', '--apply-index')
     #    #call_command('sync_cdr_asterisk')
-
-    def test_index(self):
-        """Test Function to check customer index page"""
-        response = self.client.get('/')
-        #self.assertTemplateUsed(response, 'frontend/index.html')
-        self.assertEqual(response.status_code, 200)
-
-        request = self.factory.get('/')
-        request.user = self.user
-        request.session = {}
-        response = index(request)
-        self.assertEqual(response.status_code, 200)
 
     def test_dashboard(self):
         """Test Function to check customer dashboard"""

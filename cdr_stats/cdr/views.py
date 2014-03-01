@@ -31,7 +31,6 @@ from cdr.functions_def import get_country_name, get_hangupcause_name,\
 from cdr.forms import CdrSearchForm, \
     CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
     ConcurrentCallForm, SwitchForm, WorldForm, EmailReportForm
-from frontend.forms import LoginForm
 from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_monthly_overview, pipeline_daily_overview,\
     pipeline_hourly_overview, pipeline_country_report,\
@@ -66,41 +65,6 @@ def ceil_strdate(str_date, start, hour_min=False):
             return datetime(int(str_date[0:4]), int(str_date[5:7]), int(str_date[8:10]), int(str_date[11:13]), int(str_date[14:16]), 0, 0)
         else:
             return datetime(int(str_date[0:4]), int(str_date[5:7]), int(str_date[8:10]), 23, 59, 59, 999999)
-
-
-def index(request):
-    """Index Page of CDR-Stats
-
-    **Attributes**:
-
-        * ``template`` - frontend/index.html
-        * ``form`` - loginForm
-    """
-    template = 'frontend/index.html'
-    errorlogin = ''
-    loginform = LoginForm()
-
-    if request.GET.get('db_error'):
-        if request.GET['db_error'] == 'closed':
-            errorlogin = _('mongodb database connection is closed!')
-        if request.GET['db_error'] == 'locked':
-            errorlogin = _('mongodb database is locked!')
-
-    if request.GET.get('acc_code_error'):
-        if request.GET['acc_code_error'] == 'true':
-            errorlogin = _('account code is not assigned!')
-
-    if request.GET.get('voip_plan_error'):
-        if request.GET['voip_plan_error'] == 'true':
-            errorlogin = _('voip plan is not attached to user!')
-
-    data = {
-        'module': current_view(request),
-        'loginform': loginform,
-        'errorlogin': errorlogin,
-        'news': get_news(settings.NEWS_URL),
-    }
-    return render_to_response(template, data, context_instance=RequestContext(request))
 
 
 def show_menu(request):
@@ -450,7 +414,7 @@ def cdr_view(request):
     }
 
     logging.debug('CDR View End')
-    return render_to_response('frontend/cdr_view.html', template_data, context_instance=RequestContext(request))
+    return render_to_response('cdr/list.html', template_data, context_instance=RequestContext(request))
 
 
 @login_required
@@ -552,10 +516,8 @@ def cdr_detail(request, id, switch_id):
             raise Http404
 
         doc = DBCON[table_name].find({'_id': ObjectId(id)})
-        return render_to_response(
-            'frontend/cdr_detail_freeswitch.html',
-            {'row': list(doc), 'menu': menu},
-            context_instance=RequestContext(request))
+        data = {'row': list(doc), 'menu': menu}
+        return render_to_response('cdr/detail_freeswitch.html', data, context_instance=RequestContext(request))
 
     elif cdr_type == 'asterisk':
         #Connect on Database
@@ -589,11 +551,8 @@ def cdr_detail(request, id, switch_id):
         row = cursor.fetchone()
         if not row:
             raise Http404
-
-        return render_to_response(
-            'frontend/cdr_detail_asterisk.html',
-            {'row': list(row), 'menu': menu},
-            context_instance=RequestContext(request))
+        data = {'row': list(row), 'menu': menu}
+        return render_to_response('cdr/detail_asterisk.html', data, context_instance=RequestContext(request))
 
 
 def chk_date_for_hrs(previous_date, graph_date):
@@ -878,7 +837,7 @@ def cdr_dashboard(request):
         },
     }
 
-    return render_to_response('frontend/cdr_dashboard.html', variables, context_instance=RequestContext(request))
+    return render_to_response('cdr/dashboard.html', variables, context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.concurrent_calls', login_url='/')
@@ -970,7 +929,7 @@ def cdr_concurrent_calls(request):
                 'jquery_on_ready': True,
             },
         }
-    return render_to_response('frontend/cdr_graph_concurrent_calls.html', data, context_instance=RequestContext(request))
+    return render_to_response('cdr/graph_concurrent_calls.html', data, context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.real_time_calls', login_url='/')
@@ -1032,7 +991,7 @@ def cdr_realtime(request):
             'realtime_graph_maxcall': settings.REALTIME_Y_AXIS_LIMIT,
         }
 
-    return render_to_response('frontend/cdr_graph_realtime.html', variables, context_instance=RequestContext(request))
+    return render_to_response('cdr/graph_realtime.html', variables, context_instance=RequestContext(request))
 
 
 def get_cdr_mail_report():
@@ -1158,18 +1117,13 @@ def mail_report(request):
         to generate mail report
     """
     logging.debug('CDR mail report view start')
-    template = 'frontend/cdr_mail_report.html'
     msg = ''
-
     user_profile = request.user.get_profile()
 
-    form = EmailReportForm(request.user, instance=user_profile)
-    if request.method == 'POST':
-        form = EmailReportForm(request.user, request.POST,
-                               instance=user_profile)
-        if form.is_valid():
-            form.save()
-            msg = _('email ids are saved successfully.')
+    form = EmailReportForm(request.user, request.POST or None, instance=user_profile)
+    if form.is_valid():
+        form.save()
+        msg = _('email ids are saved successfully.')
 
     mail_data = get_cdr_mail_report()
     logging.debug('CDR mail report view end')
@@ -1188,8 +1142,7 @@ def mail_report(request):
         'hangup_analytic_array': mail_data['hangup_analytic_array'],
         'msg': msg,
     }
-    return render_to_response(template, data,
-           context_instance=RequestContext(request))
+    return render_to_response('cdr/mail_report.html', data, context_instance=RequestContext(request))
 
 
 def get_hourly_report_for_date(start_date, end_date, query_var):
@@ -1404,7 +1357,7 @@ def cdr_daily_comparison(request):
                 'jquery_on_ready': True,
             },
         }
-        return render_to_response('frontend/cdr_report_by_hour.html', variables, context_instance=RequestContext(request))
+        return render_to_response('cdr/report_by_hour.html', variables, context_instance=RequestContext(request))
 
 
 @check_cdr_exists
@@ -1853,7 +1806,7 @@ def cdr_overview(request):
                 'jquery_on_ready': False,
             },
         }
-        return render_to_response('frontend/cdr_overview.html', variables, context_instance=RequestContext(request))
+        return render_to_response('cdr/overview.html', variables, context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.by_country', login_url='/')
@@ -2086,7 +2039,7 @@ def cdr_country_report(request):
             'jquery_on_ready': False,
         },
     }
-    return render_to_response('frontend/cdr_country_report.html', data, context_instance=RequestContext(request))
+    return render_to_response('cdr/country_report.html', data, context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.world_map', login_url='/')
@@ -2109,7 +2062,6 @@ def world_map_view(request):
         to create country call
     """
     logging.debug('CDR world report view start')
-    template_name = 'frontend/world_map.html'
     action = 'tabs-1'
     switch_id = 0
     query_var = {}
@@ -2178,5 +2130,4 @@ def world_map_view(request):
         'world_analytic_array': world_analytic_array,
         'action': action,
     }
-    return render_to_response(template_name, variables,
-        context_instance=RequestContext(request))
+    return render_to_response('cdr/world_map.html', variables, context_instance=RequestContext(request))
