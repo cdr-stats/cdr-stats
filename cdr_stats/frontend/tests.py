@@ -14,7 +14,7 @@
 
 from django.test import TestCase
 from django_lets_go.utils import BaseAuthenticatedClient
-from frontend.views import index, login_view, logout_view, diagnostic
+from frontend.views import login_view, logout_view, diagnostic
 
 
 class FrontendView(BaseAuthenticatedClient):
@@ -34,18 +34,6 @@ class FrontendCustomerView(BaseAuthenticatedClient):
     """Test cases for Cdr-stats Customer Interface."""
 
     fixtures = ['auth_user.json']
-
-    def test_index(self):
-        """Test Function to check customer index page"""
-        response = self.client.get('/')
-        #self.assertTemplateUsed(response, 'frontend/index.html')
-        self.assertEqual(response.status_code, 200)
-
-        request = self.factory.get('/')
-        request.user = self.user
-        request.session = {}
-        response = index(request)
-        self.assertEqual(response.status_code, 200)
 
     def test_login_view(self):
         """Test Function to check login view"""

@@ -30,6 +30,7 @@ from mongodb_connection import mongodb
 news_url = settings.NEWS_URL
 
 
+@login_required
 def index(request):
     """Index Page of CDR-Stats
 
@@ -38,7 +39,7 @@ def index(request):
         * ``template`` - frontend/index.html
         * ``form`` - loginForm
     """
-    template = 'frontend/index.html'
+    print 'shreink'
     errorlogin = ''
     loginform = LoginForm()
 
@@ -62,7 +63,7 @@ def index(request):
         'errorlogin': errorlogin,
         'news': get_news(settings.NEWS_URL),
     }
-    return render_to_response(template, data, context_instance=RequestContext(request))
+    return render_to_response('frontend/index.html', data, context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.diagnostic', login_url='/')

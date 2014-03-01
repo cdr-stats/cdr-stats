@@ -20,8 +20,7 @@ from django.http import HttpResponseRedirect
 from django.template.context import RequestContext
 from django.utils.translation import ugettext_lazy as _
 from user_profile.models import UserProfile
-from user_profile.forms import UserChangeDetailForm, \
-    UserChangeDetailExtendForm
+from user_profile.forms import UserChangeDetailForm, UserChangeDetailExtendForm
 from django_lets_go.common_functions import current_view
 
 
