@@ -39,7 +39,6 @@ def index(request):
         * ``template`` - frontend/index.html
         * ``form`` - loginForm
     """
-    print 'shreink'
     errorlogin = ''
     loginform = LoginForm()
 
