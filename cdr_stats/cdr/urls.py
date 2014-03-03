@@ -15,8 +15,6 @@ from django.conf.urls import patterns
 
 
 urlpatterns = patterns('cdr.views',
-    (r'^$', 'index'),
-    (r'^index/$', 'index'),
     (r'^cdr_view/$', 'cdr_view'),
     (r'^cdr_export_csv/$', 'cdr_export_to_csv'),
     (r'^cdr_detail/(?P<id>\w+)/(?P<switch_id>\w+)/$', 'cdr_detail'),

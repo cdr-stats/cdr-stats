@@ -30,7 +30,6 @@ from mongodb_connection import mongodb
 news_url = settings.NEWS_URL
 
 
-@login_required
 def index(request):
     """Index Page of CDR-Stats
 

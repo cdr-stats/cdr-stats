@@ -68,41 +68,6 @@ def ceil_strdate(str_date, start, hour_min=False):
             return datetime(int(str_date[0:4]), int(str_date[5:7]), int(str_date[8:10]), 23, 59, 59, 999999)
 
 
-def index(request):
-    """Index Page of CDR-Stats
-
-    **Attributes**:
-
-        * ``template`` - frontend/index.html
-        * ``form`` - loginForm
-    """
-    template = 'frontend/index.html'
-    errorlogin = ''
-    loginform = LoginForm()
-
-    if request.GET.get('db_error'):
-        if request.GET['db_error'] == 'closed':
-            errorlogin = _('mongodb database connection is closed!')
-        if request.GET['db_error'] == 'locked':
-            errorlogin = _('mongodb database is locked!')
-
-    if request.GET.get('acc_code_error'):
-        if request.GET['acc_code_error'] == 'true':
-            errorlogin = _('account code is not assigned!')
-
-    if request.GET.get('voip_plan_error'):
-        if request.GET['voip_plan_error'] == 'true':
-            errorlogin = _('voip plan is not attached to user!')
-
-    data = {
-        'module': current_view(request),
-        'loginform': loginform,
-        'errorlogin': errorlogin,
-        'news': get_news(settings.NEWS_URL),
-    }
-    return render_to_response(template, data, context_instance=RequestContext(request))
-
-
 def show_menu(request):
     """Check if we suppose to show menu"""
     try:
