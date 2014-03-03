@@ -102,7 +102,6 @@ def voip_rates(request):
     request.session['final_rate_list'] = final_rate_list
 
     variables = RequestContext(request, {
-        'module': current_view(request),
         'form': form,
         'user': request.user,
         'rate_list': final_rate_list,
@@ -191,7 +190,6 @@ def simulator(request):
                              r_r_plan.voip_retail_plan_id.name,
                              i.retail_rate))
     data = {
-        'module': current_view(request),
         'form': form,
         'data': data,
     }

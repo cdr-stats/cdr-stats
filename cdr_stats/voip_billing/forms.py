@@ -21,7 +21,7 @@ from voip_billing.constants import CONFIRMATION_TYPE
 from cdr.forms import sw_list_with_all, CdrSearchForm
 from mod_utils.forms import Exportfile, common_submit_buttons
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Div, HTML, Submit
+from crispy_forms.layout import Layout, Div, HTML, Submit, Field
 from crispy_forms.bootstrap import FormActions
 
 
@@ -202,6 +202,17 @@ class SimulatorForm(SendVoIPForm):
         self.fields.keyOrder = ['plan_id', 'destination_no', ]
         if not user.is_superuser:
             self.fields['plan_id'] = forms.ChoiceField(widget=forms.HiddenInput())
+        self.helper = FormHelper()
+        self.helper.form_class = 'well'
+        css_class = 'col-md-4'
+        self.helper.layout = Layout(
+            Div(
+                Div('destination_no', css_class=css_class),
+                Div('plan_id', css_class=css_class),
+                css_class='row',
+            ),
+        )
+        common_submit_buttons(self.helper.layout, 'search')
 
     def clean_plan_id(self):
         """
