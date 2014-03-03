@@ -5,7 +5,16 @@
 
 {% block extra_head %}
     {{ form.media }}
-    {% include "frontend/common_datepicker.html" %}
+    <script type="text/javascript">
+        $(function() {
+            $("#id_from_date_picker").on("change.dp",function (e) {
+               $('#id_to_date_picker').data("DateTimePicker").setStartDate(e.date);
+            });
+            $("#id_to_date_picker").on("change.dp",function (e) {
+               $('#id_from_date_picker').data("DateTimePicker").setEndDate(e.date);
+            });
+        });
+    </script>
     {% load_chart charttype chartdata chartcontainer extra %}
 {% endblock %}
 
