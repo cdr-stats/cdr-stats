@@ -1,3 +1,54 @@
+function toggleChecked(status) {
+    $(".checkbox").each( function() {
+        $(this).attr("checked", status);
+    })
+}
+
+$(document).ready(function() {
+    $('#ListForm').submit(function(e) {
+
+        var currentForm = this;
+        e.preventDefault();
+
+        var $fields = $(this).find('input[name="select"]:checked');
+
+        if (!$fields.length) {
+            msg = gettext('you must check at least one box!');
+            bootbox.alert(msg);
+            return false; // The form will *not* submit
+        }
+        else
+        {
+            var confirm_string;
+            var contact_count;
+
+            if(document.location.href.search("/alert/") != -1) {
+                confirm_string =  $fields.length + gettext(' alarms(s) are going to be deleted?');
+            }
+
+            bootbox.confirm(confirm_string, function(result) {
+                if (result) {
+                    currentForm.submit();
+                }
+            });
+
+            return false;
+        }
+    });
+
+    $('#id_delete_confirm').click(function(e) {
+        e.preventDefault();
+        var href = this.href;
+        confirm_string = gettext('confirm deletion?');
+        bootbox.confirm(confirm_string, function(result){
+            if (result) {
+                window.location = href;
+            }
+        });
+        return false;
+    });
+});
+
 var previousPoint = null;
 
 function showTooltip(x, y, contents) {
@@ -43,8 +94,7 @@ function MonthName(m, type){
             gettext("sep"),
             gettext("oct"),
             gettext("nov"),
-            gettext("dec"),
-    );
+            gettext("dec"));
     var month = new Array(
             gettext("january"),
             gettext("february"),
@@ -57,10 +107,19 @@ function MonthName(m, type){
             gettext("september"),
             gettext("october"),
             gettext("november"),
-            gettext("december"),
-    );
+            gettext("december"));
     if (type == 0)
         return short_month[m-1];
     else
         return month[m-1];
+}
+
+function add_button()
+{
+    window.location = 'add/';
+}
+
+function delete_button()
+{
+    $('#ListForm').submit();
 }
