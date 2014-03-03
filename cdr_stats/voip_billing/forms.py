@@ -22,7 +22,7 @@ from cdr.forms import sw_list_with_all, CdrSearchForm
 from mod_utils.forms import Exportfile, common_submit_buttons
 from bootstrap3_datetime.widgets import DateTimePicker
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Div, HTML, Submit, Field
+from crispy_forms.layout import Layout, Div, HTML, Submit
 from crispy_forms.bootstrap import FormActions
 
 

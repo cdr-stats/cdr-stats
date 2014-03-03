@@ -12,114 +12,121 @@
 {% block container %}
 
     {% block content %}
-        <div class="modal-header">
-            <a class="close" data-dismiss="modal" >&times;</a>
-            <h3>{% trans "alarm test"|title %}</h3>
-        </div>
-        <div class="modal-body">
-            <table class="table table-striped table-bordered table-condensed">
-            <tr>
-                <th>{% trans "alarm type"|capfirst %}</th>
-                <td>{{ alarm_obj.type|alarm_type }}</td>
-            </tr>
-            <tr>
-                <th>{% trans "alarm period"|capfirst %}</th>
-                <td>{{ alarm_obj.period|alarm_period }}</td>
-            </tr>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a id="id_close_x" class="close" data-dismiss="modal">&times;</a>
+                    <h3>{% trans "alarm test"|title %}
+                        <small></small>
+                    </h3>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-condensed">
+                            <tr>
+                                <th>{% trans "alarm type"|capfirst %}</th>
+                                <td>{{ alarm_obj.type|alarm_type }}</td>
+                            </tr>
+                            <tr>
+                                <th>{% trans "alarm period"|capfirst %}</th>
+                                <td>{{ alarm_obj.period|alarm_period }}</td>
+                            </tr>
 
-            {# This condition only apply if PERIOD is "Day" #}
-            {% if alarm_obj.period == PERIOD.DAY %}
-            <tr>
-                <th>{% trans "alarm condition addon"|capfirst %}</th>
-                <td>{{ alarm_obj.alert_condition_add_on|alarm_condition_add_on }}</td>
-            </tr>
-            {% endif %}
+                            {# This condition only apply if PERIOD is "Day" #}
+                            {% if alarm_obj.period == PERIOD.DAY %}
+                            <tr>
+                                <th>{% trans "alarm condition addon"|capfirst %}</th>
+                                <td>{{ alarm_obj.alert_condition_add_on|alarm_condition_add_on }}</td>
+                            </tr>
+                            {% endif %}
 
-            {% if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN  %}
-            <tr>
-                <th>{% trans "alarm condition"|capfirst %}</th>
-                <td>{{ alarm_obj.alert_value }} {{ alarm_obj.alert_condition|alarm_condition }} {{ alarm_data.previous_value }}</td>
-            </tr>
-            <tr>
-                <th>{% trans "alarm will trigger"|capfirst %}</th>
-                <td>
-                    {% if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN %}
-                        {% if alarm_obj.alert_value < alarm_data.current_value %}
-                            <font class="text-success"><strong>{% trans "yes"|capfirst %}</strong></font>
-                        {% else %}
-                            <font class="text-error"><strong>{% trans "no"|capfirst %}</strong></font>
-                        {% endif %}
-                    {% endif %}
+                            {% if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN  %}
+                            <tr>
+                                <th>{% trans "alarm condition"|capfirst %}</th>
+                                <td>{{ alarm_obj.alert_value }} {{ alarm_obj.alert_condition|alarm_condition }} {{ alarm_data.previous_value }}</td>
+                            </tr>
+                            <tr>
+                                <th>{% trans "alarm will trigger"|capfirst %}</th>
+                                <td>
+                                    {% if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN %}
+                                        {% if alarm_obj.alert_value < alarm_data.current_value %}
+                                            <font class="text-success"><strong>{% trans "yes"|capfirst %}</strong></font>
+                                        {% else %}
+                                            <font class="text-error"><strong>{% trans "no"|capfirst %}</strong></font>
+                                        {% endif %}
+                                    {% endif %}
 
-                    {% if alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN %}
-                        {% if alarm_obj.alert_value > alarm_data.current_value %}
-                            <font class="text-success"><strong>{% trans "yes"|capfirst %}</strong></font>
-                        {% else %}
-                            <font class="text-error"><strong>{% trans "no"|capfirst %}</strong></font>
-                        {% endif %}
-                    {% endif %}
-                </td>
-            </tr>
-            {% endif %}
+                                    {% if alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN %}
+                                        {% if alarm_obj.alert_value > alarm_data.current_value %}
+                                            <font class="text-success"><strong>{% trans "yes"|capfirst %}</strong></font>
+                                        {% else %}
+                                            <font class="text-error"><strong>{% trans "no"|capfirst %}</strong></font>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endif %}
 
-            {% if alarm_obj.alert_condition == ALERT_CONDITION.DECREASE_BY_MORE_THAN or alarm_obj.alert_condition == ALERT_CONDITION.INCREASE_BY_MORE_THAN  %}
-            <tr>
-                <th>{% trans "alarm condition"|capfirst %}</th>
-                <td>{{ alarm_data.diff }} {{ alarm_obj.alert_condition|alarm_condition }} {{ alarm_obj.alert_value }}</td>
-            </tr>
-            <tr>
-                <th>{% trans "alarm will trigger"|capfirst %}</th>
-                <td>
-                    {% if alarm_obj.alert_condition == ALERT_CONDITION.DECREASE_BY_MORE_THAN %}
-                        {% if alarm_data.diff < alarm_obj.alert_value %}
-                            <font class="text-success"><strong>{% trans "yes"|capfirst %}</strong></font>
-                        {% else %}
-                            <font class="text-error"><strong>{% trans "no"|capfirst %}</strong></font>
-                        {% endif %}
-                    {% endif %}
+                            {% if alarm_obj.alert_condition == ALERT_CONDITION.DECREASE_BY_MORE_THAN or alarm_obj.alert_condition == ALERT_CONDITION.INCREASE_BY_MORE_THAN  %}
+                            <tr>
+                                <th>{% trans "alarm condition"|capfirst %}</th>
+                                <td>{{ alarm_data.diff }} {{ alarm_obj.alert_condition|alarm_condition }} {{ alarm_obj.alert_value }}</td>
+                            </tr>
+                            <tr>
+                                <th>{% trans "alarm will trigger"|capfirst %}</th>
+                                <td>
+                                    {% if alarm_obj.alert_condition == ALERT_CONDITION.DECREASE_BY_MORE_THAN %}
+                                        {% if alarm_data.diff < alarm_obj.alert_value %}
+                                            <font class="text-success"><strong>{% trans "yes"|capfirst %}</strong></font>
+                                        {% else %}
+                                            <font class="text-error"><strong>{% trans "no"|capfirst %}</strong></font>
+                                        {% endif %}
+                                    {% endif %}
 
-                    {% if alarm_obj.alert_condition == ALERT_CONDITION.INCREASE_BY_MORE_THAN %}
-                        {% if alarm_data.diff > alarm_obj.alert_value %}
-                            <font class="text-success"><strong>{% trans "yes"|capfirst %}</strong></font>
-                        {% else %}
-                            <font class="text-error"><strong>{% trans "no"|capfirst %}</strong></font>
-                        {% endif %}
-                    {% endif %}
-                </td>
-            </tr>
-            {% endif %}
+                                    {% if alarm_obj.alert_condition == ALERT_CONDITION.INCREASE_BY_MORE_THAN %}
+                                        {% if alarm_data.diff > alarm_obj.alert_value %}
+                                            <font class="text-success"><strong>{% trans "yes"|capfirst %}</strong></font>
+                                        {% else %}
+                                            <font class="text-error"><strong>{% trans "no"|capfirst %}</strong></font>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endif %}
 
-            {% if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_DECREASE_BY_MORE_THAN or alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_INCREASE_BY_MORE_THAN  %}
-            <tr>
-                <th>{% trans "alarm condition"|capfirst %}</th>
-                <td>{{ alarm_data.percentage }} {{ alarm_obj.alert_condition|alarm_condition }} {{ alarm_obj.alert_value }}</td>
-            </tr>
-            <tr>
-                <th>{% trans "alarm will trigger"|capfirst %}</th>
-                <td>
-                    {% if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_DECREASE_BY_MORE_THAN %}
-                        {% if alarm_data.percentage < alarm_obj.alert_value %}
-                            <font class="text-success"><strong>{% trans "yes"|capfirst %}</strong></font>
-                        {% else %}
-                            <font class="text-error"><strong>{% trans "no"|capfirst %}</strong></font>
-                        {% endif %}
-                    {% endif %}
+                            {% if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_DECREASE_BY_MORE_THAN or alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_INCREASE_BY_MORE_THAN  %}
+                            <tr>
+                                <th>{% trans "alarm condition"|capfirst %}</th>
+                                <td>{{ alarm_data.percentage }} {{ alarm_obj.alert_condition|alarm_condition }} {{ alarm_obj.alert_value }}</td>
+                            </tr>
+                            <tr>
+                                <th>{% trans "alarm will trigger"|capfirst %}</th>
+                                <td>
+                                    {% if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_DECREASE_BY_MORE_THAN %}
+                                        {% if alarm_data.percentage < alarm_obj.alert_value %}
+                                            <font class="text-success"><strong>{% trans "yes"|capfirst %}</strong></font>
+                                        {% else %}
+                                            <font class="text-error"><strong>{% trans "no"|capfirst %}</strong></font>
+                                        {% endif %}
+                                    {% endif %}
 
-                    {% if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_INCREASE_BY_MORE_THAN %}
-                        {% if alarm_data.percentage > alarm_obj.alert_value %}
-                            <font class="text-success"><strong>{% trans "yes"|capfirst %}</strong></font>
-                        {% else %}
-                            <font class="text-error"><strong>{% trans "no"|capfirst %}</strong></font>
-                        {% endif %}
-                    {% endif %}
-                </td>
-            </tr>
-            {% endif %}
-
-            </table>
-        </div>
-        <div class="modal-footer">
-            <a href="#" class="close btn" data-dismiss="modal">{% trans "close"|title %}</a>
+                                    {% if alarm_obj.alert_condition == ALERT_CONDITION.PERCENTAGE_INCREASE_BY_MORE_THAN %}
+                                        {% if alarm_data.percentage > alarm_obj.alert_value %}
+                                            <font class="text-success"><strong>{% trans "yes"|capfirst %}</strong></font>
+                                        {% else %}
+                                            <font class="text-error"><strong>{% trans "no"|capfirst %}</strong></font>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endif %}
+                            </table>
+                    </div>
+                </div>
+                <div class="modal-footer" align="right">
+                    <button id="id_close" type="button" class="btn btn-default" data-dismiss="modal">{% trans "close"|title %}</button>
+                </div>
+            </div>
         </div>
     {% endblock %}
 

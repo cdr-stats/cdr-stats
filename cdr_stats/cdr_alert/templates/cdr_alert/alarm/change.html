@@ -1,13 +1,7 @@
 {% extends "frontend/master.html" %}
-{% load i18n %}
-
-{% block header %}
-{% endblock %}
+{% load i18n crispy_forms_tags %}
 
 {% block content_header %}
-{% endblock %}
-
-{% block content %}
 <h3>
     {% if action == 'update' %}
         {% trans "update"|capfirst %}
@@ -17,34 +11,8 @@
     {% trans "alarm"|capfirst %}
     <small></small>
 </h3>
+{% endblock %}
 
-<form class="well" method="POST" action="." enctype="multipart/form-data">{% csrf_token %}
-    {% for field in form %}
-    <div class="row{% if field.errors %} control-group error{% endif %}">
-        <div class="span2">
-            <label class="control-label" for="{{ field.auto_id }}">
-                {{ field.label|title }}
-            </label>
-        </div>
-        <div class="span8">{{ field }}
-            {% if field.errors %}
-                <span class="help-inline">{{ field.errors|removetags:"ul li"|safe }}</span>
-            {% endif %}
-            <span class="help-block">{{ field.help_text|capfirst }} </span>
-        </div>
-    </div>
-    {% endfor %}
-    <div class="actions">
-        {% if action == 'update' %}
-        <input id="update" type="submit" class="btn btn-primary" value="{% trans "update"|title %}" />
-        {% else %}
-        <input id="add" type="submit" class="btn btn-primary" value="{% trans "submit"|title %}" />
-        {% endif %}
-        &nbsp;&nbsp;
-        {% if action == 'update' %}
-         <input id="delete" name="delete" class="btn btn-danger" type="submit" value="{% trans "delete"|title %}" />
-        {% endif %}
-    </div>
-</form>
-
+{% block content %}
+    {% crispy form form.helper %}
 {% endblock %}

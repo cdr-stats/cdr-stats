@@ -16,6 +16,9 @@ from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 from cdr_alert.models import Alarm
 from cdr.functions_def import get_country_list
+from mod_utils.forms import common_submit_buttons
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Div
 
 
 class BWCountryForm(forms.Form):
@@ -42,10 +45,42 @@ class AlarmForm(ModelForm):
 
     class Meta:
         model = Alarm
-        fields = ['name', 'period', 'type', 'alert_condition',
-                  'alert_value', 'alert_condition_add_on', 'status',
-                  'email_to_send_alarm']
+        #fields = ['name', 'period', 'type', 'alert_condition',
+        #          'alert_value', 'alert_condition_add_on', 'status',
+        #          'email_to_send_alarm']
         exclude = ('user',)
+
+    def __init__(self, *args, **kwargs):
+        super(AlarmForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_class = 'well'
+        css_class = 'col-md-6'
+        self.helper.layout = Layout(
+            Div(
+                Div('name', css_class=css_class),
+                Div('period', css_class=css_class),
+                css_class='row',
+            ),
+            Div(
+                Div('type', css_class=css_class),
+                Div('alert_condition', css_class=css_class),
+                css_class='row',
+            ),
+            Div(
+                Div('alert_value', css_class=css_class),
+                Div('alert_condition_add_on', css_class=css_class),
+                css_class='row',
+            ),
+            Div(
+                Div('status', css_class=css_class),
+                Div('email_to_send_alarm', css_class=css_class),
+                css_class='row',
+            ),
+        )
+        if self.instance.id:
+            common_submit_buttons(self.helper.layout, 'update')
+        else:
+            common_submit_buttons(self.helper.layout)
 
 
 class AlarmReportForm(forms.Form):
