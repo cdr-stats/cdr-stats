@@ -82,6 +82,7 @@ def voip_rates(request):
             request.session['final_rate_list'] = ''
             dialcode = ''
     full_url = request.build_absolute_uri('/')
+    """
     if dialcode:
         api_url = full_url + 'api/v1/voip_rate/?dialcode=%s&sort_field=%s&sort_order=%s' % (dialcode, sort_order, order)
         response = requests.get(api_url, auth=(request.user, request.user))
@@ -97,7 +98,7 @@ def voip_rates(request):
         for i in rate_list:
             # convert string into dict
             final_rate_list.append(ast.literal_eval(i))
-
+    """
     request.session['final_rate_list'] = final_rate_list
 
     variables = RequestContext(request, {

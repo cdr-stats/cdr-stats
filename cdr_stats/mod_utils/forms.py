@@ -90,4 +90,7 @@ def common_submit_buttons(layout_section=None, default_action='add'):
     elif default_action == 'search':
         form_action = FormActions(Submit('search', _('search').title()))
         layout_section.append(form_action)
+    elif default_action == 'reset-rate':
+        form_action = FormActions(HTML("""<a href="/rates/" class="btn btn-danger">Clear</a>"""))
+        layout_section.append(form_action)
     return layout_section

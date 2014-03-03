@@ -19,25 +19,25 @@ from voip_billing.function_def import rate_range
 from voip_billing.models import VoIPPlan, VoIPRetailPlan, VoIPCarrierPlan
 from voip_billing.constants import CONFIRMATION_TYPE
 from cdr.forms import sw_list_with_all, CdrSearchForm
-from mod_utils.forms import Exportfile
+from mod_utils.forms import Exportfile, common_submit_buttons
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Div, HTML, Submit
+from crispy_forms.bootstrap import FormActions
 
 
 def voip_plan_list():
     """Return List of VoIP Plans"""
-    #return VoIPPlan.objects.values_list('id', 'name').all()
-    return []
+    return VoIPPlan.objects.values_list('id', 'name').all()
 
 
 def carrier_plan_list():
     """List all carrier plan"""
-    #return VoIPCarrierPlan.objects.values_list('id', 'name').all()
-    return []
+    return VoIPCarrierPlan.objects.values_list('id', 'name').all()
 
 
 def retail_plan_list():
     """List all retail plan"""
-    #return VoIPRetailPlan.objects.values_list('id', 'name').all()
-    return []
+    return VoIPRetailPlan.objects.values_list('id', 'name').all()
 
 
 class FileImport(forms.Form):
@@ -142,6 +142,22 @@ class PrefixRetailRrateForm(forms.Form):
     """
     prefix = forms.CharField(label=_("enter prefix").capitalize(),
                    widget=forms.TextInput(attrs={'size': 15}), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(PrefixRetailRrateForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_class = 'well'
+        css_class = 'col-md-4'
+        self.helper.layout = Layout(
+            Div(
+                Div('prefix', css_class=css_class),
+                css_class='row',
+            ),
+            FormActions(
+                Submit('search', _('search').title()),
+                HTML("""<a href="/rates/" class="btn btn-danger">Clear</a>""")
+            )
+        )
 
 
 class SendVoIPForm(forms.Form):
