@@ -31,7 +31,7 @@ def customer_detail_change(request):
     **Attributes**:
 
         * ``form`` - UserChangeDetailForm, UserChangeDetailExtendForm, PasswordChangeForm
-        * ``template`` - 'frontend/registration/user_detail_change.html'
+        * ``template`` - 'user_profile/user_detail_change.html'
 
     **Logic Description**:
 
@@ -88,8 +88,6 @@ def customer_detail_change(request):
                 msg_pass = _('your password has been changed.')
             else:
                 error_pass = _('please correct the errors below.')
-
-    template = 'frontend/registration/user_detail_change.html'
     data = {
         'module': current_view(request),
         'user_detail_form': user_detail_form,
@@ -101,5 +99,4 @@ def customer_detail_change(request):
         'error_pass': error_pass,
         'action': action,
     }
-    return render_to_response(template, data,
-           context_instance=RequestContext(request))
+    return render_to_response('user_profile/user_detail_change.html', data, context_instance=RequestContext(request))

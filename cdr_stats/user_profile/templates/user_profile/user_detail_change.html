@@ -19,11 +19,11 @@
 
 <div class="tab-content">
 	<div id="tabs-1" class="tab-pane {% if action == "tabs-1" or action == "" %}active{% endif %}">
-        {% include "frontend/registration/user_account.html" %}
+        {% include "user_profile/user_account.html" %}
     </div>
 
     <div id="tabs-2" class="tab-pane {% if action == "tabs-2" %}active{% endif %}">
-        {% include "frontend/registration/user_change_password.html" %}
+        {% include "user_profile/user_change_password.html" %}
     </div>
 
     <div id="tabs-3" align="left" class="tab-pane {% if action == "tabs-3" %}active{% endif %}">
