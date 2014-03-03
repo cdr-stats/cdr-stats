@@ -13,12 +13,12 @@
 #
 from django import forms
 from django.forms import ModelForm
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from cdr_alert.models import Alarm
 from cdr.functions_def import get_country_list
 from mod_utils.forms import common_submit_buttons
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Div
+from crispy_forms.layout import Layout, Div, HTML
 
 
 class BWCountryForm(forms.Form):
@@ -26,18 +26,52 @@ class BWCountryForm(forms.Form):
     country = forms.ChoiceField(label=_('country'), required=True,
                                 choices=get_country_list())
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, form_type, *args, **kwargs):
         super(BWCountryForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['country']
+
+        self.helper = FormHelper()
+        if form_type == 'blacklist':
+            self.helper.form_id = 'id_bl_country_from'
+            form_button = HTML("""<input id="add_bl_country" type="button" class="btn btn-info" value="%s" />""" % _("blacklist this country").capitalize())
+        else:
+            self.helper.form_id = 'id_wl_country_from'
+            form_button = HTML("""<input id="add_wl_country" type="button" class="btn btn-info" value="%s" />""" % _("whitelist this country").capitalize())
+
+        self.helper.form_show_labels = False
+        css_class = 'col-md-3'
+        self.helper.layout = Layout(
+            Div(
+                Div('country', css_class=css_class),
+                Div(form_button, css_class=css_class),
+                css_class='row',
+            ),
+        )
 
 
 class BWPrefixForm(forms.Form):
     """Blacklist/Whitelist by prefix form"""
     prefix = forms.CharField(label=_('prefix'), required=False)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, form_type, *args, **kwargs):
         super(BWPrefixForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['prefix']
+
+        self.helper = FormHelper()
+        if form_type == 'blacklist':
+            self.helper.form_id = 'id_bl_prefix_from'
+            form_button = HTML("""<input id="add_bl_prefix" type="button" class="btn btn-info" value="%s" />""" % _("blacklist this dialcode").capitalize())
+        else:
+            self.helper.form_id = 'id_wl_prefix_from'
+            form_button = HTML("""<input id="add_wl_prefix" type="button" class="btn btn-info" value="%s" />""" % _("whitelist this dialcode").capitalize())
+
+        self.helper.form_show_labels = False
+        css_class = 'col-md-3'
+        self.helper.layout = Layout(
+            Div(
+                Div('prefix', css_class=css_class),
+                Div(form_button, css_class=css_class),
+                css_class='row',
+            ),
+        )
 
 
 class AlarmForm(ModelForm):

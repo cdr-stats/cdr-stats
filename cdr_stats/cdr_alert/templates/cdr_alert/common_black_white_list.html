@@ -1,5 +1,5 @@
 {% extends "frontend/master.html" %}
-{% load i18n common_tags dajaxice_templatetags %}
+{% load i18n common_tags dajaxice_templatetags crispy_forms_tags %}
 
 {% block title %}{% trans "trust control"|title %}{% endblock %}
 
@@ -115,7 +115,7 @@
 
     </script>
 
-    {% include "frontend/custom_jquery_select_all.html" %}
+    {# include "frontend/custom_jquery_select_all.html" #}
     <h3>{% trans "Trust control"|title %} <small>{% trans "control the blacklist / whitelist" %}</small></h3>
 {% endblock %}
 
@@ -123,123 +123,103 @@
 <div id="id_alert_message"></div>
 
 <div class="row">
-    <div class="span12">
+    <div class="col-md-12">
         <h3>{% trans "blacklist"|title %}</h3>
-
         <div class="btn-group">
-            <button class="btn">{% trans "action"|capfirst %}</button>
-            <button class="btn dropdown-toggle" data-toggle="dropdown">
-                <span class="caret"></span>
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            {% trans "action"|capfirst %} <span class="caret"></span>
             </button>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu" role="menu">
                 {% if perms.cdr_alert.delete_alert  %}
                     <li><a href="#" onclick="delete_button('blacklist')">{% trans "delete selected"|capfirst %}</a></li>
                     <li><a href="#" onclick="delete_all_button('blacklist')">{% trans "delete all"|capfirst %}</a></li>
                 {% endif %}
             </ul>
         </div>
-        <br/><br/>
+        <div>&nbsp;</div>
         <div id="id_blacklist_table">
             {% if blacklist %}
-            <table class="table table-striped table-bordered table-condensed">
-                <tr>
-                    <td><input type="checkbox" onclick="toggleChecked_blacklist(this.checked);"></td>
-                </tr>
-                {% for row in blacklist|groupby_columns:5 %}
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-condensed">
                     <tr>
-                        {% for obj in row %}
-                            {% if obj %}
-                                <td><input type="checkbox" name="select_blacklist" class="checkbox" value="{{ obj.id }}" />
-                                    &nbsp;{{ obj.phonenumber_prefix }} | {{ obj.country.countryname }}</td>
-                            {% else %}
-                                <td></td>
-                            {% endif %}
-                        {% endfor %}
+                        <td><input type="checkbox" onclick="toggleChecked_blacklist(this.checked);"></td>
                     </tr>
-                {% endfor %}
-            </table>
+                    {% for row in blacklist|groupby_columns:5 %}
+                        <tr>
+                            {% for obj in row %}
+                                {% if obj %}
+                                    <td><input type="checkbox" name="select_blacklist" class="checkbox" value="{{ obj.id }}" />
+                                        &nbsp;{{ obj.phonenumber_prefix }} | {{ obj.country.countryname }}</td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
             {% endif %}
         </div>
     </div>
 </div>
 
 <div class="row">
-    <div class="span12">
+    <div class="col-md-12">
         <!--blacklist country form-->
-        <form class="form-search" action="." id="id_bl_country_from" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {% for field in bl_country_form %}
-                {{ field }}
-                <input id="add_bl_country" type="button" class="btn btn-info" value="{% trans "blacklist this country"|capfirst %}" />
-            {% endfor %}
-        </form>
+        {% crispy bl_country_form bl_country_form.helper %}
 
         <!--blacklist prefix form-->
-        <form class="form-search" action="." id="id_bl_prefix_from" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <input id="id_bl_prefix" name="prefix"  type="text" data-provide="typeahead" data-items="10" data-source='{{ prefix_list }}'>
-            <input id="add_bl_prefix" type="button" class="btn btn-info" value="{% trans "blacklist this dialcode"|capfirst %}" />
-        </form>
+        {% crispy bl_prefix_form bl_prefix_form.helper %}
     </div>
 </div>
 
 
 <div class="row">
-    <div class="span12">
+    <div class="col-md-12">
         <h3>{% trans "whitelist"|title %}</h3>
-
         <div class="btn-group">
-            <button class="btn">{% trans "action"|capfirst %}</button>
-            <button class="btn dropdown-toggle" data-toggle="dropdown">
-                <span class="caret"></span>
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            {% trans "action"|capfirst %} <span class="caret"></span>
             </button>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu" role="menu">
                 {% if perms.cdr_alert.delete_alert  %}
                     <li><a href="#" onclick="delete_button('whitelist')">{% trans "delete selected"|capfirst %}</a></li>
                     <li><a href="#" onclick="delete_all_button('whitelist')">{% trans "delete all"|capfirst %}</a></li>
                 {% endif %}
             </ul>
         </div>
-        <br/><br/>
+        <div>&nbsp;</div>
         <div id="id_whitelist_table">
             {% if whitelist %}
-            <table class="table table-striped table-bordered table-condensed">
-                <tr><td><input type="checkbox" onclick="toggleChecked_whitelist(this.checked);"></td></tr>
-                {% for row in whitelist|groupby_columns:5 %}
-                    <tr>
-                        {% for obj in row %}
-                            {% if obj %}
-                                <td><input type="checkbox" name="select_whitelist" class="checkbox" value="{{ obj.id }}" />
-                                    &nbsp;{{ obj.phonenumber_prefix }} | {{ obj.country.countryname }}</td>
-                            {% else %}
-                                <td></td>
-                            {% endif %}
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </table>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-condensed">
+                    <tr><td><input type="checkbox" onclick="toggleChecked_whitelist(this.checked);"></td></tr>
+                    {% for row in whitelist|groupby_columns:5 %}
+                        <tr>
+                            {% for obj in row %}
+                                {% if obj %}
+                                    <td><input type="checkbox" name="select_whitelist" class="checkbox" value="{{ obj.id }}" />
+                                        &nbsp;{{ obj.phonenumber_prefix }} | {{ obj.country.countryname }}</td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
             {% endif %}
         </div>
     </div>
 </div>
 
 <div class="row">
-    <div class="span12">
+    <div class="col-md-12">
         <!--whitelist country form-->
-        <form class="form-search" action="." id="id_wl_country_from" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {% for field in wl_country_form %}
-                {{ field }}
-                <input id="add_wl_country" type="button" class="btn btn-info" value="{% trans "whitelist this country"|capfirst %}" />
-            {% endfor %}
-        </form>
+        {% crispy wl_country_form wl_country_form.helper %}
 
         <!--whitelist prefix form-->
-        <form class="form-search" action="." id="id_wl_prefix_from" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <input id="id_wl_prefix" name="prefix"  type="text" data-provide="typeahead" data-items="10" data-source='{{ prefix_list }}'>
-            <input id="add_wl_prefix" type="button" class="btn btn-info" value="{% trans "whitelist this dialcode"|capfirst %}" />
-        </form>
+        {% crispy wl_prefix_form wl_prefix_form.helper %}
     </div>
 </div>
 {% endblock %}

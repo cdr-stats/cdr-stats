@@ -359,12 +359,12 @@ def trust_control(request):
     whitelist = Whitelist.objects.filter(user=request.user).order_by('id')
 
     # blacklist form
-    bl_country_form = BWCountryForm()
-    bl_prefix_form = BWPrefixForm()
+    bl_country_form = BWCountryForm(form_type='blacklist')
+    bl_prefix_form = BWPrefixForm(form_type='blacklist')
 
     # whitelist form
-    wl_country_form = BWCountryForm()
-    wl_prefix_form = BWPrefixForm()
+    wl_country_form = BWCountryForm(form_type='whitelist')
+    wl_prefix_form = BWPrefixForm(form_type='whitelist')
 
     data = {
         'module': current_view(request),

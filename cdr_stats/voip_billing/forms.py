@@ -46,8 +46,8 @@ class FileImport(forms.Form):
     General Form : CSV file upload
     """
     csv_file = forms.FileField(label=_("upload CSV File "), required=True,
-                            error_messages={'required': 'please upload File'},
-                            help_text=_("browse CSV file"))
+                               error_messages={'required': 'please upload File'},
+                               help_text=_("browse CSV file"))
 
     def clean_file(self):
         """
@@ -66,8 +66,8 @@ class RetailRate_fileImport(FileImport):
     """
     Admin Form : Import CSV file with Retail Plan
     """
-    plan_id = forms.ChoiceField(label=_("retail plan"), required=False,
-        choices=retail_plan_list(), help_text=_("select retail plan"))
+    plan_id = forms.ChoiceField(label=_("retail plan"), required=False, choices=retail_plan_list(),
+                                help_text=_("select retail plan"))
 
 
 class CarrierRate_fileImport(FileImport):
@@ -78,7 +78,7 @@ class CarrierRate_fileImport(FileImport):
                                 choices=carrier_plan_list(),
                                 help_text=_("select carrier plan"))
     chk = forms.BooleanField(label=_("make retail plan"), required=False,
-                        help_text=_("select if you want to make retail plan"))
+                             help_text=_("select if you want to make retail plan"))
     retail_plan_id = forms.ChoiceField(label=_("retail plan"), required=False,
                                 choices=retail_plan_list(),
                                 help_text=_("select retail plan"))
