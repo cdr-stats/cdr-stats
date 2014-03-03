@@ -14,13 +14,12 @@
 
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.template.context import RequestContext
 from django.utils.translation import ugettext_lazy as _
 from user_profile.models import UserProfile
-from user_profile.forms import UserChangeDetailForm, UserChangeDetailExtendForm
+from user_profile.forms import UserChangeDetailForm, UserChangeDetailExtendForm, UserPasswordChangeForm
 from django_lets_go.common_functions import current_view
 
 
@@ -30,7 +29,7 @@ def customer_detail_change(request):
 
     **Attributes**:
 
-        * ``form`` - UserChangeDetailForm, UserChangeDetailExtendForm, PasswordChangeForm
+        * ``form`` - UserChangeDetailForm, UserChangeDetailExtendForm, UserPasswordChangeForm
         * ``template`` - 'user_profile/user_detail_change.html'
 
     **Logic Description**:
@@ -49,12 +48,10 @@ def customer_detail_change(request):
         user_detail_extened = UserProfile(user=user_detail)
         user_detail_extened.save()
 
-    user_detail_form = UserChangeDetailForm(request.user,
-                                            instance=user_detail)
-    user_detail_extened_form = UserChangeDetailExtendForm(
-        request.user, instance=user_detail_extened)
+    user_detail_form = UserChangeDetailForm(request.user, instance=user_detail)
+    user_detail_extened_form = UserChangeDetailExtendForm(request.user, instance=user_detail_extened)
 
-    user_password_form = PasswordChangeForm(user=request.user)
+    user_password_form = UserPasswordChangeForm(user=request.user)
 
     msg_detail = ''
     msg_pass = ''
@@ -80,8 +77,7 @@ def customer_detail_change(request):
                 error_detail = _('please correct the errors below.')
         else:
             # change-password
-            user_password_form = PasswordChangeForm(user=request.user,
-                                                    data=request.POST)
+            user_password_form = UserPasswordChangeForm(user=request.user, data=request.POST)
             action = 'tabs-2'
             if user_password_form.is_valid():
                 user_password_form.save()

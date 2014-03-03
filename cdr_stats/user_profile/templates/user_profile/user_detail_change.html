@@ -27,22 +27,22 @@
     </div>
 
     <div id="tabs-3" align="left" class="tab-pane {% if action == "tabs-3" %}active{% endif %}">
-
-    <div class="row-fluid">
-
-        <div class="span12">
-            <form class="well" action="/i18n/setlang/" method="post">
-                {% csrf_token %}
-                {% trans "select language"|capfirst %} : <select name="language" id="language-container" class="input-small" onchange="this.form.submit();">
-                {% for lang in LANGUAGES %}
-                <option value="{{ lang.0 }}" {% ifequal lang.0 LANGUAGE_CODE %}selected{% endifequal %}>{{ lang.1 }}</option>
-                {% endfor %}
-                </select>
-            </form>
-        </div>
-        
+        <form class="well" role="form" action="/i18n/setlang/" method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-md-4 col-xs-8">
+                        <label>{% trans "change the language"|capfirst %}</label>
+                        <select name="language" id="language-container" class="form-control" onchange="this.form.submit()">
+                            {% for lang in LANGUAGES %}
+                            <option value="{{ lang.0 }}" {% ifequal lang.0 LANGUAGE_CODE %}selected{% endifequal %}>{{ lang.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
-</div>
 </div>
 
 

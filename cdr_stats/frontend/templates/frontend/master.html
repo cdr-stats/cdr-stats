@@ -94,7 +94,7 @@
                         {% trans "display language"|capfirst %} :
                         <div class="checkbox">
                             <label>
-                                <select name="language" id="language-container" class="form-control">
+                                <select name="language" id="language-container" class="form-control" onchange="this.form.submit()">
                                     {% for lang in LANGUAGES %}
                                     <option value="{{ lang.0 }}" {% ifequal lang.0 LANGUAGE_CODE %}selected{% endifequal %}>{{ lang.1 }}</option>
                                     {% endfor %}
