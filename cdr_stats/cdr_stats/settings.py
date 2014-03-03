@@ -183,6 +183,7 @@ INSTALLED_APPS = (
     'cdr',
     'cdr_alert',
     'user_profile',
+    'mod_registration',
     'frontend',
     'django_lets_go',
     'notification',
@@ -442,6 +443,9 @@ NUM_COUNTRY = 10
 #TASTYPIE API
 #============
 API_ALLOWED_IP = ['127.0.0.1', 'localhost']
+
+# EMAIL_ADMIN will be used for forget password email sent
+EMAIL_ADMIN = 'cdr-stats@localhost.com'
 
 #EMAIL BACKEND
 #=============

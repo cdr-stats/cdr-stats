@@ -14,11 +14,11 @@
 from django.conf.urls import patterns
 
 
-urlpatterns = patterns('frontend.views',
-    (r'^$', 'index'),
-    (r'^index/$', 'index'),
-    (r'^diagnostic/$', 'diagnostic'),
-    (r'^login/$', 'login_view'),
-    (r'^logout/$', 'logout_view'),
-    (r'^pleaselog/$', 'pleaselog'),
+urlpatterns = patterns('mod_registration.views',
+    # Password reset for Customer UI
+    (r'^password_reset/$', 'cust_password_reset'),
+    (r'^password_reset/done/$', 'cust_password_reset_done'),
+    (r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$',
+        'cust_password_reset_confirm'),
+    (r'^reset/done/$', 'cust_password_reset_complete'),
 )
