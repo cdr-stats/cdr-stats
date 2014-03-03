@@ -29,8 +29,7 @@ def check_cdr_exists(function=None):
                 raise Http404
             doc = mongodb.cdr_common.find_one()
             if not doc:
-                return render_to_response('frontend/error_import.html',
-                    context_instance=RequestContext(request))
+                return render_to_response('cdr/error_import.html', context_instance=RequestContext(request))
             else:
                 return run_func(request, *args, **kwargs)
         return _caller

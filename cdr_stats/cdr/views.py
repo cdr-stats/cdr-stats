@@ -40,7 +40,6 @@ from cdr.decorators import check_cdr_exists, check_user_accountcode, \
     check_user_voipplan
 from cdr.constants import CDR_COLUMN_NAME, Export_choice
 from voip_billing.function_def import get_rounded_value
-from frontend.forms import LoginForm
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta

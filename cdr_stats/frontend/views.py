@@ -157,9 +157,7 @@ def diagnostic(request):
         'success_ip': success_ip,
         'error_ip': error_ip,
     }
-    template = 'frontend/diagnostic.html'
-    return render_to_response(template, data,
-           context_instance=RequestContext(request))
+    return render_to_response('frontend/diagnostic.html', data, context_instance=RequestContext(request))
 
 
 def logout_view(request):
@@ -193,12 +191,12 @@ def login_view(request):
           the dashboard.
     """
     errorlogin = ''
+    loginform = LoginForm()
     if request.method == 'POST':
         loginform = LoginForm(request.POST)
         if loginform.is_valid():
             cd = loginform.cleaned_data
-            user = authenticate(username=cd['user'],
-                                password=cd['password'])
+            user = authenticate(username=cd['user'], password=cd['password'])
             if user is not None:
                 if user.is_active:
                     login(request, user)
@@ -214,8 +212,6 @@ def login_view(request):
         else:
             # Return an 'Valid User Credentials' error message.
             errorlogin = _('enter valid user credentials.')
-    else:
-        loginform = LoginForm()
 
     data = {
         'module': current_view(request),
@@ -224,19 +220,15 @@ def login_view(request):
         'news': get_news(news_url),
         'is_authenticated': request.user.is_authenticated(),
     }
-
     return render_to_response('frontend/index.html', data, context_instance=RequestContext(request))
 
 
 def pleaselog(request):
-    template = 'frontend/index.html'
-
     data = {
         'loginform': LoginForm(),
         'notlogged': True,
     }
-    return render_to_response(template, data,
-           context_instance=RequestContext(request))
+    return render_to_response('frontend/index.html', data, context_instance=RequestContext(request))
 
 
 def cust_password_reset(request):
