@@ -1,50 +1,20 @@
 {% extends "frontend/master.html" %}
-{% load i18n common_tags icons nvd3_tags %}
+{% load i18n common_tags icons nvd3_tags crispy_forms_tags %}
 
-{% block title %}{% trans "Billing Report" %}{% endblock %}
+{% block title %}{% trans "billing report"|title %}{% endblock %}
 
 {% block extra_head %}
+    {{ form.media }}
     {% include "frontend/common_datepicker.html" %}
-    {% include_nvd3jscss False %}
-    {% load_chart charttype chartdata "hourly_container" False "AM_PM" True %}
+    {% load_chart charttype chartdata chartcontainer extra %}
 {% endblock %}
 
 {% block content %}
 
     <div id="form_collapse" class="collapse">
-        <form class="well" method="POST" action="." enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="row">
-                <div class="span12">
-                    <div class="row">
-                        <div class="span4">
-                            <label class="control-label" for="{{ form.from_date.auto_id }}">{{ form.from_date.label|title }}</label>
-                            <div class="input">
-                                {{ form.from_date }}
-                                <span class="help-block">{{ form.from_date.help_text|capfirst|safe }} </span>
-                            </div>
-                        </div>
-                        <div class="span4">
-                            <label class="control-label" for="{{ form.switch_id.auto_id }}">{{ form.switch_id.label|title }}</label>
-                            <div class="input">
-                                {{ form.switch_id }}
-                                <span class="help-block">{{ form.switch_id.help_text|capfirst|safe }} </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <label>&nbsp;</label>
-            <div class="actions">
-                <input class="btn btn-primary" type=submit name=submit value={% trans "search"|capfirst %} />
-            </div>
-        </form>
+        {% crispy form form.helper %}
     </div>
-    <div>
-        <a id="toggle_btn_search" class="btn" href="#" data-toggle="collapse" data-target="#form_collapse">
-            <i class="icon-search"></i> <span>{% trans "advanced search"|title %}</span>
-        </a>
-    </div>
+    {% include "frontend/common_search_toggle_button.html" %}
 
     <div class="graph_header">
         {% trans "hourly billing report"|title  %} -
@@ -56,8 +26,8 @@
     </div>
 
     <div class="row">
-        <div class="span12">
-            {% include_container "hourly_container" 400 '100%' %}
+        <div class="col-md-12">
+            {% include_container chartcontainer 400 '100%' %}
         </div>
     </div>
 

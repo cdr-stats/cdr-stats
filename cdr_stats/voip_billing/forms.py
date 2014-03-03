@@ -20,6 +20,7 @@ from voip_billing.models import VoIPPlan, VoIPRetailPlan, VoIPCarrierPlan
 from voip_billing.constants import CONFIRMATION_TYPE
 from cdr.forms import sw_list_with_all, CdrSearchForm
 from mod_utils.forms import Exportfile, common_submit_buttons
+from bootstrap3_datetime.widgets import DateTimePicker
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, HTML, Submit, Field
 from crispy_forms.bootstrap import FormActions
@@ -237,13 +238,26 @@ class CustomRateFilterForm(forms.Form):
 
 class DailyBillingForm(forms.Form):
     """Daily Billing Form"""
-    from_date = forms.CharField(label=_('from'), required=True, max_length=10)
-    to_date = forms.CharField(label=_('to'), required=True, max_length=10)
+    from_date = forms.DateTimeField(label=_('from').capitalize(), required=False,
+        widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
+    to_date = forms.DateTimeField(label=_('to').capitalize(), required=False,
+        widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
     switch_id = forms.ChoiceField(label=_('switch'), required=False, choices=sw_list_with_all())
 
     def __init__(self, *args, **kwargs):
         super(DailyBillingForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['from_date', 'to_date', 'switch_id']
+        self.helper = FormHelper()
+        self.helper.form_class = 'well'
+        css_class = 'col-md-4'
+        self.helper.layout = Layout(
+            Div(
+                Div('from_date', css_class=css_class),
+                Div('to_date', css_class=css_class),
+                Div('switch_id', css_class=css_class),
+                css_class='row',
+            ),
+        )
+        common_submit_buttons(self.helper.layout, 'search')
 
 
 class HourlyBillingForm(DailyBillingForm):
@@ -251,12 +265,22 @@ class HourlyBillingForm(DailyBillingForm):
     def __init__(self, *args, **kwargs):
         super(HourlyBillingForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['from_date', 'switch_id']
+        self.helper = FormHelper()
+        self.helper.form_class = 'well'
+        css_class = 'col-md-4'
+        self.helper.layout = Layout(
+            Div(
+                Div('from_date', css_class=css_class),
+                Div('switch_id', css_class=css_class),
+                css_class='row',
+            ),
+        )
+        common_submit_buttons(self.helper.layout, 'search')
 
 
 class RebillForm(CdrSearchForm):
     """Re-bill VoIP call"""
-    confirmation = forms.ChoiceField(choices=list(CONFIRMATION_TYPE),
-        required=False)
+    confirmation = forms.ChoiceField(choices=list(CONFIRMATION_TYPE), required=False)
 
     def __init__(self, *args, **kwargs):
         super(RebillForm, self).__init__(*args, **kwargs)

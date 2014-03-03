@@ -312,6 +312,13 @@ def daily_billing_report(request):
         'end_date': end_date,
         'charttype': charttype,
         'chartdata': chartdata,
+        'chartcontainer': 'chart_container',
+        'extra': {
+            'x_is_date': True,
+            'x_axis_format': '%d %b %Y',
+            'tag_script_js': True,
+            'jquery_on_ready': True,
+        },
     }
     return render_to_response('voip_billing/daily_billing_report.html', data, context_instance=RequestContext(request))
 
@@ -415,5 +422,12 @@ def hourly_billing_report(request):
         'start_date': start_date,
         'chartdata': chartdata,
         'charttype': charttype,
+        'chartcontainer': 'chart_container',
+        'extra': {
+            'x_is_date': True,
+            'x_axis_format': '%d %b %Y',
+            'tag_script_js': True,
+            'jquery_on_ready': True,
+        },
     }
     return render_to_response('voip_billing/hourly_billing_report.html', data, context_instance=RequestContext(request))
