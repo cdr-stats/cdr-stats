@@ -40,6 +40,7 @@ from cdr.decorators import check_cdr_exists, check_user_accountcode, \
     check_user_voipplan
 from cdr.constants import CDR_COLUMN_NAME, Export_choice
 from voip_billing.function_def import get_rounded_value
+from user_profile.models import UserProfile
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -317,7 +318,7 @@ def cdr_view(request):
             query_var['accountcode'] = acc
 
     if not request.user.is_superuser:
-        daily_report_query_var['metadata.accountcode'] = request.user.get_profile().accountcode
+        daily_report_query_var['metadata.accountcode'] = UserProfile.objects.get(user=request.user).accountcode
         query_var['accountcode'] = daily_report_query_var['metadata.accountcode']
 
     cli = mongodb_str_filter(caller, caller_type)
@@ -628,7 +629,7 @@ def cdr_dashboard(request):
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = request.user.get_profile().accountcode
+        query_var['metadata.accountcode'] = UserProfile.objects.get(user=request.user).accountcode
 
     logging.debug('cdr dashboard analytic')
 
@@ -889,7 +890,7 @@ def cdr_concurrent_calls(request):
     query_var['date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        query_var['accountcode'] = request.user.get_profile().accountcode
+        query_var['accountcode'] = UserProfile.objects.get(user=request.user).accountcode
 
     xdata = []
     charttype = "stackedAreaChart"
@@ -971,7 +972,7 @@ def cdr_realtime(request):
     query_var['value.call_date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        query_var['value.accountcode'] = request.user.get_profile().accountcode
+        query_var['value.accountcode'] = UserProfile.objects.get(user=request.user).accountcode
 
     if query_var:
         if not mongodb.conc_call_agg:
@@ -1124,7 +1125,7 @@ def mail_report(request):
     """
     logging.debug('CDR mail report view start')
     msg = ''
-    user_profile = request.user.get_profile()
+    user_profile = UserProfile.objects.get(user=request.user)
 
     form = EmailReportForm(request.user, request.POST or None, instance=user_profile)
     if form.is_valid():
@@ -1292,7 +1293,7 @@ def cdr_daily_comparison(request):
         query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = request.user.get_profile().accountcode
+        query_var['metadata.accountcode'] = UserProfile.objects.get(user=request.user).accountcode
 
     if query_var:
         # Previous days
@@ -1451,7 +1452,7 @@ def cdr_overview(request):
         query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = request.user.get_profile().accountcode
+        query_var['metadata.accountcode'] = UserProfile.objects.get(user=request.user).accountcode
 
     if query_var:
         logging.debug('Map-reduce cdr overview analytic')
@@ -1881,7 +1882,7 @@ def cdr_country_report(request):
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = request.user.get_profile().accountcode
+        query_var['metadata.accountcode'] = UserProfile.objects.get(user=request.user).accountcode
 
     # Country daily data
     pipeline = pipeline_country_hourly_report(query_var)
@@ -2100,7 +2101,7 @@ def world_map_view(request):
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = request.user.get_profile().accountcode
+        query_var['metadata.accountcode'] = UserProfile.objects.get(user=request.user).accountcode
 
     logging.debug('Aggregate world report')
     pipeline = pipeline_country_report(query_var)

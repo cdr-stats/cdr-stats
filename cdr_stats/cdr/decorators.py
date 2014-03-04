@@ -15,6 +15,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from mongodb_connection import mongodb
+from user_profile.models import UserProfile
 
 
 def check_cdr_exists(function=None):
@@ -46,7 +47,7 @@ def check_user_accountcode(function=None):
         def _caller(request, *args, **kwargs):
             """Caller."""
             if not request.user.is_superuser:
-                if not request.user.get_profile().accountcode:
+                if not UserProfile.objects.get(user=request.user).accountcode:
                     return HttpResponseRedirect('/?acc_code_error=true')
                 else:
                     return run_func(request, *args, **kwargs)
@@ -66,7 +67,7 @@ def check_user_voipplan(function=None):
         def _caller(request, *args, **kwargs):
             """Caller."""
             if not request.user.is_superuser:
-                if not request.user.get_profile().voipplan_id:
+                if not UserProfile.objects.get(user=request.user).voipplan_id:
                     return HttpResponseRedirect('/?voipplan_error=true')
                 else:
                     return run_func(request, *args, **kwargs)

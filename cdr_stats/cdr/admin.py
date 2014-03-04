@@ -30,6 +30,7 @@ from cdr.forms import CdrSearchForm
 from cdr.constants import CDR_COLUMN_NAME
 from cdr.views import cdr_view_daily_report, get_pagination_vars
 from cdr_alert.functions_blacklist import chk_destination
+from user_profile.models import UserProfile
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import logging
@@ -483,7 +484,7 @@ class SwitchAdmin(admin.ModelAdmin):
                 query_var['accountcode'] = acc
 
         if not request.user.is_superuser:
-            daily_report_query_var['metadata.accountcode'] = request.user.get_profile().accountcode
+            daily_report_query_var['metadata.accountcode'] = UserProfile.objects.get(user=request.user).accountcode
             query_var['accountcode'] = daily_report_query_var['metadata.accountcode']
 
         cli = mongodb_str_filter(caller, caller_type)

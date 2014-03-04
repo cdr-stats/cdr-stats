@@ -34,6 +34,7 @@ from voip_billing.widgets import AutocompleteModelAdmin
 from voip_billing.function_def import rate_filter_range_field_chk
 from voip_billing.rate_engine import rate_engine
 from voip_billing.tasks import RebillingTask, ReaggregateTask
+from user_profile.models import UserProfile
 from django_lets_go.common_functions import variable_value, ceil_strdate
 from django_lets_go.app_label_renamer import AppLabelRenamer
 from django_lets_go.admin_custom_actions import export_as_csv_action
@@ -265,7 +266,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                 monthly_kwargs['metadata.date'] = {'$gte': start_date.strftime('%Y-%m'),
                                                    '$lt': end_date.strftime('%Y-%m')}
 
-            user_profile = request.user.get_profile()
+            user_profile = UserProfile.objects.get(user=request.user)
             if not request.user.is_superuser:  # not superuser
                 call_kwargs['accountcode'] = user_profile.accountcode
                 monthly_kwargs['metadata.accountcode'] =\

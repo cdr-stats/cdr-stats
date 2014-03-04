@@ -37,7 +37,7 @@ def customer_detail_change(request):
         * User is able to change their details.
     """
     if not request.user.is_superuser:  # not superuser
-        if not request.user.get_profile().accountcode:
+        if not UserProfile.objects.get(user=request.user).accountcode:
             return HttpResponseRedirect('/?acc_code_error=true')
 
     user_detail = get_object_or_404(User, username=request.user)

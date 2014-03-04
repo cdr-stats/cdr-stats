@@ -37,7 +37,7 @@ class VoipCallValidation(Validation):
         if not bundle.data:
             errors['Data'] = ['Data set is empty']
 
-        voipplan_id = request.user.get_profile().voipplan_id
+        voipplan_id = UserProfile.objects.get(user=request.user).voipplan_id
         if voipplan_id is None:
             errors['user_error'] = ["User is not attached with voip plan"]
 
@@ -46,22 +46,19 @@ class VoipCallValidation(Validation):
 
         if bundle.data.get('start_uepoch'):
             try:
-                bundle.data['start_uepoch'] = \
-                    datetime.fromtimestamp(int(bundle.data.get('start_uepoch')[:10]))
+                bundle.data['start_uepoch'] =  datetime.fromtimestamp(int(bundle.data.get('start_uepoch')[:10]))
             except:
                 errors['start_uepoch_error'] = ["start_uepoch must be in timestamp format"]
 
         if bundle.data.get('answer_uepoch'):
             try:
-                bundle.data['answer_uepoch'] = \
-                    datetime.fromtimestamp(int(bundle.data.get('answer_uepoch')[:10]))
+                bundle.data['answer_uepoch'] =  datetime.fromtimestamp(int(bundle.data.get('answer_uepoch')[:10]))
             except:
                 errors['answer_uepoch_error'] = ["answer_uepoch must be in timestamp format"]
 
         if bundle.data.get('end_uepoch'):
             try:
-                bundle.data['end_uepoch'] = \
-                    datetime.fromtimestamp(int(bundle.data.get('end_uepoch')[:10]))
+                bundle.data['end_uepoch'] =  datetime.fromtimestamp(int(bundle.data.get('end_uepoch')[:10]))
             except:
                 errors['end_uepoch_error'] = ["end_uepoch must be in timestamp format"]
 
