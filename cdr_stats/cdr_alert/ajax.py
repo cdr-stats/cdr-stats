@@ -39,32 +39,30 @@ blacklist_success = '<div class="alert alert-success">' + alert + ' : (%s) ' + s
 blacklist_delete_success = '<div class="alert alert-success">' + alert + ' : (%s) ' + delete_success_msg + ' ' + blacklist_word + '</div>'
 blacklist_delete_all_success = '<div class="alert alert-success">' + alert + ' :  ' + delete_all_success_msg + ' ' + blacklist_word + '</div>'
 blacklist_info = '<div class="alert alert-info">' + alert + ' : (%s) ' + info_msg + ' ' + blacklist_word + '</div>'
-blacklist_error = '<div class="alert alert-error">' + alert + ' : (%s) ' + error_msg + ' ' + blacklist_word + '</div>'
-blacklist_delete_error = '<div class="alert alert-error">' + alert + ' : (%s) ' + delete_error_msg + ' ' + blacklist_word + '</div>'
+blacklist_error = '<div class="alert alert-danger">' + alert + ' : (%s) ' + error_msg + ' ' + blacklist_word + '</div>'
+blacklist_delete_error = '<div class="alert alert-danger">' + alert + ' : (%s) ' + delete_error_msg + ' ' + blacklist_word + '</div>'
 
 
 whitelist_success = '<div class="alert alert-success">' + alert + ' : (%s) ' + success_msg + ' ' + whitelist_word + '</div>'
 whitelist_delete_success = '<div class="alert alert-success">' + alert + ' : (%s) ' + delete_success_msg + ' ' + whitelist_word + '</div>'
 whitelist_delete_all_success = '<div class="alert alert-success">' + alert + ' :  ' + delete_all_success_msg + ' ' + whitelist_word + '</div>'
 whitelist_info = '<div class="alert alert-info">' + alert + ' : (%s) ' + info_msg + ' ' + whitelist_word + '</div>'
-whitelist_error = '<div class="alert alert-error">' + alert + ' : (%s) ' + error_msg + ' ' + whitelist_word + '</div>'
-whitelist_delete_error = '<div class="alert alert-error">' + alert + ' : (%s) ' + delete_error_msg + ' ' + whitelist_word + '</div>'
+whitelist_error = '<div class="alert alert-danger">' + alert + ' : (%s) ' + error_msg + ' ' + whitelist_word + '</div>'
+whitelist_delete_error = '<div class="alert alert-danger">' + alert + ' : (%s) ' + delete_error_msg + ' ' + whitelist_word + '</div>'
 
 
 def get_html_table(request, default_name='blacklist'):
     col = 5  # group by columns
-    html_table = '<table class="table table-striped table-bordered table-condensed">'
+    html_table = '<div class="table-responsive"><table class="table table-striped table-bordered table-condensed">'
     if default_name == 'blacklist':
         prefix_list = Blacklist.objects.filter(user=request.user).order_by('id')
         prefix_list_count = prefix_list.count()
-        html_table += '<tr><td>\
-            <input type="checkbox" onclick="toggleChecked_blacklist(this.checked);"></td></tr>'
+        html_table += '<tr><td><input type="checkbox" onclick="toggleChecked_blacklist(this.checked);"></td></tr>'
 
     if default_name == 'whitelist':
         prefix_list = Whitelist.objects.filter(user=request.user).order_by('id')
         prefix_list_count = prefix_list.count()
-        html_table += '<tr><td>\
-            <input type="checkbox" onclick="toggleChecked_whitelist(this.checked);"></td></tr>'
+        html_table += '<tr><td><input type="checkbox" onclick="toggleChecked_whitelist(this.checked);"></td></tr>'
 
     if prefix_list_count != 0:
         # Logic of groupby_columns template tag
@@ -87,7 +85,7 @@ def get_html_table(request, default_name='blacklist'):
                 else:
                     html_table += '<td>&nbsp;</td>'
             html_table += '</tr>'
-        html_table += '</table>'
+        html_table += '</table></div>'
     else:
         html_table = ''
 

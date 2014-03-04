@@ -147,14 +147,15 @@
             <div class="table-responsive">
                 <table class="table table-striped table-bordered table-condensed">
                     <tr>
-                        <td><input type="checkbox" onclick="toggleChecked_blacklist(this.checked);"></td>
+                        <td colspan="5"><input type="checkbox" onclick="toggleChecked_blacklist(this.checked);"></td>
                     </tr>
                     {% for row in blacklist|groupby_columns:5 %}
                         <tr>
                             {% for obj in row %}
                                 {% if obj %}
-                                    <td><input type="checkbox" name="select_blacklist" class="checkbox" value="{{ obj.id }}" />
-                                        &nbsp;{{ obj.phonenumber_prefix }} | {{ obj.country.countryname }}</td>
+                                    <td>
+                                        <input type="checkbox" name="select_blacklist" class="checkbox" value="{{ obj.id }}"/>{{ obj.phonenumber_prefix }} | {{ obj.country.countryname }}
+                                    </td>
                                 {% else %}
                                     <td></td>
                                 {% endif %}
@@ -198,13 +199,14 @@
             {% if whitelist %}
             <div class="table-responsive">
                 <table class="table table-striped table-bordered table-condensed">
-                    <tr><td><input type="checkbox" onclick="toggleChecked_whitelist(this.checked);"></td></tr>
+                    <tr><td colspan="5"><input type="checkbox" onclick="toggleChecked_whitelist(this.checked);"></td></tr>
                     {% for row in whitelist|groupby_columns:5 %}
                         <tr>
                             {% for obj in row %}
                                 {% if obj %}
-                                    <td><input type="checkbox" name="select_whitelist" class="checkbox" value="{{ obj.id }}" />
-                                        &nbsp;{{ obj.phonenumber_prefix }} | {{ obj.country.countryname }}</td>
+                                    <td>
+                                        <input type="checkbox" name="select_whitelist" class="checkbox" value="{{ obj.id }}" />{{ obj.phonenumber_prefix }} | {{ obj.country.countryname }}
+                                    </td>
                                 {% else %}
                                     <td></td>
                                 {% endif %}
