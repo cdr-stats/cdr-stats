@@ -123,3 +123,12 @@ function delete_button()
 {
     $('#ListForm').submit();
 }
+
+$(function() {
+    $("#id_from_date_picker").on("change.dp",function (e) {
+       $('#id_to_date_picker').data("DateTimePicker").setStartDate(e.date);
+    });
+    $("#id_to_date_picker").on("change.dp",function (e) {
+       $('#id_from_date_picker').data("DateTimePicker").setEndDate(e.date);
+    });
+});

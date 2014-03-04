@@ -53,7 +53,7 @@ import itertools
 
 def ceil_strdate(str_date, start, hour_min=False):
     """convert a string date to either a start or end day date"""
-    str_date = str_date.strftime('%Y-%m-%d %H:%M')
+    #str_date = str_date.strftime('%Y-%m-%d %H:%M')
     if start == 'start':
         if hour_min:
             return datetime(int(str_date[0:4]), int(str_date[5:7]),
@@ -216,8 +216,8 @@ def cdr_view(request):
 
         request.session['session_cdr_view_daily_data'] = {}
 
-        from_date = str(getvar(request, 'from_date', setsession=True))
-        to_date = str(getvar(request, 'to_date', setsession=True))
+        from_date = getvar(request, 'from_date', setsession=True)
+        to_date = getvar(request, 'to_date', setsession=True)
         result = getvar(request, 'result', setsession=True)
         destination = getvar(request, 'destination', setsession=True)
         destination_type = getvar(request, 'destination_type', setsession=True)
@@ -240,6 +240,9 @@ def cdr_view(request):
         country_id = [int(row) for row in country_id]
         if len(country_id) >= 1:
             request.session['session_country_id'] = country_id
+
+        start_date = ceil_strdate(from_date, 'start', True)
+        end_date = ceil_strdate(to_date, 'end', True)
 
     menu = show_menu(request)
     try:
@@ -266,11 +269,12 @@ def cdr_view(request):
             from_date
     except NameError:
         tday = datetime.today()
-        from_date = tday.strftime('%Y-%m-01 00:00')
+        from_date = datetime(tday.year, tday.month, 1, 0, 0, 0, 0)
         last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) +
                     relativedelta(months=1)) -
                     relativedelta(days=1)).strftime('%d')
-        to_date = tday.strftime('%Y-%m-' + last_day + ' 23:59')
+        #to_date = tday.strftime('%Y-%m-' + last_day + ' 23:59')
+        to_date = datetime(tday.year, tday.month, int(last_day), 23, 59, 59, 999999)
         search_tag = 0
         country_id = ''
         records_per_page = settings.PAGE_SIZE
@@ -290,14 +294,16 @@ def cdr_view(request):
         request.session['session_country_id'] = ''
         request.session['session_cdr_view_daily_data'] = {}
 
-    start_date = ceil_strdate(from_date, 'start', True)  # .strftime('%Y-%m-%d %H:%M')
-    end_date = ceil_strdate(to_date, 'end', True)
+        start_date = ceil_strdate(str(from_date), 'start', True)
+        end_date = ceil_strdate(str(to_date), 'end', True)
+        print start_date
+        print end_date
 
-    query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
+    #query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
     # aggregate query variable
     daily_report_query_var = {}
-    daily_report_query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+    #daily_report_query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     dst = mongodb_str_filter(destination, destination_type)
     if dst:
@@ -1368,7 +1374,7 @@ def cdr_overview(request):
 
     **Attributes**:
 
-        * ``template`` - frontend/cdr_overview.html.html
+        * ``template`` - cdr/cdr_overview.html.html
         * ``form`` - CdrOverviewForm
         * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
 
@@ -1435,8 +1441,8 @@ def cdr_overview(request):
 
         start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
         end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
-        start_hour_date = ceil_strdate(tday.strftime('%Y-%m-%d 00:00'), 'start', hour_min=True)
-        end_hour_date = ceil_strdate(tday.strftime('%Y-%m-%d 23:55'), 'end', hour_min=True)
+        start_hour_date = ceil_strdate(tday.strftime('%Y-%m-%d %H:%M'), 'start', hour_min=True)
+        end_hour_date = ceil_strdate(tday.strftime('%Y-%m-%d %H:%M'), 'end', hour_min=True)
         month_start_date = datetime(start_date.year, start_date.month, 1,
                                     0, 0, 0, 0)
         month_end_date = datetime(end_date.year, end_date.month, end_date.day,
