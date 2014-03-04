@@ -37,9 +37,9 @@ import tablib
 import csv
 from mongodb_connection import mongodb
 from django_lets_go.common_functions import getvar, unset_session_var
-from django_lets_go.app_label_renamer import AppLabelRenamer
+#from django_lets_go.app_label_renamer import AppLabelRenamer
 APP_LABEL = _('CDR')
-AppLabelRenamer(native_app_label='cdr', app_label=APP_LABEL).main()
+#AppLabelRenamer(native_app_label='cdr', app_label=APP_LABEL).main()
 
 
 def get_value_from_uni(j, row, field_name):

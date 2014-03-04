@@ -27,6 +27,7 @@ from voip_billing.urls import urlpatterns as urlpatterns_voip_billing
 from api.api_playgrounds.urls import urlpatterns as urlpatterns_api_playgrounds
 from frontend_notification.urls import urlpatterns as urlpatterns_frontend_notification
 from mod_registration.urls import urlpatterns as urlpatterns_mod_registration
+from apirest.urls import urlpatterns as urlpatterns_apirest
 from django.contrib import admin
 from dajaxice.core import dajaxice_autodiscover
 import os
@@ -80,6 +81,7 @@ urlpatterns += urlpatterns_api_playgrounds
 urlpatterns += urlpatterns_frontend_notification
 urlpatterns += urlpatterns_voip_billing
 urlpatterns += urlpatterns_mod_registration
+urlpatterns += urlpatterns_apirest
 
 urlpatterns += patterns('',
     url("", include('django_socketio.urls')),
