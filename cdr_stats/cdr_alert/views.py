@@ -342,6 +342,13 @@ def alert_report(request):
         'col_name_with_order': pagination_data['col_name_with_order'],
         'charttype': days_report['charttype'],
         'chartdata': days_report['chartdata'],
+        'chartcontainer': 'alert_chartcontainer',
+        'extra': {
+            'x_is_date': True,
+            'x_axis_format': '%d %b %y',
+            'tag_script_js': False,
+            'jquery_on_ready': True,
+        },
     }
     return render_to_response('cdr_alert/alarm_report.html', data, context_instance=RequestContext(request))
 
