@@ -32,9 +32,11 @@ class BWCountryForm(forms.Form):
         self.helper = FormHelper()
         if form_type == 'blacklist':
             self.helper.form_id = 'id_bl_country_from'
+            #country_field_id = ''
             form_button = HTML("""<input id="add_bl_country" type="button" class="btn btn-info" value="%s" />""" % _("blacklist this country").capitalize())
         else:
             self.helper.form_id = 'id_wl_country_from'
+            #country_field_id = ''
             form_button = HTML("""<input id="add_wl_country" type="button" class="btn btn-info" value="%s" />""" % _("whitelist this country").capitalize())
 
         self.helper.form_show_labels = False
@@ -58,9 +60,11 @@ class BWPrefixForm(forms.Form):
         self.helper = FormHelper()
         if form_type == 'blacklist':
             self.helper.form_id = 'id_bl_prefix_from'
+            prefix_field_id = 'id_bl_prefix'
             form_button = HTML("""<input id="add_bl_prefix" type="button" class="btn btn-info" value="%s" />""" % _("blacklist this dialcode").capitalize())
         else:
             self.helper.form_id = 'id_wl_prefix_from'
+            prefix_field_id = 'id_wl_prefix'
             form_button = HTML("""<input id="add_wl_prefix" type="button" class="btn btn-info" value="%s" />""" % _("whitelist this dialcode").capitalize())
 
         self.helper.form_show_labels = False
@@ -72,6 +76,7 @@ class BWPrefixForm(forms.Form):
                 css_class='row',
             ),
         )
+        self.fields['prefix'].widget.attrs.update({'id': prefix_field_id})
 
 
 class AlarmForm(ModelForm):
@@ -127,8 +132,7 @@ class AlarmReportForm(forms.Form):
 
         alarm_list_user = []
         alarm_list_user.append((0, '---'))
-        alarm_list = Alarm.objects.values_list('id', 'name')\
-            .filter(user=user).order_by('id')
+        alarm_list = Alarm.objects.values_list('id', 'name').filter(user=user).order_by('id')
         for i in alarm_list:
             alarm_list_user.append((i[0], i[1]))
 

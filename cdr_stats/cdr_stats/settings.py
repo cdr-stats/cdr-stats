@@ -533,6 +533,7 @@ BOWER_INSTALLED_APPS = (
     'nvd3#1.1.12-beta',
     'components-font-awesome#4.0.3',
     'bower-jvectormap',
+    'typeahead.js#0.10.1',
 )
 
 #IMPORT LOCAL SETTINGS

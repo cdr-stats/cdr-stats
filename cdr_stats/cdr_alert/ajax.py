@@ -101,8 +101,7 @@ def add_blacklist_country(request, country_id):
     try:
         country = Country.objects.get(id=int(country_id))
         country_id = country.id
-        prefix_list =\
-            Prefix.objects.values_list('prefix', flat=True).filter(country_id=country_id)
+        prefix_list = Prefix.objects.values_list('prefix', flat=True).filter(country_id=country_id)
 
         add_flag = False
         for prefix in prefix_list:
