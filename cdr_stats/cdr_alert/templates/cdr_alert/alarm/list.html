@@ -50,7 +50,7 @@
                     </tr>
                     </thead>
                     {% if rows %}
-                        {% autopaginate rows PAGE_SIZE %}
+                        {% autopaginate rows cdr_stats_page_size %}
                         {% for row in rows %}
                         <tr>
                             <td><input type="checkbox" name="select" class="checkbox" value="{{ row.id }}" /></td>

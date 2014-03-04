@@ -57,7 +57,6 @@ def alarm_list(request):
         'error_msg': request.session.get('error_msg'),
         'rows': alarm_list,
         'total_count': alarm_list.count(),
-        'PAGE_SIZE': settings.PAGE_SIZE,
         'ALARM_COLUMN_NAME': ALARM_COLUMN_NAME,
         'col_name_with_order': pagination_data['col_name_with_order'],
     }
@@ -329,7 +328,6 @@ def alert_report(request):
     end_date = days_report['end_date']
 
     data = {
-        'module': current_view(request),
         'form': form,
         'action': action,
         'total_data': total_data,
@@ -337,7 +335,6 @@ def alert_report(request):
         'end_date': end_date,
         'rows': alarm_report_list,
         'total_count': alarm_report_list.count(),
-        'PAGE_SIZE': pagination_data['PAGE_SIZE'],
         'ALARM_REPORT_COLUMN_NAME': ALARM_REPORT_COLUMN_NAME,
         'col_name_with_order': pagination_data['col_name_with_order'],
         'charttype': days_report['charttype'],

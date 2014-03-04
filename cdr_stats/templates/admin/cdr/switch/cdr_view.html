@@ -213,7 +213,7 @@
             </tr>
             </thead>
             {% if cdr_daily_data.total_calls %}
-            {% autopaginate rows PAGE_SIZE %}
+            {% autopaginate rows cdr_stats_page_size %}
             {% for row in rows %}
             <tr class="{% cycle 'row1' 'row2' %}">
                 <td>{{ row.start_uepoch }}</td>

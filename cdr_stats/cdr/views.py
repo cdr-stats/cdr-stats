@@ -408,7 +408,6 @@ def cdr_view(request):
         'rows': rows,
         'form': form,
         'record_count': record_count,
-        'PAGE_SIZE': PAGE_SIZE,
         'cdr_daily_data': cdr_view_daily_data,
         'search_tag': search_tag,
         'col_name_with_order': col_name_with_order,

@@ -144,6 +144,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.csrf",
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
+    "cdr_stats.context_processors.cdr_stats_common_template_variable"
 )
 
 ROOT_URLCONF = 'cdr_stats.urls'
@@ -429,7 +430,7 @@ MONGO_CDRSTATS = {
 API_PLAYGROUND_FEEDBACK = False
 
 #No of records per page
-#=======================
+#======================
 PAGE_SIZE = 10
 
 #TOTAL_GRAPH_COLOR For TOTAL Variable

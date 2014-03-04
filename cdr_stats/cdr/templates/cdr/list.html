@@ -176,7 +176,7 @@
             </tr>
             </thead>
             {% if rows %}
-            {% autopaginate rows PAGE_SIZE %}
+            {% autopaginate rows cdr_stats_page_size %}
             {% for row in rows %}
             <tr>
                 <td>{{ row.start_uepoch }}</td>

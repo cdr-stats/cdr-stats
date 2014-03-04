@@ -33,9 +33,9 @@ class SwitchSerializer(serializers.HyperlinkedModelSerializer):
                 "previous": null,
                 "results": [
                     {
-                        "url": "http://127.0.0.1:8000/rest-api/switch/1/", 
-                        "name": "localhost", 
-                        "ipaddress": "127.0.0.1", 
+                        "url": "http://127.0.0.1:8000/rest-api/switch/1/",
+                        "name": "localhost",
+                        "ipaddress": "127.0.0.1",
                         "key_uuid": "25116b72-b477-11e1-964f-000c296bd875"
                     }
                 ]

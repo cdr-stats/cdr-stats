@@ -396,7 +396,6 @@ class SwitchAdmin(admin.ModelAdmin):
                 template_data = RequestContext(request, {
                     'rows': [],
                     'form': form,
-                    'PAGE_SIZE': settings.PAGE_SIZE,
                     'cdr_daily_data': cdr_view_daily_data,
                     'search_tag': search_tag,
                     'col_name_with_order': [],
@@ -573,7 +572,6 @@ class SwitchAdmin(admin.ModelAdmin):
             'rows': rows,
             'form': form,
             'record_count': record_count,
-            'PAGE_SIZE': PAGE_SIZE,
             'cdr_daily_data': cdr_view_daily_data,
             'search_tag': search_tag,
             'col_name_with_order': col_name_with_order,

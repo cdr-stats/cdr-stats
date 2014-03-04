@@ -108,7 +108,6 @@ def voip_rates(request):
         'rate_list': final_rate_list,
         'rate_list_count': len(final_rate_list),
         'col_name_with_order': pagination_data['col_name_with_order'],
-        'PAGE_SIZE': pagination_data['PAGE_SIZE'],
         'RATE_COLUMN_NAME': RATE_COLUMN_NAME,
         'sort_order': sort_order,
     })

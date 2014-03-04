@@ -64,7 +64,7 @@
                 </thead>
                 <tbody>
                 {% if rate_list %}
-                    {% autopaginate rate_list PAGE_SIZE %}
+                    {% autopaginate rate_list cdr_stats_page_size %}
                     {% for item in rate_list %}
                         <tr>
                           <td>{{ item.prefix }}</td>
