@@ -1113,7 +1113,7 @@ def mail_report(request):
 
     **Attributes**:
 
-        * ``template`` - frontend/cdr_mail_report.html
+        * ``template`` - cdr/cdr_mail_report.html
         * ``form`` - MailreportForm
         * ``mongodb_data_set`` - mongodb.cdr_common
 

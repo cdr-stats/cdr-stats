@@ -51,13 +51,13 @@
                         if(call_data[k].label == code)
                         {
                             var temp_string = label.text();
-                            temp_string = temp_string + " : " + String(call_data[k].data[0]) + " Calls - " + conve_min(parseInt(call_data[k].data[1]));
+                            temp_string = temp_string + " : " + String(call_data[k].data[0]) + gettext(" Calls - ") + conve_min(parseInt(call_data[k].data[1]));
 
                             {% if user.is_superuser %}
-                            temp_string += " - Buy Cost : " + call_data[k].data[2];
+                                temp_string += gettext(" - Buy Cost : ") + call_data[k].data[2];
                             {% endif %}
 
-                            temp_string += " - Sell Cost : " + call_data[k].data[3];
+                            temp_string += gettext(" - Sell Cost : ") + call_data[k].data[3];
                             label.text(temp_string);
                             break;
                         }
