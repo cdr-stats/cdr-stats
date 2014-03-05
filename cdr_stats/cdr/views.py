@@ -53,19 +53,20 @@ import itertools
 
 
 def ceil_strdate(str_date, start, hour_min=False):
-    """convert a string date to either a start or end day date"""
-    #str_date = str_date.strftime('%Y-%m-%d %H:%M')
+    """
+    Convert a string date to either a start or end day date
+    """
     if start == 'start':
-        if hour_min:
-            return datetime(int(str_date[0:4]), int(str_date[5:7]),
-                int(str_date[8:10]), int(str_date[11:13]), int(str_date[14:16]), 0, 0)
-        else:
-            return datetime(int(str_date[0:4]), int(str_date[5:7]), int(str_date[8:10]), 0, 0, 0, 0)
+        (hour, minute, second, millisec) = (0, 0, 0, 0)
     else:
-        if hour_min:
-            return datetime(int(str_date[0:4]), int(str_date[5:7]), int(str_date[8:10]), int(str_date[11:13]), int(str_date[14:16]), 0, 0)
-        else:
-            return datetime(int(str_date[0:4]), int(str_date[5:7]), int(str_date[8:10]), 23, 59, 59, 999999)
+        (hour, minute, second, millisec) = (23, 59, 59, 999999)
+    #if hour_min then we will retrieve them from str_date
+    if hour_min:
+        return datetime(int(str_date[0:4]), int(str_date[5:7]), int(str_date[8:10]),
+                        int(str_date[11:13]), int(str_date[14:16]), 0, 0)
+    else:
+        return datetime(int(str_date[0:4]), int(str_date[5:7]), int(str_date[8:10]), hour,
+                        minute, second, millisec)
 
 
 def show_menu(request):
@@ -203,6 +204,17 @@ def cdr_view(request):
     action = 'tabs-1'
     menu = 'on'
     cdr_view_daily_data = {}
+    country_id = ''
+    tday = datetime.today()
+    from_date = datetime(tday.year, tday.month, 1, 0, 0, 0, 0)
+    last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) +
+                relativedelta(months=1)) -
+                relativedelta(days=1)).strftime('%d')
+    #to_date = tday.strftime('%Y-%m-' + last_day + ' 23:59')
+    to_date = datetime(tday.year, tday.month, int(last_day), 23, 59, 59, 999999)
+    start_date = ceil_strdate(str(from_date), 'start', True)
+    end_date = ceil_strdate(str(to_date), 'end', True)
+    records_per_page = settings.PAGE_SIZE
     form = CdrSearchForm(request.POST or None)
     if form.is_valid():
         logging.debug('CDR Search View')
@@ -217,8 +229,8 @@ def cdr_view(request):
 
         request.session['session_cdr_view_daily_data'] = {}
 
-        from_date = getvar(request, 'from_date', setsession=True)
-        to_date = getvar(request, 'to_date', setsession=True)
+        from_date = getvar(request, 'from_date', setsession=False)
+        to_date = getvar(request, 'to_date', setsession=False)
         result = getvar(request, 'result', setsession=True)
         destination = getvar(request, 'destination', setsession=True)
         destination_type = getvar(request, 'destination_type', setsession=True)
@@ -266,8 +278,6 @@ def cdr_view(request):
             records_per_page = request.session.get('session_records_per_page')
             country_id = request.session['session_country_id']
             cdr_view_daily_data = request.session.get('session_cdr_view_daily_data')
-        else:
-            from_date
     except NameError:
         tday = datetime.today()
         from_date = datetime(tday.year, tday.month, 1, 0, 0, 0, 0)
@@ -281,8 +291,8 @@ def cdr_view(request):
         records_per_page = settings.PAGE_SIZE
         # unset session var value
         request.session['session_result'] = 1
-        request.session['session_from_date'] = from_date
-        request.session['session_to_date'] = to_date
+        request.session['session_from_date'] = str(from_date)
+        request.session['session_to_date'] = str(to_date)
 
         field_list = ['destination', 'destination_type', 'accountcode',
                       'accountcode_type', 'caller', 'caller_type', 'duration',
@@ -344,7 +354,8 @@ def cdr_view(request):
         daily_report_query_var['metadata.country_id'] = {'$in': country_id}
         query_var['country_id'] = {'$in': country_id}
 
-    final_result = mongodb.cdr_common.find(query_var,
+    final_result = mongodb.cdr_common.find(
+        query_var,
         {
             "uuid": 0,
             "answer_uepoch": 0,
@@ -440,7 +451,8 @@ def cdr_export_to_csv(request):
     # get query_var from request.session
     query_var = request.session.get('query_var')
 
-    final_result = mongodb.cdr_common.find(query_var,
+    final_result = mongodb.cdr_common.find(
+        query_var,
         {
             "uuid": 0,
             "answer_uepoch": 0,
@@ -472,15 +484,13 @@ def cdr_export_to_csv(request):
             cdr['accountcode'],
             cdr['direction'],
         ))
-    data = tablib.Dataset(*list_val, headers=headers)
 
+    data = tablib.Dataset(*list_val, headers=headers)
     if format == Export_choice.XLS:
         response.write(data.xls)
-
-    if format == Export_choice.CSV:
+    elif format == Export_choice.CSV:
         response.write(data.csv)
-
-    if format == Export_choice.JSON:
+    elif format == Export_choice.JSON:
         response.write(data.json)
 
     return response
@@ -536,13 +546,13 @@ def cdr_detail(request, id, switch_id):
             if db_engine == 'mysql':
                 import MySQLdb as Database
                 connection = Database.connect(user=user, passwd=password,
-                    db=db_name, host=host, port=port, connect_timeout=4)
+                                              db=db_name, host=host, port=port, connect_timeout=4)
                 connection.autocommit(True)
                 cursor = connection.cursor()
             elif db_engine == 'pgsql':
                 import psycopg2 as Database
                 connection = Database.connect(user=user, password=password,
-                    database=db_name, host=host, port=port)
+                                              database=db_name, host=host, port=port)
                 connection.autocommit(True)
                 cursor = connection.cursor()
         except:
@@ -552,8 +562,7 @@ def cdr_detail(request, id, switch_id):
             "SELECT dst, calldate, clid, src, dst, dcontext, channel, dstchannel "
             "lastapp, duration, billsec, disposition, amaflags, accountcode, "
             "uniqueid, userfield, %s FROM %s WHERE %s=%s" %
-            (settings.ASTERISK_PRIMARY_KEY, table_name,
-            settings.ASTERISK_PRIMARY_KEY, id))
+            (settings.ASTERISK_PRIMARY_KEY, table_name, settings.ASTERISK_PRIMARY_KEY, id))
         row = cursor.fetchone()
         if not row:
             raise Http404
@@ -1085,8 +1094,7 @@ def get_cdr_mail_report():
         total_hangup = sum([int(x[1]) for x in hangup_analytic])
         for i in hangup_analytic:
             hangup_analytic_array.append(
-                (get_hangupcause_name(int(i[0])),
-                "{0:.0f}%".format((float(i[1]) / float(total_hangup)) * 100)))
+                (get_hangupcause_name(int(i[0])), "{0:.0f}%".format((float(i[1]) / float(total_hangup)) * 100)))
 
     mail_data = {
         'yesterday_date': start_date,
