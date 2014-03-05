@@ -54,7 +54,7 @@ import itertools
 
 def ceil_strdate(str_date, start, hour_min=False):
     """convert a string date to either a start or end day date"""
-    str_date = str_date.strftime('%Y-%m-%d %H:%M')
+    #str_date = str_date.strftime('%Y-%m-%d %H:%M')
     if start == 'start':
         if hour_min:
             return datetime(int(str_date[0:4]), int(str_date[5:7]),
