@@ -83,9 +83,9 @@ urlpatterns += urlpatterns_voip_billing
 urlpatterns += urlpatterns_mod_registration
 urlpatterns += urlpatterns_apirest
 
-urlpatterns += patterns('',
-    url("", include('django_socketio.urls')),
-)
+# urlpatterns += patterns('',
+#     url("", include('django_socketio.urls')),
+# )
 
 urlpatterns += patterns('',
     (r'^%s/(?P<path>.*)$' % settings.MEDIA_URL.strip(os.sep),
