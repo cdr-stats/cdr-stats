@@ -51,19 +51,19 @@ $(function() {
 {% endblock %}
 
 {% block content %}
-<div class="row-fluid">
+<div class="row">
     {% crispy form form.helper %}
 </div>
 
 {% for c_switch in list_switch %}
 <h3><div class="graph_header">{% trans "switch"|title %} : {{ c_switch.name }}</div></h3>
 <div class="row">
-    <div class="span6 offset2">
+    <div class="col-md-6 col-md-offset-2">
         <center>
             <canvas id="chart{{ c_switch.key_uuid }}" width="600" height="180"></canvas>
         </center>
     </div>
-    <div class="span2 offset1">
+    <div class="col-md-2 col-md-offset-1">
         <div class="well">
             <center>
                 <h1># {% trans "calls"|title %}</h1>
@@ -73,7 +73,6 @@ $(function() {
       </div>
     </div>
 </div>
-<hr/>
 {% endfor %}
 
 {% endblock %}

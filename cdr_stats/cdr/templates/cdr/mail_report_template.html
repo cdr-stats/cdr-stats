@@ -5,80 +5,80 @@
 <center><h3>{% trans "CDR-Stats report of" %} {{ yesterday_date|date:"jS F Y" }}</h3></center>
 
 <p><div class="dashboard_summary_header">{% trans "last 10 calls"|title %}</div></p>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-condensed">
+        <thead>
+        <tr>
+            <th>{% trans "date"|capfirst %}</th>
+            <th>{% trans "clid"|capfirst %}</th>
+            <th>{% trans "destination"|capfirst %}</th>
+            <th>{% trans "duration"|capfirst %}</th>
+            <th>{% trans "bill sec"|capfirst %}</th>
+            <th>{% trans "hangup cause"|capfirst %}</th>
+            <th>{% trans "account"|capfirst %}</th>
+            {% if user.is_superuser %}
+            <th>{% trans "buy cost"|capfirst %}</th>
+            {% endif %}
+            <th>{% trans "sell cost"|capfirst %}</th>
+            <th>&nbsp;</th>
+        </tr>
+        </thead>
 
-<table class="table table-striped table-bordered table-condensed">
-    <thead>
-    <tr>
-        <th>{% trans "date"|capfirst %}</th>
-        <th>{% trans "clid"|capfirst %}</th>
-        <th>{% trans "destination"|capfirst %}</th>
-        <th>{% trans "duration"|capfirst %}</th>
-        <th>{% trans "bill sec"|capfirst %}</th>
-        <th>{% trans "hangup cause"|capfirst %}</th>
-        <th>{% trans "account"|capfirst %}</th>
-        {% if user.is_superuser %}
-        <th>{% trans "buy cost"|capfirst %}</th>
-        {% endif %}
-        <th>{% trans "sell cost"|capfirst %}</th>
-        <th>&nbsp;</th>
-    </tr>
-    </thead>
-
-    {% if rows %}
-    {% for row in rows %}
-    <tr>
-        <td>{{ row.start_uepoch }}</td>
-        <td>{{ row.caller_id_number }} - {{ row.caller_id_name }}</td>
-        <td>{{ row.destination_number }}</td>
-        <td>{{ row.duration|conv_min }}</td>
-        <td>{{ row.billsec|conv_min }}</td>
-        <td>{{ row.hangup_cause_id|hangupcause_name }}</td>
-        <td>{{ row.accountcode }}</td>
-        {% if user.is_superuser %}
-        <td>{{ row.buy_cost }}</td>
-        {% endif %}
-        <td>{{ row.sell_cost }}</td>
-        <td>
-            <div class="flag_icon">
-                {% if row.country_id %}
-                    {% cache 1800 country_data row.country_id %}
-                        <img src="{{ STATIC_URL }}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name|title }}">
-                    {% endcache %}
-                {% else %}
-                    <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "world"|capfirst %}">
-                {% endif %}
-                <img src="{{ STATIC_URL }}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans "authorized call"|capfirst %}"/>
-
-                {% ifequal row.direction 'inbound' %}
-                    <img src="{{ STATIC_URL }}cdr-stats/icons/door_in.png" title="{{ row.direction|capfirst }} {% trans "call" %}" class="elemtooltip"/>
-                {% else %}
-                    {% ifequal row.direction 'outbound' %}
-                        <img src="{{ STATIC_URL }}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
+        {% if rows %}
+        {% for row in rows %}
+        <tr>
+            <td>{{ row.start_uepoch }}</td>
+            <td>{{ row.caller_id_number }} - {{ row.caller_id_name }}</td>
+            <td>{{ row.destination_number }}</td>
+            <td>{{ row.duration|conv_min }}</td>
+            <td>{{ row.billsec|conv_min }}</td>
+            <td>{{ row.hangup_cause_id|hangupcause_name }}</td>
+            <td>{{ row.accountcode }}</td>
+            {% if user.is_superuser %}
+            <td>{{ row.buy_cost }}</td>
+            {% endif %}
+            <td>{{ row.sell_cost }}</td>
+            <td>
+                <div class="flag_icon">
+                    {% if row.country_id %}
+                        {% cache 1800 country_data row.country_id %}
+                            <img src="{{ STATIC_URL }}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name|title }}">
+                        {% endcache %}
                     {% else %}
-                        <img src="{{ STATIC_URL }}cdr-stats/icons/door.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
-                    {% endifequal %}
-                {% endifequal %}
-            <div>
-        </td>
-    </tr>
-    {% endfor %}
-    <tr>
-        <td>...</td>
-        <td>...</td>
-        <td>...</td>
-        <td>...</td>
-        <td>...</td>
-        <td>...</td>
-        <td>...</td>
-        <td>...</td>
-        <td>...</td>
-        <td>...</td>
-    </tr>
-    {% else %}
-      <tr><td colspan="10">{% trans "no record found"|title %}</td></tr>
-    {% endif %}
-</table>
+                        <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "world"|capfirst %}">
+                    {% endif %}
+                    <img src="{{ STATIC_URL }}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans "authorized call"|capfirst %}"/>
 
+                    {% ifequal row.direction 'inbound' %}
+                        <img src="{{ STATIC_URL }}cdr-stats/icons/door_in.png" title="{{ row.direction|capfirst }} {% trans "call" %}" class="elemtooltip"/>
+                    {% else %}
+                        {% ifequal row.direction 'outbound' %}
+                            <img src="{{ STATIC_URL }}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
+                        {% else %}
+                            <img src="{{ STATIC_URL }}cdr-stats/icons/door.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
+                        {% endifequal %}
+                    {% endifequal %}
+                <div>
+            </td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+        </tr>
+        {% else %}
+          <tr><td colspan="10">{% trans "no record found"|title %}</td></tr>
+        {% endif %}
+    </table>
+</div>
 <p>&nbsp;</p>
 
 <div class="row">
@@ -86,36 +86,38 @@
         <div class="show-grid overlay">
             <div class="dashboard_summary_header col-md-6">{% trans "total calls"|title %}</div>
             <div class="col-md-6">
-                <table>
-                    <tbody>
-                    <tr>
-                        <td class="td-dashboard">{{ total_calls }}</td>
-                        <td>{% trans "number of calls"|title %}</td>
-                    </tr>
-                    <tr>
-                        <td class="td-dashboard">{{ ACT }}</td>
-                        <td>{% trans "average calls per hour"|title %}</td>
-                    </tr>
-                    <tr>
-                        <td class="td-dashboard">{{ total_duration }}</td>
-                        <td>{% trans "total duration"|title %}</td>
-                    </tr>
-                    <tr>
-                        <td class="td-dashboard">{{ ACD }}</td>
-                        <td>{% trans "average call duration"|title %}</td>
-                    </tr>
-                    {% if user.is_superuser %}
-                    <tr>
-                        <td class="td-dashboard">{{ total_buy_cost }}</td>
-                        <td>{% trans "buy cost"|title %}</td>
-                    </tr>
-                    {% endif %}
-                    <tr>
-                        <td class="td-dashboard">{{ total_sell_cost }}</td>
-                        <td>{% trans "sell cost"|title %}</td>
-                    </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table>
+                        <tbody>
+                        <tr>
+                            <td class="td-dashboard">{{ total_calls }}</td>
+                            <td>{% trans "number of calls"|title %}</td>
+                        </tr>
+                        <tr>
+                            <td class="td-dashboard">{{ ACT }}</td>
+                            <td>{% trans "average calls per hour"|title %}</td>
+                        </tr>
+                        <tr>
+                            <td class="td-dashboard">{{ total_duration }}</td>
+                            <td>{% trans "total duration"|title %}</td>
+                        </tr>
+                        <tr>
+                            <td class="td-dashboard">{{ ACD }}</td>
+                            <td>{% trans "average call duration"|title %}</td>
+                        </tr>
+                        {% if user.is_superuser %}
+                        <tr>
+                            <td class="td-dashboard">{{ total_buy_cost }}</td>
+                            <td>{% trans "buy cost"|title %}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td class="td-dashboard">{{ total_sell_cost }}</td>
+                            <td>{% trans "sell cost"|title %}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -125,30 +127,32 @@
                 <div class="dashboard_summary_header col-md-6">{% trans "5 most called countries"|title %}</div>
                 {% if country_analytic_array %}
                     <div class="col-md-6">
-                        <table>
-                            <tbody>
-                            {% for country_data in country_analytic_array %}
-                            <tr>
-                                <td class="td-dashboard">
-                                    {% if country_data.0 %}
-                                        {% cache 1800 country_data country_data.0 %}
-                                            <img src="{{ STATIC_URL }}cdr-stats/{{ country_data.0|iso_flag }}" class="elemtooltip" title="{{ country_data.0|country_name|title }}">
-                                        {% endcache %}
-                                    {% else %}
-                                        <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "world"|capfirst %}">
+                        <div class="table-responsive">
+                            <table>
+                                <tbody>
+                                {% for country_data in country_analytic_array %}
+                                <tr>
+                                    <td class="td-dashboard">
+                                        {% if country_data.0 %}
+                                            {% cache 1800 country_data country_data.0 %}
+                                                <img src="{{ STATIC_URL }}cdr-stats/{{ country_data.0|iso_flag }}" class="elemtooltip" title="{{ country_data.0|country_name|title }}">
+                                            {% endcache %}
+                                        {% else %}
+                                            <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "world"|capfirst %}">
+                                        {% endif %}
+                                    </td>
+                                    <td class="td-dashboard" width="100">{{ country_data.0|country_name|title }}</td>
+                                    <td width="100">{{ country_data.1.call_count }} {% trans "calls"|title %}</td>
+                                    <td width="100">{{ country_data.1.duration_sum|conv_min }} {% trans "minutes" %}</td>
+                                    {% if user.is_superuser %}
+                                        <td width="100">{{ country_data.1.buy_cost }} <abbr title="{% trans "buy cost"|title %}">{% trans "BC" %}</abbr></td>
                                     {% endif %}
-                                </td>
-                                <td class="td-dashboard" width="100">{{ country_data.0|country_name|title }}</td>
-                                <td width="100">{{ country_data.1.call_count }} {% trans "calls"|title %}</td>
-                                <td width="100">{{ country_data.1.duration_sum|conv_min }} {% trans "minutes" %}</td>
-                                {% if user.is_superuser %}
-                                    <td width="100">{{ country_data.1.buy_cost }} <abbr title="{% trans "buy cost"|title %}">{% trans "BC" %}</abbr></td>
-                                {% endif %}
-                                <td width="100">{{ country_data.1.sell_cost }} <abbr title="{% trans "sell cost"|title %}">{% trans "SC" %}</abbr></td>
-                            </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                                    <td width="100">{{ country_data.1.sell_cost }} <abbr title="{% trans "sell cost"|title %}">{% trans "SC" %}</abbr></td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 {% else %}
                     <div class="col-md-6">{% trans "no record found"|title %}</div>
