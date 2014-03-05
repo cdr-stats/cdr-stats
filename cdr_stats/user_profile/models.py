@@ -17,7 +17,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from voip_billing.models import VoIPPlan
 from django_lets_go.language_field import LanguageField
-from django_countries import CountryField
+from django_countries.fields import CountryField
 
 
 class UserProfile(models.Model):
