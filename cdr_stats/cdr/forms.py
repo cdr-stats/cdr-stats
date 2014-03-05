@@ -438,52 +438,27 @@ ACCOUNTCODE_FIELD_LIST_NUM = sorted(ACCOUNTCODE_FIELD_LIST_NUM,
 
 class CDR_FileImport(FileImport):
     """Admin Form : Import CSV file with phonebook CDR_FIELD_LIST"""
-    switch_id = forms.ChoiceField(label=_('switch'), choices=get_switch_list(),
-                                  required=True, help_text=_('select switch'))
-    accountcode_csv = forms.CharField(label=_('account code'),
-                                      required=False)
-    caller_id_number = forms.ChoiceField(label=_('caller_id_number'),
-                                         required=True,
-                                         choices=CDR_FIELD_LIST_NUM)
-    caller_id_name = forms.ChoiceField(label=_('caller_id_name'),
-                                       required=True,
-                                       choices=ACCOUNTCODE_FIELD_LIST_NUM)
-    destination_number = forms.ChoiceField(label=_('destination_number'),
-                                           required=True,
-                                           choices=CDR_FIELD_LIST_NUM)
-    duration = forms.ChoiceField(label=_('duration'), required=True,
-                                 choices=CDR_FIELD_LIST_NUM)
-    billsec = forms.ChoiceField(label=_('billsec'), required=True,
-                                choices=CDR_FIELD_LIST_NUM)
-    hangup_cause_id = forms.ChoiceField(label=_('hangup_cause_id'),
-                                        required=True,
-                                        choices=CDR_FIELD_LIST_NUM)
-    direction = forms.ChoiceField(label=_('direction'), required=True,
-                                  choices=ACCOUNTCODE_FIELD_LIST_NUM)
-    uuid = forms.ChoiceField(label=_('uuid'), required=True,
-                             choices=ACCOUNTCODE_FIELD_LIST_NUM)
-    remote_media_ip = forms.ChoiceField(label=_('remote_media_ip'),
-                                        required=True,
-                                        choices=ACCOUNTCODE_FIELD_LIST_NUM)
-    start_uepoch = forms.ChoiceField(label=_('start_uepoch'), required=True,
-                                     choices=CDR_FIELD_LIST_NUM)
-    answer_uepoch = forms.ChoiceField(label=_('answer_uepoch'), required=True,
-                                      choices=ACCOUNTCODE_FIELD_LIST_NUM)
-    end_uepoch = forms.ChoiceField(label=_('end_uepoch'), required=True,
-                                   choices=ACCOUNTCODE_FIELD_LIST_NUM)
-    mduration = forms.ChoiceField(label=_('mduration'), required=True,
-                                  choices=ACCOUNTCODE_FIELD_LIST_NUM)
-    billmsec = forms.ChoiceField(label=_('billmsec'), required=True,
-                                 choices=ACCOUNTCODE_FIELD_LIST_NUM)
-    read_codec = forms.ChoiceField(label=_('read_codec'), required=True,
-                                   choices=ACCOUNTCODE_FIELD_LIST_NUM)
-    write_codec = forms.ChoiceField(label=_('write_codec'), required=True,
-                                    choices=ACCOUNTCODE_FIELD_LIST_NUM)
-    accountcode = forms.ChoiceField(label=_('accountcode'), required=True,
-                                    choices=ACCOUNTCODE_FIELD_LIST_NUM)
+    switch_id = forms.ChoiceField(label=_('switch'), choices=get_switch_list(), required=True, help_text=_('select switch'))
+    accountcode_csv = forms.CharField(label=_('account code'), required=False)
+    caller_id_number = forms.ChoiceField(label=_('caller_id_number'), required=True, choices=CDR_FIELD_LIST_NUM)
+    caller_id_name = forms.ChoiceField(label=_('caller_id_name'), required=True, choices=ACCOUNTCODE_FIELD_LIST_NUM)
+    destination_number = forms.ChoiceField(label=_('destination_number'), required=True, choices=CDR_FIELD_LIST_NUM)
+    duration = forms.ChoiceField(label=_('duration'), required=True, choices=CDR_FIELD_LIST_NUM)
+    billsec = forms.ChoiceField(label=_('billsec'), required=True, choices=CDR_FIELD_LIST_NUM)
+    hangup_cause_id = forms.ChoiceField(label=_('hangup_cause_id'), required=True, choices=CDR_FIELD_LIST_NUM)
+    direction = forms.ChoiceField(label=_('direction'), required=True, choices=ACCOUNTCODE_FIELD_LIST_NUM)
+    uuid = forms.ChoiceField(label=_('uuid'), required=True, choices=ACCOUNTCODE_FIELD_LIST_NUM)
+    remote_media_ip = forms.ChoiceField(label=_('remote_media_ip'), required=True, choices=ACCOUNTCODE_FIELD_LIST_NUM)
+    start_uepoch = forms.ChoiceField(label=_('start_uepoch'), required=True, choices=CDR_FIELD_LIST_NUM)
+    answer_uepoch = forms.ChoiceField(label=_('answer_uepoch'), required=True, choices=ACCOUNTCODE_FIELD_LIST_NUM)
+    end_uepoch = forms.ChoiceField(label=_('end_uepoch'), required=True, choices=ACCOUNTCODE_FIELD_LIST_NUM)
+    mduration = forms.ChoiceField(label=_('mduration'), required=True, choices=ACCOUNTCODE_FIELD_LIST_NUM)
+    billmsec = forms.ChoiceField(label=_('billmsec'), required=True, choices=ACCOUNTCODE_FIELD_LIST_NUM)
+    read_codec = forms.ChoiceField(label=_('read_codec'), required=True, choices=ACCOUNTCODE_FIELD_LIST_NUM)
+    write_codec = forms.ChoiceField(label=_('write_codec'), required=True, choices=ACCOUNTCODE_FIELD_LIST_NUM)
+    accountcode = forms.ChoiceField(label=_('accountcode'), required=True, choices=ACCOUNTCODE_FIELD_LIST_NUM)
     import_asterisk = forms.BooleanField(label=_('asterisk hangup format'),
-        required=False,
-        help_text=_('with this option on, the field hangup_cause_id will expect Asterisk Hangup Cause in the format : ANSWER, CANCEL, BUSY, CONGESTION, CHANUNAVAIL, etc..'))
+        required=False, help_text=_('with this option on, the field hangup_cause_id will expect Asterisk Hangup Cause in the format : ANSWER, CANCEL, BUSY, CONGESTION, CHANUNAVAIL, etc..'))
 
     def __init__(self, user, *args, **kwargs):
         super(CDR_FileImport, self).__init__(*args, **kwargs)

@@ -104,8 +104,7 @@ class Carrier_Rate_fileExport(Exportfile):
     """
     Admin Form : Carrier Rate Export
     """
-    plan_id = forms.ChoiceField(label=_("carrier plan").capitalize(),
-                                choices=carrier_plan_list(), required=False)
+    plan_id = forms.ChoiceField(label=_("carrier plan").capitalize(), choices=carrier_plan_list(), required=False)
 
     def __init__(self, *args, **kwargs):
         super(Carrier_Rate_fileExport, self).__init__(*args, **kwargs)
@@ -116,8 +115,7 @@ class Retail_Rate_fileExport(Exportfile):
     """
     Admin Form : Retail Rate Export
     """
-    plan_id = forms.ChoiceField(label=_("retail plan").capitalize(),
-                                choices=retail_plan_list(), required=False)
+    plan_id = forms.ChoiceField(label=_("retail plan").capitalize(), choices=retail_plan_list(), required=False)
 
     def __init__(self, *args, **kwargs):
         super(Retail_Rate_fileExport, self).__init__(*args, **kwargs)
@@ -128,9 +126,8 @@ class VoIPPlan_fileExport(Exportfile):
     """
     Admin Form : VoIP Plan Export
     """
-    plan_id = forms.ChoiceField(label=_("VoIP plan"),
-        choices=voip_plan_list(), required=False,
-        help_text=_('this will export the VoIPPlan using LCR on each prefix-rate tuple'))
+    plan_id = forms.ChoiceField(label=_("VoIP plan"), choices=voip_plan_list(), required=False,
+                                help_text=_('this will export the VoIPPlan using LCR on each prefix-rate tuple'))
 
     def __init__(self, *args, **kwargs):
         super(VoIPPlan_fileExport, self).__init__(*args, **kwargs)
@@ -142,7 +139,7 @@ class PrefixRetailRrateForm(forms.Form):
     Client Form : To know Retail Rate for prefix
     """
     prefix = forms.CharField(label=_("enter prefix").capitalize(),
-                   widget=forms.TextInput(attrs={'size': 15}), required=False)
+                             widget=forms.TextInput(attrs={'size': 15}), required=False)
 
     def __init__(self, *args, **kwargs):
         super(PrefixRetailRrateForm, self).__init__(*args, **kwargs)
