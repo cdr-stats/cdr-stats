@@ -1,5 +1,14 @@
 /* CSS Document */
 
+.jumbotron li {
+    font-size: 15px;
+}
+
+.jumbotron {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
 .fg-button {
    outline: 0;
    margin:0 4px 0 0;

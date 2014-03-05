@@ -85,6 +85,7 @@
         {% block row_fluid %}
             <div class="row">
                 {% if not user.is_authenticated %}
+                <br/>
                 <div class="col-6 col-sm-6 col-lg-6">
                     {% crispy loginform loginform.helper %}
                 </div>
