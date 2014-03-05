@@ -408,11 +408,12 @@ def cdr_view(request):
 
     # Get daily report from session while using pagination & sorting
     if request.GET.get('page') or request.GET.get('sort_by'):
-        cdr_view_daily_data = request.session['session_cdr_view_daily_data']
+        # cdr_view_daily_data = request.session['session_cdr_view_daily_data']
+        daily_report_query_var = request.session['session_daily_report_query_var']
     else:
         # pass aggregate query to cdr_view_daily_report
-        cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
-        request.session['session_cdr_view_daily_data'] = cdr_view_daily_data
+        request.session['session_daily_report_query_var'] = daily_report_query_var
+    cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
 
     template_data = {
         'module': current_view(request),
