@@ -42,36 +42,38 @@
         {% endif %}
         <br/>
         <div class="dashboard_summary_header">{% trans "total calls"|title %}</div>
-        <table>
-            <tbody>
-            <tr>
-                <td class="td-dashboard">{{ total_calls }}</td>
-                <td>{% trans "number of calls"|title %}</td>
-            </tr>
-            <tr>
-                <td class="td-dashboard">{{ ACT }}</td>
-                <td>{% trans "average calls per hour"|title %}</td>
-            </tr>
-            <tr>
-                <td class="td-dashboard">{{ total_duration }}</td>
-                <td>{% trans "total duration"|title %}</td>
-            </tr>
-            <tr>
-                <td class="td-dashboard">{{ ACD }}</td>
-                <td>{% trans "average call duration"|title %}</td>
-            </tr>
-            {% if user.is_superuser %}
-            <tr>
-                <td class="td-dashboard">{{ total_buy_cost }}</td>
-                <td>{% trans "total buy cost"|title %}</td>
-            </tr>
-            {% endif %}
-            <tr>
-                <td class="td-dashboard">{{ total_sell_cost }}</td>
-                <td>{% trans "total sell cost"|title %}</td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table>
+                <tbody>
+                <tr>
+                    <td class="td-dashboard">{{ total_calls }}</td>
+                    <td>{% trans "number of calls"|title %}</td>
+                </tr>
+                <tr>
+                    <td class="td-dashboard">{{ ACT }}</td>
+                    <td>{% trans "average calls per hour"|title %}</td>
+                </tr>
+                <tr>
+                    <td class="td-dashboard">{{ total_duration }}</td>
+                    <td>{% trans "total duration"|title %}</td>
+                </tr>
+                <tr>
+                    <td class="td-dashboard">{{ ACD }}</td>
+                    <td>{% trans "average call duration"|title %}</td>
+                </tr>
+                {% if user.is_superuser %}
+                <tr>
+                    <td class="td-dashboard">{{ total_buy_cost }}</td>
+                    <td>{% trans "total buy cost"|title %}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td class="td-dashboard">{{ total_sell_cost }}</td>
+                    <td>{% trans "total sell cost"|title %}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
     <div class="col-md-6 welldashboard">
         <h2 align="center">{% trans "countries report"|title %}</h2>
@@ -82,6 +84,7 @@
         <br/>
         <div class="dashboard_summary_header">{% trans "5 most called countries"|title %}</div>
         {% if total_country_data %}
+        <div class="table-responsive">
             <table>
                 <tbody>
                 {% for country_data in total_country_data %}
@@ -106,6 +109,7 @@
                 {% endfor %}
                 </tbody>
             </table>
+        </div>
         {% else %}
             <div class="">{% trans "No record found" %}</div>
         {% endif %}
