@@ -33,14 +33,13 @@
                     var seconds = val % 60; // 30
                     return String(minutes +':'+seconds+' minutes')
                 }
-                else
-                {return String('00:00 minutes');}
+                else{return String('00:00 minutes');}
 
             }
 
             $('#call-world-map').vectorMap({
                 backgroundColor: '#DDECEF',
-                map: 'world_en',
+                map: 'world_mill_en',
                 values: values,
                 scaleColors: ['#C7AFBD', '#484452'],
                 hoverOpacity: 0.7,
@@ -51,13 +50,13 @@
                         if(call_data[k].label == code)
                         {
                             var temp_string = label.text();
-                            temp_string = temp_string + " : " + String(call_data[k].data[0]) + gettext(" Calls - ") + conve_min(parseInt(call_data[k].data[1]));
+                            temp_string = temp_string + " : " + String(call_data[k].data[0]) + " Calls - " + conve_min(parseInt(call_data[k].data[1]));
 
                             {% if user.is_superuser %}
-                                temp_string += gettext(" - Buy Cost : ") + call_data[k].data[2];
+                                temp_string += " - Buy Cost : " + call_data[k].data[2];
                             {% endif %}
 
-                            temp_string += gettext(" - Sell Cost : ") + call_data[k].data[3];
+                            temp_string += " - Sell Cost : " + call_data[k].data[3];
                             label.text(temp_string);
                             break;
                         }

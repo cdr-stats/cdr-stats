@@ -41,7 +41,7 @@ import tablib
 @permission_required('user_profile.call_rate', login_url='/')
 @login_required
 @check_user_voipplan
-#@cache_page(60 * 5)
+@cache_page(60 * 5)
 def voip_rates(request):
     """List voip call rates according to country prefix
 
