@@ -37,9 +37,9 @@ class VoIPRateList(APIView):
 
             CURL Usage::
 
-                curl -u username:password -H 'Accept: application/json' http://localhost:8000/rest-api/voip-rate/?recipient_phone_no=4323432
+                curl -u username:password -H 'Accept: application/json' http://localhost:8000/rest-api/voip-rate/?recipient_phone_no=4323432&sort_field=prefix&sort_order=desc
 
-                curl -u username:password -H 'Accept: application/json' http://localhost:8000/rest-api/voip-rate/?dialcode=4323432
+                curl -u username:password -H 'Accept: application/json' http://localhost:8000/rest-api/voip-rate/?dialcode=4323432&sort_field=prefix&sort_order=desc
         """
         logger.debug('Voip Rate GET API get called')
         error = {}

@@ -41,7 +41,7 @@ import tablib
 @permission_required('user_profile.call_rate', login_url='/')
 @login_required
 @check_user_voipplan
-@cache_page(60 * 5)
+#@cache_page(60 * 5)
 def voip_rates(request):
     """List voip call rates according to country prefix
 
@@ -83,13 +83,12 @@ def voip_rates(request):
             request.session['final_rate_list'] = ''
             dialcode = ''
     full_url = request.build_absolute_uri('/')
-    """
     if dialcode:
-        api_url = full_url + 'api/v1/voip_rate/?dialcode=%s&sort_field=%s&sort_order=%s' % (dialcode, sort_order, order)
+        api_url = full_url + 'rest-api/voip-rate/?dialcode=%s&sort_field=%s&sort_order=%s' % (dialcode, sort_order, order)
         response = requests.get(api_url, auth=(request.user, request.user))
     else:
         # Default listing or rate
-        api_url = full_url + 'api/v1/voip_rate/?sort_field=%s&sort_order=%s' % (sort_order, order)
+        api_url = full_url + 'rest-api/voip-rate/?sort_field=%s&sort_order=%s' % (sort_order, order)
         response = requests.get(api_url, auth=(request.user, request.user))
 
     if response.status_code == 200:
@@ -99,12 +98,11 @@ def voip_rates(request):
         for i in rate_list:
             # convert string into dict
             final_rate_list.append(ast.literal_eval(i))
-    """
+
     request.session['final_rate_list'] = final_rate_list
 
     variables = RequestContext(request, {
         'form': form,
-        'user': request.user,
         'rate_list': final_rate_list,
         'rate_list_count': len(final_rate_list),
         'col_name_with_order': pagination_data['col_name_with_order'],
