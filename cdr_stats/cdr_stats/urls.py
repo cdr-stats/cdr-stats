@@ -14,17 +14,17 @@
 #
 from django.conf.urls import handler404, handler500, url, patterns, include
 from django.conf import settings
-from tastypie.api import Api
-from api.user_api import UserResource
-from api.switch_api import SwitchResource
-from api.voip_rate_api import VoipRateResource
-from api.voip_call import VoipCallResource
+#from tastypie.api import Api
+#from api.user_api import UserResource
+#from api.switch_api import SwitchResource
+#from api.voip_rate_api import VoipRateResource
+#from api.voip_call import VoipCallResource
 from cdr.urls import urlpatterns as urlpatterns_cdr
 from cdr_alert.urls import urlpatterns as urlpatterns_cdr_alert
 from user_profile.urls import urlpatterns as urlpatterns_user_profile
 from frontend.urls import urlpatterns as urlpatterns_frontend
 from voip_billing.urls import urlpatterns as urlpatterns_voip_billing
-from api.api_playgrounds.urls import urlpatterns as urlpatterns_api_playgrounds
+#from api.api_playgrounds.urls import urlpatterns as urlpatterns_api_playgrounds
 from frontend_notification.urls import urlpatterns as urlpatterns_frontend_notification
 from mod_registration.urls import urlpatterns as urlpatterns_mod_registration
 from apirest.urls import urlpatterns as urlpatterns_apirest
@@ -41,11 +41,11 @@ except admin.sites.AlreadyRegistered:
     pass
 
 # tastypie api
-tastypie_api = Api(api_name='v1')
-tastypie_api.register(UserResource())
-tastypie_api.register(SwitchResource())
-tastypie_api.register(VoipRateResource())
-tastypie_api.register(VoipCallResource())
+#tastypie_api = Api(api_name='v1')
+#tastypie_api.register(UserResource())
+#tastypie_api.register(SwitchResource())
+#tastypie_api.register(VoipRateResource())
+#tastypie_api.register(VoipCallResource())
 
 js_info_dict = {
     'domain': 'djangojs',
@@ -61,7 +61,7 @@ urlpatterns = patterns('',
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
     (r'^admin_tools/', include('admin_tools.urls')),
-    (r'^api/', include(tastypie_api.urls)),
+    #(r'^api/', include(tastypie_api.urls)),
 
     # Serve static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
@@ -77,7 +77,7 @@ urlpatterns += urlpatterns_cdr
 urlpatterns += urlpatterns_cdr_alert
 urlpatterns += urlpatterns_user_profile
 urlpatterns += urlpatterns_frontend
-urlpatterns += urlpatterns_api_playgrounds
+#urlpatterns += urlpatterns_api_playgrounds
 urlpatterns += urlpatterns_frontend_notification
 urlpatterns += urlpatterns_voip_billing
 urlpatterns += urlpatterns_mod_registration
