@@ -152,24 +152,21 @@ def prefix_list_string(phone_number):
     """
     #Extra number, this is used in case phonenumber is followed by chars
     #ie 34650123456*234
-    m = re.search('(\d*)', phone_number)
+    m = re.search('(\d*)', str(phone_number))
     phone_number = m.group(0)
     try:
         int(phone_number)
     except ValueError:
         return False
     phone_number = str(phone_number)
-    prefix_range = range(settings.PREFIX_LIMIT_MIN,
-                         settings.PREFIX_LIMIT_MAX + 1)
+    prefix_range = range(settings.PREFIX_LIMIT_MIN, settings.PREFIX_LIMIT_MAX + 1)
     prefix_range.reverse()
     destination_prefix_list = ''
     for i in prefix_range:
         if i == settings.PREFIX_LIMIT_MIN:
-            destination_prefix_list = destination_prefix_list \
-                + phone_number[0:i]
+            destination_prefix_list = destination_prefix_list + phone_number[0:i]
         else:
-            destination_prefix_list = destination_prefix_list \
-                + phone_number[0:i] + ', '
+            destination_prefix_list = destination_prefix_list + phone_number[0:i] + ', '
     return str(destination_prefix_list)
 
 
