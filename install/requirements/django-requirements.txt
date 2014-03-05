@@ -26,7 +26,7 @@ django-tastypie==0.11.0
 git+git://github.com/areski/Django-API-Playground.git
 
 django-lets-go==2.9.1
-django-extensions==1.2.5
+django-extensions==1.3.3
 django-bower==4.8.1
 django-cors-headers==0.12
 #git+git://github.com/hmarr/django-ses.git
