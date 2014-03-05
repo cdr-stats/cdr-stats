@@ -12,7 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-from django.test import TestCase
+#from django.test import TestCase
 from django_lets_go.utils import BaseAuthenticatedClient
 from frontend.views import login_view, logout_view, diagnostic
 
@@ -123,40 +123,3 @@ class FrontendCustomerView(BaseAuthenticatedClient):
         request.LANGUAGE_CODE = 'en'
         response = logout_view(request)
         self.assertEqual(response.status_code, 302)
-
-
-class FrontendForgotPassword(TestCase):
-    """Test cases for Cdr-stats Customer Interface. for forgot password"""
-
-    def test_check_password_reset(self):
-        """Test Function to check password reset"""
-        response = self.client.get('/password_reset/', follow=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(
-            response,
-            'frontend/registration/password_reset_form.html')
-
-        response = self.client.post('/password_reset/',
-                                    {'email': 'admin@localhost.com'})
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.get('/password_reset/done/')
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(
-            response,
-            'frontend/registration/password_reset_done.html')
-
-        response = self.client.get('/reset/1-2xc-5791af4cc6b67e88ce8e/')
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(
-            response,
-            'frontend/registration/password_reset_confirm.html')
-        response = self.client.post('/reset/1-2xc-5791af4cc6b67e88ce8e/',
-                                    {'new_password1': 'admin',
-                                     'new_password2': 'admin'})
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.get('/reset/done/')
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response,
-            'frontend/registration/password_reset_complete.html')
