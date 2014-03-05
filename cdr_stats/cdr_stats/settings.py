@@ -144,7 +144,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.csrf",
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
-    "context_processors.cdr_stats_common_template_variable"
+    "cdr_stats.context_processors.cdr_stats_common_template_variable"
 )
 
 ROOT_URLCONF = 'cdr_stats.urls'

@@ -16,7 +16,7 @@ from socketio import SocketIOServer
 from django.core.management import setup_environ
 setup_environ(settings)
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'cdr_settings.settings'
 application = django.core.handlers.wsgi.WSGIHandler()
 
 version = 'v1.0'
