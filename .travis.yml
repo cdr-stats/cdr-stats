@@ -2,7 +2,7 @@ language: python
 python:
   - "2.7"
 env:
-  - DJANGO=1.5.1
+  - DJANGO=1.6.2
 services:
   - mongodb     # will start riak
   - redis-server
@@ -14,8 +14,8 @@ install:
   # - pip install pep8 --use-mirrors
   # - pip install https://github.com/dcramer/pyflakes/tarball/master
 before_script:
-  - cp install/conf/settings_local.py cdr_stats/settings_local.py
-  - cp install/conf/settings_travis.py cdr_stats/settings_travis.py
+  - cp install/conf/settings_local.py cdr_stats/cdr_stats/settings_local.py
+  - cp install/conf/settings_travis.py cdr_stats/cdr_stats/settings_travis.py
   #TODO: Now we should use postgresql
   - "mysql -e 'create database cdrstats;'"
   - "mysql -e 'create database cdrstats_test;'"
