@@ -176,7 +176,7 @@
                         <th></th>
                     </tr>
                     </thead>
-                    {% if rows %}
+                    {% if record_count != 0 %}
                     {% autopaginate rows cdr_stats_page_size %}
                     {% for row in rows %}
                     <tr>
