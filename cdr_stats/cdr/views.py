@@ -231,6 +231,8 @@ def cdr_view(request):
 
         from_date = getvar(request, 'from_date', setsession=False)
         to_date = getvar(request, 'to_date', setsession=False)
+        #request.session['session_from_date'] = str(from_date)
+        #request.session['session_to_date'] = str(to_date)
         result = getvar(request, 'result', setsession=True)
         destination = getvar(request, 'destination', setsession=True)
         destination_type = getvar(request, 'destination_type', setsession=True)
@@ -254,8 +256,8 @@ def cdr_view(request):
         if len(country_id) >= 1:
             request.session['session_country_id'] = country_id
 
-        start_date = ceil_strdate(from_date, 'start', True)
-        end_date = ceil_strdate(to_date, 'end', True)
+        #start_date = ceil_strdate(str(from_date), 'start', True)
+        #end_date = ceil_strdate(str(to_date), 'end', True)
 
     menu = show_menu(request)
     try:
@@ -273,7 +275,9 @@ def cdr_view(request):
             direction = request.session.get('session_direction')
             switch_id = request.session.get('session_switch_id')
             hangup_cause_id = request.session.get('session_hangup_cause_id')
-            result = int(request.session.get('session_result'))
+            result = request.session.get('session_result')
+            if not result:
+                result = 1
             search_tag = request.session.get('session_search_tag')
             records_per_page = request.session.get('session_records_per_page')
             country_id = request.session['session_country_id']
@@ -291,8 +295,8 @@ def cdr_view(request):
         records_per_page = settings.PAGE_SIZE
         # unset session var value
         request.session['session_result'] = 1
-        request.session['session_from_date'] = str(from_date)
-        request.session['session_to_date'] = str(to_date)
+        #request.session['session_from_date'] = str(from_date)
+        #request.session['session_to_date'] = str(to_date)
 
         field_list = ['destination', 'destination_type', 'accountcode',
                       'accountcode_type', 'caller', 'caller_type', 'duration',
@@ -307,14 +311,13 @@ def cdr_view(request):
 
         start_date = ceil_strdate(str(from_date), 'start', True)
         end_date = ceil_strdate(str(to_date), 'end', True)
-        print start_date
-        print end_date
-
-    #query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
+    print type(start_date)
+    print type(end_date)
+    query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
     # aggregate query variable
     daily_report_query_var = {}
-    #daily_report_query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+    daily_report_query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     dst = mongodb_str_filter(destination, destination_type)
     if dst:
@@ -353,7 +356,7 @@ def cdr_view(request):
     if len(country_id) >= 1 and country_id[0] != 0:
         daily_report_query_var['metadata.country_id'] = {'$in': country_id}
         query_var['country_id'] = {'$in': country_id}
-
+    
     final_result = mongodb.cdr_common.find(
         query_var,
         {
@@ -413,7 +416,7 @@ def cdr_view(request):
     else:
         # pass aggregate query to cdr_view_daily_report
         request.session['session_daily_report_query_var'] = daily_report_query_var
-    cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
+        cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
 
     template_data = {
         'module': current_view(request),
