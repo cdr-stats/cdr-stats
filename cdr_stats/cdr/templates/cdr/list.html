@@ -36,7 +36,6 @@
 
     {% include "frontend/common_search_toggle_button.html" %}
 
-
     <div class="tab-content">
         <div id="tabs-1" class="tab-pane {% if action == 'tabs-1' or action == '' %}active{% endif %}">
 
@@ -51,19 +50,21 @@
                 {% endif %}
                 </b>
             </div>
-
-            <div class="btn-group">
-                <button class="btn">{% trans "action"|title %}</button>
-                <button class="btn dropdown-toggle" data-toggle="dropdown">
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    {% if perms.cdr.search %}
-                        <li><a href="/cdr_export_csv/?format=csv">{% trans "export to CSV"|capfirst %}</a></li>
-                        <li><a href="/cdr_export_csv/?format=xls">{% trans "export to XLS"|capfirst %}</a></li>
-                        <li><a href="/cdr_export_csv/?format=json">{% trans "export to JSON"|capfirst %}</a></li>
-                    {% endif %}
-                </ul>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        {% trans "action"|capfirst %} <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            {% if perms.cdr.search %}
+                                <li><a href="/cdr_export_csv/?format=csv">{% trans "export to CSV"|capfirst %}</a></li>
+                                <li><a href="/cdr_export_csv/?format=xls">{% trans "export to XLS"|capfirst %}</a></li>
+                                <li><a href="/cdr_export_csv/?format=json">{% trans "export to JSON"|capfirst %}</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div>&nbsp;</div>
             <div class="table-responsive">
@@ -239,30 +240,9 @@
 
                                 {% if "cdr_object_id" in row %}
                                     {% if perms.user_profile.cdr_detail %}
-                                        <a data-toggle="modal" href="#modal-create-{{ row.cdr_object_id }}" class="ajax-modal-{{ row.cdr_object_id }}" url='/cdr_detail/{{ row.cdr_object_id }}/{{ row.switch_id }}' data-controls-modal='modal-create-content-{{ row.cdr_object_id }}'><img src="{{ STATIC_URL }}cdr-stats/icons/zoom.png" class="elemtooltip" title="{% trans "show details"|capfirst %}"/></a>
+                                        {% cdr_details row.cdr_object_id row.switch_id %}
                                     {% endif %}
                                 {% endif %}
-
-                                <script type="text/javascript" charset="utf-8">
-                                    $(".ajax-modal-{{ row.cdr_object_id }}").live('click', function() {
-                                        var url = $(this).attr('url');
-                                        var modal_id = $(this).attr('data-controls-modal');
-                                        url = url + "/?menu=off";
-                                        $("#" + modal_id).load(url);
-                                    });
-                                </script>
-                                <!-- modal content -->
-                                <div id="modal-create-{{ row.cdr_object_id }}" class="modal hide fade" >
-                                    <div class="modal-header">
-                                        <a class="close" data-dismiss="modal" >&times;</a>
-                                        <h3>{% trans "call details"|title %}</h3>
-                                    </div>
-                                    <div class="modal-body" id="modal-create-content-{{ row.cdr_object_id }}">
-                                    </div>
-                                    <div class="modal-footer">
-                                        <a href="#" class="btn" data-dismiss="modal">{% trans "close"|capfirst %}</a>
-                                    </div>
-                                </div>
                             </div>
                         </td>
                     </tr>
@@ -277,10 +257,13 @@
                     {% endif %}
                 </table>
             </div>
-            <div align="right" class="show-rows">
-                {% trans "show rows"|title %} :
-                {{ form.records_per_page }}
-                {% trans "total calls"|title %} : {{ record_count }}
+            <div class="row">
+                <div class="col-md-10 text-left">{% trans "total calls"|title %} : {{ record_count }}</div>
+                <div class="col-md-2 text-right">
+                    <div class="form-group">
+                        <div class="controls">{{ form.records_per_page }}</div>
+                    </div>
+                </div>
             </div>
         </form><!-- complete search form tag-->
             {% if rows %}
@@ -349,4 +332,14 @@
         </div>
     </div>
 </div>
+<!--Section cdr detail modal-->
+<script type="text/javascript" charset="utf-8">
+    $(".cdr-detail").on('click', function(e) {
+        var url = $(this).attr('url');
+        var modal_id = $(this).attr('data-controls-modal');
+        $("#" + modal_id).load(url);
+    });
+</script>
+<!-- modal content-->
+<div id="cdr-detail" class="modal fade" role="dialog" aria-labelledby="cdr_detail"></div>
 {% endblock %}

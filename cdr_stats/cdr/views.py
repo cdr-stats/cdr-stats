@@ -528,7 +528,7 @@ def cdr_detail(request, id, switch_id):
         try:
             connection = Connection(host, port)
             DBCON = connection[db_name]
-            DBCON.autentificate(user, password)
+            #DBCON.autentificate(user, password)
         except ConnectionFailure:
             raise Http404
 

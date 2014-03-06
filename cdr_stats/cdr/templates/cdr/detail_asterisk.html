@@ -9,3 +9,47 @@
 
 {% endfor %}
 {% endblock %}
+
+{% extends "frontend/master.html" %}
+{% load i18n cdr_tags common_tags %}
+
+{% block header_files %}
+{% endblock %}
+
+{% block extra_files %}
+{% endblock %}
+
+{% block row_fluid %}
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block menu %}
+{% endblock %}
+
+{% block container %}
+    {% block content %}
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a class="close" data-dismiss="modal">&times;</a>
+                    <h3>{% trans "CDR detail" %}</h3>
+                </div>
+                <div class="modal-body">
+                    {% for element in row %}
+					    <p><pre>{{ element }}</pre></p>
+					{% endfor %}
+                </div>
+
+                <div class="modal-footer" align="right">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "close"|title %}</button>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block footer %}
+    {% endblock %}
+
+{% endblock %}

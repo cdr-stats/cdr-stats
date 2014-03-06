@@ -165,7 +165,7 @@ class CdrSearchForm(SearchForm):
                 Div('duration', css_class='col-md-2'),
                 Div('duration_type', css_class='col-md-2'),
                 Div(HTML("""
-                    <b>Result : {{form.result.value}}</b><br/>
+                    <b>Result : </b><br/>
                     <div class="btn-group" data-toggle="buttons">
                         {% for choice in form.result.field.choices %}
                         <label class="btn btn-default {% if choice.0 == form.result.value %}active{% endif %}">
@@ -182,6 +182,7 @@ class CdrSearchForm(SearchForm):
             ),
         )
         common_submit_buttons(self.helper.layout, 'search')
+        self.fields['records_per_page'].widget.attrs['class'] = 'select form-control'
 
 
 class CountryReportForm(CdrSearchForm):
