@@ -21,7 +21,7 @@ from django.conf import settings
 from mongodb_connection import mongodb
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
-from django_lets_go.common_functions import current_view, get_news, \
+from django_lets_go.common_functions import current_view,\
     variable_value, mongodb_str_filter, mongodb_int_filter, \
     int_convert_to_minute, validate_days, percentage, \
     getvar, unset_session_var
@@ -260,65 +260,64 @@ def cdr_view(request):
         #end_date = ceil_strdate(str(to_date), 'end', True)
 
     menu = show_menu(request)
-    try:
-        if request.GET.get('page') or request.GET.get('sort_by'):
-            from_date = request.session.get('session_from_date')
-            to_date = request.session.get('session_to_date')
-            destination = request.session.get('session_destination')
-            destination_type = request.session.get('session_destination_type')
-            accountcode = request.session.get('session_accountcode')
-            accountcode_type = request.session.get('session_accountcode_type')
-            caller = request.session.get('session_caller')
-            caller_type = request.session.get('session_caller_type')
-            duration = request.session.get('session_duration')
-            duration_type = request.session.get('session_duration_type')
-            direction = request.session.get('session_direction')
-            switch_id = request.session.get('session_switch_id')
-            hangup_cause_id = request.session.get('session_hangup_cause_id')
-            result = request.session.get('session_result')
-            if not result:
-                result = 1
-            search_tag = request.session.get('session_search_tag')
-            records_per_page = request.session.get('session_records_per_page')
-            country_id = request.session['session_country_id']
-            cdr_view_daily_data = request.session.get('session_cdr_view_daily_data')
-    except NameError:
-        tday = datetime.today()
-        from_date = datetime(tday.year, tday.month, 1, 0, 0, 0, 0)
-        last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) +
-                    relativedelta(months=1)) -
-                    relativedelta(days=1)).strftime('%d')
-        #to_date = tday.strftime('%Y-%m-' + last_day + ' 23:59')
-        to_date = datetime(tday.year, tday.month, int(last_day), 23, 59, 59, 999999)
-        search_tag = 0
-        country_id = ''
-        records_per_page = settings.PAGE_SIZE
-        # unset session var value
-        request.session['session_result'] = 1
-        #request.session['session_from_date'] = str(from_date)
-        #request.session['session_to_date'] = str(to_date)
 
-        field_list = ['destination', 'destination_type', 'accountcode',
-                      'accountcode_type', 'caller', 'caller_type', 'duration',
-                      'duration_type', 'hangup_cause_id', 'switch_id', 'direction',
-                      'country_id']
-        unset_session_var(request, field_list)
+    if request.GET.get('page') or request.GET.get('sort_by'):
+        from_date = request.session.get('session_from_date')
+        to_date = request.session.get('session_to_date')
+        destination = request.session.get('session_destination')
+        destination_type = request.session.get('session_destination_type')
+        accountcode = request.session.get('session_accountcode')
+        accountcode_type = request.session.get('session_accountcode_type')
+        caller = request.session.get('session_caller')
+        caller_type = request.session.get('session_caller_type')
+        duration = request.session.get('session_duration')
+        duration_type = request.session.get('session_duration_type')
+        direction = request.session.get('session_direction')
+        switch_id = request.session.get('session_switch_id')
+        hangup_cause_id = request.session.get('session_hangup_cause_id')
+        result = request.session.get('session_result')
+        if not result:
+            result = 1
+        search_tag = request.session.get('session_search_tag')
+        records_per_page = request.session.get('session_records_per_page')
+        country_id = request.session['session_country_id']
+        cdr_view_daily_data = request.session.get('session_cdr_view_daily_data')
+    else:
+        if request.method == 'GET':
+            tday = datetime.today()
+            from_date = datetime(tday.year, tday.month, 1, 0, 0, 0, 0)
+            last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) +
+                        relativedelta(months=1)) -
+                        relativedelta(days=1)).strftime('%d')
+            #to_date = tday.strftime('%Y-%m-' + last_day + ' 23:59')
+            to_date = datetime(tday.year, tday.month, int(last_day), 23, 59, 59, 999999)
+            search_tag = 0
+            country_id = ''
+            records_per_page = settings.PAGE_SIZE
+            # unset session var value
+            request.session['session_result'] = 1
+            #request.session['session_from_date'] = str(from_date)
+            #request.session['session_to_date'] = str(to_date)
 
-        request.session['session_search_tag'] = search_tag
-        request.session['session_records_per_page'] = records_per_page
-        request.session['session_country_id'] = ''
-        request.session['session_cdr_view_daily_data'] = {}
+            field_list = ['destination', 'destination_type', 'accountcode',
+                          'accountcode_type', 'caller', 'caller_type', 'duration',
+                          'duration_type', 'hangup_cause_id', 'switch_id', 'direction',
+                          'country_id']
+            unset_session_var(request, field_list)
 
-        start_date = ceil_strdate(str(from_date), 'start', True)
-        end_date = ceil_strdate(str(to_date), 'end', True)
-    print type(start_date)
-    print type(end_date)
-    #query_var["start_uepoch"] = {"$gte": start_date, "$lt": end_date}
+            request.session['session_search_tag'] = search_tag
+            request.session['session_records_per_page'] = records_per_page
+            request.session['session_country_id'] = ''
+            request.session['session_cdr_view_daily_data'] = {}
+            start_date = ceil_strdate(str(from_date), 'start', True)
+            end_date = ceil_strdate(str(to_date), 'end', True)
+
+    query_var["start_uepoch"] = {"$gte": start_date, "$lt": end_date}
 
     # aggregate query variable
     daily_report_query_var = {}
-    #daily_report_query_var["metadata.date"] = {"$gte": start_date, "$lt": end_date}
-    """
+    daily_report_query_var["metadata.date"] = {"$gte": start_date, "$lt": end_date}
+
     dst = mongodb_str_filter(destination, destination_type)
     if dst:
         query_var['destination_number'] = dst
@@ -356,7 +355,7 @@ def cdr_view(request):
     if len(country_id) >= 1 and country_id[0] != 0:
         daily_report_query_var['metadata.country_id'] = {'$in': country_id}
         query_var['country_id'] = {'$in': country_id}
-    """
+
     final_result = mongodb.cdr_common.find(
         query_var,
         {
@@ -392,7 +391,7 @@ def cdr_view(request):
         }
     )
 
-    request.session['query_var'] = query_var
+    #request.session['query_var'] = query_var
 
     # Define no of records per page
     PAGE_SIZE = int(records_per_page)
@@ -415,7 +414,7 @@ def cdr_view(request):
         daily_report_query_var = request.session['session_daily_report_query_var']
     else:
         # pass aggregate query to cdr_view_daily_report
-        request.session['session_daily_report_query_var'] = daily_report_query_var
+        #request.session['session_daily_report_query_var'] = daily_report_query_var
         cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
 
     template_data = {
