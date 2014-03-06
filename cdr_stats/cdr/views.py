@@ -313,12 +313,12 @@ def cdr_view(request):
         end_date = ceil_strdate(str(to_date), 'end', True)
     print type(start_date)
     print type(end_date)
-    query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
+    #query_var["start_uepoch"] = {"$gte": start_date, "$lt": end_date}
 
     # aggregate query variable
     daily_report_query_var = {}
-    daily_report_query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
-
+    #daily_report_query_var["metadata.date"] = {"$gte": start_date, "$lt": end_date}
+    """
     dst = mongodb_str_filter(destination, destination_type)
     if dst:
         query_var['destination_number'] = dst
@@ -356,7 +356,7 @@ def cdr_view(request):
     if len(country_id) >= 1 and country_id[0] != 0:
         daily_report_query_var['metadata.country_id'] = {'$in': country_id}
         query_var['country_id'] = {'$in': country_id}
-    
+    """
     final_result = mongodb.cdr_common.find(
         query_var,
         {
