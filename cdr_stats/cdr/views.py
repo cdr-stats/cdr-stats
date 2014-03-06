@@ -247,20 +247,6 @@ def cdr_view(request):
     if request.GET.get('page') or request.GET.get('sort_by'):
         # get previous output but with pagination or sorted outpur
         pass
-    else:
-        if request.method == 'GET':
-            tday = datetime.today()
-            from_date = datetime(tday.year, tday.month, 1, 0, 0, 0, 0)
-            last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) +
-                        relativedelta(months=1)) -
-                        relativedelta(days=1)).strftime('%d')
-            #to_date = tday.strftime('%Y-%m-' + last_day + ' 23:59')
-            to_date = datetime(tday.year, tday.month, int(last_day), 23, 59, 59, 999999)
-            search_tag = 0
-            country_id = ''
-            records_per_page = settings.PAGE_SIZE
-            start_date = ceil_strdate(str(from_date), 'start', True)
-            end_date = ceil_strdate(str(to_date), 'end', True)
 
     query_var["start_uepoch"] = {"$gte": start_date, "$lt": end_date}
 
