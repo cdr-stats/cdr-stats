@@ -20,6 +20,7 @@ from django.utils.translation import gettext as _
 from django.conf import settings
 from mongodb_connection import mongodb
 from pymongo.connection import Connection
+from bson import json_util
 from pymongo.errors import ConnectionFailure
 from django_lets_go.common_functions import current_view,\
     variable_value, mongodb_str_filter, mongodb_int_filter, \
@@ -50,6 +51,7 @@ import tablib
 import time
 import logging
 import itertools
+import json
 
 
 def ceil_strdate(str_date, start, hour_min=False):
@@ -214,6 +216,7 @@ def cdr_view(request):
     to_date = datetime(tday.year, tday.month, int(last_day), 23, 59, 59, 999999)
     start_date = ceil_strdate(str(from_date), 'start', True)
     end_date = ceil_strdate(str(to_date), 'end', True)
+
     records_per_page = settings.PAGE_SIZE
     form = CdrSearchForm(request.POST or None)
     if form.is_valid():
@@ -243,10 +246,6 @@ def cdr_view(request):
         end_date = ceil_strdate(str(to_date), 'end', True)
 
     menu = show_menu(request)
-
-    if request.GET.get('page') or request.GET.get('sort_by'):
-        # get previous output but with pagination or sorted outpur
-        pass
 
     query_var["start_uepoch"] = {"$gte": start_date, "$lt": end_date}
 
@@ -306,6 +305,18 @@ def cdr_view(request):
         }
     )
 
+    if request.GET.get('page') or request.GET.get('sort_by'):
+        # get previous output but with pagination or sorted outpur
+        f = open('cdr_records.txt', 'r')
+        final_result = json.loads(f.read(), object_hook=json_util.object_hook)
+        print type(final_result)
+        f.close()
+    else:
+        dump_records = [doc for doc in final_result.clone()]
+        f = open('cdr_records.txt', 'w')
+        f.write(json.dumps(dump_records, default=json_util.default))
+        f.close()
+
     form = CdrSearchForm(
         initial={
             'from_date': from_date,
@@ -326,8 +337,6 @@ def cdr_view(request):
             'records_per_page': records_per_page
         }
     )
-
-    #request.session['query_var'] = query_var
 
     # Define no of records per page
     PAGE_SIZE = int(records_per_page)
@@ -354,7 +363,6 @@ def cdr_view(request):
         cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
 
     template_data = {
-        'module': current_view(request),
         'rows': rows,
         'form': form,
         'record_count': record_count,
