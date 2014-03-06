@@ -308,11 +308,14 @@ def cdr_view(request):
     if request.GET.get('page') or request.GET.get('sort_by'):
         # get previous output but with pagination or sorted outpur
         f = open('cdr_records.txt', 'r')
-        final_result = json.loads(f.read(), object_hook=json_util.object_hook)
-        print type(final_result)
+        temp_data = f.read()
+        if temp_data.startswith('[') and temp_data.endswith(']'):
+            temp_data = temp_data[1:-1]
+        temp_data = "'" + temp_data + "'"
+        final_result = json.loads(temp_data, object_hook=json_util.object_hook)
         f.close()
     else:
-        dump_records = [doc for doc in final_result.clone()]
+        dump_records = list(final_result.clone())
         f = open('cdr_records.txt', 'w')
         f.write(json.dumps(dump_records, default=json_util.default))
         f.close()
