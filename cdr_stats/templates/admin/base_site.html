@@ -48,6 +48,11 @@
             }
         });*/
     });
+    function toggleChecked(status) {
+        $(".checkbox").each( function() {
+            $(this).attr("checked", status);
+        })
+    }
 </script>
 <style>
 
@@ -64,14 +69,9 @@ a:link, a:visited {
 color:#5B80B2;
 text-decoration:none;
 }
+
 </style>
-<script type="text/javascript" language="JavaScript">
-    function toggleChecked(status) {
-        $(".checkbox").each( function() {
-            $(this).attr("checked", status);
-        })
-    }
-</script>
+
 {% endblock %}
 
 {% block extrastyle %}
