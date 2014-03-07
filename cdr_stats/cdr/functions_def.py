@@ -238,11 +238,3 @@ def calculate_act_and_acd(total_calls, total_duration):
         ACD = int_convert_to_minute(math.floor(total_duration / total_calls))
 
     return {'ACT': ACT, 'ACD': ACD}
-
-
-def show_menu(request):
-    """Check if we suppose to show menu"""
-    try:
-        return request.GET.get('menu')
-    except:
-        return 'on'
