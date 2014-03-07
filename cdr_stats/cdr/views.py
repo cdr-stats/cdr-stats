@@ -1742,26 +1742,24 @@ def cdr_country_report(request):
     if form.is_valid():
         logging.debug('CDR country report view with search option')
         search_tag = 1
-        if "from_date" in request.POST:
-            # From
-            start_date = from_date = form.cleaned_data.get('from_date')
+        from_date = getvar(request, 'from_date')
+        start_date = ceil_strdate(str(from_date), 'start')
 
-        if "to_date" in request.POST:
-            # To
-            end_date = to_date = form.cleaned_data.get('to_date')
+        to_date = getvar(request, 'to_date')
+        end_date = ceil_strdate(str(to_date), 'end')
+        switch_id = int(getvar(request, 'switch_id'))
+        duration = getvar(request, 'duration')
+        duration_type = getvar(request, 'duration_type')
 
-        country_id = form.cleaned_data.get('country_id')
+        country_id = getvar(request, 'country_id')
         # convert list value in int
         country_id = [int(row) for row in country_id]
         if len(country_id) >= 1 and country_id[0] != 0:
             query_var['metadata.country_id'] = {'$in': country_id}
 
-        switch_id = int(form.cleaned_data.get('switch_id'))
         if switch_id and switch_id != 0:
             query_var['metadata.switch_id'] = switch_id
 
-        duration = form.cleaned_data.get('duration')
-        duration_type = form.cleaned_data.get('duration_type')
         if duration:
             due = mongodb_int_filter(duration, duration_type)
             temp = []
@@ -1771,7 +1769,6 @@ def cdr_country_report(request):
                 query_var['$or'] = temp
 
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
-
     if not request.user.is_superuser:  # not superuser
         query_var['metadata.accountcode'] = UserProfile.objects.get(user=request.user).accountcode
 
@@ -1828,12 +1825,8 @@ def cdr_country_report(request):
 
         xdata = list(set([i for i in xdata]))
         xdata = sorted(xdata)
-        final_call_chartdata = {
-            'x': xdata,
-        }
-        final_duration_chartdata = {
-            'x': xdata,
-        }
+        final_call_chartdata = {'x': xdata}
+        final_duration_chartdata = {'x': xdata}
         int_count = 1
         extra_serie = {"tooltip": {"y_start": "", "y_end": " calls"}}
         for i in call_count_res:
