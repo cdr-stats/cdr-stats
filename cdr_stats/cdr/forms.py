@@ -144,6 +144,7 @@ class CdrSearchForm(SearchForm):
         self.helper.form_class = 'well'
         css_class = 'col-md-4'
         self.fields['result'].initial = 1
+
         self.helper.layout = Layout(
             Div(
                 Div('from_date', css_class=css_class),
@@ -279,7 +280,7 @@ class ConcurrentCallForm(CdrSearchForm):
     """
     def __init__(self, *args, **kwargs):
         super(ConcurrentCallForm, self).__init__(*args, **kwargs)
-        self.fields['from_date'].label = _('select date')
+        self.fields['from_date'].label = _('select date').capitalize()
         self.helper = FormHelper()
         self.helper.form_class = 'well'
         css_class = 'col-md-4'
@@ -287,16 +288,6 @@ class ConcurrentCallForm(CdrSearchForm):
             Div(
                 Div('from_date', css_class=css_class),
                 Div('switch_id', css_class=css_class),
-                Div(HTML("""
-                    <b>Result : </b><br/>
-                    <div class="btn-group" data-toggle="buttons">
-                        {% for choice in form.result.field.choices %}
-                        <label class="btn btn-default">
-                            <input name='{{ form.result.name }}' type='radio' value='{{ choice.0 }}'/> {{ choice.1 }}
-                        </label>
-                        {% endfor %}
-                    </div>
-                   """), css_class=css_class),
                 css_class='row'
             ),
         )

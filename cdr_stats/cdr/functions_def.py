@@ -18,7 +18,10 @@ from cdr.models import Switch, HangupCause
 from country_dialcode.models import Country, Prefix
 from cache_utils.decorators import cached
 from django.utils.translation import gettext as _
+from django_lets_go.common_functions import int_convert_to_minute
+from datetime import datetime
 import re
+import math
 
 
 def convert_to_minute(value):
@@ -207,3 +210,39 @@ def get_country_name(id, type=''):
             return obj.countryname
     except:
         return _('unknown')
+
+
+def chk_date_for_hrs(previous_date, graph_date):
+    """Check given graph_date is in last 24 hours range
+
+    >>> graph_date = datetime(2012, 8, 20)
+
+    >>> chk_date_for_hrs(graph_date)
+    False
+    """
+    if graph_date > previous_date:
+        return True
+    return False
+
+
+def calculate_act_and_acd(total_calls, total_duration):
+    """Calculate the Average Time of Call
+
+    >>> calculate_act_and_acd(5, 100)
+    {'ACD': '00:20', 'ACT': 0.0}
+    """
+    ACT = math.floor(total_calls / 24)
+    if total_calls == 0:
+        ACD = 0
+    else:
+        ACD = int_convert_to_minute(math.floor(total_duration / total_calls))
+
+    return {'ACT': ACT, 'ACD': ACD}
+
+
+def show_menu(request):
+    """Check if we suppose to show menu"""
+    try:
+        return request.GET.get('menu')
+    except:
+        return 'on'

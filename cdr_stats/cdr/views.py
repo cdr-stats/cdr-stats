@@ -21,23 +21,20 @@ from django.conf import settings
 from mongodb_connection import mongodb
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
-from django_lets_go.common_functions import current_view,\
-    variable_value, mongodb_str_filter, mongodb_int_filter, \
-    int_convert_to_minute, validate_days, percentage, \
+from django_lets_go.common_functions import variable_value, mongodb_str_filter,\
+    mongodb_int_filter, int_convert_to_minute, validate_days, percentage, \
     getvar, unset_session_var
 from cdr.models import Switch
 from cdr.functions_def import get_country_name, get_hangupcause_name,\
-    get_switch_ip_addr, convert_to_minute
-from cdr.forms import CdrSearchForm, \
-    CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
+    get_switch_ip_addr, convert_to_minute, chk_date_for_hrs, calculate_act_and_acd
+from cdr.forms import CdrSearchForm, CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
     ConcurrentCallForm, SwitchForm, WorldForm, EmailReportForm
 from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_monthly_overview, pipeline_daily_overview,\
     pipeline_hourly_overview, pipeline_country_report,\
     pipeline_hourly_report, pipeline_country_hourly_report,\
     pipeline_mail_report
-from cdr.decorators import check_cdr_exists, check_user_accountcode, \
-    check_user_voipplan
+from cdr.decorators import check_cdr_exists, check_user_accountcode, check_user_voipplan
 from cdr.constants import CDR_COLUMN_NAME, Export_choice
 from voip_billing.function_def import get_rounded_value
 from user_profile.models import UserProfile
@@ -45,7 +42,6 @@ from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
 from collections import defaultdict
-import math
 import tablib
 import time
 import logging
@@ -492,7 +488,7 @@ def cdr_detail(request, id, switch_id):
 
     **Attributes**:
 
-        * ``template`` - frontend/cdr_detail.html
+        * ``template`` - cdr/cdr_detail.html
 
     **Logic Description**:
 
@@ -559,34 +555,6 @@ def cdr_detail(request, id, switch_id):
         return render_to_response('cdr/detail_asterisk.html', data, context_instance=RequestContext(request))
 
 
-def chk_date_for_hrs(previous_date, graph_date):
-    """Check given graph_date is in last 24 hours range
-
-    >>> graph_date = datetime(2012, 8, 20)
-
-    >>> chk_date_for_hrs(graph_date)
-    False
-    """
-    if graph_date > previous_date:
-        return True
-    return False
-
-
-def calculate_act_and_acd(total_calls, total_duration):
-    """Calculate the Average Time of Call
-
-    >>> calculate_act_and_acd(5, 100)
-    {'ACD': '00:20', 'ACT': 0.0}
-    """
-    ACT = math.floor(total_calls / 24)
-    if total_calls == 0:
-        ACD = 0
-    else:
-        ACD = int_convert_to_minute(math.floor(total_duration / total_calls))
-
-    return {'ACT': ACT, 'ACD': ACD}
-
-
 @permission_required('user_profile.dashboard', login_url='/')
 @check_cdr_exists
 @check_user_accountcode
@@ -597,7 +565,7 @@ def cdr_dashboard(request):
 
     **Attributes**:
 
-        * ``template`` - frontend/cdr_dashboard.html
+        * ``template`` - cdr/dashboard.html
         * ``form`` - SwitchForm
         * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
 
@@ -800,7 +768,6 @@ def cdr_dashboard(request):
 
     logging.debug('CDR dashboard view end')
     variables = {
-        'module': current_view(request),
         'total_calls': total_calls,
         'total_duration': int_convert_to_minute(total_duration),
         'total_buy_cost': total_buy_cost,
@@ -811,7 +778,6 @@ def cdr_dashboard(request):
         'hangup_analytic': hangup_analytic,
         'form': form,
         'total_country_data': total_country_data[0:5],
-
         'final_chartdata': final_chartdata,
         'final_charttype': final_charttype,
         'final_chartcontainer': 'final_container',
@@ -840,7 +806,6 @@ def cdr_dashboard(request):
             'jquery_on_ready': True,
         },
     }
-
     return render_to_response('cdr/dashboard.html', variables, context_instance=RequestContext(request))
 
 
@@ -853,7 +818,7 @@ def cdr_concurrent_calls(request):
 
     **Attributes**:
 
-        * ``template`` - frontend/cdr_graph_concurrent_calls.html
+        * ``template`` - cdr/graph_concurrent_calls.html
         * ``form`` - ConcurrentCallForm
         * ``mongodb_data_set`` - MONGO_CDRSTATS['CONC_CALL_AGG'] (map-reduce collection)
 
@@ -863,26 +828,26 @@ def cdr_concurrent_calls(request):
         current date
     """
     logging.debug('CDR concurrent view start')
+    now = datetime.today()
+    from_date = now.strftime('%Y-%m-%d')
+    start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
+    end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 0)
+
     query_var = {}
     switch_id = 0
-    form = ConcurrentCallForm(request.POST or None)
+
+    form = ConcurrentCallForm(request.POST or None, initial={'from_date': from_date})
     logging.debug('CDR concurrent view with search option')
 
     if form.is_valid():
-        if "from_date" in request.POST and request.POST['from_date'] != '':
-            from_date = request.POST['from_date']
-            start_date = ceil_strdate(from_date, 'start')
-            end_date = ceil_strdate(from_date, 'end')
+        from_date = getvar(request, 'from_date')
+        switch_id = getvar(request, 'switch_id')
 
-        switch_id = form.cleaned_data.get('switch_id')
+        start_date = ceil_strdate(from_date, 'start')
+        end_date = ceil_strdate(from_date, 'end')
+
         if switch_id and int(switch_id) != 0:
             query_var['switch_id'] = int(switch_id)
-    else:
-        now = datetime.today()
-        from_date = now.strftime('%Y-%m-%d')
-        start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
-        end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 0)
-        form = ConcurrentCallForm(initial={'from_date': from_date})
 
     query_var['date'] = {'$gte': start_date, '$lt': end_date}
 
@@ -905,11 +870,8 @@ def cdr_concurrent_calls(request):
             xdata.append(str(tsint))
             call_count_res[d['switch_id']].append(d['numbercall'])
 
-        chartdata = {
-            'x': xdata,
-        }
-
         int_count = 1
+        chartdata = {'x': xdata}
         extra_serie = {"tooltip": {"y_start": "", "y_end": " concurrent calls"},
                        "date_format": "%d %b %Y %I:%M:%S %p"}
         for i in call_count_res:
@@ -920,7 +882,6 @@ def cdr_concurrent_calls(request):
 
         logging.debug('CDR concurrent view end')
         data = {
-            'module': current_view(request),
             'form': form,
             'start_date': start_date,
             'chartdata': chartdata,
@@ -944,7 +905,7 @@ def cdr_realtime(request):
 
     **Attributes**:
 
-        * ``template`` - frontend/cdr_realtime.html
+        * ``template`` - cdr/realtime.html
         * ``form`` - SwitchForm
         * ``mongodb_collection`` - MONGO_CDRSTATS['CONC_CALL_AGG'] (map-reduce collection)
 
@@ -984,7 +945,6 @@ def cdr_realtime(request):
         logging.debug('Realtime view end')
         list_switch = Switch.objects.all()
         variables = {
-            'module': current_view(request),
             'form': form,
             'final_data': final_data,
             'list_switch': list_switch,
@@ -1003,10 +963,8 @@ def get_cdr_mail_report():
     # Get yesterday's CDR-Stats Mail Report
     query_var = {}
     yesterday = date.today() - timedelta(1)
-    start_date = datetime(yesterday.year, yesterday.month,
-                          yesterday.day, 0, 0, 0, 0)
-    end_date = datetime(yesterday.year, yesterday.month,
-                        yesterday.day, 23, 59, 59, 999999)
+    start_date = datetime(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0, 0)
+    end_date = datetime(yesterday.year, yesterday.month, yesterday.day, 23, 59, 59, 999999)
 
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
@@ -1048,14 +1006,10 @@ def get_cdr_mail_report():
             # created country_analytic
             country_id = int(doc['_id']['country_id'])
             if country_id in country_analytic:
-                country_analytic[country_id]['call_count'] +=\
-                    int(doc['call_count'])
-                country_analytic[country_id]['duration_sum'] +=\
-                    doc['duration_sum']
-                country_analytic[country_id]['buy_cost'] +=\
-                    float(doc['buy_cost'])
-                country_analytic[country_id]['sell_cost'] +=\
-                    float(doc['sell_cost'])
+                country_analytic[country_id]['call_count'] += int(doc['call_count'])
+                country_analytic[country_id]['duration_sum'] += doc['duration_sum']
+                country_analytic[country_id]['buy_cost'] += float(doc['buy_cost'])
+                country_analytic[country_id]['sell_cost'] += float(doc['sell_cost'])
             else:
                 country_analytic[country_id] = {
                     'call_count': int(doc['call_count']),
@@ -1110,7 +1064,7 @@ def mail_report(request):
 
     **Attributes**:
 
-        * ``template`` - cdr/cdr_mail_report.html
+        * ``template`` - cdr/mail_report.html
         * ``form`` - MailreportForm
         * ``mongodb_data_set`` - mongodb.cdr_common
 
@@ -1131,7 +1085,6 @@ def mail_report(request):
     mail_data = get_cdr_mail_report()
     logging.debug('CDR mail report view end')
     data = {
-        'module': current_view(request),
         'yesterday_date': mail_data['yesterday_date'],
         'rows': mail_data['rows'],
         'form': form,
@@ -1177,8 +1130,7 @@ def get_hourly_report_for_date(start_date, end_date, query_var):
                 for key, value in dict_in_list.iteritems():
                     call_day_hours[int(key)] += int(value)
 
-            call_total_record[str(called_time)[:10]] = \
-                [value for key, value in call_day_hours.iteritems()]
+            call_total_record[str(called_time)[:10]] = [value for key, value in call_day_hours.iteritems()]
 
             # Min per hour
             for dict_in_list in doc['duration_per_hour']:
@@ -1207,7 +1159,7 @@ def cdr_daily_comparison(request):
 
     **Attributes**:
 
-        * ``template`` - frontend/cdr_report_by_hour.html
+        * ``template`` - cdr/report_by_hour.html
         * ``form`` - CompareCallSearchForm
         * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
         * ``map_reduce`` - mapreduce_cdr_hourly_analytic()
@@ -1336,7 +1288,6 @@ def cdr_daily_comparison(request):
 
         variables = {
             'action': action,
-            'module': current_view(request),
             'form': form,
             'search_tag': search_tag,
             'from_date': from_date,
@@ -1371,7 +1322,7 @@ def cdr_overview(request):
 
     **Attributes**:
 
-        * ``template`` - cdr/cdr_overview.html.html
+        * ``template`` - cdr/overview.html.html
         * ``form`` - CdrOverviewForm
         * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
 
@@ -1749,7 +1700,6 @@ def cdr_overview(request):
         logging.debug('CDR daily view end')
         variables = {
             'action': action,
-            'module': current_view(request),
             'form': form,
             'search_tag': search_tag,
             'start_date': start_date,
@@ -1821,7 +1771,7 @@ def cdr_country_report(request):
 
     **Attributes**:
 
-        * ``template`` - frontend/cdr_country_report.html
+        * ``template`` - cdr/country_report.html
         * ``form`` - CountryReportForm
         * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
 
@@ -1999,7 +1949,6 @@ def cdr_country_report(request):
     logging.debug('CDR country report view end')
     data = {
         'action': 'tabs-1',
-        'module': current_view(request),
         'total_calls': total_calls,
         'total_duration': total_duration,
         'country_analytic': country_analytic_array,
@@ -2055,7 +2004,7 @@ def world_map_view(request):
 
     **Attributes**:
 
-        * ``template`` - frontend/world_map.html
+        * ``template`` - cdr/world_map.html
         * ``form`` - WorldForm
         * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
 
@@ -2125,7 +2074,6 @@ def world_map_view(request):
     logging.debug('CDR world report view end')
 
     variables = {
-        'module': current_view(request),
         'form': form,
         'search_tag': search_tag,
         'start_date': start_date,

@@ -189,13 +189,13 @@
                             {{ row.caller_id_name }}
                         </td>
                         <td>{{ row.destination_number }}</td>
-                        <td>{% if result == 1 %}
+                        <td>{% if result == '1' %}
                                 {{ row.duration|conv_min }}
                             {% else %}
                                 {{ row.duration }}
                             {% endif %}
                         </td>
-                        <td>{% if result == 1 %}
+                        <td>{% if result == '1' %}
                                 {{ row.billsec|conv_min }}
                             {% else %}
                                 {{ row.billsec }}
