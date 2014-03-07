@@ -156,8 +156,8 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
         data = {
             'switch_id': 1,
-            'from_date': datetime.now().strftime("%Y-%m-%d"),
-            'to_date': datetime.now().strftime("%Y-%m-%d"),
+            'from_date': datetime.now(),
+            'to_date': datetime.now(),
             'destination': '91',
             'destination_type': 1,
             'accountcode': '123',
@@ -226,8 +226,8 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
         data = {'switch_id': 1,
-                'from_date': datetime.now().strftime("%Y-%m-%d"),
-                'to_date': datetime.now().strftime("%Y-%m-%d")}
+                'from_date': datetime.now().strftime("%Y-%m-%d %H:%M"),
+                'to_date': datetime.now().strftime("%Y-%m-%d %H%M")}
         response = self.client.post('/cdr_overview/', data)
         #self.assertTrue(response.context['form'], CdrOverviewForm(data))
         self.assertEqual(response.status_code, 200)
@@ -383,8 +383,8 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
         data = {'switch_id': 1,
-                'from_date': datetime.now().strftime("%Y-%m-%d"),
-                'to_date': datetime.now().strftime("%Y-%m-%d")}
+                'from_date': datetime.now(),
+                'to_date': datetime.now()}
         response = self.client.post('/world_map/', data)
         self.assertEqual(response.status_code, 200)
 
