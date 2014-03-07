@@ -173,7 +173,7 @@ def cdr_view(request):
 
     **Attributes**:
 
-        * ``template`` - frontend/cdr_view.html
+        * ``template`` - cdr/cdr_view.html
         * ``form`` - CdrSearchForm
         * ``mongodb_data_set`` - mongodb.cdr_common
 
@@ -184,6 +184,7 @@ def cdr_view(request):
     """
     logging.debug('CDR View Start')
     query_var = {}
+    export_query_var = {}
     result = 1  # default min
     switch_id = 0  # default all
     hangup_cause_id = 0  # default all
@@ -215,7 +216,7 @@ def cdr_view(request):
         field_list = ['destination', 'result', 'destination_type', 'accountcode',
                       'accountcode_type', 'caller', 'caller_type', 'duration',
                       'duration_type', 'hangup_cause_id', 'switch_id', 'direction',
-                      'country_id']
+                      'country_id', 'export_query_var']
         unset_session_var(request, field_list)
 
         from_date = getvar(request, 'from_date', setsession=False)
@@ -344,6 +345,11 @@ def cdr_view(request):
         daily_report_query_var['metadata.country_id'] = {'$in': country_id}
         query_var['country_id'] = {'$in': country_id}
 
+    # store query_var in session without date
+    export_query_var = query_var
+    del export_query_var['start_uepoch']
+    request.session['session_export_query_var'] = export_query_var
+
     final_result = mongodb.cdr_common.find(query_var,
         {
             "uuid": 0,
@@ -356,9 +362,6 @@ def cdr_view(request):
             "remote_media_ip": 0,
         }
     )
-
-    # pass aggregate query to cdr_view_daily_report
-    cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
 
     form = CdrSearchForm(
         initial={
@@ -435,10 +438,15 @@ def cdr_export_to_csv(request):
     response['Content-Disposition'] = 'attachment;filename=export.' + format
 
     # get query_var from request.session
-    query_var = request.session.get('query_var')
+    export_query_var = request.session.get('session_export_query_var')
+    start_date = request.session.get('session_start_date')
+    end_date = request.session.get('session_end_date')
+    start_date = ceil_strdate(start_date, 'start', True)
+    end_date = ceil_strdate(end_date, 'end', True)
+    export_query_var["start_uepoch"] = {"$gte": start_date, "$lt": end_date}
 
     final_result = mongodb.cdr_common.find(
-        query_var,
+        export_query_var,
         {
             "uuid": 0,
             "answer_uepoch": 0,
