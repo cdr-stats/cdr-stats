@@ -15,7 +15,7 @@
 <link href="{{ STATIC_URL }}cdr-stats/css/admin_custom.css" rel="stylesheet">
 <script>
   $(function() {
-    $( "#tabs" ).tabs();
+    //$( "#tabs" ).tabs();
   });
 </script>
 <div id="content-main">
@@ -86,24 +86,24 @@
     {% endblock %}
 
   <div id="tabs">
-    <ul>
-    <li><a href="#tabs-1">{% trans "call detail records"|title %}</a></li>
-    <li><a href="#tabs-2">{% trans "report by day"|title %}</a></li>
-    </ul>
+      <ul>
+          <li><a href="#tabs-1">{% trans "call detail records"|title %}</a></li>
+          <li><a href="#tabs-2">{% trans "report by day"|title %}</a></li>
+      </ul>
     <div id="tabs-1">
-    <p>&nbsp;</p>
-    <ul class="object-tools">
-      <li><a href="../export_cdr/?format=csv" class="addlink">{% trans "export to CSV"|capfirst %}</a></li>
-      <li><a href="../export_cdr/?format=xls" class="addlink">{% trans "export to XLS"|capfirst %}</a></li>
-      <li><a href="../export_cdr/?format=json" class="addlink">{% trans "export to JSON"|capfirst %}</a></li>
-      <li><a href="../import_cdr/" class="addlink">{% trans "import CDR"|capfirst %}</a></li>
-      <li><a href="/admin/voip_billing/voipplan/rebilling/" class="addlink">{% trans "rebilling"|capfirst %}</a></li>
-    </ul>
+        <p>&nbsp;</p>
+        <ul class="object-tools">
+          <li><a href="../export_cdr/?format=csv" class="addlink">{% trans "export to CSV"|capfirst %}</a></li>
+          <li><a href="../export_cdr/?format=xls" class="addlink">{% trans "export to XLS"|capfirst %}</a></li>
+          <li><a href="../export_cdr/?format=json" class="addlink">{% trans "export to JSON"|capfirst %}</a></li>
+          <li><a href="../import_cdr/" class="addlink">{% trans "import CDR"|capfirst %}</a></li>
+          <li><a href="/admin/voip_billing/voipplan/rebilling/" class="addlink">{% trans "rebilling"|capfirst %}</a></li>
+        </ul>
 
 
     <div class="module" id="changelist">
       <div class="result">
-        <table>
+            <table>
             <thead>
             <tr>
                 <th class="sortable" scope="col">
@@ -213,7 +213,7 @@
             </tr>
             </thead>
             {% if cdr_daily_data.total_calls %}
-            {% autopaginate rows cdr_stats_page_size %}
+            {% autopaginate rows records_per_page %}
             {% for row in rows %}
             <tr class="{% cycle 'row1' 'row2' %}">
                 <td>{{ row.start_uepoch }}</td>

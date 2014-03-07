@@ -548,6 +548,7 @@ class SwitchAdmin(admin.ModelAdmin):
             'opts': opts,
             'model_name': opts.object_name.lower(),
             'app_label': APP_LABEL,
+            'records_per_page': records_per_page,
         })
         logging.debug('CDR View End')
         return render_to_response('admin/cdr/switch/cdr_view.html', context_instance=template_data)

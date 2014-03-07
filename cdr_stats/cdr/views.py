@@ -1972,7 +1972,17 @@ def world_map_view(request):
 
         to_date = getvar(request, 'to_date')
         end_date = ceil_strdate(str(to_date), 'end')
-        switch_id = getvar(request, 'switch_id')
+        switch_id = int(getvar(request, 'switch_id'))
+        
+        if "from_date" in request.POST:
+            # From
+            from_date = form.cleaned_data.get('from_date')
+            start_date = ceil_strdate(from_date, 'start')
+
+        if "to_date" in request.POST:
+            # To
+            to_date = form.cleaned_data.get('to_date')
+            end_date = ceil_strdate(to_date, 'end')
 
         if switch_id and int(switch_id) != 0:
             query_var['metadata.switch_id'] = int(switch_id)
