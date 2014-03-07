@@ -1290,7 +1290,7 @@ def cdr_overview(request):
 
     **Attributes**:
 
-        * ``template`` - cdr/overview.html.html
+        * ``template`` - cdr/overview.html
         * ``form`` - CdrOverviewForm
         * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
 
@@ -1302,7 +1302,6 @@ def cdr_overview(request):
     logging.debug('CDR overview start')
     # initialize variables
     query_var = {}
-    tday = datetime.today()
     search_tag = 0
 
     hourly_duration_charttype = hourly_call_charttype = "lineWithFocusChart"
@@ -1316,418 +1315,396 @@ def cdr_overview(request):
     monthly_duration_chartdata = {'x': []}
 
     action = 'tabs-1'
-    form = CdrOverviewForm(request.POST or None)
+    tday = datetime.today()
+    switch_id = 0
+    # assign initial value in form fields
+    form = CdrOverviewForm(request.POST or None,
+                           initial={'from_date': tday.strftime('%Y-%m-%d 00:00'),
+                                    'to_date': tday.strftime('%Y-%m-%d 23:55'),
+                                    'switch_id': switch_id})
+
+    start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
+    end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
+    start_hour_date = ceil_strdate(tday.strftime('%Y-%m-%d %H:%M'), 'start', hour_min=True)
+    end_hour_date = ceil_strdate(tday.strftime('%Y-%m-%d %H:%M'), 'end', hour_min=True)
+
     logging.debug('CDR overview with search option')
     if form.is_valid():
         search_tag = 1
-        if "from_date" in request.POST:
-            from_date = request.POST['from_date']
-            start_date = ceil_strdate(from_date, 'start')
-            start_hour_date = ceil_strdate(from_date, 'start', hour_min=True)
-        else:
-            from_date = tday.strftime('%Y-%m-%d %H:%M')
+        from_date = getvar(request, 'from_date')
+        start_date = ceil_strdate(str(from_date), 'start')
+        start_hour_date = ceil_strdate(str(from_date), 'start', hour_min=True)
 
-        if "to_date" in request.POST:
-            to_date = request.POST['to_date']
-            end_date = ceil_strdate(to_date, 'end')
-            end_hour_date = ceil_strdate(to_date, 'end', hour_min=True)
-        else:
-            to_date = tday.strftime('%Y-%m-%d 23:55')
+        to_date = getvar(request, 'to_date')
+        end_date = ceil_strdate(str(to_date), 'end')
+        end_hour_date = ceil_strdate(str(to_date), 'end', hour_min=True)
 
-        switch_id = form.cleaned_data.get('switch_id')
+        switch_id = getvar(request, 'switch_id')
         if switch_id and int(switch_id) != 0:
             query_var['metadata.switch_id'] = int(switch_id)
 
-        if from_date and to_date:
-            query_var['metadata.date'] = {
-                '$gte': start_date,
-                '$lt': end_date
-            }
-
-            month_start_date = datetime(start_date.year, start_date.month, 1, 0, 0, 0, 0)
-            month_end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
-
-    if len(query_var) == 0:
-        tday = datetime.today()
-        switch_id = 0
-        # assign initial value in form fields
-        form = CdrOverviewForm(initial={'from_date': tday.strftime('%Y-%m-%d 00:00'),
-                                        'to_date': tday.strftime('%Y-%m-%d 23:55'),
-                                        'switch_id': switch_id})
-
-        start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
-        end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
-        start_hour_date = ceil_strdate(tday.strftime('%Y-%m-%d %H:%M'), 'start', hour_min=True)
-        end_hour_date = ceil_strdate(tday.strftime('%Y-%m-%d %H:%M'), 'end', hour_min=True)
-        month_start_date = datetime(start_date.year, start_date.month, 1,
-                                    0, 0, 0, 0)
-        month_end_date = datetime(end_date.year, end_date.month, end_date.day,
-                                  23, 59, 59, 999999)
-
-        query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+    query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+    month_start_date = datetime(start_date.year, start_date.month, 1, 0, 0, 0, 0)
+    month_end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
 
     if not request.user.is_superuser:  # not superuser
         query_var['metadata.accountcode'] = UserProfile.objects.get(user=request.user).accountcode
 
-    if query_var:
-        logging.debug('Map-reduce cdr overview analytic')
+    logging.debug('Map-reduce cdr overview analytic')
 
-        # Collect Hourly data
-        logging.debug('Aggregate cdr hourly overview')
-        pipeline = pipeline_hourly_overview(query_var)
+    # Collect Hourly data
+    logging.debug('Aggregate cdr hourly overview')
+    pipeline = pipeline_hourly_overview(query_var)
 
-        logging.debug('Before Aggregate')
-        list_data = mongodb.DBCON.command('aggregate',
-                                          settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                          pipeline=pipeline)
-        logging.debug('After Aggregate')
+    logging.debug('Before Aggregate')
+    list_data = mongodb.DBCON.command('aggregate',
+                                      settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+                                      pipeline=pipeline)
+    logging.debug('After Aggregate')
 
-        xdata = []
-        hourly_call_count_res = dict()
-        hourly_call_duration_res = dict()
-        if list_data:
-            for doc in list_data['result']:
-                a_Year = int(doc['_id']['date'][0:4])
-                b_Month = int(doc['_id']['date'][4:6])
-                c_Day = int(doc['_id']['date'][6:8])
-                day_hours = dict()
+    xdata = []
+    hourly_call_count_res = dict()
+    hourly_call_duration_res = dict()
+    if list_data:
+        for doc in list_data['result']:
+            a_Year = int(doc['_id']['date'][0:4])
+            b_Month = int(doc['_id']['date'][4:6])
+            c_Day = int(doc['_id']['date'][6:8])
+            day_hours = dict()
 
-                for dict_in_list in doc['call_per_hour']:
-                    for key, value in dict_in_list.iteritems():
-                        key = int(key)
-                        # Get date from aggregate result array
-                        graph_day = datetime(a_Year, b_Month, c_Day, key)
+            for dict_in_list in doc['call_per_hour']:
+                for key, value in dict_in_list.iteritems():
+                    key = int(key)
+                    # Get date from aggregate result array
+                    graph_day = datetime(a_Year, b_Month, c_Day, key)
 
-                        if graph_day >= start_hour_date and graph_day <= end_hour_date:
-                            # convert date into timestamp value
-                            dt = int(1000 * time.mktime(graph_day.timetuple()))
+                    if graph_day >= start_hour_date and graph_day <= end_hour_date:
+                        # convert date into timestamp value
+                        dt = int(1000 * time.mktime(graph_day.timetuple()))
 
-                            # prepare day_hours dict var with hour key
-                            # and values are like call count, duration sum, switch id
-                            if key in day_hours:
-                                day_hours[key]['calldate__count'] += int(value)
-                            else:
-                                day_hours[key] = {
-                                    'dt': dt,
-                                    'calldate__count': int(value),
-                                    'duration__sum': 0,
-                                    'switch_id': int(doc['_id']['switch_id'])
-                                }
+                        # prepare day_hours dict var with hour key
+                        # and values are like call count, duration sum, switch id
+                        if key in day_hours:
+                            day_hours[key]['calldate__count'] += int(value)
+                        else:
+                            day_hours[key] = {
+                                'dt': dt,
+                                'calldate__count': int(value),
+                                'duration__sum': 0,
+                                'switch_id': int(doc['_id']['switch_id'])
+                            }
 
-                # update day_hours for duration
-                for dict_in_list in doc['duration_per_hour']:
-                    for key, value in dict_in_list.iteritems():
-                        key = int(key)
-                        # Get date from aggregate result array
-                        graph_day = datetime(a_Year, b_Month, c_Day, key)
-                        if graph_day >= start_hour_date and graph_day <= end_hour_date:
-                            day_hours[int(key)]['duration__sum'] += int(value)
+            # update day_hours for duration
+            for dict_in_list in doc['duration_per_hour']:
+                for key, value in dict_in_list.iteritems():
+                    key = int(key)
+                    # Get date from aggregate result array
+                    graph_day = datetime(a_Year, b_Month, c_Day, key)
+                    if graph_day >= start_hour_date and graph_day <= end_hour_date:
+                        day_hours[int(key)]['duration__sum'] += int(value)
 
-                for hr in day_hours:
-                    # All switches hourly data
-                    temp_dt = day_hours[hr]['dt']
-                    temp_call_count = int(day_hours[hr]['calldate__count'])
-                    temp_duration_sum = day_hours[hr]['duration__sum']
+            for hr in day_hours:
+                # All switches hourly data
+                temp_dt = day_hours[hr]['dt']
+                temp_call_count = int(day_hours[hr]['calldate__count'])
+                temp_duration_sum = day_hours[hr]['duration__sum']
 
-                    xdata.append(temp_dt)
+                xdata.append(temp_dt)
 
-                    sw_id = day_hours[hr]['switch_id']
-                    if sw_id in hourly_call_count_res:
-                        hourly_call_count_res[sw_id].append(temp_call_count)
-                    else:
-                        hourly_call_count_res[sw_id] = [temp_call_count]
+                sw_id = day_hours[hr]['switch_id']
+                if sw_id in hourly_call_count_res:
+                    hourly_call_count_res[sw_id].append(temp_call_count)
+                else:
+                    hourly_call_count_res[sw_id] = [temp_call_count]
 
-                    if sw_id in hourly_call_duration_res:
-                        hourly_call_duration_res[sw_id].append(convert_to_minute(temp_duration_sum))
-                    else:
-                        hourly_call_duration_res[sw_id] = [convert_to_minute(temp_duration_sum)]
+                if sw_id in hourly_call_duration_res:
+                    hourly_call_duration_res[sw_id].append(convert_to_minute(temp_duration_sum))
+                else:
+                    hourly_call_duration_res[sw_id] = [convert_to_minute(temp_duration_sum)]
 
-            switch_count = len(hourly_call_duration_res.keys())
-            if switch_id == 0 and switch_count > 1:
-                # get total of no of switch
-                total_call_list = []
-                for i in hourly_call_count_res:
-                    total_call_list.append(hourly_call_count_res[i])
-
-                total_duration_list = []
-                for i in hourly_call_duration_res:
-                    total_duration_list.append(hourly_call_duration_res[i])
-
-                total_hourly_call_count = [sum(x) for x in itertools.izip_longest(*total_call_list, fillvalue=0)]
-                total_hourly_call_duration = [sum(x) for x in itertools.izip_longest(*total_duration_list, fillvalue=0)]
-
-            # get unique data for x-axis
-            xdata = list(set([i for i in xdata]))
-            xdata = sorted(xdata)
-            hourly_call_chartdata = {
-                'x': xdata,
-            }
-            hourly_duration_chartdata = {
-                'x': xdata,
-            }
-
-            int_count = 1
-            extra_serie = {"tooltip": {"y_start": "", "y_end": " calls"},
-                           "date_format": "%d %b %y %H:%M%p"}
+        switch_count = len(hourly_call_duration_res.keys())
+        if switch_id == 0 and switch_count > 1:
+            # get total of no of switch
+            total_call_list = []
             for i in hourly_call_count_res:
-                hourly_call_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
-                hourly_call_chartdata['y' + str(int_count)] = hourly_call_count_res[i]
-                hourly_call_chartdata['extra' + str(int_count)] = extra_serie
-                int_count += 1
+                total_call_list.append(hourly_call_count_res[i])
 
-            if switch_id == 0 and switch_count > 1:
-                hourly_call_chartdata['name' + str(int_count)] = 'Total calls'
-                hourly_call_chartdata['y' + str(int_count)] = total_hourly_call_count
-                hourly_call_chartdata['extra' + str(int_count)] = extra_serie
-
-            int_count = 1
-            extra_serie = {"tooltip": {"y_start": "", "y_end": " mins"},
-                           "date_format": "%d %b %y %H:%M%p"}
+            total_duration_list = []
             for i in hourly_call_duration_res:
-                hourly_duration_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
-                hourly_duration_chartdata['y' + str(int_count)] = hourly_call_duration_res[i]
-                hourly_duration_chartdata['extra' + str(int_count)] = extra_serie
-                int_count += 1
+                total_duration_list.append(hourly_call_duration_res[i])
 
-            if switch_id == 0 and switch_count > 1:
-                hourly_duration_chartdata['name' + str(int_count)] = 'Total duration'
-                hourly_duration_chartdata['y' + str(int_count)] = total_hourly_call_duration
-                hourly_duration_chartdata['extra' + str(int_count)] = extra_serie
+            total_hourly_call_count = [sum(x) for x in itertools.izip_longest(*total_call_list, fillvalue=0)]
+            total_hourly_call_duration = [sum(x) for x in itertools.izip_longest(*total_duration_list, fillvalue=0)]
 
-        # Collect daily data
-        logging.debug('Aggregate cdr daily analytic')
-        pipeline = pipeline_daily_overview(query_var)
+        # get unique data for x-axis
+        xdata = list(set([i for i in xdata]))
+        xdata = sorted(xdata)
+        hourly_call_chartdata = {'x': xdata}
+        hourly_duration_chartdata = {'x': xdata}
 
-        logging.debug('Before Aggregate')
-        list_data = mongodb.DBCON.command('aggregate',
-                                          settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                          pipeline=pipeline)
-        logging.debug('After Aggregate')
+        int_count = 1
+        extra_serie = {
+            "tooltip": {"y_start": "", "y_end": " calls"},
+            "date_format": "%d %b %y %H:%M%p"
+        }
+        for i in hourly_call_count_res:
+            hourly_call_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
+            hourly_call_chartdata['y' + str(int_count)] = hourly_call_count_res[i]
+            hourly_call_chartdata['extra' + str(int_count)] = extra_serie
+            int_count += 1
 
-        xdata = []
-        daily_call_count_res = dict()
-        daily_call_duration_res = dict()
-        if list_data:
-            for doc in list_data['result']:
-                # Get date from aggregate result array
-                graph_day = datetime(int(doc['_id']['date'][0:4]),
-                                     int(doc['_id']['date'][4:6]),
-                                     int(doc['_id']['date'][6:8]),
-                                     0, 0, 0, 0)
-                # convert date into timestamp value
-                dt = int(1000 * time.mktime(graph_day.timetuple()))
+        if switch_id == 0 and switch_count > 1:
+            hourly_call_chartdata['name' + str(int_count)] = 'Total calls'
+            hourly_call_chartdata['y' + str(int_count)] = total_hourly_call_count
+            hourly_call_chartdata['extra' + str(int_count)] = extra_serie
 
-                xdata.append(dt)
-                sw_id = doc['_id']['switch_id']
-                if sw_id in daily_call_count_res:
-                    daily_call_count_res[sw_id].append(int(doc['call_per_day']))
-                else:
-                    daily_call_count_res[sw_id] = [int(doc['call_per_day'])]
+        int_count = 1
+        extra_serie = {
+            "tooltip": {"y_start": "", "y_end": " mins"},
+            "date_format": "%d %b %y %H:%M%p"
+        }
+        for i in hourly_call_duration_res:
+            hourly_duration_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
+            hourly_duration_chartdata['y' + str(int_count)] = hourly_call_duration_res[i]
+            hourly_duration_chartdata['extra' + str(int_count)] = extra_serie
+            int_count += 1
 
-                if sw_id in daily_call_duration_res:
-                    daily_call_duration_res[sw_id].append(convert_to_minute(doc['duration_per_day']))
-                else:
-                    daily_call_duration_res[sw_id] = [convert_to_minute(doc['duration_per_day'])]
+        if switch_id == 0 and switch_count > 1:
+            hourly_duration_chartdata['name' + str(int_count)] = 'Total duration'
+            hourly_duration_chartdata['y' + str(int_count)] = total_hourly_call_duration
+            hourly_duration_chartdata['extra' + str(int_count)] = extra_serie
 
-            if switch_id == 0 and switch_count > 1:
-                daily_total_call_list = []
-                for i in daily_call_count_res:
-                    daily_total_call_list.append(daily_call_count_res[i])
+    # Collect daily data
+    logging.debug('Aggregate cdr daily analytic')
+    pipeline = pipeline_daily_overview(query_var)
 
-                daily_total_duration_list = []
-                for i in daily_call_duration_res:
-                    daily_total_duration_list.append(daily_call_duration_res[i])
+    logging.debug('Before Aggregate')
+    list_data = mongodb.DBCON.command('aggregate',
+                                      settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+                                      pipeline=pipeline)
+    logging.debug('After Aggregate')
 
-                total_daily_call_count = [sum(x) for x in itertools.izip_longest(*daily_total_call_list, fillvalue=0)]
-                total_daily_call_duration = [sum(x) for x in itertools.izip_longest(*daily_total_duration_list, fillvalue=0)]
+    xdata = []
+    daily_call_count_res = dict()
+    daily_call_duration_res = dict()
+    if list_data:
+        for doc in list_data['result']:
+            # Get date from aggregate result array
+            graph_day = datetime(int(doc['_id']['date'][0:4]),
+                                 int(doc['_id']['date'][4:6]),
+                                 int(doc['_id']['date'][6:8]),
+                                 0, 0, 0, 0)
+            # convert date into timestamp value
+            dt = int(1000 * time.mktime(graph_day.timetuple()))
 
-            xdata = list(set([i for i in xdata]))
-            xdata = sorted(xdata)
-            daily_call_chartdata = {
-                'x': xdata,
-            }
-            daily_duration_chartdata = {
-                'x': xdata,
-            }
+            xdata.append(dt)
+            sw_id = doc['_id']['switch_id']
+            if sw_id in daily_call_count_res:
+                daily_call_count_res[sw_id].append(int(doc['call_per_day']))
+            else:
+                daily_call_count_res[sw_id] = [int(doc['call_per_day'])]
 
-            int_count = 1
-            extra_serie = {"tooltip": {"y_start": "", "y_end": " calls"},
-                           "date_format": "%d %b %Y"}
+            if sw_id in daily_call_duration_res:
+                daily_call_duration_res[sw_id].append(convert_to_minute(doc['duration_per_day']))
+            else:
+                daily_call_duration_res[sw_id] = [convert_to_minute(doc['duration_per_day'])]
+
+        if switch_id == 0 and switch_count > 1:
+            daily_total_call_list = []
             for i in daily_call_count_res:
-                daily_call_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
-                daily_call_chartdata['y' + str(int_count)] = daily_call_count_res[i]
-                daily_call_chartdata['extra' + str(int_count)] = extra_serie
-                int_count += 1
+                daily_total_call_list.append(daily_call_count_res[i])
 
-            if switch_id == 0 and switch_count > 1:
-                daily_call_chartdata['name' + str(int_count)] = 'Total calls'
-                daily_call_chartdata['y' + str(int_count)] = total_daily_call_count
-                daily_call_chartdata['extra' + str(int_count)] = extra_serie
-
-            int_count = 1
-            extra_serie = {"tooltip": {"y_start": "", "y_end": " mins"},
-                           "date_format": "%d %b %Y"}
+            daily_total_duration_list = []
             for i in daily_call_duration_res:
-                daily_duration_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
-                daily_duration_chartdata['y' + str(int_count)] = daily_call_duration_res[i]
-                daily_duration_chartdata['extra' + str(int_count)] = extra_serie
-                int_count += 1
+                daily_total_duration_list.append(daily_call_duration_res[i])
 
-            if switch_id == 0 and switch_count > 1:
-                daily_duration_chartdata['name' + str(int_count)] = 'Total duration'
-                daily_duration_chartdata['y' + str(int_count)] = total_daily_call_duration
-                daily_duration_chartdata['extra' + str(int_count)] = extra_serie
+            total_daily_call_count = [sum(x) for x in itertools.izip_longest(*daily_total_call_list, fillvalue=0)]
+            total_daily_call_duration = [sum(x) for x in itertools.izip_longest(*daily_total_duration_list, fillvalue=0)]
 
-        # Collect monthly data
-        logging.debug('Aggregate cdr monthly analytic')
-        query_var['metadata.date'] = {
-            '$gte': month_start_date,
-            '$lt': month_end_date
+        xdata = list(set([i for i in xdata]))
+        xdata = sorted(xdata)
+        daily_call_chartdata = {'x': xdata}
+        daily_duration_chartdata = {'x': xdata}
+
+        int_count = 1
+        extra_serie = {
+            "tooltip": {"y_start": "", "y_end": " calls"},
+            "date_format": "%d %b %Y"
         }
-        pipeline = pipeline_monthly_overview(query_var)
+        for i in daily_call_count_res:
+            daily_call_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
+            daily_call_chartdata['y' + str(int_count)] = daily_call_count_res[i]
+            daily_call_chartdata['extra' + str(int_count)] = extra_serie
+            int_count += 1
 
-        logging.debug('Before Aggregate')
-        list_data = mongodb.DBCON.command('aggregate',
-                                          settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC'],
-                                          pipeline=pipeline)
-        logging.debug('After Aggregate')
+        if switch_id == 0 and switch_count > 1:
+            daily_call_chartdata['name' + str(int_count)] = 'Total calls'
+            daily_call_chartdata['y' + str(int_count)] = total_daily_call_count
+            daily_call_chartdata['extra' + str(int_count)] = extra_serie
 
-        xdata = []
-        monthly_call_count_res = dict()
-        monthly_call_duration_res = dict()
-        if list_data:
-            for doc in list_data['result']:
-                # Get date from aggregate result array
-                graph_month = datetime(int(doc['_id']['date'][0:4]),
-                                       int(doc['_id']['date'][4:6]),
-                                       1, 0, 0, 0, 0)
-                # convert date into timestamp value
-                dt = int(1000 * time.mktime(graph_month.timetuple()))
+        int_count = 1
+        extra_serie = {
+            "tooltip": {"y_start": "", "y_end": " mins"},
+            "date_format": "%d %b %Y"
+        }
+        for i in daily_call_duration_res:
+            daily_duration_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
+            daily_duration_chartdata['y' + str(int_count)] = daily_call_duration_res[i]
+            daily_duration_chartdata['extra' + str(int_count)] = extra_serie
+            int_count += 1
 
-                xdata.append(dt)
-                sw_id = doc['_id']['switch_id']
-                if sw_id in monthly_call_count_res:
-                    monthly_call_count_res[sw_id].append(int(doc['call_per_month']))
-                else:
-                    monthly_call_count_res[sw_id] = [int(doc['call_per_month'])]
+        if switch_id == 0 and switch_count > 1:
+            daily_duration_chartdata['name' + str(int_count)] = 'Total duration'
+            daily_duration_chartdata['y' + str(int_count)] = total_daily_call_duration
+            daily_duration_chartdata['extra' + str(int_count)] = extra_serie
 
-                if sw_id in monthly_call_duration_res:
-                    monthly_call_duration_res[sw_id].append(convert_to_minute(doc['duration_per_month']))
-                else:
-                    monthly_call_duration_res[sw_id] = [convert_to_minute(doc['duration_per_month'])]
+    # Collect monthly data
+    logging.debug('Aggregate cdr monthly analytic')
+    query_var['metadata.date'] = {'$gte': month_start_date, '$lt': month_end_date}
+    pipeline = pipeline_monthly_overview(query_var)
 
-            if switch_id == 0 and switch_count > 1:
-                monthly_total_call_list = []
-                for i in monthly_call_count_res:
-                    monthly_total_call_list.append(monthly_call_count_res[i])
+    logging.debug('Before Aggregate')
+    list_data = mongodb.DBCON.command('aggregate',
+                                      settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC'],
+                                      pipeline=pipeline)
+    logging.debug('After Aggregate')
 
-                monthly_total_duration_list = []
-                for i in monthly_call_duration_res:
-                    monthly_total_duration_list.append(monthly_call_duration_res[i])
+    xdata = []
+    monthly_call_count_res = dict()
+    monthly_call_duration_res = dict()
+    if list_data:
+        for doc in list_data['result']:
+            # Get date from aggregate result array
+            graph_month = datetime(int(doc['_id']['date'][0:4]),
+                                   int(doc['_id']['date'][4:6]),
+                                   1, 0, 0, 0, 0)
+            # convert date into timestamp value
+            dt = int(1000 * time.mktime(graph_month.timetuple()))
 
-                total_monthly_call_count = [sum(x) for x in itertools.izip_longest(*monthly_total_call_list, fillvalue=0)]
-                total_monthly_call_duration = [sum(x) for x in itertools.izip_longest(*monthly_total_duration_list, fillvalue=0)]
+            xdata.append(dt)
+            sw_id = doc['_id']['switch_id']
+            if sw_id in monthly_call_count_res:
+                monthly_call_count_res[sw_id].append(int(doc['call_per_month']))
+            else:
+                monthly_call_count_res[sw_id] = [int(doc['call_per_month'])]
 
-            xdata = list(set([i for i in xdata]))
-            xdata = sorted(xdata)
-            monthly_call_chartdata = {
-                'x': xdata,
-            }
-            monthly_duration_chartdata = {
-                'x': xdata,
-            }
+            if sw_id in monthly_call_duration_res:
+                monthly_call_duration_res[sw_id].append(convert_to_minute(doc['duration_per_month']))
+            else:
+                monthly_call_duration_res[sw_id] = [convert_to_minute(doc['duration_per_month'])]
 
-            int_count = 1
-            extra_serie = {"tooltip": {"y_start": "", "y_end": " calls"},
-                           "date_format": "%b %Y"}
+        if switch_id == 0 and switch_count > 1:
+            monthly_total_call_list = []
             for i in monthly_call_count_res:
-                monthly_call_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
-                monthly_call_chartdata['y' + str(int_count)] = monthly_call_count_res[i]
-                monthly_call_chartdata['extra' + str(int_count)] = extra_serie
-                int_count += 1
+                monthly_total_call_list.append(monthly_call_count_res[i])
 
-            if switch_id == 0 and switch_count > 1:
-                monthly_call_chartdata['name' + str(int_count)] = 'Total calls'
-                monthly_call_chartdata['y' + str(int_count)] = total_monthly_call_count
-                monthly_call_chartdata['extra' + str(int_count)] = extra_serie
-
-            int_count = 1
-            extra_serie = {"tooltip": {"y_start": "", "y_end": " mins"},
-                           "date_format": "%b %Y"}
+            monthly_total_duration_list = []
             for i in monthly_call_duration_res:
-                monthly_duration_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
-                monthly_duration_chartdata['y' + str(int_count)] = monthly_call_duration_res[i]
-                monthly_duration_chartdata['extra' + str(int_count)] = extra_serie
-                int_count += 1
+                monthly_total_duration_list.append(monthly_call_duration_res[i])
 
-            if switch_id == 0 and switch_count > 1:
-                monthly_duration_chartdata['name' + str(int_count)] = 'Total duration'
-                monthly_duration_chartdata['y' + str(int_count)] = total_monthly_call_duration
-                monthly_duration_chartdata['extra' + str(int_count)] = extra_serie
+            total_monthly_call_count = [sum(x) for x in itertools.izip_longest(*monthly_total_call_list, fillvalue=0)]
+            total_monthly_call_duration = [sum(x) for x in itertools.izip_longest(*monthly_total_duration_list, fillvalue=0)]
 
-        logging.debug('CDR daily view end')
-        variables = {
-            'action': action,
-            'form': form,
-            'search_tag': search_tag,
-            'start_date': start_date,
-            'end_date': end_date,
-            'hourly_call_chartdata': hourly_call_chartdata,
-            'hourly_call_charttype': hourly_call_charttype,
-            'hourly_call_chartcontainer': 'hourly_call_container',
-            'hourly_call_extra': {
-                'x_is_date': True,
-                'x_axis_format': '%d %b %y %H%p',
-                'tag_script_js': True,
-                'jquery_on_ready': False,
-            },
-            'hourly_duration_chartdata': hourly_duration_chartdata,
-            'hourly_duration_charttype': hourly_duration_charttype,
-            'hourly_duration_chartcontainer': 'hourly_duration_container',
-            'hourly_duration_extra': {
-                'x_is_date': True,
-                'x_axis_format': '%d %b %y %H %p',
-                'tag_script_js': False,
-                'jquery_on_ready': False,
-            },
-            'daily_call_chartdata': daily_call_chartdata,
-            'daily_call_charttype': daily_call_charttype,
-            'daily_call_chartcontainer': 'daily_call_container',
-            'daily_call_extra': {
-                'x_is_date': True,
-                'x_axis_format': '%d %b %Y',
-                'tag_script_js': False,
-                'jquery_on_ready': False,
-            },
-            'daily_duration_chartdata': daily_duration_chartdata,
-            'daily_duration_charttype': daily_duration_charttype,
-            'daily_duration_chartcontainer': 'daily_duration_container',
-            'daily_duration_extra': {
-                'x_is_date': True,
-                'x_axis_format': '%d %b %Y',
-                'tag_script_js': False,
-                'jquery_on_ready': False,
-            },
-            'monthly_call_chartdata': monthly_call_chartdata,
-            'monthly_call_charttype': monthly_call_charttype,
-            'monthly_call_chartcontainer': 'monthly_call_container',
-            'monthly_call_extra': {
-                'x_is_date': True,
-                'x_axis_format': '%b %Y',
-                'tag_script_js': False,
-                'jquery_on_ready': False,
-            },
-            'monthly_duration_chartdata': monthly_duration_chartdata,
-            'monthly_duration_charttype': monthly_duration_charttype,
-            'monthly_duration_chartcontainer': 'monthly_duration_container',
-            'monthly_duration_extra': {
-                'x_is_date': True,
-                'x_axis_format': '%b %Y',
-                'tag_script_js': False,
-                'jquery_on_ready': False,
-            },
+        xdata = list(set([i for i in xdata]))
+        xdata = sorted(xdata)
+        monthly_call_chartdata = {'x': xdata}
+        monthly_duration_chartdata = {'x': xdata}
+
+        int_count = 1
+        extra_serie = {
+            "tooltip": {"y_start": "", "y_end": " calls"},
+            "date_format": "%b %Y"
         }
-        return render_to_response('cdr/overview.html', variables, context_instance=RequestContext(request))
+        for i in monthly_call_count_res:
+            monthly_call_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
+            monthly_call_chartdata['y' + str(int_count)] = monthly_call_count_res[i]
+            monthly_call_chartdata['extra' + str(int_count)] = extra_serie
+            int_count += 1
+
+        if switch_id == 0 and switch_count > 1:
+            monthly_call_chartdata['name' + str(int_count)] = 'Total calls'
+            monthly_call_chartdata['y' + str(int_count)] = total_monthly_call_count
+            monthly_call_chartdata['extra' + str(int_count)] = extra_serie
+
+        int_count = 1
+        extra_serie = {
+            "tooltip": {"y_start": "", "y_end": " mins"},
+            "date_format": "%b %Y"
+        }
+        for i in monthly_call_duration_res:
+            monthly_duration_chartdata['name' + str(int_count)] = str(get_switch_ip_addr(i))
+            monthly_duration_chartdata['y' + str(int_count)] = monthly_call_duration_res[i]
+            monthly_duration_chartdata['extra' + str(int_count)] = extra_serie
+            int_count += 1
+
+        if switch_id == 0 and switch_count > 1:
+            monthly_duration_chartdata['name' + str(int_count)] = 'Total duration'
+            monthly_duration_chartdata['y' + str(int_count)] = total_monthly_call_duration
+            monthly_duration_chartdata['extra' + str(int_count)] = extra_serie
+
+    logging.debug('CDR daily view end')
+    variables = {
+        'action': action,
+        'form': form,
+        'search_tag': search_tag,
+        'start_date': start_date,
+        'end_date': end_date,
+        'hourly_call_chartdata': hourly_call_chartdata,
+        'hourly_call_charttype': hourly_call_charttype,
+        'hourly_call_chartcontainer': 'hourly_call_container',
+        'hourly_call_extra': {
+            'x_is_date': True,
+            'x_axis_format': '%d %b %y %H%p',
+            'tag_script_js': True,
+            'jquery_on_ready': False,
+        },
+        'hourly_duration_chartdata': hourly_duration_chartdata,
+        'hourly_duration_charttype': hourly_duration_charttype,
+        'hourly_duration_chartcontainer': 'hourly_duration_container',
+        'hourly_duration_extra': {
+            'x_is_date': True,
+            'x_axis_format': '%d %b %y %H %p',
+            'tag_script_js': False,
+            'jquery_on_ready': False,
+        },
+        'daily_call_chartdata': daily_call_chartdata,
+        'daily_call_charttype': daily_call_charttype,
+        'daily_call_chartcontainer': 'daily_call_container',
+        'daily_call_extra': {
+            'x_is_date': True,
+            'x_axis_format': '%d %b %Y',
+            'tag_script_js': False,
+            'jquery_on_ready': False,
+        },
+        'daily_duration_chartdata': daily_duration_chartdata,
+        'daily_duration_charttype': daily_duration_charttype,
+        'daily_duration_chartcontainer': 'daily_duration_container',
+        'daily_duration_extra': {
+            'x_is_date': True,
+            'x_axis_format': '%d %b %Y',
+            'tag_script_js': False,
+            'jquery_on_ready': False,
+        },
+        'monthly_call_chartdata': monthly_call_chartdata,
+        'monthly_call_charttype': monthly_call_charttype,
+        'monthly_call_chartcontainer': 'monthly_call_container',
+        'monthly_call_extra': {
+            'x_is_date': True,
+            'x_axis_format': '%b %Y',
+            'tag_script_js': False,
+            'jquery_on_ready': False,
+        },
+        'monthly_duration_chartdata': monthly_duration_chartdata,
+        'monthly_duration_charttype': monthly_duration_charttype,
+        'monthly_duration_chartcontainer': 'monthly_duration_container',
+        'monthly_duration_extra': {
+            'x_is_date': True,
+            'x_axis_format': '%b %Y',
+            'tag_script_js': False,
+            'jquery_on_ready': False,
+        },
+    }
+    return render_to_response('cdr/overview.html', variables, context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.by_country', login_url='/')

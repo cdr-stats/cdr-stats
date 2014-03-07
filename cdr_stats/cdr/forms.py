@@ -121,9 +121,9 @@ class CdrSearchForm(SearchForm):
     """
     Form used to search calls in the Customer UI.
     """
-    from_date = forms.DateTimeField(label=_('from').capitalize(), required=False,
+    from_date = forms.DateTimeField(label=_('from').capitalize(), required=True,
         widget=DateTimePicker(options={"format": "YYYY-MM-DD HH:mm", "pickSeconds": False}))
-    to_date = forms.DateTimeField(label=_('to').capitalize(), required=False,
+    to_date = forms.DateTimeField(label=_('to').capitalize(), required=True,
         widget=DateTimePicker(options={"format": "YYYY-MM-DD HH:mm", "pickSeconds": False}))
     direction = forms.TypedChoiceField(label=_('direction').capitalize(), required=False,
                                        choices=(('all', _('all')),
