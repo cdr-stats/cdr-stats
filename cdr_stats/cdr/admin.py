@@ -345,7 +345,7 @@ class SwitchAdmin(admin.ModelAdmin):
         if form.is_valid():
             logging.debug('CDR Search View')
             search_tag = 1
-            request.session['session_search_tag'] = search_tag
+
             # set session var value
             field_list = ['destination', 'result', 'destination_type', 'accountcode',
                           'accountcode_type', 'caller', 'caller_type', 'duration',
@@ -377,8 +377,8 @@ class SwitchAdmin(admin.ModelAdmin):
             if len(country_id) >= 1:
                 request.session['session_country_id'] = country_id
 
-            start_date = ceil_strdate(str(from_date), 'start', True)
-            end_date = ceil_strdate(str(to_date), 'end', True)
+            start_date = ceil_strdate(from_date, 'start', True)
+            end_date = ceil_strdate(to_date, 'end', True)
             converted_start_date = start_date.strftime('%Y-%m-%d %H:%M')
             converted_end_date = end_date.strftime('%Y-%m-%d %H:%M')
             request.session['session_start_date'] = converted_start_date
@@ -387,8 +387,10 @@ class SwitchAdmin(admin.ModelAdmin):
         menu = 'off'
 
         if request.GET.get('page') or request.GET.get('sort_by'):
-            from_date = request.session.get('session_from_date')
-            to_date = request.session.get('session_to_date')
+            from_date = start_date = request.session.get('session_start_date')
+            to_date = end_date = request.session.get('session_end_date')
+            start_date = ceil_strdate(start_date, 'start', True)
+            end_date = ceil_strdate(end_date, 'end', True)
             destination = request.session.get('session_destination')
             destination_type = request.session.get('session_destination_type')
             accountcode = request.session.get('session_accountcode')
@@ -419,12 +421,11 @@ class SwitchAdmin(admin.ModelAdmin):
 
                 converted_start_date = start_date.strftime('%Y-%m-%d %H:%M')
                 converted_end_date = end_date.strftime('%Y-%m-%d %H:%M')
+
+                # unset session var value
+                request.session['session_result'] = 1
                 request.session['session_start_date'] = converted_start_date
                 request.session['session_end_date'] = converted_end_date
-                # unset session var value
-                request.session['session_from_date'] = from_date
-                request.session['session_to_date'] = to_date
-                request.session['session_result'] = 1
 
                 field_list = ['destination', 'destination_type', 'accountcode',
                               'accountcode_type', 'caller', 'caller_type', 'duration',
@@ -518,8 +519,6 @@ class SwitchAdmin(admin.ModelAdmin):
                 'records_per_page': records_per_page
             }
         )
-
-        request.session['query_var'] = query_var
 
         # Define no of records per page
         records_per_page = int(records_per_page)

@@ -7,20 +7,20 @@
 <link rel="shortcut icon" type="image/x-icon" href="{{ STATIC_URL }}cdr-stats/images/favicon.ico">
 <!-- Javascript -->
 <script src="{{ STATIC_URL }}jquery/jquery.min.js" type="text/javascript"></script>
-<script src="{{ STATIC_URL }}jquery-ui/ui/minified/jquery-ui.min.js" type="text/javascript"></script>
-<!-- jquery UI css -->
-<link type="text/css" href="{{ STATIC_URL }}cdr-stats/css/jquery-ui-bootstrap/jquery-ui-1.8.16.custom.css" rel="stylesheet">
-
-<link href="{{ STATIC_URL }}cdr-stats/css/datepicker.css" rel="stylesheet">
+<script src="{{ STATIC_URL }}cdr-stats/js/jquery.datetimepicker.js" type="text/javascript"></script>
+<!--CSS-->
+<link href="{{ STATIC_URL }}cdr-stats/css/jquery.datetimepicker.css" rel="stylesheet">
 <script type="text/javascript">
+
     $(function() {
+
         var today = new Date();
         var last_day_of_month = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
 
         var fromDate = new Date(today.getFullYear(), today.getMonth(), 1);
         var toDate = new Date(today.getFullYear(), today.getMonth(), last_day_of_month);
 
-        var dates = $('#id_from_date, #id_to_date').datepicker({
+        /*var dates = $('#id_from_date, #id_to_date').datepicker({
             defaultDate: "+1w",
             changeMonth: true,
             dateFormat: 'yy-mm-dd',
@@ -32,16 +32,21 @@
                 dates.not(this).datepicker("option", option, date);
             }
         });
+        */
+        $('#id_from_date, #id_to_date').datetimepicker({
+            format:'Y-m-d H:i',
+            //inline:true,
+        });
 
         // from_date, to_date should not be null
-        $('#id_from_date, #id_to_date').blur(function () {
+        /*$('#id_from_date, #id_to_date').blur(function () {
             if($('#id_from_date').val() == ''){
                 $('#id_from_date').datepicker("setDate", fromDate );
             }
             if($('#id_to_date').val() == ''){
                 $('#id_to_date').datepicker("setDate", toDate );
             }
-        });
+        });*/
     });
 </script>
 <style>
