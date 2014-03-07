@@ -156,15 +156,12 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
         data = {
             'switch_id': 1,
-            'from_date': datetime.now(),
-            'to_date': datetime.now(),
+            'from_date': datetime.now().strftime("%Y-%m-%d %H:%M"),
+            'to_date': datetime.now().strftime("%Y-%m-%d %H:%M"),
             'destination': '91',
             'destination_type': 1,
             'accountcode': '123',
             'caller': 'abc',
-            'duration': '30',
-            'duration_type': '>',
-            'direction': 'INBOUND',
             'hangup_cause_id': 1,
             'result': 1,
             'records_per_page': 10
@@ -382,9 +379,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         response = world_map_view(request)
         self.assertEqual(response.status_code, 200)
 
-        data = {'switch_id': 1,
-                'from_date': datetime.now(),
-                'to_date': datetime.now()}
+        data = {'switch_id': 1}
         response = self.client.post('/world_map/', data)
         self.assertEqual(response.status_code, 200)
 
