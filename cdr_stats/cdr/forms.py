@@ -244,7 +244,7 @@ class CompareCallSearchForm(SearchForm):
     """
     from_date = forms.DateTimeField(label=_('select date').capitalize(), required=True,
         widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
-    comp_days = forms.ChoiceField(label=_('compare'), required=False, choices=comp_day_range(6))
+    comp_days = forms.ChoiceField(label=_('compare').capitalize(), required=False, choices=comp_day_range(6))
     check_days = forms.TypedChoiceField(label=_('check with').capitalize(),
                                         choices=list(CheckWith), widget=forms.RadioSelect(renderer=HorizRadioRenderer))
 
@@ -259,10 +259,10 @@ class CompareCallSearchForm(SearchForm):
                 Div('comp_days', css_class='col-md-2'),
                 Div('switch_id', css_class='col-md-3'),
                 Div(HTML("""
-                    <b>Check with : </b><br/>
+                    <b>Check with* : </b><br/>
                     <div class="btn-group" data-toggle="buttons">
                         {% for choice in form.check_days.field.choices %}
-                        <label class="btn btn-default {% if choice.0 == 1 %}active{% endif %}">
+                        <label class="btn btn-default">
                             <input name='{{ form.check_days.name }}' type='radio' value='{{ choice.0 }}'/> {{ choice.1 }}
                         </label>
                         {% endfor %}

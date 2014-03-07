@@ -917,6 +917,7 @@ def cdr_realtime(request):
     logging.debug('CDR realtime view start')
     query_var = {}
     switch_id = 0
+    list_switch = Switch.objects.all()
     form = SwitchForm(request.POST or None)
     if form.is_valid():
         switch_id = form.cleaned_data.get('switch_id')
@@ -928,33 +929,28 @@ def cdr_realtime(request):
     end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
 
     query_var['value.call_date'] = {'$gte': start_date, '$lt': end_date}
-
     if not request.user.is_superuser:  # not superuser
         query_var['value.accountcode'] = UserProfile.objects.get(user=request.user).accountcode
 
-    if query_var:
-        if not mongodb.conc_call_agg:
-            raise mongodb.conc_call_agg
-        calls_in_day = mongodb.conc_call_agg.find(query_var).sort([('_id.g_Millisec', -1)])
+    if not mongodb.conc_call_agg:
+        raise mongodb.conc_call_agg
+    calls_in_day = mongodb.conc_call_agg.find(query_var).sort([('_id.g_Millisec', -1)])
 
-        final_data = []
-        for d in calls_in_day:
-            dt = int(d['_id']['g_Millisec'])
-            final_data.append((dt, int(d['value']['numbercall__max'])))
+    final_data = []
+    for d in calls_in_day:
+        dt = int(d['_id']['g_Millisec'])
+        final_data.append((dt, int(d['value']['numbercall__max'])))
 
-        logging.debug('Realtime view end')
-        list_switch = Switch.objects.all()
-        variables = {
-            'form': form,
-            'final_data': final_data,
-            'list_switch': list_switch,
-            'user_id': request.user.id,
-            'colorgraph1': '180, 0, 0',
-            'colorgraph2': '0, 180, 0',
-            'colorgraph3': '0, 0, 180',
-            'realtime_graph_maxcall': settings.REALTIME_Y_AXIS_LIMIT,
-        }
-
+    logging.debug('Realtime view end')
+    variables = {
+        'form': form,
+        'final_data': final_data,
+        'list_switch': list_switch,
+        'colorgraph1': '180, 0, 0',
+        'colorgraph2': '0, 180, 0',
+        'colorgraph3': '0, 0, 180',
+        'realtime_graph_maxcall': settings.REALTIME_Y_AXIS_LIMIT,
+    }
     return render_to_response('cdr/graph_realtime.html', variables, context_instance=RequestContext(request))
 
 
@@ -1075,9 +1071,7 @@ def mail_report(request):
     """
     logging.debug('CDR mail report view start')
     msg = ''
-    user_profile = UserProfile.objects.get(user=request.user)
-
-    form = EmailReportForm(request.user, request.POST or None, instance=user_profile)
+    form = EmailReportForm(request.user, request.POST or None, instance=UserProfile.objects.get(user=request.user))
     if form.is_valid():
         form.save()
         msg = _('email ids are saved successfully.')
@@ -1178,28 +1172,30 @@ def cdr_daily_comparison(request):
     check_days = 1
     search_tag = 0
     action = 'tabs-1'
-    tday = datetime.today()
-    from_date = tday.strftime('%Y-%m-%d')
+    from_date = datetime.today()
     form = CompareCallSearchForm(request.POST or None,
-                                 initial={'from_date': from_date,
+                                 initial={'from_date': from_date.strftime('%Y-%m-%d'),
                                           'comp_days': comp_days,
                                           'check_days': check_days,
                                           'switch_id': 0})
 
+    from_day = validate_days(from_date.year, from_date.month, from_date.day)
+    end_date = datetime(from_date.year, from_date.month, from_day)
+    start_date = end_date + relativedelta(days=-comp_days)
+    start_date = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, 0)
+    end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
+
     logging.debug('CDR hourly view with search option')
     if form.is_valid():
         search_tag = 1
-        if "from_date" in request.POST:
-            from_date = request.POST['from_date']
-            select_date = datetime(int(from_date[0:4]),
-                                   int(from_date[5:7]),
-                                   int(from_date[8:10]), 0, 0, 0, 0)
-        else:
-            from_date = tday.strftime('%Y-%m-%d')
-            select_date = tday
+        from_date = getvar(request, 'from_date')
+        select_date = ceil_strdate(from_date, 'start')
+        switch_id = getvar(request, 'switch_id')
+        comp_days = int(getvar(request, 'comp_days'))
+        check_days = int(getvar(request, 'check_days'))
+        if switch_id and int(switch_id) != 0:
+            query_var['metadata.switch_id'] = int(switch_id)
 
-        comp_days = int(variable_value(request, 'comp_days'))
-        check_days = int(variable_value(request, 'check_days'))
         # check previous days
         if check_days == 2:
             compare_date_list = []
@@ -1210,108 +1206,80 @@ def cdr_daily_comparison(request):
                 interval_date = select_date + relativedelta(weeks=-i)
                 compare_date_list.append(interval_date)
 
-        switch_id = form.cleaned_data.get('switch_id')
-        if switch_id and int(switch_id) != 0:
-            query_var['metadata.switch_id'] = int(switch_id)
+        end_date = from_date = select_date
+        start_date = end_date + relativedelta(days=-int(comp_days))
+        start_date = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, 0)
+        end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
 
-        if from_date != '':
-            end_date = from_date = select_date
-            start_date = end_date + relativedelta(days=-int(comp_days))
-            start_date = datetime(start_date.year, start_date.month,
-                                  start_date.day, 0, 0, 0, 0)
-            end_date = datetime(end_date.year, end_date.month,
-                                end_date.day, 23, 59, 59, 999999)
-            if check_days == 1:
-                query_var['metadata.date'] = {
-                    '$gte': start_date,
-                    '$lt': end_date
-                }
-
-    if len(query_var) == 0:
-        from_date = datetime.today()
-        from_day = validate_days(from_date.year, from_date.month, from_date.day)
-        from_year = from_date.year
-        from_month = from_date.month
-        end_date = datetime(from_year, from_month, from_day)
-        start_date = end_date + relativedelta(days=-comp_days)
-        start_date = datetime(start_date.year, start_date.month,
-                              start_date.day, 0, 0, 0, 0)
-        end_date = datetime(end_date.year, end_date.month,
-                            end_date.day, 23, 59, 59, 999999)
-        query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+    query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 
     if not request.user.is_superuser:  # not superuser
         query_var['metadata.accountcode'] = UserProfile.objects.get(user=request.user).accountcode
 
-    if query_var:
-        # Previous days
-        if check_days == 2:
-            for i in compare_date_list:
-                s_date = datetime(i.year, i.month, i.day, 0, 0, 0, 0)
-                e_date = datetime(i.year, i.month, i.day, 23, 59, 59, 999999)
-                query_var['metadata.date'] = {'$gte': s_date, '$lt': e_date}
+    # Previous days
+    if check_days == 2:
+        for i in compare_date_list:
+            s_date = datetime(i.year, i.month, i.day, 0, 0, 0, 0)
+            e_date = datetime(i.year, i.month, i.day, 23, 59, 59, 999999)
+            query_var['metadata.date'] = {'$gte': s_date, '$lt': e_date}
 
-                call_min_data = get_hourly_report_for_date(s_date, e_date, query_var)
-                call_per_hr_data = call_min_data['call_total_record']
-                min_per_hr_data = call_min_data['min_total_record']
-
-        # Same day of the week
-        if check_days == 1:
-            call_min_data = get_hourly_report_for_date(start_date, end_date, query_var)
+            call_min_data = get_hourly_report_for_date(s_date, e_date, query_var)
             call_per_hr_data = call_min_data['call_total_record']
             min_per_hr_data = call_min_data['min_total_record']
 
-        xdata = [i for i in range(0, 24)]
-        extra_serie = {"tooltip": {"y_start": "There are ", "y_end": " calls"}}
-        call_chartdata = {
-            'x': xdata,
-        }
-        y_count = 1
-        for i in call_per_hr_data:
-            call_chartdata['name' + str(y_count)] = i
-            call_chartdata['y' + str(y_count)] = call_per_hr_data[i]
-            call_chartdata['extra' + str(y_count)] = extra_serie
-            y_count += 1
+    # Same day of the week
+    if check_days == 1:
+        call_min_data = get_hourly_report_for_date(start_date, end_date, query_var)
+        call_per_hr_data = call_min_data['call_total_record']
+        min_per_hr_data = call_min_data['min_total_record']
 
-        extra_serie = {"tooltip": {"y_start": "There are ", "y_end": " mins"}}
-        min_chartdata = {
-            'x': xdata,
-        }
-        y_count = 1
-        for i in min_per_hr_data:
-            min_chartdata['name' + str(y_count)] = i
-            min_chartdata['y' + str(y_count)] = min_per_hr_data[i]
-            min_chartdata['extra' + str(y_count)] = extra_serie
-            y_count += 1
+    xdata = [i for i in range(0, 24)]
+    extra_serie = {"tooltip": {"y_start": "There are ", "y_end": " calls"}}
+    call_chartdata = {'x': xdata}
+    y_count = 1
+    for i in call_per_hr_data:
+        call_chartdata['name' + str(y_count)] = i
+        call_chartdata['y' + str(y_count)] = call_per_hr_data[i]
+        call_chartdata['extra' + str(y_count)] = extra_serie
+        y_count += 1
 
-        logging.debug('CDR hourly view end')
+    extra_serie = {"tooltip": {"y_start": "There are ", "y_end": " mins"}}
+    min_chartdata = {'x': xdata}
+    y_count = 1
+    for i in min_per_hr_data:
+        min_chartdata['name' + str(y_count)] = i
+        min_chartdata['y' + str(y_count)] = min_per_hr_data[i]
+        min_chartdata['extra' + str(y_count)] = extra_serie
+        y_count += 1
 
-        variables = {
-            'action': action,
-            'form': form,
-            'search_tag': search_tag,
-            'from_date': from_date,
-            'comp_days': comp_days,
-            'call_charttype': call_charttype,
-            'call_chartdata': call_chartdata,
-            'call_chartcontainer': 'call_chartcontainer',
-            'call_extra': {
-                'x_is_date': False,
-                'x_axis_format': 'AM_PM',
-                'tag_script_js': True,
-                'jquery_on_ready': True,
-            },
-            'min_charttype': min_charttype,
-            'min_chartdata': min_chartdata,
-            'min_chartcontainer': 'min_chartcontainer',
-            'min_extra': {
-                'x_is_date': False,
-                'x_axis_format': 'AM_PM',
-                'tag_script_js': False,
-                'jquery_on_ready': True,
-            },
-        }
-        return render_to_response('cdr/report_by_hour.html', variables, context_instance=RequestContext(request))
+    logging.debug('CDR hourly view end')
+
+    variables = {
+        'action': action,
+        'form': form,
+        'search_tag': search_tag,
+        'from_date': from_date,
+        'comp_days': comp_days,
+        'call_charttype': call_charttype,
+        'call_chartdata': call_chartdata,
+        'call_chartcontainer': 'call_chartcontainer',
+        'call_extra': {
+            'x_is_date': False,
+            'x_axis_format': 'AM_PM',
+            'tag_script_js': True,
+            'jquery_on_ready': True,
+        },
+        'min_charttype': min_charttype,
+        'min_chartdata': min_chartdata,
+        'min_chartcontainer': 'min_chartcontainer',
+        'min_extra': {
+            'x_is_date': False,
+            'x_axis_format': 'AM_PM',
+            'tag_script_js': False,
+            'jquery_on_ready': True,
+        },
+    }
+    return render_to_response('cdr/report_by_hour.html', variables, context_instance=RequestContext(request))
 
 
 @check_cdr_exists
