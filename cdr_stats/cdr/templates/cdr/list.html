@@ -177,7 +177,7 @@
                     </tr>
                     </thead>
                     {% if record_count != 0 %}
-                    {% autopaginate rows PAGE_SIZE %}
+                    {% autopaginate rows records_per_page %}
                     {% for row in rows %}
                     <tr>
                         <td>{{ row.start_uepoch }}</td>

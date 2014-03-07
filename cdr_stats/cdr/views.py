@@ -346,7 +346,7 @@ def cdr_view(request):
         query_var['country_id'] = {'$in': country_id}
 
     # store query_var in session without date
-    export_query_var = query_var
+    export_query_var = query_var.copy()
     del export_query_var['start_uepoch']
     request.session['session_export_query_var'] = export_query_var
 
@@ -385,19 +385,14 @@ def cdr_view(request):
     )
 
     # Define no of records per page
-    PAGE_SIZE = int(records_per_page)
-    pagination_data = get_pagination_vars(request)
-
-    PAGE_NUMBER = pagination_data['PAGE_NUMBER']
-    col_name_with_order = pagination_data['col_name_with_order']
-    sort_field = pagination_data['sort_field']
-    default_order = pagination_data['default_order']
+    records_per_page = int(records_per_page)
+    page_var = get_pagination_vars(request)
 
     logging.debug('Create cdr result')
-    SKIP_NO = PAGE_SIZE * (PAGE_NUMBER - 1)
+    SKIP_NO = records_per_page * (page_var['PAGE_NUMBER'] - 1)
     record_count = final_result.count()
     # perform pagination on cdr_common collection via skip() and limit()
-    rows = final_result.skip(SKIP_NO).limit(PAGE_SIZE).sort([(sort_field, default_order)])
+    rows = final_result.skip(SKIP_NO).limit(records_per_page).sort([(page_var['sort_field'], page_var['default_order'])])
 
     cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
 
@@ -407,14 +402,14 @@ def cdr_view(request):
         'record_count': record_count,
         'cdr_daily_data': cdr_view_daily_data,
         'search_tag': search_tag,
-        'col_name_with_order': col_name_with_order,
+        'col_name_with_order': page_var['col_name_with_order'],
         'menu': menu,
         'start_date': start_date,
         'end_date': end_date,
         'action': action,
         'result': result,
         'CDR_COLUMN_NAME': CDR_COLUMN_NAME,
-        'PAGE_SIZE': PAGE_SIZE,
+        'records_per_page': records_per_page,
         'up_icon': '<i class="glyphicon glyphicon-chevron-up"></i>',
         'down_icon': '<i class="glyphicon glyphicon-chevron-down"></i>'
     }
