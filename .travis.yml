@@ -22,8 +22,8 @@ before_script:
   # - "pep8 --exclude=migrations --ignore=E501,E225 cdr_stats"
   # - pyflakes -x W cdr_stats
 script:
-  #- python cdr_stats/manage.py test --settings=settings_travis -s -x --with-xtraceback --with-color
-  - python cdr_stats/manage.py test --settings=settings_travis -s -x --with-xtraceback --with-color --ignore-files=api_tests.py
+  python cdr_stats/manage.py test -s -x --with-xtraceback --with-color
+  #- python cdr_stats/manage.py test --settings=settings_travis -s -x --with-xtraceback --with-color --ignore-files=api_tests.py
   #- python cdr_stats/manage.py test --settings=settings_travis -s --with-progressive
 # whitelist
 branches:
