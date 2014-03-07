@@ -168,6 +168,7 @@ DAJAXICE_MEDIA_PREFIX = "dajaxice"
 
 INSTALLED_APPS = (
     #admin tool apps
+    # 'admintools_bootstrap',  # https://bitbucket.org/salvator/django-admintools-bootstrap
     'admin_tools',
     'admin_tools.theming',
     'admin_tools.menu',

@@ -62,10 +62,12 @@
 
 {% block container %}
 <div class="container">
-    <div class="row row-offcanvas row-offcanvas-right">
+<div class="row row-offcanvas row-offcanvas-right">
 
     <div class="col-xs-12 col-sm-12">
-        <!--offcanvas side menu toggle button-->
+    <!--offcanvas side menu toggle button-->
+    <div class="row">
+
         <p class="pull-right visible-xs">
             <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">{% trans "side menu"|title %}</button>
         </p>
@@ -108,7 +110,12 @@
             </div>
         {% endblock %}
 
-        {% block content_header %}
+        {% block header %}
+        <div class="page-header">
+            {% block content_header %}
+                <h1>CDR-Stats <small>{% trans "call traffic analysis and alert solution"|title %}</small></h1>
+            {% endblock %}
+        </div>
         {% endblock %}
 
         {% block extra_head %}
@@ -140,13 +147,14 @@
             {{ content }}
         {% endblock %}
 
+    </div>
     </div><!--end right side-->
 
-    </div><!--div row row-offcanvas row-offcanvas-right-->
+</div><!--div row row-offcanvas row-offcanvas-right-->
 
-    {% ifnotequal menu 'off' %}
-        {% include "frontend/footer.html" %}
-    {% endifnotequal %}
+{% ifnotequal menu 'off' %}
+    {% include "frontend/footer.html" %}
+{% endifnotequal %}
 
 </div><!-- div container -->
 {% endblock %}
