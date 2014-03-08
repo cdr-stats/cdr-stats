@@ -108,9 +108,9 @@
               <tr>
                   <th class="sortable" scope="col">
                       {% ifequal col_name_with_order.sort_field 'start_uepoch' %}
-                        {% sort_link "<i class='icon-chevron-up'></i>" "start_uepoch"  %}
+                        {% sort_link "+" "start_uepoch"  %}
                           {{ CDR_COLUMN_NAME.call_date|capfirst }}
-                        {% sort_link "<i class='icon-chevron-down'></i>" "-start_uepoch"  %}
+                        {% sort_link "-" "-start_uepoch"  %}
                       {% else %}
                         {% sort_link CDR_COLUMN_NAME.call_date|capfirst "-start_uepoch"  %}
                       {% endifequal %}
