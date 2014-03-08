@@ -50,6 +50,10 @@ $(function() {
 {% endfor %}
 {% endblock %}
 
+{% block content_header %}
+    <h1>{% trans "real-time calls"|capfirst %}<small></small></h1>
+{% endblock %}
+
 {% block content %}
 <div class="row">
     {% crispy form form.helper %}

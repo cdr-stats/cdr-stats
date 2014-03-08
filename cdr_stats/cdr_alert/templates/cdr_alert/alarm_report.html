@@ -21,6 +21,10 @@
     </script>
 {% endblock %}
 
+{% block content_header %}
+    <h1>{% trans "alert report"|title %} <small>{% trans "list of alerts"|capfirst %}</small></h1>
+{% endblock %}
+
 {% block content %}
 <div class="tabbable">
     <ul class="nav nav-tabs">
@@ -31,15 +35,11 @@
     <div id="form_collapse" class="collapse">
         {% crispy form form.helper %}
     </div>
-
     {% include "frontend/common_search_toggle_button.html" %}
-
-<div class="tab-content">
-    <div id="tabs-1" class="tab-pane {% if action == 'tabs-1' or action == '' %}active{% endif %}">
-        <div class="graph_header">
-            <h3>{% trans "alert report"|title %} <small>{% trans "list of alerts"|capfirst %}</small></h3>-
-        </div>
-        <form method="POST" action="del/0/" enctype="multipart/form-data" id="ListForm">{% csrf_token %}
+    <div>&nbsp;</div>
+    <div class="tab-content">
+        <div id="tabs-1" class="tab-pane {% if action == 'tabs-1' or action == '' %}active{% endif %}">
+            <form method="POST" action="del/0/" enctype="multipart/form-data" id="ListForm">{% csrf_token %}
             <div class="table-responsive">
                 <table class="table table-striped table-bordered table-condensed">
                     <thead>
@@ -79,11 +79,9 @@
             {% if rows %}
                 {% paginate %}
             {% endif %}
-        </form>
-
-    </div>
-    <div id="tabs-2" class="tab-pane {% if action == 'tabs-2' or action == '' %}active{% endif %}">
-
+            </form>
+        </div>
+        <div id="tabs-2" class="tab-pane {% if action == 'tabs-2' or action == '' %}active{% endif %}">
         <div class="graph_header">
             {% trans "daily report"|title  %} -
             <b>
@@ -97,7 +95,6 @@
         </div>
 
         {% include_container chartcontainer 400 '100%' %}
-
     </div>
 </div>
 {% endblock %}

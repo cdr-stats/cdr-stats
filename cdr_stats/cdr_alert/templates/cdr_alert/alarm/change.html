@@ -2,15 +2,7 @@
 {% load i18n crispy_forms_tags %}
 
 {% block content_header %}
-<h3>
-    {% if action == 'update' %}
-        {% trans "update"|capfirst %}
-    {% else %}
-        {% trans "add"|capfirst %}
-    {% endif %}
-    {% trans "alarm"|capfirst %}
-    <small></small>
-</h3>
+	<h1>{{ action|title }} {% trans "alarm"|capfirst %}<small></small></h1>
 {% endblock %}
 
 {% block content %}

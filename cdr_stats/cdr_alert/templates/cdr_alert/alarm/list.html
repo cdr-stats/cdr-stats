@@ -3,10 +3,8 @@
 
 {% block title %}{% trans "alert"|title %}{% endblock %}
 
-{% block extra_head %}
-    <center>
-        <h3>{% trans "alerts"|title %} <small>{% trans "list of alerts"|capfirst %}</small></h3>
-    </center>
+{% block content_header %}
+    <h1>{% trans "alerts"|title %} <small>{% trans "list of alerts"|capfirst %}</small></h1>
 {% endblock %}
 
 {% block content %}

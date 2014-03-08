@@ -4,6 +4,10 @@
 {% block extra_head %}
 {% endblock %}
 
+{% block content_header %}
+    <h1>{% trans "call simulator"|title %}<small></small></h1>
+{% endblock %}
+
 {% block content %}
 
 {% crispy form form.helper %}
