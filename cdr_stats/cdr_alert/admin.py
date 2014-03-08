@@ -78,7 +78,7 @@ class BlacklistAdmin(admin.ModelAdmin):
         **Important variable**:
         """
         opts = Blacklist._meta
-        form = BWCountryForm(request.POST or None, form_type='blacklist')
+        form = BWCountryForm('blacklist', request.POST or None)
         prefix_list = []
         if form.is_valid():
             country = int(request.POST['country'])
@@ -149,7 +149,7 @@ class WhitelistAdmin(admin.ModelAdmin):
         **Important variable**:
         """
         opts = Whitelist._meta
-        form = BWCountryForm(request.POST or None, form_type='whitelist')
+        form = BWCountryForm('whitelist', request.POST or None)
         prefix_list = []
 
         if form.is_valid():
