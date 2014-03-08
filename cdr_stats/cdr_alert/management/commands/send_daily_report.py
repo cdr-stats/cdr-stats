@@ -54,7 +54,7 @@ class Command(BaseCommand):
 
             subject = _('CDR Report')
 
-            html_content = get_template('frontend/mail_report_template.html')\
+            html_content = get_template('cdr/mail_report_template.html')\
                 .render(Context({
                     'yesterday_date': mail_data['yesterday_date'],
                     'rows': mail_data['rows'],

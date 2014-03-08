@@ -59,8 +59,7 @@ class BlacklistAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(BlacklistAdmin, self).get_urls()
         my_urls = patterns('',
-            (r'^blacklist_by_country/$',
-             self.admin_site.admin_view(self.blacklist_by_country)),
+            (r'^blacklist_by_country/$', self.admin_site.admin_view(self.blacklist_by_country)),
         )
         return my_urls + urls
 
@@ -79,40 +78,33 @@ class BlacklistAdmin(admin.ModelAdmin):
         **Important variable**:
         """
         opts = Blacklist._meta
-        form = BWCountryForm()
+        form = BWCountryForm(request.POST or None, form_type='blacklist')
         prefix_list = []
+        if form.is_valid():
+            country = int(request.POST['country'])
+            prefix_list = Prefix.objects.values('prefix').filter(country_id=country)
+            msg = _("successfully added prefix into blacklist")
+            if request.POST.getlist('blacklist_country'):
+                # blacklist whole country
+                Blacklist.objects.create(
+                    phonenumber_prefix=int(prefix_list[0]['prefix']),
+                    country=Country.objects.get(pk=country),
+                    user=request.user)
 
-        if request.method == 'POST':
-            form = BWCountryForm(request.POST)
+                messages.info(request, msg)
+                return HttpResponseRedirect(reverse("admin:cdr_alert_blacklist_changelist"))
 
-            if form.is_valid():
-                country = int(request.POST['country'])
-                prefix_list = \
-                    Prefix.objects.values('prefix').filter(country_id=country)
-                msg = _("successfully added prefix into blacklist")
-                if request.POST.getlist('blacklist_country'):
-                    # blacklist whole country
-                    Blacklist.objects.create(
-                        phonenumber_prefix=int(prefix_list[0]['prefix']),
-                        country=Country.objects.get(pk=country),
-                        user=request.user)
+            else:
+                values = request.POST.getlist('select')
+                if values:
+                    for i in values:
+                        Blacklist.objects.create(
+                            phonenumber_prefix=int(i),
+                            country=Country.objects.get(pk=country),
+                            user=request.user)
 
                     messages.info(request, msg)
-                    return HttpResponseRedirect(
-                        reverse("admin:cdr_alert_blacklist_changelist"))
-
-                else:
-                    values = request.POST.getlist('select')
-                    if values:
-                        for i in values:
-                            Blacklist.objects.create(
-                                phonenumber_prefix=int(i),
-                                country=Country.objects.get(pk=country),
-                                user=request.user)
-
-                        messages.info(request, msg)
-                        return HttpResponseRedirect(
-                            reverse("admin:cdr_alert_blacklist_changelist"))
+                    return HttpResponseRedirect(reverse("admin:cdr_alert_blacklist_changelist"))
 
         ctx = RequestContext(request, {
             'title': _('blacklist by country'),
@@ -122,9 +114,7 @@ class BlacklistAdmin(admin.ModelAdmin):
             'app_label': APP_LABEL,
             'prefix_list': prefix_list,
         })
-
-        template_name = 'admin/cdr_alert/blacklist/blacklist_by_country.html'
-        return render_to_response(template_name, context_instance=ctx)
+        return render_to_response('admin/cdr_alert/blacklist/blacklist_by_country.html', context_instance=ctx)
 
 
 # Whitelist
@@ -140,8 +130,7 @@ class WhitelistAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(WhitelistAdmin, self).get_urls()
         my_urls = patterns('',
-            (r'^whitelist_by_country/$',
-             self.admin_site.admin_view(self.whitelist_by_country)),
+            (r'^whitelist_by_country/$', self.admin_site.admin_view(self.whitelist_by_country)),
         )
         return my_urls + urls
 
@@ -160,40 +149,33 @@ class WhitelistAdmin(admin.ModelAdmin):
         **Important variable**:
         """
         opts = Whitelist._meta
-        form = BWCountryForm()
+        form = BWCountryForm(request.POST or None, form_type='whitelist')
         prefix_list = []
 
-        if request.method == 'POST':
-            form = BWCountryForm(request.POST)
+        if form.is_valid():
+            country = int(request.POST['country'])
+            prefix_list = Prefix.objects.values('prefix').filter(country_id=country)
+            msg = _("successfully added prefix into whitelist")
+            if request.POST.getlist('whitelist_country'):
+                # whitelist whole country
+                Whitelist.objects.create(
+                    phonenumber_prefix=int(prefix_list[0]['prefix']),
+                    country=Country.objects.get(pk=country),
+                    user=request.user)
 
-            if form.is_valid():
-                country = int(request.POST['country'])
-                prefix_list = \
-                    Prefix.objects.values('prefix').filter(country_id=country)
-                msg = _("successfully added prefix into whitelist")
-                if request.POST.getlist('whitelist_country'):
-                    # whitelist whole country
-                    Whitelist.objects.create(
-                        phonenumber_prefix=int(prefix_list[0]['prefix']),
-                        country=Country.objects.get(pk=country),
-                        user=request.user)
+                messages.info(request, msg)
+                return HttpResponseRedirect(reverse("admin:cdr_alert_whitelist_changelist"))
+            else:
+                values = request.POST.getlist('select')
+                if values:
+                    for i in values:
+                        Whitelist.objects.create(
+                            phonenumber_prefix=int(i),
+                            country=Country.objects.get(pk=country),
+                            user=request.user)
 
                     messages.info(request, msg)
-                    return HttpResponseRedirect(
-                        reverse("admin:cdr_alert_whitelist_changelist"))
-
-                else:
-                    values = request.POST.getlist('select')
-                    if values:
-                        for i in values:
-                            Whitelist.objects.create(
-                                phonenumber_prefix=int(i),
-                                country=Country.objects.get(pk=country),
-                                user=request.user)
-
-                        messages.info(request, msg)
-                        return HttpResponseRedirect(
-                            reverse("admin:cdr_alert_whitelist_changelist"))
+                    return HttpResponseRedirect(reverse("admin:cdr_alert_whitelist_changelist"))
 
         ctx = RequestContext(request, {
             'title': _('whitelist by country'),
@@ -203,9 +185,7 @@ class WhitelistAdmin(admin.ModelAdmin):
             'app_label': APP_LABEL,
             'prefix_list': prefix_list,
         })
-
-        template_name = 'admin/cdr_alert/whitelist/whitelist_by_country.html'
-        return render_to_response(template_name, context_instance=ctx)
+        return render_to_response('admin/cdr_alert/whitelist/whitelist_by_country.html', context_instance=ctx)
 
 
 admin.site.register(AlertRemovePrefix, AlertRemovePrefixAdmin)
