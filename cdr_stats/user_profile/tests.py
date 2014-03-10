@@ -101,8 +101,6 @@ class UserProfileModel(TestCase):
 
         form = UserChangeDetailForm(self.user)
         form = UserChangeDetailExtendForm(self.user)
-        form.user.address = "test address"
-        form.user.save()
 
     def teardown(self):
         self.user_profile.delete()
