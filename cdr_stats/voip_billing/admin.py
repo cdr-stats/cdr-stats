@@ -170,50 +170,45 @@ class VoIPPlanAdmin(admin.ModelAdmin):
         opts = VoIPPlan._meta
         form = VoIPPlan_fileExport(request.POST or None, initial={'export_to': Export_choice.CSV})
         if form.is_valid():
-            if "plan_id" in request.POST:
-                format_type = request.POST.get('export_to')
-                response = HttpResponse(mimetype='text/%s' % format_type)
-                response['Content-Disposition'] = 'attachment;filename=export_voipplan.%s' % format_type
+            format_type = request.POST.get('export_to')
+            response = HttpResponse(mimetype='text/%s' % format_type)
+            response['Content-Disposition'] = 'attachment;filename=export_voipplan.%s' % format_type
 
-                voipplan_id = request.POST['plan_id']
-                sql_statement = (
-                    'SELECT voipbilling_voip_retail_rate.prefix, '
-                    'Min(retail_rate) as minrate, dialcode_prefix.destination '
-                    'FROM voipbilling_voip_retail_rate '
-                    'INNER JOIN voipbilling_voipplan_voipretailplan '
-                    'ON voipbilling_voipplan_voipretailplan.voipretailplan_id = '
-                    'voipbilling_voip_retail_rate.voip_retail_plan_id '
-                    'LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix = '
-                    'voipbilling_voip_retail_rate.prefix '
-                    'WHERE voipplan_id=%s '
-                    'GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination')
+            voipplan_id = request.POST['plan_id']
+            sql_statement = (
+                'SELECT voipbilling_voip_retail_rate.prefix, '
+                'Min(retail_rate) as minrate, dialcode_prefix.destination '
+                'FROM voipbilling_voip_retail_rate '
+                'INNER JOIN voipbilling_voipplan_voipretailplan '
+                'ON voipbilling_voipplan_voipretailplan.voipretailplan_id = '
+                'voipbilling_voip_retail_rate.voip_retail_plan_id '
+                'LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix = '
+                'voipbilling_voip_retail_rate.prefix '
+                'WHERE voipplan_id=%s '
+                'GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination')
 
-                from django.db import connection
-                cursor = connection.cursor()
-                cursor.execute(sql_statement, [voipplan_id, ])
-                row = cursor.fetchall()
+            from django.db import connection
+            cursor = connection.cursor()
+            cursor.execute(sql_statement, [voipplan_id, ])
+            row = cursor.fetchall()
 
-                # Content writing in file
-                headers = ('prefix', 'rate', 'destination')
-                list_val = []
-                for record in row:
-                    rate = record[1]
-                    if format_type == 'json':
-                        rate = str(record[1])
+            # Content writing in file
+            headers = ('prefix', 'rate', 'destination')
+            list_val = []
+            for record in row:
+                rate = record[1]
+                if format_type == 'json':
+                    rate = str(record[1])
+                list_val.append((record[0], rate, record[2]))
 
-                    list_val.append((
-                        record[0],
-                        rate,
-                        record[2],
-                    ))
-                data = tablib.Dataset(*list_val, headers=headers)
-                if format_type == Export_choice.XLS:
-                    response.write(data.xls)
-                elif format_type == Export_choice.CSV:
-                    response.write(data.csv)
-                elif format_type == Export_choice.JSON:
-                    response.write(data.json)
-                return response
+            data = tablib.Dataset(*list_val, headers=headers)
+            if format_type == Export_choice.XLS:
+                response.write(data.xls)
+            elif format_type == Export_choice.CSV:
+                response.write(data.csv)
+            elif format_type == Export_choice.JSON:
+                response.write(data.json)
+            return response
 
         ctx = RequestContext(request, {
             'title': _('Export VoIP Plan'),
@@ -453,7 +448,6 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
                 rate = row['retail_rate']
                 if format_type == 'json':
                     rate = str(row['retail_rate'])
-
                 list_val.append((row['prefix'], rate))
 
             data = tablib.Dataset(*list_val, headers=headers)
