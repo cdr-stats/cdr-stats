@@ -68,7 +68,7 @@
             </ul>
             <ul class="nav navbar-nav">
               <li class="">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "threat control"|title %}<b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "alert"|title %}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   {% if perms.cdr_alert.alert_settings %}
                     <li {% ifequal module 'alert' %}class="active"{% endifequal %}><a href="/alert/">{% trans "alert settings"|title %}</a></li>
