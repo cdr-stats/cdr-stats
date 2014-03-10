@@ -11,8 +11,7 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.contrib.auth.decorators import login_required,\
-    permission_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
@@ -22,10 +21,10 @@ from mongodb_connection import mongodb
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 from django_lets_go.common_functions import variable_value, mongodb_str_filter,\
-    mongodb_int_filter, int_convert_to_minute, validate_days, percentage, \
-    getvar, unset_session_var
+    mongodb_int_filter, int_convert_to_minute, validate_days, percentage,\
+    getvar, unset_session_var, ceil_strdate
 from cdr.models import Switch
-from cdr.functions_def import get_country_name, get_hangupcause_name, ceil_strdate,\
+from cdr.functions_def import get_country_name, get_hangupcause_name,\
     get_switch_ip_addr, convert_to_minute, chk_date_for_hrs, calculate_act_and_acd
 from cdr.forms import CdrSearchForm, CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
     ConcurrentCallForm, SwitchForm, WorldForm, EmailReportForm
