@@ -11,15 +11,14 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.contrib.auth.decorators import login_required,\
-    permission_required
-from datetime import datetime
-from cdr.models import Switch
+from django.contrib.auth.decorators import login_required, permission_required
 from django.core.cache import cache
-from cdr.decorators import check_user_detail
-import logging
 from dajaxice.decorators import dajaxice_register
+from cdr.models import Switch
+from cdr.decorators import check_user_detail
+from datetime import datetime
 import json
+import logging
 
 
 @permission_required('user_profile.real_time_calls', login_url='/')

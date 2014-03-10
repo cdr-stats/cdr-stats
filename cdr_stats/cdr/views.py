@@ -25,7 +25,7 @@ from django_lets_go.common_functions import variable_value, mongodb_str_filter,\
     mongodb_int_filter, int_convert_to_minute, validate_days, percentage, \
     getvar, unset_session_var
 from cdr.models import Switch
-from cdr.functions_def import get_country_name, get_hangupcause_name,\
+from cdr.functions_def import get_country_name, get_hangupcause_name, ceil_strdate,\
     get_switch_ip_addr, convert_to_minute, chk_date_for_hrs, calculate_act_and_acd
 from cdr.forms import CdrSearchForm, CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
     ConcurrentCallForm, SwitchForm, WorldForm, EmailReportForm
@@ -46,23 +46,6 @@ import tablib
 import time
 import logging
 import itertools
-
-
-def ceil_strdate(str_date, start, hour_min=False):
-    """
-    Convert a string date to either a start or end day date
-    """
-    if start == 'start':
-        (hour, minute, second, millisec) = (0, 0, 0, 0)
-    else:
-        (hour, minute, second, millisec) = (23, 59, 59, 999999)
-    #if hour_min then we will retrieve them from str_date
-    if hour_min:
-        return datetime(int(str_date[0:4]), int(str_date[5:7]), int(str_date[8:10]),
-                        int(str_date[11:13]), int(str_date[14:16]), 0, 0)
-    else:
-        return datetime(int(str_date[0:4]), int(str_date[5:7]), int(str_date[8:10]), hour,
-                        minute, second, millisec)
 
 
 def show_menu(request):
