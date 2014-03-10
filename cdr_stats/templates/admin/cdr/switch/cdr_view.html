@@ -103,50 +103,50 @@
 
         <div class="module" id="changelist">
             <div class="result">
-                <table>
+              <table>
               <thead>
               <tr>
                   <th class="sortable" scope="col">
                       {% ifequal col_name_with_order.sort_field 'start_uepoch' %}
-                        {% sort_link "+" "start_uepoch"  %}
+                        {% sort_link sort_up|safe "start_uepoch"  %}
                           {{ CDR_COLUMN_NAME.call_date|capfirst }}
-                        {% sort_link "-" "-start_uepoch"  %}
+                        {% sort_link sort_down|safe "-start_uepoch"  %}
                       {% else %}
                         {% sort_link CDR_COLUMN_NAME.call_date|capfirst "-start_uepoch"  %}
                       {% endifequal %}
                   </th>
                   <th class="sortable" scope="col">
                       {% ifequal col_name_with_order.sort_field 'caller_id_number' %}
-                        {% sort_link "<i class='icon-chevron-up'></i>" "caller_id_number"  %}
+                        {% sort_link sort_up|safe "caller_id_number"  %}
                           {{ CDR_COLUMN_NAME.clid|capfirst }}
-                        {% sort_link "<i class='icon-chevron-down'></i>" "-caller_id_number"  %}
+                        {% sort_link sort_down|safe "-caller_id_number"  %}
                       {% else %}
                         {% sort_link CDR_COLUMN_NAME.clid|capfirst "-caller_id_number"  %}
                       {% endifequal %}
                   </th>
                   <th class="sortable" scope="col">
                       {% ifequal col_name_with_order.sort_field 'destination_number' %}
-                        {% sort_link "<i class='icon-chevron-up'></i>" "destination_number"  %}
+                        {% sort_link sort_up|safe "destination_number"  %}
                           {{ CDR_COLUMN_NAME.destination|capfirst }}
-                        {% sort_link "<i class='icon-chevron-down'></i>" "-destination_number"  %}
+                        {% sort_link sort_down|safe "-destination_number"  %}
                       {% else %}
                         {% sort_link CDR_COLUMN_NAME.destination|capfirst "-destination_number"  %}
                       {% endifequal %}
                   </th>
                   <th class="sortable" scope="col">
                       {% ifequal col_name_with_order.sort_field 'duration' %}
-                        {% sort_link "<i class='icon-chevron-up'></i>" "duration"  %}
+                        {% sort_link sort_up|safe "duration"  %}
                           {{ CDR_COLUMN_NAME.duration|capfirst }}
-                        {% sort_link "<i class='icon-chevron-down'></i>" "-duration"  %}
+                        {% sort_link sort_down|safe "-duration"  %}
                       {% else %}
                         {% sort_link CDR_COLUMN_NAME.duration|capfirst "-duration"  %}
                       {% endifequal %}
                   </th>
                   <th class="sortable" scope="col">
                       {% ifequal col_name_with_order.sort_field 'billsec' %}
-                        {% sort_link "<i class='icon-chevron-up'></i>" "billsec"  %}
+                        {% sort_link sort_up|safe "billsec"  %}
                         <abbr title='{% trans "bill seconds"|title %}'>{{ CDR_COLUMN_NAME.bill|capfirst }}</abbr>
-                        {% sort_link "<i class='icon-chevron-down'></i>" "-billsec"  %}
+                        {% sort_link sort_down|safe "-billsec"  %}
                       {% else %}
                           <abbr title={% trans 'bill seconds'|title %}>
                           {% sort_link CDR_COLUMN_NAME.bill|capfirst "-billsec"  %}
@@ -155,18 +155,18 @@
                   </th>
                   <th class="sortable" scope="col">
                       {% ifequal col_name_with_order.sort_field 'hangup_cause_id' %}
-                        {% sort_link "<i class='icon-chevron-up'></i>" "hangup_cause_id"  %}
+                        {% sort_link sort_up|safe "hangup_cause_id"  %}
                           {{ CDR_COLUMN_NAME.hangup_cause|capfirst }}
-                        {% sort_link "<i class='icon-chevron-down'></i>" "-hangup_cause_id"  %}
+                        {% sort_link sort_down|safe "-hangup_cause_id"  %}
                       {% else %}
                         {% sort_link CDR_COLUMN_NAME.hangup_cause|capfirst "-hangup_cause_id"  %}
                       {% endifequal %}
                   </th>
                   <th class="sortable" scope="col">
                       {% ifequal col_name_with_order.sort_field 'accountcode' %}
-                        {% sort_link "<i class='icon-chevron-up'></i>" "accountcode"  %}
+                        {% sort_link sort_up|safe "accountcode"  %}
                           {{ CDR_COLUMN_NAME.account|capfirst }}
-                        {% sort_link "<i class='icon-chevron-down'></i>" "-accountcode"  %}
+                        {% sort_link sort_down|safe "-accountcode"  %}
                       {% else %}
                         {% sort_link CDR_COLUMN_NAME.account|capfirst "-accountcode"  %}
                       {% endifequal %}
@@ -174,18 +174,18 @@
                   {% if user.is_superuser %}
                       <th class="sortable" scope="col">
                           {% ifequal col_name_with_order.sort_field 'buy_rate' %}
-                              {% sort_link "<i class='icon-chevron-up'></i>" "buy_rate"  %}
+                              {% sort_link sort_up|safe "buy_rate"  %}
                               {{ CDR_COLUMN_NAME.buy_rate|capfirst }}
-                              {% sort_link "<i class='icon-chevron-down'></i>" "-buy_rate"  %}
+                              {% sort_link sort_down|safe "-buy_rate"  %}
                           {% else %}
                               {% sort_link CDR_COLUMN_NAME.buy_rate|capfirst "-buy_rate"  %}
                           {% endifequal %}
                       </th>
                       <th class="sortable" scope="col">
                           {% ifequal col_name_with_order.sort_field 'buy_cost' %}
-                              {% sort_link "<i class='icon-chevron-up'></i>" "buy_cost"  %}
+                              {% sort_link sort_up|safe "buy_cost"  %}
                               {{ CDR_COLUMN_NAME.buy_cost|capfirst }}
-                              {% sort_link "<i class='icon-chevron-down'></i>" "-buy_cost"  %}
+                              {% sort_link sort_down|safe "-buy_cost"  %}
                           {% else %}
                               {% sort_link CDR_COLUMN_NAME.buy_cost|capfirst "-buy_cost"  %}
                           {% endifequal %}
@@ -193,18 +193,18 @@
                   {% endif %}
                   <th class="sortable" scope="col">
                       {% ifequal col_name_with_order.sort_field 'sell_rate' %}
-                          {% sort_link "<i class='icon-chevron-up'></i>" "sell_rate"  %}
+                          {% sort_link sort_up|safe "sell_rate"  %}
                           {{ CDR_COLUMN_NAME.sell_rate|capfirst }}
-                          {% sort_link "<i class='icon-chevron-down'></i>" "-sell_rate"  %}
+                          {% sort_link sort_down|safe "-sell_rate"  %}
                       {% else %}
                           {% sort_link CDR_COLUMN_NAME.sell_rate|capfirst "-sell_rate"  %}
                       {% endifequal %}
                   </th>
                   <th class="sortable" scope="col">
                       {% ifequal col_name_with_order.sort_field 'sell_cost' %}
-                          {% sort_link "<i class='icon-chevron-up'></i>" "sell_cost"  %}
+                          {% sort_link sort_up|safe "sell_cost"  %}
                           {{ CDR_COLUMN_NAME.sell_cost|capfirst }}
-                          {% sort_link "<i class='icon-chevron-down'></i>" "-sell_cost"  %}
+                          {% sort_link sort_down|safe "-sell_cost"  %}
                       {% else %}
                           {% sort_link CDR_COLUMN_NAME.sell_cost|capfirst "-sell_cost"  %}
                       {% endifequal %}

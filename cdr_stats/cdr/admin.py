@@ -549,6 +549,8 @@ class SwitchAdmin(admin.ModelAdmin):
             'model_name': opts.object_name.lower(),
             'app_label': APP_LABEL,
             'records_per_page': records_per_page,
+            'sort_up': '<i class="fa fa-sort-up"></i>',
+            'sort_down': '<i class="fa fa-sort-down"></i>',
         })
         logging.debug('CDR View End')
         return render_to_response('admin/cdr/switch/cdr_view.html', context_instance=template_data)
