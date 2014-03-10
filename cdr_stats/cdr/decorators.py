@@ -37,41 +37,20 @@ def check_cdr_exists(function=None):
     return _dec(function) if function is not None else _dec
 
 
-def check_user_accountcode(function=None):
-    """
-    Decorator check if account code exists for user
-    if not go to error page
-    """
-    def _dec(run_func):
-        """Decorator"""
-        def _caller(request, *args, **kwargs):
-            """Caller."""
+def check_user_detail(extra_value=[]):
+    def decorator(run_func):
+        def _wrapped_view(request, *args, **kwargs):
             if not request.user.is_superuser:
-                if not UserProfile.objects.get(user=request.user).accountcode:
+                try:
+                    user_profile = UserProfile.objects.get(user=request.user)
+                    if 'accountcode' in extra_value and not user_profile.accountcode:
+                        return HttpResponseRedirect('/?acc_code_error=true')
+                    elif 'voipplan' in extra_value and not user_profile.voipplan_id:
+                        return HttpResponseRedirect('/?voipplan_error=true')
+                    else:
+                        return run_func(request, *args, **kwargs)
+                except:
                     return HttpResponseRedirect('/?acc_code_error=true')
-                else:
-                    return run_func(request, *args, **kwargs)
-            else:
-                return run_func(request, *args, **kwargs)
-        return _caller
-    return _dec(function) if function is not None else _dec
-
-
-def check_user_voipplan(function=None):
-    """
-    Decorator check if voip plan exists for user
-    if not go to error page
-    """
-    def _dec(run_func):
-        """Decorator"""
-        def _caller(request, *args, **kwargs):
-            """Caller."""
-            if not request.user.is_superuser:
-                if not UserProfile.objects.get(user=request.user).voipplan_id:
-                    return HttpResponseRedirect('/?voipplan_error=true')
-                else:
-                    return run_func(request, *args, **kwargs)
-            else:
-                return run_func(request, *args, **kwargs)
-        return _caller
-    return _dec(function) if function is not None else _dec
+            return run_func(request, *args, **kwargs)
+        return _wrapped_view
+    return decorator

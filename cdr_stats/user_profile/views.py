@@ -20,7 +20,6 @@ from django.template.context import RequestContext
 from django.utils.translation import ugettext_lazy as _
 from user_profile.models import UserProfile
 from user_profile.forms import UserChangeDetailForm, UserChangeDetailExtendForm, UserPasswordChangeForm
-from django_lets_go.common_functions import current_view
 
 
 @login_required
@@ -85,7 +84,6 @@ def customer_detail_change(request):
             else:
                 error_pass = _('please correct the errors below.')
     data = {
-        'module': current_view(request),
         'user_detail_form': user_detail_form,
         'user_detail_extened_form': user_detail_extened_form,
         'user_password_form': user_password_form,

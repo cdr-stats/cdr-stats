@@ -16,14 +16,14 @@ from django.contrib.auth.decorators import login_required,\
 from datetime import datetime
 from cdr.models import Switch
 from django.core.cache import cache
-from cdr.views import check_user_accountcode
+from cdr.decorators import check_user_detail
 import logging
 from dajaxice.decorators import dajaxice_register
 import json
 
 
 @permission_required('user_profile.real_time_calls', login_url='/')
-@check_user_accountcode
+@check_user_detail(['accountcode'])
 @login_required
 @dajaxice_register
 def get_realtime_json(request, key_uuid):
