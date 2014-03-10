@@ -155,8 +155,8 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
         data = {
             'switch_id': 1,
-            'from_date': datetime.now().strftime("%Y-%m-%d %H:%M"),
-            'to_date': datetime.now().strftime("%Y-%m-%d %H:%M"),
+            #'from_date': datetime.now().strftime("%Y-%m-%d %H:%M"),
+            #'to_date': datetime.now().strftime("%Y-%m-%d %H:%M"),
             'destination': '91',
             'destination_type': 1,
             'accountcode': '123',

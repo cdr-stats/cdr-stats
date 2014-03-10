@@ -16,8 +16,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.contrib.auth.forms import PasswordChangeForm
 from user_profile.models import UserProfile
-from user_profile.forms import UserChangeDetailForm, \
-    UserChangeDetailExtendForm
+from user_profile.forms import UserChangeDetailForm, UserChangeDetailExtendForm
 from user_profile.views import customer_detail_change
 from django_lets_go.utils import BaseAuthenticatedClient
 
@@ -64,8 +63,7 @@ class UserProfileCustomerView(BaseAuthenticatedClient):
         self.assertTrue(response.context['user_password_form'],
                         PasswordChangeForm(self.user))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response,
-            'user_profile/user_detail_change.html')
+        self.assertTemplateUsed(response, 'user_profile/user_detail_change.html')
 
         request = self.factory.get('/user_detail_change/')
         request.user = self.user
@@ -102,10 +100,6 @@ class UserProfileModel(TestCase):
         self.assertEqual(self.user_profile.user, self.user)
 
         form = UserChangeDetailForm(self.user)
-        form.user.last_name = "Test"
-        form.user.first_name = "Test"
-        form.user.save()
-
         form = UserChangeDetailExtendForm(self.user)
         form.user.address = "test address"
         form.user.save()
