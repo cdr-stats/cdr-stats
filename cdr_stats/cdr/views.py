@@ -391,7 +391,6 @@ def cdr_view(request):
         'up_icon': '<i class="glyphicon glyphicon-chevron-up"></i>',
         'down_icon': '<i class="glyphicon glyphicon-chevron-down"></i>'
     }
-
     logging.debug('CDR View End')
     return render_to_response('cdr/list.html', template_data, context_instance=RequestContext(request))
 
@@ -404,11 +403,11 @@ def cdr_export_to_csv(request):
         get the call records  from mongodb collection
         according to search parameters & store into csv file
     """
-    format = request.GET['format']
+    format_type = request.GET['format']
     # get the response object, this can be used as a stream
-    response = HttpResponse(mimetype='text/' + format)
+    response = HttpResponse(mimetype='text/%s' % format_type)
     # force download
-    response['Content-Disposition'] = 'attachment;filename=export.' + format
+    response['Content-Disposition'] = 'attachment;filename=export.%s' % format_type
 
     # get query_var from request.session
     export_query_var = request.session.get('session_export_query_var')
@@ -432,13 +431,13 @@ def cdr_export_to_csv(request):
         }
     )
 
-    headers = ('Call-date', 'CLID', 'Destination', 'Duration',
-               'Bill sec', 'Hangup cause', 'AccountCode', 'Direction')
+    headers = ('Call-date', 'CLID', 'Destination', 'Duration', 'Bill sec', 'Hangup cause',
+               'AccountCode', 'Direction')
 
     list_val = []
     for cdr in final_result:
         starting_date = cdr['start_uepoch']
-        if format == Export_choice.JSON:
+        if format_type == Export_choice.JSON:
             starting_date = str(cdr['start_uepoch'])
 
         list_val.append((
@@ -453,11 +452,11 @@ def cdr_export_to_csv(request):
         ))
 
     data = tablib.Dataset(*list_val, headers=headers)
-    if format == Export_choice.XLS:
+    if format_type == Export_choice.XLS:
         response.write(data.xls)
-    elif format == Export_choice.CSV:
+    elif format_type == Export_choice.CSV:
         response.write(data.csv)
-    elif format == Export_choice.JSON:
+    elif format_type == Export_choice.JSON:
         response.write(data.json)
 
     return response
@@ -563,9 +562,9 @@ def cdr_dashboard(request):
 
     if form.is_valid():
         logging.debug('CDR dashboard view with search option')
-        switch_id = form.cleaned_data.get('switch_id')
-        if switch_id and int(switch_id) != 0:
-            query_var['metadata.switch_id'] = int(switch_id)
+        switch_id = int(getvar(request, 'switch_id'))
+        if switch_id and switch_id != 0:
+            query_var['metadata.switch_id'] = switch_id
 
     end_date = datetime(now.year, now.month, now.day,
                         now.hour, now.minute, now.second, now.microsecond)
@@ -901,9 +900,9 @@ def cdr_realtime(request):
     list_switch = Switch.objects.all()
     form = SwitchForm(request.POST or None)
     if form.is_valid():
-        switch_id = form.cleaned_data.get('switch_id')
-        if switch_id and int(switch_id) != 0:
-            query_var['value.switch_id'] = int(switch_id)
+        switch_id = int(getvar(request, 'switch_id'))
+        if switch_id and switch_id != 0:
+            query_var['value.switch_id'] = switch_id
 
     now = datetime.now()
     start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
@@ -1953,8 +1952,8 @@ def world_map_view(request):
         end_date = ceil_strdate(str(to_date), 'end')
         switch_id = int(getvar(request, 'switch_id'))
 
-        if switch_id and int(switch_id) != 0:
-            query_var['metadata.switch_id'] = int(switch_id)
+        if switch_id and switch_id != 0:
+            query_var['metadata.switch_id'] = switch_id
 
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
 

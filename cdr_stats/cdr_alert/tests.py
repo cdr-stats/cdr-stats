@@ -15,10 +15,8 @@ from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.test import TestCase
 from django_lets_go.utils import BaseAuthenticatedClient
-from cdr_alert.models import AlertRemovePrefix, \
-    Alarm, AlarmReport, Blacklist, Whitelist
-from cdr_alert.tasks import send_cdr_report, \
-    blacklist_whitelist_notification, chk_alarm
+from cdr_alert.models import AlertRemovePrefix, Alarm, AlarmReport, Blacklist, Whitelist
+from cdr_alert.tasks import send_cdr_report, blacklist_whitelist_notification, chk_alarm
 from cdr_alert.forms import BWCountryForm
 from cdr_alert.functions_blacklist import chk_destination
 from cdr_alert.views import alarm_list, alarm_add, alarm_del, alarm_change,\

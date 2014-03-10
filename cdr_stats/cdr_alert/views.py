@@ -11,27 +11,26 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.contrib.auth.decorators import login_required,\
-    permission_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.utils.translation import gettext as _
-from django.conf import settings
+#from django.conf import settings
 from django.db.models import Count
 from cdr_alert.models import Alarm, Blacklist, Whitelist, AlarmReport
 from cdr_alert.constants import ALARM_COLUMN_NAME, ALARM_REPORT_COLUMN_NAME
-from cdr_alert.forms import AlarmForm, BWCountryForm, BWPrefixForm,\
-    AlarmReportForm
+from cdr_alert.forms import AlarmForm, BWCountryForm, BWPrefixForm, AlarmReportForm
 from cdr_alert.tasks import run_alarm
 from cdr_alert.constants import ALERT_CONDITION, PERIOD
-from django_lets_go.common_functions import current_view, get_pagination_vars,\
-    validate_days
+from django_lets_go.common_functions import getvar, get_pagination_vars, validate_days
 from country_dialcode.models import Prefix
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import time
 import logging
+
+redirect_url_alarm = '/alert/'
 
 
 @permission_required('cdr_alert.alert_settings', login_url='/')
@@ -52,7 +51,6 @@ def alarm_list(request):
     pagination_data = get_pagination_vars(request, sort_col_field_list, default_sort_field='id')
     alarm_list = Alarm.objects.filter(user=request.user).order_by(pagination_data['sort_order'])
     template_data = {
-        'module': current_view(request),
         'msg': request.session.get('msg'),
         'error_msg': request.session.get('error_msg'),
         'rows': alarm_list,
@@ -86,10 +84,9 @@ def alarm_add(request):
         obj.user = request.user
         obj.save()
         request.session["msg"] = _('"%(name)s" added.') % {'name': request.POST['name']}
-        return HttpResponseRedirect('/alert/')
+        return HttpResponseRedirect(redirect_url_alarm)
 
     data = {
-        'module': current_view(request),
         'form': form,
         'action': 'add',
     }
@@ -167,7 +164,7 @@ def alarm_del(request, object_id):
         except:
             raise Http404
 
-    return HttpResponseRedirect('/alert/')
+    return HttpResponseRedirect(redirect_url_alarm)
 
 
 @permission_required('cdr_alert.change_alarm', login_url='/')
@@ -191,14 +188,13 @@ def alarm_change(request, object_id):
     if request.method == 'POST':
         if request.POST.get('delete'):
             alarm_del(request, object_id)
-            return HttpResponseRedirect('/alert/')
+            return HttpResponseRedirect(redirect_url_alarm)
         else:
             if form.is_valid():
                 form.save()
                 request.session["msg"] = _('"%(name)s" is updated.') % {'name': request.POST['name']}
-                return HttpResponseRedirect('/alert/')
+                return HttpResponseRedirect(redirect_url_alarm)
     data = {
-        'module': current_view(request),
         'form': form,
         'action': 'update',
     }
@@ -299,25 +295,23 @@ def alert_report(request):
     action = 'tabs-1'
 
     if form.is_valid():
-        request.session['session_alarm'] = ''
-        if request.POST.get('alarm'):
-            alert_id = request.POST.get('alarm')
-            request.session['session_alarm'] = alert_id
+        request.session['session_alarm_id'] = ''
+        alert_id = getvar(request, 'alarm_id', setsession=True)
 
     post_var_with_page = 0
     if request.GET.get('page') or request.GET.get('sort_by'):
         post_var_with_page = 1
-        alert_id = request.session.get('session_alarm')
-        form = AlarmReportForm(request.user, initial={'alarm': alert_id})
+        alert_id = request.session.get('session_alarm_id')
+        form = AlarmReportForm(request.user, initial={'alarm_id': alert_id})
 
     if post_var_with_page == 0:
         # default
         # unset session var
-        request.session['session_alarm'] = ''
+        request.session['session_alarm_id'] = ''
 
     kwargs = {}
-    if alert_id and alert_id != 0:
-        kwargs['alarm_id'] = alert_id
+    if alert_id and int(alert_id) != 0:
+        kwargs['alarm_id'] = int(alert_id)
     kwargs['alarm__user'] = request.user
 
     alarm_report_list = AlarmReport.objects.filter(**kwargs).order_by(pagination_data['sort_order'])
@@ -371,7 +365,6 @@ def trust_control(request):
     wl_prefix_form = BWPrefixForm(form_type='whitelist')
 
     data = {
-        'module': current_view(request),
         'prefix_list': prefix_list,
         'bl_country_form': bl_country_form,
         'bl_prefix_form': bl_prefix_form,

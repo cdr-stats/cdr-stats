@@ -124,7 +124,7 @@ class AlarmForm(ModelForm):
 
 class AlarmReportForm(forms.Form):
     """alarm list form"""
-    alarm = forms.ChoiceField(label=_("alert").title(), required=False)
+    alarm_id = forms.ChoiceField(label=_("alert").title(), required=False)
 
     def __init__(self, user, *args, **kwargs):
         super(AlarmReportForm, self).__init__(*args, **kwargs)
@@ -134,13 +134,13 @@ class AlarmReportForm(forms.Form):
         for i in alarm_list:
             alarm_list_user.append((i[0], i[1]))
 
-        self.fields['alarm'].choices = alarm_list_user
+        self.fields['alarm_id'].choices = alarm_list_user
         self.helper = FormHelper()
         self.helper.form_class = 'well'
         css_class = 'col-md-4'
         self.helper.layout = Layout(
             Div(
-                Div('alarm', css_class=css_class),
+                Div('alarm_id', css_class=css_class),
                 css_class='row',
             ),
         )

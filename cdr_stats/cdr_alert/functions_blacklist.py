@@ -12,8 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.conf import settings
-from cdr.functions_def import remove_prefix, \
-    prefix_list_string, get_country_id
+from cdr.functions_def import remove_prefix, prefix_list_string, get_country_id
 from cdr_alert.models import Blacklist, Whitelist
 from cdr_alert.tasks import blacklist_whitelist_notification
 
@@ -89,8 +88,7 @@ def chk_destination(destination_number):
     }
     """
     #remove prefix
-    sanitized_destination = remove_prefix(destination_number,
-        settings.PREFIX_TO_IGNORE)
+    sanitized_destination = remove_prefix(destination_number, settings.PREFIX_TO_IGNORE)
 
     prefix_list = prefix_list_string(sanitized_destination)
 

@@ -28,17 +28,26 @@ from crispy_forms.bootstrap import FormActions
 
 def voip_plan_list():
     """Return List of VoIP Plans"""
-    return VoIPPlan.objects.values_list('id', 'name').all()
+    try:
+        return VoIPPlan.objects.values_list('id', 'name').all()
+    except:
+        return []
 
 
 def carrier_plan_list():
     """List all carrier plan"""
-    return VoIPCarrierPlan.objects.values_list('id', 'name').all()
+    try:
+        return VoIPCarrierPlan.objects.values_list('id', 'name').all()
+    except:
+        return []
 
 
 def retail_plan_list():
     """List all retail plan"""
-    return VoIPRetailPlan.objects.values_list('id', 'name').all()
+    try:
+        return VoIPRetailPlan.objects.values_list('id', 'name').all()
+    except:
+        return []
 
 
 class FileImport(forms.Form):
@@ -56,8 +65,7 @@ class FileImport(forms.Form):
         filename = self.cleaned_data["csv_file"]
         file_exts = ("csv", "txt")
         if not str(filename).split(".")[1].lower() in file_exts:
-            raise forms.ValidationError(_(u'document types accepted: %s' %
-                                        ' '.join(file_exts)))
+            raise forms.ValidationError(_(u'document types accepted: %s' % ' '.join(file_exts)))
         else:
             return filename
 
@@ -80,11 +88,11 @@ class CarrierRate_fileImport(FileImport):
     chk = forms.BooleanField(label=_("make retail plan"), required=False,
                              help_text=_("select if you want to make retail plan"))
     retail_plan_id = forms.ChoiceField(label=_("retail plan"), required=False,
-                                choices=retail_plan_list(),
-                                help_text=_("select retail plan"))
+                                       choices=retail_plan_list(),
+                                       help_text=_("select retail plan"))
     profit_percentage = forms.CharField(label=_("profit in % :"), required=False,
-                    widget=forms.TextInput(attrs={'size': 3}),
-                    help_text=_("enter digit without %"))
+                                        widget=forms.TextInput(attrs={'size': 3}),
+                                        help_text=_("enter digit without %"))
 
     def clean_profit_percentage(self):
         """
@@ -108,7 +116,7 @@ class Carrier_Rate_fileExport(Exportfile):
 
     def __init__(self, *args, **kwargs):
         super(Carrier_Rate_fileExport, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['plan_id', 'export_to', ]
+        self.fields.keyOrder = ['plan_id', 'export_to']
 
 
 class Retail_Rate_fileExport(Exportfile):
@@ -119,7 +127,7 @@ class Retail_Rate_fileExport(Exportfile):
 
     def __init__(self, *args, **kwargs):
         super(Retail_Rate_fileExport, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['plan_id', 'export_to', ]
+        self.fields.keyOrder = ['plan_id', 'export_to']
 
 
 class VoIPPlan_fileExport(Exportfile):
@@ -131,7 +139,7 @@ class VoIPPlan_fileExport(Exportfile):
 
     def __init__(self, *args, **kwargs):
         super(VoIPPlan_fileExport, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['plan_id', 'export_to', ]
+        self.fields.keyOrder = ['plan_id', 'export_to']
 
 
 class PrefixRetailRrateForm(forms.Form):
@@ -164,10 +172,8 @@ class SendVoIPForm(forms.Form):
     """
     destination_no = forms.CharField(label=_("destination").capitalize(), required=True,
                                      help_text=_('enter digit only'))
-    txt_msg = forms.CharField(label=_("message").capitalize(),
-                              widget=forms.Textarea,
-                              help_text=_('not more than 120 characters'),
-                              required=True)
+    txt_msg = forms.CharField(label=_("message").capitalize(), widget=forms.Textarea,
+                              help_text=_('not more than 120 characters'), required=True)
 
     def clean_destination_no(self):
         """
@@ -226,10 +232,8 @@ class CustomRateFilterForm(forms.Form):
     """
     Admin Form : Custom Rate Filter
     """
-    rate_range = forms.ChoiceField(label=_(" "),
-                                   choices=rate_range(), required=False)
-    rate = forms.CharField(label=_(" "),
-                           widget=forms.TextInput(attrs={'size': 10}),
+    rate_range = forms.ChoiceField(label=_(" "), choices=rate_range(), required=False)
+    rate = forms.CharField(label=_(" "), widget=forms.TextInput(attrs={'size': 10}),
                            required=False)
 
 

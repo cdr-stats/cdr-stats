@@ -392,8 +392,7 @@ def blacklist_whitelist_notification(notice_type):
         prevtime = str(datetime.time(notice_obj.added.replace(microsecond=0)))
         curtime = str(datetime.time(datetime.now().replace(microsecond=0)))
         FMT = '%H:%M:%S'
-        diff = datetime.strptime(curtime, FMT) - datetime.strptime(prevtime,
-                FMT)
+        diff = datetime.strptime(curtime, FMT) - datetime.strptime(prevtime, FMT)
         # if difference is more than X min than notification resend
         if int(diff.seconds / 60) >= settings.DELAY_BETWEEN_MAIL_NOTIFICATION:
             # blacklist notification id - 3 | whitelist notification type - 4
@@ -431,8 +430,7 @@ class send_cdr_report(PeriodicTask):
                 to = user_profile_obj.multiple_email
             except UserProfile.DoesNotExist:
                 to = ''
-                logger.error('Error : UserProfile notfound (user_id:%d)'
-                             % c_user.id)
+                logger.error('Error : UserProfile notfound (user_id:%d)' % c_user.id)
 
             mail_data = get_cdr_mail_report()
 

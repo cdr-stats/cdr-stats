@@ -188,9 +188,8 @@ def login_view(request):
           the dashboard.
     """
     errorlogin = ''
-    loginform = LoginForm()
+    loginform = LoginForm(request.POST or None)
     if request.method == 'POST':
-        loginform = LoginForm(request.POST)
         if loginform.is_valid():
             cd = loginform.cleaned_data
             user = authenticate(username=cd['user'], password=cd['password'])

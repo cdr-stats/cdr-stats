@@ -18,12 +18,11 @@ from django.test import TestCase
 from django_lets_go.utils import BaseAuthenticatedClient
 from cdr.models import Switch, HangupCause
 from cdr.forms import CdrSearchForm, CountryReportForm, CompareCallSearchForm,\
-    ConcurrentCallForm, SwitchForm, WorldForm, EmailReportForm  # CdrOverviewForm, 
+    ConcurrentCallForm, SwitchForm, WorldForm, EmailReportForm
 from cdr.tasks import sync_cdr_pending, get_channels_info
-from cdr.views import cdr_view, cdr_dashboard, cdr_overview,\
-    cdr_daily_comparison, cdr_concurrent_calls,\
-    cdr_realtime, cdr_country_report, mail_report,\
-    world_map_view, cdr_detail
+from cdr.views import cdr_view, cdr_dashboard, cdr_overview, cdr_daily_comparison,\
+    cdr_concurrent_calls, cdr_realtime, cdr_country_report, mail_report, world_map_view,\
+    cdr_detail
 from cdr.functions_def import get_switch_list, get_hangupcause_name,\
     get_hangupcause_id, get_hc_list, get_country_id
 from cdr.templatetags.cdr_tags import hangupcause_name_with_title, mongo_id

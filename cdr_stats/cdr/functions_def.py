@@ -38,30 +38,29 @@ def get_switch_ip_addr(id):
     u''
     """
     try:
-        obj = Switch.objects.get(pk=id)
-        return obj.name
+        return Switch.objects.get(pk=id).name
     except:
         return u''
 
 
 def get_switch_list():
     """Switch list used in form"""
-    list = Switch.objects.all()
-    return ((l.id, l.name) for l in list)
+    switch_list = Switch.objects.all()
+    return ((l.id, l.name) for l in switch_list)
 
 
 def get_country_list():
     """Country list used in form"""
-    list = Country.objects.all()
-    return ((l.id, l.countryname) for l in list)
+    country_list = Country.objects.all()
+    return ((l.id, l.countryname) for l in country_list)
 
 
 @cached(3600)
 def get_hc_list():
     """hangupcause list used in form"""
-    list = HangupCause.objects.all()
+    hangup_list = HangupCause.objects.all()
     result = []
-    for l in list:
+    for l in hangup_list:
         if len(l.enumeration) > 0:
             result.append((l.id, l.enumeration))
         else:
@@ -80,8 +79,7 @@ def get_hangupcause_name(id):
     ''
     """
     try:
-        obj = HangupCause.objects.get(pk=id)
-        return obj.enumeration
+        return HangupCause.objects.get(pk=id).enumeration
     except:
         return ''
 
@@ -97,8 +95,7 @@ def get_hangupcause_id(hangupcause_code):
     0
     """
     try:
-        obj = HangupCause.objects.get(code=hangupcause_code)
-        return obj.id
+        return HangupCause.objects.get(code=hangupcause_code).id
     except:
         return 0
 
@@ -113,8 +110,7 @@ def get_hangupcause_id_from_name(hangupcause_name):
     7
     """
     try:
-        obj = HangupCause.objects.get(enumeration=hangupcause_name)
-        return obj.id
+        return HangupCause.objects.get(enumeration=hangupcause_name).id
     except:
         return 0
 

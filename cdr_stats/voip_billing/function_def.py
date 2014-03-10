@@ -32,13 +32,13 @@ def rate_filter_range_field_chk(rate, rate_range, field_name):
     if rate_range != '' and rate != '':
         if rate_range == 'gte':
             kwargs[field_name + '__gte'] = rate
-        if rate_range == 'gt':
+        elif rate_range == 'gt':
             kwargs[field_name + '__gt'] = rate
-        if rate_range == 'eq':
+        elif rate_range == 'eq':
             kwargs[field_name] = rate
-        if rate_range == 'lt':
+        elif rate_range == 'lt':
             kwargs[field_name + '__lt'] = rate
-        if rate_range == 'lte':
+        elif rate_range == 'lte':
             kwargs[field_name + '__lte'] = rate
     return kwargs
 
@@ -47,8 +47,8 @@ def prfix_list():
     """
     Prefix List
     """
-    list = Prefix.objects.all()
-    LIST = map(lambda x: (int(x.prefix), int(x.prefix)), list)
+    prefix_list = Prefix.objects.all()
+    LIST = map(lambda x: (int(x.prefix), int(x.prefix)), prefix_list)
     return LIST
 
 

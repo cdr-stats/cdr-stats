@@ -113,176 +113,166 @@ class SwitchAdmin(admin.ModelAdmin):
         success_import_list = []
         error_import_list = []
         type_error_import_list = []
+        form = CDR_FileImport(request.user, request.POST or None, request.FILES or None)
 
-        if request.method == 'POST':
-            form = CDR_FileImport(request.user, request.POST, request.FILES)
-            if form.is_valid():
-                field_list = {}
-                field_notin_list = []
-                for i in CDR_FIELD_LIST:
-                    if int(request.POST[i]) != 0:
-                        field_list[i] = int(request.POST[i])
-                    else:
-                        field_notin_list.append((i))
-
-                # perform sorting & get unique order list
-                countMap = {}
-                for v in field_list.itervalues():
-                    countMap[v] = countMap.get(v, 0) + 1
-                uni = [(k, v) for k, v in field_list.iteritems() if countMap[v] == 1]
-                uni = sorted(uni, key=lambda uni: uni[1])
-
-                # if order list matched with CDR_FIELD_LIST count
-                if len(uni) == len(CDR_FIELD_LIST) - len(field_notin_list):
-
-                    # To count total rows of CSV file
-                    records = csv.reader(
-                        request.FILES['csv_file'], delimiter=',', quotechar='"')
-                    total_rows = len(list(records))
-
-                    rdr = csv.reader(
-                        request.FILES['csv_file'], delimiter=',', quotechar='"')
-                    cdr_record_count = 0
-
-                    #Store cdr in list to insert by bulk
-                    cdr_bulk_record = []
-                    local_count_import = 0
-                    PAGE_SIZE = 1000
-
-                    # Read each Row
-                    for row in rdr:
-                        if (row and str(row[0]) > 0):
-                            row = striplist(row)
-                            try:
-                                accountcode = ''
-                                # extra fields to import
-                                caller_id_name = ''
-                                direction = 'outbound'
-                                remote_media_ip = ''
-                                answer_uepoch = ''
-                                end_uepoch = ''
-                                mduration = ''
-                                billmsec = ''
-                                write_codec = ''
-                                read_codec = ''
-                                get_cdr_from_row = {}
-                                row_counter = 0
-
-                                for j in uni:
-                                    get_cdr_from_row[j[0]] = row[j[1] - 1]
-                                    #get_cdr_from_row[j[0]] = row[row_counter]
-                                    caller_id_name = get_value_from_uni(j, row, 'caller_id_name')
-                                    caller_id_number = get_value_from_uni(j, row, 'caller_id_number')
-                                    direction = get_value_from_uni(j, row, 'direction')
-                                    remote_media_ip = get_value_from_uni(j, row, 'remote_media_ip')
-                                    answer_uepoch = get_value_from_uni(j, row, 'answer_uepoch')
-                                    end_uepoch = get_value_from_uni(j, row, 'end_uepoch')
-                                    mduration = get_value_from_uni(j, row, 'mduration')
-                                    billmsec = get_value_from_uni(j, row, 'billmsec')
-                                    read_codec = get_value_from_uni(j, row, 'read_codec')
-                                    write_codec = get_value_from_uni(j, row, 'write_codec')
-                                    row_counter = row_counter + 1
-
-                                if len(field_notin_list) != 0:
-                                    for i in field_notin_list:
-                                        if i == 'accountcode' and request.POST.get("accountcode_csv"):
-                                            accountcode = request.POST["accountcode_csv"]
-
-                                if not accountcode and request.POST.get("accountcode") != '0':
-                                    accountcode = get_cdr_from_row['accountcode']
-
-                                # Mandatory fields to import
-                                switch_id = int(request.POST['switch_id'])
-                                caller_id_number = get_cdr_from_row['caller_id_number']
-                                duration = int(get_cdr_from_row['duration'])
-                                billsec = int(get_cdr_from_row['billsec'])
-
-                                if (request.POST.get('import_asterisk')
-                                   and request.POST['import_asterisk'] == 'on'):
-                                    hangup_cause_name = "_".join(get_cdr_from_row['hangup_cause_id'].upper().split(' '))
-                                    hangup_cause_id =\
-                                        get_hangupcause_id_from_name(hangup_cause_name)
-                                else:
-                                    hangup_cause_id =\
-                                        get_hangupcause_id(int(get_cdr_from_row['hangup_cause_id']))
-
-                                start_uepoch = \
-                                    datetime.datetime.fromtimestamp(int(float(get_cdr_from_row['start_uepoch'])))
-
-                                destination_number = get_cdr_from_row['destination_number']
-                                uuid = get_cdr_from_row['uuid']
-
-                                destination_data = chk_destination(destination_number)
-                                authorized = destination_data['authorized']
-                                country_id = destination_data['country_id']
-
-                                # Extra fields to import
-                                if answer_uepoch:
-                                    answer_uepoch = \
-                                        datetime.datetime.fromtimestamp(int(answer_uepoch[:10]))
-                                if end_uepoch:
-                                    end_uepoch = \
-                                        datetime.datetime.fromtimestamp(int(end_uepoch[:10]))
-
-                                # Prepare global CDR
-                                cdr_record = generate_global_cdr_record(switch_id, caller_id_number,
-                                    caller_id_name, destination_number, duration, billsec, hangup_cause_id,
-                                    accountcode, direction, uuid, remote_media_ip, start_uepoch, answer_uepoch,
-                                    end_uepoch, mduration, billmsec, read_codec, write_codec,
-                                    CDR_TYPE['CSV_IMPORT'], '', country_id, authorized)
-
-                                # check if cdr is already existing in cdr_common
-                                if not mongodb.cdr_common:
-                                    raise Http404
-                                mongodb.cdr_common = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
-                                query_var = {}
-                                query_var['uuid'] = uuid
-                                record_count = mongodb.cdr_common.find(query_var).count()
-
-                                if record_count >= 1:
-                                    msg = _('CDR already exists !!')
-                                    error_import_list.append(row)
-                                else:
-                                    # if not, insert record
-                                    # record global CDR
-
-                                    # Append cdr to bulk_cdr list
-                                    cdr_bulk_record.append(cdr_record)
-
-                                    local_count_import = local_count_import + 1
-                                    if local_count_import == PAGE_SIZE:
-                                        mongodb.cdr_common.insert(cdr_bulk_record)
-                                        local_count_import = 0
-                                        cdr_bulk_record = []
-
-                                    date_start_uepoch = get_cdr_from_row['start_uepoch']
-                                    create_analytic(date_start_uepoch, start_uepoch,
-                                        switch_id, country_id, accountcode, hangup_cause_id, duration)
-
-                                    cdr_record_count = cdr_record_count + 1
-
-                                    msg =\
-                                        _('%(cdr_record_count)s CDR(s) are uploaded, out of %(total_rows)s row(s) !!')\
-                                        % {'cdr_record_count': cdr_record_count,
-                                            'total_rows': total_rows}
-                                    success_import_list.append(row)
-                            except:
-                                msg = _("error : invalid value for import")
-                                type_error_import_list.append(row)
-
-                    # remaining record
-                    if cdr_bulk_record:
-                        mongodb.cdr_common.insert(cdr_bulk_record)
-                        local_count_import = 0
-                        cdr_bulk_record = []
-
-                    if cdr_record_count > 0:
-                        # Apply index
-                        apply_index(shell=True)
+        if form.is_valid():
+            field_list = {}
+            field_notin_list = []
+            for i in CDR_FIELD_LIST:
+                if int(request.POST[i]) != 0:
+                    field_list[i] = int(request.POST[i])
                 else:
-                    msg = _("error : importing several times the same column")
-        else:
-            form = CDR_FileImport(request.user)
+                    field_notin_list.append((i))
+
+            # perform sorting & get unique order list
+            countMap = {}
+            for v in field_list.itervalues():
+                countMap[v] = countMap.get(v, 0) + 1
+            uni = [(k, v) for k, v in field_list.iteritems() if countMap[v] == 1]
+            uni = sorted(uni, key=lambda uni: uni[1])
+
+            # if order list matched with CDR_FIELD_LIST count
+            if len(uni) == len(CDR_FIELD_LIST) - len(field_notin_list):
+
+                # To count total rows of CSV file
+                records = csv.reader(request.FILES['csv_file'], delimiter=',', quotechar='"')
+                total_rows = len(list(records))
+
+                rdr = csv.reader(request.FILES['csv_file'], delimiter=',', quotechar='"')
+                cdr_record_count = 0
+
+                #Store cdr in list to insert by bulk
+                cdr_bulk_record = []
+                local_count_import = 0
+                PAGE_SIZE = 1000
+
+                # Read each Row
+                for row in rdr:
+                    if (row and str(row[0]) > 0):
+                        row = striplist(row)
+                        try:
+                            accountcode = ''
+                            # extra fields to import
+                            caller_id_name = ''
+                            direction = 'outbound'
+                            remote_media_ip = ''
+                            answer_uepoch = ''
+                            end_uepoch = ''
+                            mduration = ''
+                            billmsec = ''
+                            write_codec = ''
+                            read_codec = ''
+                            get_cdr_from_row = {}
+                            row_counter = 0
+
+                            for j in uni:
+                                get_cdr_from_row[j[0]] = row[j[1] - 1]
+                                #get_cdr_from_row[j[0]] = row[row_counter]
+                                caller_id_name = get_value_from_uni(j, row, 'caller_id_name')
+                                caller_id_number = get_value_from_uni(j, row, 'caller_id_number')
+                                direction = get_value_from_uni(j, row, 'direction')
+                                remote_media_ip = get_value_from_uni(j, row, 'remote_media_ip')
+                                answer_uepoch = get_value_from_uni(j, row, 'answer_uepoch')
+                                end_uepoch = get_value_from_uni(j, row, 'end_uepoch')
+                                mduration = get_value_from_uni(j, row, 'mduration')
+                                billmsec = get_value_from_uni(j, row, 'billmsec')
+                                read_codec = get_value_from_uni(j, row, 'read_codec')
+                                write_codec = get_value_from_uni(j, row, 'write_codec')
+                                row_counter = row_counter + 1
+
+                            if len(field_notin_list) != 0:
+                                for i in field_notin_list:
+                                    if i == 'accountcode' and request.POST.get("accountcode_csv"):
+                                        accountcode = request.POST["accountcode_csv"]
+
+                            if not accountcode and request.POST.get("accountcode") != '0':
+                                accountcode = get_cdr_from_row['accountcode']
+
+                            # Mandatory fields to import
+                            switch_id = int(request.POST['switch_id'])
+                            caller_id_number = get_cdr_from_row['caller_id_number']
+                            duration = int(get_cdr_from_row['duration'])
+                            billsec = int(get_cdr_from_row['billsec'])
+
+                            if (request.POST.get('import_asterisk')
+                               and request.POST['import_asterisk'] == 'on'):
+                                hangup_cause_name = "_".join(get_cdr_from_row['hangup_cause_id'].upper().split(' '))
+                                hangup_cause_id = get_hangupcause_id_from_name(hangup_cause_name)
+                            else:
+                                hangup_cause_id = get_hangupcause_id(int(get_cdr_from_row['hangup_cause_id']))
+
+                            start_uepoch = datetime.datetime.fromtimestamp(int(float(get_cdr_from_row['start_uepoch'])))
+
+                            destination_number = get_cdr_from_row['destination_number']
+                            uuid = get_cdr_from_row['uuid']
+
+                            destination_data = chk_destination(destination_number)
+                            authorized = destination_data['authorized']
+                            country_id = destination_data['country_id']
+
+                            # Extra fields to import
+                            if answer_uepoch:
+                                answer_uepoch = datetime.datetime.fromtimestamp(int(answer_uepoch[:10]))
+                            if end_uepoch:
+                                end_uepoch = datetime.datetime.fromtimestamp(int(end_uepoch[:10]))
+
+                            # Prepare global CDR
+                            cdr_record = generate_global_cdr_record(switch_id, caller_id_number,
+                                caller_id_name, destination_number, duration, billsec, hangup_cause_id,
+                                accountcode, direction, uuid, remote_media_ip, start_uepoch, answer_uepoch,
+                                end_uepoch, mduration, billmsec, read_codec, write_codec,
+                                CDR_TYPE['CSV_IMPORT'], '', country_id, authorized)
+
+                            # check if cdr is already existing in cdr_common
+                            if not mongodb.cdr_common:
+                                raise Http404
+                            mongodb.cdr_common = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
+                            query_var = {}
+                            query_var['uuid'] = uuid
+                            record_count = mongodb.cdr_common.find(query_var).count()
+
+                            if record_count >= 1:
+                                msg = _('CDR already exists !!')
+                                error_import_list.append(row)
+                            else:
+                                # if not, insert record
+                                # record global CDR
+
+                                # Append cdr to bulk_cdr list
+                                cdr_bulk_record.append(cdr_record)
+
+                                local_count_import = local_count_import + 1
+                                if local_count_import == PAGE_SIZE:
+                                    mongodb.cdr_common.insert(cdr_bulk_record)
+                                    local_count_import = 0
+                                    cdr_bulk_record = []
+
+                                date_start_uepoch = get_cdr_from_row['start_uepoch']
+                                create_analytic(date_start_uepoch, start_uepoch,
+                                                switch_id, country_id, accountcode,
+                                                hangup_cause_id, duration)
+
+                                cdr_record_count = cdr_record_count + 1
+
+                                msg = _('%(cdr_record_count)s CDR(s) are uploaded, out of %(total_rows)s row(s) !!')\
+                                    % {'cdr_record_count': cdr_record_count,
+                                       'total_rows': total_rows}
+                                success_import_list.append(row)
+                        except:
+                            msg = _("error : invalid value for import")
+                            type_error_import_list.append(row)
+
+                # remaining record
+                if cdr_bulk_record:
+                    mongodb.cdr_common.insert(cdr_bulk_record)
+                    local_count_import = 0
+                    cdr_bulk_record = []
+
+                if cdr_record_count > 0:
+                    # Apply index
+                    apply_index(shell=True)
+            else:
+                msg = _("error : importing several times the same column")
 
         ctx = RequestContext(request, {
             'title': _('import CDR'),
@@ -298,8 +288,7 @@ class SwitchAdmin(admin.ModelAdmin):
             'CDR_FIELD_LIST': list(CDR_FIELD_LIST),
             'CDR_FIELD_LIST_NUM': list(CDR_FIELD_LIST_NUM),
         })
-        template = 'admin/cdr/switch/import_cdr.html'
-        return render_to_response(template, context_instance=ctx)
+        return render_to_response('admin/cdr/switch/import_cdr.html', context_instance=ctx)
 
     def cdr_view(self, request):
         """List of CDRs
@@ -557,10 +546,10 @@ class SwitchAdmin(admin.ModelAdmin):
 
     def export_cdr(self, request):
         # get the response object, this can be used as a stream.
-        format = request.GET['format']
-        response = HttpResponse(mimetype='text/' + format)
+        format_type = request.GET['format']
+        response = HttpResponse(mimetype='text/%s' % format_type)
         # force download.
-        response['Content-Disposition'] = 'attachment;filename=export.' + format
+        response['Content-Disposition'] = 'attachment;filename=export.%s' % format_type
 
         # super(VoIPCall_ReportAdmin, self).queryset(request)
         export_query_var = request.session.get('session_export_query_var')
@@ -590,7 +579,7 @@ class SwitchAdmin(admin.ModelAdmin):
 
         for cdr in final_result:
             starting_date = cdr['start_uepoch']
-            if format == 'json':
+            if format_type == 'json':
                 starting_date = str(cdr['start_uepoch'])
 
             list_val.append((
@@ -605,11 +594,11 @@ class SwitchAdmin(admin.ModelAdmin):
             ))
         data = tablib.Dataset(*list_val, headers=headers)
 
-        if format == Export_choice.XLS:
+        if format_type == Export_choice.XLS:
             response.write(data.xls)
-        elif format == Export_choice.CSV:
+        elif format_type == Export_choice.CSV:
             response.write(data.csv)
-        elif format == Export_choice.JSON:
+        elif format_type == Export_choice.JSON:
             response.write(data.json)
         return response
 admin.site.register(Switch, SwitchAdmin)

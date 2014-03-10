@@ -760,8 +760,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                                     prefix=pfix, carrier_rate=row[1])
                                 carrier_record_count = carrier_record_count + 1
 
-                                msg = '%d Carrier Rate(s) are uploaded \
-                                       successfully out of %d row(s)!!' \
+                                msg = '%d Carrier Rate(s) are uploaded successfully out of %d row(s)!!' \
                                        % (carrier_record_count, total_rows)
                                 cr_success_import_list.append(row)
 
@@ -779,10 +778,8 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                                             retail_rate=str(new_rate))
 
                                         retail_record_count = retail_record_count + 1
-                                        msg = '%d Carrier Rate(s) are \
-                                              uploaded successfully with  \
-                                              %d Retail Rate(s) \
-                                              out of %d row(s) !!' % \
+                                        msg = '%d Carrier Rate(s) are uploaded successfully with  \
+                                              %d Retail Rate(s) out of %d row(s) !!' % \
                                               (carrier_record_count,
                                                retail_record_count,
                                                total_rows)
@@ -790,8 +787,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                         else:
                             msg = _('Error: Prefix is not in the Prfix table')
                     except:
-                        msg = _("Error : invalid value for import! \
-                               Please look at the import samples.")
+                        msg = _("Error : invalid value for import! Please look at the import samples.")
                         type_error_import_list.append(row)
 
         ctx = RequestContext(request, {
