@@ -25,11 +25,10 @@ from voip_billing.rate_engine import rate_engine
 from voip_billing.constants import RATE_COLUMN_NAME
 from user_profile.models import UserProfile
 from mongodb_connection import mongodb
-from cdr.decorators import check_cdr_exists, check_user_accountcode, \
-    check_user_voipplan
+from cdr.decorators import check_cdr_exists, check_user_detail
 from cdr.aggregate import pipeline_daily_billing_report, pipeline_hourly_billing_report
 from cdr.constants import Export_choice
-from django_lets_go.common_functions import current_view, ceil_strdate, get_pagination_vars
+from django_lets_go.common_functions import getvar, ceil_strdate, get_pagination_vars
 from datetime import datetime
 import logging
 import time
@@ -40,7 +39,7 @@ import tablib
 
 @permission_required('user_profile.call_rate', login_url='/')
 @login_required
-@check_user_voipplan
+@check_user_detail(['voipplan'])
 @cache_page(60 * 5)
 def voip_rates(request):
     """List voip call rates according to country prefix
@@ -121,11 +120,11 @@ def export_rate(request):
         get the prifix rates  from voip rate API
         according to search parameters & store into csv file
     """
-    format = request.GET['format']
+    format_type = request.GET['format']
     # get the response object, this can be used as a stream
-    response = HttpResponse(mimetype='text/' + format)
+    response = HttpResponse(mimetype='text/%s' % format_type)
     # force download
-    response['Content-Disposition'] = 'attachment;filename=call_rate.' + format
+    response['Content-Disposition'] = 'attachment;filename=call_rate.%s' % format_type
 
     headers = ('prefix', 'destination', 'retail_rate')
 
@@ -135,28 +134,22 @@ def export_rate(request):
 
     list_val = []
     for row in final_result:
-        list_val.append((
-            row['prefix'],
-            row['prefix__destination'],
-            row['retail_rate'],
-        ))
+        list_val.append((row['prefix'], row['prefix__destination'], row['retail_rate']))
 
     data = tablib.Dataset(*list_val, headers=headers)
 
-    if format == Export_choice.XLS:
+    if format_type == Export_choice.XLS:
         response.write(data.xls)
-
-    if format == Export_choice.CSV:
+    elif format_type == Export_choice.CSV:
         response.write(data.csv)
-
-    if format == Export_choice.JSON:
+    elif format_type == Export_choice.JSON:
         response.write(data.json)
 
     return response
 
 
 @permission_required('user_profile.simulator', login_url='/')
-@check_user_voipplan
+@check_user_detail(['voipplan'])
 @login_required
 def simulator(request):
     """Client Simulator
@@ -196,8 +189,7 @@ def simulator(request):
 
 @permission_required('user_profile.daily_billing', login_url='/')
 @check_cdr_exists
-@check_user_accountcode
-@check_user_voipplan
+@check_user_detail(['accountcode', 'voipplan'])
 @login_required
 def daily_billing_report(request):
     """CDR billing graph by daily basis
@@ -224,16 +216,12 @@ def daily_billing_report(request):
                                                            'to_date': tday.strftime('%Y-%m-%d')})
     if form.is_valid():
         search_tag = 1
-        if "from_date" in request.POST:
-            from_date = request.POST['from_date']
-            start_date = ceil_strdate(from_date, 'start')
+        from_date = getvar(request, 'from_date')
+        to_date = getvar(request, 'to_date')
 
-        if "to_date" in request.POST:
-            to_date = request.POST['to_date']
-            end_date = ceil_strdate(to_date, 'end')
-
-        if "switch_id" in request.POST:
-            switch_id = request.POST['switch_id']
+        start_date = ceil_strdate(from_date, 'start')
+        end_date = ceil_strdate(to_date, 'end')
+        switch_id = getvar(request, 'switch_id')
     else:
         start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
         end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
@@ -302,7 +290,6 @@ def daily_billing_report(request):
         }
 
     data = {
-        'module': current_view(request),
         'form': form,
         'search_tag': search_tag,
         'total_data': total_data,
@@ -323,8 +310,7 @@ def daily_billing_report(request):
 
 @permission_required('user_profile.hourly_billing', login_url='/')
 @check_cdr_exists
-@check_user_accountcode
-@check_user_voipplan
+@check_user_detail(['accountcode', 'voipplan'])
 @login_required
 def hourly_billing_report(request):
     """CDR billing graph by hourly basis
@@ -350,15 +336,12 @@ def hourly_billing_report(request):
     form = HourlyBillingForm(request.POST or None, initial={'from_date': tday.strftime('%Y-%m-%d')})
     if form.is_valid():
         search_tag = 1
-        if "from_date" in request.POST:
-            from_date = request.POST['from_date']
-            start_date = ceil_strdate(from_date, 'start')
+        from_date = getvar(request, 'from_date')
+        switch_id = getvar(request, 'switch_id')
 
-            start_date = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, 0)
-            end_date = datetime(start_date.year, start_date.month, start_date.day, 23, 59, 59, 999999)
-
-        if "switch_id" in request.POST:
-            switch_id = request.POST['switch_id']
+        start_date = ceil_strdate(from_date, 'start')
+        start_date = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, 0)
+        end_date = datetime(start_date.year, start_date.month, start_date.day, 23, 59, 59, 999999)
     else:
         start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
         end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
@@ -414,7 +397,6 @@ def hourly_billing_report(request):
             }
 
     data = {
-        'module': current_view(request),
         'form': form,
         'search_tag': search_tag,
         'start_date': start_date,

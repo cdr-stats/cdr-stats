@@ -10,17 +10,38 @@
         {{ opts.verbose_name }}
     </div>
     {% endif %}
-{% endblock %}
 
-
-{% block content %}
     <script type="text/javascript">
+        $(function() {
+            $('#id_from_date').datetimepicker({
+                format:'Y-m-d',
+                timepicker:false,
+                onShow:function( ct ){
+                    this.setOptions({
+                        maxDate:$('#id_to_date').val()?$('#id_to_date').val():false
+                    })
+                },
+            });
+            $('#id_to_date').datetimepicker({
+                format:'Y-m-d',
+                timepicker:false,
+                onShow:function( ct ){
+                    this.setOptions({
+                        minDate:$('#id_from_date').val()?$('#id_from_date').val():false
+                    })
+                },
+            });
+        });
         $(function() {
             $('#id_no').click(function(){
                 document.location.href='/admin/{{ opts.app_label }}/{{ model_name }}/rebilling/';
             });
         });
     </script>
+{% endblock %}
+
+
+{% block content %}
   <div id="content-main">
 
     {% if cl.formset.errors %}

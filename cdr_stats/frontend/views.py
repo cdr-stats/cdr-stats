@@ -20,7 +20,7 @@ from django.conf import settings
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 from pymongo.connection import Connection
-from django_lets_go.common_functions import current_view, get_news
+from django_lets_go.common_functions import get_news
 from frontend.forms import LoginForm
 from cdr.import_cdr_freeswitch_mongodb import chk_ipaddress
 from mongodb_connection import mongodb
@@ -54,7 +54,6 @@ def index(request):
             errorlogin = _('voip plan is not attached to user!')
 
     data = {
-        'module': current_view(request),
         'loginform': loginform,
         'errorlogin': errorlogin,
         'news': get_news(settings.NEWS_URL),
@@ -212,7 +211,6 @@ def login_view(request):
             errorlogin = _('enter valid user credentials.')
 
     data = {
-        'module': current_view(request),
         'loginform': loginform,
         'errorlogin': errorlogin,
         'news': get_news(news_url),

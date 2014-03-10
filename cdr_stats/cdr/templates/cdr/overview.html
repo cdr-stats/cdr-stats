@@ -26,6 +26,10 @@
     {{ form.media }}
 {% endblock %}
 
+{% block content_header %}
+    <h1>{% trans "CDR overview"|capfirst %}<small></small></h1>
+{% endblock %}
+
 {% block content %}
 <div id="form_collapse" class="collapse">
     {% crispy form form.helper %}

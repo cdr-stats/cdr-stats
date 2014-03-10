@@ -13,6 +13,10 @@
   {% load_chart country_analytic_charttype country_analytic_chartdata country_chartcontainer country_extra %}
 {% endblock %}
 
+{% block content_header %}
+    <h1>{% trans "dashboard"|capfirst %}<small></small></h1>
+{% endblock %}
+
 {% block content %}
 
 {% crispy form form.helper %}

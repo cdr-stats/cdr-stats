@@ -135,24 +135,22 @@ class VoIPPlanAdmin(admin.ModelAdmin):
         voipplan_id = variable_value(request, "plan_id")
 
         data = []
-        form = SimulatorForm(request.user)
-        if request.method == 'POST':
-            form = SimulatorForm(request.user, request.POST)
-            if form.is_valid():
-                destination_no = request.POST.get("destination_no")
-                voipplan_id = request.POST.get("plan_id")
-                query = rate_engine(destination_no=destination_no, voipplan_id=voipplan_id)
+        form = SimulatorForm(request.user, request.POST or None)
+        if form.is_valid():
+            destination_no = request.POST.get("destination_no")
+            voipplan_id = request.POST.get("plan_id")
+            query = rate_engine(destination_no=destination_no, voipplan_id=voipplan_id)
 
-                for i in query:
-                    c_r_plan = VoIPCarrierRate.objects.get(id=i.crid)
-                    r_r_plan = VoIPRetailRate.objects.get(id=i.rrid)
-                    data.append((voipplan_id,
-                                 c_r_plan.voip_carrier_plan_id.id,
-                                 c_r_plan.voip_carrier_plan_id.name,
-                                 r_r_plan.voip_retail_plan_id.id,
-                                 r_r_plan.voip_retail_plan_id.name,
-                                 i.crid, i.carrier_rate,
-                                 i.rrid, i.retail_rate, i.rt_prefix))
+            for i in query:
+                c_r_plan = VoIPCarrierRate.objects.get(id=i.crid)
+                r_r_plan = VoIPRetailRate.objects.get(id=i.rrid)
+                data.append((voipplan_id,
+                             c_r_plan.voip_carrier_plan_id.id,
+                             c_r_plan.voip_carrier_plan_id.name,
+                             r_r_plan.voip_retail_plan_id.id,
+                             r_r_plan.voip_retail_plan_id.name,
+                             i.crid, i.carrier_rate,
+                             i.rrid, i.retail_rate, i.rt_prefix))
 
         ctx = RequestContext(request,
             {
@@ -163,67 +161,54 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                 'app_label': APP_LABEL,
                 'data': data,
             })
-        template = 'admin/voip_billing/voipplan/simulator.html'
-        return render_to_response(template, context_instance=ctx)
+        return render_to_response('admin/voip_billing/voipplan/simulator.html', context_instance=ctx)
 
     def export(self, request):
         """
         Export Carrier Rate into CSV file
         """
         opts = VoIPPlan._meta
-        form = VoIPPlan_fileExport(initial={'export_to': Export_choice.CSV})
-        if request.method == 'POST':
-            form = VoIPPlan_fileExport(request.POST)
-            if form.is_valid():
-                if "plan_id" in request.POST:
-                    format = request.POST.get('export_to')
-                    response = HttpResponse(mimetype='text/' + format)
-                    response['Content-Disposition'] = \
-                        'attachment;filename=export_voipplan.' + format
+        form = VoIPPlan_fileExport(request.POST or None, initial={'export_to': Export_choice.CSV})
+        if form.is_valid():
+            format_type = request.POST.get('export_to')
+            response = HttpResponse(mimetype='text/%s' % format_type)
+            response['Content-Disposition'] = 'attachment;filename=export_voipplan.%s' % format_type
 
-                    voipplan_id = request.POST['plan_id']
-                    sql_statement = (
-                        'SELECT voipbilling_voip_retail_rate.prefix, '
-                        'Min(retail_rate) as minrate, dialcode_prefix.destination '
-                        'FROM voipbilling_voip_retail_rate '
-                        'INNER JOIN voipbilling_voipplan_voipretailplan '
-                        'ON voipbilling_voipplan_voipretailplan.voipretailplan_id = '
-                        'voipbilling_voip_retail_rate.voip_retail_plan_id '
-                        'LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix = '
-                        'voipbilling_voip_retail_rate.prefix '
-                        'WHERE voipplan_id=%s '
-                        'GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination')
+            voipplan_id = request.POST['plan_id']
+            sql_statement = (
+                'SELECT voipbilling_voip_retail_rate.prefix, '
+                'Min(retail_rate) as minrate, dialcode_prefix.destination '
+                'FROM voipbilling_voip_retail_rate '
+                'INNER JOIN voipbilling_voipplan_voipretailplan '
+                'ON voipbilling_voipplan_voipretailplan.voipretailplan_id = '
+                'voipbilling_voip_retail_rate.voip_retail_plan_id '
+                'LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix = '
+                'voipbilling_voip_retail_rate.prefix '
+                'WHERE voipplan_id=%s '
+                'GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination')
 
-                    from django.db import connection
-                    cursor = connection.cursor()
-                    cursor.execute(sql_statement, [voipplan_id, ])
-                    row = cursor.fetchall()
+            from django.db import connection
+            cursor = connection.cursor()
+            cursor.execute(sql_statement, [voipplan_id, ])
+            row = cursor.fetchall()
 
-                    # Content writing in file
-                    headers = ('prefix', 'rate', 'destination')
-                    list_val = []
-                    for record in row:
-                        rate = record[1]
-                        if format == 'json':
-                            rate = str(record[1])
+            # Content writing in file
+            headers = ('prefix', 'rate', 'destination')
+            list_val = []
+            for record in row:
+                rate = record[1]
+                if format_type == 'json':
+                    rate = str(record[1])
+                list_val.append((record[0], rate, record[2]))
 
-                        list_val.append((
-                            record[0],
-                            rate,
-                            record[2],
-                        ))
-                    data = tablib.Dataset(*list_val, headers=headers)
-
-                    if format == 'xls':
-                        response.write(data.xls)
-
-                    if format == 'csv':
-                        response.write(data.csv)
-
-                    if format == 'json':
-                        response.write(data.json)
-
-                    return response
+            data = tablib.Dataset(*list_val, headers=headers)
+            if format_type == Export_choice.XLS:
+                response.write(data.xls)
+            elif format_type == Export_choice.CSV:
+                response.write(data.csv)
+            elif format_type == Export_choice.JSON:
+                response.write(data.json)
+            return response
 
         ctx = RequestContext(request, {
             'title': _('Export VoIP Plan'),
@@ -232,15 +217,19 @@ class VoIPPlanAdmin(admin.ModelAdmin):
             'model_name': opts.object_name.lower(),
             'app_label': APP_LABEL,
         })
-        return render_to_response(
-            'admin/voip_billing/voipplan/export.html',
-            context_instance=ctx)
+        return render_to_response('admin/voip_billing/voipplan/export.html', context_instance=ctx)
 
     def rebilling(self, request):
         """
         Re-billing successful voip calls
         """
         opts = VoIPPlan._meta
+        # default values for form
+        tday = datetime.today()
+        to_date = from_date = tday.strftime('%Y-%m-%d')
+        form = RebillForm(request.POST or None,
+                          initial={'from_date': from_date, 'to_date': to_date,
+                                   'confirmation': CONFIRMATION_TYPE.NO})
         call_rebill_count = 0
         if request.method == 'POST':
             form = RebillForm(request.POST)
@@ -292,8 +281,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                         'call_rebill_count': call_rebill_count,
                         'CONFIRMATION_TYPE': CONFIRMATION_TYPE,
                     })
-                    return render_to_response('admin/voip_billing/voipplan/rebilling.html',
-                        context_instance=ctx)
+                    return render_to_response('admin/voip_billing/voipplan/rebilling.html', context_instance=ctx)
 
                 voipplan_id = user_profile.voipplan_id
 
@@ -310,12 +298,6 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                     messages.info(request, msg)
                     request.POST['confirmation'] = CONFIRMATION_TYPE.NO
                     call_rebill_count = 0
-        else:
-            # default values for form
-            tday = datetime.today()
-            to_date = from_date = tday.strftime('%Y-%m-%d')
-            form = RebillForm(initial={'from_date': from_date, 'to_date': to_date,
-                                       'confirmation': CONFIRMATION_TYPE.NO})
 
         ctx = RequestContext(request, {
             'form': form,
@@ -325,8 +307,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
             'title': _('Rebill VoIP Call'),
             'call_rebill_count': call_rebill_count,
         })
-        return render_to_response('admin/voip_billing/voipplan/rebilling.html',
-            context_instance=ctx)
+        return render_to_response('admin/voip_billing/voipplan/rebilling.html', context_instance=ctx)
 
 admin.site.register(VoIPPlan, VoIPPlanAdmin)
 
@@ -439,15 +420,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
         """
         VoIP Retail Rate Listing & Custom Rate Filter (>,>=,=,<=,<)
         """
-        form = CustomRateFilterForm()
-        if request.method == 'POST':
-            # Assign form field value to local variable
-            rate = variable_value(request, 'rate')
-            rate_range = variable_value(request, 'rate_range')
-
-            # Custom Rate Filter Form
-            form = CustomRateFilterForm(initial={"rate": rate,
-                                                 "rate_range": rate_range})
+        form = CustomRateFilterForm(request.POST or None)
         ctx = {
             'title': _('Select VoIP Retail Rate to Change'),
             'form': form,
@@ -459,38 +432,32 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
         Export Retail Rate into CSV file
         """
         opts = VoIPRetailRate._meta
-        form = Retail_Rate_fileExport(initial={'export_to': Export_choice.CSV})
-        if request.method == 'POST':
-            form = Retail_Rate_fileExport(request.POST)
-            if form.is_valid():
-                if "plan_id" in request.POST:
-                    format = request.POST.get('export_to')
-                    response = HttpResponse(mimetype='text/' + format)
-                    response['Content-Disposition'] = \
-                        'attachment;filename=export_retail_rate.' + format
+        form = Retail_Rate_fileExport(request.POST or None,
+                                      initial={'export_to': Export_choice.CSV})
 
-                    qs = VoIPRetailRate.objects.values('prefix', 'retail_rate').filter(voip_retail_plan_id=request.POST['plan_id'])
+        if form.is_valid():
+            format_type = request.POST.get('export_to')
+            response = HttpResponse(mimetype='text/%s' % format_type)
+            response['Content-Disposition'] = 'attachment;filename=export_retail_rate.%s' % format_type
+            qs = VoIPRetailRate.objects.values('prefix', 'retail_rate').filter(voip_retail_plan_id=request.POST['plan_id'])
 
-                    # Content writing in file
-                    headers = ('prefix', 'rate')
-                    list_val = []
-                    for row in qs:
-                        rate = row['retail_rate']
-                        if format == 'json':
-                            rate = str(row['retail_rate'])
+            # Content writing in file
+            headers = ('prefix', 'rate')
+            list_val = []
+            for row in qs:
+                rate = row['retail_rate']
+                if format_type == 'json':
+                    rate = str(row['retail_rate'])
+                list_val.append((row['prefix'], rate))
 
-                        list_val.append((row['prefix'], rate))
-
-                    data = tablib.Dataset(*list_val, headers=headers)
-                    if format == Export_choice.XLS:
-                        response.write(data.xls)
-
-                    if format == Export_choice.CSV:
-                        response.write(data.csv)
-
-                    if format == Export_choice.JSON:
-                        response.write(data.json)
-                    return response
+            data = tablib.Dataset(*list_val, headers=headers)
+            if format_type == Export_choice.XLS:
+                response.write(data.xls)
+            elif format_type == Export_choice.CSV:
+                response.write(data.csv)
+            elif format_type == Export_choice.JSON:
+                response.write(data.json)
+            return response
 
         ctx = RequestContext(request, {
             'title': _('Export Retail Rate'),
@@ -499,9 +466,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
             'model_name': opts.object_name.lower(),
             'app_label': APP_LABEL,
         })
-        return render_to_response(
-            'admin/voip_billing/voipretailrate/export_rr.html',
-            context_instance=ctx)
+        return render_to_response('admin/voip_billing/voipretailrate/export_rr.html', context_instance=ctx)
 
     def import_rr(self, request):
         """
@@ -513,64 +478,59 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
         retail_record_count - No. of records which are imported from CSV file
         """
         opts = VoIPRetailRate._meta
-        form = RetailRate_fileImport()
+        form = RetailRate_fileImport(request.POST or None, request.FILES or None)
         rdr = ''  # will contain CSV data
         msg = ''
         success_import_list = []
         error_import_list = []
         type_error_import_list = []
-        if request.method == 'POST':
-            form = RetailRate_fileImport(request.POST, request.FILES)
-            if form.is_valid():
-                # col_no - field name
-                #  0     - Prefix
-                #  1     - Retail Rate
-                # To count total rows of CSV file
-                records = csv.reader(request.FILES['csv_file'],
-                                 delimiter=',', quotechar='"')
-                total_rows = len(list(records))
 
-                rdr = csv.reader(request.FILES['csv_file'],
-                                 delimiter=',', quotechar='"')
-                retail_record_count = 0
-                # Read each Row
-                for row in rdr:
-                    if (row and str(row[0]) > 0):
-                        try:
-                            # check field type
-                            int(row[0])
-                            float(row[1])
+        if form.is_valid():
+            # col_no - field name
+            #  0     - Prefix
+            #  1     - Retail Rate
+            # To count total rows of CSV file
+            records = csv.reader(request.FILES['csv_file'], delimiter=',', quotechar='"')
+            total_rows = len(list(records))
 
-                            # Check row[0] available or not in Prefix table
-                            pfix = Prefix.objects.get(prefix=row[0])
-                            if pfix is not None:
-                                voip_retail_plan = VoIPRetailPlan.objects.get(
-                                    pk=request.POST['plan_id'])
-                                try:
-                                    # check if prefix is already
-                                    # exist with retail plan or not
-                                    VoIPRetailRate.objects.get(
-                                        voip_retail_plan_id=voip_retail_plan,
-                                        prefix=pfix)
-                                    msg = _('Retail Rate(s) are already exist !!')
-                                    error_import_list.append(row)
-                                except:
-                                    # if not, insert record
-                                    VoIPRetailRate.objects.create(
-                                        voip_retail_plan_id=voip_retail_plan,
-                                        prefix=pfix,
-                                        retail_rate=row[1])
-                                    retail_record_count = retail_record_count + 1
-                                    msg = '%d Retail Rate(s) are uploaded  \
-                                          successfully out of %d row(s) !!'\
-                                          % (retail_record_count, total_rows)
-                                    success_import_list.append(row)
-                            else:
-                                msg = _('Error: Prefix is not in the Prefix table')
-                        except:
-                            msg = _("Error : invalid value for import! \
-                                   Please look at the import samples.")
-                            type_error_import_list.append(row)
+            rdr = csv.reader(request.FILES['csv_file'], delimiter=',', quotechar='"')
+            retail_record_count = 0
+            # Read each Row
+            for row in rdr:
+                if (row and str(row[0]) > 0):
+                    try:
+                        # check field type
+                        int(row[0])
+                        float(row[1])
+
+                        # Check row[0] available or not in Prefix table
+                        pfix = Prefix.objects.get(prefix=row[0])
+                        if pfix is not None:
+                            voip_retail_plan = VoIPRetailPlan.objects.get(
+                                pk=request.POST['plan_id'])
+                            try:
+                                # check if prefix is already
+                                # exist with retail plan or not
+                                VoIPRetailRate.objects.get(
+                                    voip_retail_plan_id=voip_retail_plan,
+                                    prefix=pfix)
+                                msg = _('Retail Rate(s) are already exist !!')
+                                error_import_list.append(row)
+                            except:
+                                # if not, insert record
+                                VoIPRetailRate.objects.create(
+                                    voip_retail_plan_id=voip_retail_plan,
+                                    prefix=pfix,
+                                    retail_rate=row[1])
+                                retail_record_count = retail_record_count + 1
+                                msg = '%d Retail Rate(s) are uploaded successfully out of %d row(s) !!'\
+                                      % (retail_record_count, total_rows)
+                                success_import_list.append(row)
+                        else:
+                            msg = _('Error: Prefix is not in the Prefix table')
+                    except:
+                        msg = _("Error : invalid value for import! Please look at the import samples.")
+                        type_error_import_list.append(row)
 
         ctx = RequestContext(request, {
             'title': _('Import Retail Rate'),
@@ -584,8 +544,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
             'error_import_list': error_import_list,
             'type_error_import_list': type_error_import_list,
         })
-        return render_to_response('admin/voip_billing/voipretailrate/import_rr.html',
-               context_instance=ctx)
+        return render_to_response('admin/voip_billing/voipretailrate/import_rr.html', context_instance=ctx)
 admin.site.register(VoIPRetailRate, VoIPRetailRateAdmin)
 
 
@@ -642,8 +601,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
         """
         if db_field.name == "prefix":
             kwargs["queryset"] = prefix_qs()
-        return super(VoIPCarrierRateAdmin, self)\
-            .formfield_for_foreignkey(db_field, request, **kwargs)
+        return super(VoIPCarrierRateAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_urls(self):
         urls = super(VoIPCarrierRateAdmin, self).get_urls()
@@ -677,15 +635,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
         """
         VoIP Carrier Rate Listing & Custom Rate Filter (>,>=,=,<=,<)
         """
-        form = CustomRateFilterForm()
-        if request.method == 'POST':
-            # Assign form field value to local variable
-            rate = variable_value(request, 'rate')
-            rate_range = variable_value(request, 'rate_range')
-
-            # Custom Rate Filter Form
-            form = CustomRateFilterForm(initial={"rate": rate,
-                                                 "rate_range": rate_range})
+        form = CustomRateFilterForm(request.POST or None)
         ctx = {
             'title': _('Select VoIP Carrier Rate to Change'),
             'form': form,
@@ -697,38 +647,32 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
         Export Carrier Rate into CSV file
         """
         opts = VoIPCarrierRate._meta
-        form = Carrier_Rate_fileExport(initial={'export_to': Export_choice.CSV})
-        if request.method == 'POST':
-            form = Carrier_Rate_fileExport(request.POST)
-            if form.is_valid():
-                if "plan_id" in request.POST:
-                    format = request.POST.get('export_to')
-                    response = HttpResponse(mimetype='text/' + format)
-                    response['Content-Disposition'] = \
-                        'attachment;filename=export_carrier_rate.' + format
+        form = Carrier_Rate_fileExport(request.POST or None, initial={'export_to': Export_choice.CSV})
+        if form.is_valid():
+            format_type = request.POST.get('export_to')
+            response = HttpResponse(mimetype='text/%s' % format_type)
+            response['Content-Disposition'] = 'attachment;filename=export_carrier_rate.%s' % format
 
-                    qs = VoIPCarrierRate.objects.values('prefix', 'carrier_rate').filter(
-                        voip_carrier_plan_id=request.POST['plan_id'])
+            qs = VoIPCarrierRate.objects.values('prefix', 'carrier_rate').filter(
+                voip_carrier_plan_id=request.POST['plan_id'])
 
-                    # Content writing in file
-                    headers = ('prefix', 'rate')
-                    list_val = []
-                    for row in qs:
-                        rate = row['carrier_rate']
-                        if format == 'json':
-                            rate = str(row['carrier_rate'])
-                        list_val.append((row['prefix'], rate))
+            # Content writing in file
+            headers = ('prefix', 'rate')
+            list_val = []
+            for row in qs:
+                rate = row['carrier_rate']
+                if format_type == 'json':
+                    rate = str(row['carrier_rate'])
+                list_val.append((row['prefix'], rate))
 
-                    data = tablib.Dataset(*list_val, headers=headers)
-                    if format == Export_choice.XLS:
-                        response.write(data.xls)
-
-                    if format == Export_choice.CSV:
-                        response.write(data.csv)
-
-                    if format == Export_choice.JSON:
-                        response.write(data.json)
-                    return response
+            data = tablib.Dataset(*list_val, headers=headers)
+            if format_type == Export_choice.XLS:
+                response.write(data.xls)
+            elif format_type == Export_choice.CSV:
+                response.write(data.csv)
+            elif format_type == Export_choice.JSON:
+                response.write(data.json)
+            return response
 
         ctx = RequestContext(request, {
             'title': _('Export Carrier Rate'),
@@ -737,8 +681,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
             'model_name': opts.object_name.lower(),
             'app_label': APP_LABEL,
         })
-        return render_to_response('admin/voip_billing/voipcarrierrate/export_cr.html',
-               context_instance=ctx)
+        return render_to_response('admin/voip_billing/voipcarrierrate/export_cr.html', context_instance=ctx)
 
     def import_cr(self, request):
         """
@@ -752,7 +695,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                               profit(%) & carrier rates
         """
         opts = VoIPCarrierRate._meta
-        form = CarrierRate_fileImport()
+        form = CarrierRate_fileImport(request.POST or None, request.FILES or None)
         rdr = ''  # will contain CSV data
         msg = ''
         cr_success_import_list = []
@@ -761,101 +704,95 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
         rr_error_import_list = []
         type_error_import_list = []
 
-        if request.method == 'POST':
-            form = CarrierRate_fileImport(request.POST, request.FILES)
-            if form.is_valid():
-                # Checked form field - "chk" - check_box value
-                if "chk" in request.POST:
-                    if request.POST['chk'] == "on":
-                        profit_per = request.POST['profit_percentage']
-                        voip_retail_plan = VoIPRetailPlan.objects.get(
-                            pk=request.POST['retail_plan_id'])
+        if form.is_valid():
+            # Checked form field - "chk" - check_box value
+            if "chk" in request.POST:
+                if request.POST['chk'] == "on":
+                    profit_per = request.POST['profit_percentage']
+                    voip_retail_plan = VoIPRetailPlan.objects.get(pk=request.POST['retail_plan_id'])
 
-                # col_no - field name
-                #  0     - Prefix
-                #  1     - Carrier Rate
-                # Total no of records in CSV file
-                records = csv.reader(request.FILES['csv_file'],
-                                 delimiter=',', quotechar='"')
-                total_rows = len(list(records))
+            # col_no - field name
+            #  0     - Prefix
+            #  1     - Carrier Rate
+            # Total no of records in CSV file
+            records = csv.reader(request.FILES['csv_file'], delimiter=',', quotechar='"')
+            total_rows = len(list(records))
 
-                rdr = csv.reader(request.FILES['csv_file'],
-                                 delimiter=',', quotechar='"')
-                carrier_record_count = 0
-                retail_record_count = 0
+            rdr = csv.reader(request.FILES['csv_file'], delimiter=',', quotechar='"')
+            carrier_record_count = 0
+            retail_record_count = 0
 
-                # To count total rows of CSV file
-                for row in rdr:
-                    if (row and row[0] > 0):
-                        try:
-                            # check field type
-                            int(row[0])
-                            float(row[1])
+            # To count total rows of CSV file
+            for row in rdr:
+                if (row and row[0] > 0):
+                    try:
+                        # check field type
+                        int(row[0])
+                        float(row[1])
 
-                            pfix = Prefix.objects.get(prefix=row[0])
-                            if pfix is not None:
-                                voip_carrier_plan = VoIPCarrierPlan.objects.get(
-                                    pk=request.POST['plan_id'])
-                                try:
-                                    # check if prefix is alredy exist with
-                                    # retail plan or not
-                                    VoIPCarrierRate.objects.get(
-                                        voip_carrier_plan_id=voip_carrier_plan,
-                                        prefix=pfix)
+                        pfix = Prefix.objects.get(prefix=row[0])
+                        if pfix is not None:
+                            voip_carrier_plan = VoIPCarrierPlan.objects.get(
+                                pk=request.POST['plan_id'])
+                            try:
+                                # check if prefix is alredy exist with
+                                # retail plan or not
+                                VoIPCarrierRate.objects.get(
+                                    voip_carrier_plan_id=voip_carrier_plan,
+                                    prefix=pfix)
 
-                                    msg = _('Carrier Rates are already exist !!')
-                                    cr_error_import_list.append(row)
+                                msg = _('Carrier Rates are already exist !!')
+                                cr_error_import_list.append(row)
 
-                                    # Checked form field - "chk"\
-                                    # - check_box value
-                                    if "chk" in request.POST:
-                                        if request.POST['chk'] == "on":
-                                            VoIPRetailRate.objects.get(
-                                                voip_retail_plan_id=voip_retail_plan,
-                                                prefix=pfix)
-                                            msg = _('Carrier/Retail Rates are already exist !!')
-                                            rr_error_import_list.append(row)
-                                except:
-                                    # if not, insert record
-                                    VoIPCarrierRate.objects.create(
-                                        voip_carrier_plan_id=voip_carrier_plan,
-                                        prefix=pfix, carrier_rate=row[1])
-                                    carrier_record_count = carrier_record_count + 1
+                                # Checked form field - "chk"\
+                                # - check_box value
+                                if "chk" in request.POST:
+                                    if request.POST['chk'] == "on":
+                                        VoIPRetailRate.objects.get(
+                                            voip_retail_plan_id=voip_retail_plan,
+                                            prefix=pfix)
+                                        msg = _('Carrier/Retail Rates are already exist !!')
+                                        rr_error_import_list.append(row)
+                            except:
+                                # if not, insert record
+                                VoIPCarrierRate.objects.create(
+                                    voip_carrier_plan_id=voip_carrier_plan,
+                                    prefix=pfix, carrier_rate=row[1])
+                                carrier_record_count = carrier_record_count + 1
 
-                                    msg = '%d Carrier Rate(s) are uploaded \
-                                           successfully out of %d row(s)!!' \
-                                           % (carrier_record_count, total_rows)
-                                    cr_success_import_list.append(row)
+                                msg = '%d Carrier Rate(s) are uploaded \
+                                       successfully out of %d row(s)!!' \
+                                       % (carrier_record_count, total_rows)
+                                cr_success_import_list.append(row)
 
-                                    # Checked form field - "chk"
-                                    # - check_box value
-                                    if "chk" in request.POST:
-                                        if request.POST['chk'] == "on":
+                                # Checked form field - "chk"
+                                # - check_box value
+                                if "chk" in request.POST:
+                                    if request.POST['chk'] == "on":
 
-                                            # Calculate New Retail Rate
-                                            new_rate = (float(row[1]) *
-                                                (float(profit_per) / 100) + float(row[1]))
+                                        # Calculate New Retail Rate
+                                        new_rate = (float(row[1]) * (float(profit_per) / 100) + float(row[1]))
 
-                                            VoIPRetailRate.objects.create(
-                                                voip_retail_plan_id=voip_retail_plan,
-                                                prefix=pfix,
-                                                retail_rate=str(new_rate))
+                                        VoIPRetailRate.objects.create(
+                                            voip_retail_plan_id=voip_retail_plan,
+                                            prefix=pfix,
+                                            retail_rate=str(new_rate))
 
-                                            retail_record_count = retail_record_count + 1
-                                            msg = '%d Carrier Rate(s) are \
-                                                  uploaded successfully with  \
-                                                  %d Retail Rate(s) \
-                                                  out of %d row(s) !!' % \
-                                                  (carrier_record_count,
-                                                   retail_record_count,
-                                                   total_rows)
-                                            rr_success_import_list.append((row[0], str(new_rate)))
-                            else:
-                                msg = _('Error: Prefix is not in the Prfix table')
-                        except:
-                            msg = _("Error : invalid value for import! \
-                                   Please look at the import samples.")
-                            type_error_import_list.append(row)
+                                        retail_record_count = retail_record_count + 1
+                                        msg = '%d Carrier Rate(s) are \
+                                              uploaded successfully with  \
+                                              %d Retail Rate(s) \
+                                              out of %d row(s) !!' % \
+                                              (carrier_record_count,
+                                               retail_record_count,
+                                               total_rows)
+                                        rr_success_import_list.append((row[0], str(new_rate)))
+                        else:
+                            msg = _('Error: Prefix is not in the Prfix table')
+                    except:
+                        msg = _("Error : invalid value for import! \
+                               Please look at the import samples.")
+                        type_error_import_list.append(row)
 
         ctx = RequestContext(request, {
             'title': _('Import Carrier Rate'),
@@ -871,6 +808,5 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
             'rr_error_import_list': rr_error_import_list,
             'type_error_import_list': type_error_import_list,
         })
-        return render_to_response('admin/voip_billing/voipcarrierrate/import_cr.html',
-               context_instance=ctx)
+        return render_to_response('admin/voip_billing/voipcarrierrate/import_cr.html', context_instance=ctx)
 admin.site.register(VoIPCarrierRate, VoIPCarrierRateAdmin)

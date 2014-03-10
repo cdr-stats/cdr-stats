@@ -14,16 +14,17 @@ install:
   # - pip install pep8 --use-mirrors
   # - pip install https://github.com/dcramer/pyflakes/tarball/master
 before_script:
-  - cp install/conf/settings_local.py cdr_stats/cdr_stats/settings_local.py
-  - cp install/conf/settings_travis.py cdr_stats/cdr_stats/settings_travis.py
+  - cp install/conf/settings_travis.py cdr_stats/cdr_stats/settings_local.py
+  #- cp install/conf/settings_local.py cdr_stats/cdr_stats/settings_local.py
+  #- cp install/conf/settings_travis.py cdr_stats/cdr_stats/settings_travis.py
   #TODO: Now we should use postgresql
-  - "mysql -e 'create database cdrstats;'"
-  - "mysql -e 'create database cdrstats_test;'"
+  #- "mysql -e 'create database cdrstats;'"
+  #- "mysql -e 'create database cdrstats_test;'"
   # - "pep8 --exclude=migrations --ignore=E501,E225 cdr_stats"
   # - pyflakes -x W cdr_stats
 script:
-  #- python cdr_stats/manage.py test --settings=settings_travis -s -x --with-xtraceback --with-color
-  - python cdr_stats/manage.py test --settings=settings_travis -s -x --with-xtraceback --with-color --ignore-files=api_tests.py
+  python cdr_stats/manage.py test -s -x --with-xtraceback --with-color
+  #- python cdr_stats/manage.py test --settings=settings_travis -s -x --with-xtraceback --with-color --ignore-files=api_tests.py
   #- python cdr_stats/manage.py test --settings=settings_travis -s --with-progressive
 # whitelist
 branches:

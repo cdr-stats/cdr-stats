@@ -119,13 +119,13 @@
         });
 
     </script>
-
-    {# include "frontend/custom_jquery_select_all.html" #}
-    <h3>{% trans "Trust control"|title %} <small>{% trans "control the blacklist / whitelist" %}</small></h3>
 {% endblock %}
 
+{% block content_header %}
+    <h1>{% trans "Trust control"|title %} <small>{% trans "control the blacklist / whitelist" %}</small></h1>
+{% endblock %}
 {% block content %}
-<div id="id_alert_message" class="alert"></div>
+<div id="id_alert_message"></div>
 
 <div class="row">
     <div class="col-md-12">

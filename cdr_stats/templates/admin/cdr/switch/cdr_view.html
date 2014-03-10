@@ -15,7 +15,7 @@
 <link href="{{ STATIC_URL }}cdr-stats/css/admin_custom.css" rel="stylesheet">
 <script>
   $(function() {
-    $( "#tabs" ).tabs();
+    //$( "#tabs" ).tabs();
   });
 </script>
 <div id="content-main">
@@ -54,8 +54,8 @@
         </tr>
 
         <tr>
-          <th>{{ form.hangup_cause.label|title }}</th>
-          <td>{{ form.hangup_cause }}</td>
+          <th>{{ form.hangup_cause_id.label|title }}</th>
+          <td>{{ form.hangup_cause_id }}</td>
           <th>{{ form.country_id.label|title }}</th>
           <td>{{ form.country_id }}<span class="help-block">{{ form.country_id.help_text|capfirst|safe }} </span></td>
           <th>{{ form.result.label|title }}</th>
@@ -86,231 +86,231 @@
     {% endblock %}
 
   <div id="tabs">
-    <ul>
-    <li><a href="#tabs-1">{% trans "call detail records"|title %}</a></li>
-    <li><a href="#tabs-2">{% trans "report by day"|title %}</a></li>
-    </ul>
-    <div id="tabs-1">
-    <p>&nbsp;</p>
-    <ul class="object-tools">
-      <li><a href="../export_cdr/?format=csv" class="addlink">{% trans "export to CSV"|capfirst %}</a></li>
-      <li><a href="../export_cdr/?format=xls" class="addlink">{% trans "export to XLS"|capfirst %}</a></li>
-      <li><a href="../export_cdr/?format=json" class="addlink">{% trans "export to JSON"|capfirst %}</a></li>
-      <li><a href="../import_cdr/" class="addlink">{% trans "import CDR"|capfirst %}</a></li>
-      <li><a href="/admin/voip_billing/voipplan/rebilling/" class="addlink">{% trans "rebilling"|capfirst %}</a></li>
-    </ul>
+      <ul>
+          <li><a href="#tabs-1">{% trans "call detail records"|title %}</a></li>
+          <li><a href="#tabs-2">{% trans "report by day"|title %}</a></li>
+      </ul>
+      <div id="tabs-1">
+        <p>&nbsp;</p>
+        <ul class="object-tools">
+          <li><a href="../export_cdr/?format=csv" class="addlink">{% trans "export to CSV"|capfirst %}</a></li>
+          <li><a href="../export_cdr/?format=xls" class="addlink">{% trans "export to XLS"|capfirst %}</a></li>
+          <li><a href="../export_cdr/?format=json" class="addlink">{% trans "export to JSON"|capfirst %}</a></li>
+          <li><a href="../import_cdr/" class="addlink">{% trans "import CDR"|capfirst %}</a></li>
+          <li><a href="/admin/voip_billing/voipplan/rebilling/" class="addlink">{% trans "rebilling"|capfirst %}</a></li>
+        </ul>
 
 
-    <div class="module" id="changelist">
-      <div class="result">
-        <table>
-            <thead>
-            <tr>
-                <th class="sortable" scope="col">
-                    {% ifequal col_name_with_order.sort_field 'start_uepoch' %}
-                      {% sort_link "<i class='icon-chevron-up'></i>" "start_uepoch"  %}
-                        {{ CDR_COLUMN_NAME.call_date|capfirst }}
-                      {% sort_link "<i class='icon-chevron-down'></i>" "-start_uepoch"  %}
-                    {% else %}
-                      {% sort_link CDR_COLUMN_NAME.call_date|capfirst "-start_uepoch"  %}
-                    {% endifequal %}
-                </th>
-                <th class="sortable" scope="col">
-                    {% ifequal col_name_with_order.sort_field 'caller_id_number' %}
-                      {% sort_link "<i class='icon-chevron-up'></i>" "caller_id_number"  %}
-                        {{ CDR_COLUMN_NAME.clid|capfirst }}
-                      {% sort_link "<i class='icon-chevron-down'></i>" "-caller_id_number"  %}
-                    {% else %}
-                      {% sort_link CDR_COLUMN_NAME.clid|capfirst "-caller_id_number"  %}
-                    {% endifequal %}
-                </th>
-                <th class="sortable" scope="col">
-                    {% ifequal col_name_with_order.sort_field 'destination_number' %}
-                      {% sort_link "<i class='icon-chevron-up'></i>" "destination_number"  %}
-                        {{ CDR_COLUMN_NAME.destination|capfirst }}
-                      {% sort_link "<i class='icon-chevron-down'></i>" "-destination_number"  %}
-                    {% else %}
-                      {% sort_link CDR_COLUMN_NAME.destination|capfirst "-destination_number"  %}
-                    {% endifequal %}
-                </th>
-                <th class="sortable" scope="col">
-                    {% ifequal col_name_with_order.sort_field 'duration' %}
-                      {% sort_link "<i class='icon-chevron-up'></i>" "duration"  %}
-                        {{ CDR_COLUMN_NAME.duration|capfirst }}
-                      {% sort_link "<i class='icon-chevron-down'></i>" "-duration"  %}
-                    {% else %}
-                      {% sort_link CDR_COLUMN_NAME.duration|capfirst "-duration"  %}
-                    {% endifequal %}
-                </th>
-                <th class="sortable" scope="col">
-                    {% ifequal col_name_with_order.sort_field 'billsec' %}
-                      {% sort_link "<i class='icon-chevron-up'></i>" "billsec"  %}
-                      <abbr title='{% trans "bill seconds"|title %}'>{{ CDR_COLUMN_NAME.bill|capfirst }}</abbr>
-                      {% sort_link "<i class='icon-chevron-down'></i>" "-billsec"  %}
-                    {% else %}
-                        <abbr title={% trans 'bill seconds'|title %}>
-                        {% sort_link CDR_COLUMN_NAME.bill|capfirst "-billsec"  %}
-                        </abbr>
-                    {% endifequal %}
-                </th>
-                <th class="sortable" scope="col">
-                    {% ifequal col_name_with_order.sort_field 'hangup_cause_id' %}
-                      {% sort_link "<i class='icon-chevron-up'></i>" "hangup_cause_id"  %}
-                        {{ CDR_COLUMN_NAME.hangup_cause|capfirst }}
-                      {% sort_link "<i class='icon-chevron-down'></i>" "-hangup_cause_id"  %}
-                    {% else %}
-                      {% sort_link CDR_COLUMN_NAME.hangup_cause|capfirst "-hangup_cause_id"  %}
-                    {% endifequal %}
-                </th>
-                <th class="sortable" scope="col">
-                    {% ifequal col_name_with_order.sort_field 'accountcode' %}
-                      {% sort_link "<i class='icon-chevron-up'></i>" "accountcode"  %}
-                        {{ CDR_COLUMN_NAME.account|capfirst }}
-                      {% sort_link "<i class='icon-chevron-down'></i>" "-accountcode"  %}
-                    {% else %}
-                      {% sort_link CDR_COLUMN_NAME.account|capfirst "-accountcode"  %}
-                    {% endifequal %}
-                </th>
-                {% if user.is_superuser %}
-                    <th class="sortable" scope="col">
-                        {% ifequal col_name_with_order.sort_field 'buy_rate' %}
-                            {% sort_link "<i class='icon-chevron-up'></i>" "buy_rate"  %}
-                            {{ CDR_COLUMN_NAME.buy_rate|capfirst }}
-                            {% sort_link "<i class='icon-chevron-down'></i>" "-buy_rate"  %}
-                        {% else %}
-                            {% sort_link CDR_COLUMN_NAME.buy_rate|capfirst "-buy_rate"  %}
-                        {% endifequal %}
-                    </th>
-                    <th class="sortable" scope="col">
-                        {% ifequal col_name_with_order.sort_field 'buy_cost' %}
-                            {% sort_link "<i class='icon-chevron-up'></i>" "buy_cost"  %}
-                            {{ CDR_COLUMN_NAME.buy_cost|capfirst }}
-                            {% sort_link "<i class='icon-chevron-down'></i>" "-buy_cost"  %}
-                        {% else %}
-                            {% sort_link CDR_COLUMN_NAME.buy_cost|capfirst "-buy_cost"  %}
-                        {% endifequal %}
-                    </th>
-                {% endif %}
-                <th class="sortable" scope="col">
-                    {% ifequal col_name_with_order.sort_field 'sell_rate' %}
-                        {% sort_link "<i class='icon-chevron-up'></i>" "sell_rate"  %}
-                        {{ CDR_COLUMN_NAME.sell_rate|capfirst }}
-                        {% sort_link "<i class='icon-chevron-down'></i>" "-sell_rate"  %}
-                    {% else %}
-                        {% sort_link CDR_COLUMN_NAME.sell_rate|capfirst "-sell_rate"  %}
-                    {% endifequal %}
-                </th>
-                <th class="sortable" scope="col">
-                    {% ifequal col_name_with_order.sort_field 'sell_cost' %}
-                        {% sort_link "<i class='icon-chevron-up'></i>" "sell_cost"  %}
-                        {{ CDR_COLUMN_NAME.sell_cost|capfirst }}
-                        {% sort_link "<i class='icon-chevron-down'></i>" "-sell_cost"  %}
-                    {% else %}
-                        {% sort_link CDR_COLUMN_NAME.sell_cost|capfirst "-sell_cost"  %}
-                    {% endifequal %}
-                </th>
-                <th></th>
-            </tr>
-            </thead>
-            {% if cdr_daily_data.total_calls %}
-            {% autopaginate rows cdr_stats_page_size %}
-            {% for row in rows %}
-            <tr class="{% cycle 'row1' 'row2' %}">
-                <td>{{ row.start_uepoch }}</td>
-                <td>
-                    {{ row.caller_id_number }}
-                    {% if row.caller_id_number and row.caller_id_name %}
-                        -
-                    {% endif %}
-                    {{ row.caller_id_name }}
-                </td>
-                <td>{{ row.destination_number }}</td>
-                <td>{% if result == 1 %}
-                        {{ row.duration|conv_min }}
-                    {% else %}
-                        {{ row.duration }}
-                    {% endif %}
-                </td>
-                <td>{% if result == 1 %}
-                        {{ row.billsec|conv_min }}
-                    {% else %}
-                        {{ row.billsec }}
-                    {% endif %}
-                </td>
-                <td>
-                  {% cache 1800 hangupcause_name row.hangup_cause_id %}
-                    {{ row.hangup_cause_id|hangupcause_name }}
-                  {% endcache %}
-                </td>
-                <td>{{ row.accountcode }}</td>
-                {% if user.is_superuser %}
-                    <td>{{ row.buy_rate }}</td>
-                    <td>{{ row.buy_cost }}</td>
-                {% endif %}
-                <td>{{ row.sell_rate }}</td>
-                <td>{{ row.sell_cost }}</td>
-                <td>
-                    <div class="flag_icon">
-                        {% if row.country_id %}
-                            {% cache 1800 hcountry_flag row.country_id %}
-                                <img src="{{ STATIC_URL }}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name }}">
-                            {% endcache %}
-                        {% else %}
-                            <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World" %}">
-                        {% endif %}
-                        {% if row.authorized == 1  %}
-                            <img src="{{ STATIC_URL }}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans "Authorized call" %}"/>
-                        {% else %}
-                            <img src="{{ STATIC_URL }}cdr-stats/icons/flag_red.png" class="elemtooltip" title="{% trans "Unauthorized call" %}"/>
-                        {% endif %}
-                        {% ifequal row.direction 'inbound' %}
-                            <img src="{{STATIC_URL}}cdr-stats/icons/door_in.png" title="{{ row.direction|capfirst }} {% trans "call"|capfirst %}" class="elemtooltip"/>
-                        {% else %}
-                            {% ifequal row.direction 'outbound' %}
-                                <img src="{{ STATIC_URL }}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans "call"|capfirst %}" class="elemtooltip"/>
-                            {% else %}
-                                <img src="{{ STATIC_URL }}cdr-stats/icons/door.png" title="{{ row.direction|capfirst }}  {% trans "call"|capfirst %}" class="elemtooltip"/>
-                            {% endifequal %}
-                        {% endifequal %}
+        <div class="module" id="changelist">
+            <div class="result">
+              <table>
+              <thead>
+              <tr>
+                  <th class="sortable" scope="col">
+                      {% ifequal col_name_with_order.sort_field 'start_uepoch' %}
+                        {% sort_link sort_up|safe "start_uepoch"  %}
+                          {{ CDR_COLUMN_NAME.call_date|capfirst }}
+                        {% sort_link sort_down|safe "-start_uepoch"  %}
+                      {% else %}
+                        {% sort_link CDR_COLUMN_NAME.call_date|capfirst "-start_uepoch"  %}
+                      {% endifequal %}
+                  </th>
+                  <th class="sortable" scope="col">
+                      {% ifequal col_name_with_order.sort_field 'caller_id_number' %}
+                        {% sort_link sort_up|safe "caller_id_number"  %}
+                          {{ CDR_COLUMN_NAME.clid|capfirst }}
+                        {% sort_link sort_down|safe "-caller_id_number"  %}
+                      {% else %}
+                        {% sort_link CDR_COLUMN_NAME.clid|capfirst "-caller_id_number"  %}
+                      {% endifequal %}
+                  </th>
+                  <th class="sortable" scope="col">
+                      {% ifequal col_name_with_order.sort_field 'destination_number' %}
+                        {% sort_link sort_up|safe "destination_number"  %}
+                          {{ CDR_COLUMN_NAME.destination|capfirst }}
+                        {% sort_link sort_down|safe "-destination_number"  %}
+                      {% else %}
+                        {% sort_link CDR_COLUMN_NAME.destination|capfirst "-destination_number"  %}
+                      {% endifequal %}
+                  </th>
+                  <th class="sortable" scope="col">
+                      {% ifequal col_name_with_order.sort_field 'duration' %}
+                        {% sort_link sort_up|safe "duration"  %}
+                          {{ CDR_COLUMN_NAME.duration|capfirst }}
+                        {% sort_link sort_down|safe "-duration"  %}
+                      {% else %}
+                        {% sort_link CDR_COLUMN_NAME.duration|capfirst "-duration"  %}
+                      {% endifequal %}
+                  </th>
+                  <th class="sortable" scope="col">
+                      {% ifequal col_name_with_order.sort_field 'billsec' %}
+                        {% sort_link sort_up|safe "billsec"  %}
+                        <abbr title='{% trans "bill seconds"|title %}'>{{ CDR_COLUMN_NAME.bill|capfirst }}</abbr>
+                        {% sort_link sort_down|safe "-billsec"  %}
+                      {% else %}
+                          <abbr title={% trans 'bill seconds'|title %}>
+                          {% sort_link CDR_COLUMN_NAME.bill|capfirst "-billsec"  %}
+                          </abbr>
+                      {% endifequal %}
+                  </th>
+                  <th class="sortable" scope="col">
+                      {% ifequal col_name_with_order.sort_field 'hangup_cause_id' %}
+                        {% sort_link sort_up|safe "hangup_cause_id"  %}
+                          {{ CDR_COLUMN_NAME.hangup_cause|capfirst }}
+                        {% sort_link sort_down|safe "-hangup_cause_id"  %}
+                      {% else %}
+                        {% sort_link CDR_COLUMN_NAME.hangup_cause|capfirst "-hangup_cause_id"  %}
+                      {% endifequal %}
+                  </th>
+                  <th class="sortable" scope="col">
+                      {% ifequal col_name_with_order.sort_field 'accountcode' %}
+                        {% sort_link sort_up|safe "accountcode"  %}
+                          {{ CDR_COLUMN_NAME.account|capfirst }}
+                        {% sort_link sort_down|safe "-accountcode"  %}
+                      {% else %}
+                        {% sort_link CDR_COLUMN_NAME.account|capfirst "-accountcode"  %}
+                      {% endifequal %}
+                  </th>
+                  {% if user.is_superuser %}
+                      <th class="sortable" scope="col">
+                          {% ifequal col_name_with_order.sort_field 'buy_rate' %}
+                              {% sort_link sort_up|safe "buy_rate"  %}
+                              {{ CDR_COLUMN_NAME.buy_rate|capfirst }}
+                              {% sort_link sort_down|safe "-buy_rate"  %}
+                          {% else %}
+                              {% sort_link CDR_COLUMN_NAME.buy_rate|capfirst "-buy_rate"  %}
+                          {% endifequal %}
+                      </th>
+                      <th class="sortable" scope="col">
+                          {% ifequal col_name_with_order.sort_field 'buy_cost' %}
+                              {% sort_link sort_up|safe "buy_cost"  %}
+                              {{ CDR_COLUMN_NAME.buy_cost|capfirst }}
+                              {% sort_link sort_down|safe "-buy_cost"  %}
+                          {% else %}
+                              {% sort_link CDR_COLUMN_NAME.buy_cost|capfirst "-buy_cost"  %}
+                          {% endifequal %}
+                      </th>
+                  {% endif %}
+                  <th class="sortable" scope="col">
+                      {% ifequal col_name_with_order.sort_field 'sell_rate' %}
+                          {% sort_link sort_up|safe "sell_rate"  %}
+                          {{ CDR_COLUMN_NAME.sell_rate|capfirst }}
+                          {% sort_link sort_down|safe "-sell_rate"  %}
+                      {% else %}
+                          {% sort_link CDR_COLUMN_NAME.sell_rate|capfirst "-sell_rate"  %}
+                      {% endifequal %}
+                  </th>
+                  <th class="sortable" scope="col">
+                      {% ifequal col_name_with_order.sort_field 'sell_cost' %}
+                          {% sort_link sort_up|safe "sell_cost"  %}
+                          {{ CDR_COLUMN_NAME.sell_cost|capfirst }}
+                          {% sort_link sort_down|safe "-sell_cost"  %}
+                      {% else %}
+                          {% sort_link CDR_COLUMN_NAME.sell_cost|capfirst "-sell_cost"  %}
+                      {% endifequal %}
+                  </th>
+                  <th></th>
+              </tr>
+              </thead>
+              {% if cdr_daily_data.total_calls %}
+              {% autopaginate rows records_per_page %}
+              {% for row in rows %}
+              <tr class="{% cycle 'row1' 'row2' %}">
+                  <td>{{ row.start_uepoch }}</td>
+                  <td>
+                      {{ row.caller_id_number }}
+                      {% if row.caller_id_number and row.caller_id_name %}
+                          -
+                      {% endif %}
+                      {{ row.caller_id_name }}
+                  </td>
+                  <td>{{ row.destination_number }}</td>
+                  <td>{% if result == 1 %}
+                          {{ row.duration|conv_min }}
+                      {% else %}
+                          {{ row.duration }}
+                      {% endif %}
+                  </td>
+                  <td>{% if result == 1 %}
+                          {{ row.billsec|conv_min }}
+                      {% else %}
+                          {{ row.billsec }}
+                      {% endif %}
+                  </td>
+                  <td>
+                    {% cache 1800 hangupcause_name row.hangup_cause_id %}
+                      {{ row.hangup_cause_id|hangupcause_name }}
+                    {% endcache %}
+                  </td>
+                  <td>{{ row.accountcode }}</td>
+                  {% if user.is_superuser %}
+                      <td>{{ row.buy_rate }}</td>
+                      <td>{{ row.buy_cost }}</td>
+                  {% endif %}
+                  <td>{{ row.sell_rate }}</td>
+                  <td>{{ row.sell_cost }}</td>
+                  <td>
+                      <div class="flag_icon">
+                          {% if row.country_id %}
+                              {% cache 1800 hcountry_flag row.country_id %}
+                                  <img src="{{ STATIC_URL }}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name }}">
+                              {% endcache %}
+                          {% else %}
+                              <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World" %}">
+                          {% endif %}
+                          {% if row.authorized == 1  %}
+                              <img src="{{ STATIC_URL }}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans "Authorized call" %}"/>
+                          {% else %}
+                              <img src="{{ STATIC_URL }}cdr-stats/icons/flag_red.png" class="elemtooltip" title="{% trans "Unauthorized call" %}"/>
+                          {% endif %}
+                          {% ifequal row.direction 'inbound' %}
+                              <img src="{{STATIC_URL}}cdr-stats/icons/door_in.png" title="{{ row.direction|capfirst }} {% trans "call"|capfirst %}" class="elemtooltip"/>
+                          {% else %}
+                              {% ifequal row.direction 'outbound' %}
+                                  <img src="{{ STATIC_URL }}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans "call"|capfirst %}" class="elemtooltip"/>
+                              {% else %}
+                                  <img src="{{ STATIC_URL }}cdr-stats/icons/door.png" title="{{ row.direction|capfirst }}  {% trans "call"|capfirst %}" class="elemtooltip"/>
+                              {% endifequal %}
+                          {% endifequal %}
 
-                        {% if "cdr_object_id" in row %}
-                            {% if perms.user_profile.cdr_detail %}
-                                <a href='/cdr_detail/{{ row.cdr_object_id }}/{{ row.switch_id }}' target="_blank"><img src="{{ STATIC_URL }}cdr-stats/icons/zoom.png" class="elemtooltip" title="{% trans "show details"|capfirst %}"/></a>
-                            {% endif %}
-                        {% endif %}
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
+                          {% if "cdr_object_id" in row %}
+                              {% if perms.user_profile.cdr_detail %}
+                                  <a href='/cdr_detail/{{ row.cdr_object_id }}/{{ row.switch_id }}' target="_blank"><img src="{{ STATIC_URL }}cdr-stats/icons/zoom.png" class="elemtooltip" title="{% trans "show details"|capfirst %}"/></a>
+                              {% endif %}
+                          {% endif %}
+                      </div>
+                  </td>
+              </tr>
+              {% endfor %}
 
-            {% else %}
-            <tr>
-                <td colspan="12" align="center">
-                    {% trans "no records found"|title %}
+              {% else %}
+              <tr>
+                  <td colspan="12" align="center">
+                      {% trans "no records found"|title %}
+                  </td>
+              </tr>
+              {% endif %}
+              <tr>
+                <td colspan="12" align="right">
+                  {% trans "show rows"|title %} :
+                  {{ form.records_per_page }}
+                  {% trans "total calls"|title %} : {{ record_count }}
                 </td>
-            </tr>
-            {% endif %}
-            <tr>
-              <td colspan="12" align="right">
-                {% trans "show rows"|title %} :
-                {{ form.records_per_page }}
-                {% trans "total calls"|title %} : {{ record_count }}
-              </td>
-            </tr>
-        </table>
-        </form>
-      </div>
-      </div>
-      <div align="center">
-        {% if rows %}
-            {% paginate %}
-        {% endif %}
-      </div>
+              </tr>
+                </table>
+            </form>
+            </div>
+        </div>
+        <div align="center">
+          {% if rows %}
+              {% paginate %}
+          {% endif %}
+        </div>
       </div>
       <div id="tabs-2">
-      <div class="module" id="changelist">
-        <div class="result">
-        <table class="table table-striped table-bordered table-condensed">
+        <div class="module" id="changelist">
+            <div class="result">
+                <table class="table table-striped table-bordered table-condensed">
             <thead>
             <tr>
                 <th scope="col">{% trans "date"|capfirst  %}</th>
@@ -354,10 +354,10 @@
                 <td>{{ cdr_daily_data.total_buy_cost }}</td>
                 <td>{{ cdr_daily_data.total_sell_cost }}</td>
             </tr>
-        </table>
+                </table>
+            </div>
+        </div>
       </div>
-      </div>
-    </div>
   </div>
 </div>
 {% endblock %}

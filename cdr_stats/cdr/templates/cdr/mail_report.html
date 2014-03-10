@@ -3,6 +3,10 @@
 
 {% block title %}{% trans "CDR" %} {% trans "mail report"|title %}{% endblock %}
 
+{% block content_header %}
+    <h1>{% trans "mail report"|capfirst %}<small></small></h1>
+{% endblock %}
+
 {% block content %}
     {% if msg %}
         <div class="alert alert-success">

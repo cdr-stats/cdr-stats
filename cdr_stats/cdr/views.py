@@ -25,7 +25,7 @@ from django_lets_go.common_functions import variable_value, mongodb_str_filter,\
     mongodb_int_filter, int_convert_to_minute, validate_days, percentage, \
     getvar, unset_session_var
 from cdr.models import Switch
-from cdr.functions_def import get_country_name, get_hangupcause_name,\
+from cdr.functions_def import get_country_name, get_hangupcause_name, ceil_strdate,\
     get_switch_ip_addr, convert_to_minute, chk_date_for_hrs, calculate_act_and_acd
 from cdr.forms import CdrSearchForm, CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
     ConcurrentCallForm, SwitchForm, WorldForm, EmailReportForm
@@ -34,7 +34,7 @@ from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_hourly_overview, pipeline_country_report,\
     pipeline_hourly_report, pipeline_country_hourly_report,\
     pipeline_mail_report
-from cdr.decorators import check_cdr_exists, check_user_accountcode, check_user_voipplan
+from cdr.decorators import check_cdr_exists, check_user_detail
 from cdr.constants import CDR_COLUMN_NAME, Export_choice
 from voip_billing.function_def import get_rounded_value
 from user_profile.models import UserProfile
@@ -46,23 +46,6 @@ import tablib
 import time
 import logging
 import itertools
-
-
-def ceil_strdate(str_date, start, hour_min=False):
-    """
-    Convert a string date to either a start or end day date
-    """
-    if start == 'start':
-        (hour, minute, second, millisec) = (0, 0, 0, 0)
-    else:
-        (hour, minute, second, millisec) = (23, 59, 59, 999999)
-    #if hour_min then we will retrieve them from str_date
-    if hour_min:
-        return datetime(int(str_date[0:4]), int(str_date[5:7]), int(str_date[8:10]),
-                        int(str_date[11:13]), int(str_date[14:16]), 0, 0)
-    else:
-        return datetime(int(str_date[0:4]), int(str_date[5:7]), int(str_date[8:10]), hour,
-                        minute, second, millisec)
 
 
 def show_menu(request):
@@ -161,8 +144,7 @@ def get_pagination_vars(request, default_sort_field='start_uepoch'):
 
 @permission_required('user_profile.search', login_url='/')
 @check_cdr_exists
-@check_user_accountcode
-@check_user_voipplan
+@check_user_detail(['accountcode', 'voipplan'])
 @login_required
 def cdr_view(request):
     """List of CDRs
@@ -557,8 +539,7 @@ def cdr_detail(request, id, switch_id):
 
 @permission_required('user_profile.dashboard', login_url='/')
 @check_cdr_exists
-@check_user_accountcode
-@check_user_voipplan
+@check_user_detail(['accountcode', 'voipplan'])
 @login_required
 def cdr_dashboard(request):
     """CDR dashboard for a current day
@@ -811,7 +792,7 @@ def cdr_dashboard(request):
 
 @permission_required('user_profile.concurrent_calls', login_url='/')
 @check_cdr_exists
-@check_user_accountcode
+@check_user_detail(['accountcode'])
 @login_required
 def cdr_concurrent_calls(request):
     """CDR view of concurrent calls
@@ -898,7 +879,7 @@ def cdr_concurrent_calls(request):
 
 
 @permission_required('user_profile.real_time_calls', login_url='/')
-@check_user_accountcode
+@check_user_detail(['accountcode'])
 @login_required
 def cdr_realtime(request):
     """Call realtime view
@@ -1052,8 +1033,7 @@ def get_cdr_mail_report():
 
 @permission_required('user_profile.mail_report', login_url='/')
 @check_cdr_exists
-@check_user_accountcode
-@check_user_voipplan
+@check_user_detail(['accountcode', 'voipplan'])
 @login_required
 def mail_report(request):
     """Mail Report Template
@@ -1146,7 +1126,7 @@ def get_hourly_report_for_date(start_date, end_date, query_var):
 
 @permission_required('user_profile.daily_comparison', login_url='/')
 @check_cdr_exists
-@check_user_accountcode
+@check_user_detail(['accountcode'])
 @login_required
 def cdr_daily_comparison(request):
     """CDR graph by hourly basis
@@ -1283,7 +1263,7 @@ def cdr_daily_comparison(request):
 
 
 @check_cdr_exists
-@check_user_accountcode
+@check_user_detail(['accountcode'])
 @login_required
 def cdr_overview(request):
     """CDR graph by hourly/daily/monthly basis
@@ -1709,7 +1689,7 @@ def cdr_overview(request):
 
 @permission_required('user_profile.by_country', login_url='/')
 @check_cdr_exists
-@check_user_accountcode
+@check_user_detail(['accountcode'])
 @login_required
 def cdr_country_report(request):
     """CDR country report
@@ -1934,8 +1914,7 @@ def cdr_country_report(request):
 
 @permission_required('user_profile.world_map', login_url='/')
 @check_cdr_exists
-@check_user_accountcode
-@check_user_voipplan
+@check_user_detail(['accountcode', 'voipplan'])
 @login_required
 def world_map_view(request):
     """CDR world report
@@ -1972,7 +1951,7 @@ def world_map_view(request):
 
         to_date = getvar(request, 'to_date')
         end_date = ceil_strdate(str(to_date), 'end')
-        switch_id = getvar(request, 'switch_id')
+        switch_id = int(getvar(request, 'switch_id'))
 
         if switch_id and int(switch_id) != 0:
             query_var['metadata.switch_id'] = int(switch_id)
