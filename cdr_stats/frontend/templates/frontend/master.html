@@ -67,11 +67,6 @@
     <div class="col-xs-12 col-sm-12">
     <!--offcanvas side menu toggle button-->
     <div class="row">
-
-        <p class="pull-right visible-xs">
-            <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">{% trans "side menu"|title %}</button>
-        </p>
-
         {% if errorlogin %}
             <div class="alert alert-danger">
                 <strong>{% trans "alert"|capfirst %} : </strong>  {{ errorlogin|capfirst }}

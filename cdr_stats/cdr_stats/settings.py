@@ -537,7 +537,7 @@ BOWER_INSTALLED_APPS = (
     'components-font-awesome#4.0.3',
     'typeahead.js#0.10.1',
     'bower-jvectormap',
-    'datetimepicker'
+    'datetimepicker',
 )
 
 #REST FRAMEWORK

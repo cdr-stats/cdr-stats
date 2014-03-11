@@ -79,6 +79,7 @@ class BWPrefixForm(forms.Form):
             ),
         )
         self.fields['prefix'].widget.attrs.update({'id': prefix_field_id})
+        self.fields['prefix'].widget.attrs['data-provide'] = 'typeahead'
 
 
 class AlarmForm(ModelForm):
