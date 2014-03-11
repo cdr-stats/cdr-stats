@@ -57,6 +57,8 @@ def alarm_list(request):
         'total_count': alarm_list.count(),
         'ALARM_COLUMN_NAME': ALARM_COLUMN_NAME,
         'col_name_with_order': pagination_data['col_name_with_order'],
+        'up_icon': '<i class="glyphicon glyphicon-chevron-up"></i>',
+        'down_icon': '<i class="glyphicon glyphicon-chevron-down"></i>'
     }
     request.session['msg'] = ''
     request.session['error_msg'] = ''

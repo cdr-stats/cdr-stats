@@ -155,8 +155,8 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
         data = {
             'switch_id': 1,
-            #'from_date': datetime.now().strftime("%Y-%m-%d %H:%M"),
-            #'to_date': datetime.now().strftime("%Y-%m-%d %H:%M"),
+            'from_date': datetime.now().strftime("%Y-%m-%d %H:%M"),
+            'to_date': datetime.now().strftime("%Y-%m-%d %H:%M"),
             'destination': '91',
             'destination_type': 1,
             'accountcode': '123',
@@ -166,7 +166,6 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
             'records_per_page': 10
         }
         response = self.client.post('/cdr_view/', data)
-        #self.assertTrue(response.context['form'], CdrSearchForm(data))
         self.assertEqual(response.status_code, 200)
 
         response = self.client.get('/cdr_view/?page=1')
