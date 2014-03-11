@@ -66,6 +66,13 @@
         });
     </script>
     {{ form.media }}
+    <style type="text/css">
+        .jvectormap-zoomin, .jvectormap-zoomout {
+            width: 15px;
+            height: 13px;
+            line-height: 5px;
+        }
+    </style>
 {% endblock %}
 
 {% block content_header %}
@@ -106,7 +113,7 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <div id="call-world-map" style="margin:auto; width: 1150px; height: 500px"></div>
+                    <div id="call-world-map" style="height: 500px"></div>
                 </div>
             </div>
         </div>
