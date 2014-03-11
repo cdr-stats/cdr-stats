@@ -88,7 +88,12 @@ def common_submit_buttons(layout_section=None, default_action='add'):
         )
         layout_section.append(form_action)
     elif default_action == 'search':
-        form_action = FormActions(Submit('search', _('search').title()))
+        start_div = '<div class="row"><div class="col-md-12 text-left">'
+        form_action = FormActions(
+            HTML('%s<button type="submit" id="id_submit" name="submit" class="btn btn-primary" value="submit">'
+                 '<i class="fa fa-search fa-lg"></i> %s</button>%s' % (start_div, _('search').title(), end_div)
+                 )
+        )
         layout_section.append(form_action)
     elif default_action == 'reset-rate':
         form_action = FormActions(HTML("""<a href="/rates/" class="btn btn-danger"><i class="fa fa-trash-o fa-lg"></i> %s</a>""" %_('clear').title()))
