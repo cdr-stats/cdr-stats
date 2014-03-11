@@ -17,9 +17,10 @@ import os
 
 sys.path.insert(0, os.path.abspath('../../'))
 sys.path.insert(1, os.path.abspath('../../cdr_stats'))
-import cdr_stats.settings
-from django.core.management import setup_environ
-setup_environ(cdr_stats.settings)
+
+from cdr_stats import cdr_stats
+os.environ['DJANGO_SETTINGS_MODULE'] = 'cdr_stats.settings'
+
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
