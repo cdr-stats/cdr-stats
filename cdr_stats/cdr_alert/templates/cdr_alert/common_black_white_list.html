@@ -111,10 +111,10 @@
         }
 
         $(function() {
-            //$('.typeahead').typeahead();
-            $('#id_wl_prefix,id_bl_prefix').typeahead({
-                name: 'prefix',
-                local: '{{ prefix_list|safe }}'
+            // TODO : need to be fixed
+            $('#id_wl_prefix,#id_bl_prefix').typeahead({
+                name: 'prefix_list',
+                local: {{ prefix_list|safe }}
             });
         });
 
