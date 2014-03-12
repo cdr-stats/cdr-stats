@@ -3,11 +3,6 @@
 {% load cache crispy_forms_tags %}
 
 {% block extra_head %}
-  <script type="text/javascript">
-  $(document).ready(function() {
-    $("#accordion").accordion({autoHeight: false,  clearStyle: true});
-  });
-  </script>
   {% load_chart final_charttype final_chartdata final_chartcontainer final_extra %}
   {% load_chart hangup_analytic_charttype hangup_analytic_chartdata hangup_chartcontainer hangup_extra %}
   {% load_chart country_analytic_charttype country_analytic_chartdata country_chartcontainer country_extra %}

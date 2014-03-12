@@ -5,8 +5,6 @@
 {% block extra_head %}
     <script type="text/javascript">
         $(function () {
-            $("#accordion").accordion({ autoHeight: false,  clearStyle: true });
-
             $('a[data-toggle="tab"]').on('click', function (e) {
                 if (e.target.hash == '#tabs-2') {
                     {% load_chart final_duration_charttype final_duration_chartdata final_duration_chartcontainer final_duration_extra %}
@@ -62,18 +60,26 @@
 </div>
 
 <br/><br/>
-
 <div class="row">
-    <div class="col-md-6 welldashboard">
+    <div class="col-md-6">
         <h2 align="center">{% trans "calls by country"|title %}</h2>
         <hr/>
         {% load_chart country_call_charttype country_call_chartdata country_call_chartcontainer country_call_extra %}
         {% include_container country_call_chartcontainer 400 500 %}
-        <br/>
-        <div class="col-md-6">
+    </div>
+    <div class="col-md-6">
+        <h2 align="center">{% trans "duration by country"|title %}</h2>
+        <hr/>
+        {% load_chart country_call_charttype country_duration_chartdata country_duration_chartcontainer country_duration_extra %}
+        {% include_container country_duration_chartcontainer 400 500 %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 col-md-offset-1">
+        <div>
             <h3 class="text-left">{% trans "top"|title %} {{ NUM_COUNTRY }} {% trans "calls by country"|title %}</h3>
             <table>
-                <tbody>
                 {% for country_data in country_analytic %}
                     <tr>
                         <td class="td-dashboard">
@@ -95,30 +101,21 @@
                         <td width="100">{{ country_data.1 }} {% trans "calls"|capfirst %}</td>
                     </tr>
                 {% endfor %}
-                </tbody>
             </table>
             <hr style="width:400px;"/>
             <table>
-                <tbody>
                 <tr>
                     <td class="td-dashboard"></td>
                     <td class="td-dashboard" width="100">{% trans "total"|capfirst %}</td>
                     <td width="100">{{ total_calls }} {% trans "calls"|capfirst %}</td>
                 </tr>
-                </tbody>
             </table>
         </div>
     </div>
-    <div class="col-md-6 welldashboard">
-        <h2 align="center">{% trans "duration by country"|title %}</h2>
-        <hr/>
-        {% load_chart country_call_charttype country_duration_chartdata country_duration_chartcontainer country_duration_extra %}
-        {% include_container country_duration_chartcontainer 400 500 %}
-        <br/>
-        <div class="col-md-6">
+    <div class="col-md-4 col-md-offset-2">
+        <div>
             <h3 class="text-left">{% trans "top"|title %} {{ NUM_COUNTRY }} {% trans "duration by country"|title %}</h3>
             <table>
-                <tbody>
                 {% for country_data in country_analytic %}
                     <tr>
                         <td class="td-dashboard">
@@ -140,17 +137,14 @@
                         <td>{{ country_data.2|conv_min }} {% trans "minutes" %}</td>
                     </tr>
                 {% endfor %}
-                </tbody>
             </table>
             <hr style="width:400px;"/>
             <table>
-                <tbody>
                 <tr>
                     <td class="td-dashboard"></td>
                     <td class="td-dashboard" width="100">{% trans "total"|capfirst %}</td>
                     <td>{{ total_duration|conv_min }} {% trans "minutes" %}</td>
                 </tr>
-                </tbody>
             </table>
         </div>
     </div>
