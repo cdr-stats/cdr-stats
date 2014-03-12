@@ -4,7 +4,6 @@
 {% block title %}{% trans "alert"|capfirst %}{% endblock %}
 
 {% block extra_head %}
-    {# include "frontend/custom_jquery_select_all.html" #}
     <style type="text/css">
         .tab-content {
             overflow: inherit;
@@ -12,11 +11,16 @@
     </style>
     <script type="text/javascript">
         $(function () {
+            var init = true;
             $('a[data-toggle="tab"]').on('click', function (e) {
                 if (e.target.hash == '#tabs-2') {
                     {% load_chart charttype chartdata chartcontainer extra %}
                 }
             })
+            if(init){
+                {% load_chart charttype chartdata chartcontainer extra %}
+                init = false;
+            }
         })
     </script>
 {% endblock %}
