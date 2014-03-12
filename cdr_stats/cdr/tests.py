@@ -288,7 +288,6 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
     def test_cdr_concurrent_calls(self):
         """Test Function to check concurrent calls"""
         response = self.client.get('/cdr_concurrent_calls/')
-        self.assertTemplateUsed(response, 'cdr/graph_concurrent_calls.html')
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.get('/cdr_concurrent_calls/')
