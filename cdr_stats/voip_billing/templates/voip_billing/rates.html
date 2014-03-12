@@ -33,27 +33,27 @@
                 <tr>
                     <th>
                         {% ifequal sort_order 'prefix' %}
-                          {% sort_link "<i class='icon-chevron-up'></i>" "prefix"  %}
+                          {% sort_link up_icon "prefix"  %}
                             {{ RATE_COLUMN_NAME.prefix|capfirst }}
-                          {% sort_link "<i class='icon-chevron-down'></i>" "-prefix"  %}
+                          {% sort_link down_icon "-prefix"  %}
                         {% else %}
                           {% sort_link RATE_COLUMN_NAME.prefix|capfirst "-prefix" %}
                         {% endifequal %}
                     </th>
                     <th>
                         {% ifequal sort_order 'destination' %}
-                          {% sort_link "<i class='icon-chevron-up'></i>" "destination"  %}
+                          {% sort_link up_icon "destination"  %}
                             {{ RATE_COLUMN_NAME.destination|capfirst }}
-                          {% sort_link "<i class='icon-chevron-down'></i>" "-destination"  %}
+                          {% sort_link down_icon "-destination"  %}
                         {% else %}
                           {% sort_link RATE_COLUMN_NAME.destination|capfirst "-destination" %}
                         {% endifequal %}
                     </th>
                     <th>
                         {% ifequal sort_order 'retail_rate' %}
-                          {% sort_link "<i class='icon-chevron-up'></i>" "retail_rate"  %}
+                          {% sort_link up_icon "retail_rate"  %}
                             {{ RATE_COLUMN_NAME.rate|capfirst }}
-                          {% sort_link "<i class='icon-chevron-down'></i>" "-retail_rate"  %}
+                          {% sort_link down_icon "-retail_rate"  %}
                         {% else %}
                           {% sort_link RATE_COLUMN_NAME.rate|capfirst "-retail_rate" %}
                         {% endifequal %}

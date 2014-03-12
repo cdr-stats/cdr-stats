@@ -212,20 +212,20 @@
                                         <img src="{{ STATIC_URL }}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name }}">
                                     {% endcache %}
                                 {% else %}
-                                    <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "world"|capfirst %}">
+                                    <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans 'world'|capfirst %}">
                                 {% endif %}
                                 {% if row.authorized == 1  %}
-                                    <img src="{{ STATIC_URL }}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans "authorized call"|capfirst %}"/>
+                                    <img src="{{ STATIC_URL }}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans 'authorized call'|capfirst %}"/>
                                 {% else %}
-                                    <img src="{{ STATIC_URL }}cdr-stats/icons/flag_red.png" class="elemtooltip" title="{% trans "unauthorized call"|capfirst %}"/>
+                                    <img src="{{ STATIC_URL }}cdr-stats/icons/flag_red.png" class="elemtooltip" title="{% trans 'unauthorized call'|capfirst %}"/>
                                 {% endif %}
                                 {% ifequal row.direction 'inbound' %}
-                                    <img src="{{ STATIC_URL }}cdr-stats/icons/door_in.png" title="{{ row.direction|capfirst }} {% trans "call" %}" class="elemtooltip"/>
+                                    <img src="{{ STATIC_URL }}cdr-stats/icons/door_in.png" title="{{ row.direction|capfirst }} {% trans 'call' %}" class="elemtooltip"/>
                                 {% else %}
                                     {% ifequal row.direction 'outbound' %}
-                                        <img src="{{ STATIC_URL }}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
+                                        <img src="{{ STATIC_URL }}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans 'call' %}" class="elemtooltip"/>
                                     {% else %}
-                                        <img src="{{ STATIC_URL }}cdr-stats/icons/door.png" title="{{ row.direction|capfirst }}  {% trans "call" %}" class="elemtooltip"/>
+                                        <img src="{{ STATIC_URL }}cdr-stats/icons/door.png" title="{{ row.direction|capfirst }}  {% trans 'call' %}" class="elemtooltip"/>
                                     {% endifequal %}
                                 {% endifequal %}
 

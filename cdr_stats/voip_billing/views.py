@@ -107,6 +107,8 @@ def voip_rates(request):
         'col_name_with_order': page_data['col_name_with_order'],
         'RATE_COLUMN_NAME': RATE_COLUMN_NAME,
         'sort_order': sort_order,
+        'up_icon': '<i class="glyphicon glyphicon-chevron-up"></i>',
+        'down_icon': '<i class="glyphicon glyphicon-chevron-down"></i>'
     })
     return render_to_response('voip_billing/rates.html', variables, context_instance=RequestContext(request))
 

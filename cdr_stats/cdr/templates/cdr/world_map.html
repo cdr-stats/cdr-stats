@@ -110,7 +110,6 @@
 
     <div class="tab-content">
         <div id="tabs-1" class="tab-pane {% if action == 'tabs-1' or action == '' %}active{% endif %}">
-
             <div class="row">
                 <div class="col-md-12">
                     <div id="call-world-map" style="height: 500px"></div>
@@ -143,7 +142,7 @@
                                         {{ country_data.4 }}
                                     {% endcache %}
                                 {% else %}
-                                    <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "world"|capfirst %}">
+                                    <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans 'world'|capfirst %}">
                                     {% trans "world"|title  %}
                                 {% endif %}
                             </td>
