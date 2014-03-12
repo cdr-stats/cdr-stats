@@ -14,7 +14,7 @@
 from django import template
 from cdr_alert.constants import PERIOD, ALARM_TYPE, STATUS,\
     ALARM_REPROT_STATUS, ALERT_CONDITION, ALERT_CONDITION_ADD_ON
-
+from mod_utils.function_def import get_status_value
 register = template.Library()
 
 
@@ -25,16 +25,7 @@ def alarm_period(value):
     >>> alarm_period(1)
     'START'
     """
-    if not value:
-        return ''
-
-    period = dict(PERIOD)
-    try:
-        period = period[value]
-    except:
-        period = ''
-
-    return str(period)
+    return get_status_value(value, PERIOD)
 
 
 @register.filter(name='alarm_type')
@@ -44,74 +35,28 @@ def alarm_type(value):
     >>> alarm_type(1)
     'START'
     """
-    if not value:
-        return ''
-
-    alarm_type = dict(ALARM_TYPE)
-    try:
-        alarm_type = alarm_type[value]
-    except:
-        alarm_type = ''
-
-    return str(alarm_type)
+    return get_status_value(value, ALARM_TYPE)
 
 
 @register.filter(name='alarm_status')
 def alarm_status(value):
-    """alarm status
-    """
-    if not value:
-        return ''
-    status = dict(STATUS)
-    try:
-        status = status[value]
-    except:
-        status = ''
-
-    return str(status)
+    """alarm status"""
+    return get_status_value(value, STATUS)
 
 
 @register.filter(name='alarm_condition')
 def alarm_condition(value):
-    """alarm report status
-    """
-    if not value:
-        return ''
-    alarm_condition = dict(ALERT_CONDITION)
-    try:
-        alarm_condition = alarm_condition[value]
-    except:
-        alarm_condition = ''
-
-    return str(alarm_condition)
+    """alarm report status"""
+    return get_status_value(value, ALERT_CONDITION)
 
 
 @register.filter(name='alarm_condition_add_on')
 def alarm_condition_add_on(value):
-    """alarm condition add_on
-    """
-    if not value:
-        return ''
-    alarm_condition_add_on = dict(ALERT_CONDITION_ADD_ON)
-    try:
-        alarm_condition_add_on = alarm_condition_add_on[value]
-    except:
-        alarm_condition_add_on = ''
-
-    return str(alarm_condition_add_on)
+    """alarm condition add_on"""
+    return get_status_value(value, ALERT_CONDITION_ADD_ON)
 
 
 @register.filter(name='alarm_report_status')
 def alarm_report_status(value):
-    """alarm report status
-    """
-    if not value:
-        return ''
-    STATUS = dict(ALARM_REPROT_STATUS)
-    try:
-        status = STATUS[value]
-    except:
-        status = ''
-
-    return str(status)
-
+    """alarm report status"""
+    return get_status_value(value, ALARM_REPROT_STATUS)
