@@ -139,6 +139,7 @@ class AlarmReportForm(forms.Form):
 
         self.fields['alarm_id'].choices = alarm_list_user
         self.helper = FormHelper()
+        self.helper.form_action = '.'
         self.helper.form_class = 'well'
         css_class = 'col-md-4'
         self.helper.layout = Layout(

@@ -207,20 +207,15 @@ def last_seven_days_report(request, kwargs):
     comp_days = 7
     from_date = datetime.today()
     from_day = validate_days(from_date.year, from_date.month, from_date.day)
-    from_year = from_date.year
-    from_month = from_date.month
-    end_date = datetime(from_year, from_month, from_day)
+    end_date = datetime(from_date.year, from_date.month, from_day)
     start_date = end_date + relativedelta(days=-comp_days)
-    start_date = datetime(start_date.year, start_date.month,
-                          start_date.day, 0, 0, 0, 0)
-    end_date = datetime(end_date.year, end_date.month,
-                        end_date.day, 23, 59, 59, 999999)
+    start_date = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, 0)
+    end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
 
     if start_date and end_date:
         kwargs['daterun__range'] = (start_date, end_date)
 
     select_data = {"daterun": "SUBSTR(CAST(daterun as CHAR(30)),1,10)"}
-
     alarm_data = AlarmReport.objects.extra(select=select_data)\
         .values('daterun')\
         .filter(**kwargs)\
@@ -234,9 +229,7 @@ def last_seven_days_report(request, kwargs):
     for doc in alarm_data:
         daterun = str(doc['daterun'])
 
-        graph_day = datetime(int(daterun[0:4]),
-                             int(daterun[5:7]),
-                             int(daterun[8:10]),
+        graph_day = datetime(int(daterun[0:4]), int(daterun[5:7]), int(daterun[8:10]),
                              0, 0, 0, 0)
         dt = int(1000 * time.mktime(graph_day.timetuple()))
 
@@ -250,8 +243,7 @@ def last_seven_days_report(request, kwargs):
         total_alert += int(doc['daterun__count'])
 
     # sorting on date col
-    total_data = total_data.items()
-    total_data = sorted(total_data, key=lambda k: k[0])
+    total_data = sorted(total_data.items(), key=lambda k: k[0])
 
     xdata = []
     ydata = []
@@ -287,36 +279,39 @@ def alert_report(request):
     **Attributes**:
 
         * ``form`` - AlarmReportForm
-        * ``template`` - frontend/cdr_alert/alarm_report.html
+        * ``template`` - cdr_alert/alarm_report.html
     """
-    form = AlarmReportForm(request.user, request.POST or None, initial={'alarm': 0})
+    form = AlarmReportForm(request.user, request.POST or None, initial={'alarm_id': 0})
     sort_col_field_list = ['id', 'alarm', 'calculatedvalue', 'status', 'daterun']
-    pagination_data = get_pagination_vars(request, sort_col_field_list, default_sort_field='id')
+    page_data = get_pagination_vars(request, sort_col_field_list, default_sort_field='id')
 
-    alert_id = ''
+    alarm_id = 0
     action = 'tabs-1'
-
-    if form.is_valid():
-        request.session['session_alarm_id'] = ''
-        alert_id = getvar(request, 'alarm_id', setsession=True)
-
     post_var_with_page = 0
+    if form.is_valid():
+        post_var_with_page = 1
+        request.session['session_alarm_id'] = ''
+        alarm_id = getvar(request, 'alarm_id', setsession=True)
+
     if request.GET.get('page') or request.GET.get('sort_by'):
         post_var_with_page = 1
-        alert_id = request.session.get('session_alarm_id')
-        form = AlarmReportForm(request.user, initial={'alarm_id': alert_id})
+        alarm_id = request.session.get('session_alarm_id')
+        form = AlarmReportForm(request.user, initial={'alarm_id': alarm_id})
 
     if post_var_with_page == 0:
-        # default
         # unset session var
         request.session['session_alarm_id'] = ''
 
     kwargs = {}
-    if alert_id and int(alert_id) != 0:
-        kwargs['alarm_id'] = int(alert_id)
+    if alarm_id and int(alarm_id) != 0:
+        kwargs['alarm_id'] = int(alarm_id)
     kwargs['alarm__user'] = request.user
 
-    alarm_report_list = AlarmReport.objects.filter(**kwargs).order_by(pagination_data['sort_order'])
+    alarm_report_list = AlarmReport.objects.filter(**kwargs)
+    all_alarm_list = alarm_report_list.order_by(page_data['sort_order'])
+    alarm_list = all_alarm_list[page_data['start_page']:page_data['end_page']]
+    contact_alarm = all_alarm_list.count()
+
     days_report = last_seven_days_report(request, kwargs)
 
     data = {
@@ -325,10 +320,11 @@ def alert_report(request):
         'total_data': days_report['total_data'],
         'start_date': days_report['start_date'],
         'end_date': days_report['end_date'],
-        'rows': alarm_report_list,
-        'total_count': alarm_report_list.count(),
+        'all_alarm_list': all_alarm_list,
+        'rows': alarm_list,
+        'total_count': contact_alarm,
         'ALARM_REPORT_COLUMN_NAME': ALARM_REPORT_COLUMN_NAME,
-        'col_name_with_order': pagination_data['col_name_with_order'],
+        'col_name_with_order': page_data['col_name_with_order'],
         'charttype': days_report['charttype'],
         'chartdata': days_report['chartdata'],
         'chartcontainer': 'chartcontainer',

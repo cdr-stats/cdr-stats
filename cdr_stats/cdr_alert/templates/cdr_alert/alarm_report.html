@@ -4,23 +4,13 @@
 {% block title %}{% trans "alert"|capfirst %}{% endblock %}
 
 {% block extra_head %}
-    <style type="text/css">
-        .tab-content {
-            overflow: inherit;
-        }
-    </style>
     <script type="text/javascript">
         $(function () {
-            var init = true;
             $('a[data-toggle="tab"]').on('click', function (e) {
                 if (e.target.hash == '#tabs-2') {
                     {% load_chart charttype chartdata chartcontainer extra %}
                 }
             })
-            if(init){
-                {% load_chart charttype chartdata chartcontainer extra %}
-                init = false;
-            }
         })
     </script>
 {% endblock %}
@@ -57,7 +47,7 @@
                     </thead>
                     {% if rows %}
 
-                    {% autopaginate rows cdr_stats_page_size %}
+                    {% autopaginate all_alarm_list cdr_stats_page_size %}
                     {% for row in rows %}
                     <tr>
                         <td>{{ row.id }}</td>
