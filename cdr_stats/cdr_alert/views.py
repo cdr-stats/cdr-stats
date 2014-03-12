@@ -177,7 +177,7 @@ def alarm_change(request, object_id):
 
         * ``object_id`` - Selected alarm object
         * ``form`` - AlarmForm
-        * ``template`` - frontend/cdr_alert/alarm/change.html
+        * ``template`` - cdr_alert/alarm/change.html
 
     **Logic Description**:
 
@@ -339,10 +339,10 @@ def alert_report(request):
 def trust_control(request):
     #Blacklist, Whitelist
     prefix_list = map(str, Prefix.objects.values_list("prefix", flat=True).all().order_by('prefix'))
-    #prefix_list = (','.join('"' + item + '"' for item in prefix_list))
-    #prefix_list = "[" + str(prefix_list) + "]"
-    prefix_list = (','.join('{pre_fix: "' + item + '"}' for item in prefix_list))
+    prefix_list = (','.join('"' + item + '"' for item in prefix_list))
     prefix_list = "[" + str(prefix_list) + "]"
+    #prefix_list = (','.join('{pre_fix: "' + item + '"}' for item in prefix_list))
+    #prefix_list = "[" + str(prefix_list) + "]"
     #import ast
     #prefix_list = ast.literal_eval(prefix_list)
 
