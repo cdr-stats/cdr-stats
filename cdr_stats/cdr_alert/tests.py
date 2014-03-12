@@ -243,12 +243,6 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         response = alert_report(request)
         self.assertEqual(response.status_code, 200)
 
-        request = self.factory.post('/alert_report/', {'alarm': 1})
-        request.user = self.user
-        request.session = {}
-        response = alert_report(request)
-        self.assertEqual(response.status_code, 200)
-
 
 class CdrAlertModelTestCase(TestCase):
     """Test AlertRemovePrefix, Alarm, AlarmReport,

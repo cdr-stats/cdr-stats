@@ -319,23 +319,19 @@ def alert_report(request):
     alarm_report_list = AlarmReport.objects.filter(**kwargs).order_by(pagination_data['sort_order'])
     days_report = last_seven_days_report(request, kwargs)
 
-    total_data = days_report['total_data']
-    start_date = days_report['start_date']
-    end_date = days_report['end_date']
-
     data = {
         'form': form,
         'action': action,
-        'total_data': total_data,
-        'start_date': start_date,
-        'end_date': end_date,
+        'total_data': days_report['total_data'],
+        'start_date': days_report['start_date'],
+        'end_date': days_report['end_date'],
         'rows': alarm_report_list,
         'total_count': alarm_report_list.count(),
         'ALARM_REPORT_COLUMN_NAME': ALARM_REPORT_COLUMN_NAME,
         'col_name_with_order': pagination_data['col_name_with_order'],
         'charttype': days_report['charttype'],
         'chartdata': days_report['chartdata'],
-        'chartcontainer': 'alert_chartcontainer',
+        'chartcontainer': 'chartcontainer',
         'extra': {
             'x_is_date': True,
             'x_axis_format': '%d %b %y',
