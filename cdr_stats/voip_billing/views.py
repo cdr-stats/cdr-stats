@@ -58,9 +58,9 @@ def voip_rates(request):
     final_rate_list = []
     # Get pagination data
     sort_col_field_list = ['prefix', 'retail_rate', 'destination']
-    pagination_data = get_pagination_vars(request, sort_col_field_list, default_sort_field='prefix')
+    page_data = get_pagination_vars(request, sort_col_field_list, default_sort_field='prefix')
 
-    sort_order = pagination_data['sort_order']
+    sort_order = page_data['sort_order']
     order = 'ASC'
     if "-" in sort_order:
         order = 'DESC'
@@ -104,7 +104,7 @@ def voip_rates(request):
         'form': form,
         'rate_list': final_rate_list,
         'rate_list_count': len(final_rate_list),
-        'col_name_with_order': pagination_data['col_name_with_order'],
+        'col_name_with_order': page_data['col_name_with_order'],
         'RATE_COLUMN_NAME': RATE_COLUMN_NAME,
         'sort_order': sort_order,
     })
@@ -269,8 +269,7 @@ def daily_billing_report(request):
                 }
 
         # apply sorting on timestamp value
-        total_data = daily_data.items()
-        total_data = sorted(total_data, key=lambda k: k[0])
+        total_data = sorted(daily_data.items(), key=lambda k: k[0])
 
         xdata = []
         ydata = []
@@ -385,7 +384,6 @@ def hourly_billing_report(request):
                     sell_hours[int(key)] += float(value)
 
             # Assign buy_hours/sell_hours variables to another
-
             xdata = [i for i in range(0, 24)]
             y1 = [get_rounded_value(value) for key, value in buy_hours.iteritems()]
             y2 = [get_rounded_value(value) for key, value in sell_hours.iteritems()]

@@ -677,8 +677,7 @@ def cdr_dashboard(request):
     logging.debug('*** After loop to handle data ***')
 
     # sorting on timestamp col
-    final_record = final_record.items()
-    final_record = sorted(final_record, key=lambda k: k[0])
+    final_record = sorted(final_record.items(), key=lambda k: k[0])
 
     xdata = []
     ydata = []
@@ -720,8 +719,7 @@ def cdr_dashboard(request):
     hangup_analytic_charttype = "pieChart"
 
     # sorting on call_count, duration_sum col
-    total_country_data = country_all_data.items()
-    total_country_data = sorted(total_country_data,
+    total_country_data = sorted(country_all_data.items(),
                                 key=lambda k: (k[1]['call_count'],
                                                k[1]['duration_sum']),
                                 reverse=True)
@@ -998,16 +996,14 @@ def get_cdr_mail_report():
     ACD = act_acd_array['ACD']
 
     # sorting on country_analytic
-    country_analytic = country_analytic.items()
-    country_analytic = sorted(country_analytic,
+    country_analytic = sorted(country_analytic.items(),
                               key=lambda k: (k[1]['call_count'],
                                              k[1]['duration_sum']),
                               reverse=True)
 
     # Create Hangup Cause analytic in percentage format
     hangup_analytic_array = []
-    hangup_analytic = hangup_analytic.items()
-    hangup_analytic = sorted(hangup_analytic, key=lambda k: k[0])
+    hangup_analytic = sorted(hangup_analytic.items(), key=lambda k: k[0])
     if len(hangup_analytic) != 0:
         total_hangup = sum([int(x[1]) for x in hangup_analytic])
         for i in hangup_analytic:
