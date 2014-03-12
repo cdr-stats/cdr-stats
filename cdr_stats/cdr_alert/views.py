@@ -48,21 +48,21 @@ def alarm_list(request):
     """
     sort_col_field_list = ['id', 'name', 'period', 'type', 'alert_condition',
                            'alert_value', 'status', 'updated_date']
-    pagination_data = get_pagination_vars(request, sort_col_field_list, default_sort_field='id')
-    alarm_list = Alarm.objects.filter(user=request.user).order_by(pagination_data['sort_order'])
-    template_data = {
+    page_data = get_pagination_vars(request, sort_col_field_list, default_sort_field='id')
+    alarm_list = Alarm.objects.filter(user=request.user).order_by(page_data['sort_order'])
+    data = {
         'msg': request.session.get('msg'),
         'error_msg': request.session.get('error_msg'),
         'rows': alarm_list,
         'total_count': alarm_list.count(),
         'ALARM_COLUMN_NAME': ALARM_COLUMN_NAME,
-        'col_name_with_order': pagination_data['col_name_with_order'],
+        'col_name_with_order': page_data['col_name_with_order'],
         'up_icon': '<i class="glyphicon glyphicon-chevron-up"></i>',
         'down_icon': '<i class="glyphicon glyphicon-chevron-down"></i>'
     }
     request.session['msg'] = ''
     request.session['error_msg'] = ''
-    return render_to_response('cdr_alert/alarm/list.html', template_data, context_instance=RequestContext(request))
+    return render_to_response('cdr_alert/alarm/list.html', data, context_instance=RequestContext(request))
 
 
 @permission_required('cdr_alert.add_alarm', login_url='/')
@@ -82,9 +82,8 @@ def alarm_add(request):
     """
     form = AlarmForm(request.POST or None)
     if form.is_valid():
-        obj = form.save(commit=False)
-        obj.user = request.user
-        obj.save()
+        form.save(user=request.user)
+        form.save()
         request.session["msg"] = _('"%(name)s" added.') % {'name': request.POST['name']}
         return HttpResponseRedirect(redirect_url_alarm)
 
@@ -228,7 +227,6 @@ def last_seven_days_report(request, kwargs):
     chartdata = {"x": []}
     for doc in alarm_data:
         daterun = str(doc['daterun'])
-
         graph_day = datetime(int(daterun[0:4]), int(daterun[5:7]), int(daterun[8:10]),
                              0, 0, 0, 0)
         dt = int(1000 * time.mktime(graph_day.timetuple()))
@@ -245,11 +243,8 @@ def last_seven_days_report(request, kwargs):
     # sorting on date col
     total_data = sorted(total_data.items(), key=lambda k: k[0])
 
-    xdata = []
-    ydata = []
-    for i in total_data:
-        xdata.append(i[0])
-        ydata.append(i[1]['alert_count'])
+    xdata = [i[0] for i in total_data]
+    ydata = [i[1]['alert_count'] for i in total_data]
 
     tooltip_date = "%d %b %Y %H:%M %p"
     extra_serie = {"tooltip": {"y_start": "", "y_end": ""},
@@ -281,7 +276,7 @@ def alert_report(request):
         * ``form`` - AlarmReportForm
         * ``template`` - cdr_alert/alarm_report.html
     """
-    form = AlarmReportForm(request.user, request.POST or None, initial={'alarm_id': 0})
+    form = AlarmReportForm(request.user, request.POST or None)
     sort_col_field_list = ['id', 'alarm', 'calculatedvalue', 'status', 'daterun']
     page_data = get_pagination_vars(request, sort_col_field_list, default_sort_field='id')
 

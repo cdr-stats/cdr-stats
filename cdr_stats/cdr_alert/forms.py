@@ -12,11 +12,11 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django import forms
-from django.forms import ModelForm
+#from django.forms import ModelForm
 from django.utils.translation import gettext_lazy as _
 from cdr_alert.models import Alarm
 from cdr.functions_def import get_country_list
-from mod_utils.forms import common_submit_buttons
+from mod_utils.forms import common_submit_buttons, SaveUserModelForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, HTML
 
@@ -82,7 +82,7 @@ class BWPrefixForm(forms.Form):
         self.fields['prefix'].widget.attrs['class'] = 'textinput textInput form-control tt-hint typeahead'
 
 
-class AlarmForm(ModelForm):
+class AlarmForm(SaveUserModelForm):
     """Alarm ModelForm"""
 
     class Meta:
