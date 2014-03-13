@@ -142,12 +142,12 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
     def test_cdr_view(self):
         """Test Function to check cdr_view"""
-        response = self.client.get('/cdr_view/')
+        response = self.client.get('/cdr_list/')
         #self.assertTrue(response.context['form'], CdrSearchForm())
         #self.assertTemplateUsed(response, 'cdr/list.html')
         self.assertEqual(response.status_code, 200)
 
-        request = self.factory.get('/cdr_view/')
+        request = self.factory.get('/cdr_list/')
         request.user = self.user
         request.session = {}
         response = cdr_view(request)
@@ -165,19 +165,19 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
             'result': 1,
             'records_per_page': 10
         }
-        response = self.client.post('/cdr_view/', data)
+        response = self.client.post('/cdr_list/', data)
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get('/cdr_view/?page=1')
+        response = self.client.get('/cdr_list/?page=1')
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get('/cdr_view/?page=1&sort_by=-caller_id_number')
+        response = self.client.get('/cdr_list/?page=1&sort_by=-caller_id_number')
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get('/cdr_view/?page=1&sort_by=caller_id_number')
+        response = self.client.get('/cdr_list/?page=1&sort_by=caller_id_number')
         self.assertEqual(response.status_code, 200)
 
-        request = self.factory.post('/cdr_view/', data)
+        request = self.factory.post('/cdr_list/', data)
         request.user = self.user
         request.session = {}
         response = cdr_view(request)
