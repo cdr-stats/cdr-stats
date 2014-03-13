@@ -209,12 +209,12 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
     def test_cdr_overview(self):
         """Test Function to check cdr_overview"""
-        response = self.client.get('/cdr_overview/')
+        response = self.client.get('/overview/')
         #self.assertTrue(response.context['form'], CdrOverviewForm())
         #self.assertTemplateUsed(response, 'cdr/overview.html')
         self.assertEqual(response.status_code, 200)
 
-        request = self.factory.get('/cdr_overview/')
+        request = self.factory.get('/overview/')
         request.user = self.user
         request.session = {}
         response = cdr_overview(request)
@@ -223,11 +223,11 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         data = {'switch_id': 1,
                 'from_date': datetime.now().strftime("%Y-%m-%d %H:%M"),
                 'to_date': datetime.now().strftime("%Y-%m-%d %H%M")}
-        response = self.client.post('/cdr_overview/', data)
+        response = self.client.post('/overview/', data)
         #self.assertTrue(response.context['form'], CdrOverviewForm(data))
         self.assertEqual(response.status_code, 200)
 
-        request = self.factory.post('/cdr_overview/', data)
+        request = self.factory.post('/overview/', data)
         request.user = self.user
         request.session = {}
         response = cdr_overview(request)
@@ -236,7 +236,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         data = {'switch_id': 0,
                 'from_date': '',
                 'to_date': ''}
-        request = self.factory.post('/cdr_overview/', data)
+        request = self.factory.post('/overview/', data)
         request.user = self.user
         request.session = {}
         response = cdr_overview(request)
@@ -287,11 +287,11 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
     def test_cdr_concurrent_calls(self):
         """Test Function to check concurrent calls"""
-        response = self.client.get('/cdr_concurrent_calls/')
+        response = self.client.get('/concurrent_calls/')
         ##self.assertTemplateUsed(response, 'cdr/graph_concurrent_calls.html')
         self.assertEqual(response.status_code, 200)
 
-        request = self.factory.get('/cdr_concurrent_calls/')
+        request = self.factory.get('/concurrent_calls/')
         request.user = self.user
         request.session = {}
         response = cdr_concurrent_calls(request)
@@ -299,11 +299,11 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
         data = {'switch_id': 1,
                 'from_date': datetime.now().strftime("%Y-%m-%d")}
-        response = self.client.post('/cdr_concurrent_calls/', data)
+        response = self.client.post('/concurrent_calls/', data)
         #self.assertTrue(response.context['form'], ConcurrentCallForm(data))
         self.assertEqual(response.status_code, 200)
 
-        request = self.factory.post('/cdr_concurrent_calls/', data)
+        request = self.factory.post('/concurrent_calls/', data)
         request.user = self.user
         request.session = {}
         response = cdr_concurrent_calls(request)
@@ -311,21 +311,21 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
     def test_cdr_realtime(self):
         """Test Function to check realtime calls"""
-        response = self.client.get('/cdr_realtime/')
+        response = self.client.get('/realtime/')
         #self.assertTemplateUsed(response, 'cdr/graph_realtime.html')
         self.assertEqual(response.status_code, 200)
 
-        request = self.factory.get('/cdr_realtime/')
+        request = self.factory.get('/realtime/')
         request.user = self.user
         request.session = {}
         response = cdr_realtime(request)
         self.assertEqual(response.status_code, 200)
 
         data = {'switch_id': 1}
-        response = self.client.post('/cdr_realtime/', data)
+        response = self.client.post('/realtime/', data)
         self.assertEqual(response.status_code, 200)
 
-        request = self.factory.post('/cdr_realtime/', data)
+        request = self.factory.post('/realtime/', data)
         request.user = self.user
         request.session = {}
         response = cdr_realtime(request)
