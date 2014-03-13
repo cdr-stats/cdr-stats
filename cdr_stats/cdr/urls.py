@@ -15,14 +15,14 @@ from django.conf.urls import patterns
 
 
 urlpatterns = patterns('cdr.views',
-    (r'^cdr_view/$', 'cdr_view'),
+    (r'^cdr_list/$', 'cdr_view'),
     (r'^cdr_export_csv/$', 'cdr_export_to_csv'),
     (r'^cdr_detail/(?P<id>\w+)/(?P<switch_id>\w+)/$', 'cdr_detail'),
     (r'^dashboard/$', 'cdr_dashboard'),
     (r'^daily_comparison/$', 'cdr_daily_comparison'),
-    (r'^cdr_overview/$', 'cdr_overview'),
-    (r'^cdr_concurrent_calls/$', 'cdr_concurrent_calls'),
-    (r'^cdr_realtime/$', 'cdr_realtime'),
+    (r'^overview/$', 'cdr_overview'),
+    (r'^concurrent_calls/$', 'cdr_concurrent_calls'),
+    (r'^realtime/$', 'cdr_realtime'),
     (r'^mail_report/$', 'mail_report'),
     (r'^country_report/$', 'cdr_country_report'),
     (r'^world_map/$', 'world_map_view'),

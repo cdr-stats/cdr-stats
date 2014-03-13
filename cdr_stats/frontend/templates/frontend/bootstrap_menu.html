@@ -17,7 +17,7 @@
         {% if user.is_authenticated %}
             <ul class="nav navbar-nav">
               {% if perms.user_profile.dashboard %}
-                <li {% ifequal module 'dashboard' %}class="active"{% endifequal %}><a href="/dashboard/">{% trans "dashboard"|title %}</a></li>
+                <li {% ifactive '/dashboard/' %}class="active"{% endifactive %}><a href="/dashboard/">{% trans "dashboard"|title %}</a></li>
               {% endif %}
             </ul>
             <ul class="nav navbar-nav">
@@ -25,13 +25,13 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "analytics"|title %}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   {% if perms.user_profile.overview %}
-                    <li {% ifequal module 'overview' %}class="active"{% endifequal %}><a href="/cdr_overview/">{% trans "overview"|title %}</a></li>
+                    <li {% ifactive '/overview/' %}class="active"{% endifactive %}><a href="/overview/">{% trans "overview"|title %}</a></li>
                   {% endif %}
                   {% if perms.user_profile.search %}
-                    <li {% ifequal module 'search' %}class="active"{% endifequal %}><a href="/cdr_view/">{% trans "search"|title %}</a></li>
+                    <li {% ifactive '/cdr_list/' %}class="active"{% endifactive %}><a href="/cdr_list/">{% trans "search"|title %}</a></li>
                   {% endif %}
                   {% if perms.user_profile.daily_comparison %}
-                    <li {% ifequal module 'cdr_daily_comparison' %}class="active"{% endifequal %}><a href="/daily_comparison/">{% trans "daily comparison"|title %}</a></li>
+                    <li {% ifactive '/daily_comparison/' %}class="active"{% endifactive %}><a href="/daily_comparison/">{% trans "daily comparison"|title %}</a></li>
                   {% endif %}
                  </ul>
               </li>
@@ -42,10 +42,10 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "real-time"|title %}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   {% if perms.user_profile.real_time_calls %}
-                    <li {% ifequal module 'cdr_realtime' %}class="active"{% endifequal %}><a href="/cdr_realtime/">{% trans "real-time calls"|title %}</a></li>
+                    <li {% ifactive '/realtime/' %}class="active"{% endifactive %}><a href="/realtime/">{% trans "real-time calls"|title %}</a></li>
                   {% endif %}
                   {% if perms.user_profile.concurrent_calls %}
-                    <li {% ifequal module 'cdr_concurrent_calls' %}class="active"{% endifequal %}><a href="/cdr_concurrent_calls/">{% trans "concurrent calls"|title %}</a></li>
+                    <li  {% ifactive '/concurrent_calls/' %}class="active"{% endifactive %}><a href="/concurrent_calls/">{% trans "concurrent calls"|title %}</a></li>
                   {% endif %}
                  </ul>
               </li>
@@ -55,13 +55,13 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "reports"|title %}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   {% if perms.user_profile.by_country %}
-                    <li {% ifequal module 'cdr_country_report' %}class="active"{% endifequal %}><a href="/country_report/">{% trans "by country"|title %}</a></li>
+                    <li {% ifactive '/country_report/' %}class="active"{% endifactive %}><a href="/country_report/">{% trans "by country"|title %}</a></li>
                   {% endif %}
                   {% if perms.user_profile.world_map %}
-                    <li {% ifequal module 'world_map_view' %}class="active"{% endifequal %}><a href="/world_map/">{% trans "world map"|title %}</a></li>
+                    <li {% ifactive '/world_map/' %}class="active"{% endifactive %}><a href="/world_map/">{% trans "world map"|title %}</a></li>
                   {% endif %}
                   {% if perms.user_profile.mail_report %}
-                    <li {% ifequal module 'cdr_mail_report' %}class="active"{% endifequal %}><a href="/mail_report/">{% trans "mail report"|title %}</a></li>
+                    <li {% ifactive '/mail_report/' %}class="active"{% endifactive %}><a href="/mail_report/">{% trans "mail report"|title %}</a></li>
                   {% endif %}
                 </ul>
               </li>
@@ -71,13 +71,13 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "alert"|title %}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   {% if perms.cdr_alert.alert_settings %}
-                    <li {% ifequal module 'alert' %}class="active"{% endifequal %}><a href="/alert/">{% trans "alert settings"|title %}</a></li>
+                    <li {% ifactive '/alert/' %}class="active"{% endifactive %}><a href="/alert/">{% trans "alert settings"|title %}</a></li>
                   {% endif %}
                   {% if perms.cdr_alert.alarm_report %}
-                    <li {% ifequal module 'alert_report' %}class="active"{% endifequal %}><a href="/alert_report/">{% trans "alert report"|title %}</a></li>
+                    <li {% ifactive '/alert_report/' %}class="active"{% endifactive %}><a href="/alert_report/">{% trans "alert report"|title %}</a></li>
                   {% endif %}
                   {% if perms.cdr_alert.view_blacklist and perms.cdr_alert.view_whitelist%}
-                    <li {% ifequal module 'trust_control' %}class="active"{% endifequal %}><a href="/trust_control/">{% trans "destination control"|title %}</a></li>
+                    <li {% ifactive '/trust_control/' %}class="active"{% endifactive %}><a href="/trust_control/">{% trans "destination control"|title %}</a></li>
                   {% endif %}
                 </ul>
               </li>
@@ -88,16 +88,16 @@
                       <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "billing"|title %}<b class="caret"></b></a>
                       <ul class="dropdown-menu">
                           {% if perms.user_profile.call_rate %}
-                          <li><a href="/rates/"> {% trans "rates"|title %}</a></li>
+                          <li {% ifactive '/rates/' %}class="active"{% endifactive %}><a href="/rates/"> {% trans "rates"|title %}</a></li>
                           {% endif %}
                           {% if perms.user_profile.sumulator %}
-                          <li><a href="/simulator/"> {% trans "call simulator"|title %}</a></li>
+                          <li {% ifactive '/simulator/' %}class="active"{% endifactive %}><a href="/simulator/"> {% trans "call simulator"|title %}</a></li>
                           {% endif %}
                           {% if perms.user_profile.daily_billing %}
-                            <li><a href="/daily_billing_report/"> {% trans "daily billing report"|title %}</a></li>
+                            <li {% ifactive '/daily_billing_report/' %}class="active"{% endifactive %}><a href="/daily_billing_report/"> {% trans "daily billing report"|title %}</a></li>
                           {% endif %}
                           {% if perms.user_profile.hourly_billing %}
-                              <li><a href="/hourly_billing_report/"> {% trans "hourly billing report"|title %}</a></li>
+                              <li {% ifactive '/hourly_billing_report/' %}class="active"{% endifactive %}><a href="/hourly_billing_report/"> {% trans "hourly billing report"|title %}</a></li>
                           {% endif %}
                       </ul>
                   </li>
@@ -112,15 +112,15 @@
                     <b class="caret"></b>
                 </a>
                 <ul class="dropdown-menu">
-                  <li {% ifequal module 'detail_change' %}class="active"{% endifequal %}><a href="/user_detail_change/?action=tabs-1">
+                  <li {% ifactive '/user_detail_change/?action=tabs-1' %}class="active"{% endifactive %}><a href="/user_detail_change/?action=tabs-1">
                         {% trans "account settings"|capfirst %}</a>
                   </li>
-                  <li>
+                  <li {% ifactive '/user_notification/' %}class="active"{% endifactive %}>
                     <a href="/user_notification/">{% trans "notifications"|title %}
                       <span class="label label-warning">{{ notice_unseen_count }}</span>
                     </a>
                   </li>
-                  <li {% ifequal module 'detail_change' %}class="active"{% endifequal %}><a href="/user_detail_change/?action=tabs-3">
+                  <li {% ifactive '/user_detail_change/?action=tabs-3' %}class="active"{% endifactive %}><a href="/user_detail_change/?action=tabs-3">
                     {% trans "change language"|title %}</a>
                   </li>
                   <li class="divider"></li>
@@ -128,7 +128,7 @@
                     <li><a href="/api-explorer/"> {% trans "API explorer"|capfirst %}</a></li>
                   {% endif %}
                   {% if user.is_superuser %}
-                    <li><a href="/diagnostic/"> {% trans "diagnostic"|title %}</a></li>
+                    <li {% ifactive '/diagnostic/' %}class="active"{% endifactive %}><a href="/diagnostic/"> {% trans "diagnostic"|title %}</a></li>
                   {% endif %}
                   <li class="divider"></li>
                   {% if user.is_superuser %}
