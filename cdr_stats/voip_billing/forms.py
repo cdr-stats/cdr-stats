@@ -13,7 +13,7 @@
 #
 from django import forms
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django_lets_go.common_functions import isint
 from voip_billing.function_def import rate_range
 from voip_billing.models import VoIPPlan, VoIPRetailPlan, VoIPCarrierPlan
@@ -160,8 +160,9 @@ class PrefixRetailRrateForm(forms.Form):
                 css_class='row',
             ),
             FormActions(
-                Submit('search', _('search').title()),
-                HTML("""<a href="/rates/" class="btn btn-danger">Clear</a>""")
+                HTML('<button type="submit" id="id_submit" name="submit" class="btn btn-primary" value="submit">'
+                     '<i class="fa fa-search fa-lg"></i> %s</button>'
+                     '<a href="/rates/" class="btn btn-danger">%s</a>' % (_('search').title(), _('clear').title()) )
             )
         )
 

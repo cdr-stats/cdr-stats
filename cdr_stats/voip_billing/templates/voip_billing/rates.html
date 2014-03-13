@@ -33,27 +33,27 @@
                 <tr>
                     <th>
                         {% ifequal sort_order 'prefix' %}
-                          {% sort_link up_icon "prefix"  %}
+                          {% sort_link up_icon|safe "prefix"  %}
                             {{ RATE_COLUMN_NAME.prefix|capfirst }}
-                          {% sort_link down_icon "-prefix"  %}
+                          {% sort_link down_icon|safe "-prefix"  %}
                         {% else %}
                           {% sort_link RATE_COLUMN_NAME.prefix|capfirst "-prefix" %}
                         {% endifequal %}
                     </th>
                     <th>
                         {% ifequal sort_order 'destination' %}
-                          {% sort_link up_icon "destination"  %}
+                          {% sort_link up_icon|safe "destination"  %}
                             {{ RATE_COLUMN_NAME.destination|capfirst }}
-                          {% sort_link down_icon "-destination"  %}
+                          {% sort_link down_icon|safe "-destination"  %}
                         {% else %}
                           {% sort_link RATE_COLUMN_NAME.destination|capfirst "-destination" %}
                         {% endifequal %}
                     </th>
                     <th>
                         {% ifequal sort_order 'retail_rate' %}
-                          {% sort_link up_icon "retail_rate"  %}
+                          {% sort_link up_icon|safe "retail_rate"  %}
                             {{ RATE_COLUMN_NAME.rate|capfirst }}
-                          {% sort_link down_icon "-retail_rate"  %}
+                          {% sort_link down_icon|safe "-retail_rate"  %}
                         {% else %}
                           {% sort_link RATE_COLUMN_NAME.rate|capfirst "-retail_rate" %}
                         {% endifequal %}
