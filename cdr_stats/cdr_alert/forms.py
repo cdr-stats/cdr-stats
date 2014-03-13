@@ -79,7 +79,7 @@ class BWPrefixForm(forms.Form):
             ),
         )
         self.fields['prefix'].widget.attrs.update({'id': prefix_field_id})
-        self.fields['prefix'].widget.attrs['class'] = 'textinput textInput form-control tt-hint typeahead'
+        self.fields['prefix'].widget.attrs['autocomplete'] = 'off'
 
 
 class AlarmForm(SaveUserModelForm):

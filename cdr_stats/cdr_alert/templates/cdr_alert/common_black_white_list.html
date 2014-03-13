@@ -7,8 +7,7 @@
     {% dajaxice_js_import %}
     <script src="{{ STATIC_URL }}cdr-stats/js/jquery.dajax.core.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}cdr-stats/js/jquery.ba-serializeobject.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}typeahead.js/dist/bloodhound.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}typeahead.js/dist/typeahead.jquery.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}typeahead.js/dist/typeahead.bundle.js" type="text/javascript"></script>
     <script type="text/javascript">
         // toggle Checkbox blacklist
         function toggleChecked_blacklist(status) {
@@ -112,30 +111,14 @@
         }
 
         $(function() {
-            var substringMatcher = function(strs) {
-                return function findMatches(q, cb) {
-                    var matches, substringRegex;
-
-                    // an array that will be populated with substring matches
-                    matches = [];
-
-                    // regex used to determine if a string contains the substring `q`
-                    substrRegex = new RegExp(q, 'i');
-
-                    // iterate through the pool of strings and for any string that
-                    // contains the substring `q`, add it to the `matches` array
-                    $.each(strs, function(i, str) {
-                        if (substrRegex.test(str)) {
-                            // the typeahead jQuery plugin expects suggestions to a
-                            // JavaScript object, refer to typeahead docs for more info
-                            matches.push({ pre_fix: str });
-                        }
-                    });
-
-                    cb(matches);
-                };
-            };
             var prefixes = {{ prefix_list|safe }};
+            var prefix = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                local: $.map(prefixes, function(prefix) { return { value: prefix }; })
+            });
+
+            prefix.initialize();
 
             $('#id_bl_prefix,#id_wl_prefix').typeahead({
                 hint: true,
@@ -144,8 +127,8 @@
             },
             {
                 name: 'prefix_list',
-                displayKey: 'pre_fix',
-                source: substringMatcher(prefixes)
+                displayKey: 'value',
+                source: prefix.ttAdapter(),
             });
         });
     </script>

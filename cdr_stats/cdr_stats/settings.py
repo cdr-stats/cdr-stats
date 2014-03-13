@@ -535,7 +535,7 @@ BOWER_INSTALLED_APPS = (
     'd3#3.3.6',
     'nvd3#1.1.12-beta',
     'components-font-awesome#4.0.3',
-    'typeahead.js#0.10.1',
+    'typeahead.js#0.10.2',
     'bower-jvectormap',
     'datetimepicker',
 )
