@@ -12,7 +12,6 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django import forms
-from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django_lets_go.common_functions import isint
 from voip_billing.function_def import rate_range
@@ -22,7 +21,7 @@ from cdr.forms import sw_list_with_all, CdrSearchForm
 from mod_utils.forms import Exportfile, common_submit_buttons
 from bootstrap3_datetime.widgets import DateTimePicker
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Div, HTML, Submit
+from crispy_forms.layout import Layout, Div, HTML
 from crispy_forms.bootstrap import FormActions
 
 

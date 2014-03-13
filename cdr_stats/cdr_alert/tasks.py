@@ -89,8 +89,7 @@ def notify_admin_with_mail(notice_id, email_id):
                               {'from_user': user}, sender=user)
         # Send mail to ADMINS
         subject = _('Alert')
-        message = _('Alert Message "%(user)s" - "%(user_id)s"') \
-            % {'user': user, 'user_id': user.id}
+        message = _('Alert Message "%(user)s" - "%(user_id)s"') % {'user': user, 'user_id': user.id}
 
         try:
             send_mail(subject, message, settings.SERVER_EMAIL, email_id)
@@ -123,16 +122,14 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
     """
     if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN:  # Is less than
         if alarm_obj.alert_value < current_value:
-            notify_admin_with_mail(alarm_obj.type,
-                                   alarm_obj.email_to_send_alarm)
+            notify_admin_with_mail(alarm_obj.type, alarm_obj.email_to_send_alarm)
             create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
         else:
             create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
 
     if alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN:  # Is greater than
         if alarm_obj.alert_value > current_value:
-            notify_admin_with_mail(alarm_obj.type,
-                                   alarm_obj.email_to_send_alarm)
+            notify_admin_with_mail(alarm_obj.type, alarm_obj.email_to_send_alarm)
             create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
         else:
             create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
@@ -140,8 +137,7 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
     if alarm_obj.alert_condition == ALERT_CONDITION.DECREASE_BY_MORE_THAN:  # Decrease by more than
         diff = abs(current_value - previous_value)
         if diff < alarm_obj.alert_value:
-            notify_admin_with_mail(alarm_obj.type,
-                                   alarm_obj.email_to_send_alarm)
+            notify_admin_with_mail(alarm_obj.type, alarm_obj.email_to_send_alarm)
             create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
         else:
             create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
@@ -149,8 +145,7 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
     if alarm_obj.alert_condition == ALERT_CONDITION.INCREASE_BY_MORE_THAN:  # Increase by more than
         diff = abs(current_value - previous_value)
         if diff > alarm_obj.alert_value:
-            notify_admin_with_mail(alarm_obj.type,
-                                   alarm_obj.email_to_send_alarm)
+            notify_admin_with_mail(alarm_obj.type, alarm_obj.email_to_send_alarm)
             create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
         else:
             create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
@@ -162,8 +157,7 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
         avg = avg if avg != 0 else 1
         percentage = diff / avg * 100
         if percentage < alarm_obj.alert_value:
-            notify_admin_with_mail(alarm_obj.type,
-                                   alarm_obj.email_to_send_alarm)
+            notify_admin_with_mail(alarm_obj.type, alarm_obj.email_to_send_alarm)
             create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
         else:
             create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
@@ -174,8 +168,7 @@ def chk_alert_value(alarm_obj, current_value, previous_value=None):
         avg = avg if avg != 0 else 1
         percentage = diff / avg * 100
         if percentage > alarm_obj.alert_value:
-            notify_admin_with_mail(alarm_obj.type,
-                                   alarm_obj.email_to_send_alarm)
+            notify_admin_with_mail(alarm_obj.type, alarm_obj.email_to_send_alarm)
             create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.ALARM_SENT)
         else:
             create_alarm_report_object(alarm_obj, status=ALARM_REPROT_STATUS.NO_ALARM_SENT)
@@ -321,8 +314,7 @@ class chk_alarm(PeriodicTask):
         alarm_status['running_alarm_status'] = True
         for alarm_obj in alarm_objs:
             try:
-                alarm_report = AlarmReport.objects.filter(alarm=alarm_obj).\
-                    latest('daterun')
+                alarm_report = AlarmReport.objects.filter(alarm=alarm_obj).latest('daterun')
                 diff_run = (datetime.now() - alarm_report.daterun).days
                 diff_run = 1
                 if alarm_obj.period == PERIOD.DAY:  # Day
@@ -344,8 +336,7 @@ class chk_alarm(PeriodicTask):
                         alarm_status = run_alarm(alarm_obj, logger)
             except:
                 # create alarm report
-                AlarmReport.objects.create(alarm=alarm_obj,
-                        calculatedvalue=alarm_obj.alert_value, status=1)
+                AlarmReport.objects.create(alarm=alarm_obj, calculatedvalue=alarm_obj.alert_value, status=1)
 
         logger.debug('TASK :: chk_alarm finished')
         return alarm_status['running_alarm_status']
@@ -361,8 +352,7 @@ def notify_admin_without_mail(notice_id, email_id):
         # send notification
         if notification:
             note_label = notification.NoticeType.objects.get(default=notice_id)
-            notification.send([recipient], note_label.label, {'from_user': user},
-                              sender=user)
+            notification.send([recipient], note_label.label, {'from_user': user}, sender=user)
     return True
 
 
@@ -449,8 +439,7 @@ class send_cdr_report(PeriodicTask):
                 }
                 ))
 
-            msg = EmailMultiAlternatives(
-                subject, html_content, from_email, [to])
+            msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
             logger.info('Email sent to %s' % to)
             msg.content_subtype = 'html'
             msg.send()

@@ -33,10 +33,8 @@ class AlertRemovePrefix(models.Model):
     **Name of DB table**: alarm
     """
     label = models.CharField(max_length=100, verbose_name=_('label'))
-    prefix = models.CharField(max_length=100, unique=True,
-                              verbose_name=_('prefix'))
-    created_date = models.DateTimeField(auto_now_add=True,
-                                    verbose_name=_('date'))
+    prefix = models.CharField(max_length=100, unique=True, verbose_name=_('prefix'))
+    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_('date'))
     updated_date = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
@@ -67,11 +65,9 @@ class Alarm(models.Model):
     """
     user = models.ForeignKey('auth.User', related_name='Alarm_owner')
     name = models.CharField(max_length=100, verbose_name=_('name'))
-    period = models.PositiveIntegerField(choices=list(PERIOD), default=1,
-                                verbose_name=_('period'),
-                                help_text=_('interval to apply alarm'))
-    type = models.PositiveIntegerField(choices=list(ALARM_TYPE), default=1,
-                                verbose_name=_('type'),
+    period = models.PositiveIntegerField(choices=list(PERIOD), default=1, verbose_name=_('period'),
+                                         help_text=_('interval to apply alarm'))
+    type = models.PositiveIntegerField(choices=list(ALARM_TYPE), default=1, verbose_name=_('type'),
                                 help_text=_('ALOC (average length of call) ; ASR (answer seize ratio) ; CIC (Consecutive Incomplete Calls) '))
     alert_condition = models.PositiveIntegerField(choices=list(ALERT_CONDITION),
                                                   default=1,
@@ -81,13 +77,9 @@ class Alarm(models.Model):
                                 help_text=_('input the value for the alert'))
     alert_condition_add_on = models.PositiveIntegerField(choices=list(ALERT_CONDITION_ADD_ON),
                                                          default=1)
-    status = models.PositiveIntegerField(choices=list(STATUS), default=1,
-                                         verbose_name=_('status'))
-
-    email_to_send_alarm = models.EmailField(max_length=100,
-                                    verbose_name=_('email to send alarm'))
-    created_date = models.DateTimeField(auto_now_add=True,
-                                        verbose_name=_('date'))
+    status = models.PositiveIntegerField(choices=list(STATUS), default=1, verbose_name=_('status'))
+    email_to_send_alarm = models.EmailField(max_length=100, verbose_name=_('email to send alarm'))
+    created_date = models.DateTimeField(auto_now_add=True, verbose_name=_('date'))
     updated_date = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
@@ -114,14 +106,11 @@ class AlarmReport(models.Model):
 
     **Name of DB table**: alert_report
     """
-    alarm = models.ForeignKey(Alarm, verbose_name=_('alarm'),
-                              help_text=_("select Alarm"))
+    alarm = models.ForeignKey(Alarm, verbose_name=_('alarm'), help_text=_("select Alarm"))
     calculatedvalue = models.DecimalField(verbose_name=_('calculated value'),
                                           max_digits=10, decimal_places=3,
                                           blank=True, null=True)
-    status = models.PositiveIntegerField(choices=list(ALARM_REPROT_STATUS),
-                        default=1, verbose_name=_('status'))
-
+    status = models.PositiveIntegerField(choices=list(ALARM_REPROT_STATUS), default=1, verbose_name=_('status'))
     daterun = models.DateTimeField(auto_now_add=True, verbose_name=_('date'))
 
     def __unicode__(self):
@@ -149,8 +138,7 @@ class Blacklist(models.Model):
     """
     user = models.ForeignKey('auth.User', related_name='Blacklist_owner')
     phonenumber_prefix = models.PositiveIntegerField(blank=False, null=False)
-    country = models.ForeignKey(Country, null=True, blank=True,
-                                verbose_name=_("country"),
+    country = models.ForeignKey(Country, null=True, blank=True, verbose_name=_("country"),
                                 help_text=_("select country"))
 
     def __unicode__(self):
@@ -178,8 +166,7 @@ class Whitelist(models.Model):
     """
     user = models.ForeignKey('auth.User', related_name='whitelist_owner')
     phonenumber_prefix = models.PositiveIntegerField(blank=False, null=False)
-    country = models.ForeignKey(Country, null=True, blank=True,
-                                verbose_name=_("country"),
+    country = models.ForeignKey(Country, null=True, blank=True, verbose_name=_("country"),
                                 help_text=_("select country"))
 
     def __unicode__(self):
