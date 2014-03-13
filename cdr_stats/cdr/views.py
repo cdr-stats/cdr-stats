@@ -178,7 +178,6 @@ def cdr_view(request):
     caller = ''
     caller_type = ''
     cli = ''
-    search_tag = 0
     action = 'tabs-1'
     menu = 'on'
     cdr_view_daily_data = {}
@@ -187,7 +186,6 @@ def cdr_view(request):
     form = CdrSearchForm(request.POST or None)
     if form.is_valid():
         logging.debug('CDR Search View')
-        search_tag = 1
 
         # set session var value
         field_list = ['destination', 'result', 'destination_type', 'accountcode',
@@ -249,7 +247,6 @@ def cdr_view(request):
         switch_id = request.session.get('session_switch_id')
         hangup_cause_id = request.session.get('session_hangup_cause_id')
         result = request.session.get('session_result')
-        search_tag = request.session.get('session_search_tag')
         records_per_page = request.session.get('session_records_per_page')
         country_id = request.session['session_country_id']
     else:
@@ -273,8 +270,6 @@ def cdr_view(request):
                           'caller', 'caller_type', 'duration', 'duration_type', 'hangup_cause_id',
                           'switch_id', 'direction', 'country_id']
             unset_session_var(request, field_list)
-
-            request.session['session_search_tag'] = search_tag
             request.session['session_records_per_page'] = records_per_page
             request.session['session_country_id'] = ''
 
@@ -378,7 +373,6 @@ def cdr_view(request):
         'form': form,
         'record_count': record_count,
         'cdr_daily_data': cdr_view_daily_data,
-        'search_tag': search_tag,
         'col_name_with_order': page_var['col_name_with_order'],
         'menu': menu,
         'start_date': start_date,
@@ -1144,7 +1138,6 @@ def cdr_daily_comparison(request):
     min_chartdata = call_chartdata = {'x': []}
     comp_days = 2
     check_days = 1
-    search_tag = 0
     action = 'tabs-1'
     from_date = datetime.today()
     form = CompareCallSearchForm(request.POST or None,
@@ -1161,7 +1154,6 @@ def cdr_daily_comparison(request):
 
     logging.debug('CDR hourly view with search option')
     if form.is_valid():
-        search_tag = 1
         from_date = getvar(request, 'from_date')
         select_date = ceil_strdate(from_date, 'start')
         switch_id = getvar(request, 'switch_id')
@@ -1231,7 +1223,6 @@ def cdr_daily_comparison(request):
     variables = {
         'action': action,
         'form': form,
-        'search_tag': search_tag,
         'from_date': from_date,
         'comp_days': comp_days,
         'call_charttype': call_charttype,
@@ -1276,7 +1267,6 @@ def cdr_overview(request):
     logging.debug('CDR overview start')
     # initialize variables
     query_var = {}
-    search_tag = 0
 
     hourly_duration_charttype = hourly_call_charttype = "lineWithFocusChart"
     daily_duration_charttype = daily_call_charttype = "lineWithFocusChart"
@@ -1304,7 +1294,6 @@ def cdr_overview(request):
 
     logging.debug('CDR overview with search option')
     if form.is_valid():
-        search_tag = 1
         from_date = getvar(request, 'from_date')
         start_date = ceil_strdate(str(from_date), 'start')
         start_hour_date = ceil_strdate(str(from_date), 'start', hour_min=True)
@@ -1620,7 +1609,6 @@ def cdr_overview(request):
     variables = {
         'action': action,
         'form': form,
-        'search_tag': search_tag,
         'start_date': start_date,
         'end_date': end_date,
         'hourly_call_chartdata': hourly_call_chartdata,
@@ -1702,7 +1690,6 @@ def cdr_country_report(request):
     logging.debug('CDR country report view start')
     switch_id = 0
     query_var = {}
-    search_tag = 0
     now = datetime.now()
     start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
     end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
@@ -1715,7 +1702,6 @@ def cdr_country_report(request):
                                                             'to_date': to_date})
     if form.is_valid():
         logging.debug('CDR country report view with search option')
-        search_tag = 1
         from_date = getvar(request, 'from_date')
         start_date = ceil_strdate(str(from_date), 'start')
 
@@ -1865,7 +1851,6 @@ def cdr_country_report(request):
         'total_duration': total_duration,
         'country_analytic': country_analytic_array,
         'form': form,
-        'search_tag': search_tag,
         'NUM_COUNTRY': settings.NUM_COUNTRY,
         'country_call_charttype': country_call_charttype,
         'country_call_chartdata': country_call_chartdata,
@@ -1928,7 +1913,6 @@ def world_map_view(request):
     action = 'tabs-1'
     switch_id = 0
     query_var = {}
-    search_tag = 0
     now = datetime.now()
     start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
     end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
@@ -1939,7 +1923,6 @@ def world_map_view(request):
 
     if form.is_valid():
         logging.debug('CDR world report view with search option')
-        search_tag = 1
         from_date = getvar(request, 'from_date')
         start_date = ceil_strdate(str(from_date), 'start')
 
@@ -1982,7 +1965,6 @@ def world_map_view(request):
 
     variables = {
         'form': form,
-        'search_tag': search_tag,
         'start_date': start_date,
         'end_date': end_date,
         'world_analytic_array': world_analytic_array,

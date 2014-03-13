@@ -26,19 +26,23 @@ from mod_utils.forms import common_submit_buttons, HorizRadioRenderer
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, HTML  # Fieldset, Field
 
-COMPARE_LIST = ((2, '>'),
+COMPARE_LIST = (
+    (2, '>'),
     (3, '>='),
     (4, '<'),
     (5, '<='),
-    (1, '='),)
+    (1, '=')
+)
 
-PAGE_SIZE_LIST = ((10, '10'),
+PAGE_SIZE_LIST = (
+    (10, '10'),
     (25, '25'),
     (50, '50'),
     (100, '100'),
     (250, '250'),
     (500, '500'),
-    (1000, '1000'))
+    (1000, '1000')
+)
 
 
 def sw_list_with_all():
@@ -163,8 +167,8 @@ class CdrSearchForm(SearchForm):
             ),
             Div(
                 Div('direction', css_class=css_class),
-                Div('duration', css_class='col-md-2'),
-                Div('duration_type', css_class='col-md-2'),
+                Div('duration', css_class='col-md-3'),
+                Div('duration_type', css_class='col-md-1'),
                 Div(HTML("""
                     <b>Result : </b><br/>
                     <div class="btn-group" data-toggle="buttons">

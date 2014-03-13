@@ -208,7 +208,6 @@ def daily_billing_report(request):
         get all call records from mongodb collection for
         daily billing analytics for given date
     """
-    search_tag = 0
     switch_id = 0
     start_date = ''
     end_date = ''
@@ -217,7 +216,6 @@ def daily_billing_report(request):
     form = DailyBillingForm(request.POST or None, initial={'from_date': tday.strftime('%Y-%m-%d'),
                                                            'to_date': tday.strftime('%Y-%m-%d')})
     if form.is_valid():
-        search_tag = 1
         from_date = getvar(request, 'from_date')
         to_date = getvar(request, 'to_date')
 
@@ -292,7 +290,6 @@ def daily_billing_report(request):
 
     data = {
         'form': form,
-        'search_tag': search_tag,
         'total_data': total_data,
         'start_date': start_date,
         'end_date': end_date,
@@ -328,7 +325,6 @@ def hourly_billing_report(request):
         get all call records from mongodb collection for
         hourly billing analytics for given date
     """
-    search_tag = 0
     switch_id = 0
     start_date = ''
     end_date = ''
@@ -336,7 +332,6 @@ def hourly_billing_report(request):
     # assign initial value in form fields
     form = HourlyBillingForm(request.POST or None, initial={'from_date': tday.strftime('%Y-%m-%d')})
     if form.is_valid():
-        search_tag = 1
         from_date = getvar(request, 'from_date')
         switch_id = getvar(request, 'switch_id')
 
@@ -398,7 +393,6 @@ def hourly_billing_report(request):
 
     data = {
         'form': form,
-        'search_tag': search_tag,
         'start_date': start_date,
         'chartdata': chartdata,
         'charttype': charttype,

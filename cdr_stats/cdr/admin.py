@@ -323,7 +323,6 @@ class SwitchAdmin(admin.ModelAdmin):
         caller = ''
         caller_type = ''
         cli = ''
-        search_tag = 0
         action = 'tabs-1'
         menu = 'on'
         cdr_view_daily_data = {}
@@ -333,7 +332,6 @@ class SwitchAdmin(admin.ModelAdmin):
         form = CdrSearchForm(request.POST or None)
         if form.is_valid():
             logging.debug('CDR Search View')
-            search_tag = 1
 
             # set session var value
             field_list = ['destination', 'result', 'destination_type', 'accountcode',
@@ -392,7 +390,6 @@ class SwitchAdmin(admin.ModelAdmin):
             switch_id = request.session.get('session_switch_id')
             hangup_cause_id = request.session.get('session_hangup_cause_id')
             result = int(request.session.get('session_result'))
-            search_tag = request.session.get('session_search_tag')
             records_per_page = request.session.get('session_records_per_page')
             country_id = request.session['session_country_id']
             cdr_view_daily_data = request.session.get('session_cdr_view_daily_data')
@@ -421,8 +418,6 @@ class SwitchAdmin(admin.ModelAdmin):
                               'duration_type', 'hangup_cause_id', 'switch_id', 'direction',
                               'country_id']
                 unset_session_var(request, field_list)
-
-                request.session['session_search_tag'] = search_tag
                 request.session['session_records_per_page'] = records_per_page
                 request.session['session_country_id'] = ''
 
@@ -526,7 +521,6 @@ class SwitchAdmin(admin.ModelAdmin):
             'form': form,
             'record_count': record_count,
             'cdr_daily_data': cdr_view_daily_data,
-            'search_tag': search_tag,
             'col_name_with_order': page_data['col_name_with_order'],
             'menu': menu,
             'start_date': start_date,
