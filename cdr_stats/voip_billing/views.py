@@ -39,7 +39,7 @@ import tablib
 
 @permission_required('user_profile.call_rate', login_url='/')
 @login_required
-@check_user_detail(['voipplan'])
+@check_user_detail('voipplan')
 @cache_page(60 * 5)
 def voip_rates(request):
     """List voip call rates according to country prefix
@@ -162,7 +162,7 @@ def export_rate(request):
 
 
 @permission_required('user_profile.simulator', login_url='/')
-@check_user_detail(['voipplan'])
+@check_user_detail('voipplan')
 @login_required
 def simulator(request):
     """Client Simulator
@@ -202,7 +202,7 @@ def simulator(request):
 
 @permission_required('user_profile.daily_billing', login_url='/')
 @check_cdr_exists
-@check_user_detail(['accountcode', 'voipplan'])
+@check_user_detail('accountcode,voipplan')
 @login_required
 def daily_billing_report(request):
     """CDR billing graph by daily basis
@@ -319,7 +319,7 @@ def daily_billing_report(request):
 
 @permission_required('user_profile.hourly_billing', login_url='/')
 @check_cdr_exists
-@check_user_detail(['accountcode', 'voipplan'])
+@check_user_detail('accountcode,voipplan')
 @login_required
 def hourly_billing_report(request):
     """CDR billing graph by hourly basis

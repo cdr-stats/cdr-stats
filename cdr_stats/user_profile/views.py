@@ -24,7 +24,7 @@ from cdr.decorators import check_user_detail
 
 
 @login_required
-@check_user_detail(['accountcode'])
+@check_user_detail('accountcode')
 def customer_detail_change(request):
     """User Detail change on Customer UI
 

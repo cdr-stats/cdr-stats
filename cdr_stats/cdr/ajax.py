@@ -22,7 +22,7 @@ import logging
 
 
 @permission_required('user_profile.real_time_calls', login_url='/')
-@check_user_detail(['accountcode'])
+@check_user_detail('accountcode')
 @login_required
 @dajaxice_register
 def get_realtime_json(request, key_uuid):

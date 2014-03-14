@@ -85,7 +85,7 @@ class UserProfile(models.Model):
             ("diagnostic", _('can view diagnostic report')),
             ("daily_billing", _('can view daily billing report')),
             ("hourly_billing", _('can view hourly billing report')),
-            ("sumulator", _('can view voip call simulator')),
+            ("simulator", _('can view voip call simulator')),
             ("call_rate", _('can view voip call rate')),
             ("export_call_rate", _('can export voip call rate')),
         )

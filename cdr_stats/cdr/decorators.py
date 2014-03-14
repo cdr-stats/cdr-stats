@@ -16,6 +16,7 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from mongodb_connection import mongodb
 from user_profile.models import UserProfile
+from functools import wraps
 
 
 def check_cdr_exists(function=None):
@@ -37,11 +38,11 @@ def check_cdr_exists(function=None):
     return _dec(function) if function is not None else _dec
 
 
-def check_user_detail(extra_value=[]):
+def check_user_detail(extra_value=None):
     """
     Decorator to check if accountcode, voipplan_id are attached to user or not
     """
-    def _dec(run_func):
+    def _dec(view_func):
         def _caller(request, *args, **kwargs):
             if not request.user.is_superuser:
                 try:
@@ -51,10 +52,9 @@ def check_user_detail(extra_value=[]):
                     elif 'voipplan' in extra_value and not user_profile.voipplan_id:
                         return HttpResponseRedirect('/?voipplan_error=true')
                     else:
-                        return run_func(request, *args, **kwargs)
+                        return view_func(request, *args, **kwargs)
                 except:
                     return HttpResponseRedirect('/?acc_code_error=true')
-            else:
-                return run_func(request, *args, **kwargs)
-        return _caller
+            return view_func(request, *args, **kwargs)
+        return wraps(view_func)(_caller)
     return _dec
