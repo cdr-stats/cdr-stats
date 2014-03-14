@@ -57,6 +57,7 @@ def voip_rates(request):
     form = PrefixRetailRateForm(request.POST or None)
     final_rate_list = []
     # Get pagination data
+    response = None
     sort_col_field_list = ['prefix', 'retail_rate', 'destination']
     page_data = get_pagination_vars(request, sort_col_field_list, default_sort_field='prefix')
 
@@ -85,13 +86,22 @@ def voip_rates(request):
     if dialcode:
         api_url = full_url + 'rest-api/voip-rate/?dialcode=%s&sort_field=%s&sort_order=%s' % \
             (dialcode, sort_order, order)
-        response = requests.get(api_url, auth=(request.user, request.user), timeout=1.0)
+        try:
+            response = requests.get(api_url, auth=(request.user, request.user), timeout=1.0)
+        except requests.exceptions.Timeout:
+            #Todo: we may want to deal with error nicely
+            logging.debug('API timeout Error : ' + api_url)
+
     else:
         # Default listing or rate
         api_url = full_url + 'rest-api/voip-rate/?sort_field=%s&sort_order=%s' % (sort_order, order)
-        response = requests.get(api_url, auth=(request.user, request.user), timeout=1.0)
+        try:
+            response = requests.get(api_url, auth=(request.user, request.user), timeout=1.0)
+        except requests.exceptions.Timeout:
+            #Todo: we may want to deal with error nicely
+            logging.debug('API timeout Error : ' + api_url)
 
-    if response.status_code == 200:
+    if response and response.status_code == 200:
         rate_list = response.content
         # due to string response of API, we need to convert response in to array
         rate_list = rate_list.replace('[', '').replace(']', '').replace('}, {', '}|{').split('|')
