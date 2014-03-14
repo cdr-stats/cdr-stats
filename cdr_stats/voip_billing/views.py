@@ -18,7 +18,7 @@ from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template.context import RequestContext
 from voip_billing.models import VoIPRetailRate
-from voip_billing.forms import PrefixRetailRrateForm, SimulatorForm, DailyBillingForm,\
+from voip_billing.forms import PrefixRetailRateForm, SimulatorForm, DailyBillingForm,\
     HourlyBillingForm
 from voip_billing.function_def import prefix_allowed_to_call, get_rounded_value
 from voip_billing.rate_engine import rate_engine
@@ -37,24 +37,24 @@ import ast
 import tablib
 
 
-@permission_required('user_profile.call_rate', login_url='/')
-@login_required
-@check_user_detail(['voipplan'])
-@cache_page(60 * 5)
+# @permission_required('user_profile.call_rate', login_url='/')
+# @login_required
+# @check_user_detail(['voipplan'])
+# @cache_page(60 * 5)
 def voip_rates(request):
     """List voip call rates according to country prefix
 
     **Attributes**:
 
         * ``template`` - voip_billing/rates.html
-        * ``form`` - PrefixRetailRrateForm
+        * ``form`` - PrefixRetailRateForm
 
     **Logic Description**:
 
         get all call rates from voip rate API and list them in template
         with pagination & sorting column
     """
-    form = PrefixRetailRrateForm(request.POST or None)
+    form = PrefixRetailRateForm(request.POST or None)
     final_rate_list = []
     # Get pagination data
     sort_col_field_list = ['prefix', 'retail_rate', 'destination']
@@ -75,7 +75,7 @@ def voip_rates(request):
         if (request.session.get('dialcode') and
            (request.GET.get('page') or request.GET.get('sort_by'))):
             dialcode = request.session.get('dialcode')
-            form = PrefixRetailRrateForm(initial={'prefix': dialcode})
+            form = PrefixRetailRateForm(initial={'prefix': dialcode})
         else:
             # Reset variables
             request.session['dialcode'] = ''

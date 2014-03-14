@@ -141,7 +141,7 @@ class VoIPPlan_fileExport(Exportfile):
         self.fields.keyOrder = ['plan_id', 'export_to']
 
 
-class PrefixRetailRrateForm(forms.Form):
+class PrefixRetailRateForm(forms.Form):
     """
     Client Form : To know Retail Rate for prefix
     """
@@ -149,7 +149,7 @@ class PrefixRetailRrateForm(forms.Form):
                              widget=forms.TextInput(attrs={'size': 15}), required=False)
 
     def __init__(self, *args, **kwargs):
-        super(PrefixRetailRrateForm, self).__init__(*args, **kwargs)
+        super(PrefixRetailRateForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_class = 'well'
         css_class = 'col-md-4'
@@ -161,7 +161,7 @@ class PrefixRetailRrateForm(forms.Form):
             FormActions(
                 HTML('<button type="submit" id="id_submit" name="submit" class="btn btn-primary" value="submit">'
                      '<i class="fa fa-search fa-lg"></i> %s</button>'
-                     '<a href="/rates/" class="btn btn-danger">%s</a>' % (_('search').title(), _('clear').title()) )
+                     '<a href="/rates/" class="btn btn-danger">%s</a>' % (_('search').title(), _('clear').title()))
             )
         )
 

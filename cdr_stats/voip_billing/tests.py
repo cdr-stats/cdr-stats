@@ -14,7 +14,7 @@
 
 from django_lets_go.utils import BaseAuthenticatedClient
 from voip_billing.forms import HourlyBillingForm, DailyBillingForm, \
-    PrefixRetailRrateForm
+    PrefixRetailRateForm
 from voip_billing.views import daily_billing_report, hourly_billing_report, export_rate
 from voip_billing.tasks import RebillingTask, ReaggregateTask
 from dateutil.relativedelta import relativedelta
@@ -99,9 +99,9 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         response = self.client.get('/simulator/')
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.post('/simulator/',
-            data={'destination_no': '123456789',
-                  'plan_id': 1})
+        response = self.client.post(
+            '/simulator/',
+            data={'destination_no': '123456789', 'plan_id': 1})
         self.assertEqual(response.status_code, 200)
         response = self.client.get('/simulator/')
         self.assertEqual(response.status_code, 200)
@@ -115,7 +115,8 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         #self.assertTrue(response.context['form'], DailyBillingForm())
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.post('/daily_billing_report/',
+        response = self.client.post(
+            '/daily_billing_report/',
             data={'plan_id': 1,
                   'from_date': datetime.now().strftime("%Y-%m-%d"),
                   'to_date': datetime.now().strftime("%Y-%m-%d")})
@@ -146,7 +147,8 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         #self.assertTemplateUsed(response, 'voip_billing/hourly_billing_report.html')
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.post('/hourly_billing_report/',
+        response = self.client.post(
+            '/hourly_billing_report/',
             data={'plan_id': 1,
                   'from_date': datetime.now().strftime("%Y-%m-%d")})
         self.assertEqual(response.status_code, 200)
@@ -170,7 +172,7 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         tday = datetime.today()
         voipplan_id = 1
         end_date = datetime(tday.year, tday.month, tday.day,
-            tday.hour, tday.minute, tday.second, tday.microsecond)
+                            tday.hour, tday.minute, tday.second, tday.microsecond)
         start_date = end_date + relativedelta(days=-1)
         call_kwargs = {}
         call_kwargs['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
@@ -185,7 +187,7 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
         tday = datetime.today()
         end_date = datetime(tday.year, tday.month, tday.day,
-            tday.hour, tday.minute, tday.second, tday.microsecond)
+                            tday.hour, tday.minute, tday.second, tday.microsecond)
         start_date = end_date + relativedelta(days=-1)
 
         call_kwargs['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
