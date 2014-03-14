@@ -20,12 +20,12 @@ function dismissAutocompletePopup(win, newId, newRepr) {
 	var calback = 'addItem_' + name;
 	// --- add result ---
 	try{
-	
+
 		eval(calback+'("'+newId+'","'+newRepr+'")');
 		win.close();
 	}catch(err){
 		//Handle errors here
 		// try default callback
 		dismissAddAnotherPopup(win, newId, newRepr);
-	}	
+	}
 }
