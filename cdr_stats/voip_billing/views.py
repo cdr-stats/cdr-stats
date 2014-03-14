@@ -37,10 +37,10 @@ import ast
 import tablib
 
 
-# @permission_required('user_profile.call_rate', login_url='/')
-# @login_required
-# @check_user_detail(['voipplan'])
-# @cache_page(60 * 5)
+@permission_required('user_profile.call_rate', login_url='/')
+@login_required
+@check_user_detail(['voipplan'])
+@cache_page(60 * 5)
 def voip_rates(request):
     """List voip call rates according to country prefix
 
@@ -83,12 +83,13 @@ def voip_rates(request):
             dialcode = ''
     full_url = request.build_absolute_uri('/')
     if dialcode:
-        api_url = full_url + 'rest-api/voip-rate/?dialcode=%s&sort_field=%s&sort_order=%s' % (dialcode, sort_order, order)
-        response = requests.get(api_url, auth=(request.user, request.user))
+        api_url = full_url + 'rest-api/voip-rate/?dialcode=%s&sort_field=%s&sort_order=%s' % \
+            (dialcode, sort_order, order)
+        response = requests.get(api_url, auth=(request.user, request.user), timeout=1.0)
     else:
         # Default listing or rate
         api_url = full_url + 'rest-api/voip-rate/?sort_field=%s&sort_order=%s' % (sort_order, order)
-        response = requests.get(api_url, auth=(request.user, request.user))
+        response = requests.get(api_url, auth=(request.user, request.user), timeout=1.0)
 
     if response.status_code == 200:
         rate_list = response.content
