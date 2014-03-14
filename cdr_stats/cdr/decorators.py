@@ -38,8 +38,11 @@ def check_cdr_exists(function=None):
 
 
 def check_user_detail(extra_value=[]):
-    def decorator(run_func):
-        def _wrapped_view(request, *args, **kwargs):
+    """
+    Decorator to check if accountcode, voipplan_id are attached to user or not
+    """
+    def _dec(run_func):
+        def _caller(request, *args, **kwargs):
             if not request.user.is_superuser:
                 try:
                     user_profile = UserProfile.objects.get(user=request.user)
@@ -51,6 +54,7 @@ def check_user_detail(extra_value=[]):
                         return run_func(request, *args, **kwargs)
                 except:
                     return HttpResponseRedirect('/?acc_code_error=true')
-            return run_func(request, *args, **kwargs)
-        return _wrapped_view
-    return decorator
+            else:
+                return run_func(request, *args, **kwargs)
+        return _caller
+    return _dec
