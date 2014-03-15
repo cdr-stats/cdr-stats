@@ -37,6 +37,16 @@ import ast
 import tablib
 
 
+def rest_api_call(request, api_url):
+    response = "['']"  # default string response of api
+    try:
+        response = requests.get(api_url, auth=(request.user, request.user), timeout=1.0)
+    except requests.exceptions.Timeout:
+        #Todo: we may want to deal with error nicely
+        logging.debug('API timeout Error : ' + api_url)
+    return response
+
+
 @permission_required('user_profile.call_rate', login_url='/')
 @login_required
 @check_user_detail('voipplan')
@@ -73,8 +83,7 @@ def voip_rates(request):
         request.session['dialcode'] = dialcode
     else:
         # pagination with prefix code
-        if (request.session.get('dialcode') and
-           (request.GET.get('page') or request.GET.get('sort_by'))):
+        if (request.session.get('dialcode') and (request.GET.get('page') or request.GET.get('sort_by'))):
             dialcode = request.session.get('dialcode')
             form = PrefixRetailRateForm(initial={'prefix': dialcode})
         else:
@@ -84,30 +93,22 @@ def voip_rates(request):
             dialcode = ''
     full_url = request.build_absolute_uri('/')
     if dialcode:
-        api_url = full_url + 'rest-api/voip-rate/?dialcode=%s&sort_field=%s&sort_order=%s' % \
-            (dialcode, sort_order, order)
-        try:
-            response = requests.get(api_url, auth=(request.user, request.user), timeout=1.0)
-        except requests.exceptions.Timeout:
-            #Todo: we may want to deal with error nicely
-            logging.debug('API timeout Error : ' + api_url)
-
+        api_url = '%srest-api/voip-rate/?dialcode=%s&sort_field=%s&sort_order=%s' % (
+            full_url, dialcode, sort_order, order)
+        response = rest_api_call(request, api_url)
     else:
         # Default listing or rate
-        api_url = full_url + 'rest-api/voip-rate/?sort_field=%s&sort_order=%s' % (sort_order, order)
-        try:
-            response = requests.get(api_url, auth=(request.user, request.user), timeout=1.0)
-        except requests.exceptions.Timeout:
-            #Todo: we may want to deal with error nicely
-            logging.debug('API timeout Error : ' + api_url)
+        api_url = '%srest-api/voip-rate/?sort_field=%s&sort_order=%s' % (
+            full_url, sort_order, order)
+        response = rest_api_call(request, api_url)
 
     if response and response.status_code == 200:
-        rate_list = response.content
         # due to string response of API, we need to convert response in to array
-        rate_list = rate_list.replace('[', '').replace(']', '').replace('}, {', '}|{').split('|')
+        rate_list = response.content.replace('[', '').replace(']', '').replace('}, {', '}|{').split('|')
         for i in rate_list:
-            # convert string into dict
-            final_rate_list.append(ast.literal_eval(i))
+            if i:
+                # convert string into dict
+                final_rate_list.append(ast.literal_eval(i))
 
     request.session['final_rate_list'] = final_rate_list
 
