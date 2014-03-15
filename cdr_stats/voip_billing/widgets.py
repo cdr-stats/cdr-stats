@@ -33,7 +33,7 @@ class ForeignKeySearchInput(forms.HiddenInput):
             'all': ('%scdr-stats/css/jquery.autocomplete.css' % settings.STATIC_URL,)
         }
         js = (
-            '%sjquery/jquery.min.js' % settings.STATIC_URL,
+            '%scdr-stats/js/jquery-1.8.2.js' % settings.STATIC_URL,
             '%scdr-stats/js/jquery.autocomplete.js' % settings.STATIC_URL,
             '%scdr-stats/js/AutocompleteObjectLookups.js ' % settings.STATIC_URL
         )
@@ -121,7 +121,7 @@ class ManyToManySearchInput(forms.MultipleHiddenInput):
             'all': ('%scdr-stats/css/jquery.autocomplete.css' % settings.STATIC_URL,)
         }
         js = (
-            '%sjquery/jquery.min.js' % settings.STATIC_URL,
+            '%scdr-stats/js/jquery-1.8.2.js' % settings.STATIC_URL,
             '%scdr-stats/js/jquery.autocomplete.js' % settings.STATIC_URL,
             '%scdr-stats/js/AutocompleteObjectLookups.js ' % settings.STATIC_URL
         )
