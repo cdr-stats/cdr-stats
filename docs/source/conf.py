@@ -17,9 +17,10 @@ import os
 
 sys.path.insert(0, os.path.abspath('../../'))
 sys.path.insert(1, os.path.abspath('../../cdr_stats'))
+#sys.path.insert(2, os.path.abspath('../../cdr_stats/cdr_stats'))
 
 from cdr_stats import cdr_stats
-os.environ['DJANGO_SETTINGS_MODULE'] = 'cdr_stats.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'cdr_stats.cdr_stats.settings'
 
 
 # If extensions (or modules to document with autodoc) are in another directory,

@@ -2,7 +2,7 @@
 
 CDR-Stats Views
 ===============
-.. automodule:: cdr.views
+.. automodule:: frontend.views
 
 
 .. _index-view:
@@ -12,6 +12,8 @@ CDR-Stats Views
 
   .. autofunction:: index
 
+
+.. automodule:: cdr.views
 
 .. _cdr-view:
 
@@ -53,12 +55,12 @@ CDR-Stats Views
   .. autofunction:: cdr_realtime
 
 
-.. _cdr-report-by-hour:
+.. _cdr-daily-comparison:
 
-:class:`cdr_report_by_hour`
----------------------------
+:class:`cdr_daily_comparison`
+-----------------------------
 
-  .. autofunction:: cdr_report_by_hour
+  .. autofunction:: cdr_daily_comparison
 
 
 .. _cdr-concurrent-calls:
