@@ -156,8 +156,8 @@ def cdr_view(request):
 
     **Logic Description**:
 
-        get the call records as well as daily call analytics
-        from mongodb collection according to search parameters
+        * get the call records as well as daily call analytics
+          from mongodb collection according to search parameters
     """
     logging.debug('CDR View Start')
     query_var = {}

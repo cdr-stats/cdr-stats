@@ -2,16 +2,6 @@
 
 CDR-Stats Views
 ===============
-.. automodule:: frontend.views
-
-
-.. _index-view:
-
-:class:`index`
---------------
-
-  .. autofunction:: index
-
 
 .. automodule:: cdr.views
 
@@ -79,6 +69,14 @@ CDR-Stats Views
   .. autofunction:: world_map_view
 
 
+.. _mail-report:
+
+:class:`mail_report`
+--------------------
+
+  .. autofunction:: mail_report
+
+
 .. automodule:: user_profile.views
 
 .. _customer-detail-change:
@@ -122,6 +120,13 @@ CDR-Stats Views
 
   .. autofunction:: alarm_change
 
+.. _alarm-test:
+
+:class:`alarm_test`
+-------------------
+
+  .. autofunction:: alarm_test
+
 
 .. _alert-report:
 
@@ -130,3 +135,122 @@ CDR-Stats Views
 
   .. autofunction:: alert_report
 
+.. _trust-control:
+
+:class:`trust_control`
+----------------------
+
+  .. autofunction:: trust_control
+
+
+.. automodule:: frontend.views
+
+.. _index-view:
+
+:class:`index`
+--------------
+
+  .. autofunction:: index
+
+.. _diagnostic:
+
+:class:`diagnostic`
+-------------------
+
+  .. autofunction:: diagnostic
+
+
+.. _login-view:
+
+:class:`login_view`
+-------------------
+
+  .. autofunction:: login_view
+
+
+.. _logout-view:
+
+:class:`logout_view`
+--------------------
+
+  .. autofunction:: logout_view
+
+
+.. _pleaselog:
+
+:class:`pleaselog`
+------------------
+
+  .. autofunction:: pleaselog
+
+
+.. automodule:: voip_billing.views
+
+.. _voip-rates-view:
+
+:class:`voip_rates`
+-------------------
+
+  .. autofunction:: voip_rates
+
+.. _export-rate-view:
+
+:class:`export_rate`
+--------------------
+
+  .. autofunction:: export_rate
+
+
+.. _simulator-view:
+
+:class:`simulator`
+------------------
+
+  .. autofunction:: simulator
+
+
+.. _daily-billing-report-view:
+
+:class:`daily_billing_report`
+-----------------------------
+
+  .. autofunction:: daily_billing_report
+
+
+.. _hourly-billing-report-view:
+
+:class:`hourly_billing_report`
+------------------------------
+
+  .. autofunction:: hourly_billing_report
+
+
+.. automodule:: mod_registration.views
+
+.. _cust-password-reset-view:
+
+:class:`cust_password_reset`
+----------------------------
+
+  .. autofunction:: cust_password_reset
+
+.. _cust-password-reset-done-view:
+
+:class:`cust_password_reset_done`
+---------------------------------
+
+  .. autofunction:: cust_password_reset_done
+
+.. _cust-password-reset-confirm-view:
+
+:class:`cust_password_reset_confirm`
+------------------------------------
+
+  .. autofunction:: cust_password_reset_confirm
+
+.. _cust-password-reset-complete-view:
+
+:class:`cust_password_reset_complete`
+-------------------------------------
+
+  .. autofunction:: cust_password_reset_complete
