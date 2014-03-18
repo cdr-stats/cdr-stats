@@ -1,8 +1,8 @@
-.. automodule:: api.voip_rate_api
+.. automodule:: apirest.view_voip_rate
 
 .. _voip-rate-api-resource:
 
-:class:`VoipRateResource`
--------------------------
+:class:`VoIPRateList`
+---------------------
 
-.. autoclass:: VoipRateResource
+.. autoclass:: VoIPRateList

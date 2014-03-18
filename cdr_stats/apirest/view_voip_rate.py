@@ -28,19 +28,19 @@ logger = logging.getLogger('cdr-stats.filelog')
 class VoIPRateList(APIView):
     """
     List all voip rate
-    """
-    authentication = (BasicAuthentication, SessionAuthentication)
 
-    def get(self, request, format=None):
-        """
-        **Read**:
+    **Read**:
 
             CURL Usage::
 
                 curl -u username:password -H 'Accept: application/json' http://localhost:8000/rest-api/voip-rate/?recipient_phone_no=4323432&sort_field=prefix&sort_order=desc
 
                 curl -u username:password -H 'Accept: application/json' http://localhost:8000/rest-api/voip-rate/?dialcode=4323432&sort_field=prefix&sort_order=desc
-        """
+    """
+    authentication = (BasicAuthentication, SessionAuthentication)
+
+    def get(self, request, format=None):
+        """"""
         logger.debug('Voip Rate GET API get called')
         error = {}
         cursor = connection.cursor()

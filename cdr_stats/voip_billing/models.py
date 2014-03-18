@@ -97,10 +97,8 @@ class BanPrefix(models.Model):
     Ban prefixes are linked to Ban plan & VoIP with these prefix
     will not be authorized to send.
     """
-    ban_plan = models.ForeignKey(BanPlan, verbose_name=_('ban plan'),
-        help_text=_("select ban plan"))
-    prefix = models.ForeignKey(Prefix, verbose_name=_('prefix'),
-       help_text=_("select prefix"))
+    ban_plan = models.ForeignKey(BanPlan, verbose_name=_('ban plan'), help_text=_("select ban plan"))
+    prefix = models.ForeignKey(Prefix, verbose_name=_('prefix'), help_text=_("select prefix"))
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
@@ -137,13 +135,10 @@ class VoIPRetailPlan(Model):
     The system can have several VoIPRetailPlans, but only the ones associated to
     the VoIPplan will be used by the client.
     """
-    name = models.CharField(max_length=255, verbose_name=_('name'),
-                            help_text=_("enter plan name"))
-    description = models.TextField(verbose_name=_('description'),
-                                   null=True, blank=True,
+    name = models.CharField(max_length=255, verbose_name=_('name'), help_text=_("enter plan name"))
+    description = models.TextField(verbose_name=_('description'), null=True, blank=True,
                                    help_text=_("short description about Plan"))
-    metric = models.IntegerField(default=10, verbose_name=_('metric'),
-                                 help_text=_("enter metric in digit"))
+    metric = models.IntegerField(default=10, verbose_name=_('metric'), help_text=_("enter metric in digit"))
     created_date = models.DateTimeField(auto_now_add=True, verbose_name=_('date'))
     updated_date = models.DateTimeField(auto_now=True)
     voip_plan = models.ManyToManyField(VoIPPlan, through='VoIPPlan_VoIPRetailPlan')
@@ -184,14 +179,11 @@ class VoIPRetailRate(models.Model):
     associated to a VoIPPlan
     """
     voip_retail_plan_id = models.ForeignKey(VoIPRetailPlan, db_column="voip_retail_plan_id",
-                                           verbose_name=_("retail plan"),
-                                           null=True, blank=True,
-                                           help_text=_("select retail plan"))
-    prefix = models.ForeignKey(Prefix, db_column="prefix",
-                               verbose_name=_("prefix"), null=True, blank=True,
+                                            verbose_name=_("retail plan"), null=True, blank=True,
+                                            help_text=_("select retail plan"))
+    prefix = models.ForeignKey(Prefix, db_column="prefix", verbose_name=_("prefix"), null=True, blank=True,
                                help_text=_("select prefix"))
-    retail_rate = models.DecimalField(max_digits=10, decimal_places=4,
-                                      default=0, verbose_name=_("rate"),
+    retail_rate = models.DecimalField(max_digits=10, decimal_places=4, default=0, verbose_name=_("rate"),
                                       help_text=_("enter Rate"))
     created_date = models.DateTimeField(auto_now_add=True, verbose_name=_("date"))
     updated_date = models.DateTimeField(auto_now=True)
@@ -273,11 +265,9 @@ class VoIPCarrierRate(models.Model):
     VoIPCarrierRates are grouped by VoIPCarrierPlan, which will be then
     associated to a VoIPRetailPlan
     """
-    voip_carrier_plan_id = models.ForeignKey(VoIPCarrierPlan,
-                                           db_column="voip_carrier_plan_id",
-                                           verbose_name=_("carrier plan"),
-                                           null=True, blank=True,
-                                           help_text=_("select carrier plan"))
+    voip_carrier_plan_id = models.ForeignKey(VoIPCarrierPlan, db_column="voip_carrier_plan_id",
+                                             verbose_name=_("carrier plan"), null=True, blank=True,
+                                             help_text=_("select carrier plan"))
     prefix = models.ForeignKey(Prefix, db_column="prefix",
                                verbose_name=_("prefix"), null=True, blank=True,
                                help_text=_("select prefix"))
