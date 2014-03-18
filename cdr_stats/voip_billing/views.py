@@ -296,8 +296,8 @@ def daily_billing_report(request):
                        "date_format": tooltip_date}
         chartdata = {
             'x': xdata,
-            'name1': 'Buy cost', 'y1': ydata, 'extra1': extra_serie,
-            'name2': 'Sell cost', 'y2': ydata2, 'extra2': extra_serie,
+            'name1': ("buy cost").capitalize(), 'y1': ydata, 'extra1': extra_serie,
+            'name2': ("sell cost").capitalize(), 'y2': ydata2, 'extra2': extra_serie,
         }
 
     data = {

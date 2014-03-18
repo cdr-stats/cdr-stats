@@ -65,18 +65,16 @@ class Alarm(models.Model):
     """
     user = models.ForeignKey('auth.User', related_name='Alarm_owner')
     name = models.CharField(max_length=100, verbose_name=_('name'))
-    period = models.PositiveIntegerField(choices=list(PERIOD), default=1, verbose_name=_('period'),
+    period = models.PositiveIntegerField(choices=list(PERIOD), default=PERIOD.DAY, verbose_name=_('period'),
                                          help_text=_('interval to apply alarm'))
-    type = models.PositiveIntegerField(choices=list(ALARM_TYPE), default=1, verbose_name=_('type'),
-                                help_text=_('ALOC (average length of call) ; ASR (answer seize ratio) ; CIC (Consecutive Incomplete Calls) '))
-    alert_condition = models.PositiveIntegerField(choices=list(ALERT_CONDITION),
-                                                  default=1,
-                                                  verbose_name=_('condition'))
-    alert_value = models.DecimalField(verbose_name=_('value'), max_digits=5,
-                                decimal_places=2, blank=True, null=True,
-                                help_text=_('input the value for the alert'))
+    type = models.PositiveIntegerField(choices=list(ALARM_TYPE), default=ALARM_TYPE.ALOC, verbose_name=_('type'),
+                                       help_text=_('ALOC (average length of call) ; ASR (answer seize ratio) ; CIC (Consecutive Incomplete Calls) '))
+    alert_condition = models.PositiveIntegerField(choices=list(ALERT_CONDITION), verbose_name=_('condition'),
+                                                  default=ALERT_CONDITION.IS_LESS_THAN)
+    alert_value = models.DecimalField(verbose_name=_('value'), max_digits=5, decimal_places=2,
+                                      blank=True, null=True, help_text=_('input the value for the alert'))
     alert_condition_add_on = models.PositiveIntegerField(choices=list(ALERT_CONDITION_ADD_ON),
-                                                         default=1)
+                                                         default=ALERT_CONDITION_ADD_ON.SAME_DAY)
     status = models.PositiveIntegerField(choices=list(STATUS), default=1, verbose_name=_('status'))
     email_to_send_alarm = models.EmailField(max_length=100, verbose_name=_('email to send alarm'))
     created_date = models.DateTimeField(auto_now_add=True, verbose_name=_('date'))
@@ -107,10 +105,10 @@ class AlarmReport(models.Model):
     **Name of DB table**: alert_report
     """
     alarm = models.ForeignKey(Alarm, verbose_name=_('alarm'), help_text=_("select Alarm"))
-    calculatedvalue = models.DecimalField(verbose_name=_('calculated value'),
-                                          max_digits=10, decimal_places=3,
-                                          blank=True, null=True)
-    status = models.PositiveIntegerField(choices=list(ALARM_REPROT_STATUS), default=1, verbose_name=_('status'))
+    calculatedvalue = models.DecimalField(verbose_name=_('calculated value'), blank=True, null=True,
+                                          max_digits=10, decimal_places=3)
+    status = models.PositiveIntegerField(choices=list(ALARM_REPROT_STATUS), verbose_name=_('status'),
+                                         default=ALARM_REPROT_STATUS.NO_ALARM_SENT)
     daterun = models.DateTimeField(auto_now_add=True, verbose_name=_('date'))
 
     def __unicode__(self):
