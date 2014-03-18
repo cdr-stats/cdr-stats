@@ -34,7 +34,7 @@ from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_hourly_report, pipeline_country_hourly_report,\
     pipeline_mail_report
 from cdr.decorators import check_cdr_exists, check_user_detail
-from cdr.constants import CDR_COLUMN_NAME, Export_choice
+from cdr.constants import CDR_COLUMN_NAME, Export_choice, CheckWith
 from voip_billing.function_def import get_rounded_value
 from user_profile.models import UserProfile
 from bson.objectid import ObjectId
@@ -1138,7 +1138,7 @@ def cdr_daily_comparison(request):
     min_charttype = call_charttype = "lineChart"
     min_chartdata = call_chartdata = {'x': []}
     comp_days = 2
-    check_days = 1
+    check_days = CheckWith.previous_days
     action = 'tabs-1'
     from_date = datetime.today()
     form = CompareCallSearchForm(request.POST or None,
@@ -1163,8 +1163,8 @@ def cdr_daily_comparison(request):
         if switch_id and int(switch_id) != 0:
             query_var['metadata.switch_id'] = int(switch_id)
 
-        # check previous days
-        if check_days == 2:
+        # Same day of the week
+        if check_days == CheckWith.same_day_of_the_week:
             compare_date_list = []
             compare_date_list.append(select_date)
 
@@ -1183,8 +1183,8 @@ def cdr_daily_comparison(request):
     if not request.user.is_superuser:  # not superuser
         query_var['metadata.accountcode'] = UserProfile.objects.get(user=request.user).accountcode
 
-    # Previous days
-    if check_days == 2:
+    # Same day of the week
+    if check_days == CheckWith.same_day_of_the_week:
         for i in compare_date_list:
             s_date = datetime(i.year, i.month, i.day, 0, 0, 0, 0)
             e_date = datetime(i.year, i.month, i.day, 23, 59, 59, 999999)
@@ -1194,8 +1194,8 @@ def cdr_daily_comparison(request):
             call_per_hr_data = call_min_data['call_total_record']
             min_per_hr_data = call_min_data['min_total_record']
 
-    # Same day of the week
-    if check_days == 1:
+    # Previous days
+    if check_days == CheckWith.previous_days:
         call_min_data = get_hourly_report_for_date(start_date, end_date, query_var)
         call_per_hr_data = call_min_data['call_total_record']
         min_per_hr_data = call_min_data['min_total_record']
