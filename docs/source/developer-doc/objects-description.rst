@@ -78,6 +78,91 @@ Objects Description
     :members:
 
 
+.. automodule:: voip_billing.models
+
+.. _VoIPPlan-model:
+
+:class:`VoIPPlan`
+-----------------
+
+.. autoclass:: VoIPPlan
+    :members:
+
+.. _BanPlan-model:
+
+:class:`BanPlan`
+----------------
+
+.. autoclass:: BanPlan
+    :members:
+
+
+.. _VoIPPlan-BanPlan-model:
+
+:class:`VoIPPlan_BanPlan`
+-------------------------
+
+.. autoclass:: VoIPPlan_BanPlan
+    :members:
+
+.. _BanPrefix-model:
+
+:class:`BanPrefix`
+------------------
+
+.. autoclass:: BanPrefix
+    :members:
+
+.. _VoIPRetailPlan-model:
+
+:class:`VoIPRetailPlan`
+-----------------------
+
+.. autoclass:: VoIPRetailPlan
+    :members:
+
+.. _VoIPPlan-VoIPRetailPlan-model:
+
+:class:`VoIPPlan_VoIPRetailPlan`
+--------------------------------
+
+.. autoclass:: VoIPPlan_VoIPRetailPlan
+    :members:
+
+.. _VoIPRetailRate-model:
+
+:class:`VoIPRetailRate`
+-----------------------
+
+.. autoclass:: VoIPRetailRate
+    :members:
+
+.. _VoIPCarrierPlan-model:
+
+:class:`VoIPCarrierPlan`
+------------------------
+
+.. autoclass:: VoIPCarrierPlan
+    :members:
+
+.. _VoIPCarrierRate-model:
+
+:class:`VoIPCarrierRate`
+------------------------
+
+.. autoclass:: VoIPCarrierRate
+    :members:
+
+
+.. _VoIPPlan-VoIPCarrierPlan-model:
+
+:class:`VoIPPlan_VoIPCarrierPlan`
+---------------------------------
+
+.. autoclass:: VoIPPlan_VoIPCarrierPlan
+    :members:
+
+
 .. _database-design:
 
 Database Design
