@@ -70,8 +70,7 @@ class get_channels_info(PeriodicTask):
 
         # Get calldate
         now = datetime.today()
-        date_now = datetime(now.year, now.month, now.day,
-                            now.hour, now.minute, now.second, 0)
+        date_now = datetime(now.year, now.month, now.day, now.hour, now.minute, now.second, 0)
         #key_date / minute precision
         key_date = "%d-%d-%d-%d-%d" % (now.year, now.month, now.day, now.hour, now.minute)
 
@@ -141,9 +140,7 @@ class get_channels_info(PeriodicTask):
                             accountcode = row[0]
                         numbercall = row[1]
                         totalcall = totalcall + numbercall
-                        logger.debug('%s (accountcode:%s, switch_id:%d) ==> %s'
-                                % (date_now, accountcode, switch_id,
-                                   str(numbercall)))
+                        logger.debug('%s (accountcode:%s, switch_id:%d) ==> %s' % (date_now, accountcode, switch_id, str(numbercall)))
 
                         call_json = {
                             'switch_id': switch_id,

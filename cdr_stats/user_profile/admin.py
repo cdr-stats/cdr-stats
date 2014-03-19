@@ -89,16 +89,14 @@ def make_read(self, request, queryset):
     """
     try:
         queryset.update(unseen=0)
-        self.message_user(request,
-            _("notifications are successfully marked as read."))
+        self.message_user(request, _("notifications are successfully marked as read."))
     except:
         messages.error(request, _("notifications are not marked as read."))
 make_read.short_description = _("mark notification as seen")
 
 
 class NoticeAdmin(NoticeAdmin):
-    list_display = ('message', 'recipient', 'sender', 'notice_type',
-                    'added', 'unseen')
+    list_display = ('message', 'recipient', 'sender', 'notice_type', 'added', 'unseen')
     actions = [make_read]
 
 admin.site.unregister(Notice)

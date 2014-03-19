@@ -117,8 +117,7 @@ class SearchForm(forms.Form):
 
     def clean_accountcode(self):
         """Retrieve valid accountcode"""
-        accountcode = self.cleaned_data['accountcode']
-        return accountcode
+        return self.cleaned_data['accountcode']
 
 
 class CdrSearchForm(SearchForm):
@@ -397,8 +396,7 @@ class FileImport(forms.Form):
         filename = self.cleaned_data['csv_file']
         file_exts = ('csv', 'txt')
         if not str(filename).split('.')[1].lower() in file_exts:
-            raise forms.ValidationError(_(u'document types accepted: %s'
-                    % """ """.join(file_exts)))
+            raise forms.ValidationError(_(u'document types accepted: %s' % """ """.join(file_exts)))
         else:
             return filename
 

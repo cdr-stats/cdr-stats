@@ -23,8 +23,7 @@ from crispy_forms.layout import Layout, Div, HTML
 
 class BWCountryForm(forms.Form):
     """Blacklist/Whitelist by country form"""
-    country = forms.ChoiceField(label=_('country'), required=True,
-                                choices=get_country_list())
+    country = forms.ChoiceField(label=_('country'), required=True, choices=get_country_list())
 
     def __init__(self, form_type, *args, **kwargs):
         super(BWCountryForm, self).__init__(*args, **kwargs)
@@ -133,8 +132,7 @@ class AlarmReportForm(forms.Form):
         super(AlarmReportForm, self).__init__(*args, **kwargs)
         alarm_list_user = []
         alarm_list_user.append((0, '---'))
-        alarm_list = Alarm.objects.values_list('id', 'name').filter(user=user).order_by('id')
-        for i in alarm_list:
+        for i in Alarm.objects.values_list('id', 'name').filter(user=user).order_by('id'):
             alarm_list_user.append((i[0], i[1]))
 
         self.fields['alarm_id'].choices = alarm_list_user

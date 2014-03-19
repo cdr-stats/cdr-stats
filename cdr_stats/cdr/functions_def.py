@@ -51,16 +51,14 @@ def get_switch_list():
 
 def get_country_list():
     """Country list used in form"""
-    country_list = Country.objects.all()
-    return ((l.id, l.countryname) for l in country_list)
+    return ((l.id, l.countryname) for l in Country.objects.all())
 
 
 @cached(3600)
 def get_hc_list():
     """hangupcause list used in form"""
-    hangup_list = HangupCause.objects.all()
     result = []
-    for l in hangup_list:
+    for l in HangupCause.objects.all():
         if len(l.enumeration) > 0:
             result.append((l.id, l.enumeration))
         else:

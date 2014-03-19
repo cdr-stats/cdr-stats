@@ -55,10 +55,8 @@ def get_value_from_uni(j, row, field_name):
     >>> get_value_from_uni(j, row, field_name)
     '2'
     """
-    if j[0] == field_name:
-        return row[j[1] - 1]
-    else:
-        return ''
+    return row[j[1] - 1] if j[0] == field_name else ''
+
 
 """
 Asterisk cdr col

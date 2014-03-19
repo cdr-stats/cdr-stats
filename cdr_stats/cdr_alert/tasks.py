@@ -25,8 +25,8 @@ from celery.task import PeriodicTask, task
 from notification import models as notification
 from django_lets_go.only_one_task import only_one
 from cdr.aggregate import pipeline_cdr_alert_task
-from cdr_alert.constants import PERIOD, ALARM_TYPE,\
-    ALERT_CONDITION, ALERT_CONDITION_ADD_ON, ALARM_REPROT_STATUS
+from cdr_alert.constants import PERIOD, ALARM_TYPE, ALERT_CONDITION, ALERT_CONDITION_ADD_ON,\
+    ALARM_REPROT_STATUS
 from cdr_alert.models import Alarm, AlarmReport
 from cdr.functions_def import get_hangupcause_id
 from cdr.views import get_cdr_mail_report
@@ -78,14 +78,13 @@ def notify_admin_with_mail(notice_id, email_id):
     True
     """
     # Get all the admin users - admin superuser
-    all_admin_user = User.objects.filter(is_superuser=True)
-    for user in all_admin_user:
+    for user in User.objects.filter(is_superuser=True):
         recipient = user
 
         # send notification
         if notification:
-            note_label = notification.NoticeType.objects.get(default=notice_id)
-            notification.send([recipient], note_label.label,
+            note_label = notification.NoticeType.objects.get(default=notice_id).label
+            notification.send([recipient], note_label,
                               {'from_user': user}, sender=user)
         # Send mail to ADMINS
         subject = _('Alert')
@@ -351,8 +350,8 @@ def notify_admin_without_mail(notice_id, email_id):
 
         # send notification
         if notification:
-            note_label = notification.NoticeType.objects.get(default=notice_id)
-            notification.send([recipient], note_label.label, {'from_user': user}, sender=user)
+            note_label = notification.NoticeType.objects.get(default=notice_id).label
+            notification.send([recipient], note_label, {'from_user': user}, sender=user)
     return True
 
 
@@ -412,12 +411,10 @@ class send_cdr_report(PeriodicTask):
         logger = self.get_logger()
         logger.info('TASK :: send_cdr_report')
 
-        list_users = User.objects.filter(is_staff=True, is_active=True)
-        for c_user in list_users:
+        for c_user in User.objects.filter(is_staff=True, is_active=True):
             from_email = c_user.email
             try:
-                user_profile_obj = UserProfile.objects.get(user=c_user)
-                to = user_profile_obj.multiple_email
+                to = UserProfile.objects.get(user=c_user).multiple_email
             except UserProfile.DoesNotExist:
                 to = ''
                 logger.error('Error : UserProfile notfound (user_id:%d)' % c_user.id)

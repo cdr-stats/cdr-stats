@@ -82,13 +82,11 @@ class CarrierRate_fileImport(FileImport):
     Admin Form : Import CSV file with Carrier Plan
     """
     plan_id = forms.ChoiceField(label=_("carrier plan"), required=False,
-                                choices=carrier_plan_list(),
-                                help_text=_("select carrier plan"))
+                                choices=carrier_plan_list(), help_text=_("select carrier plan"))
     chk = forms.BooleanField(label=_("make retail plan"), required=False,
                              help_text=_("select if you want to make retail plan"))
     retail_plan_id = forms.ChoiceField(label=_("retail plan"), required=False,
-                                       choices=retail_plan_list(),
-                                       help_text=_("select retail plan"))
+                                       choices=retail_plan_list(), help_text=_("select retail plan"))
     profit_percentage = forms.CharField(label=_("profit in % :"), required=False,
                                         widget=forms.TextInput(attrs={'size': 3}),
                                         help_text=_("enter digit without %"))
@@ -198,8 +196,7 @@ class SimulatorForm(SendVoIPForm):
     """
     Admin/Client Form : To Simulator
     """
-    plan_id = forms.ChoiceField(label=_("VoIP plan"),
-                                choices=voip_plan_list(), required=False)
+    plan_id = forms.ChoiceField(label=_("VoIP plan"), choices=voip_plan_list(), required=False)
 
     def __init__(self, user, *args, **kwargs):
         super(SimulatorForm, self).__init__(*args, **kwargs)

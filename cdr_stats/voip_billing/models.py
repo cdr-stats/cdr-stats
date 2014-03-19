@@ -268,11 +268,9 @@ class VoIPCarrierRate(models.Model):
     voip_carrier_plan_id = models.ForeignKey(VoIPCarrierPlan, db_column="voip_carrier_plan_id",
                                              verbose_name=_("carrier plan"), null=True, blank=True,
                                              help_text=_("select carrier plan"))
-    prefix = models.ForeignKey(Prefix, db_column="prefix",
-                               verbose_name=_("prefix"), null=True, blank=True,
+    prefix = models.ForeignKey(Prefix, db_column="prefix", verbose_name=_("prefix"), null=True, blank=True,
                                help_text=_("select prefix"))
-    carrier_rate = models.DecimalField(max_digits=10, decimal_places=4,
-                                       default=0, verbose_name=_("rate"),
+    carrier_rate = models.DecimalField(max_digits=10, decimal_places=4, default=0, verbose_name=_("rate"),
                                        help_text=_("enter rate"))
     created_date = models.DateTimeField(auto_now_add=True, verbose_name=_("date"))
     updated_date = models.DateTimeField(auto_now=True)

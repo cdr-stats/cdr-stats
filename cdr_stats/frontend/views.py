@@ -167,8 +167,7 @@ def logout_view(request):
     logout(request)
     # set language cookie
     response = HttpResponseRedirect('/')
-    response.set_cookie(settings.LANGUAGE_COOKIE_NAME,
-                        request.LANGUAGE_CODE)
+    response.set_cookie(settings.LANGUAGE_COOKIE_NAME, request.LANGUAGE_CODE)
     return response
 
 
