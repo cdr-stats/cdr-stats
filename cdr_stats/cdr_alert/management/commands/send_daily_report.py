@@ -44,8 +44,7 @@ class Command(BaseCommand):
                 continue
             from_email = c_user.email
             try:
-                user_profile_obj = UserProfile.objects.get(user=c_user)
-                to = user_profile_obj.multiple_email
+                to = UserProfile.objects.get(user=c_user).multiple_email
             except UserProfile.DoesNotExist:
                 print 'Error: UserProfile not found (user_id:' + str(c_user.id) + ')'
                 continue

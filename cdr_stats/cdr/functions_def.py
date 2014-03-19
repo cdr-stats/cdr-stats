@@ -45,8 +45,7 @@ def get_switch_ip_addr(id):
 
 def get_switch_list():
     """Switch list used in form"""
-    switch_list = Switch.objects.all()
-    return ((l.id, l.name) for l in switch_list)
+    return ((l.id, l.name) for l in Switch.objects.all())
 
 
 def get_country_list():
@@ -174,13 +173,13 @@ def get_country_id(prefix_list):
     try:
         # get a list in numeric order (which is also length order)
         prefix_obj = Prefix.objects.filter(prefix__in=eval(prefix_list)).order_by('prefix')
+        # find the longest prefix with a non-zero country_id
+        for i in xrange(0, len(prefix_obj)):
+            if prefix_obj[i].country_id:
+                country_id = prefix_obj[i].country_id.id
+        return country_id
     except:
         return country_id
-    # find the longest prefix with a non-zero country_id
-    for i in xrange(0, len(prefix_obj)):
-        if prefix_obj[i].country_id:
-            country_id = prefix_obj[i].country_id.id
-    return country_id
 
 
 @cached(3600)
@@ -214,9 +213,7 @@ def chk_date_for_hrs(previous_date, graph_date):
     >>> chk_date_for_hrs(graph_date)
     False
     """
-    if graph_date > previous_date:
-        return True
-    return False
+    return True if graph_date > previous_date else False
 
 
 def calculate_act_and_acd(total_calls, total_duration):

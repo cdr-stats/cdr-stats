@@ -49,8 +49,7 @@ def sw_list_with_all():
     """Switch list"""
     list_sw = []
     list_sw.append((0, _('all switches').capitalize()))
-    sw_list = get_switch_list()
-    for i in sw_list:
+    for i in get_switch_list():
         list_sw.append((i[0], i[1]))
     return list_sw
 
@@ -59,8 +58,7 @@ def hc_list_with_all():
     """Hangup cause list"""
     list_hc = []
     list_hc.append((0, _('all').capitalize()))
-    hc_list = get_hc_list()
-    for i in hc_list:
+    for i in get_hc_list():
         list_hc.append((i[0], i[1]))
     return list_hc
 
@@ -70,8 +68,7 @@ def country_list_with_all():
     list_ct = []
     list_ct.append((0, _('all').capitalize()))
     list_ct.append((999, _('internal call').capitalize()))
-    ct_list = get_country_list()
-    for i in ct_list:
+    for i in get_country_list():
         list_ct.append((i[0], i[1]))
     return list_ct
 
@@ -421,10 +418,8 @@ CDR_FIELD_LIST = (
     'accountcode',
 )
 
-CDR_FIELD_LIST_NUM = [(x, 'column-' + str(x)) for x in range(1,
-                      len(CDR_FIELD_LIST) + 1)]
-ACCOUNTCODE_FIELD_LIST_NUM = [(x, 'column-' + str(x)) for x in range(1,
-                              len(CDR_FIELD_LIST) + 1)]
+CDR_FIELD_LIST_NUM = [(x, 'column-' + str(x)) for x in range(1, len(CDR_FIELD_LIST) + 1)]
+ACCOUNTCODE_FIELD_LIST_NUM = [(x, 'column-' + str(x)) for x in range(1, len(CDR_FIELD_LIST) + 1)]
 ACCOUNTCODE_FIELD_LIST_NUM.append((0, 'No import'))
 ACCOUNTCODE_FIELD_LIST_NUM = sorted(ACCOUNTCODE_FIELD_LIST_NUM,
     key=lambda ACCOUNTCODE_FIELD_LIST_NUM: ACCOUNTCODE_FIELD_LIST_NUM[0])
