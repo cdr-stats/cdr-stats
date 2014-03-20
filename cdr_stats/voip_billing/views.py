@@ -38,13 +38,22 @@ import tablib
 
 
 def rest_api_call(request, api_url):
+    final_rate_list = []
     response = "['']"  # default string response of api
     try:
         response = requests.get(api_url, auth=(request.user, request.user), timeout=1.0)
     except requests.exceptions.Timeout:
         #Todo: we may want to deal with error nicely
         logging.debug('API timeout Error : ' + api_url)
-    return response
+
+    if response and response.status_code == 200:
+        # due to string response of API, we need to convert response in to array
+        rate_list = response.content.replace('[', '').replace(']', '').replace('}, {', '}|{').split('|')
+        for i in rate_list:
+            if i:
+                # convert string into dict
+                final_rate_list.append(ast.literal_eval(i))
+    return final_rate_list
 
 
 @permission_required('user_profile.call_rate', login_url='/')
@@ -67,7 +76,7 @@ def voip_rates(request):
     form = PrefixRetailRateForm(request.POST or None)
     final_rate_list = []
     # Get pagination data
-    response = None
+
     sort_col_field_list = ['prefix', 'retail_rate', 'destination']
     page_data = get_pagination_vars(request, sort_col_field_list, default_sort_field='prefix')
 
@@ -89,28 +98,19 @@ def voip_rates(request):
         else:
             # Reset variables
             request.session['dialcode'] = ''
-            request.session['final_rate_list'] = ''
+            request.session['session_api_url'] = ''
             dialcode = ''
     full_url = request.build_absolute_uri('/')
     if dialcode:
         api_url = '%srest-api/voip-rate/?dialcode=%s&sort_field=%s&sort_order=%s' % (
             full_url, dialcode, sort_order, order)
-        response = rest_api_call(request, api_url)
+        final_rate_list = rest_api_call(request, api_url)
     else:
         # Default listing or rate
-        api_url = '%srest-api/voip-rate/?sort_field=%s&sort_order=%s' % (
-            full_url, sort_order, order)
-        response = rest_api_call(request, api_url)
+        api_url = '%srest-api/voip-rate/?sort_field=%s&sort_order=%s' % (full_url, sort_order, order)
+        final_rate_list = rest_api_call(request, api_url)
 
-    if response and response.status_code == 200:
-        # due to string response of API, we need to convert response in to array
-        rate_list = response.content.replace('[', '').replace(']', '').replace('}, {', '}|{').split('|')
-        for i in rate_list:
-            if i:
-                # convert string into dict
-                final_rate_list.append(ast.literal_eval(i))
-
-    request.session['final_rate_list'] = final_rate_list
+    request.session['session_api_url'] = api_url
 
     variables = RequestContext(request, {
         'form': form,
@@ -143,8 +143,9 @@ def export_rate(request):
     headers = ('prefix', 'destination', 'retail_rate')
 
     final_result = []
-    if request.session.get('final_rate_list'):
-        final_result = request.session['final_rate_list']
+    if request.session.get('session_api_url'):
+        api_url = request.session['session_api_url']
+        final_result = rest_api_call(request, api_url)
 
     list_val = []
     for row in final_result:
