@@ -384,8 +384,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
         """
         if db_field.name == "prefix":
             kwargs["queryset"] = prefix_qs()
-        return super(VoIPRetailRateAdmin, self).formfield_for_foreignkey(
-            db_field, request, **kwargs)
+        return super(VoIPRetailRateAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_urls(self):
         urls = super(VoIPRetailRateAdmin, self).get_urls()

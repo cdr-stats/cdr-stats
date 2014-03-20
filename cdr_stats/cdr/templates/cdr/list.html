@@ -181,18 +181,13 @@
                             {{ row.caller_id_name }}
                         </td>
                         <td>{{ row.destination_number }}</td>
-                        <td>{% if result == '1' %}
-                                {{ row.duration|conv_min }}
-                            {% else %}
-                                {{ row.duration }}
-                            {% endif %}
-                        </td>
-                        <td>{% if result == '1' %}
-                                {{ row.billsec|conv_min }}
-                            {% else %}
-                                {{ row.billsec }}
-                            {% endif %}
-                        </td>
+                        {% if result == '1' %}
+                            <td>{{ row.duration|conv_min }}</td>
+                            <td>{{ row.billsec|conv_min }}</td>
+                        {% else %}
+                            <td>{{ row.duration }}</td>
+                            <td>{{ row.billsec }}</td>
+                        {% endif %}
                         <td>
                           {% cache 1800 hangupcause_name row.hangup_cause_id %}
                             {{ row.hangup_cause_id|hangupcause_name }}
