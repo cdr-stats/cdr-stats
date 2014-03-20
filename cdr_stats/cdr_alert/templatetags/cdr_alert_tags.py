@@ -12,9 +12,11 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django import template
-from cdr_alert.constants import PERIOD, ALARM_TYPE, STATUS,\
-    ALARM_REPROT_STATUS, ALERT_CONDITION, ALERT_CONDITION_ADD_ON
+from django.utils.safestring import mark_safe
+from cdr_alert.constants import PERIOD, ALARM_TYPE, STATUS, ALARM_REPROT_STATUS, ALERT_CONDITION,\
+    ALERT_CONDITION_ADD_ON
 from mod_utils.function_def import get_status_value
+from country_dialcode.models import Prefix
 register = template.Library()
 
 
@@ -60,3 +62,12 @@ def alarm_condition_add_on(value):
 def alarm_report_status(value):
     """alarm report status"""
     return get_status_value(value, ALARM_REPROT_STATUS)
+
+
+@register.simple_tag(name='get_prefixes')
+def get_prefixes():
+    """Usage: {% get_prefixes %}"""
+    prefix_list = map(str, Prefix.objects.values_list("prefix", flat=True).all().order_by('prefix'))
+    prefix_list = (','.join('"' + item + '"' for item in prefix_list))
+    prefix_list = "[" + str(prefix_list) + "]"
+    return mark_safe(prefix_list)

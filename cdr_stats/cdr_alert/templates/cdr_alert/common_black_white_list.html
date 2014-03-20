@@ -1,5 +1,5 @@
 {% extends "frontend/master.html" %}
-{% load i18n common_tags dajaxice_templatetags crispy_forms_tags %}
+{% load i18n common_tags dajaxice_templatetags crispy_forms_tags cdr_alert_tags %}
 
 {% block title %}{% trans "trust control"|title %}{% endblock %}
 
@@ -111,7 +111,7 @@
         }
 
         $(function() {
-            var prefixes = {{ prefix_list|safe }};
+            var prefixes = {% get_prefixes %};
             var prefix = new Bloodhound({
                 datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
