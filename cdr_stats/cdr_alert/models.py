@@ -85,8 +85,8 @@ class Alarm(models.Model):
 
     class Meta:
         permissions = (
-            ("alert_settings", _('can see alarms')),
-            ("alert_test", _('can test alarms')),
+            ("alarm_settings", _('can see alarms')),
+            ("alarm_test", _('can test alarms')),
         )
         verbose_name = _("alarm")
         verbose_name_plural = _("alarms")

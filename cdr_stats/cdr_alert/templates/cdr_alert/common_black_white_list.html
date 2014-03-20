@@ -148,7 +148,7 @@
             {% trans "action"|capfirst %} <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
-                {% if perms.cdr_alert.delete_alert  %}
+                {% if perms.cdr_alert.delete_alarm  %}
                     <li><a href="#" onclick="delete_button('blacklist')">{% trans "delete selected"|capfirst %}</a></li>
                     <li><a href="#" onclick="delete_all_button('blacklist')">{% trans "delete all"|capfirst %}</a></li>
                 {% endif %}
@@ -201,7 +201,7 @@
             {% trans "action"|capfirst %} <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
-                {% if perms.cdr_alert.delete_alert  %}
+                {% if perms.cdr_alert.delete_alarm  %}
                     <li><a href="#" onclick="delete_button('whitelist')">{% trans "delete selected"|capfirst %}</a></li>
                     <li><a href="#" onclick="delete_all_button('whitelist')">{% trans "delete all"|capfirst %}</a></li>
                 {% endif %}

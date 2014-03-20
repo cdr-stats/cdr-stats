@@ -67,7 +67,7 @@
                                 {% if perms.cdr_alert.delete_alarm %}
                                     <a id="id_delete_confirm" href="del/{{ row.id }}/" title="{% trans 'delete alarm'|capfirst %}"><i class="fa fa-trash-o"></i></a>
                                 {% endif %}
-                                {% if perms.cdr_alert.alert_test %}
+                                {% if perms.cdr_alert.alarm_test %}
                                     <a href="#alarm-test" class="alarm-test icon" url="test/{{ row.id }}/" data-toggle="modal" data-controls-modal="alarm-test" title="{% trans 'alarm test'|title %}"><i class="fa fa-search"></i></a>
                                 {% endif %}
                             </td>

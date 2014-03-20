@@ -24,7 +24,6 @@ from cdr_alert.forms import AlarmForm, BWCountryForm, BWPrefixForm, AlarmReportF
 from cdr_alert.tasks import run_alarm
 from cdr_alert.constants import ALERT_CONDITION, PERIOD
 from django_lets_go.common_functions import getvar, get_pagination_vars, validate_days
-from country_dialcode.models import Prefix
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import time
@@ -33,7 +32,7 @@ import logging
 redirect_url_alarm = '/alert/'
 
 
-@permission_required('cdr_alert.alert_settings', login_url='/')
+@permission_required('cdr_alert.alarm_settings', login_url='/')
 @login_required
 def alarm_list(request):
     """Alarm list for the logged in user
@@ -94,7 +93,7 @@ def alarm_add(request):
     return render_to_response('cdr_alert/alarm/change.html', data, context_instance=RequestContext(request))
 
 
-@permission_required('cdr_alert.alert_test', login_url='/')
+@permission_required('cdr_alert.alarm_test', login_url='/')
 @login_required
 def alarm_test(request, object_id):
     """Test a alarm for a logged in user

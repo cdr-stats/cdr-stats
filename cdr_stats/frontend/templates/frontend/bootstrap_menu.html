@@ -70,7 +70,7 @@
               <li class="">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "alert"|title %}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  {% if perms.cdr_alert.alert_settings %}
+                  {% if perms.cdr_alert.alarm_settings %}
                     <li {% ifactive '/alert/' %}class="active"{% endifactive %}><a href="/alert/">{% trans "alert settings"|title %}</a></li>
                   {% endif %}
                   {% if perms.cdr_alert.alarm_report %}
