@@ -48,7 +48,7 @@
                         {% trans "action"|capfirst %} <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu">
-                            {% if perms.cdr.search %}
+                            {% if perms.user_profile.search %}
                                 <li><a href="/cdr_export_csv/?format=csv">{% trans "export to CSV"|capfirst %}</a></li>
                                 <li><a href="/cdr_export_csv/?format=xls">{% trans "export to XLS"|capfirst %}</a></li>
                                 <li><a href="/cdr_export_csv/?format=json">{% trans "export to JSON"|capfirst %}</a></li>
