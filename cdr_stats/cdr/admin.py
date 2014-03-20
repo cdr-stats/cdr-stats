@@ -437,7 +437,7 @@ class SwitchAdmin(admin.ModelAdmin):
                 query_var['accountcode'] = acc
 
         if not request.user.is_superuser:
-            daily_report_query_var['metadata.accountcode'] = UserProfile.objects.get(user=request.user).accountcode
+            daily_report_query_var['metadata.accountcode'] = request.user.userprofile.accountcode
             query_var['accountcode'] = daily_report_query_var['metadata.accountcode']
 
         cli = mongodb_str_filter(caller, caller_type)

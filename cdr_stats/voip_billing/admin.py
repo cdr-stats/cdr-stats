@@ -34,7 +34,6 @@ from voip_billing.widgets import AutocompleteModelAdmin
 from voip_billing.function_def import rate_filter_range_field_chk
 from voip_billing.rate_engine import rate_engine
 from voip_billing.tasks import RebillingTask, ReaggregateTask
-from user_profile.models import UserProfile
 from django_lets_go.common_functions import variable_value, ceil_strdate
 from django_lets_go.app_label_renamer import AppLabelRenamer
 from django_lets_go.admin_custom_actions import export_as_csv_action
@@ -255,9 +254,8 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                 monthly_kwargs['metadata.date'] = {'$gte': start_date.strftime('%Y-%m'),
                                                    '$lt': end_date.strftime('%Y-%m')}
 
-            user_profile = UserProfile.objects.get(user=request.user)
             if not request.user.is_superuser:  # not superuser
-                call_kwargs['accountcode'] = user_profile.accountcode
+                call_kwargs['accountcode'] = request.user.userprofile.accountcode
                 monthly_kwargs['metadata.accountcode'] =\
                     daily_kwargs['metadata.accountcode'] = call_kwargs['accountcode']
 
@@ -283,7 +281,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                     })
                     return render_to_response('admin/voip_billing/voipplan/rebilling.html', context_instance=ctx)
 
-                voipplan_id = user_profile.voipplan_id
+                voipplan_id = request.user.userprofile.voipplan_id
 
                 # re-billing is confirmed by user
                 if confirmation == CONFIRMATION_TYPE.YES:

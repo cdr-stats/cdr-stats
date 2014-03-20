@@ -23,7 +23,6 @@ from voip_billing.forms import PrefixRetailRateForm, SimulatorForm, DailyBilling
 from voip_billing.function_def import prefix_allowed_to_call, get_rounded_value
 from voip_billing.rate_engine import rate_engine
 from voip_billing.constants import RATE_COLUMN_NAME
-from user_profile.models import UserProfile
 from mongodb_connection import mongodb
 from cdr.decorators import check_cdr_exists, check_user_detail
 from cdr.aggregate import pipeline_daily_billing_report, pipeline_hourly_billing_report
@@ -182,7 +181,7 @@ def simulator(request):
     data = []
     form = SimulatorForm(request.user, request.POST or None)
     # Get Voip Plan ID according to USER
-    voipplan_id = UserProfile.objects.get(user=request.user).voipplan_id
+    voipplan_id = request.user.userprofile.voipplan_id
     if form.is_valid():
         # IS recipient_phone_no/destination no is valid prefix
         # (Not banned Prefix) ?
@@ -245,7 +244,7 @@ def daily_billing_report(request):
 
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
     if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = UserProfile.objects.get(user=request.user).accountcode
+        query_var['metadata.accountcode'] = request.user.userprofile.accountcode
 
     logging.debug('Aggregate daily billing analytic')
     pipeline = pipeline_daily_billing_report(query_var)
@@ -361,7 +360,7 @@ def hourly_billing_report(request):
 
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
     if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = UserProfile.objects.get(user=request.user).accountcode
+        query_var['metadata.accountcode'] = request.user.userprofile.accountcode
 
     logging.debug('Aggregate hourly billing analytic')
     pipeline = pipeline_hourly_billing_report(query_var)

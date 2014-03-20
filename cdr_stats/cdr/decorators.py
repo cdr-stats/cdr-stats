@@ -15,7 +15,6 @@ from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from mongodb_connection import mongodb
-from user_profile.models import UserProfile
 from functools import wraps
 
 
@@ -46,10 +45,10 @@ def check_user_detail(extra_value=None):
         def _caller(request, *args, **kwargs):
             if not request.user.is_superuser:
                 try:
-                    user_profile = UserProfile.objects.get(user=request.user)
-                    if 'accountcode' in extra_value and not user_profile.accountcode:
+                    request.user.userprofile
+                    if 'accountcode' in extra_value and not request.user.userprofile.accountcode:
                         return HttpResponseRedirect('/?acc_code_error=true')
-                    elif 'voipplan' in extra_value and not user_profile.voipplan_id:
+                    elif 'voipplan' in extra_value and not request.user.userprofile.voipplan_id:
                         return HttpResponseRedirect('/?voipplan_error=true')
                     else:
                         return view_func(request, *args, **kwargs)

@@ -46,8 +46,9 @@ class VoIPRateList(APIView):
         cursor = connection.cursor()
 
         #check voipplan id for user
-        voipplan_id = UserProfile.objects.get(user=request.user).voipplan_id
-        if voipplan_id is None:
+        try:
+            voipplan_id = request.user.userprofile.voipplan_id
+        except:
             error_msg = "User is not attached with voip plan"
             error['error'] = error_msg
             return Response(error)
