@@ -19,6 +19,9 @@ from voip_billing.constants import LCR_TYPE
 from django_lets_go.intermediate_model_base_class import Model
 
 
+#TODO: Drop voipbilling_ on table names
+
+
 class VoIPPlan(Model):
     """
     VoIPPlan
@@ -189,6 +192,7 @@ class VoIPRetailRate(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
+        # TODO: rename voipbilling_voip_retail_rate to voip_retail_rate
         db_table = u'voipbilling_voip_retail_rate'
         verbose_name = _("retail rate")
         verbose_name_plural = _("retail rates")
@@ -266,9 +270,9 @@ class VoIPCarrierRate(models.Model):
     associated to a VoIPRetailPlan
     """
     voip_carrier_plan_id = models.ForeignKey(VoIPCarrierPlan, db_column="voip_carrier_plan_id",
-                                             verbose_name=_("carrier plan"), null=True, blank=True,
+                                             verbose_name=_("carrier plan"),
                                              help_text=_("select carrier plan"))
-    prefix = models.ForeignKey(Prefix, db_column="prefix", verbose_name=_("prefix"), null=True, blank=True,
+    prefix = models.ForeignKey(Prefix, db_column="prefix", verbose_name=_("prefix"),
                                help_text=_("select prefix"))
     carrier_rate = models.DecimalField(max_digits=10, decimal_places=4, default=0, verbose_name=_("rate"),
                                        help_text=_("enter rate"))

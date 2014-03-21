@@ -158,6 +158,10 @@ TEMPLATE_DIRS = (
 
 INTERNAL_IPS = ('127.0.0.1')
 
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS': False,
+}
+
 DAJAXICE_MEDIA_PREFIX = "dajaxice"
 #DAJAXICE_MEDIA_PREFIX = "dajax"  # http://domain.com/dajax/
 #DAJAXICE_CACHE_CONTROL = 10 * 24 * 60 * 60
