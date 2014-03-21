@@ -35,7 +35,7 @@ from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_mail_report
 from cdr.decorators import check_cdr_exists, check_user_detail
 from cdr.constants import CDR_COLUMN_NAME, Export_choice, CheckWith
-from voip_billing.function_def import get_rounded_value
+from voip_billing.function_def import round_val
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
@@ -1101,7 +1101,7 @@ def get_hourly_report_for_date(start_date, end_date, query_var):
                     min_day_hours[int(key)] += float(value) / 60
 
             min_total_record[str(called_time)[:10]] = \
-                [get_rounded_value(value) for key, value in min_day_hours.iteritems()]
+                [round_val(value) for key, value in min_day_hours.iteritems()]
 
     logging.debug('After Aggregate')
 

@@ -13,13 +13,13 @@
 #
 
 from django.core.cache import cache
-from country_dialcode.models import Prefix
 from cdr.functions_def import prefix_list_string
-import os
 
 
-def get_rounded_value(value):
-    """get rounded value"""
+def round_val(value):
+    """
+    Return rounded value to 2 decimal
+    """
     return round(value, 2)
 
 
@@ -43,26 +43,17 @@ def rate_filter_range_field_chk(rate, rate_range, field_name):
     return kwargs
 
 
-def prfix_list():
-    """
-    Prefix List
-    """
-    prefix_list = Prefix.objects.all()
-    LIST = map(lambda x: (int(x.prefix), int(x.prefix)), prefix_list)
-    return LIST
-
-
 def rate_range():
     """
-    Filter range symbol
+    Return list of filter for the rate symbol
     """
-    LIST = (('', 'All'),
-            ('gte', '>='),
-            ('gt', '>'),
-            ('eq', '='),
-            ('lt', '<'),
-            ('lte', '<='))
-    return LIST
+    choicelist = (('', 'All'),
+                 ('gte', '>='),
+                 ('gt', '>'),
+                 ('eq', '='),
+                 ('lt', '<'),
+                 ('lte', '<='))
+    return choicelist
 
 
 def banned_prefix_qs(voipplan_id):
@@ -107,20 +98,7 @@ def prefix_allowed_to_call(destination_number, voipplan_id):
             if i['prefix'] == j:
                 flag = True
                 break
-        # flag is true then calls are not allowed
+        # flag is false then calls are not allowed
         if flag:
             return False
-
-    # Calls are allowed
     return True
-
-
-def check_celeryd_process():
-    """
-    Check celeryd service running or not
-    """
-    process = os.popen("ps x | grep celeryd").read().splitlines()
-    if len(process) > 2:
-        return True
-    else:
-        return False
