@@ -38,12 +38,14 @@ import tablib
 
 def rest_api_call(request, api_url):
     final_rate_list = []
-    response = "['']"  # default string response of api
+    response = False
     try:
         response = requests.get(api_url, auth=(request.user, request.user), timeout=1.0)
     except requests.exceptions.Timeout:
         #Todo: we may want to deal with error nicely
-        logging.debug('API timeout Error : ' + api_url)
+        logging.debug('API Timeout Error : ' + api_url)
+    except:
+        logging.debug('API Error : ' + api_url)
 
     if response and response.status_code == 200:
         # due to string response of API, we need to convert response in to array
