@@ -49,34 +49,34 @@
 
 <div class="row">
     <div class="col-md-4 col-md-offset-1">
-        <div class="dashboard_summary_header">{% trans "total calls"|title %}</div>
+        <h4 class="text-center">{% trans "total calls"|title %}</h4>
         <div class="table-responsive">
-            <table>
+            <table class="table table-bordered">
                 <tbody>
                 <tr>
-                    <td class="td-dashboard">{{ total_calls }}</td>
+                    <th>{{ total_calls }}</th>
                     <td>{% trans "number of calls"|title %}</td>
                 </tr>
                 <tr>
-                    <td class="td-dashboard">{{ ACT }}</td>
+                    <th>{{ ACT }}</th>
                     <td>{% trans "average calls per hour"|title %}</td>
                 </tr>
                 <tr>
-                    <td class="td-dashboard">{{ total_duration }}</td>
+                    <th>{{ total_duration }}</th>
                     <td>{% trans "total duration"|title %}</td>
                 </tr>
                 <tr>
-                    <td class="td-dashboard">{{ ACD }}</td>
+                    <th>{{ ACD }}</th>
                     <td>{% trans "average call duration"|title %}</td>
                 </tr>
                 {% if user.is_superuser %}
                 <tr>
-                    <td class="td-dashboard">{{ total_buy_cost }}</td>
+                    <th>{{ total_buy_cost }}</th>
                     <td>{% trans "total buy cost"|title %}</td>
                 </tr>
                 {% endif %}
                 <tr>
-                    <td class="td-dashboard">{{ total_sell_cost }}</td>
+                    <th>{{ total_sell_cost }}</th>
                     <td>{% trans "total sell cost"|title %}</td>
                 </tr>
                 </tbody>
@@ -84,29 +84,29 @@
         </div>
     </div>
     <div class="col-md-4 col-md-offset-2">
-        <div class="dashboard_summary_header">{% trans "5 most called countries"|title %}</div>
+        <h4 class="text-center">{% trans "5 most called countries"|title %}</h4>
         {% if total_country_data %}
         <div class="table-responsive">
-            <table>
+            <table class="table table-bordered">
                 <tbody>
                 {% for country_data in total_country_data %}
                     <tr>
-                        <td class="td-dashboard">
+                        <td>
                             {% if country_data.0 %}
                                 {% cache 1800 country_data country_data.0 %}
                                     <img src="{{ STATIC_URL }}cdr-stats/{{ country_data.0|iso_flag }}" class="elemtooltip" title="{{ country_data.0|country_name|title }}">
                                 {% endcache %}
                             {% else %}
-                                <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World" %}">
+                                <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans 'World' %}">
                             {% endif %}
                         </td>
-                        <td class="td-dashboard" width="100">{{ country_data.0|country_name|title }}</td>
-                        <td width="100">{{ country_data.1.call_count }} {% trans "calls"|title %}</td>
-                        <td width="100">{{ country_data.1.duration_sum|conv_min }} {% trans "minutes" %}</td>
+                        <td>{{ country_data.0|country_name|title }}</td>
+                        <td>{{ country_data.1.call_count }} {% trans "calls"|title %}</td>
+                        <td>{{ country_data.1.duration_sum|conv_min }} {% trans "minutes" %}</td>
                         {% if user.is_superuser %}
-                            <td width="100">{{ country_data.1.buy_cost_sum }} <abbr title="{% trans "buy cost"|title %}">{% trans "BC" %}</abbr></td>
+                            <td>{{ country_data.1.buy_cost_sum }} <abbr title="{% trans 'buy cost'|title %}">{% trans "BC" %}</abbr></td>
                         {% endif %}
-                        <td width="100">{{ country_data.1.sell_cost_sum }} <abbr title="{% trans "sell cost"|title %}">{% trans "SC" %}</abbr></td>
+                        <td>{{ country_data.1.sell_cost_sum }} <abbr title="{% trans 'sell cost'|title %}">{% trans "SC" %}</abbr></td>
                     </tr>
                 {% endfor %}
                 </tbody>
