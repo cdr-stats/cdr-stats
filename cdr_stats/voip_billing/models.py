@@ -179,9 +179,9 @@ class VoIPRetailRate(models.Model):
     associated to a VoIPPlan
     """
     voip_retail_plan_id = models.ForeignKey(VoIPRetailPlan, db_column="voip_retail_plan_id",
-                                            verbose_name=_("retail plan"), null=True, blank=True,
+                                            verbose_name=_("retail plan"),
                                             help_text=_("select retail plan"))
-    prefix = models.ForeignKey(Prefix, db_column="prefix", verbose_name=_("prefix"), null=True, blank=True,
+    prefix = models.ForeignKey(Prefix, db_column="prefix", verbose_name=_("prefix"),
                                help_text=_("select prefix"))
     retail_rate = models.DecimalField(max_digits=10, decimal_places=4, default=0, verbose_name=_("rate"),
                                       help_text=_("enter Rate"))

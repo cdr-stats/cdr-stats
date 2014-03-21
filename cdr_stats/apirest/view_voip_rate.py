@@ -19,7 +19,6 @@ from rest_framework.response import Response
 from voip_billing.models import VoIPRetailRate
 from cdr.functions_def import prefix_list_string
 from voip_billing.function_def import prefix_allowed_to_call
-from user_profile.models import UserProfile
 import logging
 
 logger = logging.getLogger('cdr-stats.filelog')
@@ -33,9 +32,11 @@ class VoIPRateList(APIView):
 
             CURL Usage::
 
-                curl -u username:password -H 'Accept: application/json' http://localhost:8000/rest-api/voip-rate/?recipient_phone_no=4323432&sort_field=prefix&sort_order=desc
+                curl -u username:password -H 'Accept: application/json'
+                http://localhost:8000/rest-api/voip-rate/?recipient_phone_no=4323432&sort_field=prefix&sort_order=desc
 
-                curl -u username:password -H 'Accept: application/json' http://localhost:8000/rest-api/voip-rate/?dialcode=4323432&sort_field=prefix&sort_order=desc
+                curl -u username:password -H 'Accept: application/json'
+                http://localhost:8000/rest-api/voip-rate/?dialcode=4323432&sort_field=prefix&sort_order=desc
     """
     authentication = (BasicAuthentication, SessionAuthentication)
 
@@ -81,7 +82,9 @@ class VoIPRateList(APIView):
                 destination_prefix_list = prefix_list_string(str(recipient_phone_no))
                 prefixlist = destination_prefix_list.split(",")
                 #Get Rate List
-                rate_list = VoIPRetailRate.objects.values('prefix', 'retail_rate', 'prefix__destination').filter(prefix__in=[int(s) for s in prefixlist])
+                rate_list = VoIPRetailRate.objects\
+                    .values('prefix', 'retail_rate', 'prefix__destination')\
+                    .filter(prefix__in=[int(s) for s in prefixlist])
                 logger.debug('Voip Rate API : result OK 200')
                 return Response(rate_list)
             else:
@@ -150,12 +153,10 @@ class VoIPRateList(APIView):
             cursor.execute(sql_statement, [voipplan_id])
 
         row = cursor.fetchall()
-
         result = []
         for record in row:
             # Not banned Prefix
             allowed = prefix_allowed_to_call(record[0], voipplan_id)
-
             if allowed:
                 modrecord = {}
                 modrecord['prefix'] = record[0]
