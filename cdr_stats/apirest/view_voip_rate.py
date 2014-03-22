@@ -24,7 +24,7 @@ import logging
 logger = logging.getLogger('cdr-stats.filelog')
 
 
-def find_rates(voipplan_id, dialcode, sort_field, sort_order):
+def find_rates(voipplan_id, dialcode, sort_field, order):
     """
     function to retrieve list of rates belonging to a voipplan
     """
@@ -40,7 +40,7 @@ def find_rates(voipplan_id, dialcode, sort_field, sort_order):
     if sort_field == 'destination':
         sort_field = 'dialcode_prefix.destination'
     if sort_field:
-        extension_query = "ORDER BY " + sort_field + ' ' + sort_order
+        extension_query = "ORDER BY " + sort_field + ' ' + order
 
     cursor = connection.cursor()
     if dialcode:
@@ -99,10 +99,10 @@ class VoIPRateList(APIView):
             CURL Usage::
 
                 curl -u username:password -H 'Accept: application/json'
-                http://localhost:8000/rest-api/voip-rate/?recipient_phone_no=4323432&sort_field=prefix&sort_order=desc
+                http://localhost:8000/rest-api/voip-rate/?recipient_phone_no=4323432&sort_field=prefix&order=desc
 
                 curl -u username:password -H 'Accept: application/json'
-                http://localhost:8000/rest-api/voip-rate/?dialcode=4323432&sort_field=prefix&sort_order=desc
+                http://localhost:8000/rest-api/voip-rate/?dialcode=4323432&sort_field=prefix&order=desc
     """
     authentication = (BasicAuthentication, SessionAuthentication)
 
@@ -160,14 +160,14 @@ class VoIPRateList(APIView):
                 return Response(error)
 
         sort_field = ''
-        sort_order = ''
+        order = ''
         if request.GET.get('sort_field'):
             sort_field = request.GET.get('sort_field')
-        if request.GET.get('sort_order'):
-            sort_order = request.GET.get('sort_order')
+        if request.GET.get('order'):
+            order = request.GET.get('order')
 
         #call the find rates function
-        result = find_rates(voipplan_id, dialcode, sort_field, sort_order)
+        result = find_rates(voipplan_id, dialcode, sort_field, order)
 
         logger.debug('Voip Rate API : result OK 200')
         return Response(result)

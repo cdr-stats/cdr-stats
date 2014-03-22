@@ -34,6 +34,7 @@ import time
 import requests
 import ast
 import tablib
+from apirest.view_voip_rate import find_rates
 
 
 def rest_api_call(request, api_url):
@@ -61,7 +62,6 @@ def rest_api_call(request, api_url):
 @permission_required('user_profile.call_rate', login_url='/')
 @login_required
 @check_user_detail('voipplan')
-@cache_page(60 * 5)
 def voip_rates(request):
     """List voip call rates according to country prefix
 
@@ -76,6 +76,7 @@ def voip_rates(request):
         with pagination & sorting column
     """
     form = PrefixRetailRateForm(request.POST or None)
+    voipplan_id = request.user.userprofile.voipplan_id
     final_rate_list = []
     # Get pagination data
 
@@ -100,19 +101,11 @@ def voip_rates(request):
         else:
             # Reset variables
             request.session['dialcode'] = ''
-            request.session['session_api_url'] = ''
             dialcode = ''
-    full_url = request.build_absolute_uri('/')
     if dialcode:
-        api_url = '%srest-api/voip-rate/?dialcode=%s&sort_field=%s&sort_order=%s' % (
-            full_url, dialcode, sort_order, order)
-        final_rate_list = rest_api_call(request, api_url)
+        final_rate_list = find_rates(voipplan_id, dialcode=dialcode, sort_field=sort_order, order=order)
     else:
-        # Default listing or rate
-        api_url = '%srest-api/voip-rate/?sort_field=%s&sort_order=%s' % (full_url, sort_order, order)
-        final_rate_list = rest_api_call(request, api_url)
-
-    request.session['session_api_url'] = api_url
+        final_rate_list = find_rates(voipplan_id, dialcode=None, sort_field=sort_order, order=order)
 
     variables = RequestContext(request, {
         'form': form,
