@@ -6,3 +6,4 @@ pip-tools==0.2.1
 pygraphviz==1.1
 django-debug-toolbar-mongo==0.1.10
 django-debug-toolbar-template-timings
+tabulate

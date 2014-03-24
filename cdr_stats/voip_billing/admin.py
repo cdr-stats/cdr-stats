@@ -138,7 +138,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
         if form.is_valid():
             destination_no = request.POST.get("destination_no")
             voipplan_id = request.POST.get("plan_id")
-            query = rate_engine(destination_no=destination_no, voipplan_id=voipplan_id)
+            query = rate_engine(voipplan_id=voipplan_id, dest_number=destination_no)
 
             for i in query:
                 c_r_plan = VoIPCarrierRate.objects.get(id=i.crid)

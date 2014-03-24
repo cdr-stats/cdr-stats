@@ -24,6 +24,7 @@ import logging
 logger = logging.getLogger('cdr-stats.filelog')
 
 
+#TODO: Move to models
 def find_rates(voipplan_id, dialcode, sort_field, order):
     """
     function to retrieve list of rates belonging to a voipplan
