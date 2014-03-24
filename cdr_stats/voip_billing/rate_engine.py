@@ -16,19 +16,19 @@ from voip_billing.models import VoIPRetailPlan
 from voip_billing.function_def import prefix_list_string
 
 
-def rate_engine(voipplan_id, destination_no):
+def rate_engine(voipplan_id, dest_number):
     """
     To determine the cost of the voip call and get provider/gateway
     to use to deliver the call.
     """
 
-    if not voipplan_id or not destination_no:
-        return False
+    if not voipplan_id or not dest_number:
+        return []
 
-    destination_prefix_list = prefix_list_string(str(destination_no))
-
-    #destination_prefix_list = '34, 346, 3465, 34650'
-    #voipplan_id = 1
+    dest_prefix = prefix_list_string(str(dest_number))
+    #No prefix list
+    if not dest_prefix:
+        return []
 
     # updated query For postgresql
     query = VoIPRetailPlan.objects.raw(
@@ -54,7 +54,7 @@ def rate_engine(voipplan_id, destination_no):
                     FROM voipbilling_voip_retail_rate, \
                          voipbilling_voip_retail_plan, \
                          voipbilling_voipplan_voipretailplan \
-                    WHERE voipbilling_voip_retail_rate.prefix IN  (%s) \
+                    WHERE voipbilling_voip_retail_rate.prefix IN (%s) \
                     AND voipbilling_voip_retail_plan.id = \
                         voipbilling_voip_retail_rate.voip_retail_plan_id \
                     AND voipbilling_voipplan_voipretailplan.voipplan_id = %s \
@@ -72,7 +72,7 @@ def rate_engine(voipplan_id, destination_no):
                     AND \
             voipbilling_voip_carrier_rate.voip_carrier_plan_id = \
             voipbilling_voip_carrier_plan.id \
-                    AND voipbilling_voip_carrier_rate.prefix IN  (%s) \
+                    AND voipbilling_voip_carrier_rate.prefix IN (%s) \
                     AND \
             voipbilling_voip_carrier_plan.voip_provider_id = voip_provider.id\
                     ORDER BY voipbilling_voip_carrier_plan.id, \
@@ -81,11 +81,11 @@ def rate_engine(voipplan_id, destination_no):
         ) AS bothrates \
         ORDER BY cr_prefix DESC, rt_prefix DESC, \
         sum_metric ASC, carrier_rate ASC, retail_rate ASC LIMIT 1' %
-        (str(destination_prefix_list), str(voipplan_id), str(voipplan_id), str(destination_prefix_list)))
+        (str(dest_prefix), str(voipplan_id), str(voipplan_id), str(dest_prefix)))
 
     # This return is used by rate simulator
     # (admin + client)
-    if destination_no is not None:
+    if dest_number is not None:
         return query
 
     data = ''

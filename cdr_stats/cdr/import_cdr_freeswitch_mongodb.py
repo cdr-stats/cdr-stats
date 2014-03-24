@@ -236,29 +236,20 @@ def create_monthly_analytic(daily_date, start_uepoch, switch_id,
     return True
 
 
-def calculate_call_cost(voipplan_id, destination_number, billsec):
+def calculate_call_cost(voipplan_id, dest_number, billsec):
     """
     Calcultate the cost of the call, based on the voip plan and the destination
     """
-    query = rate_engine(voipplan_id=voipplan_id, destination_no=destination_number)
+    rates = rate_engine(voipplan_id=voipplan_id, dest_number=dest_number)
     buy_rate = 0.0
     buy_cost = 0.0
     sell_rate = 0.0
     sell_cost = 0.0
-
-    if query:
-        for i in query:
-            buy_rate = float(i.carrier_rate)
-            sell_rate = float(i.retail_rate)
-
-            try:
-                buy_cost = (float(buy_rate) * float(float(billsec) / 60))
-            except:
-                buy_cost = 0.0
-            try:
-                sell_cost = (float(sell_rate) * float(float(billsec) / 60))
-            except:
-                sell_cost = 0.0
+    for i in rates:
+        buy_rate = float(i.carrier_rate)
+        sell_rate = float(i.retail_rate)
+        buy_cost = buy_rate * float(billsec) / 60
+        sell_cost = sell_rate * float(billsec) / 60
 
     data = {
         'buy_rate': buy_rate,
@@ -269,7 +260,7 @@ def calculate_call_cost(voipplan_id, destination_number, billsec):
     return data
 
 
-def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, destination_number,
+def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest_number,
                                duration, billsec, hangup_cause_id, accountcode, direction,
                                uuid, remote_media_ip, start_uepoch, answer_uepoch, end_uepoch,
                                mduration, billmsec, read_codec, write_codec, cdr_type,
@@ -283,7 +274,7 @@ def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest
         'switch_id': switch_id,
         'caller_id_number': caller_id_number,
         'caller_id_name': caller_id_name,
-        'destination_number': destination_number,
+        'destination_number': dest_number,
         'duration': duration,
         'billsec': billsec,
         'hangup_cause_id': hangup_cause_id,
@@ -397,13 +388,13 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
 
         # Check Destination number
         #print(cdr)
-        destination_number = cdr['callflow'][0]['caller_profile']['destination_number']
+        dest_number = cdr['callflow'][0]['caller_profile']['destination_number']
 
-        if len(destination_number) <= settings.INTERNAL_CALL:
+        if len(dest_number) <= settings.INTERNAL_CALL:
             authorized = 1
             country_id = 999
         else:
-            destination_data = chk_destination(destination_number)
+            destination_data = chk_destination(dest_number)
             authorized = destination_data['authorized']
             country_id = destination_data['country_id']
 
@@ -431,7 +422,9 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             voipplan_id = False
             print_shell(shell, "No VoipPlan created for this user/accountcode")
 
-        call_rate = calculate_call_cost(voipplan_id, destination_number, billsec)
+        print_shell (shell, "calculate_call_cost for vp=%d, dst=%s, billsec=%s" % (voipplan_id, dest_number, billsec))
+        call_rate = calculate_call_cost(voipplan_id, dest_number, billsec)
+        print_shell (shell, call_rate)
         buy_rate = call_rate['buy_rate']
         buy_cost = call_rate['buy_cost']
         sell_rate = call_rate['sell_rate']
@@ -439,7 +432,7 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
 
         # Prepare global CDR
         cdr_record = generate_global_cdr_record(switch.id, caller_id_number,
-            caller_id_name, destination_number, duration, billsec, hangup_cause_id,
+            caller_id_name, dest_number, duration, billsec, hangup_cause_id,
             accountcode, direction, uuid, remote_media_ip, start_uepoch, answer_uepoch,
             end_uepoch, mduration, billmsec, read_codec, write_codec,
             CDR_TYPE["freeswitch"], cdr['_id'], country_id, authorized,
@@ -455,7 +448,7 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         # print_shell(shell, "Sync CDR (cid:%s, dest:%s, dur:%s, " \
         #             " hg:%s,country:%s, auth:%s, row_count:%s)" % (
         #             caller_id_number,
-        #             destination_number,
+        #             dest_number,
         #             duration,
         #             cdr['variables']['hangup_cause_q850'],
         #             country_id,

@@ -129,40 +129,43 @@ def remove_prefix(phonenumber, removeprefix_list):
     return phonenumber
 
 
-def prefix_list_string(phone_number):
+def prefix_list_string(dest_number):
     """
     To return prefix string
     For Example :-
-    phone_no = 34650XXXXXX
+    dest_number = 34650XXXXXX
     prefix_string = (34650, 3465, 346, 34)
 
-    >>> phone_no = 34650123456
+    >>> dest_number = 34650123456
 
-    >>> prefix_list_string(phone_no)
+    >>> prefix_list_string(dest_number)
     '34650, 3465, 346, 34'
 
-    >>> phone_no = -34650123456
+    >>> dest_number = -34650123456
 
-    >>> prefix_list_string(phone_no)
+    >>> prefix_list_string(dest_number)
     False
     """
     #Extra number, this is used in case phonenumber is followed by chars
     #ie 34650123456*234
-    m = re.search('(\d*)', str(phone_number))
-    phone_number = m.group(0)
+    if dest_number[0]=='+':
+        dest_number = dest_number[1:]
+
+    m = re.search('(\d*)', str(dest_number))
+    dest_number = m.group(0)
     try:
-        int(phone_number)
+        int(dest_number)
     except ValueError:
         return False
-    phone_number = str(phone_number)
+    dest_number = str(dest_number)
     prefix_range = range(settings.PREFIX_LIMIT_MIN, settings.PREFIX_LIMIT_MAX + 1)
     prefix_range.reverse()
     destination_prefix_list = ''
     for i in prefix_range:
         if i == settings.PREFIX_LIMIT_MIN:
-            destination_prefix_list = destination_prefix_list + phone_number[0:i]
+            destination_prefix_list = destination_prefix_list + dest_number[0:i]
         else:
-            destination_prefix_list = destination_prefix_list + phone_number[0:i] + ', '
+            destination_prefix_list = destination_prefix_list + dest_number[0:i] + ', '
     return str(destination_prefix_list)
 
 
