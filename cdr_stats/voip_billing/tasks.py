@@ -20,7 +20,7 @@ import logging
 import time
 
 
-def _rebilling_call(voipplan_id, call):
+def rebill_call(voipplan_id, call):
     """Perform call re-billing
 
     **Attributes**:
@@ -67,7 +67,7 @@ class RebillingTask(Task):
         call_rebill = mongodb.cdr_common.find(calls_kwargs)
 
         for call in call_rebill:
-            _rebilling_call(voipplan_id, call)
+            rebill_call(voipplan_id, call)
 
         logging.debug("End re-billing calls.")
         return True
