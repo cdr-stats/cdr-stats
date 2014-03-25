@@ -14,6 +14,9 @@
 
 from voip_billing.models import VoIPRetailPlan
 from voip_billing.function_def import prefix_list_string
+from collections import namedtuple
+from cache_utils.decorators import cached
+
 
 
 def rate_engine(voipplan_id, dest_number):
@@ -29,6 +32,19 @@ def rate_engine(voipplan_id, dest_number):
     if not dest_prefix:
         return []
 
+    rate_tuples = rate_call_prefix(voipplan_id, dest_prefix)
+
+    rates = []
+    if rate_tuples:
+        Rate = namedtuple('Rate', ['id', 'cpid', 'cr_prefix', 'rt_prefix', 'rrid', 'carrier_rate',\
+                    'retail_rate', 'crid', 'provider_id', 'gateway_id', 'sum_metric'])
+        rate = Rate(*rate_tuples)
+        rates.append(rate)
+    return rates
+
+
+@cached(60)
+def rate_call_prefix(voipplan_id, dest_prefix):
     #Build SQL query to rate calls
     sql = 'SELECT rpid as id, cpid, cr_prefix, prefix as rt_prefix, rrid, \
         carrier_rate, retail_rate, crid, provider_id, gateway_id, sum_metric \
@@ -75,12 +91,7 @@ def rate_engine(voipplan_id, dest_number):
         (str(dest_prefix), str(voipplan_id), str(voipplan_id), str(dest_prefix))
     qset = VoIPRetailPlan.objects.raw(sql)
 
-    # table = []
-    # for i in qset:
-    #     table.append([i.id, i.cpid, i.cr_prefix, i.rt_prefix, i.rrid, i.carrier_rate,\
-    #         i.retail_rate , i.crid, i.provider_id, i.gateway_id, i.sum_metric])
-    #     from tabulate import tabulate
-    #     print tabulate(table, headers=['i.id', 'i.cpid', 'i.cr_prefix', 'i.rt_prefix', 'i.rrid', 'i.carrier_rate',\
-    #             'i.retail_rate ', 'i.crid', 'i.provider_id', 'i.gateway_id', 'i.sum_metric'])
-
-    return qset
+    for i in qset:
+        return (i.id, i.cpid, i.cr_prefix, i.rt_prefix, i.rrid, i.carrier_rate,\
+            i.retail_rate , i.crid, i.provider_id, i.gateway_id, i.sum_metric)
+    return None

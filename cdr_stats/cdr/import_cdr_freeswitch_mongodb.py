@@ -245,9 +245,9 @@ def calculate_call_cost(voipplan_id, dest_number, billsec):
     buy_cost = 0.0
     sell_rate = 0.0
     sell_cost = 0.0
-    for i in rates:
-        buy_rate = float(i.carrier_rate)
-        sell_rate = float(i.retail_rate)
+    if rates:
+        buy_rate = float(rates[0].carrier_rate)
+        sell_rate = float(rates[0].retail_rate)
         buy_cost = buy_rate * float(billsec) / 60
         sell_cost = sell_rate * float(billsec) / 60
 

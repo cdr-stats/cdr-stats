@@ -184,12 +184,12 @@ def simulator(request):
         destination_no = request.POST.get("destination_no")
         allowed = prefix_allowed_to_call(destination_no, voipplan_id)
         if allowed:
-            query = rate_engine(voipplan_id=voipplan_id, dest_number=destination_no)
-            for i in query:
-                r_r_plan = VoIPRetailRate.objects.get(id=i.rrid)
+            rates = rate_engine(voipplan_id=voipplan_id, dest_number=destination_no)
+            for rate in rates:
+                r_r_plan = VoIPRetailRate.objects.get(id=rate.rrid)
                 data.append((voipplan_id,
                              r_r_plan.voip_retail_plan_id.name,
-                             i.retail_rate))
+                             rate.retail_rate))
     data = {
         'form': form,
         'data': data,

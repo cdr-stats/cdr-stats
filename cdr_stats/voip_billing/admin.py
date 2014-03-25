@@ -138,18 +138,18 @@ class VoIPPlanAdmin(admin.ModelAdmin):
         if form.is_valid():
             destination_no = request.POST.get("destination_no")
             voipplan_id = request.POST.get("plan_id")
-            query = rate_engine(voipplan_id=voipplan_id, dest_number=destination_no)
+            rates = rate_engine(voipplan_id=voipplan_id, dest_number=destination_no)
 
-            for i in query:
-                c_r_plan = VoIPCarrierRate.objects.get(id=i.crid)
-                r_r_plan = VoIPRetailRate.objects.get(id=i.rrid)
+            for rate in rates:
+                c_r_plan = VoIPCarrierRate.objects.get(id=rate.crid)
+                r_r_plan = VoIPRetailRate.objects.get(id=rate.rrid)
                 data.append((voipplan_id,
                              c_r_plan.voip_carrier_plan_id.id,
                              c_r_plan.voip_carrier_plan_id.name,
                              r_r_plan.voip_retail_plan_id.id,
                              r_r_plan.voip_retail_plan_id.name,
-                             i.crid, i.carrier_rate,
-                             i.rrid, i.retail_rate, i.rt_prefix))
+                             rate.crid, rate.carrier_rate,
+                             rate.rrid, rate.retail_rate, rate.rt_prefix))
 
         ctx = RequestContext(request,
             {
