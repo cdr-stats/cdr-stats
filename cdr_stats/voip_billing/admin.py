@@ -175,16 +175,16 @@ class VoIPPlanAdmin(admin.ModelAdmin):
 
             voipplan_id = request.POST['plan_id']
             sql_statement = (
-                'SELECT voipbilling_voip_retail_rate.prefix, '
+                'SELECT voip_retail_rate.prefix, '
                 'Min(retail_rate) as minrate, dialcode_prefix.destination '
-                'FROM voipbilling_voip_retail_rate '
-                'INNER JOIN voipbilling_voipplan_voipretailplan '
-                'ON voipbilling_voipplan_voipretailplan.voipretailplan_id = '
-                'voipbilling_voip_retail_rate.voip_retail_plan_id '
+                'FROM voip_retail_rate '
+                'INNER JOIN voipplan_voipretailplan '
+                'ON voipplan_voipretailplan.voipretailplan_id = '
+                'voip_retail_rate.voip_retail_plan_id '
                 'LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix = '
-                'voipbilling_voip_retail_rate.prefix '
+                'voip_retail_rate.prefix '
                 'WHERE voipplan_id=%s '
-                'GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination')
+                'GROUP BY voip_retail_rate.prefix, dialcode_prefix.destination')
 
             from django.db import connection
             cursor = connection.cursor()

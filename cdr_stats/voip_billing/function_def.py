@@ -64,10 +64,10 @@ def banned_prefix_qs(voipplan_id):
     cursor = connection.cursor()
     sql_statement = (
         'SELECT voipbilling_ban_prefix.prefix_id FROM '
-        'voipbilling_ban_prefix,voipbilling_banplan,voipbilling_voipplan_banplan '
+        'voipbilling_ban_prefix,voipbilling_banplan,voipplan_banplan '
         'WHERE voipbilling_ban_prefix.ban_plan_id = voipbilling_banplan.id '
-        'AND voipbilling_banplan.id = voipbilling_voipplan_banplan.banplan_id '
-        'AND voipbilling_voipplan_banplan.voipplan_id = %s')
+        'AND voipbilling_banplan.id = voipplan_banplan.banplan_id '
+        'AND voipplan_banplan.voipplan_id = %s')
 
     cursor.execute(sql_statement, [str(voipplan_id)])
     row = cursor.fetchall()

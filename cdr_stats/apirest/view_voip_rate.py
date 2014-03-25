@@ -35,7 +35,7 @@ def find_rates(voipplan_id, dialcode, sort_field, order):
     extension_query = ''
 
     if sort_field == 'prefix':
-        sort_field = 'voipbilling_voip_retail_rate.prefix'
+        sort_field = 'voip_retail_rate.prefix'
     if sort_field == 'retail_rate':
         sort_field = 'minrate'
     if sort_field == 'destination':
@@ -47,32 +47,32 @@ def find_rates(voipplan_id, dialcode, sort_field, order):
     if dialcode:
         sqldialcode = str(dialcode) + '%'
         sql_statement = (
-            "SELECT voipbilling_voip_retail_rate.prefix, "
+            "SELECT voip_retail_rate.prefix, "
             "Min(retail_rate) as minrate, dialcode_prefix.destination "
-            "FROM voipbilling_voip_retail_rate "
-            "INNER JOIN voipbilling_voipplan_voipretailplan "
-            "ON voipbilling_voipplan_voipretailplan.voipretailplan_id = "
-            "voipbilling_voip_retail_rate.voip_retail_plan_id "
+            "FROM voip_retail_rate "
+            "INNER JOIN voipplan_voipretailplan "
+            "ON voipplan_voipretailplan.voipretailplan_id = "
+            "voip_retail_rate.voip_retail_plan_id "
             "LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix = "
-            "voipbilling_voip_retail_rate.prefix "
+            "voip_retail_rate.prefix "
             "WHERE voipplan_id=%s "
-            "AND CAST(voipbilling_voip_retail_rate.prefix AS TEXT) LIKE %s "
-            "GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination "
+            "AND CAST(voip_retail_rate.prefix AS TEXT) LIKE %s "
+            "GROUP BY voip_retail_rate.prefix, dialcode_prefix.destination "
             + extension_query)
 
         cursor.execute(sql_statement, [voipplan_id, sqldialcode])
     else:
         sql_statement = (
-            "SELECT voipbilling_voip_retail_rate.prefix, "
+            "SELECT voip_retail_rate.prefix, "
             "Min(retail_rate) as minrate, dialcode_prefix.destination "
-            "FROM voipbilling_voip_retail_rate "
-            "INNER JOIN voipbilling_voipplan_voipretailplan "
-            "ON voipbilling_voipplan_voipretailplan.voipretailplan_id = "
-            "voipbilling_voip_retail_rate.voip_retail_plan_id "
+            "FROM voip_retail_rate "
+            "INNER JOIN voipplan_voipretailplan "
+            "ON voipplan_voipretailplan.voipretailplan_id = "
+            "voip_retail_rate.voip_retail_plan_id "
             "LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix = "
-            "voipbilling_voip_retail_rate.prefix "
+            "voip_retail_rate.prefix "
             "WHERE voipplan_id=%s "
-            "GROUP BY voipbilling_voip_retail_rate.prefix, dialcode_prefix.destination "
+            "GROUP BY voip_retail_rate.prefix, dialcode_prefix.destination "
             + extension_query)
 
         cursor.execute(sql_statement, [voipplan_id])

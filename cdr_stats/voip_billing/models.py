@@ -19,9 +19,6 @@ from voip_billing.constants import LCR_TYPE
 from django_lets_go.intermediate_model_base_class import Model
 
 
-#TODO: Drop voipbilling_ on table names
-
-
 class VoIPPlan(Model):
     """
     VoIPPlan
@@ -47,7 +44,7 @@ class VoIPPlan(Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = u'voipbilling_voip_plan'
+        db_table = u'voip_plan'
         verbose_name = _("VoIP plan")
         verbose_name_plural = _("VoIP plans")
 
@@ -87,7 +84,7 @@ class VoIPPlan_BanPlan(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = u'voipbilling_voipplan_banplan'
+        db_table = u'voipplan_banplan'
 
     def __unicode__(self):
         return "%s" % (self.banplan)
@@ -147,7 +144,7 @@ class VoIPRetailPlan(Model):
     voip_plan = models.ManyToManyField(VoIPPlan, through='VoIPPlan_VoIPRetailPlan')
 
     class Meta:
-        db_table = u'voipbilling_voip_retail_plan'
+        db_table = u'voip_retail_plan'
         verbose_name = _("retail plan")
         verbose_name_plural = _("retail plans")
 
@@ -166,7 +163,7 @@ class VoIPPlan_VoIPRetailPlan(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = u'voipbilling_voipplan_voipretailplan'
+        db_table = u'voipplan_voipretailplan'
 
     def __unicode__(self):
         return "%s" % (self.voipplan)
@@ -176,7 +173,7 @@ class VoIPRetailRate(models.Model):
     """
     VoIPRetailRate
 
-    A single VoIPRetailRate consist of a retail rate and prefix at which you
+    A single VoIPRetailRate consists of a retail rate and prefix at which you
     want to use to sell a VoIP Call to a particular destination.
     VoIPRetailRates are grouped by VoIPRetailPlan, which will be then in turn be
     associated to a VoIPPlan
@@ -192,8 +189,7 @@ class VoIPRetailRate(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # TODO: rename voipbilling_voip_retail_rate to voip_retail_rate
-        db_table = u'voipbilling_voip_retail_rate'
+        db_table = u'voip_retail_rate'
         verbose_name = _("retail rate")
         verbose_name_plural = _("retail rates")
 
@@ -252,7 +248,7 @@ class VoIPCarrierPlan(Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = u'voipbilling_voip_carrier_plan'
+        db_table = u'voip_carrier_plan'
         verbose_name = _("carrier plan")
         verbose_name_plural = _("carrier plans")
 
@@ -280,7 +276,7 @@ class VoIPCarrierRate(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = u'voipbilling_voip_carrier_rate'
+        db_table = u'voip_carrier_rate'
         verbose_name = _("carrier rate")
         verbose_name_plural = _("carrier rates")
 
@@ -318,7 +314,7 @@ class VoIPPlan_VoIPCarrierPlan(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = u'voipbilling_voipplan_voipcarrierplan'
+        db_table = u'voipplan_voipcarrierplan'
 
     def __unicode__(self):
         return "%s" % (self.voipplan)

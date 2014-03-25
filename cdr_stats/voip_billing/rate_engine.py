@@ -50,41 +50,41 @@ def rate_call_prefix(voipplan_id, dest_prefix):
         carrier_rate, retail_rate, crid, provider_id, gateway_id, sum_metric \
         FROM ( \
             SELECT DISTINCT allsellrates.*, \
-                voipbilling_voip_carrier_rate.id AS crid, \
-                voipbilling_voip_carrier_rate.prefix AS cr_prefix, \
+                voip_carrier_rate.id AS crid, \
+                voip_carrier_rate.prefix AS cr_prefix, \
                 voip_provider.id AS provider_id, \
                 voip_provider.gateway_id AS gateway_id, \
-                voipbilling_voip_carrier_rate.carrier_rate,\
-                (voipbilling_voip_carrier_plan.metric + \
+                voip_carrier_rate.carrier_rate,\
+                (voip_carrier_plan.metric + \
                  allsellrates.metric + voip_provider.metric)\
                  AS sum_metric, \
-                 voipbilling_voip_carrier_plan.id AS cpid \
+                 voip_carrier_plan.id AS cpid \
             FROM ( \
-            SELECT DISTINCT voipbilling_voip_retail_plan.id AS rpid, \
-                voipbilling_voip_retail_rate.prefix, \
-                voipbilling_voip_retail_rate.id AS rrid, \
-                voipbilling_voip_retail_rate.retail_rate AS retail_rate, \
-                voipbilling_voip_retail_plan.metric AS metric \
-                FROM voipbilling_voip_retail_rate, \
-                     voipbilling_voip_retail_plan, \
-                     voipbilling_voipplan_voipretailplan \
-                WHERE voipbilling_voip_retail_rate.prefix IN (%s) \
-                AND voipbilling_voip_retail_plan.id = \
-                    voipbilling_voip_retail_rate.voip_retail_plan_id \
-                AND voipbilling_voipplan_voipretailplan.voipplan_id = %s \
-                AND voipbilling_voipplan_voipretailplan.voipretailplan_id \
-                    = voipbilling_voip_retail_plan.id \
+            SELECT DISTINCT voip_retail_plan.id AS rpid, \
+                voip_retail_rate.prefix, \
+                voip_retail_rate.id AS rrid, \
+                voip_retail_rate.retail_rate AS retail_rate, \
+                voip_retail_plan.metric AS metric \
+                FROM voip_retail_rate, \
+                     voip_retail_plan, \
+                     voipplan_voipretailplan \
+                WHERE voip_retail_rate.prefix IN (%s) \
+                AND voip_retail_plan.id = \
+                    voip_retail_rate.voip_retail_plan_id \
+                AND voipplan_voipretailplan.voipplan_id = %s \
+                AND voipplan_voipretailplan.voipretailplan_id \
+                    = voip_retail_plan.id \
                 ORDER BY prefix DESC, retail_rate ASC\
                 )  AS allsellrates, dialcode_prefix,\
-                voipbilling_voip_carrier_rate, \
-                voipbilling_voipplan_voipcarrierplan, \
-                voipbilling_voip_carrier_plan, voip_provider \
-            WHERE voipbilling_voipplan_voipcarrierplan.voipplan_id = %s AND \
-                voipbilling_voipplan_voipcarrierplan.voipcarrierplan_id = voipbilling_voip_carrier_plan.id AND \
-                voipbilling_voip_carrier_rate.voip_carrier_plan_id = voipbilling_voip_carrier_plan.id AND \
-                voipbilling_voip_carrier_rate.prefix IN (%s) AND \
-                voipbilling_voip_carrier_plan.voip_provider_id = voip_provider.id\
-            ORDER BY voipbilling_voip_carrier_plan.id, cr_prefix DESC, allsellrates.prefix DESC \
+                voip_carrier_rate, \
+                voipplan_voipcarrierplan, \
+                voip_carrier_plan, voip_provider \
+            WHERE voipplan_voipcarrierplan.voipplan_id = %s AND \
+                voipplan_voipcarrierplan.voipcarrierplan_id = voip_carrier_plan.id AND \
+                voip_carrier_rate.voip_carrier_plan_id = voip_carrier_plan.id AND \
+                voip_carrier_rate.prefix IN (%s) AND \
+                voip_carrier_plan.voip_provider_id = voip_provider.id\
+            ORDER BY voip_carrier_plan.id, cr_prefix DESC, allsellrates.prefix DESC \
         ) AS bothrates \
         ORDER BY cr_prefix DESC, rt_prefix DESC, \
         sum_metric ASC, carrier_rate ASC, retail_rate ASC LIMIT 1' % \
