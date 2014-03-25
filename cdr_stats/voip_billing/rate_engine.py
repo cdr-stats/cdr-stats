@@ -50,30 +50,20 @@ def rate_call_prefix(voipplan_id, dest_prefix):
         carrier_rate, retail_rate, crid, provider_id, gateway_id, sum_metric \
         FROM ( \
             SELECT DISTINCT allsellrates.*, \
-                voip_carrier_rate.id AS crid, \
-                voip_carrier_rate.prefix AS cr_prefix, \
-                voip_provider.id AS provider_id, \
-                voip_provider.gateway_id AS gateway_id, \
+                voip_carrier_rate.id AS crid, voip_carrier_rate.prefix AS cr_prefix, \
+                voip_provider.id AS provider_id, voip_provider.gateway_id AS gateway_id, \
                 voip_carrier_rate.carrier_rate,\
-                (voip_carrier_plan.metric + \
-                 allsellrates.metric + voip_provider.metric)\
-                 AS sum_metric, \
-                 voip_carrier_plan.id AS cpid \
+                (voip_carrier_plan.metric + allsellrates.metric + voip_provider.metric) AS sum_metric, \
+                voip_carrier_plan.id AS cpid \
             FROM ( \
             SELECT DISTINCT voip_retail_plan.id AS rpid, \
-                voip_retail_rate.prefix, \
-                voip_retail_rate.id AS rrid, \
-                voip_retail_rate.retail_rate AS retail_rate, \
-                voip_retail_plan.metric AS metric \
-                FROM voip_retail_rate, \
-                     voip_retail_plan, \
-                     voipplan_voipretailplan \
+                voip_retail_rate.prefix, voip_retail_rate.id AS rrid, \
+                voip_retail_rate.retail_rate AS retail_rate, voip_retail_plan.metric AS metric \
+                FROM voip_retail_rate, voip_retail_plan, voipplan_voipretailplan \
                 WHERE voip_retail_rate.prefix IN (%s) \
-                AND voip_retail_plan.id = \
-                    voip_retail_rate.voip_retail_plan_id \
-                AND voipplan_voipretailplan.voipplan_id = %s \
-                AND voipplan_voipretailplan.voipretailplan_id \
-                    = voip_retail_plan.id \
+                    AND voip_retail_plan.id = voip_retail_rate.voip_retail_plan_id \
+                    AND voipplan_voipretailplan.voipplan_id = %s \
+                    AND voipplan_voipretailplan.voipretailplan_id = voip_retail_plan.id \
                 ORDER BY prefix DESC, retail_rate ASC\
                 )  AS allsellrates, dialcode_prefix,\
                 voip_carrier_rate, \
