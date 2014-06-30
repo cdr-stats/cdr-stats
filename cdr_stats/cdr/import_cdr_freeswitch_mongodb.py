@@ -269,7 +269,6 @@ def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest
     """
     Common function to create global cdr record
     """
-
     cdr_record = {
         'switch_id': switch_id,
         'caller_id_number': caller_id_number,
@@ -313,12 +312,14 @@ def create_analytic(date_start_uepoch, start_uepoch, switch_id,
     daily_date = datetime.datetime.fromtimestamp(int(date_start_uepoch[:10]))
 
     # insert daily analytic record
-    create_daily_analytic(daily_date, switch_id, country_id, accountcode,
+    create_daily_analytic(
+        daily_date, switch_id, country_id, accountcode,
         hangup_cause_id, duration, buy_cost, sell_cost)
 
     # mongodb.monthly_analytic
     # insert monthly analytic record
-    create_monthly_analytic(daily_date, start_uepoch, switch_id, country_id,
+    create_monthly_analytic(
+        daily_date, start_uepoch, switch_id, country_id,
         accountcode, duration, buy_cost, sell_cost)
 
     return True
@@ -422,16 +423,17 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             voipplan_id = False
             print_shell(shell, "No VoipPlan created for this user/accountcode")
 
-        print_shell (shell, "calculate_call_cost for vp=%d, dst=%s, billsec=%s" % (voipplan_id, dest_number, billsec))
+        print_shell(shell, "calculate_call_cost for vp=%d, dst=%s, billsec=%s" % (voipplan_id, dest_number, billsec))
         call_rate = calculate_call_cost(voipplan_id, dest_number, billsec)
-        print_shell (shell, call_rate)
+        print_shell(shell, call_rate)
         buy_rate = call_rate['buy_rate']
         buy_cost = call_rate['buy_cost']
         sell_rate = call_rate['sell_rate']
         sell_cost = call_rate['sell_cost']
 
         # Prepare global CDR
-        cdr_record = generate_global_cdr_record(switch.id, caller_id_number,
+        cdr_record = generate_global_cdr_record(
+            switch.id, caller_id_number,
             caller_id_name, dest_number, duration, billsec, hangup_cause_id,
             accountcode, direction, uuid, remote_media_ip, start_uepoch, answer_uepoch,
             end_uepoch, mduration, billmsec, read_codec, write_codec,
@@ -456,9 +458,9 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         #             count_import))
 
         date_start_uepoch = cdr['variables']['start_uepoch'][:10]
-        create_analytic(date_start_uepoch, start_uepoch, switch.id,
-            country_id, accountcode, hangup_cause_id, duration,
-            buy_cost, sell_cost)
+        create_analytic(
+            date_start_uepoch, start_uepoch, switch.id, country_id, accountcode,
+            hangup_cause_id, duration, buy_cost, sell_cost)
 
         # Flag the CDR as imported
         importcdr_handler.update(
@@ -475,11 +477,9 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         mongodb.cdr_common.insert(cdr_bulk_record)
         # Reset counter to zero
         local_count_import = 0
-        print_shell(shell, "Switch(%s) - currently imported CDRs:%d" %
-            (ipaddress, count_import))
+        print_shell(shell, "Switch(%s) - currently imported CDRs:%d" % (ipaddress, count_import))
 
-    print_shell(shell, "Import on Switch(%s) - Total Record(s) imported:%d" %
-        (ipaddress, count_import))
+    print_shell(shell, "Import on Switch(%s) - Total Record(s) imported:%d" % (ipaddress, count_import))
 
 
 def chk_ipaddress(ipaddress):
@@ -534,8 +534,8 @@ def import_cdr_freeswitch_mongodb(shell=False):
         cdr_type = settings.CDR_BACKEND[ipaddress]['cdr_type']
         host = settings.CDR_BACKEND[ipaddress]['host']
         port = settings.CDR_BACKEND[ipaddress]['port']
-        user = settings.CDR_BACKEND[ipaddress]['user']
-        password = settings.CDR_BACKEND[ipaddress]['password']
+        # user = settings.CDR_BACKEND[ipaddress]['user']
+        # password = settings.CDR_BACKEND[ipaddress]['password']
 
         if db_engine != 'mongodb' or cdr_type != 'freeswitch':
             sys.stderr.write('This function is intended for mongodb and freeswitch')

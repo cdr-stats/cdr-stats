@@ -27,22 +27,23 @@ import time
 
 random.seed()
 
-HANGUP_CAUSE = ['NORMAL_CLEARING', 'NORMAL_CLEARING', 'NORMAL_CLEARING',
-                'NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED',
-                'INVALID_NUMBER_FORMAT']
-HANGUP_CAUSE_Q850 = ['16', '17', '18', '19', '20', '21']
+# HANGUP_CAUSE = ['NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED', 'INVALID_NUMBER_FORMAT']
+# HANGUP_CAUSE_Q850 = ['16', '17', '19', '21', '28']
+HANGUP_CAUSE = ['NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER']
+HANGUP_CAUSE_Q850 = ['16', '17', '19']
+
 
 #list of exit code : http://www.howtocallabroad.com/codes.html
 COUNTRY_PREFIX = ['0034', '011346', '+3465',  # Spain
-                  #'3912', '39', '+3928',  # Italy
-                  #'15', '17',  # US
-                  #'16', '1640',  # Canada
-                  #'44', '441', '00442',  # UK
-                  #'45', '451', '00452',  # Denmark
+                  '3912', '39', '+3928',  # Italy
+                  '15', '17',  # US
+                  '16', '1640',  # Canada
+                  '44', '441', '00442',  # UK
+                  '45', '451', '00452',  # Denmark
                   '32', '321', '0322',  # Belgium
-                  #'91', '919', '0911',  # India
-                  #'53', '531', '00532',  # Cuba
-                  #'55', '551', '552',  # Brazil
+                  '91', '919', '0911',  # India
+                  '53', '531', '00532',  # Cuba
+                  '55', '551', '552',  # Brazil
                   ]
 
 
@@ -72,8 +73,9 @@ def generate_cdr_data(day_delta_int):
         #International calls
         destination_number = choice(COUNTRY_PREFIX) + destination_number
 
-    hangup_cause = choice(HANGUP_CAUSE)
-    hangup_cause_q850 = choice(HANGUP_CAUSE_Q850)
+    rand_hangup = random.randint(0, len(HANGUP_CAUSE)-1)
+    hangup_cause = HANGUP_CAUSE[rand_hangup]
+    hangup_cause_q850 = HANGUP_CAUSE_Q850[rand_hangup]
     if hangup_cause == 'NORMAL_CLEARING':
         duration = random.randint(1, 200)
         billsec = random.randint(1, 200)
@@ -132,11 +134,9 @@ class Command(BaseCommand):
         if options.get('number-cdr'):
             no_of_record = int(options.get('number-cdr', 1))
 
-
         day_delta_int = 30  # default
         if options.get('delta-day'):
             day_delta_int = int(options.get('delta-day', 30))
-
 
         arg_duration = False  # default
         if options.get('duration'):
@@ -154,8 +154,8 @@ class Command(BaseCommand):
         table_name = settings.CDR_BACKEND[ipaddress]['table_name']
         db_engine = settings.CDR_BACKEND[ipaddress]['db_engine']
         cdr_type = settings.CDR_BACKEND[ipaddress]['cdr_type']
-        user = settings.CDR_BACKEND[ipaddress]['user']
-        password = settings.CDR_BACKEND[ipaddress]['password']
+        # user = settings.CDR_BACKEND[ipaddress]['user']
+        # password = settings.CDR_BACKEND[ipaddress]['password']
         host = settings.CDR_BACKEND[ipaddress]['host']
         port = settings.CDR_BACKEND[ipaddress]['port']
 
@@ -257,13 +257,15 @@ class Command(BaseCommand):
                 'callflow': [
                     {
                         'dialplan': 'XML',
-                        'caller_profile': {'caller_id_name': str(caller_id),
-                        'ani': str(caller_id),
-                        'caller_id_number': str(caller_id),
-                        'network_addr': '192.168.1.21',
-                        'destination_number': str(destination_number),
-                        'uuid': uuid,
-                        'chan_name': 'sofia/internal/1000@127.0.0.1'}
+                        'caller_profile': {
+                            'caller_id_name': str(caller_id),
+                            'ani': str(caller_id),
+                            'caller_id_number': str(caller_id),
+                            'network_addr': '192.168.1.21',
+                            'destination_number': str(destination_number),
+                            'uuid': uuid,
+                            'chan_name': 'sofia/internal/1000@127.0.0.1'
+                        }
                     }
                 ]
             }

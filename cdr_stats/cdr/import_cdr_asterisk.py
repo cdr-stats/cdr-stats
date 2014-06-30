@@ -198,8 +198,7 @@ def import_cdr_asterisk(shell=False):
             start_uepoch = datetime.fromtimestamp(int(row[1]))
 
             # Check Destination number
-            if (len(destination_number) <= settings.INTERNAL_CALL
-               or destination_number[:1].isalpha()):
+            if len(destination_number) <= settings.INTERNAL_CALL or destination_number[:1].isalpha():
                 authorized = 1
                 country_id = 999
             else:

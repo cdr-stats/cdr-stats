@@ -321,7 +321,8 @@ def cdr_view(request):
     del export_query_var['start_uepoch']
     request.session['session_export_query_var'] = export_query_var
 
-    final_result = mongodb.cdr_common.find(query_var,
+    final_result = mongodb.cdr_common.find(
+        query_var,
         {
             "uuid": 0,
             "answer_uepoch": 0,
@@ -363,7 +364,8 @@ def cdr_view(request):
     SKIP_NO = records_per_page * (page_var['PAGE_NUMBER'] - 1)
     record_count = final_result.count()
     # perform pagination on cdr_common collection via skip() and limit()
-    rows = final_result.skip(SKIP_NO).limit(records_per_page).sort([(page_var['sort_field'], page_var['default_order'])])
+    rows = final_result.skip(SKIP_NO).limit(records_per_page)\
+        .sort([(page_var['sort_field'], page_var['default_order'])])
 
     cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
 
