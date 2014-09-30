@@ -14,11 +14,6 @@
 #
 from django.conf.urls import handler404, handler500, url, patterns, include
 from django.conf import settings
-#from tastypie.api import Api
-#from api.user_api import UserResource
-#from api.switch_api import SwitchResource
-#from api.voip_rate_api import VoipRateResource
-#from api.voip_call import VoipCallResource
 from cdr.urls import urlpatterns as urlpatterns_cdr
 from cdr_alert.urls import urlpatterns as urlpatterns_cdr_alert
 from user_profile.urls import urlpatterns as urlpatterns_user_profile
@@ -39,13 +34,6 @@ except admin.sites.AlreadyRegistered:
     # the models have already been registered.
     pass
 
-# tastypie api
-#tastypie_api = Api(api_name='v1')
-#tastypie_api.register(UserResource())
-#tastypie_api.register(SwitchResource())
-#tastypie_api.register(VoipRateResource())
-#tastypie_api.register(VoipCallResource())
-
 js_info_dict = {
     'domain': 'djangojs',
     'packages': ('cdr', 'cdr_alert'),
@@ -60,7 +48,6 @@ urlpatterns = patterns('',
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
     (r'^admin_tools/', include('admin_tools.urls')),
-    #(r'^api/', include(tastypie_api.urls)),
 
     # Serve static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',

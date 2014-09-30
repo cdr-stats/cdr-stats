@@ -181,7 +181,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     #'django.contrib.markup',
-    'api',
     'apirest',
     'cdr',
     'cdr_alert',
@@ -202,8 +201,6 @@ INSTALLED_APPS = (
     'south',
     'linaro_django_pagination',
     'djcelery',
-    #'apiplayground',
-    #'tastypie',
     'django_nvd3',
     'dajaxice',
     'dajax',
@@ -442,10 +439,6 @@ TOTAL_GRAPH_COLOR = '#A61700'
 #========================
 NUM_COUNTRY = 10
 
-
-#TASTYPIE API
-#============
-API_ALLOWED_IP = ['127.0.0.1', 'localhost']
 
 # EMAIL_ADMIN will be used for forget password email sent
 EMAIL_ADMIN = 'cdr-stats@localhost.com'

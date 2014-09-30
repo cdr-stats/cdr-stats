@@ -29,7 +29,6 @@ To get started with CDR-Stats the following must be installed:
 - redis >= 2.2.2 (Redis Python Client)
 - uuid >= 1.30 (UUID object and generation functions )
 - wsgiref >= 0.1.2 (Validation support for WSGI )
-- django-tastypie (Creating delicious APIs for Django)
 - django-notification >= 0.1.3 (User notification management for the Django web framework)
 - switch2bill-common - Common libs reused in different projects
 - django-country-dialcode - Django reusable application to manage Dial code of Countries

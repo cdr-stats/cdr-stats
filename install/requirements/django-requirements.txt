@@ -1,4 +1,4 @@
-django-celery==3.1.9
+django-celery==3.1.16
 django-kombu==0.9.4
 django-pagination==1.0.7
 django-urlauth==0.1.8
@@ -19,11 +19,7 @@ django-redis-cache==0.9.6
 git+git://github.com/Star2Billing/django-notification
 django-frontend-notification==0.2.0
 django-genericadmin==0.6.1
-django-nvd3==0.1.9
-
-#This will be removed when we get rid of django-tastypie
-django-tastypie==0.11.0
-git+git://github.com/areski/Django-API-Playground.git
+django-nvd3==0.7.6
 
 django-lets-go==2.9.2
 django-extensions==1.3.3

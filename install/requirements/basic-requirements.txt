@@ -16,4 +16,4 @@ gunicorn==0.17.2
 South==0.7.6
 pyst2==0.4
 requests==2.2.1
-tablib==0.9.11
+tablib==0.10.0

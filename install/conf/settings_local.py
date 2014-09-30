@@ -69,13 +69,6 @@ EMAIL_HOST_USER = 'username@gmail.com'
 EMAIL_HOST_PASSWORD = 'password'
 EMAIL_SUBJECT_PREFIX = '[CDR-Stats] '
 
-#TASTYPIE
-#========
-API_ALLOWED_IP = [
-    '127.0.0.1',
-    'localhost',
-    #'SERVER_IP',
-]
 
 ALLOWED_HOSTS = ['SERVER_IP']
 
