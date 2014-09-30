@@ -23,6 +23,9 @@ create-static:
 makeallmessages:
 	cd $(PRJ_DIR) && ./manage.py makemessages -s -a -e ".html,.txt"
 
+compilemessages:
+	cd $(PRJ_DIR) && ./manage.py compilemessages
+
 test:
 	python setup.py nosetests
 

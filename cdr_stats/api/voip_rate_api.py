@@ -139,7 +139,9 @@ class VoipRateResource(ModelResource):
                 destination_prefix_list = prefix_list_string(str(recipient_phone_no))
                 prefixlist = destination_prefix_list.split(",")
                 #Get Rate List
-                rate_list = VoIPRetailRate.objects.values('prefix', 'retail_rate', 'prefix__destination').filter(prefix__in=[int(s) for s in prefixlist])
+                rate_list = VoIPRetailRate.objects\
+                    .values('prefix', 'retail_rate', 'prefix__destination')\
+                    .filter(prefix__in=[int(s) for s in prefixlist])
                 logger.debug('Voip Rate API : result OK 200')
                 return self.create_response(request, rate_list)
             else:

@@ -24,7 +24,6 @@ from cdr_alert.urls import urlpatterns as urlpatterns_cdr_alert
 from user_profile.urls import urlpatterns as urlpatterns_user_profile
 from frontend.urls import urlpatterns as urlpatterns_frontend
 from voip_billing.urls import urlpatterns as urlpatterns_voip_billing
-#from api.api_playgrounds.urls import urlpatterns as urlpatterns_api_playgrounds
 from frontend_notification.urls import urlpatterns as urlpatterns_frontend_notification
 from mod_registration.urls import urlpatterns as urlpatterns_mod_registration
 from apirest.urls import urlpatterns as urlpatterns_apirest
@@ -77,7 +76,6 @@ urlpatterns += urlpatterns_cdr
 urlpatterns += urlpatterns_cdr_alert
 urlpatterns += urlpatterns_user_profile
 urlpatterns += urlpatterns_frontend
-#urlpatterns += urlpatterns_api_playgrounds
 urlpatterns += urlpatterns_frontend_notification
 urlpatterns += urlpatterns_voip_billing
 urlpatterns += urlpatterns_mod_registration
