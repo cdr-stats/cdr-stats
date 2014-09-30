@@ -42,15 +42,23 @@ DATABASES = {
     }
 }
 
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+#         'LOCATION': '/tmp/',
+#     }
+# }
+
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': '/tmp/',
-    }
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': 'localhost:11211',
+    },
 }
 
-#Include for cache machine : http://jbalogh.me/projects/cache-machine/
-CACHE_BACKEND = 'caching.backends.locmem://'
+#Include for cache machine: http://cache-machine.readthedocs.org/en/latest/
+# CACHE_BACKEND = 'caching.backends.locmem://'  # for testing
+CACHE_BACKEND = 'caching.backends.memcached://localhost:11211'
 
 #Calls to QuerySet.count() can be cached,
 CACHE_COUNT_TIMEOUT = 60  # seconds, not too long.
@@ -198,7 +206,7 @@ INSTALLED_APPS = (
     'voip_billing',
 
     'dateutil',
-    'south',
+    # 'south',
     'linaro_django_pagination',
     'djcelery',
     'django_nvd3',
