@@ -12,7 +12,6 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.contrib.auth.decorators import login_required, permission_required
-from django.views.decorators.cache import cache_page
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings

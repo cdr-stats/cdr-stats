@@ -18,7 +18,6 @@ from collections import namedtuple
 from cache_utils.decorators import cached
 
 
-
 def rate_engine(voipplan_id, dest_number):
     """
     To determine the cost of the voip call and get provider/gateway
@@ -36,7 +35,7 @@ def rate_engine(voipplan_id, dest_number):
 
     rates = []
     if rate_tuples:
-        Rate = namedtuple('Rate', ['id', 'cpid', 'cr_prefix', 'rt_prefix', 'rrid', 'carrier_rate',\
+        Rate = namedtuple('Rate', ['id', 'cpid', 'cr_prefix', 'rt_prefix', 'rrid', 'carrier_rate',
                     'retail_rate', 'crid', 'provider_id', 'gateway_id', 'sum_metric'])
         rate = Rate(*rate_tuples)
         rates.append(rate)
@@ -82,6 +81,6 @@ def rate_call_prefix(voipplan_id, dest_prefix):
     qset = VoIPRetailPlan.objects.raw(sql)
 
     for i in qset:
-        return (i.id, i.cpid, i.cr_prefix, i.rt_prefix, i.rrid, i.carrier_rate,\
-            i.retail_rate , i.crid, i.provider_id, i.gateway_id, i.sum_metric)
+        return (i.id, i.cpid, i.cr_prefix, i.rt_prefix, i.rrid, i.carrier_rate,
+            i.retail_rate, i.crid, i.provider_id, i.gateway_id, i.sum_metric)
     return None

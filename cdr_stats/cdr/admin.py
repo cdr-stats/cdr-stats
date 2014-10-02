@@ -20,7 +20,8 @@ from django.shortcuts import render_to_response
 from django.conf import settings
 from django_lets_go.common_functions import mongodb_str_filter, \
     mongodb_int_filter, ceil_strdate, striplist
-from cdr.models import Switch, HangupCause, CDR_TYPE
+from cdr.models import Switch, HangupCause, CDR
+from cdr.models import CDR_SOURCE_TYPE
 from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.functions_def import get_hangupcause_id, get_hangupcause_id_from_name
 from cdr.import_cdr_freeswitch_mongodb import apply_index, \
@@ -30,7 +31,6 @@ from cdr.forms import CdrSearchForm
 from cdr.constants import CDR_COLUMN_NAME, Export_choice
 from cdr.views import cdr_view_daily_report, get_pagination_vars
 from cdr_alert.functions_blacklist import chk_destination
-from user_profile.models import UserProfile
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import logging
@@ -38,6 +38,7 @@ import tablib
 import csv
 from mongodb_connection import mongodb
 from django_lets_go.common_functions import getvar, unset_session_var
+
 #from django_lets_go.app_label_renamer import AppLabelRenamer
 APP_LABEL = _('CDR')
 #AppLabelRenamer(native_app_label='cdr', app_label=APP_LABEL).main()
@@ -219,7 +220,7 @@ class SwitchAdmin(admin.ModelAdmin):
                                 caller_id_name, destination_number, duration, billsec, hangup_cause_id,
                                 accountcode, direction, uuid, remote_media_ip, start_uepoch, answer_uepoch,
                                 end_uepoch, mduration, billmsec, read_codec, write_codec,
-                                CDR_TYPE['CSV_IMPORT'], '', country_id, authorized)
+                                CDR_SOURCE_TYPE.CSV, '', country_id, authorized)
 
                             # check if cdr is already existing in cdr_common
                             if not mongodb.cdr_common:
@@ -602,3 +603,12 @@ class HangupCauseAdmin(admin.ModelAdmin):
     search_fields = ('code', 'enumeration',)
 
 admin.site.register(HangupCause, HangupCauseAdmin)
+
+
+# CDR
+class CDRAdmin(admin.ModelAdmin):
+    list_display = ('user', 'switch', 'destination_number', 'dialcode', 'caller_id_number',
+                    'duration', 'hangup_cause', 'direction', 'country', 'sell_cost')
+    search_fields = ('destination_number', 'caller_id_number',)
+
+admin.site.register(CDR, CDRAdmin)

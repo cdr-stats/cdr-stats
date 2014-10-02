@@ -14,7 +14,7 @@
 from django.conf import settings
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
-from cdr.models import Switch, CDR_TYPE
+from cdr.models import Switch, CDR_SOURCE_TYPE
 from cdr.functions_def import get_hangupcause_id
 from cdr_alert.functions_blacklist import chk_destination
 from user_profile.models import UserProfile
@@ -437,7 +437,7 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             caller_id_name, dest_number, duration, billsec, hangup_cause_id,
             accountcode, direction, uuid, remote_media_ip, start_uepoch, answer_uepoch,
             end_uepoch, mduration, billmsec, read_codec, write_codec,
-            CDR_TYPE["freeswitch"], cdr['_id'], country_id, authorized,
+            CDR_SOURCE_TYPE.FREESWITCH, cdr['_id'], country_id, authorized,
             buy_rate, buy_cost, sell_rate, sell_cost)
 
         # Append cdr to bulk_cdr list

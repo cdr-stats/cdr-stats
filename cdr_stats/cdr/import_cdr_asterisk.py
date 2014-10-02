@@ -12,7 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.conf import settings
-from cdr.models import CDR_TYPE
+from cdr.models import CDR_SOURCE_TYPE
 from cdr.import_cdr_freeswitch_mongodb import chk_ipaddress,\
     create_analytic, set_int_default, calculate_call_cost
 from cdr.functions_def import get_hangupcause_id
@@ -263,7 +263,7 @@ def import_cdr_asterisk(shell=False):
                 #'read_codec': '',
                 #'write_codec': '',
                 'channel': channel,
-                'cdr_type': CDR_TYPE["asterisk"],
+                'cdr_type': CDR_SOURCE_TYPE.ASTERISK,
                 'cdr_object_id': acctid,
                 'country_id': country_id,
                 'authorized': authorized,

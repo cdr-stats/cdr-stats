@@ -46,6 +46,7 @@ def get_switch_ip_addr(id):
 def get_switch_list():
     """Switch list used in form"""
     return ((l.id, l.name) for l in Switch.objects.all())
+    #return ((1, 1)
 
 
 def get_country_list():

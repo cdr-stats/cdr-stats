@@ -14,6 +14,7 @@
 
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
+from django.conf import settings
 
 from admin_tools.dashboard import modules, Dashboard, AppIndexDashboard
 from admin_tools.utils import get_admin_site_name
@@ -114,12 +115,13 @@ class CustomIndexDashboard(Dashboard):
             ]
         ))
 
-        # append a feed module
-        self.children.append(modules.Feed(
-            _('Latest CDR-Stats News'),
-            feed_url='http://www.cdr-stats.org/category/blog/feed/',
-            limit=5
-        ))
+        if not settings.DEBUG:
+            # append a feed module
+            self.children.append(modules.Feed(
+                _('Latest CDR-Stats News'),
+                feed_url='http://www.cdr-stats.org/category/blog/feed/',
+                limit=5
+            ))
 
 
 class CustomAppIndexDashboard(AppIndexDashboard):
@@ -128,7 +130,6 @@ class CustomAppIndexDashboard(AppIndexDashboard):
     """
     # we disable title because its redundant with the model list module
     title = ''
-
 
     def __init__(self, *args, **kwargs):
         AppIndexDashboard.__init__(self, *args, **kwargs)
