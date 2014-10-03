@@ -57,13 +57,7 @@ def get_country_list():
 @cached(3600)
 def get_hc_list():
     """hangupcause list used in form"""
-    result = []
-    for l in HangupCause.objects.all():
-        if len(l.enumeration) > 0:
-            result.append((l.id, l.enumeration))
-        else:
-            result.append((l.id, l.cause[:25].upper() + '...'))
-    return result
+    return HangupCause.objects.get_all_hangupcause()
 
 
 @cached(3600)

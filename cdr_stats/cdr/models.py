@@ -18,6 +18,7 @@ from django_lets_go.utils import Choice
 from country_dialcode.models import Prefix
 from country_dialcode.models import Country
 from localflavor.us.models import USStateField
+from cache_utils.decorators import cached
 import caching.base
 
 
@@ -136,6 +137,20 @@ class AccountCode(caching.base.CachingMixin, models.Model):
         db_table = "voip_accountcode"
 
 
+class HangupCauseManager(models.Manager):
+    """HangupCause Manager"""
+
+    # @cached(3600)
+    def get_all_hangupcause(self):
+        result = []
+        for l in HangupCause.objects.all():
+            if len(l.enumeration) > 0:
+                result.append((l.id, l.enumeration))
+            else:
+                result.append((l.id, l.cause[:25].upper() + '...'))
+        return result
+
+
 class HangupCause(caching.base.CachingMixin, models.Model):
     """This defines the HangupCause
 
@@ -156,9 +171,19 @@ class HangupCause(caching.base.CachingMixin, models.Model):
                              verbose_name=_('cause'))
     description = models.TextField(null=True, blank=True,
                                    verbose_name=_('description'))
+    objects = HangupCauseManager()
 
     def __unicode__(self):
         return '[%s] %s' % (self.code, self.enumeration)
+
+    def listall(self):
+        result = []
+        for l in self.objects.all():
+            if len(l.enumeration) > 0:
+                result.append((l.id, l.enumeration))
+            else:
+                result.append((l.id, l.cause[:25].upper() + '...'))
+        return result
 
     class Meta:
         verbose_name = _("hangupcause")
@@ -246,6 +271,8 @@ class CDR(models.Model):
                                     max_digits=10, decimal_places=5)
     sell_cost = models.DecimalField(default=0, verbose_name=_("Sell Cost"),
                                     max_digits=12, decimal_places=5)
+
+    # ??? TODO: jsond field
 
     def destination_name(self):
         """Return Recipient dialcode"""

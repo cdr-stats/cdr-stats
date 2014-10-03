@@ -20,15 +20,14 @@ from django.shortcuts import render_to_response
 from django.conf import settings
 from django_lets_go.common_functions import mongodb_str_filter, \
     mongodb_int_filter, ceil_strdate, striplist
-from cdr.models import Switch, HangupCause, CDR
-from cdr.models import CDR_SOURCE_TYPE
-from cdr.forms import CDR_FileImport, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
+from cdr.models import Switch, HangupCause, CDR, CDR_SOURCE_TYPE
+from cdr.forms import CDR_FileImport
 from cdr.functions_def import get_hangupcause_id, get_hangupcause_id_from_name
 from cdr.import_cdr_freeswitch_mongodb import apply_index, \
     create_analytic, generate_global_cdr_record
 from cdr.functions_def import get_hangupcause_name
 from cdr.forms import CdrSearchForm
-from cdr.constants import CDR_COLUMN_NAME, Export_choice
+from cdr.constants import CDR_COLUMN_NAME, Export_choice, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.views import cdr_view_daily_report, get_pagination_vars
 from cdr_alert.functions_blacklist import chk_destination
 from datetime import datetime

@@ -18,8 +18,9 @@ from django.conf import settings
 from django.core.validators import validate_email
 from django.utils.translation import ugettext_lazy as _
 from django_lets_go.common_functions import comp_day_range
-from cdr.functions_def import get_switch_list, get_country_list, get_hc_list
-from cdr.constants import STRING_SEARCH_TYPE_LIST, CheckWith
+from cdr.functions_def import get_switch_list, get_country_list
+from cdr.constants import STRING_SEARCH_TYPE_LIST, CheckWith, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
+from cdr.models import HangupCause
 from user_profile.models import UserProfile
 from bootstrap3_datetime.widgets import DateTimePicker
 from mod_utils.forms import common_submit_buttons, HorizRadioRenderer
@@ -58,7 +59,7 @@ def hc_list_with_all():
     """Hangup cause list"""
     list_hc = []
     list_hc.append((0, _('all').capitalize()))
-    for i in get_hc_list():
+    for i in HangupCause.objects.get_all_hangupcause():
         list_hc.append((i[0], i[1]))
     return list_hc
 
@@ -263,7 +264,8 @@ class CompareCallSearchForm(SearchForm):
                     <div class="btn-group" data-toggle="buttons">
                         {% for choice in form.check_days.field.choices %}
                         <label class="btn btn-default">
-                            <input name='{{ form.check_days.name }}' type='radio' value='{{ choice.0 }}'/> {{ choice.1 }}
+                            <input name='{{ form.check_days.name }}' type='radio' value='{{ choice.0 }}'/>
+                            {{ choice.1 }}
                         </label>
                         {% endfor %}
                     </div>
@@ -397,28 +399,6 @@ class FileImport(forms.Form):
         else:
             return filename
 
-
-CDR_FIELD_LIST = (
-    'caller_id_number',
-    'caller_id_name',
-    'destination_number',
-    'duration',
-    'billsec',
-    'hangup_cause_id',
-    'direction',
-    'uuid',
-    'remote_media_ip',
-    'start_uepoch',
-    'answer_uepoch',
-    'end_uepoch',
-    'mduration',
-    'billmsec',
-    'read_codec',
-    'write_codec',
-    'accountcode',
-)
-
-CDR_FIELD_LIST_NUM = [(x, 'column-' + str(x)) for x in range(1, len(CDR_FIELD_LIST) + 1)]
 ACCOUNTCODE_FIELD_LIST_NUM = [(x, 'column-' + str(x)) for x in range(1, len(CDR_FIELD_LIST) + 1)]
 ACCOUNTCODE_FIELD_LIST_NUM.append((0, 'No import'))
 ACCOUNTCODE_FIELD_LIST_NUM = sorted(ACCOUNTCODE_FIELD_LIST_NUM,
@@ -427,7 +407,8 @@ ACCOUNTCODE_FIELD_LIST_NUM = sorted(ACCOUNTCODE_FIELD_LIST_NUM,
 
 class CDR_FileImport(FileImport):
     """Admin Form : Import CSV file with phonebook CDR_FIELD_LIST"""
-    switch_id = forms.ChoiceField(label=_('switch'), choices=get_switch_list(), required=True, help_text=_('select switch'))
+    switch_id = forms.ChoiceField(label=_('switch'), choices=get_switch_list(), required=True,
+                                  help_text=_('select switch'))
     accountcode_csv = forms.CharField(label=_('account code'), required=False)
     caller_id_number = forms.ChoiceField(label=_('caller_id_number'), required=True, choices=CDR_FIELD_LIST_NUM)
     caller_id_name = forms.ChoiceField(label=_('caller_id_name'), required=True, choices=ACCOUNTCODE_FIELD_LIST_NUM)
@@ -446,8 +427,8 @@ class CDR_FileImport(FileImport):
     read_codec = forms.ChoiceField(label=_('read_codec'), required=True, choices=ACCOUNTCODE_FIELD_LIST_NUM)
     write_codec = forms.ChoiceField(label=_('write_codec'), required=True, choices=ACCOUNTCODE_FIELD_LIST_NUM)
     accountcode = forms.ChoiceField(label=_('accountcode'), required=True, choices=ACCOUNTCODE_FIELD_LIST_NUM)
-    import_asterisk = forms.BooleanField(label=_('asterisk hangup format'),
-        required=False, help_text=_('with this option on, the field hangup_cause_id will expect Asterisk Hangup Cause in the format : ANSWER, CANCEL, BUSY, CONGESTION, CHANUNAVAIL, etc..'))
+    import_asterisk = forms.BooleanField(label=_('asterisk hangup format'), required=False,
+        help_text=_('with this option on, the field hangup_cause_id will expect Asterisk Hangup Cause in the format : ANSWER, CANCEL, BUSY, CONGESTION, CHANUNAVAIL, etc..'))
 
     def __init__(self, user, *args, **kwargs):
         super(CDR_FileImport, self).__init__(*args, **kwargs)

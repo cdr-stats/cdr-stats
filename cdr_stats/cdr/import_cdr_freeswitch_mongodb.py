@@ -16,7 +16,6 @@ from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 from cdr.models import Switch, CDR_SOURCE_TYPE
 from cdr.functions_def import get_hangupcause_id
-from cdr_alert.functions_blacklist import chk_destination
 from user_profile.models import UserProfile
 from voip_billing.rate_engine import rate_engine
 import datetime
@@ -395,6 +394,7 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             authorized = 1
             country_id = 999
         else:
+            from cdr_alert.functions_blacklist import chk_destination
             destination_data = chk_destination(dest_number)
             authorized = destination_data['authorized']
             country_id = destination_data['country_id']

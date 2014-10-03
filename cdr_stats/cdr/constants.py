@@ -46,3 +46,28 @@ class Export_choice(Choice):
 class CheckWith(Choice):
     previous_days = 1, _('previous days').title()
     same_day_of_the_week = 2, _('same day of the week').title()
+
+
+CDR_FIELD_LIST = (
+    'caller_id_number',
+    'caller_id_name',
+    'destination_number',
+    'duration',
+    'billsec',
+    'hangup_cause_id',
+    'direction',
+    'uuid',
+    'remote_media_ip',
+    'start_uepoch',
+    'answer_uepoch',
+    'end_uepoch',
+    'mduration',
+    'billmsec',
+    'read_codec',
+    'write_codec',
+    'accountcode',
+)
+
+CDR_FIELD_LIST_NUM = [
+    (x, 'column-' + str(x)) for x in range(1, len(CDR_FIELD_LIST) + 1)
+]
