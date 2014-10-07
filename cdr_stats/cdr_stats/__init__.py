@@ -8,13 +8,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2013 Star2Billing S.L.
+# Copyright (C) 2011-2014 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
 
-# :copyright: (c) 2011-2013 by Arezqui Belaid.
+# :copyright: (c) 2011-2014 by Arezqui Belaid.
 # :license: MPL 2.0, see COPYING for more details.
 
 VERSION = (2, 0, 16, "")
