@@ -51,7 +51,8 @@ def get_switch_list():
 
 def get_country_list():
     """Country list used in form"""
-    return ((l.id, l.countryname) for l in Country.objects.all())
+    # return ((l.id, l.countryname) for l in Country.objects.all())
+    return ()
 
 
 @cached(3600)

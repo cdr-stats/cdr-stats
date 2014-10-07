@@ -17,10 +17,10 @@ from django_lets_go.utils import Choice
 
 
 class STRING_SEARCH_TYPE_LIST(Choice):
-    EQUALS = 1, _('equals').capitalize()
-    BEGINS_WITH = 2, _('begins').capitalize()
-    CONTAINS = 3, _('contains').capitalize()
-    ENDS_WITH = 4, _('ends').capitalize()
+    EQUALS = 1, _('Equals')
+    BEGINS_WITH = 2, _('Begins')
+    CONTAINS = 3, _('Contains')
+    ENDS_WITH = 4, _('Ends')
 
 
 class CDR_COLUMN_NAME(Choice):
@@ -38,9 +38,9 @@ class CDR_COLUMN_NAME(Choice):
 
 
 class Export_choice(Choice):
-    CSV = 'csv', _('csv').upper()
-    XLS = 'xls', _('xls').upper()
-    JSON = 'json', _('json').upper()
+    CSV = 'csv', _('CSV')
+    XLS = 'xls', _('XLS')
+    JSON = 'json', _('JSON')
 
 
 class CheckWith(Choice):

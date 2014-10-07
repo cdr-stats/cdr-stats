@@ -27,6 +27,7 @@ from mod_utils.forms import common_submit_buttons, HorizRadioRenderer
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, HTML  # Fieldset, Field
 
+
 COMPARE_LIST = (
     (2, '>'),
     (3, '>='),
@@ -90,15 +91,14 @@ class SearchForm(forms.Form):
     duration = forms.CharField(label=_('duration (secs)').capitalize(), required=False)
     duration_type = forms.ChoiceField(label=_('type').capitalize(), required=False,
                                       choices=COMPARE_LIST)
-    hangup_cause_id = forms.ChoiceField(label=_('hangup cause').capitalize(), required=False,
-                                        choices=hc_list_with_all())
-    switch_id = forms.ChoiceField(label=_('switch').capitalize(), required=False,
-                                  choices=get_switch_list())
+    hangup_cause_id = forms.ChoiceField(label=_('hangup cause').capitalize(), required=False)
+    switch_id = forms.ChoiceField(label=_('switch').capitalize(), required=False)
     country_id = forms.MultipleChoiceField(label=_('country').capitalize(), required=False,
                                            choices=country_list_with_all())
 
     def __init__(self, *args, **kwargs):
         super(SearchForm, self).__init__(*args, **kwargs)
+        self.fields['hangup_cause_id'].choices = hc_list_with_all()
         self.fields['switch_id'].choices = sw_list_with_all()
 
     def clean_duration(self):
@@ -407,8 +407,7 @@ ACCOUNTCODE_FIELD_LIST_NUM = sorted(ACCOUNTCODE_FIELD_LIST_NUM,
 
 class CDR_FileImport(FileImport):
     """Admin Form : Import CSV file with phonebook CDR_FIELD_LIST"""
-    switch_id = forms.ChoiceField(label=_('switch'), choices=get_switch_list(), required=True,
-                                  help_text=_('select switch'))
+    switch_id = forms.ChoiceField(label=_('switch'), required=True, help_text=_('select switch'))
     accountcode_csv = forms.CharField(label=_('account code'), required=False)
     caller_id_number = forms.ChoiceField(label=_('caller_id_number'), required=True, choices=CDR_FIELD_LIST_NUM)
     caller_id_name = forms.ChoiceField(label=_('caller_id_name'), required=True, choices=ACCOUNTCODE_FIELD_LIST_NUM)
@@ -432,3 +431,6 @@ class CDR_FileImport(FileImport):
 
     def __init__(self, user, *args, **kwargs):
         super(CDR_FileImport, self).__init__(*args, **kwargs)
+
+        self.fields['switch_id'].choices = get_switch_list()
+#

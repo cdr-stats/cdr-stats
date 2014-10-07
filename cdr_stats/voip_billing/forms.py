@@ -73,8 +73,12 @@ class RetailRate_fileImport(FileImport):
     """
     Admin Form : Import CSV file with Retail Plan
     """
-    plan_id = forms.ChoiceField(label=_("retail plan"), required=False, choices=retail_plan_list(),
+    plan_id = forms.ChoiceField(label=_("retail plan"), required=False,
                                 help_text=_("select retail plan"))
+
+    def __init__(self, *args, **kwargs):
+        super(RetailRate_fileImport, self).__init__(*args, **kwargs)
+        self.fields['plan_id'].choices = retail_plan_list()
 
 
 class CarrierRate_fileImport(FileImport):
@@ -82,14 +86,19 @@ class CarrierRate_fileImport(FileImport):
     Admin Form : Import CSV file with Carrier Plan
     """
     plan_id = forms.ChoiceField(label=_("carrier plan"), required=False,
-                                choices=carrier_plan_list(), help_text=_("select carrier plan"))
+                                help_text=_("select carrier plan"))
     chk = forms.BooleanField(label=_("make retail plan"), required=False,
                              help_text=_("select if you want to make retail plan"))
     retail_plan_id = forms.ChoiceField(label=_("retail plan"), required=False,
-                                       choices=retail_plan_list(), help_text=_("select retail plan"))
+                                       help_text=_("select retail plan"))
     profit_percentage = forms.CharField(label=_("profit in % :"), required=False,
                                         widget=forms.TextInput(attrs={'size': 3}),
                                         help_text=_("enter digit without %"))
+
+    def __init__(self, *args, **kwargs):
+        super(CarrierRate_fileImport, self).__init__(*args, **kwargs)
+        self.fields['plan_id'].choices = carrier_plan_list()
+        self.fields['retail_plan_id'].choices = retail_plan_list()
 
     def clean_profit_percentage(self):
         """
@@ -109,34 +118,37 @@ class Carrier_Rate_fileExport(Exportfile):
     """
     Admin Form : Carrier Rate Export
     """
-    plan_id = forms.ChoiceField(label=_("carrier plan").capitalize(), choices=carrier_plan_list(), required=False)
+    plan_id = forms.ChoiceField(label=_("carrier plan").capitalize(), required=False)
 
     def __init__(self, *args, **kwargs):
         super(Carrier_Rate_fileExport, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['plan_id', 'export_to']
+        self.fields['plan_id'].choices = carrier_plan_list()
 
 
 class Retail_Rate_fileExport(Exportfile):
     """
     Admin Form : Retail Rate Export
     """
-    plan_id = forms.ChoiceField(label=_("retail plan").capitalize(), choices=retail_plan_list(), required=False)
+    plan_id = forms.ChoiceField(label=_("retail plan").capitalize(), required=False)
 
     def __init__(self, *args, **kwargs):
         super(Retail_Rate_fileExport, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['plan_id', 'export_to']
+        self.fields['plan_id'].choices = retail_plan_list()
 
 
 class VoIPPlan_fileExport(Exportfile):
     """
     Admin Form : VoIP Plan Export
     """
-    plan_id = forms.ChoiceField(label=_("VoIP plan"), choices=voip_plan_list(), required=False,
+    plan_id = forms.ChoiceField(label=_("VoIP plan"), required=False,
                                 help_text=_('this will export the VoIPPlan using LCR on each prefix-rate tuple'))
 
     def __init__(self, *args, **kwargs):
         super(VoIPPlan_fileExport, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['plan_id', 'export_to']
+        self.fields['plan_id'].choices = voip_plan_list()
 
 
 class PrefixRetailRateForm(forms.Form):
@@ -196,10 +208,12 @@ class SimulatorForm(SendVoIPForm):
     """
     Admin/Client Form : To Simulator
     """
-    plan_id = forms.ChoiceField(label=_("VoIP plan"), choices=voip_plan_list(), required=False)
+    plan_id = forms.ChoiceField(label=_("VoIP plan"), required=False)
 
     def __init__(self, user, *args, **kwargs):
         super(SimulatorForm, self).__init__(*args, **kwargs)
+        self.fields['plan_id'].choices = voip_plan_list()
+
         self.fields.keyOrder = ['plan_id', 'destination_no', ]
         if not user.is_superuser:
             self.fields['plan_id'] = forms.ChoiceField(widget=forms.HiddenInput())
@@ -240,10 +254,11 @@ class DailyBillingForm(forms.Form):
         widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
     to_date = forms.DateTimeField(label=_('to').capitalize(), required=False,
         widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
-    switch_id = forms.ChoiceField(label=_('switch'), required=False, choices=sw_list_with_all())
+    switch_id = forms.ChoiceField(label=_('switch'), required=False)
 
     def __init__(self, *args, **kwargs):
         super(DailyBillingForm, self).__init__(*args, **kwargs)
+        self.fields['switch_id'].choices = sw_list_with_all()
         self.helper = FormHelper()
         self.helper.form_class = 'well'
         css_class = 'col-md-4'
