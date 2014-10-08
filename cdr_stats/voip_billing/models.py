@@ -28,9 +28,9 @@ class VoIPPlan(Model):
     An VoIPPlan is a collection of VoIPRetailPlans, you can have 1 or more
     VoIPRetailPlans associated to the VoIPPlan
 
-    A client has a single VoIPPlan
-    An VoIPPlan has many VoIPRetailPlans.
-    An VoIPRetailPlan has VoIPRetailRates
+    A client has a single VoIPPlan,
+    VoIPPlan has many VoIPRetailPlans.
+    VoIPRetailPlan has VoIPRetailRates
 
     The LCR system will route the VoIP via the lowest cost carrier.
     """

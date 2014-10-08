@@ -5,7 +5,7 @@
       "fields":{
          "updated_date":"2011-03-31 03:35:12",
          "status":0,
-         "protocol":"IAX",
+         "protocol":"SIP",
          "name":"Gateway Default",
          "count_using":null,
          "count_call":null,

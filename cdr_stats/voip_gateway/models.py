@@ -97,8 +97,8 @@ class Provider(Model):
     """
     name = models.CharField(unique=True, max_length=255, verbose_name=_('name'),
                             help_text=_("enter provider name"))
-    description = models.TextField(verbose_name=_('description'),
-                               help_text=_("short description about provider"))
+    description = models.TextField(verbose_name=_('description'), blank=True,
+                                   help_text=_("short description about provider"))
     metric = models.IntegerField(default=10, verbose_name=_('metric'),
                                  help_text=_("enter metric in digit"))
     gateway = models.ForeignKey(Gateway, null=True, blank=True,
