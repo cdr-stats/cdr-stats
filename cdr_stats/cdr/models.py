@@ -13,6 +13,7 @@
 #
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from postgres.fields import json_field
 from django_lets_go.utils import Choice
 from switch.models import Switch
 from country_dialcode.models import Prefix
@@ -99,7 +100,7 @@ class AccountCode(caching.base.CachingMixin, models.Model):
 class HangupCauseManager(models.Manager):
     """HangupCause Manager"""
 
-    # @cached(3600)
+    @cached(3600)
     def get_all_hangupcause(self):
         result = []
         for l in HangupCause.objects.all():
@@ -231,7 +232,8 @@ class CDR(models.Model):
     sell_cost = models.DecimalField(default=0, verbose_name=_("Sell Cost"),
                                     max_digits=12, decimal_places=5)
 
-    # ??? TODO: jsond field
+    #Postgresql >= 9.4 Json field
+    data = json_field.JSONField()
 
     def destination_name(self):
         """Return Recipient dialcode"""
