@@ -21,6 +21,33 @@ from country_dialcode.models import Country
 from localflavor.us.models import USStateField
 from cache_utils.decorators import cached
 import caching.base
+import random
+from uuid import uuid1
+import datetime
+import time
+import string
+
+random.seed()
+
+
+# HANGUP_CAUSE = ['NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED', 'INVALID_NUMBER_FORMAT']
+# HANGUP_CAUSE_Q850 = ['16', '17', '19', '21', '28']
+HANGUP_CAUSE = ['NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER']
+HANGUP_CAUSE_Q850 = ['16', '17', '19']
+
+
+#list of exit code : http://www.howtocallabroad.com/codes.html
+COUNTRY_PREFIX = ['0034', '011346', '+3465',  # Spain
+                  '3912', '39', '+3928',  # Italy
+                  '15', '17',  # US
+                  '16', '1640',  # Canada
+                  '44', '441', '00442',  # UK
+                  '45', '451', '00452',  # Denmark
+                  '32', '321', '0322',  # Belgium
+                  '91', '919', '0911',  # India
+                  '53', '531', '00532',  # Cuba
+                  '55', '551', '552',  # Brazil
+                  ]
 
 
 class CDR_SOURCE_TYPE(Choice):
@@ -250,6 +277,60 @@ class CDR(models.Model):
             return "%02d:%02d" % (min, sec)
         else:
             return "00:00"
+
+    @classmethod
+    def generate_fake_cdr(cls, day_delta_int):
+        """return tuples of fake CDR data"""
+
+        delta_days = random.randint(0, day_delta_int)
+        delta_minutes = random.randint(1, 1440)
+        answer_stamp = datetime.datetime.now() \
+            - datetime.timedelta(minutes=delta_minutes) \
+            - datetime.timedelta(days=delta_days)
+
+        # convert answer_stamp into milliseconds
+        start_uepoch = int(time.mktime(answer_stamp.timetuple()))
+
+        caller_id = ''.join([random.choice(string.digits) for i in range(8)])
+        channel_name = 'sofia/internal/' + caller_id + '@127.0.0.1'
+        destination_number = ''.join([random.choice(string.digits) for i in range(8)])
+
+        if random.randint(1, 20) == 1:
+            #Add local calls
+            destination_number = ''.join([random.choice(string.digits) for i in range(5)])
+        else:
+            #International calls
+            destination_number = random.choice(COUNTRY_PREFIX) + destination_number
+
+        rand_hangup = random.randint(0, len(HANGUP_CAUSE)-1)
+        hangup_cause = HANGUP_CAUSE[rand_hangup]
+        hangup_cause_q850 = HANGUP_CAUSE_Q850[rand_hangup]
+        if hangup_cause == 'NORMAL_CLEARING':
+            duration = random.randint(1, 200)
+            billsec = random.randint(1, 200)
+        else:
+            duration = 0
+            billsec = 0
+
+        end_stamp = str(datetime.datetime.now()
+                        - datetime.timedelta(minutes=delta_minutes)
+                        - datetime.timedelta(days=delta_days)
+                        + datetime.timedelta(seconds=duration))
+        uuid = str(uuid1())
+
+        return (
+            answer_stamp,
+            start_uepoch,
+            caller_id,
+            channel_name,
+            destination_number,
+            hangup_cause,
+            hangup_cause_q850,
+            duration,
+            billsec,
+            end_stamp,
+            uuid,
+        )
 
     class Meta:
         db_table = 'voip_cdr'
