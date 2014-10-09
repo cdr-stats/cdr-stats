@@ -319,17 +319,8 @@ class CDR(models.Model):
         uuid = str(uuid1())
 
         return (
-            answer_stamp,
-            start_uepoch,
-            caller_id,
-            channel_name,
-            destination_number,
-            hangup_cause,
-            hangup_cause_q850,
-            duration,
-            billsec,
-            end_stamp,
-            uuid,
+            answer_stamp, start_uepoch, caller_id, channel_name, destination_number, hangup_cause,
+            hangup_cause_q850, duration, billsec, end_stamp, uuid,
         )
 
     class Meta:
