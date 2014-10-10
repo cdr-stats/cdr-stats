@@ -85,6 +85,7 @@ def chk_destination(destination_number):
     {
         'authorized': 0,
         'country_id': 0,
+        'prefix_id': 0,
     }
     """
     #remove prefix
@@ -113,13 +114,14 @@ def chk_destination(destination_number):
         # It might be an local call
         # Need to add coma for get_country_id to eval correctly
         prefix_list = prefix_list_string(str(settings.LOCAL_DIALCODE) + sanitized_destination)
-        country_id = get_country_id(prefix_list)
+        (country_id, prefix_id) = get_country_id(prefix_list)
     else:
         # International call
-        country_id = get_country_id(prefix_list)
+        (country_id, prefix_id) = get_country_id(prefix_list)
 
     destination_data = {
         'authorized': authorized,
         'country_id': country_id,
+        'prefix_id': prefix_id,
     }
     return destination_data

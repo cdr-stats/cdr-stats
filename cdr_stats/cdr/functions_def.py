@@ -145,7 +145,7 @@ def prefix_list_string(dest_number):
     #Extra number, this is used in case phonenumber is followed by chars
     #ie 34650123456*234
     dest_number = str(dest_number)
-    if dest_number[0]=='+':
+    if dest_number[0] == '+':
         dest_number = dest_number[1:]
 
     m = re.search('(\d*)', dest_number)
@@ -168,7 +168,8 @@ def prefix_list_string(dest_number):
 @cached(3600)
 def get_country_id(prefix_list):
     """Get country id from prefix_list else return 0"""
-    country_id = 0
+    country_id = None
+    prefix_id = None
     try:
         # get a list in numeric order (which is also length order)
         prefix_obj = Prefix.objects.filter(prefix__in=eval(prefix_list)).order_by('prefix')
@@ -176,9 +177,10 @@ def get_country_id(prefix_list):
         for i in xrange(0, len(prefix_obj)):
             if prefix_obj[i].country_id:
                 country_id = prefix_obj[i].country_id.id
-        return country_id
+                prefix_id = prefix_obj[i].id
+        return (country_id, prefix_id)
     except:
-        return country_id
+        return (country_id, prefix_id)
 
 
 @cached(3600)

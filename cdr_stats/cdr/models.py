@@ -13,6 +13,7 @@
 #
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import User
 from postgres.fields import json_field
 from django_lets_go.utils import Choice
 from switch.models import Switch
@@ -28,12 +29,6 @@ import time
 import string
 
 random.seed()
-
-
-# HANGUP_CAUSE = ['NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED', 'INVALID_NUMBER_FORMAT']
-# HANGUP_CAUSE_Q850 = ['16', '17', '19', '21', '28']
-HANGUP_CAUSE = ['NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER']
-HANGUP_CAUSE_Q850 = ['16', '17', '19']
 
 
 #list of exit code : http://www.howtocallabroad.com/codes.html
@@ -207,7 +202,7 @@ class CDR(models.Model):
         * ``switch_id`` - Foreign key relationship to Switch
 
     """
-    user = models.ForeignKey('auth.User', related_name='Call Owner')
+    user = models.ForeignKey(User, related_name='Call Owner')
     switch = models.ForeignKey(Switch, verbose_name=_("Switch"), null=False)
     cdr_source_type = models.IntegerField(choices=CDR_SOURCE_TYPE, default=CDR_SOURCE_TYPE.FREESWITCH,
                                           null=True, blank=True)
@@ -282,6 +277,40 @@ class CDR(models.Model):
     def generate_fake_cdr(cls, day_delta_int):
         """return tuples of fake CDR data"""
 
+        # HANGUP_CAUSE = ['NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED', 'INVALID_NUMBER_FORMAT']
+        # HANGUP_CAUSE_Q850 = ['16', '17', '19', '21', '28']
+        """
+        HANGUP_CAUSE = ['NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER']
+        HANGUP_CAUSE_Q850 = ['16', '17', '19']
+
+        rand_hangup = random.randint(0, len(HANGUP_CAUSE)-1)
+        hangup_cause = HANGUP_CAUSE[rand_hangup]
+        hangup_cause_q850 = HANGUP_CAUSE_Q850[rand_hangup]
+        if hangup_cause == 'NORMAL_CLEARING':
+            duration = random.randint(1, 200)
+            billsec = random.randint(1, 200)
+        else:
+            duration = 0
+            billsec = 0
+        """
+        # from django.db.models import Q
+        # import operator
+
+        # HANGUP_CAUSE_Q850 = [16, 17, 19]
+        # predicates = [('code__exact', 16), ('code__exact', 17)], ('code__exact', 18)]
+        # q_list = [Q(x) for x in predicates]
+        mydict = {'code__exact': 16, 'code__exact': 17, 'code__exact': 18}
+
+        list_hg = HangupCause.objects.filter(**mydict)
+        hangupcause = list_hg[random.randint(0, len(list_hg)-1)]
+        hangup_cause_q850 = hangupcause.code
+        if hangupcause.code == 16:
+            duration = random.randint(1, 200)
+            billsec = random.randint(1, 200)
+        else:
+            duration = 0
+            billsec = 0
+
         delta_days = random.randint(0, day_delta_int)
         delta_minutes = random.randint(1, 1440)
         answer_stamp = datetime.datetime.now() \
@@ -297,30 +326,35 @@ class CDR(models.Model):
 
         if random.randint(1, 20) == 1:
             #Add local calls
+            dialcode = None
+            country_id = None
+            authorized = 1
             destination_number = ''.join([random.choice(string.digits) for i in range(5)])
         else:
             #International calls
             destination_number = random.choice(COUNTRY_PREFIX) + destination_number
 
-        rand_hangup = random.randint(0, len(HANGUP_CAUSE)-1)
-        hangup_cause = HANGUP_CAUSE[rand_hangup]
-        hangup_cause_q850 = HANGUP_CAUSE_Q850[rand_hangup]
-        if hangup_cause == 'NORMAL_CLEARING':
-            duration = random.randint(1, 200)
-            billsec = random.randint(1, 200)
-        else:
-            duration = 0
-            billsec = 0
+            from cdr_alert.functions_blacklist import chk_destination
+            destination_data = chk_destination(destination_number)
+            authorized = destination_data['authorized']
+            country_id = destination_data['country_id']
+            dialcode = destination_data['prefix_id']
 
         end_stamp = str(datetime.datetime.now()
                         - datetime.timedelta(minutes=delta_minutes)
                         - datetime.timedelta(days=delta_days)
                         + datetime.timedelta(seconds=duration))
-        uuid = str(uuid1())
+        callid = str(uuid1())
+
+        cdr_source_type = CDR_SOURCE_TYPE.FREESWITCH
+        direction = CALL_DIRECTION.INBOUND
 
         return (
-            answer_stamp, start_uepoch, caller_id, channel_name, destination_number, hangup_cause,
-            hangup_cause_q850, duration, billsec, end_stamp, uuid,
+            callid, answer_stamp, start_uepoch, caller_id,
+            channel_name, destination_number, dialcode, hangupcause,
+            hangup_cause_q850, duration, billsec, end_stamp,
+            cdr_source_type, authorized, country_id, direction,
+            # accountcode, buy_rate, buy_cost, sell_rate, sell_cost
         )
 
     class Meta:

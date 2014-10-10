@@ -159,17 +159,11 @@ class Command(BaseCommand):
 
         for i in range(1, int(no_of_record) + 1):
             (
-                answer_stamp,
-                start_uepoch,
-                caller_id,
-                channel_name,
-                destination_number,
-                hangup_cause,
-                hangup_cause_q850,
-                duration,
-                billsec,
-                end_stamp,
-                uuid,
+                callid, answer_stamp, start_uepoch, caller_id,
+                channel_name, destination_number, dialcode, hangup_cause,
+                hangup_cause_q850, duration, billsec, end_stamp,
+                cdr_source_type, authorized, country_id, direction,
+                # accountcode, buy_rate, buy_cost, sell_rate, sell_cost
             ) = CDR.generate_fake_cdr(day_delta_int)
 
             if type(arg_duration) == int:
@@ -178,8 +172,8 @@ class Command(BaseCommand):
             if i % 100 == 0:
                 print '%d CDRs created...' % i
 
-            print "CDR => date:%s, uuid:%s, dur:%s, pn:%s, hg_cause:%s" % \
-                (answer_stamp, uuid, duration, destination_number, hangup_cause)
+            print "CDR => date:%s, callid:%s, dur:%s, pn:%s, hg_cause:%s" % \
+                (answer_stamp, callid, duration, destination_number, hangup_cause)
 
             cdr_json = {
                 'channel_data': {
@@ -187,7 +181,7 @@ class Command(BaseCommand):
                     'direction': 'inbound'},
                 'variables': {
                     'direction': 'inbound',
-                    'uuid': uuid,
+                    'uuid': callid,
                     'session_id': '3',
                     'sip_network_ip': '192.168.1.21',
                     'sip_network_port': '60536',
@@ -207,7 +201,7 @@ class Command(BaseCommand):
                     'read_rate': '16000',
                     'write_codec': 'G722',
                     'write_rate': '16000',
-                    'call_uuid': uuid,
+                    'call_uuid': callid,
                     'remote_media_ip': '192.168.1.21',
                     'endpoint_disposition': 'ANSWER',
                     'current_application_data': '2000',
@@ -248,7 +242,7 @@ class Command(BaseCommand):
                             'caller_id_number': str(caller_id),
                             'network_addr': '192.168.1.21',
                             'destination_number': str(destination_number),
-                            'uuid': uuid,
+                            'uuid': callid,
                             'chan_name': 'sofia/internal/1000@127.0.0.1'
                         }
                     }
