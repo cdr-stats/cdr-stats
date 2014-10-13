@@ -267,7 +267,7 @@ def common_function_to_create_analytic(date_start_uepoch, start_uepoch, switch_i
     Common function to create DAILY_ANALYTIC, MONTHLY_ANALYTIC
     """
     # DAILY_ANALYTIC
-    daily_date = datetime.datetime.fromtimestamp(int(date_start_uepoch[:10]))
+    daily_date = datetime.datetime.fromtimestamp(int(str(date_start_uepoch)[:10]))
 
     # insert daily analytic record
     create_daily_analytic(daily_date, switch_id, country_id, accountcode,
@@ -331,17 +331,17 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
     for cdr in result:
         #find result so let's look later for more records
         start_uepoch = datetime.datetime.fromtimestamp(
-            int(cdr['variables']['start_uepoch'][:10]))
+            int(str(cdr['variables']['start_uepoch'])[:10]))
 
         answer_uepoch = ''
         if cdr['variables']['answer_uepoch']:
             answer_uepoch = datetime.datetime.fromtimestamp(
-                int(cdr['variables']['answer_uepoch'][:10]))
+                int(str(cdr['variables']['answer_uepoch'])[:10]))
 
         end_uepoch = ''
         if cdr['variables']['end_uepoch']:
             end_uepoch = datetime.datetime.fromtimestamp(
-                int(cdr['variables']['end_uepoch'][:10]))
+                int(str(cdr['variables']['end_uepoch'])[:10]))
 
         # Check Destination number
         print(cdr)
@@ -397,7 +397,7 @@ def func_importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         #             authorized,
         #             count_import))
 
-        date_start_uepoch = cdr['variables']['start_uepoch'][:10]
+        date_start_uepoch = int(str(cdr['variables']['start_uepoch'])[:10])
         common_function_to_create_analytic(date_start_uepoch, start_uepoch, switch.id,
             country_id, accountcode, hangup_cause_id, duration)
 
