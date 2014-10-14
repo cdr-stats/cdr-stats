@@ -119,7 +119,7 @@ CDR_BACKEND = {
         'cdr_type': 'freeswitch',  # asterisk or freeswitch
         'db_name': 'test',
         'table_name': 'cdr',  # collection if mongodb
-        'host': '172.17.0.2',
+        'host': '172.17.0.7',
         'port': 27017,  # 3306 mysql, 5432 pgsql, 27017 mongodb
         'user': '',
         'password': '',
@@ -139,7 +139,7 @@ ASTERISK_MANAGER_SECRET = 'secret'
 #Settings of CDR-Stats MongoDB server, this is used to store the analytic data
 MONGO_CDRSTATS = {
     'DB_NAME': 'cdr-stats',
-    'HOST': '172.17.0.2',
+    'HOST': '172.17.0.7',
     'PORT': 27017,
     'USER': '',
     'PASSWORD': '',

@@ -159,6 +159,9 @@ def create_daily_analytic(daily_date, switch_id, country_id,
                           accountcode, hangup_cause_id, duration,
                           buy_cost, sell_cost):
     """Create mongodb.daily_analytic"""
+    print (switch_id, accountcode, country_id, hangup_cause_id)
+    if not country_id:
+        country_id = 0
     id_daily = daily_date.strftime('%Y%m%d') + "/%d/%s/%d/%d" % \
         (switch_id, accountcode, country_id, hangup_cause_id)
 
@@ -207,6 +210,8 @@ def create_monthly_analytic(daily_date, start_uepoch, switch_id,
     """Create mongodb.daily_analytic"""
     # Get a datetime that only include year-month info
     d = datetime.datetime.strptime(str(start_uepoch)[:7], "%Y-%m")
+    if not country_id:
+        country_id = 0
 
     id_monthly = daily_date.strftime('%Y%m') + "/%d/%s/%d" %\
         (switch_id, accountcode, country_id)
