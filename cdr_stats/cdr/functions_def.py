@@ -166,10 +166,16 @@ def prefix_list_string(dest_number):
 
 
 @cached(3600)
-def get_country_id(prefix_list):
-    """Get country id from prefix_list else return 0"""
+def get_country_id_prefix(prefix_list):
+    """
+    Get country_id and matched prefix from prefix_list
+        @ return (country_id, prefix)
+
+    In case of error or not found,
+        @ return (None, None)
+    """
     country_id = None
-    prefix_id = None
+    prefix = None
     try:
         # get a list in numeric order (which is also length order)
         prefix_obj = Prefix.objects.filter(prefix__in=eval(prefix_list)).order_by('prefix')
@@ -177,10 +183,11 @@ def get_country_id(prefix_list):
         for i in xrange(0, len(prefix_obj)):
             if prefix_obj[i].country_id:
                 country_id = prefix_obj[i].country_id.id
-                prefix_id = prefix_obj[i].id
-        return (country_id, prefix_id)
+                prefix = prefix_obj[i].prefix
+        return (country_id, prefix)
     except:
-        return (country_id, prefix_id)
+        raise
+        return (country_id, prefix)
 
 
 @cached(3600)

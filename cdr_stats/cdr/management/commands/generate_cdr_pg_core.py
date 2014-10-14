@@ -69,8 +69,8 @@ class Command(BaseCommand):
             if i % 100 == 0:
                 print '%d CDRs created...' % i
 
-            print "CDR => date:%s, callid:%s, dur:%s, pn:%s, dc:%s, hg_cause:%s" % \
-                (answer_stamp, callid, duration, destination_number, dialcode, hangup_cause)
+            print "CDR => date:%s, callid:%s, dur:%s, pn:%s, dc:%s, country:%s, hg_cause:%s" % \
+                (answer_stamp, callid, duration, destination_number, dialcode, country_id, hangup_cause)
 
             cdr_json = {
                 'channel_data': {

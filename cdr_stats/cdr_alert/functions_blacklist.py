@@ -12,7 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.conf import settings
-from cdr.functions_def import remove_prefix, prefix_list_string, get_country_id
+from cdr.functions_def import remove_prefix, prefix_list_string, get_country_id_prefix
 from cdr_alert.models import Blacklist, Whitelist
 from cdr_alert.tasks import blacklist_whitelist_notification
 
@@ -112,12 +112,12 @@ def chk_destination(destination_number):
     elif (len(sanitized_destination) >= settings.PN_MIN_DIGITS
          and len(sanitized_destination) <= settings.PN_MAX_DIGITS):
         # It might be an local call
-        # Need to add coma for get_country_id to eval correctly
+        # Need to add coma for get_country_id_prefix to eval correctly
         prefix_list = prefix_list_string(str(settings.LOCAL_DIALCODE) + sanitized_destination)
-        (country_id, prefix_id) = get_country_id(prefix_list)
+        (country_id, prefix_id) = get_country_id_prefix(prefix_list)
     else:
         # International call
-        (country_id, prefix_id) = get_country_id(prefix_list)
+        (country_id, prefix_id) = get_country_id_prefix(prefix_list)
 
     destination_data = {
         'authorized': authorized,

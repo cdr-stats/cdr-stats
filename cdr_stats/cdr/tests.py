@@ -24,7 +24,7 @@ from cdr.views import cdr_view, cdr_dashboard, cdr_overview, cdr_daily_compariso
     cdr_concurrent_calls, cdr_realtime, cdr_country_report, mail_report, world_map_view,\
     cdr_detail
 from cdr.functions_def import get_switch_list, get_hangupcause_name,\
-    get_hangupcause_id, get_country_id
+    get_hangupcause_id, get_country_id_prefix
 from cdr.templatetags.cdr_tags import hangupcause_name_with_title, mongo_id
 from bson.objectid import ObjectId
 from datetime import datetime
@@ -445,7 +445,7 @@ class CdrModelTestCase(BaseAuthenticatedClient):
         value = {'_id': {'val': 1}}
         mongo_id(value, 'val')
 
-        get_country_id(['44', '442'])
+        get_country_id_prefix(['44', '442'])
 
     def test_cdr_search_form(self):
         data = {'switch_id': 1,

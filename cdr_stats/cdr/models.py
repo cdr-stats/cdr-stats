@@ -293,16 +293,16 @@ class CDR(models.Model):
             duration = 0
             billsec = 0
         """
-        from django.db.models import Q
-        import operator
+        # from django.db.models import Q
+        # import operator
+        # predicates = [
+        #     ('code__exact', 16), ('code__exact', 17), ('code__exact', 18)
+        # ]
+        # q_list = [Q(x) for x in predicates]
+        # list_hg = HangupCause.objects.filter(reduce(operator.or_, q_list))
 
-        # HANGUP_CAUSE_Q850 = [16, 17, 19]
-        predicates = [
-            ('code__exact', 16), ('code__exact', 17), ('code__exact', 18)
-        ]
-        q_list = [Q(x) for x in predicates]
-
-        list_hg = HangupCause.objects.filter(reduce(operator.or_, q_list))
+        HANGUP_CAUSE_Q850 = [16, 17, 19]
+        list_hg = HangupCause.objects.filter(code__in=HANGUP_CAUSE_Q850)
         hangupcause = list_hg[random.randint(0, len(list_hg)-1)]
         if hangupcause.code != 16:
             #Increase chances to have Answered calls
