@@ -15,6 +15,7 @@
 from django.conf.urls import handler404, handler500, url, patterns, include
 from django.conf import settings
 from cdr.urls import urlpatterns as urlpatterns_cdr
+from realtime.urls import urlpatterns as urlpatterns_realtime
 from cdr_alert.urls import urlpatterns as urlpatterns_cdr_alert
 from user_profile.urls import urlpatterns as urlpatterns_user_profile
 from frontend.urls import urlpatterns as urlpatterns_frontend
@@ -60,6 +61,7 @@ if settings.DEBUG:
     urlpatterns += patterns('', url(r'^__debug__/', include(debug_toolbar.urls)),)
 
 urlpatterns += urlpatterns_cdr
+urlpatterns += urlpatterns_realtime
 urlpatterns += urlpatterns_cdr_alert
 urlpatterns += urlpatterns_user_profile
 urlpatterns += urlpatterns_frontend

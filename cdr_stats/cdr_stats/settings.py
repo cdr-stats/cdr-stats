@@ -205,6 +205,7 @@ INSTALLED_APPS = (
     'voip_gateway',
     'voip_billing',
     'switch',
+    'realtime',
 
     'dateutil',
     # 'south',

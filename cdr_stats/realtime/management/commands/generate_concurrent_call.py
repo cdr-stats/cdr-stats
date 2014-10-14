@@ -31,10 +31,7 @@ class Command(BaseCommand):
            "python manage.py generate_concurrent_call -d 0"
 
     option_list = BaseCommand.option_list + (
-        make_option('--delta-day', '-d',
-            default=None,
-            dest='delta-day',
-            help=help),
+        make_option('--delta-day', '-d', default=None, dest='delta-day', help=help),
     )
 
     def handle(self, *args, **options):
