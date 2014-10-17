@@ -17,3 +17,4 @@ pyst2==0.4
 requests==2.4.1
 tablib==0.10.0
 python-memcached==1.53
+influxdb==0.1.12

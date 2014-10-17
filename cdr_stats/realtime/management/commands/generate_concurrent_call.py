@@ -39,7 +39,7 @@ class Command(BaseCommand):
         if not mongodb.conc_call:
             print "Error mongodb Connection"
 
-        no_of_record = 86400  # second in one day
+        nb_record = 86400  # second in one day
 
         if options.get('delta-day'):
             day_delta_int = int(options.get('delta-day', 1))
@@ -60,7 +60,7 @@ class Command(BaseCommand):
 
         numbercall = 10
 
-        for i in range(0, int(no_of_record)):
+        for i in range(0, nb_record):
             delta_duration = i
             call_date = date_today + datetime.timedelta(seconds=delta_duration)
 

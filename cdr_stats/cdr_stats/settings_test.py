@@ -17,6 +17,8 @@
 from settings import *
 
 
+# os.environ['REUSE_DB'] = "1"
+
 # make tests faster
 # False : test will make the test database be created using syncdb
 SOUTH_TESTS_MIGRATE = False
@@ -24,14 +26,14 @@ SOUTH_TESTS_MIGRATE = False
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        #'NAME': ':memory:',
-        'NAME': '/tmp/db.sqlite',
-        'TEST_NAME': '/tmp/test.sqlite'
+        'NAME': ':memory:',
+        # 'NAME': '/tmp/db.sqlite',
+        # 'TEST_NAME': '/tmp/test.sqlite'
     }
 }
 
 BROKER_BACKEND = "memory"
 CELERY_ALWAYS_EAGER = True
 
-INSTALLED_APPS += ('django_nose', )
-TEST_RUNNER = 'django_nose.run_tests'
+# INSTALLED_APPS += ('django_nose', )
+# TEST_RUNNER = 'django_nose.run_tests'

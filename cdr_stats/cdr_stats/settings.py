@@ -221,6 +221,7 @@ INSTALLED_APPS = (
     'activelink',
     'bootstrap3_datetime',
     'crispy_forms',
+    'influx',
 )
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
@@ -565,6 +566,19 @@ REST_FRAMEWORK = {
     #    'user': '1000/day'
     #}
 }
+
+#INFLUXDB
+#========
+
+INFLUXDB_USER = 'root'
+INFLUXDB_PASSWORD = 'root'
+INFLUXDB_DBNAME = 'cdrstats'
+INFLUXDB_HOST = 'localhost'
+INFLUXDB_PORT = 8086
+INFLUXDB_SERIE_CALL = 'cdr'
+# INFLUXDB_SERIE_CALL = 'cdr.call'
+# INFLUXDB_SERIE_BILLING = 'cdr.billing'
+# INFLUXDB_SERIE_DATA = 'cdr.data'  # keep extra data (country, disposition, etc...)
 
 #IMPORT LOCAL SETTINGS
 #=====================
