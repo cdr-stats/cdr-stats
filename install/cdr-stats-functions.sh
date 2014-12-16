@@ -366,7 +366,7 @@ func_install_source(){
 
     case $INSTALL_MODE in
         'CLONE')
-            git clone git://github.com/Star2Billing/cdr-stats.git
+            git clone -b $BRANCH git://github.com/Star2Billing/cdr-stats.git
 
             #Install Develop / Master
             if echo $BRANCH | grep -i "^develop" > /dev/null ; then
