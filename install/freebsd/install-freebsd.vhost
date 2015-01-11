@@ -1,0 +1,25 @@
+<VirtualHost *:80>
+ServerName localhost
+DocumentRoot INSTALL_DIR
+ErrorLog /var/log/cdr-stats/err-apache-cdr-stats.log
+LogLevel warn
+
+Alias /static/ "INSTALL_DIR/static/"
+
+<Location "/static/">
+SetHandler None
+</Location>
+
+WSGIPassAuthorization On
+WSGIDaemonProcess cdr-stats user=www user=www threads=1
+WSGIProcessGroup cdr-stats
+WSGIScriptAlias / INSTALL_DIR/django.wsgi
+
+<Directory INSTALL_DIR>
+Require all granted
+Order deny,allow
+Allow from all
+
+</Directory>
+
+</VirtualHost>
