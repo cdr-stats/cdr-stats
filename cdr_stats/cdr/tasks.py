@@ -24,6 +24,7 @@ from common.only_one_task import only_one
 from datetime import datetime, timedelta
 import sqlite3
 import asterisk.manager
+import psycopg2 as PgDatabase
 
 #Note: if you import a lot of CDRs the first time you can have an issue here
 #we need to make sure the user import their CDR before starting Celery
@@ -83,41 +84,84 @@ class get_channels_info(PeriodicTask):
 
         if settings.CDR_BACKEND[settings.LOCAL_SWITCH_IP]['cdr_type'] == 'freeswitch':
             con = False
-            try:
-                con = sqlite3.connect('/usr/local/freeswitch/db/core.db')
-                cur = con.cursor()
-                cur.execute('SELECT accountcode, count(*) FROM channels')
-                rows = cur.fetchall()
-                for row in rows:
-                    if not row[0]:
-                        accountcode = ''
-                    else:
-                        accountcode = row[0]
-                    numbercall = row[1]
-                    totalcall = totalcall + numbercall
-                    logger.debug('%s (accountcode:%s, switch_id:%d) ==> %s'
-                            % (date_now, accountcode, switch_id,
-                               str(numbercall)))
+            if settings.CDR_BACKEND[settings.LOCAL_SWITCH_IP]['internal_db_engine'] == 'pgsql':
+                user = settings.CDR_BACKEND[settings.LOCAL_SWITCH_IP]['internal_db_user']
+                password = settings.CDR_BACKEND[settings.LOCAL_SWITCH_IP]['internal_db_password']
+                db_name = settings.CDR_BACKEND[settings.LOCAL_SWITCH_IP]['internal_db_name']
+                host = settings.CDR_BACKEND[settings.LOCAL_SWITCH_IP]['internal_db_host']
+                port = settings.CDR_BACKEND[settings.LOCAL_SWITCH_IP]['internal_db_port']
+                try:
+                    connection = PgDatabase.connect(user=user,password=password,
+                        database=db_name, host=host, port=port)
+                    connection.autocommit = True
+                    cur = connection.cursor()
+                    cur.execute('SELECT accountcode,COUNT(*) FROM channels GROUP BY accountcode;')
+                    rows = cur.fetchall()
+                    for row in rows:
+                        if not row[0]:
+                            accountcode = ''
+                        else:
+                            accountcode = row[0]
+                        numbercall = row[1]
+                        totalcall = totalcall + numbercall
+                        logger.debug('%s (accountcode:%s, switch_id:%d) ==> %s'
+                                % (date_now, accountcode, switch_id,
+                                   str(numbercall)))
 
-                    call_json = {
-                        'switch_id': switch_id,
-                        'call_date': date_now,
-                        'numbercall': numbercall,
-                        'accountcode': accountcode,
-                    }
-                    settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].insert(call_json)
+                        call_json = {
+                            'switch_id': switch_id,
+                            'call_date': date_now,
+                            'numbercall': numbercall,
+                            'accountcode': accountcode,
+                        }
+                        settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].insert(call_json)
 
-                    #Save to cache
-                    key = "%s-%d-%s" % (key_date, switch_id, str(accountcode))
-                    cache.set(key, numbercall, 1800)  # 30 minutes
-                    #Create collection for Analytics
-                    set_concurrentcall_analytic(date_now, switch_id, accountcode, numbercall)
+                        #Save to cache
+                        key = "%s-%d-%s" % (key_date, switch_id, str(accountcode))
+                        cache.set(key, numbercall, 1800)  # 30 minutes
+                        #Create collection for Analytics
+                        set_concurrentcall_analytic(date_now, switch_id, accountcode, numbercall)
+                except PgDatabase.Error, e:
+                    logger.error('Error %s:' % e.args[0])
+                finally:
+                    if con:
+                        con.close()
+            else:
+                try:
+                    con = sqlite3.connect('/usr/local/freeswitch/db/core.db')
+                    cur = con.cursor()
+                    cur.execute('SELECT accountcode, count(*) FROM channels')
+                    rows = cur.fetchall()
+                    for row in rows:
+                        if not row[0]:
+                            accountcode = ''
+                        else:
+                            accountcode = row[0]
+                        numbercall = row[1]
+                        totalcall = totalcall + numbercall
+                        logger.debug('%s (accountcode:%s, switch_id:%d) ==> %s'
+                                % (date_now, accountcode, switch_id,
+                                   str(numbercall)))
 
-            except sqlite3.Error, e:
-                logger.error('Error %s:' % e.args[0])
-            finally:
-                if con:
-                    con.close()
+                        call_json = {
+                            'switch_id': switch_id,
+                            'call_date': date_now,
+                            'numbercall': numbercall,
+                            'accountcode': accountcode,
+                        }
+                        settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL']].insert(call_json)
+
+                        #Save to cache
+                        key = "%s-%d-%s" % (key_date, switch_id, str(accountcode))
+                        cache.set(key, numbercall, 1800)  # 30 minutes
+                        #Create collection for Analytics
+                        set_concurrentcall_analytic(date_now, switch_id, accountcode, numbercall)
+
+                except sqlite3.Error, e:
+                    logger.error('Error %s:' % e.args[0])
+                finally:
+                    if con:
+                        con.close()
         elif settings.CDR_BACKEND[settings.LOCAL_SWITCH_IP]['cdr_type'] == 'asterisk':
             manager = asterisk.manager.Manager()
             listaccount = {}
