@@ -56,11 +56,11 @@ CACHES = {
     },
 }
 
-#Include for cache machine: http://cache-machine.readthedocs.org/en/latest/
+# Include for cache machine: http://cache-machine.readthedocs.org/en/latest/
 # CACHE_BACKEND = 'caching.backends.locmem://'  # for testing
 CACHE_BACKEND = 'caching.backends.memcached://localhost:11211'
 
-#Calls to QuerySet.count() can be cached,
+# Calls to QuerySet.count() can be cached,
 CACHE_COUNT_TIMEOUT = 60  # seconds, not too long.
 
 # Local time zone for this installation. Choices can be found here:
@@ -136,7 +136,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    #'geordi.VisorMiddleware',
+    # 'geordi.VisorMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'linaro_django_pagination.middleware.PaginationMiddleware',
     'django_lets_go.filter_persist_middleware.FilterPersistMiddleware',
@@ -171,11 +171,11 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 DAJAXICE_MEDIA_PREFIX = "dajaxice"
-#DAJAXICE_MEDIA_PREFIX = "dajax"  # http://domain.com/dajax/
-#DAJAXICE_CACHE_CONTROL = 10 * 24 * 60 * 60
+# DAJAXICE_MEDIA_PREFIX = "dajax"  # http://domain.com/dajax/
+# DAJAXICE_CACHE_CONTROL = 10 * 24 * 60 * 60
 
 INSTALLED_APPS = (
-    #admin tool apps
+    # admin tool apps
     # 'admintools_bootstrap',  # https://bitbucket.org/salvator/django-admintools-bootstrap
     'admin_tools',
     'admin_tools.theming',
@@ -188,7 +188,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    #'django.contrib.markup',
+    # 'django.contrib.markup',
     'apirest',
     'cdr',
     'cdr_alert',
@@ -198,7 +198,7 @@ INSTALLED_APPS = (
     'django_lets_go',
     'notification',
     'country_dialcode',
-    #'geordi',
+    # 'geordi',
     'gunicorn',
     'frontend_notification',
     'mod_utils',
@@ -221,7 +221,7 @@ INSTALLED_APPS = (
     'activelink',
     'bootstrap3_datetime',
     'crispy_forms',
-    'influx',
+    'call_analytic',
 )
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
@@ -235,7 +235,7 @@ except ImportError:
 else:
     INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', )
     INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar_mongo',)
-    #INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', 'template_timings_panel',)
+    # INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', 'template_timings_panel',)
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + \
         ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     DEBUG_TOOLBAR_PANELS = [
@@ -252,7 +252,7 @@ else:
         'debug_toolbar.panels.signals.SignalsPanel',
         'debug_toolbar.panels.logging.LoggingPanel',
         'debug_toolbar.panels.redirects.RedirectsPanel',
-        #'template_timings_panel.panels.TemplateTimings.TemplateTimings',
+        # 'template_timings_panel.panels.TemplateTimings.TemplateTimings',
         'debug_toolbar_mongo.panel.MongoDebugPanel',
     ]
     DEBUG_TOOLBAR_CONFIG = {
@@ -289,15 +289,13 @@ AUTH_PROFILE_MODULE = 'user_profile.UserProfile'
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/pleaselog/'
 
-#DILLA SETTINGS
-#==============
+# DILLA SETTINGS
 DICTIONARY = "/usr/share/dict/words"
 DILLA_USE_LOREM_IPSUM = False  # set to True ignores dictionary
 DILLA_APPS = ['cdr']
 DILLA_SPAMLIBS = ['cdr.cdr_custom_spamlib']
 # To use Dilla
 # > python manage.py run_dilla --cycles=100
-
 
 gettext = lambda s: s
 
@@ -318,28 +316,27 @@ LOCALE_PATHS = (
 # News URL
 NEWS_URL = 'http://www.cdr-stats.org/news.php'
 
-#DJANGO-ADMIN-TOOL
-#=================
+# DJANGO-ADMIN-TOOL
 ADMIN_TOOLS_MENU = 'custom_admin_tools.menu.CustomMenu'
 ADMIN_TOOLS_INDEX_DASHBOARD = 'custom_admin_tools.dashboard.CustomIndexDashboard'
 ADMIN_TOOLS_APP_INDEX_DASHBOARD = 'custom_admin_tools.dashboard.CustomAppIndexDashboard'
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
-#CELERY SETTINGS
-#===============
-## Broker settings
+# CELERY SETTINGS
+# ===============
+# Broker settings
 BROKER_URL = "redis://localhost:6379/0"
-#BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+# BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 REDIS_DB = 0
-#REDIS_CONNECT_RETRY = True
+# REDIS_CONNECT_RETRY = True
 
-## Using the database to store task state and results.
+# Using the database to store task state and results.
 CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 CELERY_TASK_RESULT_EXPIRES = 18000  # 5 hours.
 
-#CELERY_REDIS_CONNECT_RETRY = True
+# CELERY_REDIS_CONNECT_RETRY = True
 CELERY_TIMEZONE = 'Europe/Madrid'
 CELERY_ENABLE_UTC = True
 
@@ -356,8 +353,8 @@ CELERY_QUEUES = {
     },
 }
 
-#GENERAL
-#=======
+# GENERAL
+# =======
 # PREFIX_LIMIT_MIN & PREFIX_LIMIT_MAX are used to know
 # how many digits are used to match against the dialcode prefix database
 PREFIX_LIMIT_MIN = 2
@@ -377,16 +374,16 @@ PREFIX_TO_IGNORE = "+,0,00,000,0000,00000,011,55555,99999"
 # as a internal call, for example when dialed number is 41200 and INTERNAL_CALL=5
 INTERNAL_CALL = 5
 
-#Realtime Graph : set the Y axis limit
+# Realtime Graph : set the Y axis limit
 REALTIME_Y_AXIS_LIMIT = 300
 
-#ASTERISK IMPORT
-#===============
+# ASTERISK IMPORT
+# ===============
 ASTERISK_PRIMARY_KEY = 'acctid'  # acctid, _id
 
-#CDR_BACKEND
-#===========
-#list of CDR Backends to import
+# CDR_BACKEND
+# ===========
+# list of CDR Backends to import
 CDR_BACKEND = {
     # '127.0.0.1': {
     #     'db_engine': 'mysql',  # mysql, pgsql, mongodb
@@ -410,17 +407,17 @@ CDR_BACKEND = {
     },
 }
 
-#Define the IP of your local Switch, it needs to exist in the CDR_BACKEND list
+# Define the IP of your local Switch, it needs to exist in the CDR_BACKEND list
 LOCAL_SWITCH_IP = '127.0.0.1'
 
-#Asterisk Manager / Used for Realtime and Concurrent calls
+# Asterisk Manager / Used for Realtime and Concurrent calls
 ASTERISK_MANAGER_HOST = 'localhost'
 ASTERISK_MANAGER_USER = 'cdrstats_user'
 ASTERISK_MANAGER_SECRET = 'cdrstats_secret'
 
-#MONGODB
-#=======
-#Settings of CDR-Stats MongoDB server, this is used to store the analytic data
+# MONGODB
+# =======
+# Settings of CDR-Stats MongoDB server, this is used to store the analytic data
 MONGO_CDRSTATS = {
     'DB_NAME': 'cdr-stats',
     'HOST': 'localhost',
@@ -434,28 +431,28 @@ MONGO_CDRSTATS = {
     'CONC_CALL_AGG': 'concurrent_call_aggregate'
 }
 
-#API PLAYGROUND
-#==============
+# API PLAYGROUND
+# ==============
 API_PLAYGROUND_FEEDBACK = False
 
-#No of records per page
-#======================
+# No of records per page
+# ======================
 PAGE_SIZE = 10
 
-#TOTAL_GRAPH_COLOR For TOTAL Variable
-#====================================
+# TOTAL_GRAPH_COLOR For TOTAL Variable
+# ====================================
 TOTAL_GRAPH_COLOR = '#A61700'
 
 # Display Total Countries
-#========================
+# ========================
 NUM_COUNTRY = 10
 
 
 # EMAIL_ADMIN will be used for forget password email sent
 EMAIL_ADMIN = 'cdr-stats@localhost.com'
 
-#EMAIL BACKEND
-#=============
+# EMAIL BACKEND
+# =============
 # Email configuration
 DEFAULT_FROM_EMAIL = 'CDR-Stats <cdr-stats@localhost.com>'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -466,34 +463,34 @@ EMAIL_HOST_USER = 'username@gmail.com'
 EMAIL_HOST_PASSWORD = 'password'
 EMAIL_SUBJECT_PREFIX = '[CDR-Stats] '
 # Use only in Debug mode. Not in production
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-#EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 
-#Define the delay in minute between mail notification
-#This setting avoid getting span with loads of alarms
+# Define the delay in minute between mail notification
+# This setting avoid getting span with loads of alarms
 DELAY_BETWEEN_MAIL_NOTIFICATION = 10
 
-#IPYTHON
-#=======
+# IPYTHON
+# =======
 IPYTHON_ARGUMENTS = [
     '--ext', 'django_extensions.management.notebook_extension',
     '--profile=nbserver',
     '--debug'
 ]
 
-#CORS (Cross-Origin Resource Sharing)
-#====================================
+# CORS (Cross-Origin Resource Sharing)
+# ====================================
 
-#if True, the whitelist will not be used and all origins will be accepted
+# if True, the whitelist will not be used and all origins will be accepted
 CORS_ORIGIN_ALLOW_ALL = True
 
-#specify a list of origin hostnames that are authorized to make a cross-site HTTP request
-#CORS_ORIGIN_WHITELIST = ()
+# specify a list of origin hostnames that are authorized to make a cross-site HTTP request
+# CORS_ORIGIN_WHITELIST = ()
 
-#specify a regex list of origin hostnames that are authorized to make a cross-site HTTP request
-#CORS_ORIGIN_REGEX_WHITELIST = ('^http?://(\w+\.)?google\.com$', )
+# specify a regex list of origin hostnames that are authorized to make a cross-site HTTP request
+# CORS_ORIGIN_REGEX_WHITELIST = ('^http?://(\w+\.)?google\.com$', )
 
-#specify the allowed HTTP methods that can be used when making the actual request
+# specify the allowed HTTP methods that can be used when making the actual request
 CORS_ALLOW_METHODS = (
     'GET',
     'POST',
@@ -504,7 +501,7 @@ CORS_ALLOW_METHODS = (
 )
 
 
-#specify which non-standard HTTP headers can be used when making the actual request
+# specify which non-standard HTTP headers can be used when making the actual request
 CORS_ALLOW_HEADERS = (
     'x-requested-with',
     'content-type',
@@ -517,10 +514,10 @@ CORS_ALLOW_HEADERS = (
 CORS_ORIGIN_WHITELIST = (
     'hostname.example.com',
 )
-#specify which HTTP headers are to be exposed to the browser
+# specify which HTTP headers are to be exposed to the browser
 CORS_EXPOSE_HEADERS = ()
 
-#specify whether or not cookies are allowed to be included
+# specify whether or not cookies are allowed to be included
 CORS_ALLOW_CREDENTIALS = False
 
 # Django-bower
@@ -544,10 +541,10 @@ BOWER_INSTALLED_APPS = (
     'datetimepicker',
 )
 
-#REST FRAMEWORK
-#==============
+# REST FRAMEWORK
+# ==============
 REST_FRAMEWORK = {
-    #'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
+    # 'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
     'PAGINATE_BY': 10,
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
@@ -556,19 +553,19 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
-        #'rest_framework.permissions.DjangoModelPermissions',
+        # 'rest_framework.permissions.DjangoModelPermissions',
     ),
-    #'DEFAULT_THROTTLE_CLASSES': (
+    # 'DEFAULT_THROTTLE_CLASSES': (
     #    'rest_framework.throttling.SimpleRateThrottle',
-    #),
-    #'DEFAULT_THROTTLE_RATES': {
+    # ),
+    # 'DEFAULT_THROTTLE_RATES': {
     #    'anon': '100/day',
     #    'user': '1000/day'
-    #}
+    # }
 }
 
-#INFLUXDB
-#========
+# INFLUXDB
+# ========
 
 INFLUXDB_USER = 'root'
 INFLUXDB_PASSWORD = 'root'
@@ -580,8 +577,8 @@ INFLUXDB_SERIE_CALL = 'cdr'
 # INFLUXDB_SERIE_BILLING = 'cdr.billing'
 # INFLUXDB_SERIE_DATA = 'cdr.data'  # keep extra data (country, disposition, etc...)
 
-#IMPORT LOCAL SETTINGS
-#=====================
+# IMPORT LOCAL SETTINGS
+# =====================
 try:
     from settings_local import *
 except:

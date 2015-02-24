@@ -43,7 +43,7 @@ dic_disposition = {
     'FAIL': 10, 'FAILED': 10
 }
 
-#Try to match the Asterisk Dialstatus against Q.850
+# Try to match the Asterisk Dialstatus against Q.850
 DISPOSITION_TRANSLATION = {
     0: 0,
     1: 16,      # ANSWER
@@ -52,14 +52,14 @@ DISPOSITION_TRANSLATION = {
     4: 21,      # CANCEL
     5: 34,      # CONGESTION
     6: 47,      # CHANUNAVAIL
-    #DONTCALL: Privacy mode, callee rejected the call
-    #Specific to Asterisk
+    # DONTCALL: Privacy mode, callee rejected the call
+    # Specific to Asterisk
     7: 21,       # DONTCALL
-    #TORTURE: Privacy mode, callee chose to send caller to torture menu
-    #Specific to Asterisk
+    # TORTURE: Privacy mode, callee chose to send caller to torture menu
+    # Specific to Asterisk
     8: 21,       # TORTURE
-    #INVALIDARGS: Error parsing Dial command arguments
-    #Specific to Asterisk
+    # INVALIDARGS: Error parsing Dial command arguments
+    # Specific to Asterisk
     9: 47,       # INVALIDARGS
     10: 41,     # FAILED
 }

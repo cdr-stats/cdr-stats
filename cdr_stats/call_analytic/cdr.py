@@ -27,14 +27,17 @@ class Influx(object):
         self.client = None
         self.columns = []
         self.serie_name = serie_name
+        self._prepare_write()
         self._prepare_connect()
 
-    def _prepare_connect(self):
+    def _prepare_write(self):
         self.write_series = [{
             'name':    self.serie_name,
             'columns': self.columns,
             'points':  []
         }]
+
+    def _prepare_connect(self):
         self._connect_client()
 
     def _connect_client(self):
@@ -57,7 +60,7 @@ class Influx(object):
         self.added_points += 1
         self.write_series[0]['points'].append(values)
 
-    def write_points(self):
+    def commit(self):
         """
         write the serie to the InfluxDB client
         """
@@ -134,30 +137,51 @@ class InfluxCDR(Influx):
 
     def query_country(self, past='2w'):
         """
-        SELECT COUNT(country_id) FROM cdr GROUP BY country_id, time(1h) fill(0) where time > now() - 10h
+        SELECT COUNT(country_id) FROM cdr GROUP BY country_id, time(1h) fill(0) WHERE time > now() - 10h
         """
         return self.query_column_aggr_time_group(
             column='country_id', time_bucket='1h', past=past, aggr='COUNT')
-
 
 
 """
 # SELECT MEAN(duration) FROM cdr GROUP BY time(30m) fill(0) WHERE time > now() - 10h
 # SELECT mean(duration), mean(billsec), mean(country_id) FROM cdr GROUP BY time(1h) fill(0) WHERE time > now() - 5d
 
-SELECT country_id, count(country_id) as res FROM cdr GROUP BY country_id, time(1h) fill(0) where time > now() - 10h
+SELECT country_id, count(country_id) as res FROM cdr GROUP BY country_id, time(1h) fill(0) WHERE time > now() - 10h
 
 # WITH DISTINCT
 # -------------
-SELECT DISTINCT(country_id), COUNT(DISTINCT(country_id)) FROM cdr GROUP BY time(1h) fill(0) where time > now() - 10h
+SELECT DISTINCT(country_id), COUNT(DISTINCT(country_id)) FROM cdr GROUP BY time(1h) fill(0) WHERE time > now() - 10h
 
 
 SELECT country_id, count(country_id) FROM cdr GROUP BY country_id, time(1d) fill(0) WHERE time > now() - 5d
 SELECT count(country_id) FROM cdr GROUP BY country_id, time(1d) fill(0) WHERE time > now() - 5d
 
-SELECT count(country_id) FROM cdr GROUP BY time(1h) where time > now() - 3h
+SELECT count(country_id) FROM cdr GROUP BY time(1h) WHERE time > now() - 3h
 
-SELECT country_id as time, count(country_id) from cdr GROUP BY country_id, time(1h) where time > now() - 3h
+SELECT country_id as time, count(country_id) from cdr GROUP BY country_id, time(1h) WHERE time > now() - 3h
 
 SELECT country_id, count(country_id) FROM cdr GROUP BY country_id, time(1d) fill(0) WHERE time > now() - 5d
+
+
+Total calls per hangup calls today
+----------------------------------
+SELECT SUM(duration), hangup_id, count(hangup_id) FROM cdr GROUP BY hangup_id, time(1d) fill(0) WHERE time > now() - 24h
+
+
+Most 5 countries called
+-----------------------
+SELECT SUM(duration), count(country_id), country_id FROM cdr GROUP BY country_id, time(1d) fill(0) WHERE time > now() - 24h
+
+** Need to do the TOP via code **
+
+SELECT TOP(SUM(duration), 10), country_id, count(country_id), SUM(duration) FROM cdr GROUP BY country_id, time(1d) fill(0) WHERE time > now() - 24h and duration > 0
+
+
+SELECT TOP(duration, 5), country_id FROM cdr GROUP BY country_id, time(1d) fill(0)  WHERE time > now() - 24h and duration > 0
+
+
+OTHER VIEW
+----------
+
 """
