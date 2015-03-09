@@ -15,8 +15,8 @@
 from influxdb import InfluxDBClient
 
 
-class Influx(object):
-    """docstring for Influx"""
+class InfluxdbHandler(object):
+    """docstring for InfluxdbHandler"""
 
     def __init__(self, host, port, user, password, dbname, serie_name):
         """
@@ -127,13 +127,13 @@ class Influx(object):
         return result
 
 
-class InfluxCDR(Influx):
-    """docstring for InfluxCDR"""
+class InfluxdbHandlerCDR(InfluxdbHandler):
+    """docstring for InfluxdbHandlerCDR"""
 
     def __init__(self, *args, **kwargs):
         self.columns = ["time", "duration", "billsec", "country_id", "hangup_id", "switch_id", "user_id"]
         kwargs['serie_name'] = "cdr"
-        super(InfluxCDR, self).__init__(*args, **kwargs)
+        super(InfluxdbHandlerCDR, self).__init__(*args, **kwargs)
 
     def query_country(self, past='2w'):
         """
@@ -183,5 +183,7 @@ SELECT TOP(duration, 5), country_id FROM cdr GROUP BY country_id, time(1d) fill(
 
 OTHER VIEW
 ----------
+
+
 
 """

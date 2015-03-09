@@ -17,42 +17,42 @@
 #
 
 from django.test import TestCase
-from call_analytic.cdr import InfluxCDR
+from call_analytic.cdr import InfluxdbHandlerCDR
 from django.conf import settings
 from influxdb.client import InfluxDBClientError
 # import random
 
 
-class TestInfluxCDR(TestCase):
-    """Test TestInfluxCDR"""
+class TestInfluxdbHandlerCDR(TestCase):
+    """Test TestInfluxdbHandlerCDR"""
 
     def setUp(self):
         self.testdbname = 'cdrstats'
-        self.influxcdr = InfluxCDR(
+        self.influxdbcdr = InfluxdbHandlerCDR(
             settings.INFLUXDB_HOST, settings.INFLUXDB_PORT,
             settings.INFLUXDB_USER, settings.INFLUXDB_PASSWORD,
             self.testdbname)
         try:
-            self.influxcdr.create_database()
+            self.influxdbcdr.create_database()
         except InfluxDBClientError:
             print "create_database failed: DB already created..."
             pass
 
     def test_delete_series(self):
-        self.influxcdr.delete_series()
+        self.influxdbcdr.delete_series()
 
     def test_add_points(self):
-        self.influxcdr.set_columns(
+        self.influxdbcdr.set_columns(
             ["time", "duration", "billsec", "country_id", "hangup_id", "switch_id", "user_id"])
-        self.influxcdr.add_points([1413460800, 10, 8, 55, 16, 1, 1])
-        self.influxcdr.add_points([1413460802, 25, 20, 55, 16, 1, 1])
-        self.influxcdr.commit()
+        self.influxdbcdr.add_points([1413460800, 10, 8, 55, 16, 1, 1])
+        self.influxdbcdr.add_points([1413460802, 25, 20, 55, 16, 1, 1])
+        self.influxdbcdr.commit()
 
     def test_generate_points_lastdays(self):
         import datetime
         import random
 
-        self.influxcdr.set_columns(
+        self.influxdbcdr.set_columns(
             ["time", "duration", "billsec", "country_id", "hangup_id", "switch_id", "user_id"])
 
         nb_day = 3  # number of day to generate time series
@@ -72,29 +72,29 @@ class TestInfluxCDR(TestCase):
                 hangup_id = 1 + random.randint(10, 16)
                 user_id = 1
                 # add points
-                self.influxcdr.add_points([
+                self.influxdbcdr.add_points([
                     int(past_date.strftime('%s')),
                     duration,
                     billsec,
                     country_id,
                     hangup_id, switch_id, user_id])
 
-        self.influxcdr.commit()
+        self.influxdbcdr.commit()
         # assert False
 
     def test_query_cdr_last_two_week(self):
-        result = self.influxcdr.query_column_aggr_time(
+        result = self.influxdbcdr.query_column_aggr_time(
             column='duration', time_bucket='1h', past='15d', aggr='MEAN')
         self.assertEqual(len(result['points']), 361)
 
     def test_query_country_aggr_time(self):
 
-        result = self.influxcdr.query_country(past='1d')
+        result = self.influxdbcdr.query_country(past='1d')
         val = len(result['points'])
         result = {}
         self.assertEqual(val, 775)
 
     # def tearDown(self):
     #     """Delete created object"""
-    #     self.influxcdr.empty_points()
-    #     self.influxcdr.delete_database()
+    #     self.influxdbcdr.empty_points()
+    #     self.influxdbcdr.delete_database()
