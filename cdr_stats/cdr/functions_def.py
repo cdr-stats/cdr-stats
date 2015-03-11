@@ -19,7 +19,6 @@ from country_dialcode.models import Country, Prefix
 from cache_utils.decorators import cached
 from django.utils.translation import gettext as _
 from django_lets_go.common_functions import int_convert_to_minute
-from datetime import datetime
 import re
 import math
 
@@ -216,6 +215,7 @@ def get_country_name(id, type=''):
 def chk_date_for_hrs(previous_date, graph_date):
     """Check given graph_date is in last 24 hours range
 
+    >>> from datetime import datetime
     >>> graph_date = datetime(2012, 8, 20)
 
     >>> chk_date_for_hrs(graph_date)

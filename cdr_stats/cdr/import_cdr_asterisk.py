@@ -13,8 +13,8 @@
 #
 from django.conf import settings
 from cdr.models import CDR_SOURCE_TYPE
-from cdr.import_cdr_freeswitch_mongodb import chk_ipaddress,\
-    create_analytic, set_int_default, calculate_call_cost
+from cdr.import_cdr_freeswitch_mongodb import create_analytic
+from cdr.helpers import chk_ipaddress, set_int_default, calculate_call_cost, print_shell
 from cdr.functions_def import get_hangupcause_id
 from cdr_alert.functions_blacklist import chk_destination
 from user_profile.models import UserProfile
@@ -26,11 +26,8 @@ import random
 
 random.seed()
 
-# value 0 per default
-# 1 in process of import, 2 imported successfully and verified
-STATUS_SYNC = {"new": 0, "in_process": 1, "verified": 2}
 
-dic_disposition = {
+DICT_DISPOSITION = {
     'ANSWER': 1, 'ANSWERED': 1,
     'BUSY': 2,
     'NOANSWER': 3, 'NO ANSWER': 3,
@@ -65,11 +62,201 @@ DISPOSITION_TRANSLATION = {
 }
 
 
-def print_shell(shell, message):
-    if shell:
-        print message
+def aggregate_asterisk_cdr(shell, table_name, db_engine, cursor, cursor_updated, switch, ipaddress):
+    """
+    function to import and aggreagate Asterisk CDR
+    """
+    count_import = 0
+
+    # Each time the task is running we will only take 1000 records to import
+    # This define the max speed of import, this limit could be changed
+    if db_engine == 'mysql':
+        cursor.execute("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel,"
+                       "duration, billsec, disposition, accountcode, uniqueid,"
+                       " %s FROM %s WHERE import_cdr=0 LIMIT 0, 1000" %
+                       (settings.ASTERISK_PRIMARY_KEY, table_name))
+    elif db_engine == 'pgsql':
+        cursor.execute("SELECT dst, extract(epoch FROM calldate), clid, channel,"
+                       "duration, billsec, disposition, accountcode, uniqueid,"
+                       " %s FROM %s WHERE import_cdr=0 LIMIT 1000" %
+                       (settings.ASTERISK_PRIMARY_KEY, table_name))
+    row = cursor.fetchone()
+
+    # Store cdr in list to insert by bulk
+    cdr_bulk_record = []
+    local_count_import = 0
+    batch_count = 0
+    acctid_list = ''
+
+    while row is not None:
+        destination_number = row[0]
+        if not destination_number:
+            continue
+
+        acctid = row[9]
+        callerid = row[2]
+        try:
+            m = re.search('"(.+?)" <(.+?)>', callerid)
+            callerid_name = m.group(1)
+            callerid_number = m.group(2)
+        except:
+            callerid_name = ''
+            callerid_number = callerid
+
+        channel = row[3]
+        if not channel:
+            channel = ''  # Set empty string for channel in case is None
+        duration = set_int_default(row[4], 0)
+        billsec = set_int_default(row[5], 0)
+        ast_disposition = row[6]
+        try:
+            id_disposition = DICT_DISPOSITION.get(
+                ast_disposition.encode("utf-8"), 0)
+            transdisposition = DISPOSITION_TRANSLATION[id_disposition]
+        except:
+            transdisposition = 0
+
+        hangup_cause_id = get_hangupcause_id(transdisposition)
+        accountcode = row[7]
+        uniqueid = row[8]
+        start_uepoch = datetime.fromtimestamp(int(row[1]))
+
+        # Check Destination number
+        if len(destination_number) <= settings.INTERNAL_CALL or destination_number[:1].isalpha():
+            authorized = 1
+            country_id = 999
+        else:
+            destination_data = chk_destination(destination_number)
+            authorized = destination_data['authorized']
+            country_id = destination_data['country_id']
+
+        # Option to get the direction from user_field
+        direction = "unknown"
+
+        try:
+            voipplan_id = UserProfile.objects.get(accountcode=accountcode).voipplan_id
+        except:
+            voipplan_id = False
+            print_shell(shell, "No VoipPlan created for this user/accountcode")
+
+        call_rate = calculate_call_cost(voipplan_id, destination_number, billsec)
+        buy_rate = call_rate['buy_rate']
+        buy_cost = call_rate['buy_cost']
+        sell_rate = call_rate['sell_rate']
+        sell_cost = call_rate['sell_cost']
+
+        # Sanitize callerid_number
+        try:
+            callerid_number = callerid_number.decode('utf-8', 'ignore')
+        except AttributeError:
+            callerid_number = ''
+        # Sanitize callerid_name
+        try:
+            callerid_name = callerid_name.decode('utf-8', 'ignore')
+        except AttributeError:
+            callerid_name = ''
+        # Sanitize destination_number
+        try:
+            destination_number = destination_number.decode('utf-8', 'ignore')
+        except AttributeError:
+            destination_number = ''
+        # Sanitize channel
+        try:
+            channel = channel.decode('utf-8', 'ignore')
+        except AttributeError:
+            channel = ''
+
+        # Prepare global CDR
+        cdr_record = {
+            'switch_id': switch.id,
+            'caller_id_number': callerid_number,
+            'caller_id_name': callerid_name,
+            'destination_number': destination_number,
+            'duration': duration,
+            'billsec': billsec,
+            'hangup_cause_id': hangup_cause_id,
+            'accountcode': accountcode,
+            'direction': direction,
+            'uuid': uniqueid,
+            'remote_media_ip': '',
+            'start_uepoch': start_uepoch,
+            # 'answer_uepoch': answer_uepoch,
+            # 'end_uepoch': end_uepoch,
+            # 'mduration': '',
+            # 'billmsec': '',
+            # 'read_codec': '',
+            # 'write_codec': '',
+            'channel': channel,
+            'cdr_type': CDR_SOURCE_TYPE.ASTERISK,
+            'cdr_object_id': acctid,
+            'country_id': country_id,
+            'authorized': authorized,
+
+            # For billing
+            'buy_rate': buy_rate,
+            'buy_cost': buy_cost,
+            'sell_rate': sell_rate,
+            'sell_cost': sell_cost,
+        }
+
+        # Append cdr to bulk_cdr list
+        cdr_bulk_record.append(cdr_record)
+        count_import = count_import + 1
+        local_count_import = local_count_import + 1
+        batch_count = batch_count + 1
+
+        """
+        print_shell(shell, "Sync CDR (%s:%d, cid:%s, dest:%s, dur:%s, "\
+                            "hg:%s, country:%s, auth:%s, calldate:%s)" % (
+                                settings.ASTERISK_PRIMARY_KEY,
+                                acctid,
+                                callerid_number,
+                                destination_number,
+                                duration,
+                                hangup_cause_id,
+                                country_id,
+                                authorized,
+                                start_uepoch.strftime('%Y-%m-%d %M:%S'),))
+        """
+        date_start_uepoch = str(row[1])
+        create_analytic(date_start_uepoch, start_uepoch, switch.id,
+                        country_id, accountcode, hangup_cause_id, duration,
+                        buy_cost, sell_cost)
+
+        acctid_list += "%s, " % str(acctid)
+        if batch_count == 100:
+            acctid_list = acctid_list[:-2]  # trim last comma (,) from string
+            # Postgresql
+            # select * from table_name where id in (1,2,3);
+            update_cdr = "UPDATE %s SET import_cdr=1 WHERE %s in (%s)" % \
+                (table_name, settings.ASTERISK_PRIMARY_KEY, acctid_list)
+            cursor_updated.execute(update_cdr)
+
+            batch_count = 0
+            acctid_list = ''
+
+        # Fetch a other record
+        row = cursor.fetchone()
+
+    if len(acctid_list) > 0:
+        acctid_list = acctid_list[:-2]  # trim last comma (,) from string
+        # Postgresql
+        # select * from table_name where id in (1,2,3);
+        update_cdr = "UPDATE %s SET import_cdr=1 WHERE %s in (%s)" % \
+            (table_name, settings.ASTERISK_PRIMARY_KEY, acctid_list)
+        cursor_updated.execute(update_cdr)
+
+    if local_count_import > 0:
+        # Bulk cdr list insert into cdr_common
+        mongodb.cdr_common.insert(cdr_bulk_record)
+        # Reset counter to zero
+        local_count_import = 0
+        cdr_bulk_record = []
+
+    return count_import
 
 
+# aggregate_asterisk_cdr
 def import_cdr_asterisk(shell=False):
     # Browse settings.CDR_BACKEND and for each IP
     # check if the IP exist in our Switch objects if it does we will
@@ -130,7 +317,7 @@ def import_cdr_asterisk(shell=False):
             elif db_engine == 'pgsql':
                 cursor.execute("SELECT VERSION() from %s WHERE import_cdr "
                                "IS NOT NULL LIMIT 1" % table_name)
-            row = cursor.fetchone()
+            cursor.fetchone()
         except Exception, e:
             # Add missing field to flag import
             if db_engine == 'mysql':
@@ -142,196 +329,11 @@ def import_cdr_asterisk(shell=False):
             cursor.execute("ALTER TABLE %s ADD INDEX (import_cdr)" %
                            table_name)
 
-        count_import = 0
-
-        # Each time the task is running we will only take 1000 records to import
-        # This define the max speed of import, this limit could be changed
-        if db_engine == 'mysql':
-            cursor.execute("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel,"
-                           "duration, billsec, disposition, accountcode, uniqueid,"
-                           " %s FROM %s WHERE import_cdr=0 LIMIT 0, 1000" %
-                           (settings.ASTERISK_PRIMARY_KEY, table_name))
-        elif db_engine == 'pgsql':
-            cursor.execute("SELECT dst, extract(epoch FROM calldate), clid, channel,"
-                           "duration, billsec, disposition, accountcode, uniqueid,"
-                           " %s FROM %s WHERE import_cdr=0 LIMIT 1000" %
-                           (settings.ASTERISK_PRIMARY_KEY, table_name))
-        row = cursor.fetchone()
-
-        # Store cdr in list to insert by bulk
-        cdr_bulk_record = []
-        local_count_import = 0
-        batch_count = 0
-        acctid_list = ''
-
-        while row is not None:
-            destination_number = row[0]
-            if not destination_number:
-                continue
-
-            acctid = row[9]
-            callerid = row[2]
-            try:
-                m = re.search('"(.+?)" <(.+?)>', callerid)
-                callerid_name = m.group(1)
-                callerid_number = m.group(2)
-            except:
-                callerid_name = ''
-                callerid_number = callerid
-
-            channel = row[3]
-            if not channel:
-                channel = ''  # Set empty string for channel in case is None
-            duration = set_int_default(row[4], 0)
-            billsec = set_int_default(row[5], 0)
-            ast_disposition = row[6]
-            try:
-                id_disposition = dic_disposition.get(
-                    ast_disposition.encode("utf-8"), 0)
-                transdisposition = DISPOSITION_TRANSLATION[id_disposition]
-            except:
-                transdisposition = 0
-
-            hangup_cause_id = get_hangupcause_id(transdisposition)
-            accountcode = row[7]
-            uniqueid = row[8]
-            start_uepoch = datetime.fromtimestamp(int(row[1]))
-
-            # Check Destination number
-            if len(destination_number) <= settings.INTERNAL_CALL or destination_number[:1].isalpha():
-                authorized = 1
-                country_id = 999
-            else:
-                destination_data = chk_destination(destination_number)
-                authorized = destination_data['authorized']
-                country_id = destination_data['country_id']
-
-            # Option to get the direction from user_field
-            direction = "unknown"
-
-            try:
-                voipplan_id = UserProfile.objects.get(accountcode=accountcode).voipplan_id
-            except:
-                voipplan_id = False
-                print_shell(shell, "No VoipPlan created for this user/accountcode")
-
-            call_rate = calculate_call_cost(voipplan_id, destination_number, billsec)
-            buy_rate = call_rate['buy_rate']
-            buy_cost = call_rate['buy_cost']
-            sell_rate = call_rate['sell_rate']
-            sell_cost = call_rate['sell_cost']
-
-            # Sanitize callerid_number
-            try:
-                callerid_number = callerid_number.decode('utf-8', 'ignore')
-            except AttributeError:
-                callerid_number = ''
-            # Sanitize callerid_name
-            try:
-                callerid_name = callerid_name.decode('utf-8', 'ignore')
-            except AttributeError:
-                callerid_name = ''
-            # Sanitize destination_number
-            try:
-                destination_number = destination_number.decode('utf-8', 'ignore')
-            except AttributeError:
-                destination_number = ''
-            # Sanitize channel
-            try:
-                channel = channel.decode('utf-8', 'ignore')
-            except AttributeError:
-                channel = ''
-
-            # Prepare global CDR
-            cdr_record = {
-                'switch_id': switch.id,
-                'caller_id_number': callerid_number,
-                'caller_id_name': callerid_name,
-                'destination_number': destination_number,
-                'duration': duration,
-                'billsec': billsec,
-                'hangup_cause_id': hangup_cause_id,
-                'accountcode': accountcode,
-                'direction': direction,
-                'uuid': uniqueid,
-                'remote_media_ip': '',
-                'start_uepoch': start_uepoch,
-                # 'answer_uepoch': answer_uepoch,
-                # 'end_uepoch': end_uepoch,
-                # 'mduration': '',
-                # 'billmsec': '',
-                # 'read_codec': '',
-                # 'write_codec': '',
-                'channel': channel,
-                'cdr_type': CDR_SOURCE_TYPE.ASTERISK,
-                'cdr_object_id': acctid,
-                'country_id': country_id,
-                'authorized': authorized,
-
-                # For billing
-                'buy_rate': buy_rate,
-                'buy_cost': buy_cost,
-                'sell_rate': sell_rate,
-                'sell_cost': sell_cost,
-            }
-
-            # Append cdr to bulk_cdr list
-            cdr_bulk_record.append(cdr_record)
-            count_import = count_import + 1
-            local_count_import = local_count_import + 1
-            batch_count = batch_count + 1
-
-            """
-            print_shell(shell, "Sync CDR (%s:%d, cid:%s, dest:%s, dur:%s, "\
-                                "hg:%s, country:%s, auth:%s, calldate:%s)" % (
-                                    settings.ASTERISK_PRIMARY_KEY,
-                                    acctid,
-                                    callerid_number,
-                                    destination_number,
-                                    duration,
-                                    hangup_cause_id,
-                                    country_id,
-                                    authorized,
-                                    start_uepoch.strftime('%Y-%m-%d %M:%S'),))
-            """
-            date_start_uepoch = str(row[1])
-            create_analytic(date_start_uepoch, start_uepoch, switch.id,
-                            country_id, accountcode, hangup_cause_id, duration,
-                            buy_cost, sell_cost)
-
-            acctid_list += "%s, " % str(acctid)
-            if batch_count == 100:
-                acctid_list = acctid_list[:-2]  # trim last comma (,) from string
-                # Postgresql
-                # select * from table_name where id in (1,2,3);
-                update_cdr = "UPDATE %s SET import_cdr=1 WHERE %s in (%s)" % \
-                    (table_name, settings.ASTERISK_PRIMARY_KEY, acctid_list)
-                cursor_updated.execute(update_cdr)
-
-                batch_count = 0
-                acctid_list = ''
-
-            # Fetch a other record
-            row = cursor.fetchone()
-
-        if len(acctid_list) > 0:
-            acctid_list = acctid_list[:-2]  # trim last comma (,) from string
-            # Postgresql
-            # select * from table_name where id in (1,2,3);
-            update_cdr = "UPDATE %s SET import_cdr=1 WHERE %s in (%s)" % \
-                (table_name, settings.ASTERISK_PRIMARY_KEY, acctid_list)
-            cursor_updated.execute(update_cdr)
+        count_import = aggregate_asterisk_cdr(shell, table_name, db_engine, cursor, cursor_updated, switch, ipaddress)
 
         cursor_updated.close()
         cursor.close()
         connection.close()
-
-        if local_count_import > 0:
-            # Bulk cdr list insert into cdr_common
-            mongodb.cdr_common.insert(cdr_bulk_record)
-            # Reset counter to zero
-            local_count_import = 0
-            cdr_bulk_record = []
 
         print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" %
                     (ipaddress, count_import))

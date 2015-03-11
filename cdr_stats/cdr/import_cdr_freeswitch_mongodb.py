@@ -14,10 +14,10 @@
 from django.conf import settings
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
-from cdr.models import Switch, CDR_SOURCE_TYPE
+from cdr.models import CDR_SOURCE_TYPE
 from cdr.functions_def import get_hangupcause_id
 from user_profile.models import UserProfile
-from voip_billing.rate_engine import rate_engine
+from cdr.helpers import chk_ipaddress, calculate_call_cost, print_shell
 import datetime
 import sys
 import random
@@ -26,27 +26,10 @@ from mongodb_connection import mongodb
 random.seed()
 
 
-# value 0 per default
-# 1 in process of import, 2 imported successfully and verified
-STATUS_SYNC = {"new": 0, "in_process": 1, "verified": 2}
-
-
-def print_shell(shell, message):
-    if shell:
-        print message
-
-
-def set_int_default(val, default):
-    """val if not int set default"""
-    try:
-        return int(val)
-    except:
-        return default
-
-
-def get_element(cdr):
+def build_cdr_dict(cdr):
     """
-    return some element from the cdr object
+    function that build and return only the useful element from the
+    cdr freeswitch object
     """
     # Get accountcode
     if 'variables' in cdr and 'accountcode' in cdr['variables']:
@@ -240,30 +223,6 @@ def create_monthly_analytic(daily_date, start_uepoch, switch_id,
     return True
 
 
-def calculate_call_cost(voipplan_id, dest_number, billsec):
-    """
-    Calcultate the cost of the call, based on the voip plan and the destination
-    """
-    rates = rate_engine(voipplan_id=voipplan_id, dest_number=dest_number)
-    buy_rate = 0.0
-    buy_cost = 0.0
-    sell_rate = 0.0
-    sell_cost = 0.0
-    if rates:
-        buy_rate = float(rates[0].carrier_rate)
-        sell_rate = float(rates[0].retail_rate)
-        buy_cost = buy_rate * float(billsec) / 60
-        sell_cost = sell_rate * float(billsec) / 60
-
-    data = {
-        'buy_rate': buy_rate,
-        'buy_cost': round(buy_cost, 4),
-        'sell_rate': sell_rate,
-        'sell_cost': round(sell_cost, 4),
-    }
-    return data
-
-
 def generate_global_cdr_record(switch_id, caller_id_number, caller_id_name, dest_number,
                                duration, billsec, hangup_cause_id, accountcode, direction,
                                uuid, remote_media_ip, start_uepoch, answer_uepoch, end_uepoch,
@@ -329,7 +288,7 @@ def create_analytic(date_start_uepoch, start_uepoch, switch_id,
     return True
 
 
-def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
+def aggregate_freeswitch_cdr(shell, importcdr_handler, switch, ipaddress):
     """
     function go through the current mongodb, then will
     - create mongodb.cdr_common
@@ -407,7 +366,7 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
         hangup_cause_id = get_hangupcause_id(cdr['variables']['hangup_cause_q850'])
 
         # Retrieve Element from CDR Object
-        data_element = get_element(cdr)
+        data_element = build_cdr_dict(cdr)
         accountcode = data_element['accountcode']
         remote_media_ip = data_element['remote_media_ip']
         caller_id_number = data_element['caller_id_number']
@@ -487,37 +446,6 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
     print_shell(shell, "Import on Switch(%s) - Total Record(s) imported:%d" % (ipaddress, count_import))
 
 
-def chk_ipaddress(ipaddress):
-    """
-    Check if IP address exists in our database
-    """
-    DEV_ADD_IP = False
-    # uncomment this to import from a fake different IP / used for dev
-    # DEV_ADD_IP = '127.0.0.2'
-
-    if DEV_ADD_IP:
-        previous_ip = ipaddress
-        ipaddress = DEV_ADD_IP
-    try:
-        switch = Switch.objects.get(ipaddress=ipaddress)
-    except Switch.DoesNotExist:
-        switch = Switch(name=ipaddress, ipaddress=ipaddress)
-        switch.save()
-
-    if not switch.id:
-        print "Error when adding new Switch!"
-        raise SystemExit
-
-    if DEV_ADD_IP:
-        ipaddress = previous_ip
-
-    data = {
-        'ipaddress': ipaddress,
-        'switch': switch
-    }
-    return data
-
-
 def import_cdr_freeswitch_mongodb(shell=False):
     # Browse settings.CDR_BACKEND and for each IP check if the IP exist
     # in our Switch objects. If it does we will connect to that Database
@@ -554,7 +482,7 @@ def import_cdr_freeswitch_mongodb(shell=False):
         try:
             connection = Connection(host, port)
             DBCON = connection[db_name]
-            #DBCON.authenticate(user, password)
+            # DBCON.authenticate(user, password)
         except ConnectionFailure, e:
             sys.stderr.write("Could not connect to MongoDB: %s - %s" % (e, ipaddress))
             sys.exit(1)
@@ -563,4 +491,4 @@ def import_cdr_freeswitch_mongodb(shell=False):
         importcdr_handler = DBCON[table_name]
 
         # Start import for this mongoDB
-        importcdr_aggregate(shell, importcdr_handler, switch, ipaddress)
+        aggregate_freeswitch_cdr(shell, importcdr_handler, switch, ipaddress)
