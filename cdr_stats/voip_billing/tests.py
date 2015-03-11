@@ -63,6 +63,7 @@ class VoipBillingAdminInterfaceTestCase(BaseAuthenticatedClient):
 
 
 class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
+
     """
     Test cases for voip_billing Customer Interface.
     """

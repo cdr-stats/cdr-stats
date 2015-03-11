@@ -28,6 +28,7 @@ from django.core.urlresolvers import reverse, NoReverseMatch
 class ForeignKeySearchInput(forms.HiddenInput):
     #  A Widget for displaying ForeignKeys in an autocomplete search input
     #  instead in a <select> box.
+
     class Media:
         css = {
             'all': ('%scdr-stats/css/jquery.autocomplete.css' % settings.STATIC_URL,)
@@ -112,6 +113,7 @@ $("#lookup_%(name)s").autocomplete("../search/", {
 
 
 class ManyToManySearchInput(forms.MultipleHiddenInput):
+
     """
     A Widget for displaying ForeignKeys in an autocomplete search input
     instead in a <select> box.
@@ -163,7 +165,7 @@ class ManyToManySearchInput(forms.MultipleHiddenInput):
                     'label': getattr(obj, rel_name),
                     'name': name,
                     'value': obj.id,
-                }
+            }
         return mark_safe(u'''
 <input type="text" id="lookup_%(name)s" value="" size="40"/>%(label)s
 <div style="float:left; padding-left:105px; width:300px;">
@@ -258,8 +260,8 @@ class AutocompleteModelAdmin(admin.ModelAdmin):
         model_name = request.GET.get('model_name', None)
         search_fields = request.GET.get('search_fields', None)
 
-        #print '-----------------------'
-        #print search_fields, app_label, model_name, query
+        # print '-----------------------'
+        # print search_fields, app_label, model_name, query
 
         if search_fields and app_label and model_name and query:
             def construct_search(field_name):
@@ -279,7 +281,7 @@ class AutocompleteModelAdmin(admin.ModelAdmin):
                 if field_name == "prefix":
                     field_name = '^' + field_name
                 name = construct_search(field_name)
-                #print name+ '='+ query
+                # print name+ '='+ query
                 if q:
                     q = q | models.Q(**{str(name): query})
                 else:
@@ -289,7 +291,7 @@ class AutocompleteModelAdmin(admin.ModelAdmin):
             rel_name = field_name.split('__')[0]
 
             data = ''.join([u'%s|%s\n' % (getattr(f, rel_name), f.pk) for f in qs])
-            #print data
+            # print data
     #			data = ''.join([u'%s|%s\n' % (f.__unicode__(), f.pk) for f in qs])
             return HttpResponse(data)
         return HttpResponseNotFound()
@@ -297,9 +299,9 @@ class AutocompleteModelAdmin(admin.ModelAdmin):
     def formfield_for_dbfield(self, db_field, **kwargs):
         # For ForeignKey use a special Autocomplete widget.
         if (isinstance(db_field, models.ForeignKey) and
-           db_field.name in self.related_search_fields):
+                db_field.name in self.related_search_fields):
             kwargs['widget'] = ForeignKeySearchInput(db_field.rel,
-                                    self.related_search_fields[db_field.name])
+                                                     self.related_search_fields[db_field.name])
 
             # extra HTML to the end of the rendered output.
             if 'request' in kwargs.keys():
@@ -319,9 +321,9 @@ class AutocompleteModelAdmin(admin.ModelAdmin):
 
         # For ManyToManyField use a special Autocomplete widget.
         if (isinstance(db_field, models.ManyToManyField) and
-           db_field.name in self.related_search_fields):
+                db_field.name in self.related_search_fields):
             kwargs['widget'] = ManyToManySearchInput(db_field.rel,
-                                    self.related_search_fields[db_field.name])
+                                                     self.related_search_fields[db_field.name])
             db_field.help_text = ''
 
             # extra HTML to the end of the rendered output.
@@ -337,7 +339,7 @@ class AutocompleteModelAdmin(admin.ModelAdmin):
                 if formfield is not None:
                     formfield.widget = \
                         AutocompleteWidgetWrapper(formfield.widget, db_field.rel,
-                                              self.admin_site)
+                                                  self.admin_site)
             return formfield
 
         return super(AutocompleteModelAdmin, self).formfield_for_dbfield(db_field, **kwargs)
@@ -360,15 +362,15 @@ class AutocompleteModelAdmin(admin.ModelAdmin):
             return HttpResponseRedirect(post_url_continue % pk_value)
 
         if "_popup" in request.POST:
-            #htturn response to Autocomplete PopUp
+            # htturn response to Autocomplete PopUp
             if "_popup" in request.POST:
                 return HttpResponse('<script type="text/javascript">\
                     opener.dismissAutocompletePopup(window, "%s", "%s");</script>' %
-                    (escape(pk_value), escape(obj)))
+                                    (escape(pk_value), escape(obj)))
 
         elif "_addanother" in request.POST:
             self.message_user(request, msg + ' ' + (_("You may add another %s below.") %
-                force_unicode(opts.verbose_name)))
+                                                    force_unicode(opts.verbose_name)))
             return HttpResponseRedirect(request.path)
         else:
             self.message_user(request, msg)
@@ -397,18 +399,20 @@ class AutocompleteWidgetWrapper(RelatedFieldWidgetWrapper):
             # API to determine the ID dynamically.
             output.append(u'<a href="%sadd/" class="add-another" \
                 id="add_id_%s" onclick="return showAutocompletePopup(this);"> ' %
-                (related_url, name))
+                          (related_url, name))
             output.append(u'<img src="%simg/icon_addlink.gif"\
                 width="10" height="10" alt="%s"/></a>' %
-                (settings.ADMIN_MEDIA_PREFIX, _('Add Another')))
+                          (settings.ADMIN_MEDIA_PREFIX, _('Add Another')))
         return mark_safe(u''.join(output))
 
 
 class RelatedFieldWidgetWrapperNew(RelatedFieldWidgetWrapper):
+
     """
     This class is a wrapper to a given widget to add the add icon for the
     admin interface.
     """
+
     def render(self, name, value, *args, **kwargs):
         rel_to = self.rel.to
         info = (rel_to._meta.app_label, rel_to._meta.object_name.lower())
@@ -428,9 +432,9 @@ class RelatedFieldWidgetWrapperNew(RelatedFieldWidgetWrapper):
             output.append(u'<img src="%simg/icon_addlink.gif" width="10" height="10" alt="%s"/></a>' % (settings.ADMIN_MEDIA_PREFIX, _('Add Another')))
             """
             output.append(u'<a href="%s" class="add-another" id="add_id_%s" onclick="return showAddAnotherPopup(this);"> ' %
-                (related_url, name))
+                          (related_url, name))
             output.append(u'<img src="%simg/icon_addlink.gif" width="10" height="10" alt="%s"/></a>\
                 <div id="div_add_id_%s"></div>' %
-                (settings.ADMIN_MEDIA_PREFIX, _('Add Another'), name))
+                          (settings.ADMIN_MEDIA_PREFIX, _('Add Another'), name))
 
         return mark_safe(u''.join(output))

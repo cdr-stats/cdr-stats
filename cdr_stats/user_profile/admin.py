@@ -24,6 +24,7 @@ from notification.admin import NoticeAdmin
 
 
 class UserProfileInline(admin.StackedInline):
+
     """
     Extenstion of User.
     User's extra details (ex. email, city, country etc...) will be stored in UserProfile
@@ -32,6 +33,7 @@ class UserProfileInline(admin.StackedInline):
 
 
 class StaffAdmin(UserAdmin):
+
     """
     To differentiate staff from all system users
     """
@@ -46,6 +48,7 @@ class StaffAdmin(UserAdmin):
 
 
 class CustomerAdmin(StaffAdmin):
+
     """
     To differentiate customers from all system users
     """

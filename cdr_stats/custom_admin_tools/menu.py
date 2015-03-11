@@ -18,13 +18,14 @@ import cdr_stats
 
 
 class CustomMenu(Menu):
+
     """Custom Menu for admin site."""
 
     def __init__(self, **kwargs):
         Menu.__init__(self, **kwargs)
         self.children += [
             items.MenuItem(_('CDR-Stats' + ' V' + cdr_stats.__version__),
-                reverse('admin:index')),
+                           reverse('admin:index')),
             items.Bookmarks(),
             items.AppList(
                 _('applications').capitalize(),

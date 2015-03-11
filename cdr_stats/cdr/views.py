@@ -253,7 +253,7 @@ def cdr_view(request):
             tday = datetime.today()
             from_date = datetime(tday.year, tday.month, 1, 0, 0, 0, 0)
             last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) +
-                        relativedelta(months=1)) -
+                         relativedelta(months=1)) -
                         relativedelta(days=1)).strftime('%d')
             #to_date = tday.strftime('%Y-%m-' + last_day + ' 23:59')
             to_date = datetime(tday.year, tday.month, int(last_day), 23, 59, 59, 999999)
@@ -477,7 +477,7 @@ def cdr_detail(request, id, switch_id):
     cdr_type = settings.CDR_BACKEND[ipaddress]['cdr_type']
 
     if cdr_type == 'freeswitch':
-        #Connect on MongoDB Database
+        # Connect on MongoDB Database
         host = settings.CDR_BACKEND[ipaddress]['host']
         port = settings.CDR_BACKEND[ipaddress]['port']
         db_name = settings.CDR_BACKEND[ipaddress]['db_name']
@@ -496,7 +496,7 @@ def cdr_detail(request, id, switch_id):
         return render_to_response('cdr/detail_freeswitch.html', data, context_instance=RequestContext(request))
 
     elif cdr_type == 'asterisk':
-        #Connect on Database
+        # Connect on Database
         db_name = settings.CDR_BACKEND[ipaddress]['db_name']
         table_name = settings.CDR_BACKEND[ipaddress]['table_name']
         user = settings.CDR_BACKEND[ipaddress]['user']
@@ -733,7 +733,7 @@ def cdr_dashboard(request):
     logging.debug("Result hangup_analytic %d" % len(hangup_analytic))
     logging.debug("Result country_call_count %d" % len(total_country_data))
 
-    #Calculate the Average Time of Call
+    # Calculate the Average Time of Call
     act_acd_array = calculate_act_and_acd(total_calls, total_duration)
     ACT = act_acd_array['ACT']
     ACD = act_acd_array['ACD']
@@ -840,7 +840,7 @@ def get_cdr_mail_report():
                     'buy_cost': float(doc['buy_cost']),
                     'sell_cost': float(doc['sell_cost'])
                 }
-    #Calculate the Average Time of Call
+    # Calculate the Average Time of Call
     act_acd_array = calculate_act_and_acd(total_calls, total_duration)
     ACT = act_acd_array['ACT']
     ACD = act_acd_array['ACD']
@@ -989,7 +989,7 @@ def cdr_daily_comparison(request):
     """
     logging.debug('CDR hourly view start')
     query_var = {}
-    #default
+    # default
     min_charttype = call_charttype = "lineChart"
     min_chartdata = call_chartdata = {'x': []}
     comp_days = 2
@@ -1024,7 +1024,7 @@ def cdr_daily_comparison(request):
             compare_date_list.append(select_date)
 
             for i in range(1, int(comp_days) + 1):
-                #select_date+relativedelta(weeks=-i)
+                # select_date+relativedelta(weeks=-i)
                 interval_date = select_date + relativedelta(weeks=-i)
                 compare_date_list.append(interval_date)
 
@@ -1616,7 +1616,7 @@ def cdr_country_report(request):
                     # convert date into timestamp value
                     dt = int(1000 * time.mktime(graph_day.timetuple()))
 
-                    #Create day_hours dict with call count, duration sum, country id
+                    # Create day_hours dict with call count, duration sum, country id
                     if key in day_hours:
                         day_hours[key]['calldate__count'] += int(value)
                     else:
@@ -1628,7 +1628,7 @@ def cdr_country_report(request):
                             'country_id': doc['_id']['country_id']
                         }
 
-            #Update day_hours dict for duration sum
+            # Update day_hours dict for duration sum
             for dict_in_list in doc['duration_per_hour']:
                 for key, value in dict_in_list.iteritems():
                     key = int(key)
@@ -1674,7 +1674,7 @@ def cdr_country_report(request):
     country_analytic_array = []
     if list_data:
         for doc in list_data['result']:
-            #country id - country name - call count - call duration - country_id
+            # country id - country name - call count - call duration - country_id
             # _id = country id
             country_analytic_array.append(
                 (get_country_name(int(doc['_id'])),

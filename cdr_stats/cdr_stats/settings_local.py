@@ -13,7 +13,7 @@
 #
 import os
 
-#DEBUG
+# DEBUG
 #=====
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -37,9 +37,9 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '5433',
         'OPTIONS': {
-            #Needed on Mysql
+            # Needed on Mysql
             # 'init_command': 'SET storage_engine=INNODB',
-            #Postgresql Autocommit
+            # Postgresql Autocommit
             'autocommit': True,
         }
     }
@@ -47,7 +47,7 @@ DATABASES = {
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-#CACHES
+# CACHES
 #======
 CACHES = {
     'default': {
@@ -60,13 +60,13 @@ CACHES = {
     }
 }
 
-#EMAIL BACKEND
+# EMAIL BACKEND
 #=============
 # Use only in Debug mode. Not in production
 #EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
-#GENERAL
+# GENERAL
 #=======
 # PREFIX_LIMIT_MIN & PREFIX_LIMIT_MAX are used to know
 # how many digits are used to match against the dialcode prefix database
@@ -83,34 +83,34 @@ PN_MAX_DIGITS = 9
 # List of phonenumber prefix to ignore, this will be remove prior analysis
 PREFIX_TO_IGNORE = "+,0,00,000,0000,00000,011,55555,99999"
 
-#Realtime Graph : set the Y axis limit
+# Realtime Graph : set the Y axis limit
 REALTIME_Y_AXIS_LIMIT = 300
 
-#ASTERISK IMPORT
+# ASTERISK IMPORT
 #===============
 ASTERISK_PRIMARY_KEY = 'acctid'  # acctid, _id
 
-#CDR_BACKEND
+# CDR_BACKEND
 #===========
-#list of CDR Backends to import
+# list of CDR Backends to import
 CDR_BACKEND = {
     # '127.0.0.1': {
-    #     'db_engine': 'mysql',  # mysql, pgsql, mongodb
-    #     'cdr_type': 'asterisk',  # asterisk or freeswitch
+    # 'db_engine': 'mysql',  # mysql, pgsql, mongodb
+    # 'cdr_type': 'asterisk',  # asterisk or freeswitch
     #     'db_name': 'asteriskcdr',
-    #     'table_name': 'cdr',  # collection if mongodb
+    # 'table_name': 'cdr',  # collection if mongodb
     #     'host': 'localhost',
-    #     'port': 3306,  # 3306 mysql, 5432 pgsql, 27017 mongodb
+    # 'port': 3306,  # 3306 mysql, 5432 pgsql, 27017 mongodb
     #     'user': 'root',
     #     'password': 'password',
     # },
     # '168.0.0.2': {
-    #     'db_engine': 'mysql',  # mysql, pgsql, mongodb
-    #     'cdr_type': 'asterisk',  # asterisk or freeswitch
+    # 'db_engine': 'mysql',  # mysql, pgsql, mongodb
+    # 'cdr_type': 'asterisk',  # asterisk or freeswitch
     #     'db_name': 'asteriskcdr',
-    #     'table_name': 'cdr',  # collection if mongodb
+    # 'table_name': 'cdr',  # collection if mongodb
     #     'host': '168.0.0.2',
-    #     'port': 3306,  # 3306 mysql, 5432 pgsql, 27017 mongodb
+    # 'port': 3306,  # 3306 mysql, 5432 pgsql, 27017 mongodb
     #     'user': 'root',
     #     'password': 'password',
     # },
@@ -126,17 +126,17 @@ CDR_BACKEND = {
     },
 }
 
-#Define the IP of your local Switch, it needs to exist in the CDR_BACKEND list
+# Define the IP of your local Switch, it needs to exist in the CDR_BACKEND list
 LOCAL_SWITCH_IP = '127.0.0.1'
 
-#Asterisk Manager / Used for Realtime and Concurrent calls
+# Asterisk Manager / Used for Realtime and Concurrent calls
 ASTERISK_MANAGER_HOST = 'localhost'
 ASTERISK_MANAGER_USER = 'user'
 ASTERISK_MANAGER_SECRET = 'secret'
 
-#MONGODB
+# MONGODB
 #=======
-#Settings of CDR-Stats MongoDB server, this is used to store the analytic data
+# Settings of CDR-Stats MongoDB server, this is used to store the analytic data
 MONGO_CDRSTATS = {
     'DB_NAME': 'cdr-stats',
     'HOST': '172.17.0.7',
@@ -150,7 +150,7 @@ MONGO_CDRSTATS = {
     'CONC_CALL_AGG': 'concurrent_call_aggregate'
 }
 
-#LOGGING
+# LOGGING
 #=======
 LOGGING = {
     'version': 1,

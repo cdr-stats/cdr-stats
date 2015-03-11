@@ -21,7 +21,7 @@ from user_profile.views import customer_detail_change
 from django_lets_go.utils import BaseAuthenticatedClient
 
 #from django.contrib import admin
-#admin.site.register(User)
+# admin.site.register(User)
 
 
 class UserProfileAdminView(BaseAuthenticatedClient):
@@ -47,6 +47,7 @@ class UserProfileAdminView(BaseAuthenticatedClient):
 
 
 class UserProfileCustomerView(BaseAuthenticatedClient):
+
     """Test Function to check UserProfile Customer pages"""
 
     fixtures = ['auth_user.json', 'notice_type.json', 'notification.json',
@@ -72,21 +73,22 @@ class UserProfileCustomerView(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
         response = self.client.post('/user_detail_change/?action=tabs-1',
-                {'form-type': 'change-detail',
-                 'first_name': 'admin',
-                 'phone_no': '9324552563'})
+                                    {'form-type': 'change-detail',
+                                     'first_name': 'admin',
+                                     'phone_no': '9324552563'})
         self.assertTrue(response.context['user_detail_form'],
-            UserChangeDetailForm(self.user))
+                        UserChangeDetailForm(self.user))
         self.assertTrue(response.context['user_detail_extened_form'],
-            UserChangeDetailExtendForm(self.user))
+                        UserChangeDetailExtendForm(self.user))
 
         response = self.client.post('/user_detail_change/?action=tabs-2',
-                {'form-type': ''})
+                                    {'form-type': ''})
         self.assertTrue(response.context['user_password_form'],
-            PasswordChangeForm(self.user))
+                        PasswordChangeForm(self.user))
 
 
 class UserProfileModel(TestCase):
+
     """Test UserProfile Model"""
     fixtures = ['auth_user.json', '2_example_voipplan.json', 'user_profile.json']
 

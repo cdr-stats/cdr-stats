@@ -81,7 +81,7 @@ def import_cdr_asterisk(shell=False):
         print_shell(shell, "The switch is not configured to import Asterisk")
         return False
 
-    #loop within the Mongo CDR Import List
+    # loop within the Mongo CDR Import List
     for ipaddress in settings.CDR_BACKEND:
 
         db_engine = settings.CDR_BACKEND[ipaddress]['db_engine']
@@ -91,14 +91,14 @@ def import_cdr_asterisk(shell=False):
             import psycopg2 as PgDatabase
         else:
             sys.stderr.write("Wrong setting for db_engine: %s" %
-                (str(db_engine)))
+                             (str(db_engine)))
             sys.exit(1)
 
         data = chk_ipaddress(ipaddress)
         ipaddress = data['ipaddress']
         switch = data['switch']
 
-        #Connect to Database
+        # Connect to Database
         db_name = settings.CDR_BACKEND[ipaddress]['db_name']
         table_name = settings.CDR_BACKEND[ipaddress]['table_name']
         user = settings.CDR_BACKEND[ipaddress]['user']
@@ -108,57 +108,57 @@ def import_cdr_asterisk(shell=False):
         try:
             if db_engine == 'mysql':
                 connection = Database.connect(user=user, passwd=password,
-                    db=db_name, host=host, port=port)
+                                              db=db_name, host=host, port=port)
                 connection.autocommit(True)
             elif db_engine == 'pgsql':
                 connection = PgDatabase.connect(user=user, password=password,
-                    database=db_name, host=host, port=port)
+                                                database=db_name, host=host, port=port)
                 connection.autocommit = True
             cursor = connection.cursor()
-            #update cursor used as we update at the end and we need
-            #to fetch on 1st cursor
+            # update cursor used as we update at the end and we need
+            # to fetch on 1st cursor
             cursor_updated = connection.cursor()
         except Exception, e:
             sys.stderr.write("Could not connect to Database: %s - %s" %
-                (e, ipaddress))
+                             (e, ipaddress))
             sys.exit(1)
 
         try:
             if db_engine == 'mysql':
                 cursor.execute("SELECT VERSION() from %s WHERE import_cdr "
-                    "IS NOT NULL LIMIT 0,1" % table_name)
+                               "IS NOT NULL LIMIT 0,1" % table_name)
             elif db_engine == 'pgsql':
                 cursor.execute("SELECT VERSION() from %s WHERE import_cdr "
-                    "IS NOT NULL LIMIT 1" % table_name)
+                               "IS NOT NULL LIMIT 1" % table_name)
             row = cursor.fetchone()
         except Exception, e:
-            #Add missing field to flag import
+            # Add missing field to flag import
             if db_engine == 'mysql':
                 cursor.execute("ALTER TABLE %s ADD import_cdr TINYINT NOT NULL "
-                    "DEFAULT '0'" % table_name)
+                               "DEFAULT '0'" % table_name)
             elif db_engine == 'pgsql':
                 cursor.execute("ALTER TABLE %s ADD import_cdr SMALLINT NOT NULL "
-                    "DEFAULT '0'" % table_name)
+                               "DEFAULT '0'" % table_name)
             cursor.execute("ALTER TABLE %s ADD INDEX (import_cdr)" %
-                table_name)
+                           table_name)
 
         count_import = 0
 
-        #Each time the task is running we will only take 1000 records to import
-        #This define the max speed of import, this limit could be changed
+        # Each time the task is running we will only take 1000 records to import
+        # This define the max speed of import, this limit could be changed
         if db_engine == 'mysql':
             cursor.execute("SELECT dst, UNIX_TIMESTAMP(calldate), clid, channel,"
-                "duration, billsec, disposition, accountcode, uniqueid,"
-                " %s FROM %s WHERE import_cdr=0 LIMIT 0, 1000" %
-                (settings.ASTERISK_PRIMARY_KEY, table_name))
+                           "duration, billsec, disposition, accountcode, uniqueid,"
+                           " %s FROM %s WHERE import_cdr=0 LIMIT 0, 1000" %
+                           (settings.ASTERISK_PRIMARY_KEY, table_name))
         elif db_engine == 'pgsql':
             cursor.execute("SELECT dst, extract(epoch FROM calldate), clid, channel,"
-                "duration, billsec, disposition, accountcode, uniqueid,"
-                " %s FROM %s WHERE import_cdr=0 LIMIT 1000" %
-                (settings.ASTERISK_PRIMARY_KEY, table_name))
+                           "duration, billsec, disposition, accountcode, uniqueid,"
+                           " %s FROM %s WHERE import_cdr=0 LIMIT 1000" %
+                           (settings.ASTERISK_PRIMARY_KEY, table_name))
         row = cursor.fetchone()
 
-        #Store cdr in list to insert by bulk
+        # Store cdr in list to insert by bulk
         cdr_bulk_record = []
         local_count_import = 0
         batch_count = 0
@@ -206,7 +206,7 @@ def import_cdr_asterisk(shell=False):
                 authorized = destination_data['authorized']
                 country_id = destination_data['country_id']
 
-            #Option to get the direction from user_field
+            # Option to get the direction from user_field
             direction = "unknown"
 
             try:
@@ -221,22 +221,22 @@ def import_cdr_asterisk(shell=False):
             sell_rate = call_rate['sell_rate']
             sell_cost = call_rate['sell_cost']
 
-            #Sanitize callerid_number
+            # Sanitize callerid_number
             try:
                 callerid_number = callerid_number.decode('utf-8', 'ignore')
             except AttributeError:
                 callerid_number = ''
-            #Sanitize callerid_name
+            # Sanitize callerid_name
             try:
                 callerid_name = callerid_name.decode('utf-8', 'ignore')
             except AttributeError:
                 callerid_name = ''
-            #Sanitize destination_number
+            # Sanitize destination_number
             try:
                 destination_number = destination_number.decode('utf-8', 'ignore')
             except AttributeError:
                 destination_number = ''
-            #Sanitize channel
+            # Sanitize channel
             try:
                 channel = channel.decode('utf-8', 'ignore')
             except AttributeError:
@@ -296,14 +296,14 @@ def import_cdr_asterisk(shell=False):
             """
             date_start_uepoch = str(row[1])
             create_analytic(date_start_uepoch, start_uepoch, switch.id,
-                country_id, accountcode, hangup_cause_id, duration,
-                buy_cost, sell_cost)
+                            country_id, accountcode, hangup_cause_id, duration,
+                            buy_cost, sell_cost)
 
             acctid_list += "%s, " % str(acctid)
             if batch_count == 100:
                 acctid_list = acctid_list[:-2]  # trim last comma (,) from string
-                #Postgresql
-                #select * from table_name where id in (1,2,3);
+                # Postgresql
+                # select * from table_name where id in (1,2,3);
                 update_cdr = "UPDATE %s SET import_cdr=1 WHERE %s in (%s)" % \
                     (table_name, settings.ASTERISK_PRIMARY_KEY, acctid_list)
                 cursor_updated.execute(update_cdr)
@@ -311,13 +311,13 @@ def import_cdr_asterisk(shell=False):
                 batch_count = 0
                 acctid_list = ''
 
-            #Fetch a other record
+            # Fetch a other record
             row = cursor.fetchone()
 
         if len(acctid_list) > 0:
             acctid_list = acctid_list[:-2]  # trim last comma (,) from string
-            #Postgresql
-            #select * from table_name where id in (1,2,3);
+            # Postgresql
+            # select * from table_name where id in (1,2,3);
             update_cdr = "UPDATE %s SET import_cdr=1 WHERE %s in (%s)" % \
                 (table_name, settings.ASTERISK_PRIMARY_KEY, acctid_list)
             cursor_updated.execute(update_cdr)
@@ -334,4 +334,4 @@ def import_cdr_asterisk(shell=False):
             cdr_bulk_record = []
 
         print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" %
-            (ipaddress, count_import))
+                    (ipaddress, count_import))

@@ -19,6 +19,7 @@ from crispy_forms.bootstrap import FormActions
 
 
 class LoginForm(forms.Form):
+
     """Client Login Form"""
     user = forms.CharField(max_length=30, label=_('username'), required=True)
     user.widget.attrs['placeholder'] = 'Username'

@@ -16,6 +16,7 @@ from influxdb import InfluxDBClient
 
 
 class InfluxdbHandler(object):
+
     """docstring for InfluxdbHandler"""
 
     def __init__(self, host, port, user, password, dbname, serie_name):
@@ -32,9 +33,9 @@ class InfluxdbHandler(object):
 
     def _prepare_write(self):
         self.write_series = [{
-            'name':    self.serie_name,
+            'name': self.serie_name,
             'columns': self.columns,
-            'points':  []
+            'points': []
         }]
 
     def _prepare_connect(self):
@@ -83,9 +84,9 @@ class InfluxdbHandler(object):
         """
         self.added_points = 0
         self.write_series = [{
-            'name':    self.serie_name,
+            'name': self.serie_name,
             'columns': self.columns,
-            'points':  []
+            'points': []
         }]
 
     def query(self, query):
@@ -111,7 +112,7 @@ class InfluxdbHandler(object):
 
     def query_column_aggr_time_group(self, column='country_id', time_bucket='1h', past='15d', aggr='COUNT'):
         query = ("SELECT {0}({1}) FROM {2} GROUP BY {3}, time({4}) fill(0) "
-                "WHERE time > now() - {5}").format(aggr, column, self.serie_name, column, time_bucket, past)
+                 "WHERE time > now() - {5}").format(aggr, column, self.serie_name, column, time_bucket, past)
         result = self.query(query)
         # print("Result: {0}".format(result))
         return result
@@ -121,13 +122,14 @@ class InfluxdbHandler(object):
         SELECT MEAN(duration) FROM cdr GROUP BY time(30m) fill(0) WHERE time > now() - 10h
         """
         query = ("SELECT {0}({1}) FROM {2} GROUP BY time({3}) fill(0) "
-                "WHERE time > now() - {4}").format(aggr, column, self.serie_name, time_bucket, past)
+                 "WHERE time > now() - {4}").format(aggr, column, self.serie_name, time_bucket, past)
         result = self.query(query)
         # print("Result: {0}".format(result))
         return result
 
 
 class InfluxdbHandlerCDR(InfluxdbHandler):
+
     """docstring for InfluxdbHandlerCDR"""
 
     def __init__(self, *args, **kwargs):

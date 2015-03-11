@@ -35,6 +35,7 @@ csv_file = open(
 
 
 class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
+
     """Test cases for Cdr-Stats Admin Interface."""
 
     fixtures = ['auth_user.json', 'switch.json']
@@ -62,16 +63,16 @@ class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
     def test_admin_switch_import_cdr(self):
         """Test Function to check admin cdr import"""
         response = self.client.post('/admin/cdr/switch/import_cdr/',
-                {'switch_id': 1,
-                 'csv_file': csv_file,
-                 'accountcode_csv': '12345',
-                 'caller_id_number': 1,
-                 'destination_number': 3,
-                 'duration': 4,
-                 'billsec': 5,
-                 'hangup_cause_id': 6,
-                 'uuid': 8,
-                 'start_uepoch': 10})
+                                    {'switch_id': 1,
+                                     'csv_file': csv_file,
+                                     'accountcode_csv': '12345',
+                                     'caller_id_number': 1,
+                                     'destination_number': 3,
+                                     'duration': 4,
+                                     'billsec': 5,
+                                     'hangup_cause_id': 6,
+                                     'uuid': 8,
+                                     'start_uepoch': 10})
         self.failUnlessEqual(response.status_code, 200)
         self.assertEqual(response.status_code, 200)
         #self.assertTemplateUsed(response, 'admin/cdr/switch/import_cdr.html')
@@ -95,6 +96,7 @@ class CdrAdminInterfaceTestCase(BaseAuthenticatedClient):
 
 
 class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
+
     """Test cases for Cdr-Stats Customer Interface."""
 
     fixtures = ['auth_user.json', 'switch.json',
@@ -103,8 +105,8 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
                 'voip_gateway.json', 'voip_provider.json',
                 'voip_billing.json', 'user_profile.json']
 
-    #def test_mgt_command(self):
-    #    # Test mgt command
+    # def test_mgt_command(self):
+    # Test mgt command
     #    call_command('generate_cdr',
     #        '--number-cdr=10', '--delta-day=1', '--duration=10')
     #    call_command('generate_cdr',
@@ -113,8 +115,8 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
     #    call_command('generate_cdr', '--number-cdr=10')
     #    call_command('sync_cdr_freeswitch', '--apply-index')
     #    call_command('sync_cdr_freeswitch')
-    #    #call_command('sync_cdr_asterisk', '--apply-index')
-    #    #call_command('sync_cdr_asterisk')
+    # call_command('sync_cdr_asterisk', '--apply-index')
+    # call_command('sync_cdr_asterisk')
 
     def test_dashboard(self):
         """Test Function to check customer dashboard"""
@@ -355,10 +357,11 @@ class CdrStatsTaskTestCase(TestCase):
     def test_sync_cdr_pending(self):
         """Test task : sync_cdr_pending"""
         #result = sync_cdr_pending().run()
-        #self.assertTrue(result)
+        # self.assertTrue(result)
 
 
 class CdrModelTestCase(BaseAuthenticatedClient):
+
     """Test Switch, Alarm, HangupCause models"""
 
     fixtures = ['auth_user.json', 'hangup_cause.json']
@@ -420,7 +423,7 @@ class CdrModelTestCase(BaseAuthenticatedClient):
         form = EmailReportForm(self.user, data)
         self.assertFalse(form.is_valid())
         self.assertEqual(form["multiple_email"].errors,
-            ['xyzlocalhost.com is not a valid e-mail address.'])
+                         ['xyzlocalhost.com is not a valid e-mail address.'])
 
         data = {'multiple_email': 'abc@localhost.com,xyz@localhost.com'}
         form = EmailReportForm(self.user, data)

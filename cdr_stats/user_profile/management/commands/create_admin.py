@@ -6,6 +6,7 @@ from django.template.defaultfilters import slugify
 
 
 class Command(BaseCommand):
+
     """
     command to create a new admin user with a random password
     """
@@ -21,7 +22,7 @@ class Command(BaseCommand):
             last_name = names[-1]
         else:
             username = slugify(name)
-        #Overwrite username with admin
+        # Overwrite username with admin
         username = 'root'
         password = User.objects.make_random_password(length=14)
 

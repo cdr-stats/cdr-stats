@@ -20,13 +20,14 @@ from cdr.import_cdr_asterisk import import_cdr_asterisk
 from django_lets_go.only_one_task import only_one
 from datetime import timedelta
 
-#Note: if you import a lot of CDRs the first time you can have an issue here
-#we need to make sure the user import their CDR before starting Celery
-#for now we will increase the lock limit to 1 hours
+# Note: if you import a lot of CDRs the first time you can have an issue here
+# we need to make sure the user import their CDR before starting Celery
+# for now we will increase the lock limit to 1 hours
 LOCK_EXPIRE = 60 * 60 * 1  # Lock expires in 1 hours
 
 
 class sync_cdr_pending(PeriodicTask):
+
     """
     A periodic task that checks for pending CDR to import
     """

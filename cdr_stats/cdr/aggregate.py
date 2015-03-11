@@ -30,7 +30,7 @@ def set_concurrentcall_analytic(call_date, switch_id, accountcode, numbercall):
         call_date.year, call_date.month, call_date.day,
         call_date.hour, call_date.minute)
 
-    #Get current value in CONC_CALL_AGG
+    # Get current value in CONC_CALL_AGG
     get_cc_obj = CONC_CALL_AGG.find_one(
         {
             "date": date_minprec,
@@ -39,7 +39,7 @@ def set_concurrentcall_analytic(call_date, switch_id, accountcode, numbercall):
         })
 
     if not get_cc_obj:
-        #If doesn't exist set numbercall
+        # If doesn't exist set numbercall
         CONC_CALL_AGG.insert(
             {
                 "date": date_minprec,
@@ -49,7 +49,7 @@ def set_concurrentcall_analytic(call_date, switch_id, accountcode, numbercall):
             })
     else:
         if int(get_cc_obj['numbercall']) < int(numbercall):
-            #If numbercall is not max, update
+            # If numbercall is not max, update
             CONC_CALL_AGG.update(
                 {
                     "date": date_minprec,

@@ -15,10 +15,10 @@ from django.conf.urls import patterns
 
 
 urlpatterns = patterns('mod_registration.views',
-    # Password reset for Customer UI
-    (r'^password_reset/$', 'cust_password_reset'),
-    (r'^password_reset/done/$', 'cust_password_reset_done'),
-    (r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$',
-        'cust_password_reset_confirm'),
-    (r'^reset/done/$', 'cust_password_reset_complete'),
-)
+                       # Password reset for Customer UI
+                       (r'^password_reset/$', 'cust_password_reset'),
+                       (r'^password_reset/done/$', 'cust_password_reset_done'),
+                       (r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$',
+                        'cust_password_reset_confirm'),
+                       (r'^reset/done/$', 'cust_password_reset_complete'),
+                       )

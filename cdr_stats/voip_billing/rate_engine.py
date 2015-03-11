@@ -36,7 +36,7 @@ def rate_engine(voipplan_id, dest_number):
     rates = []
     if rate_tuples:
         Rate = namedtuple('Rate', ['id', 'cpid', 'cr_prefix', 'rt_prefix', 'rrid', 'carrier_rate',
-                    'retail_rate', 'crid', 'provider_id', 'gateway_id', 'sum_metric'])
+                                   'retail_rate', 'crid', 'provider_id', 'gateway_id', 'sum_metric'])
         rate = Rate(*rate_tuples)
         rates.append(rate)
     return rates
@@ -44,7 +44,7 @@ def rate_engine(voipplan_id, dest_number):
 
 @cached(60)
 def rate_call_prefix(voipplan_id, dest_prefix):
-    #Build SQL query to rate calls
+    # Build SQL query to rate calls
     sql = 'SELECT rpid as id, cpid, cr_prefix, prefix as rt_prefix, rrid, \
         carrier_rate, retail_rate, crid, provider_id, gateway_id, sum_metric \
         FROM ( \
@@ -82,5 +82,5 @@ def rate_call_prefix(voipplan_id, dest_prefix):
 
     for i in qset:
         return (i.id, i.cpid, i.cr_prefix, i.rt_prefix, i.rrid, i.carrier_rate,
-            i.retail_rate, i.crid, i.provider_id, i.gateway_id, i.sum_metric)
+                i.retail_rate, i.crid, i.provider_id, i.gateway_id, i.sum_metric)
     return None

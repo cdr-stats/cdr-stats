@@ -32,13 +32,13 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
         make_option('--delta-day', '-d',
-            default=None,
-            dest='delta-day',
-            help=help),
+                    default=None,
+                    dest='delta-day',
+                    help=help),
         make_option('--alert-no', '-a',
-            default=None,
-            dest='alert-no',
-            help=help),
+                    default=None,
+                    dest='alert-no',
+                    help=help),
     )
 
     def handle(self, *args, **options):
@@ -88,7 +88,7 @@ class Command(BaseCommand):
                 alarm=alarm[0],
                 calculatedvalue=calculatedvalue,
                 status=random.randint(1, 2))
-            #daterun is auto_now=True, so we need to overwrite the daterun
+            # daterun is auto_now=True, so we need to overwrite the daterun
             currentalert.daterun = daterun
             currentalert.save()
             print "alarm_report -> alarm:%s, daterun=%s, calculatedvalue=%d" % \

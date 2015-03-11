@@ -15,10 +15,10 @@ from django.conf.urls import patterns
 
 
 urlpatterns = patterns('frontend.views',
-    (r'^$', 'index'),
-    (r'^index/$', 'index'),
-    (r'^diagnostic/$', 'diagnostic'),
-    (r'^login/$', 'login_view'),
-    (r'^logout/$', 'logout_view'),
-    (r'^pleaselog/$', 'pleaselog'),
-)
+                       (r'^$', 'index'),
+                       (r'^index/$', 'index'),
+                       (r'^diagnostic/$', 'diagnostic'),
+                       (r'^login/$', 'login_view'),
+                       (r'^logout/$', 'logout_view'),
+                       (r'^pleaselog/$', 'pleaselog'),
+                       )

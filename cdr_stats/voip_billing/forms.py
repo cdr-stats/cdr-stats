@@ -50,6 +50,7 @@ def retail_plan_list():
 
 
 class FileImport(forms.Form):
+
     """
     General Form : CSV file upload
     """
@@ -70,6 +71,7 @@ class FileImport(forms.Form):
 
 
 class RetailRate_fileImport(FileImport):
+
     """
     Admin Form : Import CSV file with Retail Plan
     """
@@ -82,6 +84,7 @@ class RetailRate_fileImport(FileImport):
 
 
 class CarrierRate_fileImport(FileImport):
+
     """
     Admin Form : Import CSV file with Carrier Plan
     """
@@ -115,6 +118,7 @@ class CarrierRate_fileImport(FileImport):
 
 
 class Carrier_Rate_fileExport(Exportfile):
+
     """
     Admin Form : Carrier Rate Export
     """
@@ -127,6 +131,7 @@ class Carrier_Rate_fileExport(Exportfile):
 
 
 class Retail_Rate_fileExport(Exportfile):
+
     """
     Admin Form : Retail Rate Export
     """
@@ -139,6 +144,7 @@ class Retail_Rate_fileExport(Exportfile):
 
 
 class VoIPPlan_fileExport(Exportfile):
+
     """
     Admin Form : VoIP Plan Export
     """
@@ -152,6 +158,7 @@ class VoIPPlan_fileExport(Exportfile):
 
 
 class PrefixRetailRateForm(forms.Form):
+
     """
     Client Form : To know Retail Rate for prefix
     """
@@ -177,6 +184,7 @@ class PrefixRetailRateForm(forms.Form):
 
 
 class SendVoIPForm(forms.Form):
+
     """
     Client Form : To Send VoIP
     """
@@ -205,6 +213,7 @@ class SendVoIPForm(forms.Form):
 
 
 class SimulatorForm(SendVoIPForm):
+
     """
     Admin/Client Form : To Simulator
     """
@@ -240,6 +249,7 @@ class SimulatorForm(SendVoIPForm):
 
 
 class CustomRateFilterForm(forms.Form):
+
     """
     Admin Form : Custom Rate Filter
     """
@@ -249,11 +259,12 @@ class CustomRateFilterForm(forms.Form):
 
 
 class DailyBillingForm(forms.Form):
+
     """Daily Billing Form"""
     from_date = forms.DateTimeField(label=_('from').capitalize(), required=False,
-        widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
+                                    widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
     to_date = forms.DateTimeField(label=_('to').capitalize(), required=False,
-        widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
+                                  widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
     switch_id = forms.ChoiceField(label=_('switch'), required=False)
 
     def __init__(self, *args, **kwargs):
@@ -274,7 +285,9 @@ class DailyBillingForm(forms.Form):
 
 
 class HourlyBillingForm(DailyBillingForm):
+
     """Hourly Billing Form"""
+
     def __init__(self, *args, **kwargs):
         super(HourlyBillingForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['from_date', 'switch_id']
@@ -292,6 +305,7 @@ class HourlyBillingForm(DailyBillingForm):
 
 
 class RebillForm(CdrSearchForm):
+
     """Re-bill VoIP call"""
     confirmation = forms.ChoiceField(choices=list(CONFIRMATION_TYPE), required=False)
 

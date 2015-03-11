@@ -29,6 +29,7 @@ myclient = InfluxDBClient(host, port, user, password, dbname)
 
 class CDRSeriesHelper(SeriesHelper):
     # Meta class stores time series helper configuration.
+
     class Meta:
         # The client should be an instance of InfluxDBClient.
         client = myclient

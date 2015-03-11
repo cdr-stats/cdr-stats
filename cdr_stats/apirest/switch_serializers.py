@@ -16,6 +16,7 @@ from cdr.models import Switch
 
 
 class SwitchSerializer(serializers.HyperlinkedModelSerializer):
+
     """
     **Read**:
 

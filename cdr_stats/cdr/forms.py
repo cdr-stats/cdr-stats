@@ -76,6 +76,7 @@ def country_list_with_all():
 
 
 class SearchForm(forms.Form):
+
     """
     Form used to search on general parameters in the Customer UI.
     """
@@ -119,13 +120,14 @@ class SearchForm(forms.Form):
 
 
 class CdrSearchForm(SearchForm):
+
     """
     Form used to search calls in the Customer UI.
     """
     from_date = forms.DateTimeField(label=_('from').capitalize(), required=True,
-        widget=DateTimePicker(options={"format": "YYYY-MM-DD HH:mm", "pickSeconds": False}))
+                                    widget=DateTimePicker(options={"format": "YYYY-MM-DD HH:mm", "pickSeconds": False}))
     to_date = forms.DateTimeField(label=_('to').capitalize(), required=True,
-        widget=DateTimePicker(options={"format": "YYYY-MM-DD HH:mm", "pickSeconds": False}))
+                                  widget=DateTimePicker(options={"format": "YYYY-MM-DD HH:mm", "pickSeconds": False}))
     direction = forms.TypedChoiceField(label=_('direction').capitalize(), required=False,
                                        choices=(('all', _('all')),
                                                 ('inbound', _('inbound')),
@@ -188,13 +190,14 @@ class CdrSearchForm(SearchForm):
 
 
 class CountryReportForm(CdrSearchForm):
+
     """
     Form used to get country vise calls report in the Customer UI.
     """
     from_date = forms.DateTimeField(label=_('from').capitalize(), required=False,
-        widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
+                                    widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
     to_date = forms.DateTimeField(label=_('to').capitalize(), required=False,
-        widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
+                                  widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
 
     def __init__(self, *args, **kwargs):
         super(CountryReportForm, self).__init__(*args, **kwargs)
@@ -220,9 +223,11 @@ class CountryReportForm(CdrSearchForm):
 
 
 class CdrOverviewForm(CdrSearchForm):
+
     """
     Form used to get overview of calls in the Customer UI.
     """
+
     def __init__(self, *args, **kwargs):
         super(CdrOverviewForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -240,11 +245,12 @@ class CdrOverviewForm(CdrSearchForm):
 
 
 class CompareCallSearchForm(SearchForm):
+
     """
     Form used to search calls for comparison in the Customer UI.
     """
     from_date = forms.DateTimeField(label=_('select date').capitalize(), required=True,
-        widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
+                                    widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
     comp_days = forms.ChoiceField(label=_('compare').capitalize(), required=False, choices=comp_day_range(6))
     check_days = forms.TypedChoiceField(label=_('check with').capitalize(),
                                         choices=list(CheckWith), widget=forms.RadioSelect(renderer=HorizRadioRenderer))
@@ -277,9 +283,11 @@ class CompareCallSearchForm(SearchForm):
 
 
 class ConcurrentCallForm(CdrSearchForm):
+
     """
     Form used for concurrent calls in the Customer UI.
     """
+
     def __init__(self, *args, **kwargs):
         super(ConcurrentCallForm, self).__init__(*args, **kwargs)
         self.fields['from_date'].label = _('select date').capitalize()
@@ -297,9 +305,11 @@ class ConcurrentCallForm(CdrSearchForm):
 
 
 class SwitchForm(SearchForm):
+
     """
     Form used to get the list of switches in the Customer UI.
     """
+
     def __init__(self, *args, **kwargs):
         super(SwitchForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -315,13 +325,14 @@ class SwitchForm(SearchForm):
 
 
 class WorldForm(CdrSearchForm):
+
     """
     Form used to get world overview of calls in the Customer UI.
     """
     from_date = forms.DateTimeField(label=_('from').capitalize(), required=True,
-        widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
+                                    widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
     to_date = forms.DateTimeField(label=_('to').capitalize(), required=True,
-        widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
+                                  widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
 
     def __init__(self, *args, **kwargs):
         super(WorldForm, self).__init__(*args, **kwargs)
@@ -341,6 +352,7 @@ class WorldForm(CdrSearchForm):
 
 
 class EmailReportForm(forms.ModelForm):
+
     """
     Form used to change the detail of a user in the Customer UI.
     """
@@ -384,6 +396,7 @@ class EmailReportForm(forms.ModelForm):
 
 
 class FileImport(forms.Form):
+
     """General Form : CSV file upload"""
 
     csv_file = forms.FileField(label=_('upload CSV File '), required=True,
@@ -402,10 +415,11 @@ class FileImport(forms.Form):
 ACCOUNTCODE_FIELD_LIST_NUM = [(x, 'column-' + str(x)) for x in range(1, len(CDR_FIELD_LIST) + 1)]
 ACCOUNTCODE_FIELD_LIST_NUM.append((0, 'No import'))
 ACCOUNTCODE_FIELD_LIST_NUM = sorted(ACCOUNTCODE_FIELD_LIST_NUM,
-    key=lambda ACCOUNTCODE_FIELD_LIST_NUM: ACCOUNTCODE_FIELD_LIST_NUM[0])
+                                    key=lambda ACCOUNTCODE_FIELD_LIST_NUM: ACCOUNTCODE_FIELD_LIST_NUM[0])
 
 
 class CDR_FileImport(FileImport):
+
     """Admin Form : Import CSV file with phonebook CDR_FIELD_LIST"""
     switch_id = forms.ChoiceField(label=_('switch'), required=True, help_text=_('select switch'))
     accountcode_csv = forms.CharField(label=_('account code'), required=False)
@@ -427,7 +441,7 @@ class CDR_FileImport(FileImport):
     write_codec = forms.ChoiceField(label=_('write_codec'), required=True, choices=ACCOUNTCODE_FIELD_LIST_NUM)
     accountcode = forms.ChoiceField(label=_('accountcode'), required=True, choices=ACCOUNTCODE_FIELD_LIST_NUM)
     import_asterisk = forms.BooleanField(label=_('asterisk hangup format'), required=False,
-        help_text=_('with this option on, the field hangup_cause_id will expect Asterisk Hangup Cause in the format : ANSWER, CANCEL, BUSY, CONGESTION, CHANUNAVAIL, etc..'))
+                                         help_text=_('with this option on, the field hangup_cause_id will expect Asterisk Hangup Cause in the format : ANSWER, CANCEL, BUSY, CONGESTION, CHANUNAVAIL, etc..'))
 
     def __init__(self, user, *args, **kwargs):
         super(CDR_FileImport, self).__init__(*args, **kwargs)

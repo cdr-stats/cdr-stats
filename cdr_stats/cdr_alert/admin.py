@@ -58,8 +58,8 @@ class BlacklistAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(BlacklistAdmin, self).get_urls()
         my_urls = patterns('',
-            (r'^blacklist_by_country/$', self.admin_site.admin_view(self.blacklist_by_country)),
-        )
+                           (r'^blacklist_by_country/$', self.admin_site.admin_view(self.blacklist_by_country)),
+                           )
         return my_urls + urls
 
     def blacklist_by_country(self, request):
@@ -118,6 +118,7 @@ class BlacklistAdmin(admin.ModelAdmin):
 
 # Whitelist
 class WhitelistAdmin(admin.ModelAdmin):
+
     """
     Whitelist Admin
     """
@@ -129,8 +130,8 @@ class WhitelistAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(WhitelistAdmin, self).get_urls()
         my_urls = patterns('',
-            (r'^whitelist_by_country/$', self.admin_site.admin_view(self.whitelist_by_country)),
-        )
+                           (r'^whitelist_by_country/$', self.admin_site.admin_view(self.whitelist_by_country)),
+                           )
         return my_urls + urls
 
     def whitelist_by_country(self, request):

@@ -48,11 +48,11 @@ def rate_range():
     Return list of filter for the rate symbol
     """
     choicelist = (('', 'All'),
-                 ('gte', '>='),
-                 ('gt', '>'),
-                 ('eq', '='),
-                 ('lt', '<'),
-                 ('lte', '<='))
+                  ('gte', '>='),
+                  ('gt', '>'),
+                  ('eq', '='),
+                  ('lt', '<'),
+                  ('lte', '<='))
     return choicelist
 
 

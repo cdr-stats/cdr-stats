@@ -24,7 +24,7 @@ import logging
 logger = logging.getLogger('cdr-stats.filelog')
 
 
-#TODO: Move to models
+# TODO: Move to models
 def find_rates(voipplan_id, dialcode, sort_field, order):
     """
     function to retrieve list of rates belonging to a voipplan
@@ -92,6 +92,7 @@ def find_rates(voipplan_id, dialcode, sort_field, order):
 
 
 class VoIPRateList(APIView):
+
     """
     List all voip rate
 
@@ -114,7 +115,7 @@ class VoIPRateList(APIView):
         logger.debug('Voip Rate GET API get called')
         error = {}
 
-        #check voipplan id for user
+        # check voipplan id for user
         try:
             voipplan_id = request.user.userprofile.voipplan_id
         except:
@@ -142,13 +143,13 @@ class VoIPRateList(APIView):
                 return Response(error)
 
         if recipient_phone_no:
-            #Check if recipient_phone_no is not banned
+            # Check if recipient_phone_no is not banned
             allowed = prefix_allowed_to_call(recipient_phone_no, voipplan_id)
             if allowed:
-                #Get Destination prefix list e.g (34,346,3465,34657)
+                # Get Destination prefix list e.g (34,346,3465,34657)
                 destination_prefix_list = prefix_list_string(str(recipient_phone_no))
                 prefixlist = destination_prefix_list.split(",")
-                #Get Rate List
+                # Get Rate List
                 rate_list = VoIPRetailRate.objects\
                     .values('prefix', 'retail_rate', 'prefix__destination')\
                     .filter(prefix__in=[int(s) for s in prefixlist])
@@ -167,7 +168,7 @@ class VoIPRateList(APIView):
         if request.GET.get('order'):
             order = request.GET.get('order')
 
-        #call the find rates function
+        # call the find rates function
         result = find_rates(voipplan_id, dialcode, sort_field, order)
 
         logger.debug('Voip Rate API : result OK 200')

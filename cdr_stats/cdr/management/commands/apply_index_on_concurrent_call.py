@@ -31,6 +31,6 @@ class Command(BaseCommand):
             print "Error mongodb Connection"
 
         mongodb.conc_call_agg.ensure_index([('call_date', -1), ('switch_id', 1), ('accountcode', 1)],
-                               unique=True)
+                                           unique=True)
 
         print "Index applied on concurrnt calls"

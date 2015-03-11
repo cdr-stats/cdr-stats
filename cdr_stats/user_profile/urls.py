@@ -16,6 +16,6 @@ from django.conf.urls import patterns
 
 
 urlpatterns = patterns('user_profile.views',
-    # User detail change for Customer UI
-    (r'^user_detail_change/$', 'customer_detail_change'),
-)
+                       # User detail change for Customer UI
+                       (r'^user_detail_change/$', 'customer_detail_change'),
+                       )

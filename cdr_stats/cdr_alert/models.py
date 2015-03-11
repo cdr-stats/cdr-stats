@@ -20,6 +20,7 @@ from cdr_alert.constants import PERIOD, STATUS, ALARM_TYPE, \
 
 
 class AlertRemovePrefix(models.Model):
+
     """This defines the Alert Remove Prefix
     Define the list of prefixes that need to be removed from the dialed digits,
     assuming the phone numbers are in the format 5559004432, with the signifcant digits
@@ -47,6 +48,7 @@ class AlertRemovePrefix(models.Model):
 
 
 class Alarm(models.Model):
+
     """This defines the Alarm
 
     **Attributes**:
@@ -94,6 +96,7 @@ class Alarm(models.Model):
 
 
 class AlarmReport(models.Model):
+
     """This defines the Alarm report
 
     **Attributes**:
@@ -124,6 +127,7 @@ class AlarmReport(models.Model):
 
 
 class Blacklist(models.Model):
+
     """This defines the Blacklist
 
     **Attributes**:
@@ -152,6 +156,7 @@ class Blacklist(models.Model):
 
 
 class Whitelist(models.Model):
+
     """This defines the Blacklist
 
     **Attributes**:

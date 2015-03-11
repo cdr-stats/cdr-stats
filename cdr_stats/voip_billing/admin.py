@@ -116,10 +116,10 @@ class VoIPPlanAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(VoIPPlanAdmin, self).get_urls()
         my_urls = patterns('',
-            (r'^simulator/$', self.admin_site.admin_view(self.simulator)),
-            (r'^export/$', self.admin_site.admin_view(self.export)),
-            (r'^rebilling/$', self.admin_site.admin_view(self.rebilling)),
-        )
+                           (r'^simulator/$', self.admin_site.admin_view(self.simulator)),
+                           (r'^export/$', self.admin_site.admin_view(self.export)),
+                           (r'^rebilling/$', self.admin_site.admin_view(self.rebilling)),
+                           )
         return my_urls + urls
 
     def simulator(self, request):
@@ -152,14 +152,14 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                              rate.rrid, rate.retail_rate, rate.rt_prefix))
 
         ctx = RequestContext(request,
-            {
-                'title': _('VoIP Simulator'),
-                'form': form,
-                'opts': opts,
-                'model_name': opts.object_name.lower(),
-                'app_label': APP_LABEL,
-                'data': data,
-            })
+                             {
+                                 'title': _('VoIP Simulator'),
+                                 'form': form,
+                                 'opts': opts,
+                                 'model_name': opts.object_name.lower(),
+                                 'app_label': APP_LABEL,
+                                 'data': data,
+                             })
         return render_to_response('admin/voip_billing/voipplan/simulator.html', context_instance=ctx)
 
     def export(self, request):
@@ -310,7 +310,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
 admin.site.register(VoIPPlan, VoIPPlanAdmin)
 
 
-#BanPlan
+# BanPlan
 class BanPlanAdmin(admin.ModelAdmin):
     list_display = ('name', 'created_date', 'updated_date')
     list_display_links = ('name', )
@@ -318,7 +318,7 @@ class BanPlanAdmin(admin.ModelAdmin):
 admin.site.register(BanPlan, BanPlanAdmin)
 
 
-#BanPrefix
+# BanPrefix
 class BanPrefixAdmin(AutocompleteModelAdmin):
     list_display = ('prefix_with_name', 'ban_plan', 'updated_date')
     list_display_links = ('prefix_with_name', )
@@ -330,14 +330,14 @@ class BanPrefixAdmin(AutocompleteModelAdmin):
     def get_urls(self):
         urls = super(BanPrefixAdmin, self).get_urls()
         my_urls = patterns('',
-            (r'^search/$', self.admin_site.admin_view(self.search)),
-        )
+                           (r'^search/$', self.admin_site.admin_view(self.search)),
+                           )
         return my_urls + urls
 
 admin.site.register(BanPrefix, BanPrefixAdmin)
 
 
-#VoIPRetailPlan
+# VoIPRetailPlan
 class VoIPRetailPlanAdmin(admin.ModelAdmin):
     fieldsets = (
         (_('VoIP Retail Plan'), {
@@ -356,7 +356,7 @@ class VoIPRetailPlanAdmin(admin.ModelAdmin):
 admin.site.register(VoIPRetailPlan, VoIPRetailPlanAdmin)
 
 
-#VoIPRetailRate
+# VoIPRetailRate
 class VoIPRetailRateAdmin(AutocompleteModelAdmin):
     fieldsets = (
         (_('VoIP Retail Rate'), {
@@ -375,8 +375,8 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
         'prefix': ('prefix', 'destination'),
     }
     actions = [export_as_csv_action("Export selected retail rates as CSV file",
-               fields=['voip_retail_plan_id', 'prefix', 'retail_rate'],
-               header=False)]
+                                    fields=['voip_retail_plan_id', 'prefix', 'retail_rate'],
+                                    header=False)]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """
@@ -389,11 +389,11 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
     def get_urls(self):
         urls = super(VoIPRetailRateAdmin, self).get_urls()
         my_urls = patterns('',
-            (r'^$', self.admin_site.admin_view(self.changelist_view)),
-            (r'^import_rr/$', self.admin_site.admin_view(self.import_rr)),
-            (r'^export_rr/$', self.admin_site.admin_view(self.export_rr)),
-            (r'^search/$', self.admin_site.admin_view(self.search)),
-        )
+                           (r'^$', self.admin_site.admin_view(self.changelist_view)),
+                           (r'^import_rr/$', self.admin_site.admin_view(self.import_rr)),
+                           (r'^export_rr/$', self.admin_site.admin_view(self.export_rr)),
+                           (r'^search/$', self.admin_site.admin_view(self.search)),
+                           )
         return my_urls + urls
 
     def queryset(self, request):
@@ -545,7 +545,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
 admin.site.register(VoIPRetailRate, VoIPRetailRateAdmin)
 
 
-#VoIPCarrierPlan
+# VoIPCarrierPlan
 class VoIPCarrierPlanAdmin(admin.ModelAdmin):
     fieldsets = (
         (_('VoIP Carrier Plan'), {
@@ -570,7 +570,7 @@ class VoIPCarrierPlanAdmin(admin.ModelAdmin):
 admin.site.register(VoIPCarrierPlan, VoIPCarrierPlanAdmin)
 
 
-#VoIPCarrierRate
+# VoIPCarrierRate
 class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
     fieldsets = (
         (_('VoIP Carrier Rate'), {
@@ -589,8 +589,8 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
         'prefix': ('prefix', 'destination'),
     }
     actions = [export_as_csv_action("Export selected carrier rates as CSV file",
-        fields=['voip_carrier_plan_id', 'prefix', 'carrier_rate'],
-        header=False)]
+                                    fields=['voip_carrier_plan_id', 'prefix', 'carrier_rate'],
+                                    header=False)]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """
@@ -603,11 +603,11 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
     def get_urls(self):
         urls = super(VoIPCarrierRateAdmin, self).get_urls()
         my_urls = patterns('',
-            (r'^$', self.admin_site.admin_view(self.changelist_view)),
-            (r'^import_cr/$', self.admin_site.admin_view(self.import_cr)),
-            (r'^export_cr/$', self.admin_site.admin_view(self.export_cr)),
-            (r'^search/$', self.admin_site.admin_view(self.search)),
-        )
+                           (r'^$', self.admin_site.admin_view(self.changelist_view)),
+                           (r'^import_cr/$', self.admin_site.admin_view(self.import_cr)),
+                           (r'^export_cr/$', self.admin_site.admin_view(self.export_cr)),
+                           (r'^search/$', self.admin_site.admin_view(self.search)),
+                           )
         return my_urls + urls
 
     def queryset(self, request):
@@ -758,7 +758,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                                 carrier_record_count = carrier_record_count + 1
 
                                 msg = '%d Carrier Rate(s) are uploaded successfully out of %d row(s)!!' \
-                                       % (carrier_record_count, total_rows)
+                                    % (carrier_record_count, total_rows)
                                 cr_success_import_list.append(row)
 
                                 # Checked form field - "chk"

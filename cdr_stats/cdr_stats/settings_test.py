@@ -12,7 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-#IMPORT SETTINGS
+# IMPORT SETTINGS
 #===============
 from settings import *
 

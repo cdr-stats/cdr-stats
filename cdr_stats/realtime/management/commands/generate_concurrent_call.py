@@ -53,8 +53,8 @@ class Command(BaseCommand):
                                      now.minute, now.second, 0)
 
         today_delta = datetime.timedelta(hours=datetime.datetime.now().hour,
-                minutes=datetime.datetime.now().minute,
-                seconds=datetime.datetime.now().second)
+                                         minutes=datetime.datetime.now().minute,
+                                         seconds=datetime.datetime.now().second)
         date_today = date_now - today_delta \
             - datetime.timedelta(days=day_delta_int)
 
@@ -71,12 +71,12 @@ class Command(BaseCommand):
             if numbercall < 0:
                 numbercall = 0
             print '%s (accountcode:%s, switch_id:%d) ==> %d' % (call_date,
-                    accountcode, switch_id, numbercall)
+                                                                accountcode, switch_id, numbercall)
 
             call_json = {'switch_id': switch_id, 'call_date': call_date,
                          'numbercall': numbercall, 'accountcode': accountcode}
 
             mongodb.conc_call.insert(call_json)
 
-            #Create collection for Analytics
+            # Create collection for Analytics
             set_concurrentcall_analytic(call_date, switch_id, accountcode, numbercall)

@@ -49,6 +49,7 @@ def rebill_call(voipplan_id, call):
 
 
 class RebillingTask(Task):
+
     """
     Re-billing for VoIPCall
 
@@ -74,6 +75,7 @@ class RebillingTask(Task):
 
 
 class ReaggregateTask(Task):
+
     """
     Re-aggregate voip calls for daily/monthly analytics
 
@@ -89,11 +91,11 @@ class ReaggregateTask(Task):
             logging.error("Error mongodb connection")
             return False
 
-        #1) remove daily/monthly aggregate
+        # 1) remove daily/monthly aggregate
         mongodb.daily_analytic.remove(daily_kwargs)
         mongodb.monthly_analytic.remove(monthly_kwargs)
 
-        #2) Re-create daily/monthly analytic
+        # 2) Re-create daily/monthly analytic
         PAGE_SIZE = 1000
         record_count = mongodb.cdr_common.find(call_kwargs).count()
         total_pages = int(record_count / PAGE_SIZE) + 1 if (record_count % PAGE_SIZE) != 0 else 0
@@ -117,8 +119,8 @@ class ReaggregateTask(Task):
                 date_start_uepoch = int(time.mktime(start_uepoch.timetuple()))
 
                 create_analytic(str(date_start_uepoch),
-                    start_uepoch, switch_id, country_id, accountcode,
-                    hangup_cause_id, duration, buy_cost, sell_cost)
+                                start_uepoch, switch_id, country_id, accountcode,
+                                hangup_cause_id, duration, buy_cost, sell_cost)
 
         logging.debug("Done re-aggregate")
         return True

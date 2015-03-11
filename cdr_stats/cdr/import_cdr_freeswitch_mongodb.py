@@ -48,45 +48,45 @@ def get_element(cdr):
     """
     return some element from the cdr object
     """
-    #Get accountcode
+    # Get accountcode
     if 'variables' in cdr and 'accountcode' in cdr['variables']:
         accountcode = cdr['variables']['accountcode']
     else:
         accountcode = ''
-    #Get remote_media_ip
+    # Get remote_media_ip
     if 'variables' in cdr and 'remote_media_ip' in cdr['variables']:
         remote_media_ip = cdr['variables']['remote_media_ip']
     else:
         remote_media_ip = ''
-    #Get duration
+    # Get duration
     if 'variables' in cdr and 'duration' in cdr['variables'] \
        and cdr['variables']['duration']:
         duration = float(cdr['variables']['duration'])
     else:
         duration = 0
-    #Get billsec
+    # Get billsec
     if 'variables' in cdr and 'billsec' in cdr['variables'] \
        and cdr['variables']['billsec']:
         billsec = cdr['variables']['billsec']
     else:
         billsec = 0
-    #Get direction
+    # Get direction
     if 'variables' in cdr and 'direction' in cdr['variables']:
         direction = cdr['variables']['direction']
     else:
         direction = 'unknown'
-    #Get uuid
+    # Get uuid
     if 'variables' in cdr and 'uuid' in cdr['variables']:
         uuid = cdr['variables']['uuid']
     else:
         uuid = ''
-    #Get caller_id_number
+    # Get caller_id_number
     if 'callflow' in cdr and 'caller_profile' in cdr['callflow'][0] \
        and 'caller_id_number' in cdr['callflow'][0]['caller_profile']:
         caller_id_number = cdr['callflow'][0]['caller_profile']['caller_id_number']
     else:
         caller_id_number = ''
-    #Get caller_id_name
+    # Get caller_id_name
     if 'callflow' in cdr and 'caller_profile' in cdr['callflow'][0] \
        and 'caller_id_name' in cdr['callflow'][0]['caller_profile']:
         caller_id_name = cdr['callflow'][0]['caller_profile']['caller_id_name']
@@ -336,15 +336,15 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
     - build the pre-aggregate
     """
 
-    #We limit the import tasks to a maximum - 1000
-    #This will reduce the speed but that s the only way to make sure
-    #we dont have several time the same tasks running
+    # We limit the import tasks to a maximum - 1000
+    # This will reduce the speed but that s the only way to make sure
+    # we dont have several time the same tasks running
 
     PAGE_SIZE = 1000
     count_import = 0
     local_count_import = 0
 
-    #Store cdr in list to insert by bulk
+    # Store cdr in list to insert by bulk
     cdr_bulk_record = []
 
     result = importcdr_handler.find(
@@ -375,9 +375,9 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
             "import_cdr_hourly": 1,
         }).limit(PAGE_SIZE)
 
-    #Retrieve FreeSWITCH CDRs
+    # Retrieve FreeSWITCH CDRs
     for cdr in result:
-        #find result so let's look later for more records
+        # find result so let's look later for more records
         start_uepoch = datetime.datetime.fromtimestamp(
             int(str(cdr['variables']['start_uepoch'])[:10]))
 
@@ -392,7 +392,7 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
                 int(str(cdr['variables']['end_uepoch'])[:10]))
 
         # Check Destination number
-        #print(cdr)
+        # print(cdr)
         dest_number = cdr['callflow'][0]['caller_profile']['destination_number']
 
         if len(dest_number) <= settings.INTERNAL_CALL:
@@ -406,7 +406,7 @@ def importcdr_aggregate(shell, importcdr_handler, switch, ipaddress):
 
         hangup_cause_id = get_hangupcause_id(cdr['variables']['hangup_cause_q850'])
 
-        #Retrieve Element from CDR Object
+        # Retrieve Element from CDR Object
         data_element = get_element(cdr)
         accountcode = data_element['accountcode']
         remote_media_ip = data_element['remote_media_ip']
@@ -529,10 +529,10 @@ def import_cdr_freeswitch_mongodb(shell=False):
         sys.stderr.write('Error mongodb connection')
         sys.exit(1)
 
-    #loop within the Mongo CDR Import List
+    # loop within the Mongo CDR Import List
     for ipaddress in settings.CDR_BACKEND:
 
-        #Connect to Database
+        # Connect to Database
         db_name = settings.CDR_BACKEND[ipaddress]['db_name']
         table_name = settings.CDR_BACKEND[ipaddress]['table_name']
         db_engine = settings.CDR_BACKEND[ipaddress]['db_engine']
@@ -550,7 +550,7 @@ def import_cdr_freeswitch_mongodb(shell=False):
         ipaddress = data['ipaddress']
         switch = data['switch']
 
-        #Connect on MongoDB Database
+        # Connect on MongoDB Database
         try:
             connection = Connection(host, port)
             DBCON = connection[db_name]
@@ -559,8 +559,8 @@ def import_cdr_freeswitch_mongodb(shell=False):
             sys.stderr.write("Could not connect to MongoDB: %s - %s" % (e, ipaddress))
             sys.exit(1)
 
-        #Connect to Mongo
+        # Connect to Mongo
         importcdr_handler = DBCON[table_name]
 
-        #Start import for this mongoDB
+        # Start import for this mongoDB
         importcdr_aggregate(shell, importcdr_handler, switch, ipaddress)

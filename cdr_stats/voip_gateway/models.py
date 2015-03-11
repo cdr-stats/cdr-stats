@@ -18,6 +18,7 @@ from voip_gateway.constants import GATEWAY_STATUS
 
 
 class Gateway(Model):
+
     """
     Gateway
 
@@ -47,7 +48,7 @@ class Gateway(Model):
     name = models.CharField(unique=True, max_length=255, verbose_name=_('name'),
                             help_text=_("enter gateway name"))
     description = models.TextField(verbose_name=_('description'),
-                               help_text=_("short description about provider"))
+                                   help_text=_("short description about provider"))
     addprefix = models.CharField(max_length=60, blank=True)
     removeprefix = models.CharField(max_length=60, blank=True)
     protocol = models.CharField(max_length=60)
@@ -58,17 +59,17 @@ class Gateway(Model):
     updated_date = models.DateTimeField(auto_now=True)
 
     failover = models.ForeignKey('self', null=True, blank=True,
-                related_name="Failover", help_text=_("select gateway"))
+                                 related_name="Failover", help_text=_("select gateway"))
     addparameter = models.CharField(max_length=360, blank=True)
     count_call = models.IntegerField(null=True, blank=True)
     count_using = models.IntegerField(null=True, blank=True)
     maximum_call = models.IntegerField(null=True, blank=True)
     status = models.IntegerField(choices=list(GATEWAY_STATUS),
-        default=GATEWAY_STATUS.INACTIVE, verbose_name=_("gateway status"),
-        blank=True, null=True)
+                                 default=GATEWAY_STATUS.INACTIVE, verbose_name=_("gateway status"),
+                                 blank=True, null=True)
     max_call_gateway = models.IntegerField(null=True, blank=True,
-        verbose_name=_("max call gateway"),
-        help_text=_("select gateway to route the call if the maximum call is reached"))
+                                           verbose_name=_("max call gateway"),
+                                           help_text=_("select gateway to route the call if the maximum call is reached"))
 
     class Meta:
         db_table = u'voip_gateway'
@@ -76,10 +77,11 @@ class Gateway(Model):
         verbose_name_plural = _("gateways")
 
     def __unicode__(self):
-            return u"%s" % self.name
+        return u"%s" % self.name
 
 
 class Provider(Model):
+
     """
     Provider
 
@@ -112,4 +114,4 @@ class Provider(Model):
         verbose_name_plural = _("providers")
 
     def __unicode__(self):
-            return u"%s" % self.name
+        return u"%s" % self.name

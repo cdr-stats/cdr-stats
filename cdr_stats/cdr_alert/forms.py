@@ -22,6 +22,7 @@ from crispy_forms.layout import Layout, Div, HTML
 
 
 class BWCountryForm(forms.Form):
+
     """Blacklist/Whitelist by country form"""
     country = forms.ChoiceField(label=_('country'), required=True, choices=get_country_list())
 
@@ -50,6 +51,7 @@ class BWCountryForm(forms.Form):
 
 
 class BWPrefixForm(forms.Form):
+
     """Blacklist/Whitelist by prefix form"""
     prefix = forms.CharField(label=_('prefix'), required=False)
 
@@ -82,11 +84,12 @@ class BWPrefixForm(forms.Form):
 
 
 class AlarmForm(SaveUserModelForm):
+
     """Alarm ModelForm"""
 
     class Meta:
         model = Alarm
-        #fields = ['name', 'period', 'type', 'alert_condition',
+        # fields = ['name', 'period', 'type', 'alert_condition',
         #          'alert_value', 'alert_condition_add_on', 'status',
         #          'email_to_send_alarm']
         exclude = ('user',)
@@ -125,6 +128,7 @@ class AlarmForm(SaveUserModelForm):
 
 
 class AlarmReportForm(forms.Form):
+
     """alarm list form"""
     alarm_id = forms.ChoiceField(label=_("alert").title(), required=False)
 

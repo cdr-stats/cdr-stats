@@ -16,9 +16,9 @@ from django.conf.urls import patterns
 
 urlpatterns = patterns('voip_billing.views',
 
-    (r'^rates/$', 'voip_rates'),
-    (r'^export_rate/$', 'export_rate'),
-    (r'^simulator/$', 'simulator'),
-    (r'^daily_billing_report/$', 'daily_billing_report'),
-    (r'^hourly_billing_report/$', 'hourly_billing_report'),
-)
+                       (r'^rates/$', 'voip_rates'),
+                       (r'^export_rate/$', 'export_rate'),
+                       (r'^simulator/$', 'simulator'),
+                       (r'^daily_billing_report/$', 'daily_billing_report'),
+                       (r'^hourly_billing_report/$', 'hourly_billing_report'),
+                       )

@@ -16,6 +16,7 @@ from django_lets_go.utils import BaseAuthenticatedClient
 
 
 class VoipReportAdminInterfaceTestCase(BaseAuthenticatedClient):
+
     """
     Test cases for voip_billing Admin Interface.
     """

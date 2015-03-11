@@ -77,10 +77,10 @@ def diagnostic(request):
     error_ip = []
     CDR_COUNT = 0
     backend_cdr_data = []
-    #loop within the Mongo CDR Import List
+    # loop within the Mongo CDR Import List
     for ipaddress in settings.CDR_BACKEND:
 
-        #Connect to Database
+        # Connect to Database
         db_name = settings.CDR_BACKEND[ipaddress]['db_name']
         table_name = settings.CDR_BACKEND[ipaddress]['table_name']
         db_engine = settings.CDR_BACKEND[ipaddress]['db_engine']
@@ -94,7 +94,7 @@ def diagnostic(request):
         ipaddress = data['ipaddress']
         collection_data = {}
 
-        #Connect on MongoDB Database
+        # Connect on MongoDB Database
         try:
             if db_engine == 'mysql':
                 import MySQLdb as Database

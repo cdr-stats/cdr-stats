@@ -42,6 +42,7 @@ class HistoryDashboardModule(modules.LinkList):
 
 
 class CustomIndexDashboard(Dashboard):
+
     """
     Custom index dashboard
     """
@@ -51,7 +52,7 @@ class CustomIndexDashboard(Dashboard):
         self.columns = 3
         site_name = get_admin_site_name(context)
 
-        #self.children.append(
+        # self.children.append(
         #            HistoryDashboardModule()
         #)
 
@@ -125,6 +126,7 @@ class CustomIndexDashboard(Dashboard):
 
 
 class CustomAppIndexDashboard(AppIndexDashboard):
+
     """
     Custom app index dashboard for admin.
     """
@@ -134,7 +136,7 @@ class CustomAppIndexDashboard(AppIndexDashboard):
     def __init__(self, *args, **kwargs):
         AppIndexDashboard.__init__(self, *args, **kwargs)
 
-        #TODO: Find out better way
+        # TODO: Find out better way
         if str(self.app_title) == 'Voip_Gateway':
             app_title = _('voip gateway')
             models = ['voip_gateway.*']

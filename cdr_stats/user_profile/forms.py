@@ -23,6 +23,7 @@ from crispy_forms.layout import Layout, Div, Fieldset
 
 
 class UserPasswordChangeForm(PasswordChangeForm):
+
     def __init__(self, *args, **kwargs):
         super(UserPasswordChangeForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -34,6 +35,7 @@ class UserPasswordChangeForm(PasswordChangeForm):
 
 
 class UserChangeDetailForm(ModelForm):
+
     """A form used to change the detail of a user in the Customer UI."""
     email = forms.CharField(label=_('email address'), required=True)
 
@@ -66,6 +68,7 @@ class UserChangeDetailForm(ModelForm):
 
 
 class UserChangeDetailExtendForm(ModelForm):
+
     """A form used to change the detail of a user in the Customer UI."""
     class Meta:
         model = UserProfile

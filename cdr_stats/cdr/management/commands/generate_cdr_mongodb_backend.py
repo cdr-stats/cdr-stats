@@ -32,7 +32,7 @@ HANGUP_CAUSE = ['NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER']
 HANGUP_CAUSE_Q850 = ['16', '17', '19']
 
 
-#list of exit code : http://www.howtocallabroad.com/codes.html
+# list of exit code : http://www.howtocallabroad.com/codes.html
 COUNTRY_PREFIX = ['0034', '011346', '+3465',  # Spain
                   '3912', '39', '+3928',  # Italy
                   '15', '17',  # US
@@ -63,13 +63,13 @@ def generate_cdr_data(day_delta_int):
     destination_number = ''.join([choice(digit) for i in range(8)])
 
     if random.randint(1, 20) == 1:
-        #Add local calls
+        # Add local calls
         destination_number = ''.join([choice(digit) for i in range(5)])
     else:
-        #International calls
+        # International calls
         destination_number = choice(COUNTRY_PREFIX) + destination_number
 
-    rand_hangup = random.randint(0, len(HANGUP_CAUSE)-1)
+    rand_hangup = random.randint(0, len(HANGUP_CAUSE) - 1)
     hangup_cause = HANGUP_CAUSE[rand_hangup]
     hangup_cause_q850 = HANGUP_CAUSE_Q850[rand_hangup]
     if hangup_cause == 'NORMAL_CLEARING':
@@ -133,7 +133,7 @@ class Command(BaseCommand):
         # Retrieve the field collection in the mongo_import list
         ipaddress = settings.CDR_BACKEND.items()[0][0]
 
-        #Connect to Database
+        # Connect to Database
         db_name = settings.CDR_BACKEND[ipaddress]['db_name']
         table_name = settings.CDR_BACKEND[ipaddress]['table_name']
         db_engine = settings.CDR_BACKEND[ipaddress]['db_engine']
@@ -154,7 +154,7 @@ class Command(BaseCommand):
             #DBCON.authenticate(user, password)
         except ConnectionFailure, e:
             sys.stderr.write('Could not connect to MongoDB: %s - %s' % (e,
-                             ipaddress))
+                                                                        ipaddress))
             sys.exit(1)
 
         for i in range(1, int(no_of_record) + 1):

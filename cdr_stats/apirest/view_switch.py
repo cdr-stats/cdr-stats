@@ -20,6 +20,7 @@ from cdr.models import Switch
 
 
 class SwitchViewSet(viewsets.ReadOnlyModelViewSet):
+
     """
     API endpoint that allows Switch to be viewed or edited.
     """

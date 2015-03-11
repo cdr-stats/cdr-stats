@@ -15,7 +15,7 @@ from django.conf.urls import patterns
 
 
 urlpatterns = patterns('realtime.views',
-    (r'^concurrent_calls/$', 'cdr_concurrent_calls'),
-    (r'^realtime/$', 'cdr_realtime'),
-    # (r'^get_realtime_json/$', 'cdr.ajax.get_realtime_json'),
-)
+                       (r'^concurrent_calls/$', 'cdr_concurrent_calls'),
+                       (r'^realtime/$', 'cdr_realtime'),
+                       # (r'^get_realtime_json/$', 'cdr.ajax.get_realtime_json'),
+                       )

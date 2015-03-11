@@ -20,6 +20,7 @@ from crispy_forms.bootstrap import FormActions
 
 
 class ForgotForm(forms.Form):
+
     """Forgot password Form"""
     email = forms.EmailField(max_length=60, label=_('email').capitalize(), required=True)
     email.widget.attrs['class'] = 'form-control'
@@ -38,7 +39,9 @@ class ForgotForm(forms.Form):
 
 
 class CustomSetPasswordForm(SetPasswordForm):
+
     """Set Password Form"""
+
     def __init__(self, *args, **kwargs):
         super(CustomSetPasswordForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()

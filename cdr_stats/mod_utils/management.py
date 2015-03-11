@@ -19,8 +19,8 @@ from django.utils.translation import ugettext_noop as _
 from user_profile.constants import NOTICE_TYPE
 
 
-#Info about management.py
-#http://stackoverflow.com/questions/4455533/what-is-management-py-in-django
+# Info about management.py
+# http://stackoverflow.com/questions/4455533/what-is-management-py-in-django
 
 if "notification" in settings.INSTALLED_APPS:
     from notification import models as notification

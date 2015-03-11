@@ -6,8 +6,9 @@ from cache_utils.decorators import cached
 import caching.base
 
 
-#todo: remove first 2 elements from CDR_SOURCE_TYPE
+# todo: remove first 2 elements from CDR_SOURCE_TYPE
 class SWITCH_TYPE(Choice):
+
     """
     List of switches
     """
@@ -19,6 +20,7 @@ class SWITCH_TYPE(Choice):
 
 
 class Switch(caching.base.CachingMixin, models.Model):
+
     """This defines the Switch
 
     **Attributes**:
@@ -31,7 +33,7 @@ class Switch(caching.base.CachingMixin, models.Model):
     name = models.CharField(max_length=100, blank=False,
                             null=True, unique=True)
     ipaddress = models.CharField(max_length=100, blank=False,
-                            null=False, unique=True)
+                                 null=False, unique=True)
     switch_type = models.IntegerField(choices=SWITCH_TYPE, default=SWITCH_TYPE.FREESWITCH,
                                       max_length=100, null=False)
     key_uuid = UUIDField(auto=True)

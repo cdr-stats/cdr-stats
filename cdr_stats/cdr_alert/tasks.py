@@ -293,6 +293,7 @@ def run_alarm(alarm_obj, logger):
 
 
 class chk_alarm(PeriodicTask):
+
     """A periodic task to determine unusual call patterns.
 
        Sends an email if an alert condition is matched.

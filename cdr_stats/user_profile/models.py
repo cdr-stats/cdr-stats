@@ -21,6 +21,7 @@ from django_countries.fields import CountryField
 
 
 class UserProfile(models.Model):
+
     """This defines extra features for the user
 
     **Attributes**:
@@ -64,7 +65,7 @@ class UserProfile(models.Model):
     language = LanguageField(blank=True, null=True, verbose_name=_('language'))
     note = models.CharField(max_length=250, blank=True, null=True, verbose_name=_('note'))
     multiple_email = models.TextField(blank=True, null=True, verbose_name=_('report mail list'),
-        help_text=_('enter a valid e-mail address separated by commas.'))
+                                      help_text=_('enter a valid e-mail address separated by commas.'))
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
@@ -95,6 +96,7 @@ class UserProfile(models.Model):
 
 
 class Customer(User):
+
     """
     Django user application allows you to store user accounts for customer without
     is_staff/is_superuser privilege status
@@ -108,6 +110,7 @@ class Customer(User):
 
 
 class Staff(User):
+
     """
     Django user application allows you to store user accounts for staff with
     is_staff/is_superuser privilege status

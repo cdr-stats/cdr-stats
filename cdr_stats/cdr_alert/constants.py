@@ -41,8 +41,8 @@ class ALERT_CONDITION(Choice):
     PERCENTAGE_INCREASE_BY_MORE_THAN = 6, _('percentage increase by more than').capitalize()
 
 
-#This condition only apply if PERIOD is "Day",
-#otherwise we will compare to previous week or previous month
+# This condition only apply if PERIOD is "Day",
+# otherwise we will compare to previous week or previous month
 class ALERT_CONDITION_ADD_ON(Choice):
     SAME_DAY = 1, _('same day').capitalize()
     SAME_DAY_IN_PRE_WEEK = 2, _('same day in the previous week').capitalize()

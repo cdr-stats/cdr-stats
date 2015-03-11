@@ -88,7 +88,7 @@ def chk_destination(destination_number):
         'prefix_id': 0,
     }
     """
-    #remove prefix
+    # remove prefix
     sanitized_destination = remove_prefix(destination_number, settings.PREFIX_TO_IGNORE)
 
     prefix_list = prefix_list_string(sanitized_destination)
@@ -106,11 +106,11 @@ def chk_destination(destination_number):
             authorized = 0
 
     if (len(sanitized_destination) < settings.PN_MIN_DIGITS
-       or sanitized_destination[:1].isalpha()):
+            or sanitized_destination[:1].isalpha()):
         # It might be an extension
         country_id = 0
     elif (len(sanitized_destination) >= settings.PN_MIN_DIGITS
-         and len(sanitized_destination) <= settings.PN_MAX_DIGITS):
+          and len(sanitized_destination) <= settings.PN_MAX_DIGITS):
         # It might be an local call
         # Need to add coma for get_country_id_prefix to eval correctly
         prefix_list = prefix_list_string(str(settings.LOCAL_DIALCODE) + sanitized_destination)

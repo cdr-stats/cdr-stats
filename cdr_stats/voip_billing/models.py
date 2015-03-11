@@ -20,6 +20,7 @@ from django_lets_go.intermediate_model_base_class import Model
 
 
 class VoIPPlan(Model):
+
     """
     VoIPPlan
 
@@ -53,6 +54,7 @@ class VoIPPlan(Model):
 
 
 class BanPlan(models.Model):
+
     """
     BanPlan
 
@@ -74,6 +76,7 @@ class BanPlan(models.Model):
 
 
 class VoIPPlan_BanPlan(models.Model):
+
     """
     VoIPPlan_BanPlan
 
@@ -91,6 +94,7 @@ class VoIPPlan_BanPlan(models.Model):
 
 
 class BanPrefix(models.Model):
+
     """
     BanPrefix
 
@@ -123,6 +127,7 @@ class BanPrefix(models.Model):
 
 
 class VoIPRetailPlan(Model):
+
     """
     VoIPRetailPlan
 
@@ -153,6 +158,7 @@ class VoIPRetailPlan(Model):
 
 
 class VoIPPlan_VoIPRetailPlan(models.Model):
+
     """
     VoIPPlan_VoIPRetailPlan
 
@@ -170,6 +176,7 @@ class VoIPPlan_VoIPRetailPlan(models.Model):
 
 
 class VoIPRetailRate(models.Model):
+
     """
     VoIPRetailRate
 
@@ -217,6 +224,7 @@ class VoIPRetailRate(models.Model):
 
 
 class VoIPCarrierPlan(Model):
+
     """
     VoIPCarrierPlan
 
@@ -257,6 +265,7 @@ class VoIPCarrierPlan(Model):
 
 
 class VoIPCarrierRate(models.Model):
+
     """
     VoIPCarrierRate
 
@@ -304,6 +313,7 @@ class VoIPCarrierRate(models.Model):
 
 
 class VoIPPlan_VoIPCarrierPlan(models.Model):
+
     """
     VoIPPlan_VoIPCarrierPlan
 

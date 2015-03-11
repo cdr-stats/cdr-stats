@@ -25,10 +25,10 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
         make_option('--apply-index',
-            action='store_true',
-            dest='apply-index',
-            default=False,
-            help=help),
+                    action='store_true',
+                    dest='apply-index',
+                    default=False,
+                    help=help),
     )
 
     def handle(self, *args, **options):

@@ -43,7 +43,7 @@ def rest_api_call(request, api_url):
         response = requests.get(api_url, auth=(request.user, request.user), timeout=1.0)
         logging.debug('API requests.get response: ' + response)
     except requests.exceptions.Timeout:
-        #Todo: we may want to deal with error nicely
+        # Todo: we may want to deal with error nicely
         logging.debug('API Timeout Error : ' + api_url)
     except:
         logging.debug('API Error : ' + api_url)

@@ -16,6 +16,7 @@ from django.test import TestCase
 
 
 class FrontendForgotPassword(TestCase):
+
     """Test cases for CDR-Stats Customer Interface. for forgot password"""
 
     def test_check_password_reset(self):

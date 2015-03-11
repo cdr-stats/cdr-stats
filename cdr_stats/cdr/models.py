@@ -19,7 +19,7 @@ from django_lets_go.utils import Choice
 from switch.models import Switch
 from country_dialcode.models import Prefix
 from country_dialcode.models import Country
-from localflavor.us.models import USStateField
+# from localflavor.us.models import USStateField
 from cache_utils.decorators import cached
 import caching.base
 import random
@@ -31,7 +31,7 @@ import string
 random.seed()
 
 
-#list of exit code : http://www.howtocallabroad.com/codes.html
+# list of exit code : http://www.howtocallabroad.com/codes.html
 COUNTRY_PREFIX = ['0034', '011346', '+3465',  # Spain
                   '3912', '39', '+3928',  # Italy
                   '15', '17',  # US
@@ -46,6 +46,7 @@ COUNTRY_PREFIX = ['0034', '011346', '+3465',  # Spain
 
 
 class CDR_SOURCE_TYPE(Choice):
+
     """
     List of call source type
     """
@@ -59,6 +60,7 @@ class CDR_SOURCE_TYPE(Choice):
 
 
 class CALL_DIRECTION(Choice):
+
     """
     List of call direction
     """
@@ -68,6 +70,7 @@ class CALL_DIRECTION(Choice):
 
 
 class CALL_DISPOSITION(Choice):
+
     """
     List of call disposition
     """
@@ -79,8 +82,8 @@ class CALL_DISPOSITION(Choice):
     FAILED = 6, _('FAILED')  # Added to catch all errors
 
 
-#Asterisk disposition
-#TODO: Delete this?
+# Asterisk disposition
+# TODO: Delete this?
 DISPOSITION = (
     (1, _('ANSWER')),
     (2, _('BUSY')),
@@ -95,6 +98,7 @@ DISPOSITION = (
 
 
 class AccountCode(caching.base.CachingMixin, models.Model):
+
     """This defines the Accountcode
 
     **Attributes**:
@@ -105,9 +109,9 @@ class AccountCode(caching.base.CachingMixin, models.Model):
     **Name of DB table**: voip_switch
     """
     accountcode = models.CharField(max_length=100, blank=False,
-                            null=True, unique=True)
+                                   null=True, unique=True)
     description = models.CharField(max_length=100, blank=False,
-                            null=False, unique=True)
+                                   null=False, unique=True)
     objects = caching.base.CachingManager()
 
     def __unicode__(self):
@@ -120,6 +124,7 @@ class AccountCode(caching.base.CachingMixin, models.Model):
 
 
 class HangupCauseManager(models.Manager):
+
     """HangupCause Manager"""
 
     @cached(3600)
@@ -134,6 +139,7 @@ class HangupCauseManager(models.Manager):
 
 
 class HangupCause(caching.base.CachingMixin, models.Model):
+
     """This defines the HangupCause
 
     **Attributes**:
@@ -174,6 +180,7 @@ class HangupCause(caching.base.CachingMixin, models.Model):
 
 
 class CDR(models.Model):
+
     """Call Detail Records give all information on calls made on a softswitch,
     information collected are such like destination number, callerid, duration of the
     call, date and time of the call, disposition of the calls and much more.
@@ -211,13 +218,13 @@ class CDR(models.Model):
     caller_id_number = models.CharField(max_length=80, verbose_name=_('CallerID Number'), blank=True)
     caller_id_name = models.CharField(max_length=80, verbose_name=_('CallerID Name'), blank=True)
     destination_number = models.CharField(max_length=80, verbose_name=_("destination number"),
-        help_text=_("the international number of the recipient, without the leading +"),
-        db_index=True)
+                                          help_text=_("the international number of the recipient, without the leading +"),
+                                          db_index=True)
     dialcode = models.ForeignKey(Prefix, verbose_name=_("dialcode"), null=True, blank=True)
     state = models.CharField(max_length=5, verbose_name=_('State/Region'), null=True, blank=True)
     channel = models.CharField(max_length=80, verbose_name=_("channel"), null=True, blank=True)
 
-    #Date & Duration
+    # Date & Duration
     starting_date = models.DateTimeField(auto_now_add=True, verbose_name=_("starting date"),
                                          db_index=True)
     duration = models.IntegerField(default=0, verbose_name=_("duration"))
@@ -226,7 +233,7 @@ class CDR(models.Model):
     answersec = models.IntegerField(default=0, null=True, blank=True, verbose_name=_("answer sec"))
     waitsec = models.IntegerField(default=0, null=True, blank=True, verbose_name=_("wait sec"))
 
-    #TODO: review if this is not duplicate with hangup cause
+    # TODO: review if this is not duplicate with hangup cause
     # disposition = models.IntegerField(choices=CALL_DISPOSITION, null=False, blank=False,
     #                                   verbose_name=_("disposition"))
     # hangup_cause = models.CharField(max_length=40, null=True, blank=True,
@@ -242,7 +249,7 @@ class CDR(models.Model):
     country = models.ForeignKey(Country, null=True, blank=True, verbose_name=_("country"))
     authorized = models.BooleanField(default=False, verbose_name=_('authorized'))
 
-    #Billing
+    # Billing
     accountcode = models.ForeignKey(AccountCode, verbose_name=_("account code"),
                                     null=True, blank=True)
     buy_rate = models.DecimalField(default=0, verbose_name=_("Buy Rate"),
@@ -254,7 +261,7 @@ class CDR(models.Model):
     sell_cost = models.DecimalField(default=0, verbose_name=_("Sell Cost"),
                                     max_digits=12, decimal_places=5)
 
-    #Postgresql >= 9.4 Json field
+    # Postgresql >= 9.4 Json field
     data = json_field.JSONField()
 
     def destination_name(self):
@@ -303,10 +310,10 @@ class CDR(models.Model):
 
         HANGUP_CAUSE_Q850 = [16, 17, 19]
         list_hg = HangupCause.objects.filter(code__in=HANGUP_CAUSE_Q850)
-        hangupcause = list_hg[random.randint(0, len(list_hg)-1)]
+        hangupcause = list_hg[random.randint(0, len(list_hg) - 1)]
         if hangupcause.code != 16:
-            #Increase chances to have Answered calls
-            hangupcause = list_hg[random.randint(0, len(list_hg)-1)]
+            # Increase chances to have Answered calls
+            hangupcause = list_hg[random.randint(0, len(list_hg) - 1)]
         hangup_cause_q850 = hangupcause.code
         if hangupcause.code == 16:
             duration = random.randint(1, 200)
@@ -329,13 +336,13 @@ class CDR(models.Model):
         destination_number = ''.join([random.choice(string.digits) for i in range(8)])
 
         if random.randint(1, 20) == 1:
-            #Add local calls
+            # Add local calls
             dialcode = None
             country_id = None
             authorized = 1
             destination_number = ''.join([random.choice(string.digits) for i in range(5)])
         else:
-            #International calls
+            # International calls
             destination_number = random.choice(COUNTRY_PREFIX) + destination_number
 
             from cdr_alert.functions_blacklist import chk_destination

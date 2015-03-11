@@ -18,6 +18,7 @@ from frontend.views import login_view, logout_view, diagnostic
 
 
 class FrontendView(BaseAuthenticatedClient):
+
     """Test cases for Cdr-stats Admin Interface."""
 
     def test_admin(self):
@@ -31,6 +32,7 @@ class FrontendView(BaseAuthenticatedClient):
 
 
 class FrontendCustomerView(BaseAuthenticatedClient):
+
     """Test cases for Cdr-stats Customer Interface."""
 
     fixtures = ['auth_user.json']
@@ -41,21 +43,21 @@ class FrontendCustomerView(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
         response = self.client.post('/login/',
-                {'user': 'admin',
-                 'password': 'admin'}, follow=True)
+                                    {'user': 'admin',
+                                     'password': 'admin'}, follow=True)
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.post('/login/',
-                {'user': 'admin',
-                 'password': 'admin'}, follow=True)
+                                    {'user': 'admin',
+                                     'password': 'admin'}, follow=True)
         request.user = self.user
         request.session = self.client.session
         response = login_view(request)
         self.assertEqual(response.status_code, 302)
 
         request = self.factory.post('/login/',
-                {'user': 'admin1',
-                 'password': 'admin1'}, follow=True)
+                                    {'user': 'admin1',
+                                     'password': 'admin1'}, follow=True)
 
         self.user.is_active = False
         self.user.save()
@@ -65,14 +67,14 @@ class FrontendCustomerView(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.post('/login/',
-                {'user': '', 'password': ''}, follow=True)
+                                    {'user': '', 'password': ''}, follow=True)
         request.user = self.user
         request.session = self.client.session
         response = login_view(request)
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.post('/login/',
-                {'user': 'admin', 'password': 'admin123'}, follow=True)
+                                    {'user': 'admin', 'password': 'admin123'}, follow=True)
         request.user = self.user
         request.session = self.client.session
         response = login_view(request)
@@ -105,8 +107,8 @@ class FrontendCustomerView(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.post('/login/',
-                {'username': 'admin',
-                 'password': 'admin'})
+                                    {'username': 'admin',
+                                     'password': 'admin'})
         request.user = self.user
         request.session = {}
         response = login_view(request)

@@ -386,12 +386,12 @@ ASTERISK_PRIMARY_KEY = 'acctid'  # acctid, _id
 # list of CDR Backends to import
 CDR_BACKEND = {
     # '127.0.0.1': {
-    #     'db_engine': 'mysql',  # mysql, pgsql, mongodb
-    #     'cdr_type': 'asterisk',  # asterisk or freeswitch
+    # 'db_engine': 'mysql',  # mysql, pgsql, mongodb
+    # 'cdr_type': 'asterisk',  # asterisk or freeswitch
     #     'db_name': 'asteriskcdr',
-    #     'table_name': 'cdr',  # collection if mongodb
+    # 'table_name': 'cdr',  # collection if mongodb
     #     'host': 'localhost',
-    #     'port': 3306,  # 3306 mysql, 5432 pgsql, 27017 mongodb
+    # 'port': 3306,  # 3306 mysql, 5432 pgsql, 27017 mongodb
     #     'user': 'root',
     #     'password': 'password',
     # },

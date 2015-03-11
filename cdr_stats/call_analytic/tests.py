@@ -24,6 +24,7 @@ from influxdb.client import InfluxDBClientError
 
 
 class TestInfluxdbHandlerCDR(TestCase):
+
     """Test TestInfluxdbHandlerCDR"""
 
     def setUp(self):

@@ -29,6 +29,7 @@ from cdr_alert.ajax import add_whitelist_country, add_whitelist_prefix, \
 
 
 class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
+
     """Test cases for Cdr-Stats Admin Interface."""
 
     fixtures = [
@@ -122,6 +123,7 @@ class CdrAlertAdminInterfaceTestCase(BaseAuthenticatedClient):
 
 
 class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
+
     """Test cases for Cdr-Stats Customer Interface."""
 
     fixtures = [
@@ -172,9 +174,9 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.post('/alert/1/',
-            data={
-                'name': 'test',
-            }, follow=True)
+                                    data={
+                                        'name': 'test',
+                                    }, follow=True)
         request.user = self.user
         request.session = {}
         response = alarm_change(request, 1)
@@ -182,13 +184,13 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
         # delete alarm through alarm_change
         request = self.factory.post('/alert/2/',
-            data={'delete': True}, follow=True)
+                                    data={'delete': True}, follow=True)
         request.user = self.user
         request.session = {}
         response = alarm_change(request, 2)
         self.assertEqual(response.status_code, 302)
 
-    #def test_alarm_status(self):
+    # def test_alarm_status(self):
     #    """Test Function to check alarm status"""
     #
     #    request = self.factory.post('/alert/test/1/')
@@ -227,11 +229,11 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
         request.user = self.user
         #request.session = {}
         #response = add_whitelist_country(request, 198)
-        #self.assertTrue(response)
+        # self.assertTrue(response)
         #response = get_html_table(request)
-        #self.assertTrue(response)
+        # self.assertTrue(response)
         #response = get_html_table(request, 'whitelist')
-        #self.assertTrue(response)
+        # self.assertTrue(response)
 
     def test_alert_report(self):
         """To test alarm report"""
@@ -255,6 +257,7 @@ class CdrAlertCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
 
 class CdrAlertModelTestCase(TestCase):
+
     """Test AlertRemovePrefix, Alarm, AlarmReport,
     Blacklist, Whitelist models
     """
@@ -457,15 +460,15 @@ class CdrAlertModelTestCase(TestCase):
         self.blacklist.delete()
         self.whitelist.delete()
 
-    #def test_blacklist_whitelist_notification(self):
+    # def test_blacklist_whitelist_notification(self):
     #    """Test task : blacklist_whitelist_notification"""
-    #    # notice_type = 3 blacklist
+    # notice_type = 3 blacklist
     #    result = blacklist_whitelist_notification.delay(NOTICE_TYPE.blacklist_prefix)
     #    self.assertTrue(result.get())
     #    result = blacklist_whitelist_notification.delay(NOTICE_TYPE.whitelist_prefix)
     #    self.assertTrue(result.get())
 
-    #def test_chk_alarm(self):
+    # def test_chk_alarm(self):
     #    """Test task : chk_alarm"""
     #    result = chk_alarm.delay()
     #    self.assertTrue(result.get())
@@ -473,4 +476,4 @@ class CdrAlertModelTestCase(TestCase):
     def test_send_cdr_report(self):
         """Test task : send_cdr_report"""
         #result = send_cdr_report.delay()
-        #self.assertTrue(result.get())
+        # self.assertTrue(result.get())

@@ -20,6 +20,7 @@ from optparse import make_option
 
 
 class Command(BaseCommand):
+
     """
     Command line to import Asterisk CDR with Mysql
     """

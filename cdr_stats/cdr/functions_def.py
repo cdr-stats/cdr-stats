@@ -46,7 +46,7 @@ def get_switch_ip_addr(id):
 def get_switch_list():
     """Switch list used in form"""
     return ((l.id, l.name) for l in Switch.objects.all())
-    #return ((1, 1)
+    # return ((1, 1)
 
 
 def get_country_list():
@@ -142,8 +142,8 @@ def prefix_list_string(dest_number):
     >>> prefix_list_string(dest_number)
     False
     """
-    #Extra number, this is used in case phonenumber is followed by chars
-    #ie 34650123456*234
+    # Extra number, this is used in case phonenumber is followed by chars
+    # ie 34650123456*234
     dest_number = str(dest_number)
     if dest_number[0] == '+':
         dest_number = dest_number[1:]
