@@ -140,7 +140,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'linaro_django_pagination.middleware.PaginationMiddleware',
     'django_lets_go.filter_persist_middleware.FilterPersistMiddleware',
-    'mongodb_connection_middleware.MongodbConnectionMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -229,12 +228,10 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 # Debug Toolbar
 try:
     import debug_toolbar
-    import debug_toolbar_mongo
 except ImportError:
     pass
 else:
     INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', )
-    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar_mongo',)
     # INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', 'template_timings_panel',)
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + \
         ('debug_toolbar.middleware.DebugToolbarMiddleware',)
@@ -253,7 +250,6 @@ else:
         'debug_toolbar.panels.logging.LoggingPanel',
         'debug_toolbar.panels.redirects.RedirectsPanel',
         # 'template_timings_panel.panels.TemplateTimings.TemplateTimings',
-        'debug_toolbar_mongo.panel.MongoDebugPanel',
     ]
     DEBUG_TOOLBAR_CONFIG = {
         'INTERCEPT_REDIRECTS': False,
@@ -262,9 +258,6 @@ else:
         'SQL_WARNING_THRESHOLD': 100,   # milliseconds
     }
     DEBUG_TOOLBAR_PATCH_SETTINGS = False
-
-# commented cause this module doesn't work at the moment
-# https://groups.google.com/forum/?fromgroups#!topic/mongoengine-users/cwIdHSNPCwY
 
 # Django extensions
 try:
