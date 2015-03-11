@@ -240,7 +240,7 @@ class CDR(models.Model):
     #                                 verbose_name=_("hangup cause"))
     # hangup_cause_q850 = models.CharField(max_length=10, null=True, blank=True)
 
-    #Disposition / States
+    # Disposition / States
     hangup_cause = models.ForeignKey(HangupCause, verbose_name=_("hangup cause"),
                                      null=False, blank=False)
     direction = models.IntegerField(choices=CALL_DIRECTION, null=False, blank=False,
