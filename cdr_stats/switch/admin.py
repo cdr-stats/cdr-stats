@@ -22,8 +22,7 @@ from switch.models import Switch
 from cdr.models import CDR, CDR_SOURCE_TYPE
 from cdr.forms import CDR_FileImport
 from cdr.functions_def import get_hangupcause_id, get_hangupcause_id_from_name
-from cdr.import_cdr_freeswitch_mongodb import apply_index, \
-    create_analytic, generate_global_cdr_record
+from cdr.analytic_handler import apply_index, create_analytic, generate_global_cdr_record
 from cdr.functions_def import get_hangupcause_name
 from cdr.forms import CdrSearchForm
 from cdr.constants import CDR_COLUMN_NAME, Export_choice, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
@@ -38,7 +37,6 @@ from mongodb_connection import mongodb
 from django_lets_go.common_functions import getvar, unset_session_var
 
 # Register your models here.
-
 
 
 class SwitchAdmin(admin.ModelAdmin):

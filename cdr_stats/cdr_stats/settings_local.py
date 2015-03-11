@@ -13,8 +13,6 @@
 #
 import os
 
-# DEBUG
-#=====
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -48,26 +46,21 @@ DATABASES = {
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # CACHES
-#======
 CACHES = {
     'default': {
-        #'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        #'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        # 'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        # 'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
         'BACKEND': 'redis_cache.RedisCache',
         'LOCATION': '127.0.0.1:6379',
-        #'LOCATION': '/var/tmp/django_cache',
+        # 'LOCATION': '/var/tmp/django_cache',
         'TIMEOUT': '600',  # 600 secs
     }
 }
 
-# EMAIL BACKEND
-#=============
 # Use only in Debug mode. Not in production
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
-# GENERAL
-#=======
 # PREFIX_LIMIT_MIN & PREFIX_LIMIT_MAX are used to know
 # how many digits are used to match against the dialcode prefix database
 PREFIX_LIMIT_MIN = 2
@@ -87,11 +80,10 @@ PREFIX_TO_IGNORE = "+,0,00,000,0000,00000,011,55555,99999"
 REALTIME_Y_AXIS_LIMIT = 300
 
 # ASTERISK IMPORT
-#===============
 ASTERISK_PRIMARY_KEY = 'acctid'  # acctid, _id
 
 # CDR_BACKEND
-#===========
+
 # list of CDR Backends to import
 CDR_BACKEND = {
     # '127.0.0.1': {
@@ -135,7 +127,7 @@ ASTERISK_MANAGER_USER = 'user'
 ASTERISK_MANAGER_SECRET = 'secret'
 
 # MONGODB
-#=======
+
 # Settings of CDR-Stats MongoDB server, this is used to store the analytic data
 MONGO_CDRSTATS = {
     'DB_NAME': 'cdr-stats',
@@ -151,7 +143,7 @@ MONGO_CDRSTATS = {
 }
 
 # LOGGING
-#=======
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,

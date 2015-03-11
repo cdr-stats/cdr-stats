@@ -12,8 +12,8 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.core.management.base import BaseCommand
-from cdr.import_cdr_freeswitch_mongodb import import_cdr_freeswitch_mongodb, \
-    apply_index
+from cdr.import_cdr_freeswitch_mongodb import import_cdr_freeswitch_mongodb
+from cdr.analytic_handler import apply_index
 from optparse import make_option
 
 
