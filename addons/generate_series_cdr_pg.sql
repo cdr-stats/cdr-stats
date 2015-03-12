@@ -5,7 +5,7 @@ CREATE EXTENSION "uuid-ossp";
 -- HANGUP_CAUSE_Q850 = ['16', '17', '19']
 
 INSERT INTO voip_cdr (user_id, switch_id, cdr_source_type, callid, caller_id_number, caller_id_name,
-    destination_number, starting_date, duration, billsec, hangup_cause_id, direction,
+    destination_number, starting_date, duration, billsec, hangup_cause_id, direction, country_id,
     authorized, buy_rate, buy_cost, sell_rate, sell_cost, data) (
     SELECT
         1 AS user_id,
@@ -15,11 +15,12 @@ INSERT INTO voip_cdr (user_id, switch_id, cdr_source_type, callid, caller_id_num
         '+' || cast(30 + cast(trunc(random() * 20 + 1) as int) as text) || 800000000 + cast(trunc(random() * 5000000 + 1) as int) AS caller_id_number,
         '' AS caller_id_name,
         '+' || cast(30 + cast(trunc(random() * 20 + 1) as int) as text) || 800000000 + cast(trunc(random() * 5000000 + 1) as int) AS destination_number,
-        current_timestamp + ( cast(trunc(random() * 60 + 1) as int) || ' days')::interval AS starting_date,
+        current_timestamp + ( cast(trunc(random() * 60) as int) || ' days')::interval AS starting_date,
         cast(trunc(random() * 150 + 1) as int) AS duration,
         cast(trunc(random() * 120 + 1) as int) AS billsec,
         16 + cast(trunc(random() * 4 + 0) as int) AS hangup_cause_id,
         1 AS direction,
+        cast(trunc(random() * 30 + 1) as int) as country_id,
         TRUE AS authorized,
         cast(random()::numeric / 5 AS numeric(10,5)) AS buy_rate,
         cast(random()::numeric AS numeric(12,5)) AS buy_cost,
