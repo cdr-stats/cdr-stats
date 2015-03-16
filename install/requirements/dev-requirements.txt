@@ -4,7 +4,6 @@ django-debug-toolbar
 ipython
 pip-tools
 pygraphviz
-django-debug-toolbar-mongo
 django-debug-toolbar-template-timings
 tabulate
 fake-factory

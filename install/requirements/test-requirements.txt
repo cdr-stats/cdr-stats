@@ -1,5 +1,4 @@
-#django-nose==1.2
-#django-nose conflict with no-color https://github.com/django-nose/django-nose/issues/156
+django-nose==1.3
 git+git://github.com/arthuralvim/django-nose.git
 nose==1.3.4
 nose-cov==1.6

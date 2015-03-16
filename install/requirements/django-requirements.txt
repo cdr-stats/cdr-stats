@@ -26,8 +26,8 @@ django-genericadmin==0.6.1
 django-nvd3==0.7.6
 
 django-lets-go==2.9.3
-django-extensions==1.4.0
-django-bower==5.0.1
+django-extensions==1.5.1
+django-bower==5.0.2
 django-cors-headers==0.13
 #git+git://github.com/hmarr/django-ses.git
 git+git://github.com/pinax/django-mailer
