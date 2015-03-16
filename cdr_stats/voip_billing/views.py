@@ -106,7 +106,7 @@ def voip_rates(request):
     else:
         final_rate_list = find_rates(voipplan_id, dialcode=None, sort_field=sort_order, order=order)
 
-    variables = RequestContext(request, {
+    variables = {
         'form': form,
         'rate_list': final_rate_list,
         'rate_list_count': len(final_rate_list),
@@ -115,8 +115,10 @@ def voip_rates(request):
         'sort_order': sort_order,
         'up_icon': '<i class="glyphicon glyphicon-chevron-up"></i>',
         'down_icon': '<i class="glyphicon glyphicon-chevron-down"></i>'
-    })
-    return render_to_response('voip_billing/rates.html', variables, context_instance=RequestContext(request))
+    }
+    return render_to_response('voip_billing/rates.html',
+                              variables,
+                              context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.export_call_rate', login_url='/')
@@ -193,7 +195,9 @@ def simulator(request):
         'form': form,
         'data': data,
     }
-    return render_to_response('voip_billing/simulator.html', data, context_instance=RequestContext(request))
+    return render_to_response('voip_billing/simulator.html',
+                              data,
+                              context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.daily_billing', login_url='/')
@@ -310,7 +314,9 @@ def daily_billing_report(request):
             'jquery_on_ready': True,
         },
     }
-    return render_to_response('voip_billing/daily_billing_report.html', data, context_instance=RequestContext(request))
+    return render_to_response('voip_billing/daily_billing_report.html',
+                              data,
+                              context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.hourly_billing', login_url='/')
@@ -411,4 +417,6 @@ def hourly_billing_report(request):
             'jquery_on_ready': True,
         },
     }
-    return render_to_response('voip_billing/hourly_billing_report.html', data, context_instance=RequestContext(request))
+    return render_to_response('voip_billing/hourly_billing_report.html',
+                              data,
+                              context_instance=RequestContext(request))

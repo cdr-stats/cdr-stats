@@ -27,7 +27,8 @@ from switch.models import Switch
 from cdr.functions_def import get_country_name, get_hangupcause_name,\
     get_switch_ip_addr, convert_to_minute, chk_date_for_hrs, calculate_act_and_acd
 from cdr.forms import CdrSearchForm, CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
-    ConcurrentCallForm, SwitchForm, WorldForm, EmailReportForm
+    SwitchForm, WorldForm, EmailReportForm
+# from cdr.forms import ConcurrentCallForm
 from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_monthly_overview, pipeline_daily_overview,\
     pipeline_hourly_overview, pipeline_country_report,\
@@ -255,7 +256,7 @@ def cdr_view(request):
             last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) +
                          relativedelta(months=1)) -
                         relativedelta(days=1)).strftime('%d')
-            #to_date = tday.strftime('%Y-%m-' + last_day + ' 23:59')
+            # to_date = tday.strftime('%Y-%m-' + last_day + ' 23:59')
             to_date = datetime(tday.year, tday.month, int(last_day), 23, 59, 59, 999999)
             start_date = ceil_strdate(str(from_date), 'start', True)
             end_date = ceil_strdate(str(to_date), 'end', True)
@@ -487,7 +488,7 @@ def cdr_detail(request, id, switch_id):
         try:
             connection = Connection(host, port)
             DBCON = connection[db_name]
-            #DBCON.autentificate(user, password)
+            # DBCON.autentificate(user, password)
         except ConnectionFailure:
             raise Http404
 
@@ -1691,9 +1692,9 @@ def cdr_country_report(request):
         ydata2 = []
         for i in country_analytic_array:
             xdata.append(str(i[0]))
-            #call_per_day - i[1]
+            # call_per_day - i[1]
             ydata.append(percentage(i[1], total_calls))
-            #duration_per_day - i[2]
+            # duration_per_day - i[2]
             ydata2.append(percentage(i[2], total_duration))
 
         extra_serie = {"tooltip": {"y_start": "", "y_end": " %"}}
