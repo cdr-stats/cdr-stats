@@ -224,10 +224,18 @@ def chk_date_for_hrs(previous_date, graph_date):
     return True if graph_date > previous_date else False
 
 
-def calculate_act_and_acd(total_calls, total_duration):
-    """Calculate the Average Time of Call
+def calculate_act_acd(total_calls, total_duration):
+    """Calculate aggregation on some metrics:
 
-    >>> calculate_act_and_acd(5, 100)
+        - ACT: Average Call per Time
+        - ACD: Average Call Duration
+
+    TODO:
+        - split this function in 2
+        - replace ACT by something more meaningful ACH (Average Call per Hour)
+
+
+    >>> calculate_act_acd(5, 100)
     {'ACD': '00:20', 'ACT': 0.0}
     """
     ACT = math.floor(total_calls / 24)

@@ -17,15 +17,16 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.utils.translation import gettext as _
 from django.conf import settings
-from mongodb_connection import mongodb
-from pymongo.connection import Connection
-from pymongo.errors import ConnectionFailure
-from django_lets_go.common_functions import variable_value, mongodb_str_filter,\
-    mongodb_int_filter, int_convert_to_minute, validate_days, percentage,\
-    getvar, unset_session_var, ceil_strdate
+from django.db import connection
+# from mongodb_connection import mongodb
+# from pymongo.connection import Connection
+# from pymongo.errors import ConnectionFailure
+from django_lets_go.common_functions import variable_value, int_convert_to_minute,\
+    validate_days, percentage, getvar, unset_session_var, ceil_strdate
+from django_lets_go.common_functions import mongodb_str_filter, mongodb_int_filter
 from switch.models import Switch
 from cdr.functions_def import get_country_name, get_hangupcause_name,\
-    get_switch_ip_addr, convert_to_minute, chk_date_for_hrs, calculate_act_and_acd
+    get_switch_ip_addr, convert_to_minute, chk_date_for_hrs, calculate_act_acd
 from cdr.forms import CdrSearchForm, CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
     SwitchForm, WorldForm, EmailReportForm
 # from cdr.forms import ConcurrentCallForm
@@ -34,7 +35,7 @@ from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_hourly_overview, pipeline_country_report,\
     pipeline_hourly_report, pipeline_country_hourly_report,\
     pipeline_mail_report
-from cdr.decorators import check_cdr_exists, check_user_detail
+from cdr.decorators import check_user_detail
 from cdr.constants import CDR_COLUMN_NAME, Export_choice, CheckWith
 from voip_billing.function_def import round_val
 from bson.objectid import ObjectId
@@ -45,6 +46,7 @@ import tablib
 import time
 import logging
 import itertools
+from common.helpers import pp
 
 
 def show_menu(request):
@@ -60,9 +62,10 @@ def cdr_view_daily_report(query_var):
     pipeline = pipeline_cdr_view_daily_report(query_var)
 
     logging.debug('Before Aggregate')
-    list_data = mongodb.DBCON.command('aggregate',
-                                      settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                      pipeline=pipeline)
+    list_data = []
+    # list_data = mongodb.DBCON.command('aggregate',
+    #                                   settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+    #                                   pipeline=pipeline)
     logging.debug('After Aggregate')
 
     total_data = []
@@ -142,7 +145,6 @@ def get_pagination_vars(request, default_sort_field='start_uepoch'):
 
 
 @permission_required('user_profile.search', login_url='/')
-@check_cdr_exists
 @check_user_detail('accountcode,voipplan')
 @login_required
 def cdr_view(request):
@@ -531,8 +533,174 @@ def cdr_detail(request, id, switch_id):
         return render_to_response('cdr/detail_asterisk.html', data, context_instance=RequestContext(request))
 
 
+def condition_switch_id(switch_id):
+    """
+    build where condition switch_id
+    """
+    try:
+        int_switch = int(switch_id)
+        if int_switch > 0:
+            return " AND switch_id=%d " % (int_switch)
+        else:
+            return ""
+    except ValueError:
+        return ""
+
+sqlquery_aggr_cdr_hour = """
+SELECT
+    dateday,
+    coalesce(nbcalls,0) AS nbcalls,
+    coalesce(duration,0) AS duration,
+    coalesce(billsec,0) AS billsec,
+    coalesce(buy_cost,0) AS buy_cost,
+    coalesce(sell_cost,0) AS sell_cost
+FROM
+    generate_series(
+                    date_trunc('hour', current_timestamp - interval '24' hour),
+                    date_trunc('hour', current_timestamp),
+                    '1 hour')
+    AS dateday
+LEFT OUTER JOIN (
+    SELECT
+        date_trunc('hour', starting_date) AS dayhour,
+        SUM(nbcalls) AS nbcalls,
+        SUM(duration) AS duration,
+        SUM(billsec) AS billsec,
+        SUM(buy_cost) AS buy_cost,
+        SUM(sell_cost) AS sell_cost
+    FROM matv_voip_cdr_aggr_hour
+    WHERE
+        starting_date > date_trunc('hour', current_timestamp - interval '24' hour) AND
+        starting_date <= date_trunc('hour', current_timestamp)
+        %(switch)s
+    GROUP BY dayhour
+    ) results
+ON (dateday = results.dayhour);
+"""
+
+
+def custom_sql_matv_voip_cdr_aggr_hour(switch_id):
+    """
+    perform query to retrieve last 24 hours of aggregate calls data
+    """
+    result_hour_aggr = {}
+    total_calls = total_duration = total_billsec = total_buy_cost = total_sell_cost = 0
+    with connection.cursor() as cursor:
+        params = {'switch': condition_switch_id(switch_id)}
+        sqlquery = sqlquery_aggr_cdr_hour % params
+        cursor.execute(sqlquery)
+        rows = cursor.fetchall()
+        i = 0
+        for row in rows:
+            total_calls += row[1]
+            total_duration += row[2]
+            total_billsec += row[3]
+            total_buy_cost += row[4]
+            total_sell_cost += row[5]
+            result_hour_aggr[i] = {
+                "calltime": row[0],
+                "nbcalls": row[1],
+                "duration": row[2],
+                "billsec": row[3],
+                "buy_cost": row[4],
+                "sell_cost": row[5],
+            }
+            i = i + 1
+
+    return (result_hour_aggr, total_calls, total_duration, total_billsec, total_buy_cost, total_sell_cost)
+
+
+sqlquery_aggr_country_last24h = """
+    SELECT
+        country_id,
+        SUM(duration) AS duration,
+        SUM(billsec) AS billsec,
+        SUM(nbcalls) AS nbcalls,
+        SUM(buy_cost) AS buy_cost,
+        SUM(sell_cost) AS sell_cost
+    FROM
+        matv_voip_cdr_aggr_hour
+    WHERE
+        starting_date > date_trunc('hour', current_timestamp - interval '24' hour) AND
+        starting_date <= date_trunc('hour', current_timestamp)
+        %(switch)s
+    GROUP BY
+        country_id
+    ORDER BY
+        nbcalls, duration DESC
+    LIMIT %(limit)s;
+    """
+
+
+def custom_sql_aggr_top_country(switch_id, limit=5):
+    """
+    perform query to retrieve last 24 hours of aggregate calls data
+    """
+    result = []
+    with connection.cursor() as cursor:
+        params = {'switch': condition_switch_id(switch_id), 'limit': limit}
+        sqlquery = sqlquery_aggr_country_last24h % params
+        cursor.execute(sqlquery)
+        rows = cursor.fetchall()
+        for row in rows:
+            result.append({
+                "country_id": row[0],
+                "duration": row[1],
+                "billsec": row[2],
+                "nbcalls": row[3],
+                "buy_cost": row[4],
+                "sell_cost": row[5],
+            })
+    return result
+
+
+sqlquery_aggr_hangup_cause_last24h = """
+    SELECT
+        hangup_cause_id,
+        SUM(duration) as duration,
+        SUM(billsec) as billsec,
+        SUM(nbcalls) as nbcalls,
+        SUM(buy_cost) as buy_cost,
+        SUM(sell_cost) as sell_cost
+    FROM
+        matv_voip_cdr_aggr_hour
+    WHERE
+        starting_date > date_trunc('hour', current_timestamp - interval '24' hour) and
+        starting_date <= date_trunc('hour', current_timestamp)
+        %(switch)s
+    GROUP BY
+        hangup_cause_id
+    ORDER BY
+        nbcalls, duration DESC
+    LIMIT %(limit)s;
+    """
+
+
+def custom_sql_aggr_top_hangup_cause(switch_id=0, limit=10):
+    """
+    perform query to retrieve last 24 hours of aggregate calls data
+    """
+    result = {}
+    with connection.cursor() as cursor:
+        params = {'switch': condition_switch_id(switch_id), 'limit': limit}
+        sqlquery = sqlquery_aggr_hangup_cause_last24h % params
+        cursor.execute(sqlquery)
+        rows = cursor.fetchall()
+        i = 0
+        for row in rows:
+            result[i] = {
+                "hangup_cause_id": row[0],
+                "duration": row[1],
+                "billsec": row[2],
+                "nbcalls": row[3],
+                "buy_cost": row[4],
+                "sell_cost": row[5],
+            }
+            i = i + 1
+    return result
+
+
 @permission_required('user_profile.dashboard', login_url='/')
-@check_cdr_exists
 @check_user_detail('accountcode,voipplan')
 @login_required
 def cdr_dashboard(request):
@@ -550,7 +718,6 @@ def cdr_dashboard(request):
         to create hourly report as well as hangup cause/country analytics
     """
     logging.debug('CDR dashboard view start')
-    now = datetime.now()
     form = SwitchForm(request.POST or None)
     switch_id = 0
     query_var = {}
@@ -559,133 +726,30 @@ def cdr_dashboard(request):
         logging.debug('CDR dashboard view with search option')
         switch_id = int(getvar(request, 'switch_id'))
         if switch_id and switch_id != 0:
+            # TODO
             query_var['metadata.switch_id'] = switch_id
 
-    end_date = datetime(now.year, now.month, now.day,
-                        now.hour, now.minute, now.second, now.microsecond)
-    # -2 cause the collection metadata.date only contains year-month-day
-    start_date = end_date + relativedelta(days=-2)
+    # 1) Get list of calls/duration for each of the last 24 hours
+    (calls_hour_aggr, total_calls, total_duration, total_billsec, total_buy_cost, total_sell_cost) = custom_sql_matv_voip_cdr_aggr_hour(switch_id)
+    # pp(calls_hour_aggr)
 
-    query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+    # 2) Get top 5 of country calls for last 24 hours
+    country_data = custom_sql_aggr_top_country(switch_id, limit=5)
 
-    if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = request.user.userprofile.accountcode
+    # 3) Get top 10 of hangup cause calls for last 24 hours
+    hangup_cause_data = custom_sql_aggr_top_hangup_cause(switch_id)
 
-    logging.debug('cdr dashboard analytic')
-
-    not_require_field = {'call_daily': 0,
-                         'call_hourly': 0,
-                         'duration_daily': 0,
-                         'duration_hourly': 0}
-    logging.debug('Before daily_data.find')
-    if not mongodb.daily_analytic:
-        raise Http404
-    daily_data = mongodb.daily_analytic.find(query_var, not_require_field)\
-        .sort([('metadata.date', 1),
-               ('metadata.country_id', 1),
-               ('metadata.hangup_cause_id', 1)])
-    logging.debug('After daily_data.find')
-    # initialize variables
-    total_calls = 0
-    total_duration = 0
-    total_buy_cost = 0.0
-    total_sell_cost = 0.0
-    previous_date = datetime.now() - relativedelta(days=1)
-
-    hangup_analytic = dict()
-    country_all_data = dict()
-    final_record = dict()
-
-    for i in daily_data:
-        # get individual dict variable from daily_data
-        calldate_dict = i['call_minute']
-        duration_dict = i['duration_minute']
-        buy_cost_dict = i['buy_cost_minute']
-        sell_cost_dict = i['sell_cost_minute']
-
-        # get date info from daily_data
-        a_Year = int(i['metadata']['date'].strftime('%Y'))
-        b_Month = int(i['metadata']['date'].strftime('%m'))
-        c_Day = int(i['metadata']['date'].strftime('%d'))
-        country_id = int(i['metadata']['country_id'])
-        hc = int(i['metadata']['hangup_cause_id'])
-
-        if len(calldate_dict) > 0:
-            # get key(call_hour) - value(min_dict) from calldate_dict
-            for call_hour, min_dict in calldate_dict.iteritems():
-                # get key(min) - value(count_val) from min_dict
-                for min, count_val in min_dict.iteritems():
-                    calldate__count = int(calldate_dict[call_hour][min])
-
-                    if calldate__count > 0:
-                        # Get graph_day from aggregate result array
-                        graph_day = datetime(a_Year, b_Month, c_Day,
-                                             int(call_hour), int(min))
-                        # convert date into timestamp value
-                        dt = int(1000 * time.mktime(graph_day.timetuple()))
-
-                        # check graph date
-                        if chk_date_for_hrs(previous_date, graph_day):
-                            duration__sum = int(duration_dict[call_hour][min])
-                            buy_cost__sum = float(buy_cost_dict[call_hour][min])
-                            sell_cost__sum = float(sell_cost_dict[call_hour][min])
-
-                            # if timestamp value in final_record, then update dict value
-                            if dt in final_record:
-                                final_record[dt]['duration_sum'] += duration__sum
-                                final_record[dt]['count_call'] += calldate__count
-                                final_record[dt]['buy_cost_sum'] += buy_cost__sum
-                                final_record[dt]['sell_cost_sum'] += sell_cost__sum
-                            else:
-                                # assign new timestamp value in final_record with dict value
-                                final_record[dt] = {
-                                    'duration_sum': duration__sum,
-                                    'count_call': calldate__count,
-                                    'buy_cost_sum': buy_cost__sum,
-                                    'sell_cost_sum': sell_cost__sum,
-                                }
-
-                            # make total values of calls, duration, buy_cost, sell_cost
-                            total_calls += calldate__count
-                            total_duration += duration__sum
-                            total_buy_cost += buy_cost__sum
-                            total_sell_cost += sell_cost__sum
-
-                            # created hangup_analytic
-                            if hc in hangup_analytic:
-                                hangup_analytic[hc] += calldate__count
-                            else:
-                                hangup_analytic[hc] = calldate__count
-
-                            # created country_analytic
-                            if country_id in country_all_data:
-                                country_all_data[country_id]['call_count'] += calldate__count
-                                country_all_data[country_id]['duration_sum'] += duration__sum
-                                country_all_data[country_id]['buy_cost_sum'] += buy_cost__sum
-                                country_all_data[country_id]['sell_cost_sum'] += sell_cost__sum
-                            else:
-                                country_all_data[country_id] = {
-                                    'call_count': calldate__count,
-                                    'duration_sum': duration__sum,
-                                    'buy_cost_sum': buy_cost__sum,
-                                    'sell_cost_sum': sell_cost__sum
-                                }
-    logging.debug('*** After loop to handle data ***')
-
-    # sorting on timestamp col
-    final_record = sorted(final_record.items(), key=lambda k: k[0])
-
-    xdata = []
-    ydata = []
-    ydata2 = []
-    ydata3 = []
-    ydata4 = []
-    for i in final_record:
-        xdata.append(i[0])
-        ydata.append(i[1]['count_call'])
-        ydata2.append(i[1]['duration_sum'])
-        ydata3.append(i[1]['buy_cost_sum'])
-        ydata4.append(i[1]['sell_cost_sum'])
+    # 4) Build chart data for last 24h calls
+    (xdata, ydata, ydata2, ydata3, ydata4) = ([], [], [], [], [])
+    for i in calls_hour_aggr:
+        # start_time = int(time.mktime(datetime.datetime(2012, 6, 1).timetuple()) * 1000)
+        start_time = (time.mktime(calls_hour_aggr[i]['calltime'].timetuple()) * 1000)
+        xdata.append(start_time)
+        ydata.append(str(calls_hour_aggr[i]['nbcalls']))
+        # TODO add billsec
+        ydata2.append(str(calls_hour_aggr[i]['duration']))
+        ydata3.append(str(calls_hour_aggr[i]['buy_cost']))
+        ydata4.append(str(calls_hour_aggr[i]['sell_cost']))
 
     tooltip_date = "%d %b %y %H:%M %p"
     extra_serie1 = {"tooltip": {"y_start": "", "y_end": " calls"}, "date_format": tooltip_date}
@@ -702,42 +766,53 @@ def cdr_dashboard(request):
     }
     final_charttype = "lineWithFocusChart"
 
-    # hangup analytic pie chart data
-    hangup_analytic = hangup_analytic.items()
-    xdata = []
-    ydata = []
-    for i in hangup_analytic:
-        xdata.append(str(get_hangupcause_name(i[0])))
-        ydata.append(percentage(i[1], total_calls))
+    # 5) Build pie chart data for last 24h calls per country
+    (xdata, ydata) = ([], [])
+    for country in country_data:
+        xdata.append(get_country_name(country["country_id"]))
+        ydata.append(percentage(country["nbcalls"], total_calls))
 
-    extra_serie = {"tooltip": {"y_start": "", "y_end": " %"}}
-    hangup_analytic_chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
-    hangup_analytic_charttype = "pieChart"
-
-    # sorting on call_count, duration_sum col
-    total_country_data = sorted(country_all_data.items(),
-                                key=lambda k: (k[1]['call_count'],
-                                               k[1]['duration_sum']),
-                                reverse=True)
-    # country analytic pie chart data
-    xdata = []
-    ydata = []
-    for i in total_country_data:
-        xdata.append(str(get_country_name(i[0])))
-        ydata.append(percentage(i[1]['call_count'], total_calls))
-
-    extra_serie = {"tooltip": {"y_start": "", "y_end": " %"}}
+    color_list = ['#FFC36C', '#FFFF9D', '#BEEB9F', '#79BD8F', '#FFB391']
+    extra_serie = {"tooltip": {"y_start": "", "y_end": " %"}, "color_list": color_list}
     country_analytic_chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
     country_analytic_charttype = "pieChart"
 
-    logging.debug("Result total_record_final %d" % len(final_record))
-    logging.debug("Result hangup_analytic %d" % len(hangup_analytic))
-    logging.debug("Result country_call_count %d" % len(total_country_data))
+    # hangup analytic pie chart data
+    (xdata, ydata) = ([], [])
+    for i in hangup_cause_data:
+        xdata.append(str(get_hangupcause_name(hangup_cause_data[i]["hangup_cause_id"])))
+        ydata.append(str(percentage(hangup_cause_data[i]["nbcalls"], total_calls)))
+
+    color_list = ['#2A343F', '#7E8282', '#EA9664', '#30998F', '#449935']
+    extra_serie = {"tooltip": {"y_start": "", "y_end": " %"}, "color_list": color_list}
+    hangup_analytic_chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
+    hangup_analytic_charttype = "pieChart"
+
+    # TODO
+    if not request.user.is_superuser:  # not superuser
+        query_var['metadata.accountcode'] = request.user.userprofile.accountcode
+
+    # do some logging
+    logging.debug("Result calls_hour_aggr %d" % len(calls_hour_aggr))
+    logging.debug("Result hangup_cause_data %d" % len(hangup_cause_data))
+    logging.debug("Result country_data %d" % len(country_data))
 
     # Calculate the Average Time of Call
-    act_acd_array = calculate_act_and_acd(total_calls, total_duration)
-    ACT = act_acd_array['ACT']
-    ACD = act_acd_array['ACD']
+    metric_aggr = calculate_act_acd(total_calls, total_duration)
+
+    country_extra = hangup_extra = {
+        'x_is_date': False,
+        'x_axis_format': '',
+        'tag_script_js': True,
+        'jquery_on_ready': True,
+    }
+
+    final_extra = {
+        'x_is_date': True,
+        'x_axis_format': '%H:%M',
+        'tag_script_js': True,
+        'jquery_on_ready': True,
+    }
 
     logging.debug('CDR dashboard view end')
     variables = {
@@ -745,39 +820,22 @@ def cdr_dashboard(request):
         'total_duration': int_convert_to_minute(total_duration),
         'total_buy_cost': total_buy_cost,
         'total_sell_cost': total_sell_cost,
-        'ACT': ACT,
-        'ACD': ACD,
-        'total_record': final_record,
-        'hangup_analytic': hangup_analytic,
+        'metric_aggr': metric_aggr,
+        'hangup_analytic': hangup_cause_data,
         'form': form,
-        'total_country_data': total_country_data[0:5],
+        'country_data': country_data,
         'final_chartdata': final_chartdata,
         'final_charttype': final_charttype,
         'final_chartcontainer': 'final_container',
-        'final_extra': {
-            'x_is_date': True,
-            'x_axis_format': '%H:%M',
-            'tag_script_js': True,
-            'jquery_on_ready': True,
-        },
+        'final_extra': final_extra,
         'hangup_analytic_charttype': hangup_analytic_charttype,
         'hangup_analytic_chartdata': hangup_analytic_chartdata,
         'hangup_chartcontainer': 'hangup_piechart_container',
-        'hangup_extra': {
-            'x_is_date': False,
-            'x_axis_format': '',
-            'tag_script_js': True,
-            'jquery_on_ready': True,
-        },
+        'hangup_extra': hangup_extra,
         'country_analytic_charttype': country_analytic_charttype,
         'country_analytic_chartdata': country_analytic_chartdata,
         'country_chartcontainer': 'country_piechart_container',
-        'country_extra': {
-            'x_is_date': False,
-            'x_axis_format': '',
-            'tag_script_js': True,
-            'jquery_on_ready': True,
-        },
+        'country_extra': country_extra,
     }
     return render_to_response('cdr/dashboard.html', variables, context_instance=RequestContext(request))
 
@@ -842,7 +900,7 @@ def get_cdr_mail_report():
                     'sell_cost': float(doc['sell_cost'])
                 }
     # Calculate the Average Time of Call
-    act_acd_array = calculate_act_and_acd(total_calls, total_duration)
+    act_acd_array = calculate_act_acd(total_calls, total_duration)
     ACT = act_acd_array['ACT']
     ACD = act_acd_array['ACD']
 
@@ -877,7 +935,6 @@ def get_cdr_mail_report():
 
 
 @permission_required('user_profile.mail_report', login_url='/')
-@check_cdr_exists
 @check_user_detail('accountcode,voipplan')
 @login_required
 def mail_report(request):
@@ -970,7 +1027,6 @@ def get_hourly_report_for_date(start_date, end_date, query_var):
 
 
 @permission_required('user_profile.daily_comparison', login_url='/')
-@check_cdr_exists
 @check_user_detail('accountcode')
 @login_required
 def cdr_daily_comparison(request):
@@ -1105,7 +1161,6 @@ def cdr_daily_comparison(request):
 
 
 @permission_required('user_profile.overview', login_url='/')
-@check_cdr_exists
 @check_user_detail('accountcode')
 @login_required
 def cdr_overview(request):
@@ -1528,7 +1583,6 @@ def cdr_overview(request):
 
 
 @permission_required('user_profile.by_country', login_url='/')
-@check_cdr_exists
 @check_user_detail('accountcode')
 @login_required
 def cdr_country_report(request):
@@ -1750,7 +1804,6 @@ def cdr_country_report(request):
 
 
 @permission_required('user_profile.world_map', login_url='/')
-@check_cdr_exists
 @check_user_detail('accountcode,voipplan')
 @login_required
 def world_map_view(request):

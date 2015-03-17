@@ -4,6 +4,8 @@ CREATE EXTENSION "uuid-ossp";
 -- HANGUP_CAUSE = ['NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER']
 -- HANGUP_CAUSE_Q850 = ['16', '17', '19']
 
+
+-- Generate 1.000.000 random calls in next the 60 days
 INSERT INTO voip_cdr (user_id, switch_id, cdr_source_type, callid, caller_id_number, caller_id_name,
     destination_number, starting_date, duration, billsec, hangup_cause_id, direction, country_id,
     authorized, buy_rate, buy_cost, sell_rate, sell_cost, data) (
@@ -15,7 +17,9 @@ INSERT INTO voip_cdr (user_id, switch_id, cdr_source_type, callid, caller_id_num
         '+' || cast(30 + cast(trunc(random() * 20 + 1) as int) as text) || 800000000 + cast(trunc(random() * 5000000 + 1) as int) AS caller_id_number,
         '' AS caller_id_name,
         '+' || cast(30 + cast(trunc(random() * 20 + 1) as int) as text) || 800000000 + cast(trunc(random() * 5000000 + 1) as int) AS destination_number,
-        current_timestamp + ( cast(trunc(random() * 60) as int) || ' days')::interval AS starting_date,
+        current_timestamp - ( cast(trunc(random() * 1) as int) || ' days')::interval
+             + ( cast(trunc(random() * 1440) as int) || ' minutes')::interval
+             AS starting_date,
         cast(trunc(random() * 150 + 1) as int) AS duration,
         cast(trunc(random() * 120 + 1) as int) AS billsec,
         16 + cast(trunc(random() * 4 + 0) as int) AS hangup_cause_id,

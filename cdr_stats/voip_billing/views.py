@@ -23,7 +23,7 @@ from voip_billing.function_def import prefix_allowed_to_call, round_val
 from voip_billing.rate_engine import rate_engine
 from voip_billing.constants import RATE_COLUMN_NAME
 from mongodb_connection import mongodb
-from cdr.decorators import check_cdr_exists, check_user_detail
+from cdr.decorators import check_user_detail
 from cdr.aggregate import pipeline_daily_billing_report, pipeline_hourly_billing_report
 from cdr.constants import Export_choice
 from django_lets_go.common_functions import getvar, ceil_strdate, get_pagination_vars
@@ -201,7 +201,6 @@ def simulator(request):
 
 
 @permission_required('user_profile.daily_billing', login_url='/')
-@check_cdr_exists
 @check_user_detail('accountcode,voipplan')
 @login_required
 def daily_billing_report(request):
@@ -320,7 +319,6 @@ def daily_billing_report(request):
 
 
 @permission_required('user_profile.hourly_billing', login_url='/')
-@check_cdr_exists
 @check_user_detail('accountcode,voipplan')
 @login_required
 def hourly_billing_report(request):

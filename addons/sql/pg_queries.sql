@@ -140,7 +140,7 @@ call_counts as (
   select
     country_id,
     date_trunc('day', starting_date) as day,
-    count(*) as ncalls, SUM(duration) as duration, SUM(billsec) as billsec
+    count(*) as nbcalls, SUM(duration) as duration, SUM(billsec) as billsec
     from voip_cdr
   where
     starting_date > date_trunc('day', current_timestamp - interval '1' day) and
@@ -150,7 +150,7 @@ call_counts as (
 )
 select country_id,
         filled_dates.day,
-        coalesce(call_counts.ncalls, filled_dates.blank_count) as ncalls,
+        coalesce(call_counts.nbcalls, filled_dates.blank_count) as nbcalls,
         coalesce(call_counts.duration, filled_dates.blank_count) as duration,
         coalesce(call_counts.billsec, filled_dates.blank_count) as billsec
 from
@@ -164,7 +164,7 @@ order by
 -- without with
 SELECT
     dateday,
-    coalesce(ncalls,0) AS ncalls,
+    coalesce(nbcalls,0) AS nbcalls,
     coalesce(duration,0) AS duration,
     coalesce(billsec,0) AS billsec
 FROM
@@ -176,7 +176,7 @@ FROM
 LEFT OUTER JOIN (
     SELECT
         date_trunc('day', voip_cdr.starting_date) as day,
-        count(*) as ncalls, SUM(duration) as duration, SUM(billsec) as billsec
+        count(*) as nbcalls, SUM(duration) as duration, SUM(billsec) as billsec
     FROM voip_cdr
     WHERE
         starting_date > date_trunc('day', current_timestamp - interval '1' day) and
@@ -185,20 +185,6 @@ LEFT OUTER JOIN (
     ) results
 ON (dateday = results.day);
 
-
--- Select the top 5 country
-SELECT
-    country_id, SUM(duration) as sumduration
-FROM
-    voip_cdr
-WHERE
-    starting_date > date_trunc('day', current_timestamp - interval '1' day) and
-    starting_date <= date_trunc('day', current_timestamp + interval '31' day)
-GROUP BY
-    country_id
-ORDER BY
-    sumduration DESC
-LIMIT 5;
 
 
 -- Drop Materialized View
@@ -279,3 +265,99 @@ GROUP BY
 ORDER BY
     sumduration DESC
 LIMIT 5;
+
+
+
+-- Interogate materialized view 'matv_voip_cdr_aggr_hour' to obtain fast day to day
+-- reporting for the last 30 days
+--
+SELECT
+    dateday,
+    coalesce(nbcalls,0) AS nbcalls,
+    coalesce(duration,0) AS duration,
+    coalesce(billsec,0) AS billsec,
+    coalesce(buy_cost,0) AS buy_cost,
+    coalesce(sell_cost,0) AS sell_cost
+FROM
+    generate_series(
+                    date_trunc('day', current_timestamp - interval '1' day),
+                    date_trunc('day', current_timestamp + interval '30' day),
+                    '1 day')
+    as dateday
+LEFT OUTER JOIN (
+    SELECT
+        date_trunc('day', starting_date) as day,
+        SUM(nbcalls) as nbcalls,
+        SUM(duration) as duration,
+        SUM(billsec) as billsec,
+        SUM(buy_cost) as buy_cost,
+        SUM(sell_cost) as sell_cost
+    FROM matv_voip_cdr_aggr_hour
+    WHERE
+        starting_date > date_trunc('day', current_timestamp - interval '1' day) and
+        starting_date <= date_trunc('day', current_timestamp + interval '31' day)
+    GROUP BY day
+    ) results
+ON (dateday = results.day);
+
+-- Interogate materialized view 'matv_voip_cdr_aggr_hour' to obtain fast hour to hour
+-- reporting for the last 24 hours
+--
+SELECT
+    dateday,
+    coalesce(nbcalls,0) AS nbcalls,
+    coalesce(duration,0) AS duration,
+    coalesce(billsec,0) AS billsec,
+    coalesce(buy_cost,0) AS buy_cost,
+    coalesce(sell_cost,0) AS sell_cost
+FROM
+    generate_series(
+                    date_trunc('hour', current_timestamp - interval '24' hour),
+                    date_trunc('hour', current_timestamp),
+                    '1 hour')
+    as dateday
+LEFT OUTER JOIN (
+    SELECT
+        date_trunc('hour', starting_date) as dayhour,
+        SUM(nbcalls) as nbcalls,
+        SUM(duration) as duration,
+        SUM(billsec) as billsec,
+        SUM(buy_cost) as buy_cost,
+        SUM(sell_cost) as sell_cost
+    FROM matv_voip_cdr_aggr_hour
+    WHERE
+        starting_date > date_trunc('hour', current_timestamp - interval '24' hour) and
+        starting_date <= date_trunc('hour', current_timestamp)
+    GROUP BY dayhour
+    ) results
+ON (dateday = results.dayhour);
+
+
+-- Select the top 5 country
+SELECT
+    country_id, SUM(duration) as duration, SUM(nbcalls) as nbcalls
+FROM
+    matv_voip_cdr_aggr_hour
+WHERE
+    starting_date > date_trunc('hour', current_timestamp - interval '24' hour) and
+    starting_date <= date_trunc('hour', current_timestamp)
+GROUP BY
+    country_id
+ORDER BY
+    duration DESC
+LIMIT 5;
+
+
+-- Select the top 10 country
+SELECT
+    hangup_cause_id, SUM(duration) as duration, SUM(nbcalls) as nbcalls
+FROM
+    matv_voip_cdr_aggr_hour
+WHERE
+    starting_date > date_trunc('hour', current_timestamp - interval '24' hour) and
+    starting_date <= date_trunc('hour', current_timestamp)
+GROUP BY
+    hangup_cause_id
+ORDER BY
+    duration DESC
+LIMIT 10;

@@ -25,7 +25,7 @@ from django_lets_go.common_functions import variable_value, mongodb_str_filter,\
     getvar, unset_session_var, ceil_strdate
 from switch.models import Switch
 from cdr.functions_def import get_country_name, get_hangupcause_name,\
-    get_switch_ip_addr, convert_to_minute, chk_date_for_hrs, calculate_act_and_acd
+    get_switch_ip_addr, convert_to_minute, chk_date_for_hrs, calculate_act_acd
 from cdr.forms import CdrSearchForm, CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
     ConcurrentCallForm, SwitchForm, WorldForm, EmailReportForm
 from cdr.aggregate import pipeline_cdr_view_daily_report,\
@@ -33,7 +33,7 @@ from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_hourly_overview, pipeline_country_report,\
     pipeline_hourly_report, pipeline_country_hourly_report,\
     pipeline_mail_report
-from cdr.decorators import check_cdr_exists, check_user_detail
+from cdr.decorators import check_user_detail
 from cdr.constants import CDR_COLUMN_NAME, Export_choice, CheckWith
 from voip_billing.function_def import round_val
 from bson.objectid import ObjectId
@@ -47,7 +47,6 @@ import itertools
 
 
 @permission_required('user_profile.concurrent_calls', login_url='/')
-@check_cdr_exists
 @check_user_detail('accountcode')
 @login_required
 def cdr_concurrent_calls(request):
@@ -135,7 +134,6 @@ def cdr_concurrent_calls(request):
 
 
 @permission_required('user_profile.real_time_calls', login_url='/')
-@check_cdr_exists
 @check_user_detail('accountcode')
 @login_required
 def cdr_realtime(request):
