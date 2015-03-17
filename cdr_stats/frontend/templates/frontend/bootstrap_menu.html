@@ -28,7 +28,7 @@
                     <li {% ifactive '/overview/' %}class="active"{% endifactive %}><a href="/overview/">{% trans "overview"|title %}</a></li>
                   {% endif %}
                   {% if perms.user_profile.search %}
-                    <li {% ifactive '/cdr_list/' %}class="active"{% endifactive %}><a href="/cdr_list/">{% trans "search"|title %}</a></li>
+                    <li {% ifactive '/cdr_view/' %}class="active"{% endifactive %}><a href="/cdr_view/">{% trans "search"|title %}</a></li>
                   {% endif %}
                   {% if perms.user_profile.daily_comparison %}
                     <li {% ifactive '/daily_comparison/' %}class="active"{% endifactive %}><a href="/daily_comparison/">{% trans "daily comparison"|title %}</a></li>

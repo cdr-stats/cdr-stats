@@ -538,18 +538,17 @@ def cdr_detail(request, id, switch_id):
 @check_user_detail('accountcode,voipplan')
 @login_required
 def cdr_dashboard(request):
-    """CDR dashboard for a current day
+    """CDR dashboard on the last 24 hours
 
     **Attributes**:
 
         * ``template`` - cdr/dashboard.html
         * ``form`` - SwitchForm
-        * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
 
     **Logic Description**:
 
-        get all call records from mongodb collection for current day
-        to create hourly report as well as hangup cause/country analytics
+        Display calls aggregated information for the last 24hours, several report will be
+        created and displayed such as hourly call report and hangup cause/country analytics.
     """
     logging.debug('CDR dashboard view start')
     form = SwitchForm(request.POST or None)
@@ -628,7 +627,6 @@ def cdr_dashboard(request):
     # if not request.user.is_superuser:  # not superuser
     #     query_var['metadata.accountcode'] = request.user.userprofile.accountcode
 
-    # do some logging
     logging.debug("Result calls_hour_aggr %d" % len(calls_hour_aggr))
     logging.debug("Result hangup_cause_data %d" % len(hangup_cause_data))
     logging.debug("Result country_data %d" % len(country_data))
