@@ -24,6 +24,7 @@ from django.conf import settings
 from django_lets_go.common_functions import variable_value, int_convert_to_minute,\
     validate_days, percentage, getvar, unset_session_var, ceil_strdate
 from django_lets_go.common_functions import mongodb_str_filter, mongodb_int_filter
+from django_lets_go.common_functions import get_pagination_vars
 from switch.models import Switch
 from cdr.functions_def import get_country_name, get_hangupcause_name,\
     get_switch_ip_addr, convert_to_minute, chk_date_for_hrs, calculate_act_acd
@@ -37,6 +38,7 @@ from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_mail_report
 from cdr.decorators import check_user_detail
 from cdr.constants import CDR_COLUMN_NAME, Export_choice, CheckWith
+from cdr.models import CDR
 from aggregator.cdr import custom_sql_aggr_top_country, custom_sql_aggr_top_hangup_cause, custom_sql_matv_voip_cdr_aggr_hour
 from voip_billing.function_def import round_val
 from bson.objectid import ObjectId
@@ -115,36 +117,6 @@ def cdr_view_daily_report(query_var):
     return cdr_view_daily_data
 
 
-def get_pagination_vars(request, default_sort_field='start_uepoch'):
-    """Pagination data for mongodb cdr_common collection"""
-    PAGE_NUMBER = int(request.GET.get('page', 1))
-
-    # get sorting field and sorting order
-    col_name_with_order = {}
-    sort_field = variable_value(request, 'sort_by')
-    if not sort_field:
-        sort_field = default_sort_field  # default sort field
-        default_order = -1  # desc
-    else:
-        if '-' in sort_field:
-            default_order = -1
-            sort_field = sort_field[1:]
-            col_name_with_order[sort_field] = sort_field
-        else:
-            default_order = 1
-            col_name_with_order[sort_field] = '-' + sort_field
-
-    col_name_with_order['sort_field'] = sort_field
-
-    data = {
-        'PAGE_NUMBER': PAGE_NUMBER,
-        'col_name_with_order': col_name_with_order,
-        'sort_field': sort_field,
-        'default_order': default_order,
-    }
-    return data
-
-
 @permission_required('user_profile.search', login_url='/')
 @check_user_detail('accountcode,voipplan')
 @login_required
@@ -155,12 +127,11 @@ def cdr_view(request):
 
         * ``template`` - cdr/cdr_view.html
         * ``form`` - CdrSearchForm
-        * ``mongodb_data_set`` - mongodb.cdr_common
 
     **Logic Description**:
 
         * get the call records as well as daily call analytics
-          from mongodb collection according to search parameters
+          from postgresql according to search parameters
     """
     logging.debug('CDR View Start')
     query_var = {}
@@ -282,62 +253,64 @@ def cdr_view(request):
     daily_report_query_var = {}
     daily_report_query_var["metadata.date"] = {"$gte": start_date, "$lt": end_date}
 
-    dst = mongodb_str_filter(destination, destination_type)
-    if dst:
-        query_var['destination_number'] = dst
+    # TODO
+    # dst = mongodb_str_filter(destination, destination_type)
+    # if dst:
+    #     query_var['destination_number'] = dst
 
-    if request.user.is_superuser:
-        # superuser can see everything
-        acc = mongodb_str_filter(accountcode, accountcode_type)
-        if acc:
-            daily_report_query_var['metadata.accountcode'] = acc
-            query_var['accountcode'] = acc
+    # TODO
+    # superuser have access to all CDRs
+    # if request.user.is_superuser:
+    #     acc = mongodb_str_filter(accountcode, accountcode_type)
+    #     if acc:
+    #         daily_report_query_var['metadata.accountcode'] = acc
+    #         query_var['accountcode'] = acc
 
-    if not request.user.is_superuser:
-        daily_report_query_var['metadata.accountcode'] = request.user.userprofile.accountcode
-        query_var['accountcode'] = daily_report_query_var['metadata.accountcode']
+    # if not request.user.is_superuser:
+    #     daily_report_query_var['metadata.accountcode'] = request.user.userprofile.accountcode
+    #     query_var['accountcode'] = daily_report_query_var['metadata.accountcode']
 
-    cli = mongodb_str_filter(caller, caller_type)
-    if cli:
-        query_var['caller_id_number'] = cli
+    # cli = mongodb_str_filter(caller, caller_type)
+    # if cli:
+    #     query_var['caller_id_number'] = cli
 
-    due = mongodb_int_filter(duration, duration_type)
-    if due:
-        query_var['duration'] = daily_report_query_var['duration_daily'] = due
+    # due = mongodb_int_filter(duration, duration_type)
+    # if due:
+    #     query_var['duration'] = daily_report_query_var['duration_daily'] = due
 
-    if switch_id and int(switch_id) != 0:
-        daily_report_query_var['metadata.switch_id'] = int(switch_id)
-        query_var['switch_id'] = int(switch_id)
+    # if switch_id and int(switch_id) != 0:
+    #     daily_report_query_var['metadata.switch_id'] = int(switch_id)
+    #     query_var['switch_id'] = int(switch_id)
 
-    if hangup_cause_id and int(hangup_cause_id) != 0:
-        daily_report_query_var['metadata.hangup_cause_id'] = int(hangup_cause_id)
-        query_var['hangup_cause_id'] = int(hangup_cause_id)
+    # if hangup_cause_id and int(hangup_cause_id) != 0:
+    #     daily_report_query_var['metadata.hangup_cause_id'] = int(hangup_cause_id)
+    #     query_var['hangup_cause_id'] = int(hangup_cause_id)
 
-    if direction and direction != 'all':
-        query_var['direction'] = str(direction)
+    # if direction and direction != 'all':
+    #     query_var['direction'] = str(direction)
 
-    if len(country_id) >= 1 and country_id[0] != 0:
-        daily_report_query_var['metadata.country_id'] = {'$in': country_id}
-        query_var['country_id'] = {'$in': country_id}
+    # if len(country_id) >= 1 and country_id[0] != 0:
+    #     daily_report_query_var['metadata.country_id'] = {'$in': country_id}
+    #     query_var['country_id'] = {'$in': country_id}
 
     # store query_var in session without date
     export_query_var = query_var.copy()
     del export_query_var['start_uepoch']
     request.session['session_export_query_var'] = export_query_var
 
-    final_result = mongodb.cdr_common.find(
-        query_var,
-        {
-            "uuid": 0,
-            "answer_uepoch": 0,
-            "end_uepoch": 0,
-            "mduration": 0,
-            "billmsec": 0,
-            "read_codec": 0,
-            "write_codec": 0,
-            "remote_media_ip": 0,
-        }
-    )
+    # mongo_cdr_result = mongodb.cdr_common.find(
+    #     query_var,
+    #     {
+    #         "uuid": 0,
+    #         "answer_uepoch": 0,
+    #         "end_uepoch": 0,
+    #         "mduration": 0,
+    #         "billmsec": 0,
+    #         "read_codec": 0,
+    #         "write_codec": 0,
+    #         "remote_media_ip": 0,
+    #     }
+    # )
 
     form = CdrSearchForm(
         initial={
@@ -362,23 +335,39 @@ def cdr_view(request):
 
     # Define no of records per page
     records_per_page = int(records_per_page)
-    page_var = get_pagination_vars(request)
+
+    sort_col_field_list = ['id', 'caller_id_number', 'destination_number', 'starting_date']
+    page_vars = get_pagination_vars(request, sort_col_field_list, default_sort_field='id')
+
+    # kwargs = {'user': request.user}
+    kwargs = {}
+    if switch_id and switch_id != '0':
+        kwargs['switch_id__in'] = [int(switch_id)]
+    if direction and direction != 'all':
+        kwargs['direction'] = direction
+
+    cdrs = CDR.objects.filter(**kwargs).order_by(page_vars['sort_order'])
+    cdr_list = cdrs[page_vars['start_page']:page_vars['end_page']]
+    cdr_count = cdrs.count()
 
     logging.debug('Create cdr result')
-    SKIP_NO = records_per_page * (page_var['PAGE_NUMBER'] - 1)
-    record_count = final_result.count()
+    # SKIP_NO = records_per_page * (page_var['PAGE_NUMBER'] - 1)
+    # cdr_count = mongo_cdr_result.count()
     # perform pagination on cdr_common collection via skip() and limit()
-    rows = final_result.skip(SKIP_NO).limit(records_per_page)\
-        .sort([(page_var['sort_field'], page_var['default_order'])])
+    # TODO: Implement pagination
+    # cdr_list = mongo_cdr_result.skip(SKIP_NO).limit(records_per_page)\
+    #     .sort([(page_var['sort_field'], page_var['default_order'])])
 
-    cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
+    # TODO
+    # cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
+    cdr_view_daily_data = {}
 
     template_data = {
-        'rows': rows,
+        'cdr_list': cdr_list,
         'form': form,
-        'record_count': record_count,
+        'cdr_count': cdr_count,
         'cdr_daily_data': cdr_view_daily_data,
-        'col_name_with_order': page_var['col_name_with_order'],
+        'col_name_with_order': page_vars['col_name_with_order'],
         'menu': menu,
         'start_date': start_date,
         'end_date': end_date,
@@ -415,7 +404,7 @@ def cdr_export_to_csv(request):
     end_date = ceil_strdate(end_date, 'end', True)
     export_query_var["start_uepoch"] = {"$gte": start_date, "$lt": end_date}
 
-    final_result = mongodb.cdr_common.find(
+    mongo_cdr_result = mongodb.cdr_common.find(
         export_query_var,
         {
             "uuid": 0,
@@ -433,7 +422,7 @@ def cdr_export_to_csv(request):
                'AccountCode', 'Direction')
 
     list_val = []
-    for cdr in final_result:
+    for cdr in mongo_cdr_result:
         starting_date = cdr['start_uepoch']
         if format_type == Export_choice.JSON:
             starting_date = str(cdr['start_uepoch'])
@@ -685,7 +674,7 @@ def get_cdr_mail_report():
     query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
 
     # find result from cdr_common collection
-    final_result = mongodb.cdr_common.find(query_var).sort([('start_uepoch', -1)]).limit(10)
+    mongo_cdr_result = mongodb.cdr_common.find(query_var).sort([('start_uepoch', -1)]).limit(10)
 
     # Collect analytics
     logging.debug('Aggregate cdr mail report')
@@ -755,7 +744,7 @@ def get_cdr_mail_report():
 
     mail_data = {
         'yesterday_date': start_date,
-        'rows': final_result,
+        'rows': mongo_cdr_result,
         'total_duration': total_duration,
         'total_calls': total_calls,
         'total_buy_cost': total_buy_cost,
