@@ -168,9 +168,9 @@
                         <th></th>
                     </tr>
                     </thead>
-                    {% if cdr_count != 0 %}
-                    {% autopaginate cdr_list records_per_page %}
-                    {% for row in cdr_list %}
+                    {% if cdr_count > 0 %}
+                    {% autopaginate cdrs records_per_page %}
+                    {% for row in page_cdr_list %}
                     <tr>
                         <td>{{ row.starting_date }}</td>
                         <td>
@@ -252,7 +252,7 @@
                 </div>
             </div>
         </form><!-- complete search form tag-->
-            {% if cdr_list %}
+            {% if page_cdr_list %}
                 {% paginate %}
             {% endif %}
         </div>

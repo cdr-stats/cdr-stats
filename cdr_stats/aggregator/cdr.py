@@ -28,6 +28,17 @@ def condition_switch_id(switch_id):
     except ValueError:
         return ""
 
+
+def condition_user(user):
+    """
+    build where condition switch_id
+    """
+    if user.is_superuser:
+        return ""
+    else:
+        return " AND user_id=%d " % (user.id)
+
+
 sqlquery_aggr_cdr_hour = """
 SELECT
     dateday,
@@ -54,6 +65,7 @@ LEFT OUTER JOIN (
     WHERE
         starting_date > date_trunc('hour', current_timestamp - interval '24' hour) AND
         starting_date <= date_trunc('hour', current_timestamp)
+        %(user)s
         %(switch)s
     GROUP BY dayhour
     ) results
@@ -61,14 +73,17 @@ ON (dateday = results.dayhour);
 """
 
 
-def custom_sql_matv_voip_cdr_aggr_hour(switch_id):
+def custom_sql_matv_voip_cdr_aggr_hour(user, switch_id):
     """
     perform query to retrieve last 24 hours of aggregate calls data
     """
     result_hour_aggr = {}
     total_calls = total_duration = total_billsec = total_buy_cost = total_sell_cost = 0
     with connection.cursor() as cursor:
-        params = {'switch': condition_switch_id(switch_id)}
+        params = {
+            'switch': condition_switch_id(switch_id),
+            'user': condition_user(user)
+            }
         sqlquery = sqlquery_aggr_cdr_hour % params
         cursor.execute(sqlquery)
         rows = cursor.fetchall()
@@ -105,6 +120,7 @@ sqlquery_aggr_country_last24h = """
     WHERE
         starting_date > date_trunc('hour', current_timestamp - interval '24' hour) AND
         starting_date <= date_trunc('hour', current_timestamp)
+        %(user)s
         %(switch)s
     GROUP BY
         country_id
@@ -114,13 +130,17 @@ sqlquery_aggr_country_last24h = """
     """
 
 
-def custom_sql_aggr_top_country(switch_id, limit=5):
+def custom_sql_aggr_top_country(user, switch_id, limit=5):
     """
     perform query to retrieve last 24 hours of aggregate calls data
     """
     result = []
     with connection.cursor() as cursor:
-        params = {'switch': condition_switch_id(switch_id), 'limit': limit}
+        params = {
+            'switch': condition_switch_id(switch_id),
+            'user': condition_user(user),
+            'limit': limit
+        }
         sqlquery = sqlquery_aggr_country_last24h % params
         cursor.execute(sqlquery)
         rows = cursor.fetchall()
@@ -149,6 +169,7 @@ sqlquery_aggr_hangup_cause_last24h = """
     WHERE
         starting_date > date_trunc('hour', current_timestamp - interval '24' hour) and
         starting_date <= date_trunc('hour', current_timestamp)
+        %(user)s
         %(switch)s
     GROUP BY
         hangup_cause_id
@@ -158,13 +179,17 @@ sqlquery_aggr_hangup_cause_last24h = """
     """
 
 
-def custom_sql_aggr_top_hangup_cause(switch_id=0, limit=10):
+def custom_sql_aggr_top_hangup_cause(user, switch_id=0, limit=10):
     """
     perform query to retrieve last 24 hours of aggregate calls data
     """
     result = {}
     with connection.cursor() as cursor:
-        params = {'switch': condition_switch_id(switch_id), 'limit': limit}
+        params = {
+            'switch': condition_switch_id(switch_id),
+            'user': condition_user(user),
+            'limit': limit
+        }
         sqlquery = sqlquery_aggr_hangup_cause_last24h % params
         cursor.execute(sqlquery)
         rows = cursor.fetchall()

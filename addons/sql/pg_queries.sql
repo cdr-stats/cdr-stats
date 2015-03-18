@@ -198,6 +198,7 @@ CREATE MATERIALIZED VIEW matv_voip_cdr_aggr_hour AS
         switch_id,
         cdr_source_type,
         hangup_cause_id,
+        user_id,
         count(*) AS nbcalls,
         sum(duration) AS duration,
         sum(billsec) AS billsec,
@@ -206,7 +207,7 @@ CREATE MATERIALIZED VIEW matv_voip_cdr_aggr_hour AS
     FROM
         voip_cdr
     GROUP BY
-        date_trunc('hour', starting_date), country_id, switch_id, cdr_source_type, hangup_cause_id;
+        date_trunc('hour', starting_date), country_id, switch_id, cdr_source_type, hangup_cause_id, user_id;
 
 -- Refresh Materialized View
 REFRESH MATERIALIZED VIEW matv_voip_cdr_aggr_hour;
@@ -229,6 +230,7 @@ CREATE MATERIALIZED VIEW matv_voip_cdr_aggr_min AS
         switch_id,
         cdr_source_type,
         hangup_cause_id,
+        user_id,
         count(*) AS nbcalls,
         sum(duration) AS duration,
         sum(billsec) AS billsec,
@@ -237,7 +239,7 @@ CREATE MATERIALIZED VIEW matv_voip_cdr_aggr_min AS
     FROM
         voip_cdr
     GROUP BY
-        date_trunc('minute', starting_date), country_id, switch_id, cdr_source_type, hangup_cause_id;
+        date_trunc('minute', starting_date), country_id, switch_id, cdr_source_type, hangup_cause_id, user_id;
 
 #Create index on Materialized view
 CREATE UNIQUE INDEX matv_voip_cdr_aggr_min_date

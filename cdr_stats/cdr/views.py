@@ -347,23 +347,17 @@ def cdr_view(request):
         kwargs['direction'] = direction
 
     cdrs = CDR.objects.filter(**kwargs).order_by(page_vars['sort_order'])
-    cdr_list = cdrs[page_vars['start_page']:page_vars['end_page']]
+    page_cdr_list = cdrs[page_vars['start_page']:page_vars['end_page']]
     cdr_count = cdrs.count()
 
-    logging.debug('Create cdr result')
-    # SKIP_NO = records_per_page * (page_var['PAGE_NUMBER'] - 1)
-    # cdr_count = mongo_cdr_result.count()
-    # perform pagination on cdr_common collection via skip() and limit()
-    # TODO: Implement pagination
-    # cdr_list = mongo_cdr_result.skip(SKIP_NO).limit(records_per_page)\
-    #     .sort([(page_var['sort_field'], page_var['default_order'])])
-
     # TODO
+    logging.debug('Create cdr result')
     # cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
     cdr_view_daily_data = {}
 
     template_data = {
-        'cdr_list': cdr_list,
+        'page_cdr_list': page_cdr_list,
+        'cdrs': cdrs,
         'form': form,
         'cdr_count': cdr_count,
         'cdr_daily_data': cdr_view_daily_data,
@@ -548,15 +542,18 @@ def cdr_dashboard(request):
     else:
         switch_id = 0
 
+    # if not request.user.is_superuser:
+        # query_var['metadata.accountcode'] = request.user.userprofile.accountcode
+
     # Get list of calls/duration for each of the last 24 hours
-    (calls_hour_aggr, total_calls, total_duration, total_billsec, total_buy_cost, total_sell_cost) = custom_sql_matv_voip_cdr_aggr_hour(switch_id)
+    (calls_hour_aggr, total_calls, total_duration, total_billsec, total_buy_cost, total_sell_cost) = custom_sql_matv_voip_cdr_aggr_hour(request.user, switch_id)
     # pp(calls_hour_aggr)
 
     # Get top 5 of country calls for last 24 hours
-    country_data = custom_sql_aggr_top_country(switch_id, limit=5)
+    country_data = custom_sql_aggr_top_country(request.user, switch_id, limit=5)
 
     # Get top 10 of hangup cause calls for last 24 hours
-    hangup_cause_data = custom_sql_aggr_top_hangup_cause(switch_id)
+    hangup_cause_data = custom_sql_aggr_top_hangup_cause(request.user, switch_id)
 
     # Build chart data for last 24h calls
     (xdata, ydata, ydata2, ydata3, ydata4, ydata5) = ([], [], [], [], [], [])
@@ -608,13 +605,6 @@ def cdr_dashboard(request):
     extra_serie = {"tooltip": {"y_start": "", "y_end": " %"}, "color_list": color_list}
     hangup_analytic_chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
     hangup_analytic_charttype = "pieChart"
-
-    # TODO
-    # Here we will implement accountcode filter using materialized view to keep things fast
-    #
-
-    # if not request.user.is_superuser:  # not superuser
-    #     query_var['metadata.accountcode'] = request.user.userprofile.accountcode
 
     logging.debug("Result calls_hour_aggr %d" % len(calls_hour_aggr))
     logging.debug("Result hangup_cause_data %d" % len(hangup_cause_data))
