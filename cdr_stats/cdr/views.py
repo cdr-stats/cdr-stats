@@ -151,8 +151,8 @@ def cdr_view(request):
     duration = ''
     duration_type = ''
     due = ''
-    caller = ''
-    caller_type = ''
+    caller_id_number = ''
+    caller_id_number_type = ''
     cli = ''
     action = 'tabs-1'
     menu = 'on'
@@ -166,7 +166,7 @@ def cdr_view(request):
 
         # set session var value
         field_list = ['destination', 'result', 'destination_type', 'accountcode',
-                      'accountcode_type', 'caller', 'caller_type', 'duration',
+                      'accountcode_type', 'caller_id_number', 'caller_id_number_type', 'duration',
                       'duration_type', 'hangup_cause_id', 'switch_id', 'direction',
                       'country_id', 'export_query_var']
         unset_session_var(request, field_list)
@@ -177,8 +177,8 @@ def cdr_view(request):
         destination_type = getvar(request, 'destination_type', setsession=True)
         accountcode = getvar(request, 'accountcode', setsession=True)
         accountcode_type = getvar(request, 'accountcode_type', setsession=True)
-        caller = getvar(request, 'caller', setsession=True)
-        caller_type = getvar(request, 'caller_type', setsession=True)
+        caller_id_number = getvar(request, 'caller_id_number', setsession=True)
+        caller_id_number_type = getvar(request, 'caller_id_number_type', setsession=True)
         duration = getvar(request, 'duration', setsession=True)
         duration_type = getvar(request, 'duration_type', setsession=True)
         direction = getvar(request, 'direction', setsession=True)
@@ -217,8 +217,8 @@ def cdr_view(request):
         destination_type = request.session.get('session_destination_type')
         accountcode = request.session.get('session_accountcode')
         accountcode_type = request.session.get('session_accountcode_type')
-        caller = request.session.get('session_caller')
-        caller_type = request.session.get('session_caller_type')
+        caller_id_number = request.session.get('session_caller_id_number')
+        caller_id_number_type = request.session.get('session_caller_id_number_type')
         duration = request.session.get('session_duration')
         duration_type = request.session.get('session_duration_type')
         direction = request.session.get('session_direction')
@@ -246,7 +246,7 @@ def cdr_view(request):
         request.session['session_end_date'] = converted_end_date
         request.session['session_result'] = 1
         field_list = ['destination', 'destination_type', 'accountcode', 'accountcode_type',
-                      'caller', 'caller_type', 'duration', 'duration_type', 'hangup_cause_id',
+                      'caller_id_number', 'caller_id_number_type', 'duration', 'duration_type', 'hangup_cause_id',
                       'switch_id', 'direction', 'country_id']
         unset_session_var(request, field_list)
         request.session['session_records_per_page'] = records_per_page
@@ -273,7 +273,7 @@ def cdr_view(request):
     #     daily_report_query_var['metadata.accountcode'] = request.user.userprofile.accountcode
     #     query_var['accountcode'] = daily_report_query_var['metadata.accountcode']
 
-    # cli = mongodb_str_filter(caller, caller_type)
+    # cli = mongodb_str_filter(caller_id_number, caller_id_number_type)
     # if cli:
     #     query_var['caller_id_number'] = cli
 
@@ -304,7 +304,7 @@ def cdr_view(request):
         kwargs['starting_date__lte'] = end_date
 
     if destination:
-        operator_query = get_filter_operator_str('destination', destination_type)
+        operator_query = get_filter_operator_str('destination_number', destination_type)
         kwargs[operator_query] = destination
 
     if duration:
@@ -335,8 +335,8 @@ def cdr_view(request):
             'destination_type': destination_type,
             'accountcode': accountcode,
             'accountcode_type': accountcode_type,
-            'caller': caller,
-            'caller_type': caller_type,
+            'caller_id_number': caller_id_number,
+            'caller_id_number_type': caller_id_number_type,
             'duration': duration,
             'duration_type': duration_type,
             'result': result,

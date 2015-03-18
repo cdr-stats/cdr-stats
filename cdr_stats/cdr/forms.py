@@ -84,8 +84,8 @@ class SearchForm(forms.Form):
     """
     Form used to search on general parameters in the Customer UI.
     """
-    caller = forms.CharField(label=_('callerID number').capitalize(), required=False)
-    caller_type = forms.ChoiceField(label=_('type').capitalize(), required=False,
+    caller_id_number = forms.CharField(label=_('callerID number').capitalize(), required=False)
+    caller_id_number_type = forms.ChoiceField(label=_('type').capitalize(), required=False,
                                     choices=list(STRING_SEARCH_TYPE_LIST))
     destination = forms.CharField(label=_('destination').capitalize(), required=False)
     destination_type = forms.ChoiceField(label=_('type').capitalize(), required=False,
@@ -164,8 +164,8 @@ class CdrSearchForm(SearchForm):
                 Div('destination_type', css_class='col-md-2'),
                 Div('accountcode', css_class='col-md-2'),
                 Div('accountcode_type', css_class='col-md-2'),
-                Div('caller', css_class='col-md-2'),
-                Div('caller_type', css_class='col-md-2'),
+                Div('caller_id_number', css_class='col-md-2'),
+                Div('caller_id_number_type', css_class='col-md-2'),
                 css_class='row'
             ),
             Div(
