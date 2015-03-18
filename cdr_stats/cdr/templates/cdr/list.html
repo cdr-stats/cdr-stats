@@ -14,6 +14,7 @@
 {% endblock %}
 
 {% block content %}
+
 <div class="tabbable">
     <ul class="nav nav-tabs">
         <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "calls detail records"|title %}</a></li>
@@ -118,16 +119,16 @@
                               {% sort_link CDR_COLUMN_NAME.hangup_cause|capfirst "-hangup_cause_id"  %}
                             {% endifequal %}
                         </th>
-                        <th>
-                            {% ifequal col_name_with_order.sort_field 'accountcode' %}
-                              {% sort_link up_icon|safe "accountcode"  %}
-                                {{ CDR_COLUMN_NAME.account|capfirst }}
-                              {% sort_link down_icon|safe "-accountcode"  %}
-                            {% else %}
-                              {% sort_link CDR_COLUMN_NAME.account|capfirst "-accountcode"  %}
-                            {% endifequal %}
-                        </th>
                         {% if user.is_superuser %}
+                            <th>
+                                {% ifequal col_name_with_order.sort_field 'accountcode' %}
+                                  {% sort_link up_icon|safe "accountcode"  %}
+                                    {{ CDR_COLUMN_NAME.account|capfirst }}
+                                  {% sort_link down_icon|safe "-accountcode"  %}
+                                {% else %}
+                                  {% sort_link CDR_COLUMN_NAME.account|capfirst "-accountcode"  %}
+                                {% endifequal %}
+                            </th>
                             <th>
                                 {% ifequal col_name_with_order.sort_field 'buy_rate' %}
                                     {% sort_link up_icon|safe "buy_rate"  %}
@@ -193,8 +194,8 @@
                             {{ row.hangup_cause_id|hangupcause_name }}
                           {% endcache %}
                         </td>
-                        <td>{{ row.accountcode }}</td>
                         {% if user.is_superuser %}
+                            <td>{{ row.user_id }}</td>
                             <td>{{ row.buy_rate }}</td>
                             <td>{{ row.buy_cost }}</td>
                         {% endif %}
@@ -214,15 +215,14 @@
                                 {% else %}
                                     <img src="{{ STATIC_URL }}cdr-stats/icons/flag_red.png" class="elemtooltip" title="{% trans 'unauthorized call'|capfirst %}"/>
                                 {% endif %}
-                                {% ifequal row.direction 'inbound' %}
-                                    <img src="{{ STATIC_URL }}cdr-stats/icons/door_in.png" title="{{ row.direction|capfirst }} {% trans 'call' %}" class="elemtooltip"/>
+
+                                {% if row.direction == 1 %}
+                                    <img src="{{ STATIC_URL }}cdr-stats/icons/door_in.png" title="{{ row.get_direction_display|lower|capfirst }} {% trans 'call' %}" class="elemtooltip"/>
+                                {% elif row.direction == 2 %}
+                                    <img src="{{ STATIC_URL }}cdr-stats/icons/door_out.png" title="{{ row.get_direction_display|lower|capfirst }}  {% trans 'call' %}" class="elemtooltip"/>
                                 {% else %}
-                                    {% ifequal row.direction 'outbound' %}
-                                        <img src="{{ STATIC_URL }}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans 'call' %}" class="elemtooltip"/>
-                                    {% else %}
-                                        <img src="{{ STATIC_URL }}cdr-stats/icons/door.png" title="{{ row.direction|capfirst }}  {% trans 'call' %}" class="elemtooltip"/>
-                                    {% endifequal %}
-                                {% endifequal %}
+                                    <img src="{{ STATIC_URL }}cdr-stats/icons/door.png" title="{{ row.get_direction_display|lower|capfirst }}  {% trans 'call' %}" class="elemtooltip"/>
+                                {% endif %}
 
                                 {% if "cdr_object_id" in row %}
                                     {% if perms.user_profile.cdr_detail %}

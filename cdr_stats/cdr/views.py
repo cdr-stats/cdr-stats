@@ -25,6 +25,7 @@ from django_lets_go.common_functions import variable_value, int_convert_to_minut
     validate_days, percentage, getvar, unset_session_var, ceil_strdate
 from django_lets_go.common_functions import mongodb_str_filter, mongodb_int_filter
 from django_lets_go.common_functions import get_pagination_vars
+from cdr.filters import CDRFilter
 from switch.models import Switch
 from cdr.functions_def import get_country_name, get_hangupcause_name,\
     get_switch_ip_addr, convert_to_minute, chk_date_for_hrs, calculate_act_acd
@@ -289,28 +290,37 @@ def cdr_view(request):
     # if direction and direction != 'all':
     #     query_var['direction'] = str(direction)
 
-    # if len(country_id) >= 1 and country_id[0] != 0:
-    #     daily_report_query_var['metadata.country_id'] = {'$in': country_id}
-    #     query_var['country_id'] = {'$in': country_id}
+    # Define no of records per page
+    records_per_page = int(records_per_page)
+
+    sort_col_field_list = ['id', 'caller_id_number', 'destination_number', 'starting_date']
+    page_vars = get_pagination_vars(request, sort_col_field_list, default_sort_field='id')
+
+    # kwargs = {'user': request.user}
+    kwargs = {}
+    if switch_id and switch_id != '0':
+        kwargs['switch_id'] = int(switch_id)
+    if direction and direction != 'all':
+        kwargs['direction'] = direction
+
+    if len(country_id) >= 1 and country_id[0] != 0:
+        kwargs['country_id__in'] = country_id
+
+    print(kwargs)
+
+    cdrs = CDR.objects.filter(**kwargs).order_by(page_vars['sort_order'])
+    page_cdr_list = cdrs[page_vars['start_page']:page_vars['end_page']]
+    cdr_count = cdrs.count()
+
+    # TODO
+    logging.debug('Create cdr result')
+    # cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
+    cdr_view_daily_data = {}
 
     # store query_var in session without date
     export_query_var = query_var.copy()
     del export_query_var['start_uepoch']
     request.session['session_export_query_var'] = export_query_var
-
-    # mongo_cdr_result = mongodb.cdr_common.find(
-    #     query_var,
-    #     {
-    #         "uuid": 0,
-    #         "answer_uepoch": 0,
-    #         "end_uepoch": 0,
-    #         "mduration": 0,
-    #         "billmsec": 0,
-    #         "read_codec": 0,
-    #         "write_codec": 0,
-    #         "remote_media_ip": 0,
-    #     }
-    # )
 
     form = CdrSearchForm(
         initial={
@@ -333,27 +343,10 @@ def cdr_view(request):
         }
     )
 
-    # Define no of records per page
-    records_per_page = int(records_per_page)
-
-    sort_col_field_list = ['id', 'caller_id_number', 'destination_number', 'starting_date']
-    page_vars = get_pagination_vars(request, sort_col_field_list, default_sort_field='id')
-
-    # kwargs = {'user': request.user}
-    kwargs = {}
-    if switch_id and switch_id != '0':
-        kwargs['switch_id__in'] = [int(switch_id)]
-    if direction and direction != 'all':
-        kwargs['direction'] = direction
-
-    cdrs = CDR.objects.filter(**kwargs).order_by(page_vars['sort_order'])
-    page_cdr_list = cdrs[page_vars['start_page']:page_vars['end_page']]
-    cdr_count = cdrs.count()
-
-    # TODO
-    logging.debug('Create cdr result')
-    # cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
-    cdr_view_daily_data = {}
+    # f = CDRFilter(request.GET, queryset=CDR.objects.all())
+    # starting_date__gte=datetime.date.today()
+    # destination_number__startswith='+34'
+    # return render_to_response('my_app/template.html', {'filter': f})
 
     template_data = {
         'page_cdr_list': page_cdr_list,

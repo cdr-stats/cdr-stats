@@ -66,7 +66,9 @@ def hc_list_with_all():
 
 
 def country_list_with_all():
-    """Country list"""
+    """
+    Country list
+    """
     list_ct = []
     list_ct.append((0, _('all').capitalize()))
     list_ct.append((999, _('internal call').capitalize()))
