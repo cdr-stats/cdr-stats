@@ -14,7 +14,7 @@ git+git://github.com/ifanrx/django-dajaxice.git
 django-dajaxice-ng==0.6.0
 django-country-dialcode==0.5.1
 django-admin-tools-stats==0.6.1
-django-filter==0.9.2
+# django-filter==0.9.2
 
 #0.8 is not compatible with django 1.7
 #django-cache-machine==0.8
