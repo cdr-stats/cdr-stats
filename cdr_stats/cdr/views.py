@@ -32,6 +32,7 @@ from cdr.functions_def import get_country_name, get_hangupcause_name,\
 from cdr.forms import CdrSearchForm, CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
     SwitchForm, WorldForm, EmailReportForm
 # from cdr.forms import ConcurrentCallForm
+from cdr.filters import get_filter_operator_int, get_filter_operator_str
 from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_monthly_overview, pipeline_daily_overview,\
     pipeline_hourly_overview, pipeline_country_report,\
@@ -158,6 +159,7 @@ def cdr_view(request):
     cdr_view_daily_data = {}
     country_id = ''
     records_per_page = settings.PAGE_SIZE
+
     form = CdrSearchForm(request.POST or None)
     if form.is_valid():
         logging.debug('CDR Search View')
@@ -168,10 +170,8 @@ def cdr_view(request):
                       'duration_type', 'hangup_cause_id', 'switch_id', 'direction',
                       'country_id', 'export_query_var']
         unset_session_var(request, field_list)
-
         from_date = getvar(request, 'from_date', setsession=False)
         to_date = getvar(request, 'to_date', setsession=False)
-
         result = getvar(request, 'result', setsession=True)
         destination = getvar(request, 'destination', setsession=True)
         destination_type = getvar(request, 'destination_type', setsession=True)
@@ -204,7 +204,10 @@ def cdr_view(request):
 
     menu = show_menu(request)
 
+    using_session = False
+    # Display a specific page or sort
     if request.GET.get('page') or request.GET.get('sort_by'):
+        using_session = True
         from_date = start_date = request.session.get('session_start_date')
         to_date = end_date = request.session.get('session_end_date')
         start_date = ceil_strdate(start_date, 'start', True)
@@ -224,31 +227,30 @@ def cdr_view(request):
         result = request.session.get('session_result')
         records_per_page = request.session.get('session_records_per_page')
         country_id = request.session['session_country_id']
-    else:
-        if request.method == 'GET':
-            tday = datetime.today()
-            from_date = datetime(tday.year, tday.month, 1, 0, 0, 0, 0)
-            last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) +
-                         relativedelta(months=1)) -
-                        relativedelta(days=1)).strftime('%d')
-            # to_date = tday.strftime('%Y-%m-' + last_day + ' 23:59')
-            to_date = datetime(tday.year, tday.month, int(last_day), 23, 59, 59, 999999)
-            start_date = ceil_strdate(str(from_date), 'start', True)
-            end_date = ceil_strdate(str(to_date), 'end', True)
 
-            converted_start_date = start_date.strftime('%Y-%m-%d %H:%M')
-            converted_end_date = end_date.strftime('%Y-%m-%d %H:%M')
-            request.session['session_start_date'] = converted_start_date
-            request.session['session_end_date'] = converted_end_date
-            request.session['session_result'] = 1
-            field_list = ['destination', 'destination_type', 'accountcode', 'accountcode_type',
-                          'caller', 'caller_type', 'duration', 'duration_type', 'hangup_cause_id',
-                          'switch_id', 'direction', 'country_id']
-            unset_session_var(request, field_list)
-            request.session['session_records_per_page'] = records_per_page
-            request.session['session_country_id'] = ''
+    # Set default cause we display page for the first time
+    if request.method == 'GET' and not using_session:
+        tday = datetime.today()
+        from_date = datetime(tday.year, tday.month, 1, 0, 0, 0, 0)
+        last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) +
+                     relativedelta(months=1)) -
+                    relativedelta(days=1)).strftime('%d')
+        # to_date = tday.strftime('%Y-%m-' + last_day + ' 23:59')
+        to_date = datetime(tday.year, tday.month, int(last_day), 23, 59, 59, 999999)
+        start_date = ceil_strdate(str(from_date), 'start', True)
+        end_date = ceil_strdate(str(to_date), 'end', True)
 
-    query_var["start_uepoch"] = {"$gte": start_date, "$lt": end_date}
+        converted_start_date = start_date.strftime('%Y-%m-%d %H:%M')
+        converted_end_date = end_date.strftime('%Y-%m-%d %H:%M')
+        request.session['session_start_date'] = converted_start_date
+        request.session['session_end_date'] = converted_end_date
+        request.session['session_result'] = 1
+        field_list = ['destination', 'destination_type', 'accountcode', 'accountcode_type',
+                      'caller', 'caller_type', 'duration', 'duration_type', 'hangup_cause_id',
+                      'switch_id', 'direction', 'country_id']
+        unset_session_var(request, field_list)
+        request.session['session_records_per_page'] = records_per_page
+        request.session['session_country_id'] = ''
 
     # aggregate query variable
     daily_report_query_var = {}
@@ -275,21 +277,6 @@ def cdr_view(request):
     # if cli:
     #     query_var['caller_id_number'] = cli
 
-    # due = mongodb_int_filter(duration, duration_type)
-    # if due:
-    #     query_var['duration'] = daily_report_query_var['duration_daily'] = due
-
-    # if switch_id and int(switch_id) != 0:
-    #     daily_report_query_var['metadata.switch_id'] = int(switch_id)
-    #     query_var['switch_id'] = int(switch_id)
-
-    # if hangup_cause_id and int(hangup_cause_id) != 0:
-    #     daily_report_query_var['metadata.hangup_cause_id'] = int(hangup_cause_id)
-    #     query_var['hangup_cause_id'] = int(hangup_cause_id)
-
-    # if direction and direction != 'all':
-    #     query_var['direction'] = str(direction)
-
     # Define no of records per page
     records_per_page = int(records_per_page)
 
@@ -298,15 +285,33 @@ def cdr_view(request):
 
     # kwargs = {'user': request.user}
     kwargs = {}
+    if hangup_cause_id and hangup_cause_id != '0':
+        kwargs['hangup_cause_id'] = int(hangup_cause_id)
+
     if switch_id and switch_id != '0':
         kwargs['switch_id'] = int(switch_id)
+
     if direction and direction != 'all':
         kwargs['direction'] = direction
 
     if len(country_id) >= 1 and country_id[0] != 0:
         kwargs['country_id__in'] = country_id
 
-    print(kwargs)
+    if start_date:
+        kwargs['starting_date__gte'] = start_date
+
+    if end_date:
+        kwargs['starting_date__lte'] = end_date
+
+    if destination:
+        operator_query = get_filter_operator_str('destination', destination_type)
+        kwargs[operator_query] = destination
+
+    if duration:
+        operator_query = get_filter_operator_int('duration', duration_type)
+        kwargs[operator_query] = duration
+
+    print(kwargs, destination_type)
 
     cdrs = CDR.objects.filter(**kwargs).order_by(page_vars['sort_order'])
     page_cdr_list = cdrs[page_vars['start_page']:page_vars['end_page']]
@@ -319,7 +324,7 @@ def cdr_view(request):
 
     # store query_var in session without date
     export_query_var = query_var.copy()
-    del export_query_var['start_uepoch']
+    # del export_query_var['start_uepoch']
     request.session['session_export_query_var'] = export_query_var
 
     form = CdrSearchForm(

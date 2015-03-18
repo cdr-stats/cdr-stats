@@ -16,7 +16,7 @@ from django.db import models
 import django_filters
 from django_filters.filters import RangeFilter, DateTimeFilter, DateRangeFilter
 from cdr.models import CDR
-
+from cdr.forms import COMPARE_DICT
 
 #
 # this is a work in progress on integrating https://django-filter.readthedocs.org/
@@ -54,3 +54,43 @@ class CDRFilter(django_filters.FilterSet):
     class Meta:
         model = CDR
         fields = ['switch', 'caller_id_number', 'starting_date', 'duration', 'billsec']
+
+
+def get_filter_operator_int(base_field, operator):
+    """
+    convert operators (>, >=, <, <=, =) as django queryset operator
+    """
+    try:
+        operator = int(operator)
+    except AttributeError:
+        return ""
+    result = base_field
+    if COMPARE_DICT[operator] == '=':
+        result += ''
+    elif COMPARE_DICT[operator] == '>':
+        result += '__gt'
+    elif COMPARE_DICT[operator] == '>=':
+        result += '__gte'
+    elif COMPARE_DICT[operator] == '<':
+        result += '__lt'
+    elif COMPARE_DICT[operator] == '<=':
+        result += '__lte'
+    return result
+
+
+def get_filter_operator_str(base_field, operator):
+    """
+    Prepare filters for django queryset
+    where fields contain string are checked like
+    exact | startswith | contains | endswith
+    """
+    result = base_field
+    if operator == '1':
+        result += '__exact'
+    elif operator == '2':
+        result += '__startswith'
+    elif operator == '3':
+        result += '__contains'
+    elif operator == '4':
+        result += '__endswith'
+    return result

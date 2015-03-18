@@ -23,7 +23,7 @@ INSERT INTO voip_cdr (user_id, switch_id, cdr_source_type, callid, caller_id_num
         cast(trunc(random() * 150 + 1) as int) AS duration,
         cast(trunc(random() * 120 + 1) as int) AS billsec,
         16 + cast(trunc(random() * 4 + 0) as int) AS hangup_cause_id,
-        1 AS direction,
+        cast(random() * 2 as int) AS direction,
         cast(trunc(random() * 30 + 1) as int) as country_id,
         TRUE AS authorized,
         cast(random()::numeric / 5 AS numeric(10,5)) AS buy_rate,

@@ -29,12 +29,13 @@ from crispy_forms.layout import Layout, Div, HTML  # Fieldset, Field
 
 
 COMPARE_LIST = (
+    (1, '='),
     (2, '>'),
     (3, '>='),
     (4, '<'),
     (5, '<='),
-    (1, '=')
 )
+COMPARE_DICT = dict((x, y) for x, y in COMPARE_LIST)
 
 PAGE_SIZE_LIST = (
     (10, '10'),
@@ -43,8 +44,9 @@ PAGE_SIZE_LIST = (
     (100, '100'),
     (250, '250'),
     (500, '500'),
-    (1000, '1000')
+    (1000, '1000'),
 )
+PAGE_SIZE_DICT = dict((x, y) for x, y in PAGE_SIZE_LIST)
 
 
 def sw_list_with_all():
@@ -131,10 +133,10 @@ class CdrSearchForm(SearchForm):
     to_date = forms.DateTimeField(label=_('to').capitalize(), required=True,
                                   widget=DateTimePicker(options={"format": "YYYY-MM-DD HH:mm", "pickSeconds": False}))
     direction = forms.TypedChoiceField(label=_('direction').capitalize(), required=False,
-                                       choices=(('all', _('all')),
-                                                ('inbound', _('inbound')),
-                                                ('outbound', _('outbound')),
-                                                ('unknown', _('unknown'))))
+                                       choices=((0, _('all')),
+                                                (1, _('inbound')),
+                                                (2, _('outbound')))
+                                       )
     result = forms.ChoiceField(label=_('result').capitalize(), required=False,
                                choices=((1, _('minutes')), (2, _('seconds'))),
                                widget=forms.RadioSelect(renderer=HorizRadioRenderer))
