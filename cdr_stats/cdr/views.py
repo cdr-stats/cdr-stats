@@ -27,6 +27,7 @@ from django_lets_go.common_functions import mongodb_str_filter, mongodb_int_filt
 from django_lets_go.common_functions import get_pagination_vars
 from cdr.filters import CDRFilter
 from switch.models import Switch
+from user_profile.models import UserProfile
 from cdr.functions_def import get_country_name, get_hangupcause_name,\
     get_switch_ip_addr, convert_to_minute, chk_date_for_hrs, calculate_act_acd
 from cdr.forms import CdrSearchForm, CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
@@ -141,32 +142,20 @@ def cdr_view(request):
     result = 1  # default min
     switch_id = 0  # default all
     hangup_cause_id = 0  # default all
-    destination = ''
-    destination_type = ''
-    dst = ''
-    accountcode = ''
-    accountcode_type = ''
-    acc = ''
-    direction = ''
-    duration = ''
-    duration_type = ''
-    due = ''
-    caller_id_number = ''
-    caller_id_number_type = ''
-    cli = ''
+    destination, destination_type, accountcode = '', '', ''
+    direction, duration, duration_type = '', '', ''
+    caller_id_number, caller_id_number_type, country_id = '', '', ''
     action = 'tabs-1'
     menu = 'on'
     cdr_view_daily_data = {}
-    country_id = ''
     records_per_page = settings.PAGE_SIZE
 
     form = CdrSearchForm(request.POST or None)
     if form.is_valid():
         logging.debug('CDR Search View')
-
         # set session var value
         field_list = ['destination', 'result', 'destination_type', 'accountcode',
-                      'accountcode_type', 'caller_id_number', 'caller_id_number_type', 'duration',
+                      'caller_id_number', 'caller_id_number_type', 'duration',
                       'duration_type', 'hangup_cause_id', 'switch_id', 'direction',
                       'country_id', 'export_query_var']
         unset_session_var(request, field_list)
@@ -176,7 +165,6 @@ def cdr_view(request):
         destination = getvar(request, 'destination', setsession=True)
         destination_type = getvar(request, 'destination_type', setsession=True)
         accountcode = getvar(request, 'accountcode', setsession=True)
-        accountcode_type = getvar(request, 'accountcode_type', setsession=True)
         caller_id_number = getvar(request, 'caller_id_number', setsession=True)
         caller_id_number_type = getvar(request, 'caller_id_number_type', setsession=True)
         duration = getvar(request, 'duration', setsession=True)
@@ -216,7 +204,6 @@ def cdr_view(request):
         destination = request.session.get('session_destination')
         destination_type = request.session.get('session_destination_type')
         accountcode = request.session.get('session_accountcode')
-        accountcode_type = request.session.get('session_accountcode_type')
         caller_id_number = request.session.get('session_caller_id_number')
         caller_id_number_type = request.session.get('session_caller_id_number_type')
         duration = request.session.get('session_duration')
@@ -245,37 +232,14 @@ def cdr_view(request):
         request.session['session_start_date'] = converted_start_date
         request.session['session_end_date'] = converted_end_date
         request.session['session_result'] = 1
-        field_list = ['destination', 'destination_type', 'accountcode', 'accountcode_type',
-                      'caller_id_number', 'caller_id_number_type', 'duration', 'duration_type', 'hangup_cause_id',
-                      'switch_id', 'direction', 'country_id']
+        field_list = [
+            'destination', 'destination_type', 'accountcode',
+            'caller_id_number', 'caller_id_number_type', 'duration',
+            'duration_type', 'hangup_cause_id',
+            'switch_id', 'direction', 'country_id']
         unset_session_var(request, field_list)
         request.session['session_records_per_page'] = records_per_page
         request.session['session_country_id'] = ''
-
-    # aggregate query variable
-    daily_report_query_var = {}
-    daily_report_query_var["metadata.date"] = {"$gte": start_date, "$lt": end_date}
-
-    # TODO
-    # dst = mongodb_str_filter(destination, destination_type)
-    # if dst:
-    #     query_var['destination_number'] = dst
-
-    # TODO
-    # superuser have access to all CDRs
-    # if request.user.is_superuser:
-    #     acc = mongodb_str_filter(accountcode, accountcode_type)
-    #     if acc:
-    #         daily_report_query_var['metadata.accountcode'] = acc
-    #         query_var['accountcode'] = acc
-
-    # if not request.user.is_superuser:
-    #     daily_report_query_var['metadata.accountcode'] = request.user.userprofile.accountcode
-    #     query_var['accountcode'] = daily_report_query_var['metadata.accountcode']
-
-    # cli = mongodb_str_filter(caller_id_number, caller_id_number_type)
-    # if cli:
-    #     query_var['caller_id_number'] = cli
 
     # Define no of records per page
     records_per_page = int(records_per_page)
@@ -311,21 +275,44 @@ def cdr_view(request):
         operator_query = get_filter_operator_int('duration', duration_type)
         kwargs[operator_query] = duration
 
-    print(kwargs, destination_type)
+    if caller_id_number:
+        operator_query = get_filter_operator_str('caller_id_number', caller_id_number_type)
+        kwargs[operator_query] = caller_id_number
+
+    # super user can see all CDRs
+    if not request.user.is_superuser:
+        kwargs['user_id'] = request.user.id
+        # TODO: CDR model also have accountcode, see exactly how it makes sense to use it.
+        # we might want on the long term to have several accountcode per users
+        #
+        # daily_report_query_var['metadata.accountcode'] = request.user.userprofile.accountcode
+        # query_var['accountcode'] = daily_report_query_var['metadata.accountcode']
+
+    if request.user.is_superuser and accountcode:
+        try:
+            user_prof = UserProfile.objects.get(accountcode=accountcode)
+            kwargs['user_id'] = user_prof.user.id
+        except UserProfile.DoesNotExist:
+            # cannot find a user for this accountcode
+            pass
 
     cdrs = CDR.objects.filter(**kwargs).order_by(page_vars['sort_order'])
     page_cdr_list = cdrs[page_vars['start_page']:page_vars['end_page']]
     cdr_count = cdrs.count()
 
-    # TODO
     logging.debug('Create cdr result')
+    # TODO
     # cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
     cdr_view_daily_data = {}
 
     # store query_var in session without date
-    export_query_var = query_var.copy()
-    # del export_query_var['start_uepoch']
-    request.session['session_export_query_var'] = export_query_var
+    export_kwargs = kwargs.copy()
+    if 'starting_date__gte' in export_kwargs:
+        export_kwargs['starting_date__gte'] = export_kwargs['starting_date__gte'].strftime('%Y-%m-%dT%H:%M:%S')
+    if 'starting_date__lte' in export_kwargs:
+        export_kwargs['starting_date__lte'] = export_kwargs['starting_date__lte'].strftime('%Y-%m-%dT%H:%M:%S')
+
+    request.session['session_export_kwargs'] = export_kwargs
 
     form = CdrSearchForm(
         initial={
@@ -334,7 +321,6 @@ def cdr_view(request):
             'destination': destination,
             'destination_type': destination_type,
             'accountcode': accountcode,
-            'accountcode_type': accountcode_type,
             'caller_id_number': caller_id_number,
             'caller_id_number_type': caller_id_number_type,
             'duration': duration,
@@ -347,11 +333,6 @@ def cdr_view(request):
             'records_per_page': records_per_page
         }
     )
-
-    # f = CDRFilter(request.GET, queryset=CDR.objects.all())
-    # starting_date__gte=datetime.date.today()
-    # destination_number__startswith='+34'
-    # return render_to_response('my_app/template.html', {'filter': f})
 
     template_data = {
         'page_cdr_list': page_cdr_list,
@@ -384,50 +365,42 @@ def cdr_export_to_csv(request):
     """
     format_type = request.GET['format']
     # get the response object, this can be used as a stream
-    response = HttpResponse(mimetype='text/%s' % format_type)
+    response = HttpResponse(content_type='text/%s' % format_type)
     # force download
     response['Content-Disposition'] = 'attachment;filename=export.%s' % format_type
 
     # get query_var from request.session
-    export_query_var = request.session.get('session_export_query_var')
     start_date = request.session.get('session_start_date')
     end_date = request.session.get('session_end_date')
     start_date = ceil_strdate(start_date, 'start', True)
     end_date = ceil_strdate(end_date, 'end', True)
-    export_query_var["start_uepoch"] = {"$gte": start_date, "$lt": end_date}
 
-    mongo_cdr_result = mongodb.cdr_common.find(
-        export_query_var,
-        {
-            "uuid": 0,
-            "answer_uepoch": 0,
-            "end_uepoch": 0,
-            "mduration": 0,
-            "billmsec": 0,
-            "read_codec": 0,
-            "write_codec": 0,
-            "remote_media_ip": 0,
-        }
-    )
+    if request.session.get('session_export_kwargs'):
+        kwargs = request.session.get('session_export_kwargs')
+
+    if start_date:
+        kwargs['starting_date__gte'] = start_date
+    if end_date:
+        kwargs['starting_date__lte'] = end_date
+
+    cdrs = CDR.objects.filter(**kwargs)
 
     headers = ('Call-date', 'CLID', 'Destination', 'Duration', 'Bill sec', 'Hangup cause',
                'AccountCode', 'Direction')
 
     list_val = []
-    for cdr in mongo_cdr_result:
-        starting_date = cdr['start_uepoch']
-        if format_type == Export_choice.JSON:
-            starting_date = str(cdr['start_uepoch'])
+    for cdr in cdrs:
+        starting_date = str(cdr.starting_date)
 
         list_val.append((
             starting_date,
-            cdr['caller_id_number'] + '-' + cdr['caller_id_name'],
-            cdr['destination_number'],
-            cdr['duration'],
-            cdr['billsec'],
-            get_hangupcause_name(cdr['hangup_cause_id']),
-            cdr['accountcode'],
-            cdr['direction'],
+            cdr.caller_id_number + '-' + cdr.caller_id_name,
+            cdr.destination_number,
+            cdr.duration,
+            cdr.billsec,
+            get_hangupcause_name(cdr.hangup_cause_id),
+            cdr.accountcode,
+            cdr.direction,
         ))
 
     data = tablib.Dataset(*list_val, headers=headers)

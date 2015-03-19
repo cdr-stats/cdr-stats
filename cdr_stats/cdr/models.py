@@ -104,8 +104,8 @@ class AccountCode(caching.base.CachingMixin, models.Model):
 
     **Attributes**:
 
-        * ``name`` - Name of switch.
-        * ``ipaddress`` - ipaddress
+        * ``accountcode`` - use for CDR identification
+        * ``description`` - description
 
     **Name of DB table**: voip_switch
     """

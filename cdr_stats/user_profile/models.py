@@ -51,20 +51,32 @@ class UserProfile(models.Model):
     **Name of DB table**: user_profile
     """
     user = models.OneToOneField(User)
-    voipplan = models.ForeignKey(VoIPPlan, verbose_name=_('VoIP plan'), help_text=_("select VoIP Plan"))
-    accountcode = models.CharField(max_length=50, verbose_name=_('account code'))
-    address = models.CharField(blank=True, null=True, max_length=200, verbose_name=_('address'))
-    city = models.CharField(max_length=120, blank=True, null=True, verbose_name=_('city'))
-    state = models.CharField(max_length=120, blank=True, null=True, verbose_name=_('state'))
+    voipplan = models.ForeignKey(VoIPPlan, verbose_name=_('VoIP plan'),
+                                 help_text=_("select VoIP Plan"))
+    accountcode = models.CharField(max_length=50, verbose_name=_('account code'),
+                                   unique=True)
+    address = models.CharField(blank=True, null=True, max_length=200,
+                               verbose_name=_('address'))
+    city = models.CharField(max_length=120, blank=True, null=True,
+                            verbose_name=_('city'))
+    state = models.CharField(max_length=120, blank=True, null=True,
+                             verbose_name=_('state'))
     country = CountryField(blank=True, null=True, verbose_name=_('country'))
-    zip_code = models.CharField(max_length=120, blank=True, null=True, verbose_name=_('zip code'))
-    phone_no = models.CharField(max_length=90, blank=True, null=True, verbose_name=_('phone number'))
-    fax = models.CharField(max_length=90, blank=True, null=True, verbose_name=_('fax Number'))
-    company_name = models.CharField(max_length=90, blank=True, null=True, verbose_name=_('company name'))
-    company_website = models.URLField(max_length=90, blank=True, null=True, verbose_name=_('company website'))
+    zip_code = models.CharField(max_length=120, blank=True, null=True,
+                                verbose_name=_('zip code'))
+    phone_no = models.CharField(max_length=90, blank=True, null=True,
+                                verbose_name=_('phone number'))
+    fax = models.CharField(max_length=90, blank=True, null=True,
+                           verbose_name=_('fax Number'))
+    company_name = models.CharField(max_length=90, blank=True, null=True,
+                                    verbose_name=_('company name'))
+    company_website = models.URLField(max_length=90, blank=True, null=True,
+                                      verbose_name=_('company website'))
     language = LanguageField(blank=True, null=True, verbose_name=_('language'))
-    note = models.CharField(max_length=250, blank=True, null=True, verbose_name=_('note'))
-    multiple_email = models.TextField(blank=True, null=True, verbose_name=_('report mail list'),
+    note = models.CharField(max_length=250, blank=True, null=True,
+                            verbose_name=_('note'))
+    multiple_email = models.TextField(blank=True, null=True,
+                                      verbose_name=_('report mail list'),
                                       help_text=_('enter a valid e-mail address separated by commas.'))
 
     created_date = models.DateTimeField(auto_now_add=True)

@@ -91,8 +91,6 @@ class SearchForm(forms.Form):
     destination_type = forms.ChoiceField(label=_('type').capitalize(), required=False,
                                          choices=list(STRING_SEARCH_TYPE_LIST))
     accountcode = forms.CharField(label=_('account code').capitalize(), required=False)
-    accountcode_type = forms.ChoiceField(label=_('type').capitalize(), required=False,
-                                         choices=list(STRING_SEARCH_TYPE_LIST))
     duration = forms.CharField(label=_('duration (secs)').capitalize(), required=False)
     duration_type = forms.ChoiceField(label=_('type').capitalize(), required=False,
                                       choices=COMPARE_LIST)
@@ -162,8 +160,7 @@ class CdrSearchForm(SearchForm):
             Div(
                 Div('destination', css_class='col-md-2'),
                 Div('destination_type', css_class='col-md-2'),
-                Div('accountcode', css_class='col-md-2'),
-                Div('accountcode_type', css_class='col-md-2'),
+                Div('accountcode', css_class='col-md-4'),
                 Div('caller_id_number', css_class='col-md-2'),
                 Div('caller_id_number_type', css_class='col-md-2'),
                 css_class='row'
