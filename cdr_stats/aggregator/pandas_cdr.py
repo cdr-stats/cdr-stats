@@ -13,14 +13,14 @@
 #
 
 from django.db import connection
-# from datetime import datetime, date, timedelta
 import pandas as pd
 from pandas.io import sql
 # import numpy as np
 
 
-def prepare_cdr_hour_report_per_switch():
-    df = sql.read_sql_query("""SELECT
+# TODO: move sqlquery to aggregator/cdr.py
+sqlquery = """
+    SELECT
         dateday,
         switch_id,
         coalesce(nbcalls,0) AS nbcalls,
@@ -50,33 +50,38 @@ def prepare_cdr_hour_report_per_switch():
 
         GROUP BY dayhour, switch_id
         ) results
-    ON (dateday = results.dayhour)""", connection, index_col=["dateday", "switch_id"])
-    print df
+    ON (dateday = results.dayhour)"""
+
+
+# TODO: add custom date range
+# TODO: add switch setting
+def prepare_cdr_hour_report_per_switch():
+    """
+    use pandas to prepare series to display cdr hour report per switch
+    """
+    series = {}
+    df = sql.read_sql_query(sqlquery, connection)
     table = pd.tools.pivot.pivot_table(df,
         values=['nbcalls', 'duration', 'billsec', 'buy_cost', 'sell_cost'],
         index=['dateday'],
         columns=['switch_id'],
         fill_value=0)
-    print table.nbcalls
+    metric_list = ['nbcalls', 'duration', 'billsec', 'buy_cost', 'sell_cost']
 
-    num_column = len(table.nbcalls.columns.tolist())
-    # list_column, ie for switches [1.0, 2.0]
-    list_column = table.nbcalls.columns.tolist()
+    # build a serie for each metric
+    for metric in metric_list:
+        series[metric] = {}
+        # list_columns, ie for switches [1.0, 2.0]
+        list_columns = table[metric].columns.tolist()
 
-    first_column = table.nbcalls.columns.tolist()[0]
-    second_column = table.nbcalls.columns.tolist()[1]
+        # Transpose
+        ntable = table[metric].T
+        # Build the result dictionary
+        series[metric]['columns'] = list_columns
+        series[metric]['x_date'] = list(table.index)
 
-    print (num_column, list_column, first_column, second_column)
-
-    # Transpose
-    ntable = table.nbcalls.T
-    # List of values for nbcalls second_column
-    for i in ntable.loc[second_column]:
-        print i
-
-    # display dates
-    for i in table.index:
-        print i
-        # 2015-03-19 12:00:00+01:00
-        # 2015-03-19 13:00:00+01:00
-        # 2015-03-19 14:00:00+01:00
+        for col in list_columns:
+            # series[metric]['values'] = {}
+            yname = 'y_' + str(col)
+            series[metric][yname] = list(ntable.loc[col])
+    return series
