@@ -363,3 +363,35 @@ GROUP BY
 ORDER BY
     duration DESC
 LIMIT 10;
+
+-- hours reporting with switches
+SELECT
+    dateday,
+    switch_id,
+    coalesce(nbcalls,0) AS nbcalls,
+    coalesce(duration,0) AS duration,
+    coalesce(billsec,0) AS billsec,
+    coalesce(buy_cost,0) AS buy_cost,
+    coalesce(sell_cost,0) AS sell_cost
+FROM
+    generate_series(
+                    date_trunc('hour', current_timestamp - interval '24' hour),
+                    date_trunc('hour', current_timestamp + interval '2' hour),
+                    '1 hour')
+    as dateday
+LEFT OUTER JOIN (
+    SELECT
+        date_trunc('hour', starting_date) as dayhour,
+        switch_id as switch_id,
+        SUM(nbcalls) as nbcalls,
+        SUM(duration) as duration,
+        SUM(billsec) as billsec,
+        SUM(buy_cost) as buy_cost,
+        SUM(sell_cost) as sell_cost
+    FROM matv_voip_cdr_aggr_hour
+    WHERE
+        starting_date > date_trunc('hour', current_timestamp - interval '24' hour) and
+        starting_date <= date_trunc('hour', current_timestamp + interval '2' hour)
+    GROUP BY dayhour, switch_id
+    ) results
+ON (dateday = results.dayhour);

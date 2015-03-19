@@ -13,6 +13,7 @@
 #
 
 from django.db import connection
+from datetime import datetime, date, timedelta
 
 
 def condition_switch_id(switch_id):
@@ -49,8 +50,8 @@ SELECT
     coalesce(sell_cost,0) AS sell_cost
 FROM
     generate_series(
-                    date_trunc('hour', current_timestamp - interval '24' hour),
-                    date_trunc('hour', current_timestamp),
+                    date_trunc('hour', %(start_date)s),
+                    date_trunc('hour', %(end_date)s),
                     '1 hour')
     AS dateday
 LEFT OUTER JOIN (
@@ -63,29 +64,43 @@ LEFT OUTER JOIN (
         SUM(sell_cost) AS sell_cost
     FROM matv_voip_cdr_aggr_hour
     WHERE
-        starting_date > date_trunc('hour', current_timestamp - interval '24' hour) AND
-        starting_date <= date_trunc('hour', current_timestamp)
-        %(user)s
-        %(switch)s
+        starting_date > date_trunc('hour', %(start_date)s) AND
+        starting_date <= date_trunc('hour', %(end_date)s)
+        #USER_CONDITION#
+        #SWITCH_CONDITION#
     GROUP BY dayhour
     ) results
 ON (dateday = results.dayhour);
 """
 
 
-def custom_sql_matv_voip_cdr_aggr_hour(user, switch_id):
+def custom_sql_matv_voip_cdr_aggr_last24hour(user, switch_id):
+    """
+    perform query to retrieve last 24 hours of aggregate calls data
+    """
+    # build daterange for last 24 hours
+    start_date = datetime.today() - timedelta(hours=24)
+    end_date = datetime.today()
+
+    return custom_sql_matv_voip_cdr_aggr_hour(user, switch_id, start_date, end_date)
+
+
+def custom_sql_matv_voip_cdr_aggr_hour(user, switch_id, start_date, end_date):
     """
     perform query to retrieve last 24 hours of aggregate calls data
     """
     result_hour_aggr = {}
     total_calls = total_duration = total_billsec = total_buy_cost = total_sell_cost = 0
+
     with connection.cursor() as cursor:
+        sqlquery = sqlquery_aggr_cdr_hour
+        sqlquery = sqlquery.replace("#USER_CONDITION#", condition_user(user))
+        sqlquery = sqlquery.replace("#SWITCH_CONDITION#", condition_switch_id(switch_id))
         params = {
-            'switch': condition_switch_id(switch_id),
-            'user': condition_user(user)
+            'start_date': start_date,
+            'end_date': end_date,
             }
-        sqlquery = sqlquery_aggr_cdr_hour % params
-        cursor.execute(sqlquery)
+        cursor.execute(sqlquery, params)
         rows = cursor.fetchall()
         i = 0
         for row in rows:
@@ -205,3 +220,76 @@ def custom_sql_aggr_top_hangup_cause(user, switch_id=0, limit=10):
             }
             i = i + 1
     return result
+
+
+sqlquery_aggr_cdr_hour_switch = """
+SELECT
+    dateday,
+    switch_id,
+    coalesce(nbcalls,0) AS nbcalls,
+    coalesce(duration,0) AS duration,
+    coalesce(billsec,0) AS billsec,
+    coalesce(buy_cost,0) AS buy_cost,
+    coalesce(sell_cost,0) AS sell_cost
+FROM
+    generate_series(
+                    date_trunc('hour', %(start_date)s),
+                    date_trunc('hour', %(end_date)s),
+                    '1 hour')
+    AS dateday
+LEFT OUTER JOIN (
+    SELECT
+        date_trunc('hour', starting_date) AS dayhour,
+        switch_id as switch_id,
+        SUM(nbcalls) AS nbcalls,
+        SUM(duration) AS duration,
+        SUM(billsec) AS billsec,
+        SUM(buy_cost) AS buy_cost,
+        SUM(sell_cost) AS sell_cost
+    FROM matv_voip_cdr_aggr_hour
+    WHERE
+        starting_date > date_trunc('hour', %(start_date)s) AND
+        starting_date <= date_trunc('hour', %(end_date)s)
+        #USER_CONDITION#
+        #SWITCH_CONDITION#
+    GROUP BY dayhour, switch_id
+    ) results
+ON (dateday = results.dayhour);
+"""
+
+
+def custom_sql_matv_voip_cdr_aggr_hour_switch(user, switch_id, start_date, end_date):
+    """
+    perform query to retrieve last 24 hours of aggregate calls data
+    """
+    result_hour_aggr = {}
+    total_calls = total_duration = total_billsec = total_buy_cost = total_sell_cost = 0
+
+    with connection.cursor() as cursor:
+        sqlquery = sqlquery_aggr_cdr_hour_switch
+        sqlquery = sqlquery.replace("#USER_CONDITION#", condition_user(user))
+        sqlquery = sqlquery.replace("#SWITCH_CONDITION#", condition_switch_id(switch_id))
+        params = {
+            'start_date': start_date,
+            'end_date': end_date,
+            }
+        cursor.execute(sqlquery, params)
+        rows = cursor.fetchall()
+        i = 0
+        for row in rows:
+            total_calls += row[1]
+            total_duration += row[2]
+            total_billsec += row[3]
+            total_buy_cost += row[4]
+            total_sell_cost += row[5]
+            result_hour_aggr[i] = {
+                "calltime": row[0],
+                "nbcalls": row[1],
+                "duration": row[2],
+                "billsec": row[3],
+                "buy_cost": row[4],
+                "sell_cost": row[5],
+            }
+            i = i + 1
+
+    return (result_hour_aggr, total_calls, total_duration, total_billsec, total_buy_cost, total_sell_cost)

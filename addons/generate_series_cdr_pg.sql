@@ -11,8 +11,8 @@ INSERT INTO voip_cdr (user_id, switch_id, cdr_source_type, callid, caller_id_num
     authorized, buy_rate, buy_cost, sell_rate, sell_cost, data) (
     SELECT
         1 AS user_id,
-        1 AS switch_id,
-        4 AS cdr_source_type,
+        cast(random() * 1 as int) + 1 AS switch_id,
+        cast(random() * 4 as int) + 1 AS cdr_source_type,
         cast(uuid_generate_v4() AS text) AS callid,
         '+' || cast(30 + cast(trunc(random() * 20 + 1) as int) as text) || 800000000 + cast(trunc(random() * 5000000 + 1) as int) AS caller_id_number,
         '' AS caller_id_name,

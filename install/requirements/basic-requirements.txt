@@ -18,3 +18,7 @@ requests==2.4.1
 tablib==0.10.0
 python-memcached==1.53
 influxdb==0.3.0
+
+pandas==0.15.2
+jsonschema==2.4.0
+SQLAlchemy==0.9.9
