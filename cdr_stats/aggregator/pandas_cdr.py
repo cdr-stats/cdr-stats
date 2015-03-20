@@ -13,9 +13,10 @@
 #
 
 from django.db import connection
+from aggregator.cdr import condition_switch_id, condition_user
 import pandas as pd
 from pandas.io import sql
-# import numpy as np
+import time
 
 
 # TODO: move sqlquery to aggregator/cdr.py
@@ -30,13 +31,13 @@ sqlquery = """
         coalesce(sell_cost,0) AS sell_cost
     FROM
         generate_series(
-                        date_trunc('hour', current_timestamp - interval '6' hour),
-                        date_trunc('hour', current_timestamp + interval '2' hour),
-                        '1 hour')
+                        date_trunc('#INTERVAL#', %(start_date)s),
+                        date_trunc('#INTERVAL#', %(end_date)s),
+                        '1 #INTERVAL#')
         as dateday
     LEFT OUTER JOIN (
         SELECT
-            date_trunc('hour', starting_date) as dayhour,
+            date_trunc('#INTERVAL#', starting_date) as time_interval,
             switch_id as switch_id,
             SUM(nbcalls) as nbcalls,
             SUM(duration) as duration,
@@ -45,22 +46,42 @@ sqlquery = """
             SUM(sell_cost) as sell_cost
         FROM matv_voip_cdr_aggr_hour
         WHERE
-            starting_date > date_trunc('hour', current_timestamp - interval '6' hour) and
-            starting_date <= date_trunc('hour', current_timestamp + interval '2' hour)
-
-        GROUP BY dayhour, switch_id
+            starting_date > date_trunc('#INTERVAL#', %(start_date)s) and
+            starting_date <= date_trunc('#INTERVAL#', %(end_date)s)
+            #USER_CONDITION#
+            #SWITCH_CONDITION#
+        GROUP BY time_interval, switch_id
         ) results
-    ON (dateday = results.dayhour)"""
+    ON (dateday = results.time_interval)"""
 
 
-# TODO: add custom date range
-# TODO: add switch setting
-def prepare_cdr_hour_report_per_switch():
+def conv_timestamp(date):
     """
-    use pandas to prepare series to display cdr hour report per switch
+    function to be used by map to convert list of datetime to timestamp
+    """
+    return int(1000 * time.mktime(date.timetuple()))
+
+
+def get_report_cdr_per_switch(user, interval, start_date, end_date, switch_id):
+    """
+    Use pandas to prepare series to display cdr hour report per switch
+
+    **Attributes**:
+
+        - interval: this could be hour / day / week / month
+        - start_date: start date
+        - end_date: end date
+        - switch_id: id of the switch (0 is all)
     """
     series = {}
-    df = sql.read_sql_query(sqlquery, connection)
+    subsqlquery = sqlquery.replace("#USER_CONDITION#", condition_user(user))
+    subsqlquery = subsqlquery.replace("#SWITCH_CONDITION#", condition_switch_id(switch_id))
+    subsqlquery = subsqlquery.replace("#INTERVAL#", interval)
+    params = {
+        'start_date': start_date,
+        'end_date': end_date,
+    }
+    df = sql.read_sql_query(subsqlquery, connection, params=params)
     table = pd.tools.pivot.pivot_table(df,
         values=['nbcalls', 'duration', 'billsec', 'buy_cost', 'sell_cost'],
         index=['dateday'],
@@ -73,15 +94,22 @@ def prepare_cdr_hour_report_per_switch():
         series[metric] = {}
         # list_columns, ie for switches [1.0, 2.0]
         list_columns = table[metric].columns.tolist()
+        list_columns = map(int, list_columns)
 
         # Transpose
         ntable = table[metric].T
         # Build the result dictionary
         series[metric]['columns'] = list_columns
         series[metric]['x_date'] = list(table.index)
+        # convert into timestamp value
+        series[metric]['x_timestamp'] = map(conv_timestamp, list(table.index))
+        series[metric]['values'] = {}
 
+        valsum = 0
         for col in list_columns:
-            # series[metric]['values'] = {}
-            yname = 'y_' + str(col)
-            series[metric][yname] = list(ntable.loc[col])
+            series[metric]['values'][str(col)] = list(ntable.loc[col])
+            # valsum += map(sum, list(ntable.loc[col]))
+            for i in list(ntable.loc[col]):
+                valsum += i
+        series[metric]['total'] = valsum
     return series

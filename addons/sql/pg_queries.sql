@@ -395,3 +395,38 @@ LEFT OUTER JOIN (
     GROUP BY dayhour, switch_id
     ) results
 ON (dateday = results.dayhour);
+
+
+-- days reporting with switches
+-- time_interval could be hour / day / week / month
+SELECT
+    dateday,
+    switch_id,
+    coalesce(nbcalls,0) AS nbcalls,
+    coalesce(duration,0) AS duration,
+    coalesce(billsec,0) AS billsec,
+    coalesce(buy_cost,0) AS buy_cost,
+    coalesce(sell_cost,0) AS sell_cost
+FROM
+    generate_series(
+                    date_trunc('day', current_timestamp - interval '24' hour),
+                    date_trunc('day', current_timestamp + interval '2' hour),
+                    '1 day')
+    as dateday
+LEFT OUTER JOIN (
+    SELECT
+        date_trunc('day', starting_date) as time_interval,
+        switch_id as switch_id,
+        SUM(nbcalls) as nbcalls,
+        SUM(duration) as duration,
+        SUM(billsec) as billsec,
+        SUM(buy_cost) as buy_cost,
+        SUM(sell_cost) as sell_cost
+    FROM matv_voip_cdr_aggr_hour
+    WHERE
+        starting_date > date_trunc('day', current_timestamp - interval '24' hour) and
+        starting_date <= date_trunc('day', current_timestamp + interval '2' hour)
+    GROUP BY time_interval, switch_id
+    ) results
+ON (dateday = results.time_interval);
+

@@ -13,7 +13,7 @@
 #
 
 from django.db import connection
-from datetime import datetime, date, timedelta
+from datetime import datetime, timedelta
 
 
 def condition_switch_id(switch_id):
@@ -122,7 +122,7 @@ def custom_sql_matv_voip_cdr_aggr_hour(user, switch_id, start_date, end_date):
     return (result_hour_aggr, total_calls, total_duration, total_billsec, total_buy_cost, total_sell_cost)
 
 
-sqlquery_aggr_country_last24h = """
+sqlquery_aggr_country = """
     SELECT
         country_id,
         SUM(duration) AS duration,
@@ -133,10 +133,10 @@ sqlquery_aggr_country_last24h = """
     FROM
         matv_voip_cdr_aggr_hour
     WHERE
-        starting_date > date_trunc('hour', current_timestamp - interval '24' hour) AND
-        starting_date <= date_trunc('hour', current_timestamp)
-        %(user)s
-        %(switch)s
+        starting_date > date_trunc('hour', %(start_date)s) AND
+        starting_date <= date_trunc('hour', %(end_date)s)
+        #USER_CONDITION#
+        #SWITCH_CONDITION#
     GROUP BY
         country_id
     ORDER BY
@@ -145,19 +145,32 @@ sqlquery_aggr_country_last24h = """
     """
 
 
-def custom_sql_aggr_top_country(user, switch_id, limit=5):
+def custom_sql_aggr_top_country_last24hour(user, switch_id, limit=5):
     """
     perform query to retrieve last 24 hours of aggregate calls data
     """
+    # build daterange for last 24 hours
+    start_date = datetime.today() - timedelta(hours=24)
+    end_date = datetime.today()
+
+    return custom_sql_aggr_top_country(user, switch_id, limit, start_date, end_date)
+
+
+def custom_sql_aggr_top_country(user, switch_id, limit, start_date, end_date):
+    """
+    perform query to retrieve and aggregate calls data by country
+    """
     result = []
     with connection.cursor() as cursor:
+        sqlquery = sqlquery_aggr_country
+        sqlquery = sqlquery.replace("#USER_CONDITION#", condition_user(user))
+        sqlquery = sqlquery.replace("#SWITCH_CONDITION#", condition_switch_id(switch_id))
         params = {
-            'switch': condition_switch_id(switch_id),
-            'user': condition_user(user),
-            'limit': limit
-        }
-        sqlquery = sqlquery_aggr_country_last24h % params
-        cursor.execute(sqlquery)
+            'start_date': start_date,
+            'end_date': end_date,
+            'limit': limit,
+            }
+        cursor.execute(sqlquery, params)
         rows = cursor.fetchall()
         for row in rows:
             result.append({

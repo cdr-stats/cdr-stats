@@ -228,17 +228,25 @@ class CdrOverviewForm(CdrSearchForm):
     """
     Form used to get overview of calls in the Customer UI.
     """
+    metric = forms.TypedChoiceField(label=_('metric').capitalize(), required=False,
+                                    choices=(('nbcalls', _('calls')),
+                                             ('duration', _('duration')),
+                                             ('billsec', _('billsec')),
+                                             ('buy_cost', _('buy_cost')),
+                                             ('sell_cost', _('sell_cost')))
+                                    )
 
     def __init__(self, *args, **kwargs):
         super(CdrOverviewForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_class = 'well'
-        css_class = 'col-md-4'
+        css_class = 'col-md-3'
         self.helper.layout = Layout(
             Div(
                 Div('from_date', css_class=css_class),
                 Div('to_date', css_class=css_class),
                 Div('switch_id', css_class=css_class),
+                Div('metric', css_class=css_class),
                 css_class='row'
             ),
         )

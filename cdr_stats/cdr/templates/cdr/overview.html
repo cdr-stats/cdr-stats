@@ -1,24 +1,12 @@
 {% extends "frontend/master.html" %}
-{% load i18n cdr_tags cache nvd3_tags crispy_forms_tags %}
+{% load i18n cdr_tags country_dialcode_tags cache nvd3_tags common_tags crispy_forms_tags %}
 
 {% block extra_header %}
     <script type="text/javascript">
         $(function () {
             $('a[data-toggle="tab"]').on('click', function (e) {
                 if (e.target.hash == '#tabs-2') {
-                    {% load_chart hourly_duration_charttype hourly_duration_chartdata hourly_duration_chartcontainer hourly_duration_extra %}
-                }
-                if (e.target.hash == '#tabs-3') {
-                    {% load_chart daily_call_charttype daily_call_chartdata daily_call_chartcontainer daily_call_extra %}
-                }
-                if (e.target.hash == '#tabs-4') {
-                    {% load_chart daily_duration_charttype daily_duration_chartdata daily_duration_chartcontainer daily_duration_extra %}
-                }
-                if (e.target.hash == '#tabs-5') {
-                    {% load_chart monthly_call_charttype monthly_call_chartdata monthly_call_chartcontainer monthly_call_extra %}
-                }
-                if (e.target.hash == '#tabs-6') {
-                    {% load_chart monthly_duration_charttype monthly_duration_chartdata monthly_duration_chartcontainer monthly_duration_extra %}
+                    {% load_chart daily_charttype daily_chartdata daily_chartcontainer daily_extra %}
                 }
             });
         });
@@ -31,10 +19,7 @@
 {% endblock %}
 
 {% block content %}
-<div id="form_collapse" class="collapse">
     {% crispy form form.helper %}
-</div>
-{% include "frontend/common_search_toggle_button.html" %}
 
 <div class="row">
     <div class="col-md-12 col-xs-12 col-sm-12">
@@ -46,67 +31,117 @@
                 {% if end_date  %}
                     {% trans "to" %} {{ end_date|date:"jS N Y" }}
                 {% endif %}
+                - {% trans "showing"|capfirst %}: {{ metric|title }}
             </b>
         </div>
     </div>
 </div>
+
+
 <div class="tabbable">
     <ul class="nav nav-tabs">
-        <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "hourly call"|title %}</a></li>
-        <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "hourly duration"|title %}</a></li>
-
-        <li {% if action == "tabs-3" %}class="active"{% endif %}><a href="#tabs-3" data-toggle="tab">{% trans "daily call"|title %}</a></li>
-        <li {% if action == "tabs-4" %}class="active"{% endif %}><a href="#tabs-4" data-toggle="tab">{% trans "daily duration"|title %}</a></li>
-
-        <li {% if action == "tabs-5" %}class="active"{% endif %}><a href="#tabs-5" data-toggle="tab">{% trans "monthly call"|title %}</a></li>
-        <li {% if action == "tabs-6" %}class="active"{% endif %}><a href="#tabs-6" data-toggle="tab">{% trans "monthly duration"|title %}</a></li>
+        <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "hourly"|title %}</a></li>
+        <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "daily"|title %}</a></li>
     </ul>
     <div class="tab-content">
         <div id="tabs-1" class="tab-pane {% if action == 'tabs-1' or action == '' %}active{% endif %}">
             <div class="row">
                 <div class="col-md-12 col-xs-12 col-sm-12">
-                    {% load_chart hourly_call_charttype hourly_call_chartdata hourly_call_chartcontainer hourly_call_extra %}
-                    {% include_container hourly_call_chartcontainer 400 '100%' %}
-                </div>
-            </div>
-        </div>
-        <div id="tabs-2" class="tab-pane {% if action == 'tabs-2' or action == '' %}active{% endif %}">
-            <div class="row">
-                <div class="col-md-12 col-xs-12 col-sm-12">
-                    {% include_container hourly_duration_chartcontainer 400 '100%' %}
+                    {% load_chart hourly_charttype hourly_chartdata hourly_chartcontainer hourly_extra %}
+                    {% include_container hourly_chartcontainer 400 '100%' %}
                 </div>
             </div>
         </div>
 
-        <div id="tabs-3" class="tab-pane {% if action == 'tabs-3' or action == '' %}active{% endif %}">
+        <div id="tabs-2" class="tab-pane {% if action == 'tabs-3' or action == '' %}active{% endif %}">
             <div class="row">
                 <div class="col-md-12 col-xs-12 col-sm-12">
-                    {% include_container daily_call_chartcontainer 400 '100%' %}
+                    {% include_container daily_chartcontainer 400 '100%' %}
                 </div>
             </div>
         </div>
 
-        <div id="tabs-4" class="tab-pane {% if action == 'tabs-4' or action == '' %}active{% endif %}">
-            <div class="row">
-                <div class="col-md-12 col-xs-12 col-sm-12">
-                    {% include_container daily_duration_chartcontainer 400 '100%' %}
-                </div>
-            </div>
-        </div>
-        <div id="tabs-5" class="tab-pane {% if action == 'tabs-5' or action == '' %}active{% endif %}">
-            <div class="row">
-                <div class="col-md-12 col-xs-12 col-sm-12">
-                    {% include_container monthly_call_chartcontainer 400 '100%' %}
-                </div>
-            </div>
-        </div>
-        <div id="tabs-6" class="tab-pane {% if action == 'tabs-6' or action == '' %}active{% endif %}">
-            <div class="row">
-                <div class="col-md-12 col-xs-12 col-sm-12">
-                    {% include_container monthly_duration_chartcontainer 400 '100%' %}
-                </div>
-            </div>
-        </div>
     </div>
 </div>
+
+<br/><br/>
+
+<div class="row">
+    <div class="col-md-4 col-md-offset-1">
+        <h4 class="text-center">{% trans "total calls"|title %}</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <tbody>
+                <tr>
+                    <th>{{ total_calls }}</th>
+                    <td>{% trans "number of calls"|title %}</td>
+                </tr>
+                <tr>
+                    <th>{{ metric_aggr.ACT }}</th>
+                    <td>{% trans "average calls per hour"|title %}</td>
+                </tr>
+                <tr>
+                    <th>{{ total_duration }}</th>
+                    <td>{% trans "total duration"|title %}</td>
+                </tr>
+                <tr>
+                    <th>{{ total_billsec }}</th>
+                    <td>{% trans "total billsec"|title %}</td>
+                </tr>
+                <tr>
+                    <th>{{ metric_aggr.ACD }}</th>
+                    <td>{% trans "average call duration"|title %}</td>
+                </tr>
+                {% if user.is_superuser %}
+                <tr>
+                    <th>{{ total_buy_cost|floatformat:2 }}</th>
+                    <td>{% trans "total buy cost"|title %}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <th>{{ total_sell_cost|floatformat:2 }}</th>
+                    <td>{% trans "total sell cost"|title %}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-5 col-md-offset-1">
+        <h4 class="text-center">{% trans "10 most called countries"|title %}</h4>
+        {% if country_data %}
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <tbody>
+                {% for country in country_data %}
+                    <tr>
+                        <td>
+                            {% if country.country_id %}
+                                {% cache 1800 country country.country_id %}
+                                    <img src="{{ STATIC_URL }}cdr-stats/{{ country.country_id|iso_flag }}" class="elemtooltip" title="{{ country.country_id|country_name|title }}">
+                                {% endcache %}
+                            {% else %}
+                                <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans 'World' %}">
+                            {% endif %}
+                        </td>
+                        <!-- <td>
+                            {{ country.country_id|country_name|title }}
+                        </td> -->
+                        <td>{{ country.nbcalls }} {% trans "calls"|title %}</td>
+                        <td>{{ country.duration|conv_min }} {% trans "minutes" %}</td>
+                        {% if user.is_superuser %}
+                            <td>{{ country.buy_cost|floatformat:2 }} <abbr title="{% trans 'buy cost'|title %}">{% trans "BC" %}</abbr></td>
+                        {% endif %}
+                        <td>{{ country.sell_cost|floatformat:2 }} <abbr title="{% trans 'sell cost'|title %}">{% trans "SC" %}</abbr></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <div class="">{% trans "No record found" %}</div>
+        {% endif %}
+    <div>
+</div>
+
+
 {% endblock %}

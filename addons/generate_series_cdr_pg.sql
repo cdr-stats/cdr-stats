@@ -17,7 +17,7 @@ INSERT INTO voip_cdr (user_id, switch_id, cdr_source_type, callid, caller_id_num
         '+' || cast(30 + cast(trunc(random() * 20 + 1) as int) as text) || 800000000 + cast(trunc(random() * 5000000 + 1) as int) AS caller_id_number,
         '' AS caller_id_name,
         '+' || cast(30 + cast(trunc(random() * 20 + 1) as int) as text) || 800000000 + cast(trunc(random() * 5000000 + 1) as int) AS destination_number,
-        current_timestamp - ( cast(trunc(random() * 1) as int) || ' days')::interval
+        current_timestamp - ( cast(trunc(random() * 30) as int) || ' days')::interval
              + ( cast(trunc(random() * 1440) as int) || ' minutes')::interval
              AS starting_date,
         cast(trunc(random() * 150 + 1) as int) AS duration,
@@ -31,5 +31,5 @@ INSERT INTO voip_cdr (user_id, switch_id, cdr_source_type, callid, caller_id_num
         cast(random()::numeric / 5 AS numeric(10,5)) / 5 AS sell_rate,
         cast(random()::numeric AS numeric(12,5)) AS sell_cost,
         '{"mos": 3}'::jsonb AS data
-        FROM generate_series(1, 1000000) AS n
+        FROM generate_series(1, 500000) AS n
 );

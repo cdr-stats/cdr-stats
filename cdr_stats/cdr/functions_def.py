@@ -37,6 +37,10 @@ def get_switch_ip_addr(id):
     u''
     """
     try:
+        id = int(id)
+    except AttributeError:
+        raise
+    try:
         return Switch.objects.get(pk=id).name
     except:
         return u''
