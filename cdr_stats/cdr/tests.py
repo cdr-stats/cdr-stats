@@ -247,7 +247,7 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
     def test_cdr_hourly_report(self):
         """Test Function to check cdr hourly report"""
         response = self.client.get('/daily_comparison/')
-        #self.assertTemplateUsed(response, 'cdr/report_by_hour.html')
+        #self.assertTemplateUsed(response, 'cdr/daily_comparison.html')
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.get('/daily_comparison/')

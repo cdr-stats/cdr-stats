@@ -822,7 +822,7 @@ def cdr_daily_comparison(request):
 
     **Attributes**:
 
-        * ``template`` - cdr/report_by_hour.html
+        * ``template`` - cdr/daily_comparison.html
         * ``form`` - CompareCallSearchForm
 
     **Logic Description**:
@@ -952,7 +952,7 @@ def cdr_daily_comparison(request):
             'jquery_on_ready': True,
         },
     }
-    return render_to_response('cdr/report_by_hour.html', variables, context_instance=RequestContext(request))
+    return render_to_response('cdr/daily_comparison.html', variables, context_instance=RequestContext(request))
 
 
 def trunc_date_start(date, trunc_hour_min=False):
