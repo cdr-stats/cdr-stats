@@ -258,18 +258,18 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
         data = {'switch_id': 0,
                 'from_date': datetime.now().strftime("%Y-%m-%d"),
-                'comp_days': 2,
+                'compare_days': 2,
                 'graph_view': 1,
-                'check_days': 1}
+                'compare_type': 1}
         response = self.client.post('/daily_comparison/', data)
         #self.assertTrue(response.context['form'], CompareCallSearchForm(data))
         self.assertEqual(response.status_code, 200)
 
         data = {'switch_id': 0,
                 'from_date': datetime.now().strftime("%Y-%m-%d"),
-                'comp_days': 2,
+                'compare_days': 2,
                 'graph_view': 2,
-                'check_days': 2}
+                'compare_type': 2}
         request = self.factory.post('/daily_comparison/', data)
         request.user = self.user
         request.session = {}
@@ -278,9 +278,9 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
         data = {'switch_id': 0,
                 'from_date': datetime.now().strftime("%Y-%m-%d"),
-                'comp_days': 10,
+                'compare_days': 10,
                 'graph_view': 3,
-                'check_days': 7}
+                'compare_type': 7}
         request = self.factory.post('/daily_comparison/', data)
         request.user = self.user
         request.session = {}

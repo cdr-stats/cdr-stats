@@ -34,7 +34,7 @@ from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_hourly_report, pipeline_country_hourly_report,\
     pipeline_mail_report
 from cdr.decorators import check_user_detail
-from cdr.constants import CDR_COLUMN_NAME, Export_choice, CheckWith
+from cdr.constants import CDR_COLUMN_NAME, Export_choice, COMPARE_WITH
 from voip_billing.function_def import round_val
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta

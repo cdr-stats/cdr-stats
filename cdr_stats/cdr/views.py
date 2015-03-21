@@ -41,7 +41,7 @@ from cdr.aggregate import pipeline_cdr_view_daily_report,\
     pipeline_hourly_report, pipeline_country_hourly_report,\
     pipeline_mail_report
 from cdr.decorators import check_user_detail
-from cdr.constants import CDR_COLUMN_NAME, Export_choice, CheckWith
+from cdr.constants import CDR_COLUMN_NAME, Export_choice, COMPARE_WITH
 from cdr.models import CDR
 from aggregator.cdr import custom_sql_aggr_top_country, custom_sql_aggr_top_hangup_cause, \
     custom_sql_matv_voip_cdr_aggr_hour, custom_sql_matv_voip_cdr_aggr_last24hour, \
@@ -818,38 +818,39 @@ def get_hourly_report_for_date(start_date, end_date, query_var):
 @check_user_detail('accountcode')
 @login_required
 def cdr_daily_comparison(request):
-    """CDR graph by hourly basis
+    """Hourly CDR graph that compare with previous dates
 
     **Attributes**:
 
         * ``template`` - cdr/report_by_hour.html
         * ``form`` - CompareCallSearchForm
-        * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
-        * ``map_reduce`` - mapreduce_cdr_hourly_analytic()
 
     **Logic Description**:
 
-        get all call records from mongodb collection for
-        hourly analytics for given date
+        get the call records aggregated from the CDR table
+        using the materialized view and compare with other date records
+
     """
+    metric = 'nbcalls'  # Default metric
+
     logging.debug('CDR hourly view start')
     query_var = {}
     # default
     min_charttype = call_charttype = "lineChart"
     min_chartdata = call_chartdata = {'x': []}
-    comp_days = 2
-    check_days = CheckWith.previous_days
+    compare_days = 2
+    compare_type = COMPARE_WITH.previous_days
     action = 'tabs-1'
     from_date = datetime.today()
     form = CompareCallSearchForm(request.POST or None,
                                  initial={'from_date': from_date.strftime('%Y-%m-%d'),
-                                          'comp_days': comp_days,
-                                          'check_days': check_days,
+                                          'compare_days': compare_days,
+                                          'compare_type': compare_type,
                                           'switch_id': 0})
 
     from_day = validate_days(from_date.year, from_date.month, from_date.day)
     end_date = datetime(from_date.year, from_date.month, from_day)
-    start_date = end_date + relativedelta(days=-comp_days)
+    start_date = end_date + relativedelta(days=-compare_days)
     start_date = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, 0)
     end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
 
@@ -858,23 +859,23 @@ def cdr_daily_comparison(request):
         from_date = getvar(request, 'from_date')
         select_date = ceil_strdate(from_date, 'start')
         switch_id = getvar(request, 'switch_id')
-        comp_days = int(getvar(request, 'comp_days'))
-        check_days = int(getvar(request, 'check_days'))
+        compare_days = int(getvar(request, 'compare_days'))
+        compare_type = int(getvar(request, 'compare_type'))
         if switch_id and int(switch_id) != 0:
             query_var['metadata.switch_id'] = int(switch_id)
 
         # Same day of the week
-        if check_days == CheckWith.same_day_of_the_week:
+        if compare_type == COMPARE_WITH.previous_weeks:
             compare_date_list = []
             compare_date_list.append(select_date)
 
-            for i in range(1, int(comp_days) + 1):
+            for i in range(1, int(compare_days) + 1):
                 # select_date+relativedelta(weeks=-i)
                 interval_date = select_date + relativedelta(weeks=-i)
                 compare_date_list.append(interval_date)
 
         end_date = from_date = select_date
-        start_date = end_date + relativedelta(days=-int(comp_days))
+        start_date = end_date + relativedelta(days=-int(compare_days))
         start_date = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, 0)
         end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
 
@@ -884,21 +885,26 @@ def cdr_daily_comparison(request):
         query_var['metadata.accountcode'] = request.user.userprofile.accountcode
 
     # Same day of the week
-    if check_days == CheckWith.same_day_of_the_week:
+    if compare_type == COMPARE_WITH.previous_weeks:
         for i in compare_date_list:
             s_date = datetime(i.year, i.month, i.day, 0, 0, 0, 0)
             e_date = datetime(i.year, i.month, i.day, 23, 59, 59, 999999)
             query_var['metadata.date'] = {'$gte': s_date, '$lt': e_date}
 
-            call_min_data = get_hourly_report_for_date(s_date, e_date, query_var)
-            call_per_hr_data = call_min_data['call_total_record']
-            min_per_hr_data = call_min_data['min_total_record']
+            # call_min_data = get_hourly_report_for_date(s_date, e_date, query_var)
+            # call_per_hr_data = call_min_data['call_total_record']
+            # min_per_hr_data = call_min_data['min_total_record']
+            call_min_data = {}
+            call_per_hr_data = {}
+            min_per_hr_data = {}
 
     # Previous days
-    if check_days == CheckWith.previous_days:
-        call_min_data = get_hourly_report_for_date(start_date, end_date, query_var)
-        call_per_hr_data = call_min_data['call_total_record']
-        min_per_hr_data = call_min_data['min_total_record']
+    if compare_type == COMPARE_WITH.previous_days:
+        # call_min_data = get_hourly_report_for_date(start_date, end_date, query_var)
+        # call_per_hr_data = call_min_data['call_total_record']
+        # min_per_hr_data = call_min_data['min_total_record']
+        call_per_hr_data = {}
+        min_per_hr_data = {}
 
     xdata = [i for i in range(0, 24)]
     extra_serie = {"tooltip": {"y_start": "There are ", "y_end": " calls"}}
@@ -925,7 +931,8 @@ def cdr_daily_comparison(request):
         'action': action,
         'form': form,
         'from_date': from_date,
-        'comp_days': comp_days,
+        'metric': metric,
+        'compare_days': compare_days,
         'call_charttype': call_charttype,
         'call_chartdata': call_chartdata,
         'call_chartcontainer': 'call_chartcontainer',

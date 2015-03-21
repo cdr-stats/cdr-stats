@@ -53,11 +53,11 @@ def get_start_end_date(alert_condition_add_on):
     # yesterday's date
     end_date = datetime.today() + relativedelta(days=-1)
     if alert_condition_add_on == ALERT_CONDITION_ADD_ON.SAME_DAY:  # Same day
-        comp_days = 1
+        compare_days = 1
     if alert_condition_add_on == ALERT_CONDITION_ADD_ON.SAME_DAY_IN_PRE_WEEK:  # Same day in the previous week
-        comp_days = 7
+        compare_days = 7
 
-    start_date = end_date + relativedelta(days=-int(comp_days))
+    start_date = end_date + relativedelta(days=-int(compare_days))
     # get Previous dates and Current dates
     dt_list['p_start_date'] = datetime(start_date.year, start_date.month,
                                        start_date.day, 0, 0, 0, 0)

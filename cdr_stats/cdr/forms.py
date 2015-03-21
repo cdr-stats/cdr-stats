@@ -19,7 +19,7 @@ from django.core.validators import validate_email
 from django.utils.translation import ugettext_lazy as _
 from django_lets_go.common_functions import comp_day_range
 from cdr.functions_def import get_switch_list, get_country_list
-from cdr.constants import STRING_SEARCH_TYPE_LIST, CheckWith, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
+from cdr.constants import STRING_SEARCH_TYPE_LIST, COMPARE_WITH, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.models import HangupCause
 from user_profile.models import UserProfile
 from bootstrap3_datetime.widgets import DateTimePicker
@@ -260,9 +260,16 @@ class CompareCallSearchForm(SearchForm):
     """
     from_date = forms.DateTimeField(label=_('select date').capitalize(), required=True,
                                     widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
-    comp_days = forms.ChoiceField(label=_('compare').capitalize(), required=False, choices=comp_day_range(6))
-    check_days = forms.TypedChoiceField(label=_('check with').capitalize(),
-                                        choices=list(CheckWith), widget=forms.RadioSelect(renderer=HorizRadioRenderer))
+    compare_days = forms.ChoiceField(label=_('compare').capitalize(), required=False, choices=comp_day_range(6))
+    compare_type = forms.TypedChoiceField(label=_('compare with').capitalize(),
+                                        choices=list(COMPARE_WITH), widget=forms.RadioSelect(renderer=HorizRadioRenderer))
+    metric = forms.TypedChoiceField(label=_('metric').capitalize(), required=False,
+                                    choices=(('nbcalls', _('calls')),
+                                             ('duration', _('duration')),
+                                             ('billsec', _('billsec')),
+                                             ('buy_cost', _('buy_cost')),
+                                             ('sell_cost', _('sell_cost')))
+                                    )
 
     def __init__(self, *args, **kwargs):
         super(CompareCallSearchForm, self).__init__(*args, **kwargs)
@@ -271,15 +278,16 @@ class CompareCallSearchForm(SearchForm):
         css_class = 'col-md-4'
         self.helper.layout = Layout(
             Div(
-                Div('from_date', css_class='col-md-3'),
-                Div('comp_days', css_class='col-md-2'),
-                Div('switch_id', css_class='col-md-3'),
+                Div('from_date', css_class='col-md-2'),
+                Div('compare_days', css_class='col-md-2'),
+                Div('switch_id', css_class='col-md-2'),
+                Div('metric', css_class='col-md-2'),
                 Div(HTML("""
                     <b>Check with* : </b><br/>
                     <div class="btn-group" data-toggle="buttons">
-                        {% for choice in form.check_days.field.choices %}
+                        {% for choice in form.compare_type.field.choices %}
                         <label class="btn btn-default">
-                            <input name='{{ form.check_days.name }}' type='radio' value='{{ choice.0 }}'/>
+                            <input name='{{ form.compare_type.name }}' type='radio' value='{{ choice.0 }}'/>
                             {{ choice.1 }}
                         </label>
                         {% endfor %}

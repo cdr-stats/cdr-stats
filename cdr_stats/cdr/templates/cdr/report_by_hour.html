@@ -19,10 +19,8 @@
 {% endblock %}
 
 {% block content %}
-    <div id="form_collapse" class="collapse">
-        {% crispy form form.helper %}
-    </div>
-    {% include "frontend/common_search_toggle_button.html" %}
+
+    {% crispy form form.helper %}
 
     <div class="row">
         <div class="col-md-12 col-xs-12 col-sm-12">
@@ -32,6 +30,7 @@
                     {% if from_date  %}
                         {{ from_date|date:"jS N Y" }} {% trans "with previous" %} {{ comp_days|cut:"-" }} {% trans "days" %}
                     {% endif %}
+                    - {% trans "showing"|capfirst %}: {{ metric|title }}
                 </b>
             </div>
         </div>

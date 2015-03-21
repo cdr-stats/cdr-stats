@@ -43,9 +43,9 @@ class Export_choice(Choice):
     JSON = 'json', _('JSON')
 
 
-class CheckWith(Choice):
+class COMPARE_WITH(Choice):
     previous_days = 1, _('previous days').title()
-    same_day_of_the_week = 2, _('same day of the week').title()
+    previous_weeks = 2, _('previous weeks').title()
 
 
 CDR_FIELD_LIST = (
