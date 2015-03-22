@@ -13,5 +13,5 @@ cdr_stats/settings_local.py
 build
 _build
 output.html
-*.ipynb
+.ipynb_checkpoints
 bower_components

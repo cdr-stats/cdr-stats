@@ -33,3 +33,13 @@ INSERT INTO voip_cdr (user_id, switch_id, cdr_source_type, callid, caller_id_num
         '{"mos": 3}'::jsonb AS data
         FROM generate_series(1, 500000) AS n
 );
+
+-- Generate fake data in events (used to test pydata)
+INSERT INTO events (value, starting_date) (
+    SELECT
+        cast(random() * 100 as int) + 1 AS value,
+        current_timestamp - ( cast(trunc(random() * 30) as int) || ' days')::interval
+             + ( cast(trunc(random() * 1440) as int) || ' minutes')::interval
+             AS starting_date
+    FROM generate_series(1, 50) AS n
+);
