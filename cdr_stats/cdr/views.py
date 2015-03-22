@@ -818,7 +818,8 @@ def get_hourly_report_for_date(start_date, end_date, query_var):
 @check_user_detail('accountcode')
 @login_required
 def cdr_daily_comparison(request):
-    """Hourly CDR graph that compare with previous dates
+    """
+    Hourly CDR graph that compare with previous dates
 
     **Attributes**:
 
@@ -830,125 +831,111 @@ def cdr_daily_comparison(request):
         get the call records aggregated from the CDR table
         using the materialized view and compare with other date records
 
+
+    # hourly_charttype = "lineWithFocusChart"
+    # daily_charttype = "lineWithFocusChart"
+    # hourly_chartdata = {'x': []}
+    # daily_chartdata = {'x': []}
+    # metric = 'nbcalls'  # Default metric
+
     """
     metric = 'nbcalls'  # Default metric
 
     logging.debug('CDR hourly view start')
     query_var = {}
     # default
-    min_charttype = call_charttype = "lineChart"
-    min_chartdata = call_chartdata = {'x': []}
+    switch_id = 0
+    hourly_charttype = "lineChart"
+    hourly_chartdata = {'x': []}
     compare_days = 2
     compare_type = COMPARE_WITH.previous_days
-    action = 'tabs-1'
-    from_date = datetime.today()
+    today_date = datetime.today()
     form = CompareCallSearchForm(request.POST or None,
-                                 initial={'from_date': from_date.strftime('%Y-%m-%d'),
+                                 initial={'from_date': today_date.strftime('%Y-%m-%d'),
                                           'compare_days': compare_days,
                                           'compare_type': compare_type,
                                           'switch_id': 0})
 
-    from_day = validate_days(from_date.year, from_date.month, from_date.day)
-    end_date = datetime(from_date.year, from_date.month, from_day)
-    start_date = end_date + relativedelta(days=-compare_days)
-    start_date = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, 0)
-    end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
+    today_date = datetime(today_date.year, today_date.month, today_date.day)
+    current_date = today_date
 
-    logging.debug('CDR hourly view with search option')
     if form.is_valid():
         from_date = getvar(request, 'from_date')
-        select_date = ceil_strdate(from_date, 'start')
+        current_date = ceil_strdate(str(from_date), 'start')
+        # current_date = trunc_date_start(from_date)
         switch_id = getvar(request, 'switch_id')
         compare_days = int(getvar(request, 'compare_days'))
-        compare_type = int(getvar(request, 'compare_type'))
-        if switch_id and int(switch_id) != 0:
-            query_var['metadata.switch_id'] = int(switch_id)
+        metric = getvar(request, 'metric')
 
-        # Same day of the week
-        if compare_type == COMPARE_WITH.previous_weeks:
-            compare_date_list = []
-            compare_date_list.append(select_date)
+    kwargs = {}
 
-            for i in range(1, int(compare_days) + 1):
-                # select_date+relativedelta(weeks=-i)
-                interval_date = select_date + relativedelta(weeks=-i)
-                compare_date_list.append(interval_date)
-
-        end_date = from_date = select_date
-        start_date = end_date + relativedelta(days=-int(compare_days))
-        start_date = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, 0)
-        end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
-
-    query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
-
-    if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = request.user.userprofile.accountcode
-
-    # Same day of the week
-    if compare_type == COMPARE_WITH.previous_weeks:
-        for i in compare_date_list:
-            s_date = datetime(i.year, i.month, i.day, 0, 0, 0, 0)
-            e_date = datetime(i.year, i.month, i.day, 23, 59, 59, 999999)
-            query_var['metadata.date'] = {'$gte': s_date, '$lt': e_date}
-
-            # call_min_data = get_hourly_report_for_date(s_date, e_date, query_var)
-            # call_per_hr_data = call_min_data['call_total_record']
-            # min_per_hr_data = call_min_data['min_total_record']
-            call_min_data = {}
-            call_per_hr_data = {}
-            min_per_hr_data = {}
-
-    # Previous days
-    if compare_type == COMPARE_WITH.previous_days:
-        # call_min_data = get_hourly_report_for_date(start_date, end_date, query_var)
-        # call_per_hr_data = call_min_data['call_total_record']
-        # min_per_hr_data = call_min_data['min_total_record']
-        call_per_hr_data = {}
-        min_per_hr_data = {}
+    if switch_id and switch_id != '0':
+        kwargs['switch_id'] = int(switch_id)
 
     xdata = [i for i in range(0, 24)]
-    extra_serie = {"tooltip": {"y_start": "There are ", "y_end": " calls"}}
-    call_chartdata = {'x': xdata}
-    y_count = 1
-    for i in call_per_hr_data:
-        call_chartdata['name' + str(y_count)] = i
-        call_chartdata['y' + str(y_count)] = call_per_hr_data[i]
-        call_chartdata['extra' + str(y_count)] = extra_serie
-        y_count += 1
+    hourly_chartdata = {'x': xdata}
 
-    extra_serie = {"tooltip": {"y_start": "There are ", "y_end": " mins"}}
-    min_chartdata = {'x': xdata}
+    print "compare_days:", compare_days
     y_count = 1
-    for i in min_per_hr_data:
-        min_chartdata['name' + str(y_count)] = i
-        min_chartdata['y' + str(y_count)] = min_per_hr_data[i]
-        min_chartdata['extra' + str(y_count)] = extra_serie
-        y_count += 1
+    for nday in range(1, compare_days + 1):
+        start_date = current_date + relativedelta(days=-int(nday))
+        start_date = datetime(start_date.year, start_date.month, start_date.day, 23, 59, 59, 999999)
+        end_date = current_date + relativedelta(days=-int(nday-1))
+        end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
+        # Get hourly Data
+        hourly_data = get_report_cdr_per_switch(request.user, 'hour', start_date, end_date, switch_id)
 
-    logging.debug('CDR hourly view end')
+        extra_serie = {
+            "tooltip": {"y_start": "", "y_end": " " + metric}
+        }
+        # We only need to set x axis once, so let's do it for nbcalls
+        # hourly_chartdata['x'] = hourly_data["nbcalls"]["x_timestamp"]
+        # import ipdb; ipdb.set_trace()
+        for switch in hourly_data[metric]["columns"]:
+            serie = get_switch_ip_addr(switch) + "_day_" + str(nday)
+            print "serie:", serie
+            hourly_chartdata['name' + str(y_count)] = serie
+            hourly_chartdata['y' + str(y_count)] = hourly_data[metric]["values"][str(switch)]
+            hourly_chartdata['extra' + str(y_count)] = extra_serie
+            print "hourly_chartdata::"
+            print hourly_chartdata
+            print "--------------------"
+            y_count += 1
+
+    print hourly_chartdata
+
+    # Previous days
+
+    # hourly_data = get_hourly_report_for_date(start_date, end_date, query_var)
+    # per_hr_data = hourly_data['total_record']
+    # hourly_per_hr_data = hourly_data['hourly_total_record']
+    # per_hr_data = {}
+    # hourly_per_hr_data = {}
+
+    # xdata = [i for i in range(0, 24)]
+    # extra_serie = {"tooltip": {"y_start": "There are ", "y_end": " " + metric}}
+    # hourly_chartdata = {'x': xdata}
+    # y_count = 1
+    # for i in per_hr_data:
+    #     hourly_chartdata['name' + str(y_count)] = i
+    #     hourly_chartdata['y' + str(y_count)] = hourly_per_hr_data[i]
+    #     hourly_chartdata['extra' + str(y_count)] = extra_serie
+    #     y_count += 1
+
+    # logging.debug('CDR hourly view end')
 
     variables = {
-        'action': action,
         'form': form,
-        'from_date': from_date,
+        'from_date': current_date,
         'metric': metric,
         'compare_days': compare_days,
-        'call_charttype': call_charttype,
-        'call_chartdata': call_chartdata,
-        'call_chartcontainer': 'call_chartcontainer',
-        'call_extra': {
+        'hourly_charttype': hourly_charttype,
+        'hourly_chartdata': hourly_chartdata,
+        'hourly_chartcontainer': 'hourly_chartcontainer',
+        'hourly_extra': {
             'x_is_date': False,
             'x_axis_format': 'AM_PM',
             'tag_script_js': True,
-            'jquery_on_ready': True,
-        },
-        'min_charttype': min_charttype,
-        'min_chartdata': min_chartdata,
-        'min_chartcontainer': 'min_chartcontainer',
-        'min_extra': {
-            'x_is_date': False,
-            'x_axis_format': 'AM_PM',
-            'tag_script_js': False,
             'jquery_on_ready': True,
         },
     }

@@ -365,8 +365,9 @@ ORDER BY
 LIMIT 10;
 
 -- hours reporting with switches
+-- extract(hour from dateday) as dateday,
 SELECT
-    dateday,
+    dateday as dateday,
     switch_id,
     coalesce(nbcalls,0) AS nbcalls,
     coalesce(duration,0) AS duration,
@@ -375,7 +376,7 @@ SELECT
     coalesce(sell_cost,0) AS sell_cost
 FROM
     generate_series(
-                    date_trunc('hour', current_timestamp - interval '24' hour),
+                    date_trunc('hour', current_timestamp - interval '72' hour),
                     date_trunc('hour', current_timestamp + interval '2' hour),
                     '1 hour')
     as dateday
@@ -390,7 +391,7 @@ LEFT OUTER JOIN (
         SUM(sell_cost) as sell_cost
     FROM matv_voip_cdr_aggr_hour
     WHERE
-        starting_date > date_trunc('hour', current_timestamp - interval '24' hour) and
+        starting_date > date_trunc('hour', current_timestamp - interval '72' hour) and
         starting_date <= date_trunc('hour', current_timestamp + interval '2' hour)
     GROUP BY dayhour, switch_id
     ) results

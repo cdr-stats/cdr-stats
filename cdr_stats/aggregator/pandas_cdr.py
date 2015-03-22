@@ -22,7 +22,7 @@ import time
 # TODO: move sqlquery to aggregator/cdr.py
 sqlquery = """
     SELECT
-        dateday,
+        dateday AS dateday,
         switch_id,
         coalesce(nbcalls,0) AS nbcalls,
         coalesce(duration,0) AS duration,
@@ -82,6 +82,7 @@ def get_report_cdr_per_switch(user, interval, start_date, end_date, switch_id):
         'end_date': end_date,
     }
     df = sql.read_sql_query(subsqlquery, connection, params=params)
+    # print connection.queries
     table = pd.tools.pivot.pivot_table(df,
         values=['nbcalls', 'duration', 'billsec', 'buy_cost', 'sell_cost'],
         index=['dateday'],
@@ -104,7 +105,6 @@ def get_report_cdr_per_switch(user, interval, start_date, end_date, switch_id):
         # convert into timestamp value
         series[metric]['x_timestamp'] = map(conv_timestamp, list(table.index))
         series[metric]['values'] = {}
-
         valsum = 0
         for col in list_columns:
             series[metric]['values'][str(col)] = list(ntable.loc[col])

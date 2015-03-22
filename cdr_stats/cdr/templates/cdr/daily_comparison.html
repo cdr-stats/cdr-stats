@@ -2,15 +2,6 @@
 {% load i18n cdr_tags nvd3_tags crispy_forms_tags %}
 
 {% block extra_header %}
-    <script type="text/javascript">
-        $(function () {
-            $('a[data-toggle="tab"]').on('click', function (e) {
-                if (e.target.hash == '#tabs-2') {
-                    {% load_chart min_charttype min_chartdata min_chartcontainer min_extra %}
-                }
-            });
-        });
-    </script>
     {{ form.media }}
 {% endblock %}
 
@@ -37,22 +28,15 @@
     </div>
 <div class="tabbable">
     <ul class="nav nav-tabs">
-        <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "calls per hour"|title %}</a></li>
-        <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "minutes per hour"|title %}</a></li>
+        <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">
+        {{ metric|title }} {% trans "per hour"|title %}</a></li>
     </ul>
     <div class="tab-content">
         <div id="tabs-1" class="tab-pane {% if action == 'tabs-1' or action == '' %}active{% endif %}">
             <div class="row">
                 <div class="col-md-12 col-xs-12 col-sm-12">
-                    {% load_chart call_charttype call_chartdata call_chartcontainer call_extra %}
-                    {% include_container call_chartcontainer 400 '100%' %}
-                </div>
-            </div>
-        </div>
-        <div id="tabs-2" class="tab-pane {% if action == 'tabs-2' or action == '' %}active{% endif %}">
-            <div class="row">
-                <div class="col-md-12 col-xs-12 col-sm-12">
-                    {% include_container min_chartcontainer 400 '100%' %}
+                    {% load_chart hourly_charttype hourly_chartdata hourly_chartcontainer hourly_extra %}
+                    {% include_container hourly_chartcontainer 400 '100%' %}
                 </div>
             </div>
         </div>

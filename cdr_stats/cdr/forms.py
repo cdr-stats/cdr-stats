@@ -261,8 +261,8 @@ class CompareCallSearchForm(SearchForm):
     from_date = forms.DateTimeField(label=_('select date').capitalize(), required=True,
                                     widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
     compare_days = forms.ChoiceField(label=_('compare').capitalize(), required=False, choices=comp_day_range(6))
-    compare_type = forms.TypedChoiceField(label=_('compare with').capitalize(),
-                                        choices=list(COMPARE_WITH), widget=forms.RadioSelect(renderer=HorizRadioRenderer))
+    # compare_type = forms.TypedChoiceField(label=_('compare with').capitalize(),
+    #                                     choices=list(COMPARE_WITH), widget=forms.RadioSelect(renderer=HorizRadioRenderer))
     metric = forms.TypedChoiceField(label=_('metric').capitalize(), required=False,
                                     choices=(('nbcalls', _('calls')),
                                              ('duration', _('duration')),
@@ -275,24 +275,24 @@ class CompareCallSearchForm(SearchForm):
         super(CompareCallSearchForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_class = 'well'
-        css_class = 'col-md-4'
+        css_class = 'col-md-3'
         self.helper.layout = Layout(
             Div(
-                Div('from_date', css_class='col-md-2'),
-                Div('compare_days', css_class='col-md-2'),
-                Div('switch_id', css_class='col-md-2'),
-                Div('metric', css_class='col-md-2'),
-                Div(HTML("""
-                    <b>Check with* : </b><br/>
-                    <div class="btn-group" data-toggle="buttons">
-                        {% for choice in form.compare_type.field.choices %}
-                        <label class="btn btn-default">
-                            <input name='{{ form.compare_type.name }}' type='radio' value='{{ choice.0 }}'/>
-                            {{ choice.1 }}
-                        </label>
-                        {% endfor %}
-                    </div>
-                   """), css_class=css_class),
+                Div('from_date', css_class=css_class),
+                Div('compare_days', css_class=css_class),
+                Div('switch_id', css_class=css_class),
+                Div('metric', css_class=css_class),
+                # Div(HTML("""
+                #     <b>Check with* : </b><br/>
+                #     <div class="btn-group" data-toggle="buttons">
+                #         {% for choice in form.compare_type.field.choices %}
+                #         <label class="btn btn-default">
+                #             <input name='{{ form.compare_type.name }}' type='radio' value='{{ choice.0 }}'/>
+                #             {{ choice.1 }}
+                #         </label>
+                #         {% endfor %}
+                #     </div>
+                #    """), css_class=css_class),
                 css_class='row'
             ),
         )
