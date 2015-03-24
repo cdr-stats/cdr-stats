@@ -46,7 +46,7 @@ from cdr.models import CDR
 from aggregator.cdr import custom_sql_aggr_top_country, custom_sql_aggr_top_hangup_cause, \
     custom_sql_matv_voip_cdr_aggr_hour, custom_sql_matv_voip_cdr_aggr_last24hour, \
     custom_sql_aggr_top_country_last24hour
-from aggregator.pandas_cdr import get_report_cdr_per_switch
+from aggregator.pandas_cdr import get_report_cdr_per_switch, get_report_compare_cdr
 from voip_billing.function_def import round_val
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
@@ -839,13 +839,10 @@ def cdr_daily_comparison(request):
     # metric = 'nbcalls'  # Default metric
 
     """
-    metric = 'nbcalls'  # Default metric
-
-    logging.debug('CDR hourly view start')
-    query_var = {}
-    # default
+    # Default
+    metric = 'nbcalls'
     switch_id = 0
-    hourly_charttype = "lineChart"
+    hourly_charttype = "multiBarChart"
     hourly_chartdata = {'x': []}
     compare_days = 2
     compare_type = COMPARE_WITH.previous_days
@@ -875,54 +872,26 @@ def cdr_daily_comparison(request):
     xdata = [i for i in range(0, 24)]
     hourly_chartdata = {'x': xdata}
 
-    print "compare_days:", compare_days
     y_count = 1
     for nday in range(1, compare_days + 1):
-        start_date = current_date + relativedelta(days=-int(nday))
-        start_date = datetime(start_date.year, start_date.month, start_date.day, 23, 59, 59, 999999)
+        start_date = current_date + relativedelta(days=-int(nday-1))
+        start_date = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, 0)
         end_date = current_date + relativedelta(days=-int(nday-1))
         end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
         # Get hourly Data
-        hourly_data = get_report_cdr_per_switch(request.user, 'hour', start_date, end_date, switch_id)
+        hourly_data = get_report_compare_cdr(request.user, 'hour', start_date, end_date, switch_id)
 
         extra_serie = {
             "tooltip": {"y_start": "", "y_end": " " + metric}
         }
         # We only need to set x axis once, so let's do it for nbcalls
         # hourly_chartdata['x'] = hourly_data["nbcalls"]["x_timestamp"]
-        # import ipdb; ipdb.set_trace()
         for switch in hourly_data[metric]["columns"]:
             serie = get_switch_ip_addr(switch) + "_day_" + str(nday)
-            print "serie:", serie
             hourly_chartdata['name' + str(y_count)] = serie
             hourly_chartdata['y' + str(y_count)] = hourly_data[metric]["values"][str(switch)]
             hourly_chartdata['extra' + str(y_count)] = extra_serie
-            print "hourly_chartdata::"
-            print hourly_chartdata
-            print "--------------------"
             y_count += 1
-
-    print hourly_chartdata
-
-    # Previous days
-
-    # hourly_data = get_hourly_report_for_date(start_date, end_date, query_var)
-    # per_hr_data = hourly_data['total_record']
-    # hourly_per_hr_data = hourly_data['hourly_total_record']
-    # per_hr_data = {}
-    # hourly_per_hr_data = {}
-
-    # xdata = [i for i in range(0, 24)]
-    # extra_serie = {"tooltip": {"y_start": "There are ", "y_end": " " + metric}}
-    # hourly_chartdata = {'x': xdata}
-    # y_count = 1
-    # for i in per_hr_data:
-    #     hourly_chartdata['name' + str(y_count)] = i
-    #     hourly_chartdata['y' + str(y_count)] = hourly_per_hr_data[i]
-    #     hourly_chartdata['extra' + str(y_count)] = extra_serie
-    #     y_count += 1
-
-    # logging.debug('CDR hourly view end')
 
     variables = {
         'form': form,
@@ -934,7 +903,7 @@ def cdr_daily_comparison(request):
         'hourly_chartcontainer': 'hourly_chartcontainer',
         'hourly_extra': {
             'x_is_date': False,
-            'x_axis_format': 'AM_PM',
+            'x_axis_format': '',
             'tag_script_js': True,
             'jquery_on_ready': True,
         },

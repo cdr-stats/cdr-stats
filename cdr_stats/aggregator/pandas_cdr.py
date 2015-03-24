@@ -22,7 +22,7 @@ import time
 # TODO: move sqlquery to aggregator/cdr.py
 sqlquery = """
     SELECT
-        dateday AS dateday,
+        #DATEDAY_FORMAT#,
         switch_id,
         coalesce(nbcalls,0) AS nbcalls,
         coalesce(duration,0) AS duration,
@@ -62,6 +62,23 @@ def conv_timestamp(date):
     return int(1000 * time.mktime(date.timetuple()))
 
 
+def get_dataframe_query(query, user, interval, start_date, end_date, switch_id):
+    """
+    build sql query return the dataframe
+    """
+    upd_query = sqlquery
+    upd_query = upd_query.replace("#USER_CONDITION#", condition_user(user))
+    upd_query = upd_query.replace("#DATEDAY_FORMAT#", "dateday AS dateday")
+    upd_query = upd_query.replace("#SWITCH_CONDITION#", condition_switch_id(switch_id))
+    upd_query = upd_query.replace("#INTERVAL#", interval)
+    params = {
+        'start_date': start_date,
+        'end_date': end_date,
+    }
+    df = sql.read_sql_query(upd_query, connection, params=params)
+    return df
+
+
 def get_report_cdr_per_switch(user, interval, start_date, end_date, switch_id):
     """
     Use pandas to prepare series to display cdr hour report per switch
@@ -74,14 +91,8 @@ def get_report_cdr_per_switch(user, interval, start_date, end_date, switch_id):
         - switch_id: id of the switch (0 is all)
     """
     series = {}
-    subsqlquery = sqlquery.replace("#USER_CONDITION#", condition_user(user))
-    subsqlquery = subsqlquery.replace("#SWITCH_CONDITION#", condition_switch_id(switch_id))
-    subsqlquery = subsqlquery.replace("#INTERVAL#", interval)
-    params = {
-        'start_date': start_date,
-        'end_date': end_date,
-    }
-    df = sql.read_sql_query(subsqlquery, connection, params=params)
+    df = get_dataframe_query(sqlquery, user, interval, start_date, end_date, switch_id)
+
     # print connection.queries
     table = pd.tools.pivot.pivot_table(df,
         values=['nbcalls', 'duration', 'billsec', 'buy_cost', 'sell_cost'],
@@ -111,5 +122,67 @@ def get_report_cdr_per_switch(user, interval, start_date, end_date, switch_id):
             # valsum += map(sum, list(ntable.loc[col]))
             for i in list(ntable.loc[col]):
                 valsum += i
+        series[metric]['total'] = valsum
+    return series
+
+
+def get_dataframe_query_cmp_day(query, user, interval, start_date, end_date, switch_id):
+    """
+    build sql query return the dataframe
+    """
+    upd_query = sqlquery
+    upd_query = upd_query.replace("#USER_CONDITION#", condition_user(user))
+    upd_query = upd_query.replace("#DATEDAY_FORMAT#", "extract(hour from dateday) as dateday")
+    upd_query = upd_query.replace("#SWITCH_CONDITION#", condition_switch_id(switch_id))
+    upd_query = upd_query.replace("#INTERVAL#", interval)
+    params = {
+        'start_date': start_date,
+        'end_date': end_date,
+    }
+    # df = sql.read_sql_query(upd_query, connection, params=params, index_col=["dateday", "switch_id"])
+    df = sql.read_sql_query(upd_query, connection, params=params)
+    return df
+
+
+def get_report_compare_cdr(user, interval, start_date, end_date, switch_id):
+    """
+    Use pandas to prepare series to display cdr hour report per switch
+
+    **Attributes**:
+
+        - interval: this could be hour / day / week / month
+        - start_date: start date
+        - end_date: end date
+        - switch_id: id of the switch (0 is all)
+    """
+    series = {}
+    df = get_dataframe_query_cmp_day(sqlquery, user, interval, start_date, end_date, switch_id)
+
+    df.update(df.switch_id.fillna(0))
+    df = df.set_index(["dateday", "switch_id"])
+
+    metric_list = ['nbcalls', 'duration', 'billsec', 'buy_cost', 'sell_cost']
+
+    # build a serie for each metric
+    for metric in metric_list:
+        unstack_df = df[metric].unstack(['switch_id']).fillna(0)
+
+        series[metric] = {}
+        # list_columns, ie for switches [1, 2]
+        list_columns = unstack_df.columns.values
+        list_columns = map(int, list_columns)
+
+        if 0 in list_columns:
+            list_columns.remove(0)
+
+        # Build the result dictionary
+        series[metric]['columns'] = list_columns
+        # series[metric]['x_date'] = unstack_df.index.tolist()
+        series[metric]['x_date'] = range(0, 23)
+        series[metric]['values'] = {}
+        valsum = 0
+        for col in list_columns:
+            series[metric]['values'][str(col)] = list(unstack_df.T.loc[col])
+            valsum += unstack_df.T.loc[col].sum()
         series[metric]['total'] = valsum
     return series

@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content_header %}
-    <h1>{% trans "hourly report"|capfirst %}<small></small></h1>
+    <h1>{% trans "Daily comparaison"|capfirst %}<small></small></h1>
 {% endblock %}
 
 {% block content %}
@@ -26,20 +26,13 @@
             </div>
         </div>
     </div>
-<div class="tabbable">
-    <ul class="nav nav-tabs">
-        <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">
-        {{ metric|title }} {% trans "per hour"|title %}</a></li>
-    </ul>
-    <div class="tab-content">
-        <div id="tabs-1" class="tab-pane {% if action == 'tabs-1' or action == '' %}active{% endif %}">
-            <div class="row">
-                <div class="col-md-12 col-xs-12 col-sm-12">
-                    {% load_chart hourly_charttype hourly_chartdata hourly_chartcontainer hourly_extra %}
-                    {% include_container hourly_chartcontainer 400 '100%' %}
-                </div>
-            </div>
+
+    <br/><br/>
+
+    <div class="row">
+        <div class="col-md-12 col-xs-12 col-sm-12">
+            {% load_chart hourly_charttype hourly_chartdata hourly_chartcontainer hourly_extra %}
+            {% include_container hourly_chartcontainer 400 '100%' %}
         </div>
     </div>
-</div>
 {% endblock %}
