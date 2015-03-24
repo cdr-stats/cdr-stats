@@ -199,10 +199,16 @@ class CountryReportForm(CdrSearchForm):
                                     widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
     to_date = forms.DateTimeField(label=_('to').capitalize(), required=False,
                                   widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
+    metric = forms.TypedChoiceField(label=_('metric').capitalize(), required=False,
+                                    choices=(('nbcalls', _('calls')),
+                                             ('duration', _('duration')),
+                                             ('billsec', _('billsec')),
+                                             ('buy_cost', _('buy_cost')),
+                                             ('sell_cost', _('sell_cost')))
+                                    )
 
     def __init__(self, *args, **kwargs):
         super(CountryReportForm, self).__init__(*args, **kwargs)
-        self.fields['duration_type'].label = _('type').title()
         self.helper = FormHelper()
         self.helper.form_class = 'well'
         css_class = 'col-md-4'
@@ -214,9 +220,8 @@ class CountryReportForm(CdrSearchForm):
                 css_class='row'
             ),
             Div(
-                Div('duration', css_class='col-md-3'),
-                Div('duration_type', css_class='col-md-1'),
                 Div('country_id', css_class=css_class),
+                Div('metric', css_class=css_class),
                 css_class='row'
             ),
         )

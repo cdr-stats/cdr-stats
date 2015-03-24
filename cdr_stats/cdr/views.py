@@ -1002,7 +1002,6 @@ def cdr_country_report(request):
 
         * ``template`` - cdr/country_report.html
         * ``form`` - CountryReportForm
-        * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
 
     **Logic Description**:
 
@@ -1012,6 +1011,14 @@ def cdr_country_report(request):
     logging.debug('CDR country report view start')
     switch_id = 0
     query_var = {}
+    country_call_charttype = "pieChart"
+    final_call_charttype = "lineWithFocusChart"
+    final_duration_charttype = "lineWithFocusChart"
+    country_call_chartdata = {'x': []}
+    country_duration_chartdata = {'x': []}
+    final_call_chartdata = {'x': []}
+    final_duration_chartdata = {'x': []}
+
     now = datetime.now()
     start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
     end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
@@ -1030,9 +1037,6 @@ def cdr_country_report(request):
         to_date = getvar(request, 'to_date')
         end_date = ceil_strdate(str(to_date), 'end')
         switch_id = int(getvar(request, 'switch_id'))
-        duration = getvar(request, 'duration')
-        duration_type = getvar(request, 'duration_type')
-
         country_id = getvar(request, 'country_id')
         # convert list value in int
         country_id = [int(row) for row in country_id]
@@ -1042,25 +1046,19 @@ def cdr_country_report(request):
         if switch_id and switch_id != 0:
             query_var['metadata.switch_id'] = switch_id
 
-        if duration:
-            # due = mongodb_int_filter(duration, duration_type)
-            temp = []
-            if due:
-                for i in range(0, 24):
-                    temp.append({'duration_hourly.%d' % (i): due})
-                query_var['$or'] = temp
-
     query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
     if not request.user.is_superuser:  # not superuser
         query_var['metadata.accountcode'] = request.user.userprofile.accountcode
 
     # Country daily data
-    pipeline = pipeline_country_hourly_report(query_var)
+    # pipeline = pipeline_country_hourly_report(query_var)
 
     logging.debug('Before Aggregate')
-    list_data = mongodb.DBCON.command('aggregate',
-                                      settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                      pipeline=pipeline)
+    # list_data = mongodb.DBCON.command('aggregate',
+    #                                   settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+    #                                   pipeline=pipeline)
+    list_data = {}
+
     xdata = []
     call_count_res = defaultdict(list)
     call_duration_res = defaultdict(list)
@@ -1125,16 +1123,13 @@ def cdr_country_report(request):
             final_duration_chartdata['extra' + str(int_count)] = extra_serie
             int_count += 1
 
-        final_call_charttype = final_duration_charttype = "lineWithFocusChart"
-
     # World report
-    logging.debug('Aggregate world report')
-    pipeline = pipeline_country_report(query_var)
+    # pipeline = pipeline_country_report(query_var)
+    # list_data = mongodb.DBCON.command('aggregate',
+    #                                   settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+    #                                   pipeline=pipeline)
+    list_data = {}
 
-    logging.debug('Before Aggregate')
-    list_data = mongodb.DBCON.command('aggregate',
-                                      settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                      pipeline=pipeline)
     logging.debug('After Aggregate')
     country_analytic_array = []
     if list_data:
@@ -1164,7 +1159,6 @@ def cdr_country_report(request):
         extra_serie = {"tooltip": {"y_start": "", "y_end": " %"}}
         country_call_chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
         country_duration_chartdata = {'x': xdata, 'y1': ydata2, 'extra1': extra_serie}
-        country_call_charttype = "pieChart"
 
     logging.debug('CDR country report view end')
     data = {
