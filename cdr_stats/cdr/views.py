@@ -19,32 +19,26 @@ from django.template.context import RequestContext
 from django.utils.translation import gettext as _
 from django.conf import settings
 import six
-# from mongodb_connection import mongodb
-# from pymongo.connection import Connection
-# from pymongo.errors import ConnectionFailure
-from django_lets_go.common_functions import variable_value, int_convert_to_minute,\
-    validate_days, percentage, getvar, unset_session_var, ceil_strdate
-from django_lets_go.common_functions import mongodb_str_filter, mongodb_int_filter
+from django_lets_go.common_functions import int_convert_to_minute,\
+    percentage, getvar, unset_session_var, ceil_strdate
 from django_lets_go.common_functions import get_pagination_vars
-from cdr.filters import CDRFilter
+# from cdr.filters import CDRFilter
 from switch.models import Switch
 from user_profile.models import UserProfile
 from cdr.functions_def import get_country_name, get_hangupcause_name,\
-    get_switch_ip_addr, convert_to_minute, chk_date_for_hrs, calculate_act_acd
+    get_switch_ip_addr, calculate_act_acd
 from cdr.forms import CdrSearchForm, CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
     SwitchForm, WorldForm, EmailReportForm
 # from cdr.forms import ConcurrentCallForm
 from cdr.filters import get_filter_operator_int, get_filter_operator_str
-from cdr.aggregate import pipeline_cdr_view_daily_report,\
-    pipeline_monthly_overview, pipeline_daily_overview,\
-    pipeline_hourly_overview, pipeline_country_report,\
-    pipeline_hourly_report, pipeline_country_hourly_report,\
+from cdr.aggregate import pipeline_country_report,\
+    pipeline_country_hourly_report,\
     pipeline_mail_report
 from cdr.decorators import check_user_detail
 from cdr.constants import CDR_COLUMN_NAME, Export_choice, COMPARE_WITH
 from cdr.models import CDR
 from aggregator.cdr import custom_sql_aggr_top_country, custom_sql_aggr_top_hangup_cause, \
-    custom_sql_matv_voip_cdr_aggr_hour, custom_sql_matv_voip_cdr_aggr_last24hour, \
+    custom_sql_matv_voip_cdr_aggr_last24hour, \
     custom_sql_aggr_top_country_last24hour
 from aggregator.pandas_cdr import get_report_cdr_per_switch, get_report_compare_cdr
 from voip_billing.function_def import round_val
@@ -55,8 +49,7 @@ from collections import defaultdict
 import tablib
 import time
 import logging
-import itertools
-from common.helpers import pp
+# from common.helpers import pp
 
 
 def show_menu(request):
@@ -65,63 +58,6 @@ def show_menu(request):
         return request.GET.get('menu')
     except:
         return 'on'
-
-
-def cdr_view_daily_report(query_var):
-    logging.debug('Aggregate cdr analytic')
-    pipeline = pipeline_cdr_view_daily_report(query_var)
-
-    logging.debug('Before Aggregate')
-    list_data = []
-    # list_data = mongodb.DBCON.command('aggregate',
-    #                                   settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-    #                                   pipeline=pipeline)
-    logging.debug('After Aggregate')
-
-    total_data = []
-    total_duration = 0
-    total_calls = 0
-    duration__avg = 0.0
-    count_days = 0
-    total_buy_cost = 0.0
-    total_sell_cost = 0.0
-    for doc in list_data['result']:
-        count_days = count_days + 1
-        total_data.append(
-            {
-                'calldate': datetime(int(doc['_id'][0:4]),
-                                     int(doc['_id'][4:6]),
-                                     int(doc['_id'][6:8])),
-                'duration__sum': int(doc['duration_per_day']),
-                'calldate__count': int(doc['call_per_day']),
-                'duration__avg': doc['avg_duration_per_day'],
-                'buy_cost': float(doc['buy_cost_per_day']),
-                'sell_cost': float(doc['sell_cost_per_day']),
-            })
-
-        total_duration += int(doc['duration_per_day'])
-        total_calls += int(doc['call_per_day'])
-        duration__avg += float(doc['avg_duration_per_day'])
-        total_buy_cost += float(doc['buy_cost_per_day'])
-        total_sell_cost += float(doc['sell_cost_per_day'])
-
-    if count_days != 0:
-        max_duration = max([int(x['duration__sum']) for x in total_data])
-        total_avg_duration = (float(duration__avg)) / count_days
-    else:
-        max_duration = 0
-        total_avg_duration = 0
-
-    cdr_view_daily_data = {
-        'total_data': total_data,
-        'total_duration': total_duration,
-        'total_calls': total_calls,
-        'total_avg_duration': total_avg_duration,
-        'max_duration': max_duration,
-        'total_buy_cost': total_buy_cost,
-        'total_sell_cost': total_sell_cost,
-    }
-    return cdr_view_daily_data
 
 
 @permission_required('user_profile.search', login_url='/')
@@ -141,8 +77,6 @@ def cdr_view(request):
           from postgresql according to search parameters
     """
     logging.debug('CDR View Start')
-    query_var = {}
-    export_query_var = {}
     result = 1  # default min
     switch_id = 0  # default all
     hangup_cause_id = 0  # default all
@@ -305,9 +239,6 @@ def cdr_view(request):
     cdr_count = cdrs.count()
 
     logging.debug('Create cdr result')
-    # TODO
-    # cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
-    cdr_view_daily_data = {}
 
     # store query_var in session without date
     export_kwargs = kwargs.copy()
@@ -343,7 +274,7 @@ def cdr_view(request):
         'cdrs': cdrs,
         'form': form,
         'cdr_count': cdr_count,
-        'cdr_daily_data': cdr_view_daily_data,
+        'cdr_daily_data': {},
         'col_name_with_order': page_vars['col_name_with_order'],
         'menu': menu,
         'start_date': start_date,
@@ -1112,7 +1043,7 @@ def cdr_country_report(request):
             query_var['metadata.switch_id'] = switch_id
 
         if duration:
-            due = mongodb_int_filter(duration, duration_type)
+            # due = mongodb_int_filter(duration, duration_type)
             temp = []
             if due:
                 for i in range(0, 24):

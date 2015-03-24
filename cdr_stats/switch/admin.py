@@ -26,7 +26,8 @@ from cdr.analytic_handler import apply_index, create_analytic, generate_global_c
 from cdr.functions_def import get_hangupcause_name
 from cdr.forms import CdrSearchForm
 from cdr.constants import CDR_COLUMN_NAME, Export_choice, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
-from cdr.views import cdr_view_daily_report, get_pagination_vars
+# from cdr.views import cdr_view_daily_report
+from cdr.views import get_pagination_vars
 from cdr_alert.functions_blacklist import chk_destination
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -479,7 +480,8 @@ class SwitchAdmin(admin.ModelAdmin):
     #     rows = final_result.skip(SKIP_NO).limit(records_per_page).sort([(page_data['sort_field'], page_data['default_order'])])
 
     #     # Get daily report from session while using pagination & sorting
-    #     cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
+    #     # cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
+    #     cdr_view_daily_data = {}
 
     #     template_data = RequestContext(request, {
     #         'rows': rows,
