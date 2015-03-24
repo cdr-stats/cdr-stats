@@ -1011,13 +1011,10 @@ def cdr_country_report(request):
     logging.debug('CDR country report view start')
     switch_id = 0
     query_var = {}
-    country_call_charttype = "pieChart"
-    final_call_charttype = "lineWithFocusChart"
-    final_duration_charttype = "lineWithFocusChart"
-    country_call_chartdata = {'x': []}
-    country_duration_chartdata = {'x': []}
-    final_call_chartdata = {'x': []}
-    final_duration_chartdata = {'x': []}
+    country_charttype = "pieChart"
+    final_charttype = "lineWithFocusChart"
+    country_chartdata = {'x': []}
+    final_chartdata = {'x': []}
 
     now = datetime.now()
     start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
@@ -1025,8 +1022,7 @@ def cdr_country_report(request):
     from_date = start_date.strftime("%Y-%m-%d")
     to_date = end_date.strftime("%Y-%m-%d")
     # assign initial value in form fields
-    total_calls = 0
-    total_duration = 0
+    total_metric = 0
     form = CountryReportForm(request.POST or None, initial={'from_date': from_date,
                                                             'to_date': to_date})
     if form.is_valid():
@@ -1061,7 +1057,6 @@ def cdr_country_report(request):
 
     xdata = []
     call_count_res = defaultdict(list)
-    call_duration_res = defaultdict(list)
 
     if list_data:
         for doc in list_data['result']:
@@ -1091,36 +1086,20 @@ def cdr_country_report(request):
                             'country_id': doc['_id']['country_id']
                         }
 
-            # Update day_hours dict for duration sum
-            for dict_in_list in doc['duration_per_hour']:
-                for key, value in dict_in_list.iteritems():
-                    key = int(key)
-                    if key in day_hours:
-                        day_hours[key]['duration__sum'] += int(value)
-
             # hours of day data append to total_record_final array
             for hr in day_hours:
                 call_count_res[day_hours[hr]['country_id']].append(day_hours[hr]['calldate__count'])
-                call_duration_res[day_hours[hr]['country_id']].append(day_hours[hr]['duration__sum'])
 
         xdata = list(set([i for i in xdata]))
         xdata = sorted(xdata)
-        final_call_chartdata = {'x': xdata}
+        final_chartdata = {'x': xdata}
         final_duration_chartdata = {'x': xdata}
         int_count = 1
         extra_serie = {"tooltip": {"y_start": "", "y_end": " calls"}}
         for i in call_count_res:
-            final_call_chartdata['name' + str(int_count)] = str(get_country_name(int(i)))
-            final_call_chartdata['y' + str(int_count)] = call_count_res[i]
-            final_call_chartdata['extra' + str(int_count)] = extra_serie
-            int_count += 1
-
-        int_count = 1
-        extra_serie = {"tooltip": {"y_start": "", "y_end": " mins"}}
-        for i in call_duration_res:
-            final_duration_chartdata['name' + str(int_count)] = str(get_country_name(int(i)))
-            final_duration_chartdata['y' + str(int_count)] = call_duration_res[i]
-            final_duration_chartdata['extra' + str(int_count)] = extra_serie
+            final_chartdata['name' + str(int_count)] = str(get_country_name(int(i)))
+            final_chartdata['y' + str(int_count)] = call_count_res[i]
+            final_chartdata['extra' + str(int_count)] = extra_serie
             int_count += 1
 
     # World report
@@ -1142,65 +1121,42 @@ def cdr_country_report(request):
                  int(doc['duration_per_day']),
                  int(doc['_id'])))
 
-            total_calls += int(doc['call_per_day'])
-            total_duration += int(doc['duration_per_day'])
+            total_metric += int(doc['call_per_day'])
 
         # country analytic pie chart data
         xdata = []
         ydata = []
-        ydata2 = []
         for i in country_analytic_array:
             xdata.append(str(i[0]))
             # call_per_day - i[1]
-            ydata.append(percentage(i[1], total_calls))
-            # duration_per_day - i[2]
-            ydata2.append(percentage(i[2], total_duration))
+            ydata.append(percentage(i[1], total_metric))
 
         extra_serie = {"tooltip": {"y_start": "", "y_end": " %"}}
-        country_call_chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
-        country_duration_chartdata = {'x': xdata, 'y1': ydata2, 'extra1': extra_serie}
+        country_chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
 
     logging.debug('CDR country report view end')
     data = {
         'action': 'tabs-1',
-        'total_calls': total_calls,
-        'total_duration': total_duration,
+        'total_metric': total_metric,
         'country_analytic': country_analytic_array,
         'form': form,
         'NUM_COUNTRY': settings.NUM_COUNTRY,
-        'country_call_charttype': country_call_charttype,
-        'country_call_chartdata': country_call_chartdata,
-        'country_call_chartcontainer': 'country_call_container',
-        'country_call_extra': {
+        'country_charttype': country_charttype,
+        'country_chartdata': country_chartdata,
+        'country_chartcontainer': 'country_container',
+        'country_extra': {
             'x_is_date': False,
             'x_axis_format': '',
             'tag_script_js': True,
             'jquery_on_ready': False,
         },
-        'country_duration_chartdata': country_duration_chartdata,
-        'country_duration_chartcontainer': 'country_duration_container',
-        'country_duration_extra': {
-            'x_is_date': False,
-            'x_axis_format': '',
-            'tag_script_js': True,
-            'jquery_on_ready': False,
-        },
-        'final_call_chartdata': final_call_chartdata,
-        'final_call_charttype': final_call_charttype,
-        'final_call_chartcontainer': 'final_call_container',
-        'final_call_extra': {
+        'final_chartdata': final_chartdata,
+        'final_charttype': final_charttype,
+        'final_chartcontainer': 'final_container',
+        'final_extra': {
             'x_is_date': True,
             'x_axis_format': '%d %b %Y',
             'tag_script_js': True,
-            'jquery_on_ready': False,
-        },
-        'final_duration_chartdata': final_duration_chartdata,
-        'final_duration_charttype': final_duration_charttype,
-        'final_duration_chartcontainer': 'final_duration_container',
-        'final_duration_extra': {
-            'x_is_date': True,
-            'x_axis_format': '%d %b %Y',
-            'tag_script_js': False,
             'jquery_on_ready': False,
         },
     }

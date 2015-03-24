@@ -28,49 +28,29 @@
 <p>&nbsp;</p>
 
 <div class="tabbable">
-    <ul class="nav nav-tabs">
-        <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "country call"|title %}</a></li>
-        <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "country duration"|title %}</a></li>
-    </ul>
     <div class="tab-content">
-        <div id="tabs-1" class="tab-pane {% if action == 'tabs-1' or action == '' %}active{% endif %}">
-            <div class="row">
-                <div class="col-md-12 col-xs-12 col-sm-12">
-                    <div class="graph_header">
-                        <h2>{% trans "country call statistics"|title %}</h2>
-                    </div>
-                    {% load_chart final_call_charttype final_call_chartdata final_call_chartcontainer final_call_extra %}
-                    {% include_container final_call_chartcontainer 400 '100%' %}
-                </div>
-            </div>
 
-        </div>
-        <div id="tabs-2" class="tab-pane {% if action == 'tabs-2' or action == '' %}active{% endif %}">
-            <div class="row">
-                <div class="col-md-12 col-xs-12 col-sm-12">
-                    <div class="graph_header">
-                        <h2>{% trans "country duration statistics"|title %}</h2>
-                    </div>
-                    {% include_container final_duration_chartcontainer 400 '100%' %}
+        <div class="row">
+            <div class="col-md-12 col-xs-12 col-sm-12">
+                <div class="graph_header">
+                    <h2>{% trans "country call statistics"|title %}</h2>
                 </div>
+                {% load_chart final_charttype final_chartdata final_chartcontainer final_extra %}
+                {% include_container final_chartcontainer 400 '100%' %}
             </div>
-
         </div>
+
     </div>
 </div>
+
+TODO: Loops on list of metrics here,
 
 <div class="row">
     <div class="col-md-6">
         <h2 align="center">{% trans "calls by country"|title %}</h2>
         <hr/>
-        {% load_chart country_call_charttype country_call_chartdata country_call_chartcontainer country_call_extra %}
-        {% include_container country_call_chartcontainer 450 500 %}
-    </div>
-    <div class="col-md-6">
-        <h2 align="center">{% trans "duration by country"|title %}</h2>
-        <hr/>
-        {% load_chart country_call_charttype country_duration_chartdata country_duration_chartcontainer country_duration_extra %}
-        {% include_container country_duration_chartcontainer 450 500 %}
+        {% load_chart country_charttype country_chartdata country_chartcontainer country_extra %}
+        {% include_container country_chartcontainer 450 500 %}
     </div>
 </div>
 
@@ -103,44 +83,12 @@
                 <tr>
                     <td></td>
                     <td>{% trans "total"|capfirst %}</td>
-                    <td>{{ total_calls }} {% trans "calls"|capfirst %}</td>
+                    <td>{{ total_metric }} {% trans "calls"|capfirst %}</td>
                 </tr>
             </table>
         </div>
     </div>
-    <div class="col-md-4 col-md-offset-2">
-        <div>
-            <h4 class="text-left">{% trans "top"|title %} {{ NUM_COUNTRY }} {% trans "duration by country"|title %}</h4>
-            <table class="table table-bordered">
-                {% for country_data in country_analytic %}
-                    <tr>
-                        <td>
-                            {% if country_data.3 %}
-                                {% cache 1800 hcountry_flag country_data.3 %}
-                                    <img src="{{ STATIC_URL }}cdr-stats/{{ country_data.3|iso_flag }}" class="elemtooltip" title="{{ country_data.3|country_name|title }}">
-                                {% endcache %}
-                            {% else %}
-                                <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "World" %}">
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if country_data.0 %}
-                                {{ country_data.0 }}
-                            {% else %}
-                                {% trans "world"|title  %}
-                            {% endif %}
-                        </td>
-                        <td>{{ country_data.2|conv_min }} {% trans "minutes" %}</td>
-                    </tr>
-                {% endfor %}
-                <tr>
-                    <td></td>
-                    <td>{% trans "total"|capfirst %}</td>
-                    <td>{{ total_duration|conv_min }} {% trans "minutes" %}</td>
-                </tr>
-            </table>
-        </div>
-    </div>
+
 </div>
 
 {% endblock %}
