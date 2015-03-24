@@ -195,10 +195,11 @@ class CountryReportForm(CdrSearchForm):
     """
     Form used to get country vise calls report in the Customer UI.
     """
-    from_date = forms.DateTimeField(label=_('from').capitalize(), required=False,
-                                    widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
-    to_date = forms.DateTimeField(label=_('to').capitalize(), required=False,
-                                  widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
+    from_date = forms.DateTimeField(label=_('from').capitalize(), required=True,
+                                    widget=DateTimePicker(options={"format": "YYYY-MM-DD HH:mm", "pickSeconds": False}))
+    to_date = forms.DateTimeField(label=_('to').capitalize(), required=True,
+                                  widget=DateTimePicker(options={"format": "YYYY-MM-DD HH:mm", "pickSeconds": False}))
+
     metric = forms.TypedChoiceField(label=_('metric').capitalize(), required=False,
                                     choices=(('nbcalls', _('calls')),
                                              ('duration', _('duration')),

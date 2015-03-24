@@ -40,7 +40,8 @@ from cdr.models import CDR
 from aggregator.cdr import custom_sql_aggr_top_country, custom_sql_aggr_top_hangup_cause, \
     custom_sql_matv_voip_cdr_aggr_last24hour, \
     custom_sql_aggr_top_country_last24hour
-from aggregator.pandas_cdr import get_report_cdr_per_switch, get_report_compare_cdr
+from aggregator.pandas_cdr import get_report_cdr_per_switch, get_report_compare_cdr, \
+    get_report_cdr_per_country
 from voip_billing.function_def import round_val
 from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
@@ -453,13 +454,6 @@ def cdr_dashboard(request):
 
     # Get list of calls/duration for each of the last 24 hours
     (calls_hour_aggr, total_calls, total_duration, total_billsec, total_buy_cost, total_sell_cost) = custom_sql_matv_voip_cdr_aggr_last24hour(request.user, switch_id)
-    # pp(calls_hour_aggr)
-
-    # Get top 5 of country calls for last 24 hours
-    country_data = custom_sql_aggr_top_country_last24hour(request.user, switch_id, limit=5)
-
-    # Get top 10 of hangup cause calls for last 24 hours
-    hangup_cause_data = custom_sql_aggr_top_hangup_cause(request.user, switch_id)
 
     # Build chart data for last 24h calls
     (xdata, ydata, ydata2, ydata3, ydata4, ydata5) = ([], [], [], [], [], [])
@@ -490,6 +484,9 @@ def cdr_dashboard(request):
     }
     final_charttype = "lineWithFocusChart"
 
+    # Get top 5 of country calls for last 24 hours
+    country_data = custom_sql_aggr_top_country_last24hour(request.user, switch_id, limit=5)
+
     # Build pie chart data for last 24h calls per country
     (xdata, ydata) = ([], [])
     for country in country_data:
@@ -500,6 +497,16 @@ def cdr_dashboard(request):
     extra_serie = {"tooltip": {"y_start": "", "y_end": " %"}, "color_list": color_list}
     country_analytic_chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
     country_analytic_charttype = "pieChart"
+
+    country_extra = {
+        'x_is_date': False,
+        'x_axis_format': '',
+        'tag_script_js': True,
+        'jquery_on_ready': True,
+    }
+
+    # Get top 10 of hangup cause calls for last 24 hours
+    hangup_cause_data = custom_sql_aggr_top_hangup_cause(request.user, switch_id)
 
     # hangup analytic pie chart data
     (xdata, ydata) = ([], [])
@@ -512,19 +519,14 @@ def cdr_dashboard(request):
     hangup_analytic_chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
     hangup_analytic_charttype = "pieChart"
 
+    hangup_extra = country_extra
+
     logging.debug("Result calls_hour_aggr %d" % len(calls_hour_aggr))
     logging.debug("Result hangup_cause_data %d" % len(hangup_cause_data))
     logging.debug("Result country_data %d" % len(country_data))
 
     # Calculate the Average Time of Call
     metric_aggr = calculate_act_acd(total_calls, total_duration)
-
-    country_extra = hangup_extra = {
-        'x_is_date': False,
-        'x_axis_format': '',
-        'tag_script_js': True,
-        'jquery_on_ready': True,
-    }
 
     final_extra = {
         'x_is_date': True,
@@ -917,12 +919,7 @@ def cdr_overview(request):
         switch_id = getvar(request, 'switch_id')
         metric = getvar(request, 'metric')
 
-    kwargs = {}
-
-    if switch_id and switch_id != '0':
-        kwargs['switch_id'] = int(switch_id)
-
-    # Sanitize metric
+    # check metric is valid
     if metric not in ['nbcalls', 'duration', 'billsec', 'buy_cost', 'sell_cost']:
         metric = 'nbcalls'
 
@@ -954,7 +951,7 @@ def cdr_overview(request):
     # Calculate the Average Time of Call
     metric_aggr = calculate_act_acd(total_calls, total_duration)
 
-    # Get top 5 of country calls
+    # Get top 10 of country calls
     country_data = custom_sql_aggr_top_country(request.user, switch_id, 10, start_date, end_date)
 
     variables = {
@@ -1008,157 +1005,115 @@ def cdr_country_report(request):
         get all call records from mongodb collection for all countries
         to create country call
     """
-    logging.debug('CDR country report view start')
+    metric = 'nbcalls'
+    tday = datetime.today()
+
     switch_id = 0
-    query_var = {}
-    country_charttype = "pieChart"
-    final_charttype = "lineWithFocusChart"
-    country_chartdata = {'x': []}
-    final_chartdata = {'x': []}
-
-    now = datetime.now()
-    start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
-    end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
-    from_date = start_date.strftime("%Y-%m-%d")
-    to_date = end_date.strftime("%Y-%m-%d")
-    # assign initial value in form fields
+    hourly_charttype = "lineWithFocusChart"
+    hourly_chartdata = {'x': []}
+    country_id_list = []
     total_metric = 0
-    form = CountryReportForm(request.POST or None, initial={'from_date': from_date,
-                                                            'to_date': to_date})
+
+    # assign initial value in form fields
+    form = CountryReportForm(request.POST or None,
+                             initial={'from_date': tday.strftime('%Y-%m-%d 00:00'),
+                                    'to_date': tday.strftime('%Y-%m-%d 23:55'),
+                                    'switch_id': switch_id})
+
+    start_date = trunc_date_start(tday)
+    end_date = trunc_date_end(tday)
+
     if form.is_valid():
-        logging.debug('CDR country report view with search option')
         from_date = getvar(request, 'from_date')
-        start_date = ceil_strdate(str(from_date), 'start')
-
         to_date = getvar(request, 'to_date')
-        end_date = ceil_strdate(str(to_date), 'end')
-        switch_id = int(getvar(request, 'switch_id'))
-        country_id = getvar(request, 'country_id')
+        start_date = trunc_date_start(from_date)
+        end_date = trunc_date_end(to_date)
+        switch_id = getvar(request, 'switch_id')
+        metric = getvar(request, 'metric')
+        country_id = form.cleaned_data['country_id']
         # convert list value in int
-        country_id = [int(row) for row in country_id]
-        if len(country_id) >= 1 and country_id[0] != 0:
-            query_var['metadata.country_id'] = {'$in': country_id}
+        country_id_list = [int(row) for row in country_id]
 
-        if switch_id and switch_id != 0:
-            query_var['metadata.switch_id'] = switch_id
+    # check metric is valid
+    if metric not in ['nbcalls', 'duration', 'billsec', 'buy_cost', 'sell_cost']:
+        metric = 'nbcalls'
 
-    query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
-    if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = request.user.userprofile.accountcode
+    hourly_data = get_report_cdr_per_country(request.user, 'hour', start_date, end_date, switch_id, country_id_list)
 
-    # Country daily data
-    # pipeline = pipeline_country_hourly_report(query_var)
+    extra_serie = {
+        "tooltip": {"y_start": "", "y_end": " " + metric},
+        "date_format": "%d %b %y %H:%M%p"
+    }
+    for country in hourly_data[metric]["columns"]:
+        hourly_chartdata['x'] = hourly_data[metric]["x_timestamp"]
+        hourly_chartdata['name' + str(country)] = str(get_country_name(int(country)))
+        hourly_chartdata['y' + str(country)] = hourly_data[metric]["values"][str(country)]
+        hourly_chartdata['extra' + str(country)] = extra_serie
 
-    logging.debug('Before Aggregate')
-    # list_data = mongodb.DBCON.command('aggregate',
-    #                                   settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-    #                                   pipeline=pipeline)
-    list_data = {}
+    total_calls = hourly_data["nbcalls"]["total"]
+    total_duration = hourly_data["duration"]["total"]
+    total_billsec = hourly_data["billsec"]["total"]
+    total_buy_cost = hourly_data["buy_cost"]["total"]
+    total_sell_cost = hourly_data["sell_cost"]["total"]
 
-    xdata = []
-    call_count_res = defaultdict(list)
+    # Calculate the Average Time of Call
+    metric_aggr = calculate_act_acd(total_calls, total_duration)
 
-    if list_data:
-        for doc in list_data['result']:
-            # Get date from aggregate result array
-            a_Year = int(doc['_id']['date'][0:4])
-            b_Month = int(doc['_id']['date'][5:7])
-            c_Day = int(doc['_id']['date'][8:10])
+    # Get top 10 of country calls
+    top_country = 10
+    country_data = custom_sql_aggr_top_country(request.user, switch_id, top_country, start_date, end_date)
 
-            day_hours = dict()
+    # Build pie chart data for last 24h calls per country
+    (xdata, ydata) = ([], [])
+    for country in country_data:
+        xdata.append(get_country_name(country["country_id"]))
+        ydata.append(percentage(country["nbcalls"], total_calls))
 
-            for dict_in_list in doc['call_per_hour']:
-                for key, value in dict_in_list.iteritems():
-                    key = int(key)
-                    graph_day = datetime(a_Year, b_Month, c_Day, key)
-                    # convert date into timestamp value
-                    dt = int(1000 * time.mktime(graph_day.timetuple()))
+    color_list = ['#FFC36C', '#FFFF9D', '#BEEB9F', '#79BD8F', '#FFB391',
+        '#58A6A6', '#86BF30', '#F2D022', '#D9AA1E', '#D98236']
 
-                    # Create day_hours dict with call count, duration sum, country id
-                    if key in day_hours:
-                        day_hours[key]['calldate__count'] += int(value)
-                    else:
-                        xdata.append(dt)
-                        day_hours[key] = {
-                            'dt': dt,
-                            'calldate__count': int(value),
-                            'duration__sum': 0,
-                            'country_id': doc['_id']['country_id']
-                        }
+    extra_serie = {"tooltip": {"y_start": "", "y_end": " %"}, "color_list": color_list}
+    country_analytic_chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
+    country_analytic_charttype = "pieChart"
 
-            # hours of day data append to total_record_final array
-            for hr in day_hours:
-                call_count_res[day_hours[hr]['country_id']].append(day_hours[hr]['calldate__count'])
+    country_extra = {
+        'x_is_date': False,
+        'x_axis_format': '',
+        'tag_script_js': True,
+        'jquery_on_ready': True,
+    }
 
-        xdata = list(set([i for i in xdata]))
-        xdata = sorted(xdata)
-        final_chartdata = {'x': xdata}
-        final_duration_chartdata = {'x': xdata}
-        int_count = 1
-        extra_serie = {"tooltip": {"y_start": "", "y_end": " calls"}}
-        for i in call_count_res:
-            final_chartdata['name' + str(int_count)] = str(get_country_name(int(i)))
-            final_chartdata['y' + str(int_count)] = call_count_res[i]
-            final_chartdata['extra' + str(int_count)] = extra_serie
-            int_count += 1
-
-    # World report
-    # pipeline = pipeline_country_report(query_var)
-    # list_data = mongodb.DBCON.command('aggregate',
-    #                                   settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-    #                                   pipeline=pipeline)
-    list_data = {}
-
-    logging.debug('After Aggregate')
-    country_analytic_array = []
-    if list_data:
-        for doc in list_data['result']:
-            # country id - country name - call count - call duration - country_id
-            # _id = country id
-            country_analytic_array.append(
-                (get_country_name(int(doc['_id'])),
-                 int(doc['call_per_day']),
-                 int(doc['duration_per_day']),
-                 int(doc['_id'])))
-
-            total_metric += int(doc['call_per_day'])
-
-        # country analytic pie chart data
-        xdata = []
-        ydata = []
-        for i in country_analytic_array:
-            xdata.append(str(i[0]))
-            # call_per_day - i[1]
-            ydata.append(percentage(i[1], total_metric))
-
-        extra_serie = {"tooltip": {"y_start": "", "y_end": " %"}}
-        country_chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
-
-    logging.debug('CDR country report view end')
+    # -------------- Build data to pass to Request ---------------
     data = {
         'action': 'tabs-1',
         'total_metric': total_metric,
-        'country_analytic': country_analytic_array,
+        'start_date': start_date,
+        'end_date': end_date,
+        'metric': metric,
         'form': form,
         'NUM_COUNTRY': settings.NUM_COUNTRY,
-        'country_charttype': country_charttype,
-        'country_chartdata': country_chartdata,
-        'country_chartcontainer': 'country_container',
-        'country_extra': {
-            'x_is_date': False,
-            'x_axis_format': '',
-            'tag_script_js': True,
-            'jquery_on_ready': False,
-        },
-        'final_chartdata': final_chartdata,
-        'final_charttype': final_charttype,
-        'final_chartcontainer': 'final_container',
-        'final_extra': {
+        'hourly_charttype': hourly_charttype,
+        'hourly_chartdata': hourly_chartdata,
+        'hourly_chartcontainer': 'hourly_container',
+        'hourly_extra': {
             'x_is_date': True,
             'x_axis_format': '%d %b %Y',
             'tag_script_js': True,
             'jquery_on_ready': False,
         },
+        'total_calls': total_calls,
+        'total_duration': total_duration,
+        'total_billsec': total_billsec,
+        'total_buy_cost': total_buy_cost,
+        'total_sell_cost': total_sell_cost,
+        'metric_aggr': metric_aggr,
+        'country_data': country_data,
+
+        'country_analytic_charttype': country_analytic_charttype,
+        'country_analytic_chartdata': country_analytic_chartdata,
+        'country_chartcontainer': 'country_piechart_container',
+        'country_extra': country_extra,
+        'top_country': top_country,
     }
     return render_to_response('cdr/country_report.html', data, context_instance=RequestContext(request))
 

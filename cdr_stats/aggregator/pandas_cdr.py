@@ -23,7 +23,7 @@ import time
 sqlquery = """
     SELECT
         #DATEDAY_FORMAT#,
-        switch_id,
+        #SECOND_INDEX#,
         coalesce(nbcalls,0) AS nbcalls,
         coalesce(duration,0) AS duration,
         coalesce(billsec,0) AS billsec,
@@ -38,7 +38,7 @@ sqlquery = """
     LEFT OUTER JOIN (
         SELECT
             date_trunc('#INTERVAL#', starting_date) as time_interval,
-            switch_id as switch_id,
+            #SECOND_INDEX# as #SECOND_INDEX#,
             SUM(nbcalls) as nbcalls,
             SUM(duration) as duration,
             SUM(billsec) as billsec,
@@ -50,7 +50,8 @@ sqlquery = """
             starting_date <= date_trunc('#INTERVAL#', %(end_date)s)
             #USER_CONDITION#
             #SWITCH_CONDITION#
-        GROUP BY time_interval, switch_id
+            #COUNTRY_CONDITION#
+        GROUP BY time_interval, #SECOND_INDEX#
         ) results
     ON (dateday = results.time_interval)"""
 
@@ -62,15 +63,22 @@ def conv_timestamp(date):
     return int(1000 * time.mktime(date.timetuple()))
 
 
-def get_dataframe_query(query, user, interval, start_date, end_date, switch_id):
+def get_dataframe_query(query, user, interval, start_date, end_date, switch_id, country_id_list, second_index):
     """
     build sql query return the dataframe
     """
     upd_query = sqlquery
+    upd_query = upd_query.replace("#SECOND_INDEX#", second_index)
     upd_query = upd_query.replace("#USER_CONDITION#", condition_user(user))
     upd_query = upd_query.replace("#DATEDAY_FORMAT#", "dateday AS dateday")
     upd_query = upd_query.replace("#SWITCH_CONDITION#", condition_switch_id(switch_id))
     upd_query = upd_query.replace("#INTERVAL#", interval)
+    if country_id_list and len(country_id_list) > 0:
+        select_country = ", ".join(str(int(l)) for l in country_id_list)
+        upd_query = upd_query.replace("#COUNTRY_CONDITION#", "AND country_id IN (" + select_country + ")")
+    else:
+        upd_query = upd_query.replace("#COUNTRY_CONDITION#", "")
+
     params = {
         'start_date': start_date,
         'end_date': end_date,
@@ -91,7 +99,8 @@ def get_report_cdr_per_switch(user, interval, start_date, end_date, switch_id):
         - switch_id: id of the switch (0 is all)
     """
     series = {}
-    df = get_dataframe_query(sqlquery, user, interval, start_date, end_date, switch_id)
+    df = get_dataframe_query(sqlquery, user, interval, start_date, end_date, switch_id,
+                             country_id_list=[], second_index="switch_id")
 
     # print connection.queries
     table = pd.tools.pivot.pivot_table(df,
@@ -126,15 +135,65 @@ def get_report_cdr_per_switch(user, interval, start_date, end_date, switch_id):
     return series
 
 
+def get_report_cdr_per_country(user, interval, start_date, end_date, switch_id, country_id_list):
+    """
+    Use pandas to prepare series to display cdr hour report per country
+
+    **Attributes**:
+
+        - interval: this could be hour / day / week / month
+        - start_date: start date
+        - end_date: end date
+        - switch_id: id of the switch (0 is all)
+    """
+    series = {}
+    df = get_dataframe_query(sqlquery, user, interval, start_date, end_date, switch_id,
+                             country_id_list=country_id_list, second_index="country_id")
+
+    # print connection.queries
+    table = pd.tools.pivot.pivot_table(df,
+        values=['nbcalls', 'duration', 'billsec', 'buy_cost', 'sell_cost'],
+        index=['dateday'],
+        columns=['country_id'],
+        fill_value=0)
+    metric_list = ['nbcalls', 'duration', 'billsec', 'buy_cost', 'sell_cost']
+
+    # build a serie for each metric
+    for metric in metric_list:
+        series[metric] = {}
+        # list_columns, ie for switches [1.0, 2.0]
+        list_columns = table[metric].columns.tolist()
+        list_columns = map(int, list_columns)
+
+        # Transpose
+        ntable = table[metric].T
+        # Build the result dictionary
+        series[metric]['columns'] = list_columns
+        series[metric]['x_date'] = list(table.index)
+        # convert into timestamp value
+        series[metric]['x_timestamp'] = map(conv_timestamp, list(table.index))
+        series[metric]['values'] = {}
+        valsum = 0
+        for col in list_columns:
+            series[metric]['values'][str(col)] = list(ntable.loc[col])
+            # valsum += map(sum, list(ntable.loc[col]))
+            for i in list(ntable.loc[col]):
+                valsum += i
+        series[metric]['total'] = valsum
+    return series
+
+
 def get_dataframe_query_cmp_day(query, user, interval, start_date, end_date, switch_id):
     """
     build sql query return the dataframe
     """
     upd_query = sqlquery
+    upd_query = upd_query.replace("#SECOND_INDEX#", "switch_id")
     upd_query = upd_query.replace("#USER_CONDITION#", condition_user(user))
     upd_query = upd_query.replace("#DATEDAY_FORMAT#", "extract(hour from dateday) as dateday")
     upd_query = upd_query.replace("#SWITCH_CONDITION#", condition_switch_id(switch_id))
     upd_query = upd_query.replace("#INTERVAL#", interval)
+    upd_query = upd_query.replace("#COUNTRY_CONDITION#", "")
     params = {
         'start_date': start_date,
         'end_date': end_date,
