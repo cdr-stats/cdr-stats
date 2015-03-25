@@ -141,6 +141,7 @@
     var calldatas = {
         {% for rc in world_analytic_array %}
             "{{ rc.country_iso3 }}": {
+                "country_name": '{{ rc.country_name }}',
                 "nbcalls": {{ rc.nbcalls }},
                 "duration": {{ rc.duration }},
                 "billsec": {{ rc.billsec }},
@@ -182,6 +183,7 @@
 
     info.update = function (props) {
         this._div.innerHTML = '<h4>Call Report Data</h4>' +  (props ?
+            '<b>' + props.country_name + '</b><br />' +
             '<b>' + props.nbcalls + ' Calls</b><br />' +
             '<b>' + display_minute_fmt(props.duration) + ' Duration</b><br />' +
             '<b>' + display_minute_fmt(props.billsec) + ' Billsec</b><br />' +
