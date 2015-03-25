@@ -1128,66 +1128,44 @@ def world_map_view(request):
 
         * ``template`` - cdr/world_map.html
         * ``form`` - WorldForm
-        * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
-
-    **Logic Description**:
-
-        get all call records from mongodb collection for all countries
-        to create country call
     """
     logging.debug('CDR world report view start')
     action = 'tabs-1'
     switch_id = 0
-    query_var = {}
-    now = datetime.now()
-    start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
-    end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
-    from_date = start_date.strftime("%Y-%m-%d")
-    to_date = end_date.strftime("%Y-%m-%d")
+    tday = datetime.today()
     # assign initial value in form fields
-    form = WorldForm(request.POST or None, initial={'from_date': from_date, 'to_date': to_date})
+    form = WorldForm(request.POST or None,
+                     initial={'from_date': tday.strftime('%Y-%m-%d 00:00'),
+                              'to_date': tday.strftime('%Y-%m-%d 23:55'),
+                              'switch_id': switch_id})
+
+    start_date = trunc_date_start(tday)
+    end_date = trunc_date_end(tday)
 
     if form.is_valid():
-        logging.debug('CDR world report view with search option')
         from_date = getvar(request, 'from_date')
-        start_date = ceil_strdate(str(from_date), 'start')
-
         to_date = getvar(request, 'to_date')
-        end_date = ceil_strdate(str(to_date), 'end')
-        switch_id = int(getvar(request, 'switch_id'))
+        start_date = trunc_date_start(from_date)
+        end_date = trunc_date_end(to_date)
+        switch_id = getvar(request, 'switch_id')
 
-        if switch_id and switch_id != 0:
-            query_var['metadata.switch_id'] = switch_id
+    # Get top 10 of country calls
+    top_country = 100
+    country_data = custom_sql_aggr_top_country(request.user, switch_id, top_country, start_date, end_date)
 
-    query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
-
-    if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = request.user.userprofile.accountcode
-
-    logging.debug('Aggregate world report')
-    pipeline = pipeline_country_report(query_var)
-
-    logging.debug('Before Aggregate')
-    list_data = mongodb.DBCON.command('aggregate',
-                                      settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                      pipeline=pipeline)
-    logging.debug('After Aggregate')
     world_analytic_array = []
-    if list_data:
-        for doc in list_data['result']:
-            # append data to world_analytic_array with following order
-            # country id|country name|call count|call duration|country_id|buy cost|sell cost
-            # _id = country id
-            world_analytic_array.append((int(doc['_id']),
-                                         get_country_name(int(doc['_id']), type='iso2'),
-                                         int(doc['call_per_day']),
-                                         doc['duration_per_day'],
-                                         get_country_name(int(doc['_id'])),
-                                         doc['buy_cost_per_day'],
-                                         doc['sell_cost_per_day'],
-                                         ))
-
-    logging.debug('CDR world report view end')
+    for country in country_data:
+        # append data to world_analytic_array with following order
+        # country id|country name|call count|call duration|country_id|buy cost|sell cost
+        # TODO: remove int()
+        world_analytic_array.append((int(country["country_id"]),
+                                     get_country_name(int(country["country_id"]), type='iso2'),
+                                     int(country["nbcalls"]),
+                                     int(country["duration"]),
+                                     get_country_name(int(country["country_id"])),
+                                     float(country["buy_cost"]),
+                                     float(country["sell_cost"]),
+                                     ))
 
     variables = {
         'form': form,
@@ -1196,4 +1174,5 @@ def world_map_view(request):
         'world_analytic_array': world_analytic_array,
         'action': action,
     }
-    return render_to_response('cdr/world_map.html', variables, context_instance=RequestContext(request))
+    return render_to_response('cdr/world_map.html',
+                              variables, context_instance=RequestContext(request))

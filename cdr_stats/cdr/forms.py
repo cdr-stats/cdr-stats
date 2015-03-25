@@ -199,7 +199,6 @@ class CountryReportForm(CdrSearchForm):
                                     widget=DateTimePicker(options={"format": "YYYY-MM-DD HH:mm", "pickSeconds": False}))
     to_date = forms.DateTimeField(label=_('to').capitalize(), required=True,
                                   widget=DateTimePicker(options={"format": "YYYY-MM-DD HH:mm", "pickSeconds": False}))
-
     metric = forms.TypedChoiceField(label=_('metric').capitalize(), required=False,
                                     choices=(('nbcalls', _('calls')),
                                              ('duration', _('duration')),
@@ -353,13 +352,12 @@ class WorldForm(CdrSearchForm):
     Form used to get world overview of calls in the Customer UI.
     """
     from_date = forms.DateTimeField(label=_('from').capitalize(), required=True,
-                                    widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
+                                    widget=DateTimePicker(options={"format": "YYYY-MM-DD HH:mm", "pickSeconds": False}))
     to_date = forms.DateTimeField(label=_('to').capitalize(), required=True,
-                                  widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
+                                  widget=DateTimePicker(options={"format": "YYYY-MM-DD HH:mm", "pickSeconds": False}))
 
     def __init__(self, *args, **kwargs):
         super(WorldForm, self).__init__(*args, **kwargs)
-        #self.fields.keyOrder = ['from_date', 'to_date', 'switch_id']
         self.helper = FormHelper()
         self.helper.form_class = 'well'
         css_class = 'col-md-4'

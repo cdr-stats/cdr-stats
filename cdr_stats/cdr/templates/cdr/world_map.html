@@ -86,11 +86,7 @@
         <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "country list"|title %}</a></li>
     </ul>
 
-    <div id="form_collapse" class="collapse">
-        {% crispy form form.helper %}
-    </div>
-
-    {% include "frontend/common_search_toggle_button.html" %}
+    {% crispy form form.helper %}
 
     <div class="row">
         <div class="col-md-12">
