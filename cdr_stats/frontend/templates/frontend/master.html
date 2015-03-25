@@ -28,7 +28,13 @@
     <link href="{{ STATIC_URL }}jquery-ui/themes/flick/jquery-ui.min.css" type="text/css" rel="stylesheet" media="all"/>
     <link href="{{ STATIC_URL }}components-font-awesome/css/font-awesome.min.css" type="text/css" rel="stylesheet" media="all"/>
     <link href="{{ STATIC_URL }}cdr-stats/css/cdr_stats_custom.css" rel="stylesheet" type="text/css" media="screen" />
-    <link href="{{ STATIC_URL }}nvd3/src/nv.d3.css" rel="stylesheet" type="text/css" media="screen" />
+
+    <!-- nvd3 -->
+    {% block nvd3_header %}
+    <link href="{{ STATIC_URL }}nvd3/build/nv.d3.css" rel="stylesheet" type="text/css" media="screen" />
+    <script src="{{ STATIC_URL }}d3/d3.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}nvd3/build/nv.d3.js" type="text/javascript"></script>
+    {% endblock %}
 
     <!-- javascript -->
     <script type="text/javascript" src="/jsi18n/"></script>
@@ -37,8 +43,6 @@
     <script src="{{ STATIC_URL }}bootbox/bootbox.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}cdr-stats/js/sidebar-offcanvas.js" type="text/javascript"></script>
 
-    <script src="{{ STATIC_URL }}nvd3/lib/d3.v2.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}nvd3/nv.d3.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}cdr-stats/js/cdr_stats_custom.js" type="text/javascript"></script>
     {% block bootstrap_switch_js %}
     <link href="{{ STATIC_URL }}bootstrap-switch/build/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet" />

@@ -193,7 +193,7 @@ def get_country_id_prefix(prefix_list):
         return (country_id, prefix)
 
 
-@cached(3600)
+# @cached(3600)
 def get_country_name(id, type=''):
     """Get country name from its id & return iso2 type name (e.g 'fr')
      or country name
@@ -210,6 +210,8 @@ def get_country_name(id, type=''):
         obj = Country.objects.get(pk=id)
         if type == 'iso2':
             return str(obj.iso2).lower()
+        if type == 'iso3':
+            return str(obj.countrycode).lower()
         else:
             return obj.countryname
     except:

@@ -523,7 +523,7 @@ BOWER_INSTALLED_APPS = (
     'bootstrap-switch#2.0.0',
     'bootbox#4.1.0',
     'd3#3.3.6',
-    'nvd3#1.1.12-beta',
+    'nvd3#1.7.1',
     'components-font-awesome#4.0.3',
     'typeahead.js#0.10.2',
     'bower-jvectormap',

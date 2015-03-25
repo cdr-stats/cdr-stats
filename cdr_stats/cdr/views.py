@@ -1118,6 +1118,22 @@ def cdr_country_report(request):
     return render_to_response('cdr/country_report.html', data, context_instance=RequestContext(request))
 
 
+def generate_crate(max_num):
+    """
+    helper function to generate well distributed grates
+    """
+    increment = max_num / 7
+    base = max_num / 10
+    grades = []
+    for i in range(0, 7):
+        x = i * increment
+        grades.append(int(base * round(float(x) / base)))
+
+    # Add the max too
+    grades.append(max_num)
+    return grades
+
+
 @permission_required('user_profile.world_map', login_url='/')
 @check_user_detail('accountcode,voipplan')
 @login_required
@@ -1133,7 +1149,7 @@ def world_map_view(request):
     action = 'tabs-1'
     switch_id = 0
     tday = datetime.today()
-    # assign initial value in form fields
+    # Assign initial value in form fields
     form = WorldForm(request.POST or None,
                      initial={'from_date': tday.strftime('%Y-%m-%d 00:00'),
                               'to_date': tday.strftime('%Y-%m-%d 23:55'),
@@ -1150,22 +1166,31 @@ def world_map_view(request):
         switch_id = getvar(request, 'switch_id')
 
     # Get top 10 of country calls
-    top_country = 100
+    top_country = 300
     country_data = custom_sql_aggr_top_country(request.user, switch_id, top_country, start_date, end_date)
 
     world_analytic_array = []
+    max_nbcalls = 0
     for country in country_data:
         # append data to world_analytic_array with following order
         # country id|country name|call count|call duration|country_id|buy cost|sell cost
         # TODO: remove int()
-        world_analytic_array.append((int(country["country_id"]),
-                                     get_country_name(int(country["country_id"]), type='iso2'),
-                                     int(country["nbcalls"]),
-                                     int(country["duration"]),
-                                     get_country_name(int(country["country_id"])),
-                                     float(country["buy_cost"]),
-                                     float(country["sell_cost"]),
-                                     ))
+        country_data = {}
+        country_data["country_id"] = int(country["country_id"])
+        country_data["country_iso3"] = get_country_name(int(country["country_id"]), type='iso3').upper()
+        country_data["country_name"] = get_country_name(int(country["country_id"]))
+        country_data["nbcalls"] = int(country["nbcalls"])
+        if country_data["nbcalls"] > max_nbcalls:
+            max_nbcalls = country_data["nbcalls"]
+        country_data["duration"] = int(country["duration"])
+        country_data["billsec"] = int(country["billsec"])
+        country_data["buy_cost"] = float(country["buy_cost"])
+        country_data["sell_cost"] = float(country["sell_cost"])
+        world_analytic_array.append(country_data)
+
+    max_nbcalls = int(round(max_nbcalls, -3))
+
+    call_crates = generate_crate(max_nbcalls)
 
     variables = {
         'form': form,
@@ -1173,6 +1198,7 @@ def world_map_view(request):
         'end_date': end_date,
         'world_analytic_array': world_analytic_array,
         'action': action,
+        'call_crates': call_crates,
     }
     return render_to_response('cdr/world_map.html',
                               variables, context_instance=RequestContext(request))

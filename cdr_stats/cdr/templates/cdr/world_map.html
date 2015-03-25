@@ -2,84 +2,61 @@
 {% load i18n cdr_tags country_dialcode_tags common_tags crispy_forms_tags %}
 {% load cache %}
 
+{% block nvd3_header %}
+    <!-- remove block nvd3 as conflict with leaflet -->
+{% endblock %}
+
 {% block extra_head %}
-    <!--css-->
-    <link type="text/css" media="screen" href="{{ STATIC_URL }}bower-jvectormap/jquery-jvectormap-1.2.2.css" rel="stylesheet">
-    <!-- Javascript -->
-    <script type="text/javascript" src="{{ STATIC_URL }}bower-jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}bower-jvectormap/jquery-jvectormap-world-mill-en.js"></script>
-    <script type="text/javascript">
-        $(function(){
-            // sample country call data
-            var call_data = [
-                {% for rc in world_analytic_array %}
-                    {
-                        label: '{{ rc.1 }}',
-                        data: [{{ rc.2 }}, {{ rc.3 }}, {{ rc.5 }}, {{ rc.6 }}]
-                    },
-                {% endfor %}
-            ];
-            values = {};
 
-            {% for rc in world_analytic_array %}
-                values['{{ rc.1 }}'] = '{{ rc.2 }}';
-            {% endfor %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-            function conve_min(val)
-            {
-                if(val != 0)
-                {
-                    var minutes = Math.floor(val / 60); // 7
-                    var seconds = val % 60; // 30
-                    return String(minutes +':'+seconds+' minutes')
-                }
-                else{return String('00:00 minutes');}
+    <link type="text/css" media="screen" href="{{ STATIC_URL }}leaflet/dist/leaflet.css" rel="stylesheet">
+    <script type="text/javascript" src="{{ STATIC_URL }}leaflet/dist/leaflet.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
 
-            }
+    <style>
+        #leaflet_map {
+            width: 100%;
+            height: 600px;
+        }
 
-            $('#call-world-map').vectorMap({
-                backgroundColor: '#DDECEF',
-                map: 'world_mill_en',
-                values: values,
-                scaleColors: ['#C7AFBD', '#484452'],
-                hoverOpacity: 0.7,
-                hoverColor: false,
-                onLabelShow: function(event, label, code){
-                    for (var k in call_data) {
-                        if (!call_data.hasOwnProperty(k)) continue;
-                        if(call_data[k].label == code)
-                        {
-                            var temp_string = label.text();
-                            temp_string = temp_string + " : " + String(call_data[k].data[0]) + gettext(" Calls - ") + conve_min(parseInt(call_data[k].data[1]));
+        .leaflet_info {
+            padding: 6px 8px;
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            background: white;
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+        .leaflet_info h4 {
+            margin: 0 0 5px;
+            color: #777;
+        }
 
-                            {% if user.is_superuser %}
-                                temp_string += gettext(" - Buy Cost : ") + call_data[k].data[2];
-                            {% endif %}
-
-                            temp_string += gettext(" - Sell Cost : ") + call_data[k].data[3];
-                            label.text(temp_string);
-                            break;
-                        }
-                    }
-                }
-            });
-        });
-    </script>
-    {{ form.media }}
-    <style type="text/css">
-        .jvectormap-zoomin, .jvectormap-zoomout {
-            width: 15px;
-            height: 13px;
-            line-height: 5px;
+        .leaflet_legend {
+            text-align: left;
+            line-height: 18px;
+            color: #555;
+        }
+        .leaflet_legend i {
+            width: 18px;
+            height: 18px;
+            float: left;
+            margin-right: 8px;
+            opacity: 0.7;
         }
     </style>
+
+    {{ form.media }}
+
 {% endblock %}
 
 {% block content_header %}
-    <h1>{% trans "world report"|capfirst %}<small></small></h1>
+    <h1>{% trans "world report"|capfirst %}</h1>
 {% endblock %}
 
 {% block content %}
+
 <div class="tabbable">
     <ul class="nav nav-tabs">
         <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "country calls detail"|title %}</a></li>
@@ -108,7 +85,7 @@
         <div id="tabs-1" class="tab-pane {% if action == 'tabs-1' or action == '' %}active{% endif %}">
             <div class="row">
                 <div class="col-md-12">
-                    <div id="call-world-map" style="height: 500px"></div>
+                    <div id="leaflet_map"></div>
                 </div>
             </div>
         </div>
@@ -132,22 +109,22 @@
                     {% for country_data in world_analytic_array %}
                         <tr>
                             <td>
-                                {% if country_data.0 %}
-                                    {% cache 1800 hcountry_flag country_data.0 %}
-                                        <img src="{{ STATIC_URL }}cdr-stats/{{ country_data.0|iso_flag }}" class="elemtooltip" title="{{ country_data.4|title }}">
-                                        {{ country_data.4 }}
+                                {% if country_data.country_id %}
+                                    {% cache 1800 hcountry_flag country_data.country_id %}
+                                        <img src="{{ STATIC_URL }}cdr-stats/{{ country_data.country_id|iso_flag }}" class="elemtooltip" title="{{ country_data.country_name|title }}">
+                                        {{ country_data.country_name }}
                                     {% endcache %}
                                 {% else %}
                                     <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans 'world'|capfirst %}">
                                     {% trans "world"|title  %}
                                 {% endif %}
                             </td>
-                            <td>{{ country_data.2 }} {% trans "calls"|capfirst %}</td>
-                            <td>{{ country_data.3|conv_min }} {% trans "minutes" %}</td>
+                            <td>{{ country_data.nbcalls }} {% trans "calls"|capfirst %}</td>
+                            <td>{{ country_data.duration|conv_min }} {% trans "minutes" %}</td>
                             {% if user.is_superuser %}
-                            <td>{{ country_data.5 }}</td>
+                            <td>{{ country_data.buy_cost }}</td>
                             {% endif %}
-                            <td>{{ country_data.6 }}</td>
+                            <td>{{ country_data.sell_cost }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -157,5 +134,181 @@
         </div>
     </div>
 </div>
+
+
+<script type="text/javascript">
+
+    var calldatas = {
+        {% for rc in world_analytic_array %}
+            "{{ rc.country_iso3 }}": {
+                "nbcalls": {{ rc.nbcalls }},
+                "duration": {{ rc.duration }},
+                "billsec": {{ rc.billsec }},
+                "buy_cost": {{ rc.buy_cost }},
+                "sell_cost": {{ rc.sell_cost }}
+            }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    };
+
+    // var calldatas = {
+    //     "AFG": {"nbcalls":10, "duration": 542, "billsec": 435, "buy_cost": 43.12, "sell_cost": 58.10},
+    //     "BEL": {"nbcalls":20, "duration": 542, "billsec": 435, "buy_cost": 43.12, "sell_cost": 58.10},
+    //     "ESP": {"nbcalls":420, "duration": 542, "billsec": 435, "buy_cost": 43.12, "sell_cost": 58.10},
+    //     "FIN": {"nbcalls":1020, "duration": 542, "billsec": 435, "buy_cost": 43.12, "sell_cost": 58.10},
+    //     "GBR": {"nbcalls":50, "duration": 542, "billsec": 435, "buy_cost": 43.12, "sell_cost": 58.10},
+    //     "KAZ": {"nbcalls":520, "duration": 542, "billsec": 435, "buy_cost": 43.12, "sell_cost": 58.10},
+    //     "PER": {"nbcalls":5520, "duration": 542, "billsec": 435, "buy_cost": 43.12, "sell_cost": 58.10}
+    // };
+
+    var map = L.map('leaflet_map').setView([54.260226, -2.146937], 2);
+
+    L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+        maxZoom: 7,
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+            '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+            'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        id: 'examples.map-20v6611k'
+    }).addTo(map);
+
+
+    // control that shows state info on hover
+    var info = L.control();
+
+    info.onAdd = function (map) {
+        this._div = L.DomUtil.create('div', 'leaflet_info');
+        this.update();
+        return this._div;
+    };
+
+    info.update = function (props) {
+        this._div.innerHTML = '<h4>Call Report Data</h4>' +  (props ?
+            '<b>' + props.nbcalls + ' Calls</b><br />' +
+            '<b>' + display_minute_fmt(props.duration) + ' Duration</b><br />' +
+            '<b>' + display_minute_fmt(props.billsec) + ' Billsec</b><br />' +
+            '<b>' + props.buy_cost.toFixed(2) + ' Buy Cost</b><br />' +
+            '<b>' + props.sell_cost.toFixed(2) + ' Sell Cost</b><br />' :
+            'Hover over a country');
+    };
+
+    info.addTo(map);
+
+    var geojson;
+
+    function display_minute_fmt(seconds) {
+        function str_pad_left(string,pad,length){
+            return (new Array(length+1).join(pad)+string).slice(-length);
+        }
+        var minutes = Math.floor(seconds / 60);
+        var seconds = seconds - minutes * 60;
+        return str_pad_left(minutes,'0',2) + ':' + str_pad_left(seconds,'0',2);
+    }
+
+    // get color depending on population density value
+    function getColor(d) {
+        return d > {{ call_crates.7 }} ? '#800026' :
+               d > {{ call_crates.6 }}  ? '#BD0026' :
+               d > {{ call_crates.5 }}  ? '#E31A1C' :
+               d > {{ call_crates.4 }}  ? '#FC4E2A' :
+               d > {{ call_crates.3 }}   ? '#FD8D3C' :
+               d > {{ call_crates.2 }}   ? '#FEB24C' :
+               d > {{ call_crates.1 }}   ? '#FED976' :
+                          '#FFEDA0';
+    }
+
+    function highlightFeature(e) {
+        var layer = e.target;
+
+        layer.setStyle({
+            weight: 5,
+            color: '#666',
+            dashArray: '',
+            fillOpacity: 0.7
+        });
+
+        if (!L.Browser.ie && !L.Browser.opera) {
+            layer.bringToFront();
+        }
+
+        info.update(calldatas[layer.feature.id]);
+    }
+
+    function resetHighlight(e) {
+        geojson.resetStyle(e.target);
+        info.update();
+    }
+
+    function zoomToFeature(e) {
+        map.fitBounds(e.target.getBounds());
+    }
+
+    function onEachFeature(feature, layer) {
+        layer.on({
+            mouseover: highlightFeature,
+            mouseout: resetHighlight,
+            click: zoomToFeature
+        });
+    }
+
+    function style(feature) {
+        var calldata = calldatas[feature.id]
+        var color = calldata ? getColor(calldata.nbcalls) : '';
+        return {
+            weight: 2,
+            opacity: 1,
+            color: 'white',
+            dashArray: '3',
+            fillOpacity: 0.7,
+            fillColor: color
+        };
+    }
+
+    function filter(feature, layer) {
+        console.log(feature)
+        var calldata = calldatas[feature.id]
+        return calldata !== undefined;
+    }
+    // $.getJSON( "/calldata.json", function( data ) {
+    //  calldatas = data;
+
+    //  $.getJSON('/static/countries.geo.json', function (geodata) {
+    //      geojson = L.geoJson(geodata, {
+    //          style: style,
+    //          onEachFeature: onEachFeature
+    //      }).addTo(map);
+    //  });
+    // });
+
+    $.getJSON('{{ STATIC_URL }}cdr-stats/geodata/countries.geo.json', function (geodata) {
+        geojson = L.geoJson(geodata, {
+            style: style,
+            filter: filter,
+            onEachFeature: onEachFeature
+        }).addTo(map);
+    });
+
+    var legend = L.control({position: 'bottomright'});
+
+    legend.onAdd = function (map) {
+
+        var div = L.DomUtil.create('div', 'leaflet_info leaflet_legend'),
+            grades = [ {{ call_crates|join:", " }} ],
+            labels = [],
+            from, to;
+
+        for (var i = 0; i < grades.length; i++) {
+            from = grades[i];
+            to = grades[i + 1];
+
+            labels.push(
+                '<i style="background:' + getColor(from + 1) + '"></i> ' +
+                from + (to ? '&ndash;' + to : '+') + " Calls");
+        }
+
+        div.innerHTML = labels.join('<br>');
+        return div;
+    };
+
+    legend.addTo(map);
+</script>
 
 {% endblock %}
