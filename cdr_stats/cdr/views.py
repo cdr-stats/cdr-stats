@@ -14,7 +14,7 @@
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponse, Http404
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.utils.translation import gettext as _
 from django.conf import settings
@@ -22,8 +22,6 @@ import six
 from django_lets_go.common_functions import int_convert_to_minute,\
     percentage, getvar, unset_session_var, ceil_strdate
 from django_lets_go.common_functions import get_pagination_vars
-# from cdr.filters import CDRFilter
-from switch.models import Switch
 from user_profile.models import UserProfile
 from cdr.functions_def import get_country_name, get_hangupcause_name,\
     get_switch_ip_addr, calculate_act_acd
@@ -31,9 +29,6 @@ from cdr.forms import CdrSearchForm, CountryReportForm, CdrOverviewForm, Compare
     SwitchForm, WorldForm, EmailReportForm
 # from cdr.forms import ConcurrentCallForm
 from cdr.filters import get_filter_operator_int, get_filter_operator_str
-from cdr.aggregate import pipeline_country_report,\
-    pipeline_country_hourly_report,\
-    pipeline_mail_report
 from cdr.decorators import check_user_detail
 from cdr.constants import CDR_COLUMN_NAME, Export_choice, COMPARE_WITH
 from cdr.models import CDR
@@ -42,16 +37,11 @@ from aggregator.aggregate_cdr import custom_sql_aggr_top_country, custom_sql_agg
     custom_sql_aggr_top_country_last24hours
 from aggregator.pandas_cdr import get_report_cdr_per_switch, get_report_compare_cdr, \
     get_report_cdr_per_country
-from voip_billing.function_def import round_val
-from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
-from collections import defaultdict
-import json
 import tablib
 import time
 import logging
-# from common.helpers import pp
 
 
 def show_menu(request):
@@ -404,16 +394,12 @@ def cdr_dashboard(request):
     else:
         switch_id = 0
 
-    # if not request.user.is_superuser:
-        # query_var['metadata.accountcode'] = request.user.userprofile.accountcode
-
     # Get list of calls/duration for each of the last 24 hours
     (calls_hour_aggr, total_calls, total_duration, total_billsec, total_buy_cost, total_sell_cost) = custom_sql_matv_voip_cdr_aggr_last24hours(request.user, switch_id)
 
     # Build chart data for last 24h calls
     (xdata, ydata, ydata2, ydata3, ydata4, ydata5) = ([], [], [], [], [], [])
     for i in calls_hour_aggr:
-        # start_time = int(time.mktime(datetime.datetime(2012, 6, 1).timetuple()) * 1000)
         start_time = (time.mktime(calls_hour_aggr[i]['calltime'].timetuple()) * 1000)
         xdata.append(start_time)
         ydata.append(str(calls_hour_aggr[i]['nbcalls']))
@@ -861,8 +847,8 @@ def cdr_country_report(request):
 
     **Logic Description**:
 
-        get all call records from mongodb collection for all countries
-        to create country call
+        Retrieve call records from Postgresql for all countries
+        and create reporting information for those countries
     """
     metric = 'nbcalls'
     tday = datetime.today()
@@ -942,7 +928,6 @@ def cdr_country_report(request):
         'jquery_on_ready': True,
     }
 
-    # -------------- Build data to pass to Request ---------------
     data = {
         'action': 'tabs-1',
         'total_metric': total_metric,
@@ -1033,7 +1018,6 @@ def world_map_view(request):
     for country in country_data:
         # append data to world_analytic_array with following order
         # country id|country name|call count|call duration|country_id|buy cost|sell cost
-        # TODO: remove int()
         country_data = {}
         country_data["country_id"] = int(country["country_id"])
         country_data["country_iso3"] = get_country_name(int(country["country_id"]), type='iso3').upper()
