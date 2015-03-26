@@ -19,7 +19,7 @@ from django.core.validators import validate_email
 from django.utils.translation import ugettext_lazy as _
 from django_lets_go.common_functions import comp_day_range
 from cdr.functions_def import get_switch_list, get_country_list
-from cdr.constants import STRING_SEARCH_TYPE_LIST, COMPARE_WITH, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
+from cdr.constants import STRING_SEARCH_TYPE_LIST, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 from cdr.models import HangupCause
 from user_profile.models import UserProfile
 from bootstrap3_datetime.widgets import DateTimePicker

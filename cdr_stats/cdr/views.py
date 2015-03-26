@@ -18,7 +18,6 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.utils.translation import gettext as _
 from django.conf import settings
-import six
 from django_lets_go.common_functions import int_convert_to_minute,\
     percentage, getvar, unset_session_var, ceil_strdate
 from django_lets_go.common_functions import get_pagination_vars
@@ -37,7 +36,9 @@ from aggregator.aggregate_cdr import custom_sql_aggr_top_country, custom_sql_agg
     custom_sql_aggr_top_country_last24hours
 from aggregator.pandas_cdr import get_report_cdr_per_switch, get_report_compare_cdr, \
     get_report_cdr_per_country
-from datetime import datetime, date, timedelta
+from common.helpers import trunc_date_start, trunc_date_end
+from cdr.helpers import get_cdr_mail_report
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import tablib
 import time
@@ -502,55 +503,6 @@ def cdr_dashboard(request):
     return render_to_response('cdr/dashboard.html', variables, context_instance=RequestContext(request))
 
 
-def get_cdr_mail_report(user):
-    """
-    General function to get previous day CDR report
-    """
-    # Get yesterday's CDR-Stats Mail Report
-    yesterday = date.today() - timedelta(1)
-    start_date = trunc_date_start(yesterday)
-    end_date = trunc_date_end(yesterday)
-
-    # Build filter for CDR.object
-    kwargs = {}
-    if start_date:
-        kwargs['starting_date__gte'] = start_date
-
-    if end_date:
-        kwargs['starting_date__lte'] = end_date
-
-    # user are restricted to their own CDRs
-    if not user.is_superuser:
-        kwargs['user_id'] = user.id
-
-    cdrs = CDR.objects.filter(**kwargs)[:10]
-
-    # Get list of calls/duration for each of the last 24 hours
-    (calls_hour_aggr, total_calls, total_duration, total_billsec, total_buy_cost, total_sell_cost) = custom_sql_matv_voip_cdr_aggr_last24hours(user, switch_id=0)
-
-    # Get top 5 of country calls for last 24 hours
-    country_data = custom_sql_aggr_top_country_last24hours(user, switch_id=0, limit=5)
-
-    # Get top 10 of hangup cause calls for last 24 hours
-    hangup_cause_data = custom_sql_aggr_top_hangup_last24hours(user, switch_id=0)
-
-    # Calculate the Average Time of Call
-    metric_aggr = calculate_act_acd(total_calls, total_duration)
-
-    mail_data = {
-        'yesterday_date': start_date,
-        'rows': cdrs,
-        'total_duration': total_duration,
-        'total_calls': total_calls,
-        'total_buy_cost': total_buy_cost,
-        'total_sell_cost': total_sell_cost,
-        'metric_aggr': metric_aggr,
-        'country_data': country_data,
-        'hangup_cause_data': hangup_cause_data,
-    }
-    return mail_data
-
-
 @permission_required('user_profile.mail_report', login_url='/')
 @check_user_detail('accountcode,voipplan')
 @login_required
@@ -689,38 +641,6 @@ def cdr_daily_comparison(request):
     return render_to_response('cdr/daily_comparison.html', variables, context_instance=RequestContext(request))
 
 
-def trunc_date_start(date, trunc_hour_min=False):
-    """
-    Convert a string date to a start date
-
-    trunc_min allows to trunc the date to the minute
-    """
-    if isinstance(date, six.string_types):
-        date = datetime.strptime(date, '%Y-%m-%d %H:%M')
-
-    (hour, minute, second, millisec) = (0, 0, 0, 0)
-    # if not trunc_hour_min:
-    #     return datetime(date.year, date.month, date.day, date.hour, date.minute, 0, 0)
-    # return start date
-    return datetime(date.year, date.month, date.day, hour, minute, second, millisec)
-
-
-def trunc_date_end(date, trunc_hour_min=False):
-    """
-    Convert a string date to a end date
-
-    trunc_min allows to trunc the date to the minute
-    """
-    if isinstance(date, six.string_types):
-        date = datetime.strptime(date, '%Y-%m-%d %H:%M')
-
-    (hour, minute, second, millisec) = (23, 59, 59, 999999)
-    # if not trunc_hour_min:
-    #     return datetime(date.year, date.month, date.day, date.hour, date.minute, 0, 0)
-    # return end date
-    return datetime(date.year, date.month, date.day, hour, minute, second, millisec)
-
-
 @permission_required('user_profile.overview', login_url='/')
 @check_user_detail('accountcode')
 @login_required
@@ -755,7 +675,6 @@ def cdr_overview(request):
     start_date = trunc_date_start(tday)
     end_date = trunc_date_end(tday)
 
-    logging.debug('CDR overview with search option')
     if form.is_valid():
         from_date = getvar(request, 'from_date')
         to_date = getvar(request, 'to_date')

@@ -16,17 +16,19 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from voip_billing.models import VoIPRetailRate
-from voip_billing.forms import PrefixRetailRateForm, SimulatorForm, BillingReportForm,\
-    BillingReportForm
-from voip_billing.function_def import prefix_allowed_to_call, round_val
+from voip_billing.forms import PrefixRetailRateForm, SimulatorForm, BillingReportForm
+from voip_billing.function_def import prefix_allowed_to_call
 from voip_billing.rate_engine import rate_engine
 from voip_billing.constants import RATE_COLUMN_NAME
+from aggregator.pandas_cdr import get_report_cdr_per_switch
+from aggregator.aggregate_cdr import custom_sql_aggr_top_country
 from cdr.decorators import check_user_detail
+from cdr.functions_def import get_switch_ip_addr, calculate_act_acd
 from cdr.constants import Export_choice
-from django_lets_go.common_functions import getvar, ceil_strdate, get_pagination_vars
+from common.helpers import trunc_date_start, trunc_date_end
+from django_lets_go.common_functions import getvar, get_pagination_vars
 from datetime import datetime
 import logging
-import time
 import requests
 import ast
 import tablib
@@ -214,81 +216,54 @@ def billing_report(request):
         daily billing analytics for given date range
     """
     switch_id = 0
-    start_date = ''
-    end_date = ''
     tday = datetime.today()
-    # assign initial value in form fields
-    form = BillingReportForm(request.POST or None, initial={'from_date': tday.strftime('%Y-%m-%d'),
-                                                           'to_date': tday.strftime('%Y-%m-%d')})
+    total_data = []
+    charttype = "lineWithFocusChart"
+    hourly_chartdata = {"x": []}
+
+    form = BillingReportForm(request.POST or None,
+                             initial={'from_date': tday.strftime('%Y-%m-%d 00:00'),
+                                    'to_date': tday.strftime('%Y-%m-%d 23:55'),
+                                    'switch_id': switch_id})
+    start_date = trunc_date_start(tday)
+    end_date = trunc_date_end(tday)
+
     if form.is_valid():
         from_date = getvar(request, 'from_date')
         to_date = getvar(request, 'to_date')
-
-        start_date = ceil_strdate(from_date, 'start')
-        end_date = ceil_strdate(to_date, 'end')
+        start_date = trunc_date_start(from_date)
+        end_date = trunc_date_end(to_date)
         switch_id = getvar(request, 'switch_id')
-    else:
-        start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
-        end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
 
-    query_var = {}
-    if switch_id and int(switch_id) != 0:
-        query_var['metadata.switch_id'] = int(switch_id)
+    metrics = ['buy_cost', 'sell_cost']
 
-    query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
-    if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = request.user.userprofile.accountcode
+    hourly_data = get_report_cdr_per_switch(request.user, 'hour', start_date, end_date, switch_id)
 
-    # list_data = mongodb.DBCON.command('aggregate',
-    #                                   settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-    #                                   pipeline=pipeline)
-    list_data = {}
+    hourly_chartdata['x'] = hourly_data["nbcalls"]["x_timestamp"]
 
-    logging.debug('After Aggregate')
-    daily_data = dict()
-    total_data = []
-    charttype = "lineWithFocusChart"
-    chartdata = {"x": []}
-    if list_data:
-        for doc in list_data['result']:
-            # Get date from aggregate result array
-            graph_day = datetime(int(doc['_id'][0:4]),
-                                 int(doc['_id'][4:6]),
-                                 int(doc['_id'][6:8]),
-                                 0, 0, 0, 0)
-            # convert date into timestamp value
-            dt = int(1000 * time.mktime(graph_day.timetuple()))
-
-            # if timestamp value in daily_data, then update dict value
-            if dt in daily_data:
-                daily_data[dt]['buy_cost_per_day'] += float(doc['buy_cost_per_day'])
-                daily_data[dt]['sell_cost_per_day'] += float(doc['sell_cost_per_day'])
-            else:
-                # assign new timestamp value in daily_data with dict value
-                daily_data[dt] = {
-                    'buy_cost_per_day': float(doc['buy_cost_per_day']),
-                    'sell_cost_per_day': float(doc['sell_cost_per_day']),
-                }
-
-        # apply sorting on timestamp value
-        total_data = sorted(daily_data.items(), key=lambda k: k[0])
-
-        xdata = []
-        ydata = []
-        ydata2 = []
-        for i in total_data:
-            xdata.append(str(i[0]))
-            ydata.append(round_val(i[1]['buy_cost_per_day']))
-            ydata2.append(round_val(i[1]['sell_cost_per_day']))
-
-        tooltip_date = "%d %b %Y"
-        extra_serie = {"tooltip": {"y_start": "$ ", "y_end": ""},
-                       "date_format": tooltip_date}
-        chartdata = {
-            'x': xdata,
-            'name1': ("buy cost").capitalize(), 'y1': ydata, 'extra1': extra_serie,
-            'name2': ("sell cost").capitalize(), 'y2': ydata2, 'extra2': extra_serie,
+    i = 0
+    for metric in metrics:
+        extra_serie = {
+            "tooltip": {"y_start": "", "y_end": " " + metric},
+            "date_format": "%d %b %y %H:%M%p"
         }
+        for switch in hourly_data[metric]["columns"]:
+            i = i + 1
+            hourly_chartdata['name' + str(i)] = get_switch_ip_addr(switch) + "_" + metric
+            hourly_chartdata['y' + str(i)] = hourly_data[metric]["values"][str(switch)]
+            hourly_chartdata['extra' + str(i)] = extra_serie
+
+    total_calls = hourly_data["nbcalls"]["total"]
+    total_duration = hourly_data["duration"]["total"]
+    total_billsec = hourly_data["billsec"]["total"]
+    total_buy_cost = hourly_data["buy_cost"]["total"]
+    total_sell_cost = hourly_data["sell_cost"]["total"]
+
+    # Calculate the Average Time of Call
+    metric_aggr = calculate_act_acd(total_calls, total_duration)
+
+    # Get top 10 of country calls
+    country_data = custom_sql_aggr_top_country(request.user, switch_id, 10, start_date, end_date)
 
     data = {
         'form': form,
@@ -296,7 +271,7 @@ def billing_report(request):
         'start_date': start_date,
         'end_date': end_date,
         'charttype': charttype,
-        'chartdata': chartdata,
+        'chartdata': hourly_chartdata,
         'chartcontainer': 'chart_container',
         'extra': {
             'x_is_date': True,
@@ -304,6 +279,13 @@ def billing_report(request):
             'tag_script_js': True,
             'jquery_on_ready': True,
         },
+        'total_calls': total_calls,
+        'total_duration': total_duration,
+        'total_billsec': total_billsec,
+        'total_buy_cost': total_buy_cost,
+        'total_sell_cost': total_sell_cost,
+        'metric_aggr': metric_aggr,
+        'country_data': country_data,
     }
     return render_to_response('voip_billing/billing_report.html',
                               data,

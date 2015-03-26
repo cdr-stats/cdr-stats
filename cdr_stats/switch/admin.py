@@ -27,7 +27,7 @@ from cdr.functions_def import get_hangupcause_name
 from cdr.forms import CdrSearchForm
 from cdr.constants import CDR_COLUMN_NAME, Export_choice, CDR_FIELD_LIST, CDR_FIELD_LIST_NUM
 # from cdr.views import cdr_view_daily_report
-from cdr.views import get_pagination_vars
+from django_lets_go.common_functions import get_pagination_vars
 from cdr_alert.functions_blacklist import chk_destination
 from datetime import datetime
 from dateutil.relativedelta import relativedelta

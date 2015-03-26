@@ -261,10 +261,10 @@ class CustomRateFilterForm(forms.Form):
 class BillingReportForm(forms.Form):
 
     """Daily Billing Form"""
-    from_date = forms.DateTimeField(label=_('from').capitalize(), required=False,
-                                    widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
-    to_date = forms.DateTimeField(label=_('to').capitalize(), required=False,
-                                  widget=DateTimePicker(options={"format": "YYYY-MM-DD", "pickTime": False}))
+    from_date = forms.DateTimeField(label=_('from').capitalize(), required=True,
+                                    widget=DateTimePicker(options={"format": "YYYY-MM-DD HH:mm", "pickSeconds": False}))
+    to_date = forms.DateTimeField(label=_('to').capitalize(), required=True,
+                                  widget=DateTimePicker(options={"format": "YYYY-MM-DD HH:mm", "pickSeconds": False}))
     switch_id = forms.ChoiceField(label=_('switch'), required=False)
 
     def __init__(self, *args, **kwargs):
