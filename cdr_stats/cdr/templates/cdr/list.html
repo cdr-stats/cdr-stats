@@ -226,10 +226,8 @@
                                     <img src="{{ STATIC_URL }}cdr-stats/icons/door.png" title="{{ row.get_direction_display|lower|capfirst }}  {% trans 'call' %}" class="elemtooltip"/>
                                 {% endif %}
 
-                                {% if "cdr_object_id" in row %}
-                                    {% if perms.user_profile.cdr_detail %}
-                                        {% cdr_details row.cdr_object_id row.switch_id %}
-                                    {% endif %}
+                                {% if perms.user_profile.cdr_detail %}
+                                    {% cdr_details row.id %}
                                 {% endif %}
                             </div>
                         </td>

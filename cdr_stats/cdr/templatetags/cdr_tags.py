@@ -12,9 +12,11 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django import template
-from cdr.models import Switch
 from django.utils.translation import ugettext as _
 from cdr.functions_def import get_hangupcause_name, get_switch_ip_addr
+from django.utils.safestring import mark_safe
+import json
+from cdr.utils.encoder import SafeJSONEncoder
 import re
 
 register = template.Library()
@@ -68,8 +70,19 @@ def get_cost(rate, billsec):
 
 
 @register.simple_tag(name='cdr_details')
-def cdr_details(cdr_object_id, switch_id):
+def cdr_details(cdr_id):
     """Create link to get cdr detail"""
-    link = '<a href="#cdr-detail"  url="/cdr_detail/%s/%s" class="cdr-detail" data-toggle="modal" data-controls-modal="cdr-detail" title="%s"><i class="fa fa-search"></i></a>' \
-           % (cdr_object_id, switch_id, _('cdr detail').capitalize())
+    link = '<a href="#cdr-detail"  url="/cdr_detail/%s" class="cdr-detail" data-toggle="modal" data-controls-modal="cdr-detail" title="%s"><i class="fa fa-search"></i></a>' \
+           % (cdr_id, _('cdr detail').capitalize())
     return link
+
+
+@register.filter('json')
+def json_filter(value):
+    """
+    Returns the JSON representation of ``value`` in a safe manner.
+    """
+    return mark_safe(json.dumps(value,
+                                sort_keys=True,
+                                indent=4,
+                                cls=SafeJSONEncoder))

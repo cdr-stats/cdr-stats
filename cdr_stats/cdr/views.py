@@ -47,6 +47,7 @@ from bson.objectid import ObjectId
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
 from collections import defaultdict
+import json
 import tablib
 import time
 import logging
@@ -295,8 +296,8 @@ def cdr_export_to_csv(request):
     """
     **Logic Description**:
 
-        get the call records  from mongodb collection
-        according to search parameters & store into csv file
+        Retrieve calls records from Postgresql according to search
+        parameters, then export the result into CSV/XLS/JSON file
     """
     format_type = request.GET['format']
     # get the response object, this can be used as a stream
@@ -351,7 +352,7 @@ def cdr_export_to_csv(request):
 
 @permission_required('user_profile.cdr_detail', login_url='/')
 @login_required
-def cdr_detail(request, id, switch_id):
+def cdr_detail(request, cdr_id):
     """Detail of Call
 
     **Attributes**:
@@ -360,67 +361,22 @@ def cdr_detail(request, id, switch_id):
 
     **Logic Description**:
 
-        get the single call record in detail from mongodb collection
+        Get details from CDR through the jsonb data field
     """
-    c_switch = get_object_or_404(Switch, id=switch_id)
-    ipaddress = c_switch.ipaddress
     menu = show_menu(request)
 
-    db_engine = settings.CDR_BACKEND[ipaddress]['db_engine']
-    cdr_type = settings.CDR_BACKEND[ipaddress]['cdr_type']
+    try:
+        cdr = CDR.objects.get(id=cdr_id)
+    except CDR.DoesNotExist:
+        raise Http404
 
-    if cdr_type == 'freeswitch':
-        # Connect on MongoDB Database
-        host = settings.CDR_BACKEND[ipaddress]['host']
-        port = settings.CDR_BACKEND[ipaddress]['port']
-        db_name = settings.CDR_BACKEND[ipaddress]['db_name']
-        table_name = settings.CDR_BACKEND[ipaddress]['table_name']
-        user = settings.CDR_BACKEND[ipaddress]['user']
-        password = settings.CDR_BACKEND[ipaddress]['password']
-        try:
-            connection = Connection(host, port)
-            DBCON = connection[db_name]
-            # DBCON.autentificate(user, password)
-        except ConnectionFailure:
-            raise Http404
-
-        doc = DBCON[table_name].find({'_id': ObjectId(id)})
-        data = {'row': list(doc), 'menu': menu}
-        return render_to_response('cdr/detail_freeswitch.html', data, context_instance=RequestContext(request))
-
-    elif cdr_type == 'asterisk':
-        # Connect on Database
-        db_name = settings.CDR_BACKEND[ipaddress]['db_name']
-        table_name = settings.CDR_BACKEND[ipaddress]['table_name']
-        user = settings.CDR_BACKEND[ipaddress]['user']
-        password = settings.CDR_BACKEND[ipaddress]['password']
-        host = settings.CDR_BACKEND[ipaddress]['host']
-        try:
-            if db_engine == 'mysql':
-                import MySQLdb as Database
-                connection = Database.connect(user=user, passwd=password,
-                                              db=db_name, host=host, port=port, connect_timeout=4)
-                connection.autocommit(True)
-                cursor = connection.cursor()
-            elif db_engine == 'pgsql':
-                import psycopg2 as Database
-                connection = Database.connect(user=user, password=password,
-                                              database=db_name, host=host, port=port)
-                connection.autocommit(True)
-                cursor = connection.cursor()
-        except:
-            raise Http404
-
-        cursor.execute(
-            "SELECT dst, calldate, clid, src, dst, dcontext, channel, dstchannel "
-            "lastapp, duration, billsec, disposition, amaflags, accountcode, "
-            "uniqueid, userfield, %s FROM %s WHERE %s=%s" %
-            (settings.ASTERISK_PRIMARY_KEY, table_name, settings.ASTERISK_PRIMARY_KEY, id))
-        row = cursor.fetchone()
-        if not row:
-            raise Http404
-        data = {'row': list(row), 'menu': menu}
-        return render_to_response('cdr/detail_asterisk.html', data, context_instance=RequestContext(request))
+    data = {
+        'cdr': cdr,
+        'cdr_data': cdr.data,
+        'menu': menu
+    }
+    return render_to_response('cdr/cdr_detail.html',
+                              data, context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.dashboard', login_url='/')
