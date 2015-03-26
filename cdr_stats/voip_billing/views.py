@@ -130,9 +130,7 @@ def export_rate(request):
         according to search parameters & store into csv file
     """
     format_type = request.GET['format']
-    # get the response object, this can be used as a stream
-    response = HttpResponse(mimetype='text/%s' % format_type)
-    # force download
+    response = HttpResponse(content_type='text/%s' % format_type)
     response['Content-Disposition'] = 'attachment;filename=call_rate.%s' % format_type
 
     headers = ('prefix', 'destination', 'retail_rate')

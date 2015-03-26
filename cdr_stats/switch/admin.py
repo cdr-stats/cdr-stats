@@ -508,7 +508,7 @@ class SwitchAdmin(admin.ModelAdmin):
     # def export_cdr(self, request):
     #     # get the response object, this can be used as a stream.
     #     format_type = request.GET['format']
-    #     response = HttpResponse(mimetype='text/%s' % format_type)
+    #     response = HttpResponse(content_type='text/%s' % format_type)
     #     # force download.
     #     response['Content-Disposition'] = 'attachment;filename=export.%s' % format_type
 

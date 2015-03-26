@@ -150,16 +150,15 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                              r_r_plan.voip_retail_plan_id.name,
                              rate.crid, rate.carrier_rate,
                              rate.rrid, rate.retail_rate, rate.rt_prefix))
-
-        ctx = RequestContext(request,
-                             {
-                                 'title': _('VoIP Simulator'),
-                                 'form': form,
-                                 'opts': opts,
-                                 'model_name': opts.object_name.lower(),
-                                 'app_label': APP_LABEL,
-                                 'data': data,
-                             })
+        variables = {
+            'title': _('VoIP Simulator'),
+            'form': form,
+            'opts': opts,
+            'model_name': opts.object_name.lower(),
+            'app_label': APP_LABEL,
+            'data': data,
+        }
+        ctx = RequestContext(request, variables)
         return render_to_response('admin/voip_billing/voipplan/simulator.html', context_instance=ctx)
 
     def export(self, request):
@@ -170,7 +169,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
         form = VoIPPlan_fileExport(request.POST or None, initial={'export_to': Export_choice.CSV})
         if form.is_valid():
             format_type = request.POST.get('export_to')
-            response = HttpResponse(mimetype='text/%s' % format_type)
+            response = HttpResponse(content_type='text/%s' % format_type)
             response['Content-Disposition'] = 'attachment;filename=export_voipplan.%s' % format_type
 
             voipplan_id = request.POST['plan_id']
@@ -434,7 +433,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
 
         if form.is_valid():
             format_type = request.POST.get('export_to')
-            response = HttpResponse(mimetype='text/%s' % format_type)
+            response = HttpResponse(content_type='text/%s' % format_type)
             response['Content-Disposition'] = 'attachment;filename=export_retail_rate.%s' % format_type
             qs = VoIPRetailRate.objects.values('prefix', 'retail_rate').filter(voip_retail_plan_id=request.POST['plan_id'])
 
@@ -647,7 +646,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
         form = Carrier_Rate_fileExport(request.POST or None, initial={'export_to': Export_choice.CSV})
         if form.is_valid():
             format_type = request.POST.get('export_to')
-            response = HttpResponse(mimetype='text/%s' % format_type)
+            response = HttpResponse(content_type='text/%s' % format_type)
             response['Content-Disposition'] = 'attachment;filename=export_carrier_rate.%s' % format
 
             qs = VoIPCarrierRate.objects.values('prefix', 'carrier_rate').filter(

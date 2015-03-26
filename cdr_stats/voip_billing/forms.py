@@ -183,40 +183,12 @@ class PrefixRetailRateForm(forms.Form):
         )
 
 
-class SendVoIPForm(forms.Form):
-
-    """
-    Client Form : To Send VoIP
-    """
-    destination_no = forms.CharField(label=_("destination").capitalize(), required=True,
-                                     help_text=_('enter digit only'))
-    txt_msg = forms.CharField(label=_("message").capitalize(), widget=forms.Textarea,
-                              help_text=_('not more than 120 characters'), required=True)
-
-    def clean_destination_no(self):
-        """
-        Form Validation :  destination_no Check
-        """
-        destination_no = self.cleaned_data['destination_no']
-        if not isint(destination_no):
-            raise forms.ValidationError("enter digit only!")
-        return destination_no
-
-    def clean_txt_msg(self):
-        """
-        Form Validation :  text message length Check
-        """
-        txt_msg = self.cleaned_data['txt_msg']
-        if len(txt_msg) > 120:
-            raise forms.ValidationError("message should be less than 120 characters !!")
-        return txt_msg
-
-
-class SimulatorForm(SendVoIPForm):
-
+class SimulatorForm(forms.Form):
     """
     Admin/Client Form : To Simulator
     """
+    destination_no = forms.CharField(label=_("destination").capitalize(), required=True,
+                                     help_text=_('enter digit only'))
     plan_id = forms.ChoiceField(label=_("VoIP plan"), required=False)
 
     def __init__(self, user, *args, **kwargs):
@@ -246,6 +218,15 @@ class SimulatorForm(SendVoIPForm):
         if plan_id == 0:
             raise forms.ValidationError("select VoIP Plan!!")
         return plan_id
+
+    def clean_destination_no(self):
+        """
+        Form Validation :  destination_no Check
+        """
+        destination_no = self.cleaned_data['destination_no']
+        if not isint(destination_no):
+            raise forms.ValidationError("enter digit only!")
+        return destination_no
 
 
 class CustomRateFilterForm(forms.Form):
