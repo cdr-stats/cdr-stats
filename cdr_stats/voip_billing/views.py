@@ -14,17 +14,14 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
-from django.conf import settings
 from django.template.context import RequestContext
 from voip_billing.models import VoIPRetailRate
-from voip_billing.forms import PrefixRetailRateForm, SimulatorForm, DailyBillingForm,\
-    HourlyBillingForm
+from voip_billing.forms import PrefixRetailRateForm, SimulatorForm, BillingReportForm,\
+    BillingReportForm
 from voip_billing.function_def import prefix_allowed_to_call, round_val
 from voip_billing.rate_engine import rate_engine
 from voip_billing.constants import RATE_COLUMN_NAME
-from mongodb_connection import mongodb
 from cdr.decorators import check_user_detail
-from cdr.aggregate import pipeline_daily_billing_report, pipeline_hourly_billing_report
 from cdr.constants import Export_choice
 from django_lets_go.common_functions import getvar, ceil_strdate, get_pagination_vars
 from datetime import datetime
@@ -200,30 +197,28 @@ def simulator(request):
                               context_instance=RequestContext(request))
 
 
-@permission_required('user_profile.daily_billing', login_url='/')
+@permission_required('user_profile.billing_report', login_url='/')
 @check_user_detail('accountcode,voipplan')
 @login_required
-def daily_billing_report(request):
+def billing_report(request):
     """CDR billing graph by daily basis
 
     **Attributes**:
 
-        * ``template`` - voip_billing/daily_billing_report.html
-        * ``form`` - DailyBillingForm
-        * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
-        * ``aggregate`` - pipeline_daily_billing_report()
+        * ``template`` - voip_billing/billing_report.html
+        * ``form`` - BillingReportForm
 
     **Logic Description**:
 
-        get all call records from mongodb collection for
-        daily billing analytics for given date
+        Retrieve call records from PostgreSQL and build the
+        daily billing analytics for given date range
     """
     switch_id = 0
     start_date = ''
     end_date = ''
     tday = datetime.today()
     # assign initial value in form fields
-    form = DailyBillingForm(request.POST or None, initial={'from_date': tday.strftime('%Y-%m-%d'),
+    form = BillingReportForm(request.POST or None, initial={'from_date': tday.strftime('%Y-%m-%d'),
                                                            'to_date': tday.strftime('%Y-%m-%d')})
     if form.is_valid():
         from_date = getvar(request, 'from_date')
@@ -244,13 +239,10 @@ def daily_billing_report(request):
     if not request.user.is_superuser:  # not superuser
         query_var['metadata.accountcode'] = request.user.userprofile.accountcode
 
-    logging.debug('Aggregate daily billing analytic')
-    pipeline = pipeline_daily_billing_report(query_var)
-
-    logging.debug('Before Aggregate')
-    list_data = mongodb.DBCON.command('aggregate',
-                                      settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                      pipeline=pipeline)
+    # list_data = mongodb.DBCON.command('aggregate',
+    #                                   settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
+    #                                   pipeline=pipeline)
+    list_data = {}
 
     logging.debug('After Aggregate')
     daily_data = dict()
@@ -313,108 +305,6 @@ def daily_billing_report(request):
             'jquery_on_ready': True,
         },
     }
-    return render_to_response('voip_billing/daily_billing_report.html',
-                              data,
-                              context_instance=RequestContext(request))
-
-
-@permission_required('user_profile.hourly_billing', login_url='/')
-@check_user_detail('accountcode,voipplan')
-@login_required
-def hourly_billing_report(request):
-    """CDR billing graph by hourly basis
-
-    **Attributes**:
-
-        * ``template`` - voip_billing/hourly_billing_report.html
-        * ``form`` - HourlyBillingForm
-        * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
-        * ``aggregate`` - pipeline_hourly_billing_report()
-
-    **Logic Description**:
-
-        get all call records from mongodb collection for
-        hourly billing analytics for given date
-    """
-    switch_id = 0
-    start_date = ''
-    end_date = ''
-    tday = datetime.today()
-    # assign initial value in form fields
-    form = HourlyBillingForm(request.POST or None, initial={'from_date': tday.strftime('%Y-%m-%d')})
-    if form.is_valid():
-        from_date = getvar(request, 'from_date')
-        switch_id = getvar(request, 'switch_id')
-
-        start_date = ceil_strdate(from_date, 'start')
-        start_date = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, 0)
-        end_date = datetime(start_date.year, start_date.month, start_date.day, 23, 59, 59, 999999)
-    else:
-        start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
-        end_date = datetime(tday.year, tday.month, tday.day, 23, 59, 59, 999999)
-
-    query_var = {}
-    if switch_id and int(switch_id) != 0:
-        query_var['metadata.switch_id'] = int(switch_id)
-
-    query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
-    if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = request.user.userprofile.accountcode
-
-    logging.debug('Aggregate hourly billing analytic')
-    pipeline = pipeline_hourly_billing_report(query_var)
-
-    logging.debug('Before Aggregate')
-    list_data = mongodb.DBCON.command('aggregate',
-                                      settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                      pipeline=pipeline)
-
-    logging.debug('After Aggregate')
-
-    charttype = "lineChart"
-    chartdata = {"x": []}
-    if list_data:
-        for doc in list_data['result']:
-            buy_hours = {}
-            sell_hours = {}
-            # Assign 0 - 23 hrs in dict variable and initialize them with 0
-            for hr in range(0, 24):
-                buy_hours[hr] = 0
-                sell_hours[hr] = 0
-
-            # update dict variables with aggregate data
-            for dict_in_list in doc['buy_cost_per_hour']:
-                for key, value in dict_in_list.iteritems():
-                    buy_hours[int(key)] += float(value)
-
-            for dict_in_list in doc['sell_cost_per_hour']:
-                for key, value in dict_in_list.iteritems():
-                    sell_hours[int(key)] += float(value)
-
-            # Assign buy_hours/sell_hours variables to another
-            xdata = [i for i in range(0, 24)]
-            y1 = [round_val(value) for key, value in buy_hours.iteritems()]
-            y2 = [round_val(value) for key, value in sell_hours.iteritems()]
-            extra_serie = {"tooltip": {"y_start": "$ ", "y_end": ""}}
-            chartdata = {
-                'x': xdata,
-                "name1": ("buy cost").capitalize(), "y1": y1, "extra1": extra_serie,
-                "name2": ("sell cost").capitalize(), "y2": y2, "extra2": extra_serie,
-            }
-
-    data = {
-        'form': form,
-        'start_date': start_date,
-        'chartdata': chartdata,
-        'charttype': charttype,
-        'chartcontainer': 'chart_container',
-        'extra': {
-            'x_is_date': True,
-            'x_axis_format': '%d %b %Y',
-            'tag_script_js': True,
-            'jquery_on_ready': True,
-        },
-    }
-    return render_to_response('voip_billing/hourly_billing_report.html',
+    return render_to_response('voip_billing/billing_report.html',
                               data,
                               context_instance=RequestContext(request))

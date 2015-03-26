@@ -95,11 +95,8 @@
                           {% if perms.user_profile.sumulator %}
                           <li {% ifactive '/simulator/' %}class="active"{% endifactive %}><a href="/simulator/"> {% trans "call simulator"|title %}</a></li>
                           {% endif %}
-                          {% if perms.user_profile.daily_billing %}
-                            <li {% ifactive '/daily_billing_report/' %}class="active"{% endifactive %}><a href="/daily_billing_report/"> {% trans "daily billing report"|title %}</a></li>
-                          {% endif %}
-                          {% if perms.user_profile.hourly_billing %}
-                              <li {% ifactive '/hourly_billing_report/' %}class="active"{% endifactive %}><a href="/hourly_billing_report/"> {% trans "hourly billing report"|title %}</a></li>
+                          {% if perms.user_profile.billing_report %}
+                            <li {% ifactive '/billing_report/' %}class="active"{% endifactive %}><a href="/billing_report/"> {% trans "billing report"|title %}</a></li>
                           {% endif %}
                       </ul>
                   </li>

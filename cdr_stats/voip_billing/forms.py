@@ -258,7 +258,7 @@ class CustomRateFilterForm(forms.Form):
                            required=False)
 
 
-class DailyBillingForm(forms.Form):
+class BillingReportForm(forms.Form):
 
     """Daily Billing Form"""
     from_date = forms.DateTimeField(label=_('from').capitalize(), required=False,
@@ -268,7 +268,7 @@ class DailyBillingForm(forms.Form):
     switch_id = forms.ChoiceField(label=_('switch'), required=False)
 
     def __init__(self, *args, **kwargs):
-        super(DailyBillingForm, self).__init__(*args, **kwargs)
+        super(BillingReportForm, self).__init__(*args, **kwargs)
         self.fields['switch_id'].choices = sw_list_with_all()
         self.helper = FormHelper()
         self.helper.form_class = 'well'
@@ -277,26 +277,6 @@ class DailyBillingForm(forms.Form):
             Div(
                 Div('from_date', css_class=css_class),
                 Div('to_date', css_class=css_class),
-                Div('switch_id', css_class=css_class),
-                css_class='row',
-            ),
-        )
-        common_submit_buttons(self.helper.layout, 'search')
-
-
-class HourlyBillingForm(DailyBillingForm):
-
-    """Hourly Billing Form"""
-
-    def __init__(self, *args, **kwargs):
-        super(HourlyBillingForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['from_date', 'switch_id']
-        self.helper = FormHelper()
-        self.helper.form_class = 'well'
-        css_class = 'col-md-4'
-        self.helper.layout = Layout(
-            Div(
-                Div('from_date', css_class=css_class),
                 Div('switch_id', css_class=css_class),
                 css_class='row',
             ),

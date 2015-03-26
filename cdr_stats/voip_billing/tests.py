@@ -13,9 +13,9 @@
 #
 
 from django_lets_go.utils import BaseAuthenticatedClient
-from voip_billing.forms import HourlyBillingForm, DailyBillingForm, \
+from voip_billing.forms import BillingReportForm, \
     PrefixRetailRateForm
-from voip_billing.views import daily_billing_report, hourly_billing_report, export_rate
+from voip_billing.views import billing_report, export_rate
 from voip_billing.tasks import RebillingTask, ReaggregateTask
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
@@ -108,64 +108,35 @@ class VoipBillingCustomerInterfaceTestCase(BaseAuthenticatedClient):
         self.assertEqual(response.status_code, 200)
         #self.assertTemplateUsed(response, 'voip_billing/simulator.html')
 
-    def test_daily_billing_report(self):
+    def test_billing_report(self):
         """
         Test Function to check VoIP daily billing report
         """
-        response = self.client.get('/daily_billing_report/')
-        #self.assertTrue(response.context['form'], DailyBillingForm())
+        response = self.client.get('/billing_report/')
+        #self.assertTrue(response.context['form'], BillingReportForm())
         self.assertEqual(response.status_code, 200)
 
         response = self.client.post(
-            '/daily_billing_report/',
+            '/billing_report/',
             data={'plan_id': 1,
                   'from_date': datetime.now().strftime("%Y-%m-%d"),
                   'to_date': datetime.now().strftime("%Y-%m-%d")})
         self.assertEqual(response.status_code, 200)
-        #self.assertTemplateUsed(response, 'voip_billing/daily_billing_report.html')
+        #self.assertTemplateUsed(response, 'voip_billing/billing_report.html')
 
-        request = self.factory.get('/daily_billing_report/')
+        request = self.factory.get('/billing_report/')
         request.user = self.user
         request.session = {}
-        response = daily_billing_report(request)
+        response = billing_report(request)
         self.assertEqual(response.status_code, 200)
 
         data = {'plan_id': 1,
                 'from_date': datetime.now().strftime("%Y-%m-%d"),
                 'to_date': datetime.now().strftime("%Y-%m-%d")}
-        request = self.factory.post('/daily_billing_report/', data)
+        request = self.factory.post('/billing_report/', data)
         request.user = self.user
         request.session = {}
-        response = daily_billing_report(request)
-        self.assertEqual(response.status_code, 200)
-
-    def test_hourly_billing_report(self):
-        """
-        Test Function to check VoIP hourly billing report
-        """
-        response = self.client.get('/hourly_billing_report/')
-        #self.assertTrue(response.context['form'], HourlyBillingForm())
-        #self.assertTemplateUsed(response, 'voip_billing/hourly_billing_report.html')
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.post(
-            '/hourly_billing_report/',
-            data={'plan_id': 1,
-                  'from_date': datetime.now().strftime("%Y-%m-%d")})
-        self.assertEqual(response.status_code, 200)
-
-        request = self.factory.get('/hourly_billing_report/')
-        request.user = self.user
-        request.session = {}
-        response = hourly_billing_report(request)
-        self.assertEqual(response.status_code, 200)
-
-        data = {'plan_id': 1,
-                'from_date': datetime.now().strftime("%Y-%m-%d")}
-        request = self.factory.post('/hourly_billing_report/', data)
-        request.user = self.user
-        request.session = {}
-        response = hourly_billing_report(request)
+        response = billing_report(request)
         self.assertEqual(response.status_code, 200)
 
     def test_rebilling(self):

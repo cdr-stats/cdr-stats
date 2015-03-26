@@ -211,18 +211,10 @@ CDR-Stats Views
 
 .. _daily-billing-report-view:
 
-:class:`daily_billing_report`
+:class:`billing_report`
 -----------------------------
 
-  .. autofunction:: daily_billing_report
-
-
-.. _hourly-billing-report-view:
-
-:class:`hourly_billing_report`
-------------------------------
-
-  .. autofunction:: hourly_billing_report
+  .. autofunction:: billing_report
 
 
 .. automodule:: mod_registration.views
