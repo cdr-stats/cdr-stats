@@ -377,7 +377,8 @@ class EmailReportForm(forms.ModelForm):
     """
     Form used to change the detail of a user in the Customer UI.
     """
-    multiple_email = forms.CharField(max_length=300, required=False, label=_('Email to send the report'))
+    multiple_email = forms.CharField(max_length=300, required=False,
+                                     label=_('Email to send the report'))
 
     class Meta:
         model = UserProfile

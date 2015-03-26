@@ -25,37 +25,49 @@
         {% if rows %}
         {% for row in rows %}
         <tr>
-            <td>{{ row.start_uepoch }}</td>
-            <td>{{ row.caller_id_number }} - {{ row.caller_id_name }}</td>
+            <td>{{ row.starting_date }}</td>
+            <td>
+                {{ row.caller_id_number }}
+                {% if row.caller_id_number and row.caller_id_name %}
+                    -
+                {% endif %}
+                {{ row.caller_id_name }}
+            </td>
             <td>{{ row.destination_number }}</td>
             <td>{{ row.duration|conv_min }}</td>
             <td>{{ row.billsec|conv_min }}</td>
-            <td>{{ row.hangup_cause_id|hangupcause_name }}</td>
-            <td>{{ row.accountcode }}</td>
+            <td>
+              {% cache 1800 hangupcause_name row.hangup_cause_id %}
+                {{ row.hangup_cause_id|hangupcause_name }}
+              {% endcache %}
+            </td>
             {% if user.is_superuser %}
-            <td>{{ row.buy_cost }}</td>
+                <td>{{ row.user_id }}</td>
+                <td>{{ row.buy_cost }}</td>
             {% endif %}
             <td>{{ row.sell_cost }}</td>
             <td>
                 <div class="flag_icon">
                     {% if row.country_id %}
-                        {% cache 1800 country_data row.country_id %}
-                            <img src="{{ STATIC_URL }}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name|title }}">
+                        {% cache 1800 hcountry_flag row.country_id %}
+                            <img src="{{ STATIC_URL }}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name }}">
                         {% endcache %}
                     {% else %}
                         <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans 'world'|capfirst %}">
                     {% endif %}
-                    <img src="{{ STATIC_URL }}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans 'authorized call'|capfirst %}"/>
-
-                    {% ifequal row.direction 'inbound' %}
-                        <img src="{{ STATIC_URL }}cdr-stats/icons/door_in.png" title="{{ row.direction|capfirst }} {% trans 'call' %}" class="elemtooltip"/>
+                    {% if row.authorized == 1  %}
+                        <img src="{{ STATIC_URL }}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans 'authorized call'|capfirst %}"/>
                     {% else %}
-                        {% ifequal row.direction 'outbound' %}
-                            <img src="{{ STATIC_URL }}cdr-stats/icons/door_out.png" title="{{ row.direction|capfirst }}  {% trans 'call' %}" class="elemtooltip"/>
-                        {% else %}
-                            <img src="{{ STATIC_URL }}cdr-stats/icons/door.png" title="{{ row.direction|capfirst }}  {% trans 'call' %}" class="elemtooltip"/>
-                        {% endifequal %}
-                    {% endifequal %}
+                        <img src="{{ STATIC_URL }}cdr-stats/icons/flag_red.png" class="elemtooltip" title="{% trans 'unauthorized call'|capfirst %}"/>
+                    {% endif %}
+
+                    {% if row.direction == 1 %}
+                        <img src="{{ STATIC_URL }}cdr-stats/icons/door_in.png" title="{{ row.get_direction_display|lower|capfirst }} {% trans 'call' %}" class="elemtooltip"/>
+                    {% elif row.direction == 2 %}
+                        <img src="{{ STATIC_URL }}cdr-stats/icons/door_out.png" title="{{ row.get_direction_display|lower|capfirst }}  {% trans 'call' %}" class="elemtooltip"/>
+                    {% else %}
+                        <img src="{{ STATIC_URL }}cdr-stats/icons/door.png" title="{{ row.get_direction_display|lower|capfirst }}  {% trans 'call' %}" class="elemtooltip"/>
+                    {% endif %}
                 <div>
             </td>
         </tr>
@@ -79,7 +91,7 @@
 </div>
 
 <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-4">
         <h4>{% trans "total calls"|title %}</h4>
         <div class="table-responsive">
             <table class="table table-bordered">
@@ -89,7 +101,7 @@
                     <td>{% trans "number of calls"|title %}</td>
                 </tr>
                 <tr>
-                    <th>{{ ACT }}</th>
+                    <th>{{ metric_aggr.ACT }}</th>
                     <td>{% trans "average calls per hour"|title %}</td>
                 </tr>
                 <tr>
@@ -97,7 +109,7 @@
                     <td>{% trans "total duration"|title %}</td>
                 </tr>
                 <tr>
-                    <th>{{ ACD }}</th>
+                    <th>{{ metric_aggr.ACD }}</th>
                     <td>{% trans "average call duration"|title %}</td>
                 </tr>
                 {% if user.is_superuser %}
@@ -115,32 +127,34 @@
         </div>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-4">
         <h4>{% trans "5 most called countries"|title %}</h4>
-        {% if country_analytic_array %}
+        {% if country_data %}
             <div class="table-responsive">
                 <table class="table table-bordered">
                     <tbody>
-                    {% for country_data in country_analytic_array %}
+                    {% for country in country_data %}
                     <tr>
                         <td>
-                            {% if country_data.0 %}
-                                {% cache 1800 country_data country_data.0 %}
-                                    <img src="{{ STATIC_URL }}cdr-stats/{{ country_data.0|iso_flag }}" class="elemtooltip" title="{{ country_data.0|country_name|title }}">
+                            {% if country.country_id %}
+                                {% cache 1800 country country.country_id %}
+                                    <img src="{{ STATIC_URL }}cdr-stats/{{ country.country_id|iso_flag }}" class="elemtooltip" title="{{ country.country_id|country_name|title }}">
                                 {% endcache %}
                             {% else %}
-                                <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans "world"|capfirst %}">
+                                <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans 'World' %}">
                             {% endif %}
                         </td>
-                        <td>{{ country_data.0|country_name|title }}</td>
-                        <td>{{ country_data.1.call_count }} {% trans "calls"|title %}</td>
-                        <td>{{ country_data.1.duration_sum|conv_min }} {% trans "minutes" %}</td>
+                        <!-- <td>
+                            {{ country.country_id|country_name|title }}
+                        </td> -->
+                        <td>{{ country.nbcalls }} {% trans "calls"|title %}</td>
+                        <td>{{ country.duration|conv_min }} {% trans "min"|title  %}</td>
                         {% if user.is_superuser %}
-                            <td>{{ country_data.1.buy_cost }} <abbr title="{% trans 'buy cost'|title %}">{% trans "BC" %}</abbr></td>
+                            <td>{{ country.buy_cost|floatformat:2 }} <abbr title="{% trans 'buy cost'|title %}">{% trans "BC" %}</abbr></td>
                         {% endif %}
-                        <td>{{ country_data.1.sell_cost }} <abbr title="{% trans 'sell cost'|title %}">{% trans "SC" %}</abbr></td>
+                        <td>{{ country.sell_cost|floatformat:2 }} <abbr title="{% trans 'sell cost'|title %}">{% trans "SC" %}</abbr></td>
                     </tr>
-                    {% endfor %}
+                {% endfor %}
                     </tbody>
                 </table>
             </div>
@@ -148,16 +162,17 @@
             {% trans "no record found"|title %}
         {% endif %}
     </div>
-    <div class="col-md-3">
+    <div class="col-md-4">
         <h4>{% trans "calls status"|title %}</h4>
-        {% if hangup_analytic_array %}
+        {% if hangup_cause_data %}
             <div class="table-responsive">
                 <table class="table table-bordered">
                     <tbody>
-                    {% for hangup in hangup_analytic_array %}
+                    {% for hangup in hangup_cause_data %}
                         <tr>
-                            <td>{{ hangup.1 }}</td>
-                            <td>{{ hangup.0|title }}</td>
+                            <td>{{ hangup.nbcalls }} {% trans "calls"|title %}</td>
+                            <td>{{ hangup.duration|conv_min }} {% trans "min"|title %}</td>
+                            <td>{{ hangup.hangup_cause_name|title }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>

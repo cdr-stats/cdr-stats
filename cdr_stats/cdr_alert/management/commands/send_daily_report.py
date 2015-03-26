@@ -49,7 +49,7 @@ class Command(BaseCommand):
                 print 'Error: UserProfile not found (user_id:' + str(c_user.id) + ')'
                 continue
 
-            mail_data = get_cdr_mail_report()
+            mail_data = get_cdr_mail_report(c_user)
 
             subject = _('CDR Report')
 

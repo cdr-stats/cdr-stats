@@ -37,9 +37,9 @@ from cdr.aggregate import pipeline_country_report,\
 from cdr.decorators import check_user_detail
 from cdr.constants import CDR_COLUMN_NAME, Export_choice, COMPARE_WITH
 from cdr.models import CDR
-from aggregator.cdr import custom_sql_aggr_top_country, custom_sql_aggr_top_hangup_cause, \
-    custom_sql_matv_voip_cdr_aggr_last24hour, \
-    custom_sql_aggr_top_country_last24hour
+from aggregator.aggregate_cdr import custom_sql_aggr_top_country, custom_sql_aggr_top_hangup_last24hours, \
+    custom_sql_matv_voip_cdr_aggr_last24hours, \
+    custom_sql_aggr_top_country_last24hours
 from aggregator.pandas_cdr import get_report_cdr_per_switch, get_report_compare_cdr, \
     get_report_cdr_per_country
 from voip_billing.function_def import round_val
@@ -69,7 +69,7 @@ def cdr_view(request):
 
     **Attributes**:
 
-        * ``template`` - cdr/cdr_view.html
+        * ``template`` - cdr/list.html
         * ``form`` - CdrSearchForm
 
     **Logic Description**:
@@ -86,7 +86,6 @@ def cdr_view(request):
     caller_id_number, caller_id_number_type, country_id = '', '', ''
     action = 'tabs-1'
     menu = 'on'
-    cdr_view_daily_data = {}
     records_per_page = settings.PAGE_SIZE
 
     form = CdrSearchForm(request.POST or None)
@@ -186,7 +185,7 @@ def cdr_view(request):
     sort_col_field_list = ['id', 'caller_id_number', 'destination_number', 'starting_date']
     page_vars = get_pagination_vars(request, sort_col_field_list, default_sort_field='id')
 
-    # kwargs = {'user': request.user}
+    # Build filter for CDR.object
     kwargs = {}
     if hangup_cause_id and hangup_cause_id != '0':
         kwargs['hangup_cause_id'] = int(hangup_cause_id)
@@ -453,7 +452,7 @@ def cdr_dashboard(request):
         # query_var['metadata.accountcode'] = request.user.userprofile.accountcode
 
     # Get list of calls/duration for each of the last 24 hours
-    (calls_hour_aggr, total_calls, total_duration, total_billsec, total_buy_cost, total_sell_cost) = custom_sql_matv_voip_cdr_aggr_last24hour(request.user, switch_id)
+    (calls_hour_aggr, total_calls, total_duration, total_billsec, total_buy_cost, total_sell_cost) = custom_sql_matv_voip_cdr_aggr_last24hours(request.user, switch_id)
 
     # Build chart data for last 24h calls
     (xdata, ydata, ydata2, ydata3, ydata4, ydata5) = ([], [], [], [], [], [])
@@ -485,7 +484,7 @@ def cdr_dashboard(request):
     final_charttype = "lineWithFocusChart"
 
     # Get top 5 of country calls for last 24 hours
-    country_data = custom_sql_aggr_top_country_last24hour(request.user, switch_id, limit=5)
+    country_data = custom_sql_aggr_top_country_last24hours(request.user, switch_id, limit=5)
 
     # Build pie chart data for last 24h calls per country
     (xdata, ydata) = ([], [])
@@ -506,13 +505,13 @@ def cdr_dashboard(request):
     }
 
     # Get top 10 of hangup cause calls for last 24 hours
-    hangup_cause_data = custom_sql_aggr_top_hangup_cause(request.user, switch_id)
+    hangup_cause_data = custom_sql_aggr_top_hangup_last24hours(request.user, switch_id)
 
     # hangup analytic pie chart data
     (xdata, ydata) = ([], [])
-    for i in hangup_cause_data:
-        xdata.append(str(get_hangupcause_name(hangup_cause_data[i]["hangup_cause_id"])))
-        ydata.append(str(percentage(hangup_cause_data[i]["nbcalls"], total_calls)))
+    for hangup_cause in hangup_cause_data:
+        xdata.append(str(get_hangupcause_name(hangup_cause["hangup_cause_id"])))
+        ydata.append(str(percentage(hangup_cause["nbcalls"], total_calls)))
 
     color_list = ['#2A343F', '#7E8282', '#EA9664', '#30998F', '#449935']
     extra_serie = {"tooltip": {"y_start": "", "y_end": " %"}, "color_list": color_list}
@@ -561,96 +560,51 @@ def cdr_dashboard(request):
     return render_to_response('cdr/dashboard.html', variables, context_instance=RequestContext(request))
 
 
-def get_cdr_mail_report():
-    """General function to get previous day CDR report"""
+def get_cdr_mail_report(user):
+    """
+    General function to get previous day CDR report
+    """
     # Get yesterday's CDR-Stats Mail Report
-    query_var = {}
     yesterday = date.today() - timedelta(1)
-    start_date = datetime(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0, 0)
-    end_date = datetime(yesterday.year, yesterday.month, yesterday.day, 23, 59, 59, 999999)
+    start_date = trunc_date_start(yesterday)
+    end_date = trunc_date_end(yesterday)
 
-    query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
+    # Build filter for CDR.object
+    kwargs = {}
+    if start_date:
+        kwargs['starting_date__gte'] = start_date
 
-    # find result from cdr_common collection
-    mongo_cdr_result = mongodb.cdr_common.find(query_var).sort([('start_uepoch', -1)]).limit(10)
+    if end_date:
+        kwargs['starting_date__lte'] = end_date
 
-    # Collect analytics
-    logging.debug('Aggregate cdr mail report')
-    pipeline = pipeline_mail_report(query_var)
+    # user are restricted to their own CDRs
+    if not user.is_superuser:
+        kwargs['user_id'] = user.id
 
-    logging.debug('Before Aggregate')
-    list_data = mongodb.DBCON.command('aggregate',
-                                      settings.MONGO_CDRSTATS['CDR_COMMON'],
-                                      pipeline=pipeline)
-    logging.debug('After Aggregate')
+    cdrs = CDR.objects.filter(**kwargs)[:10]
 
-    # inintalize variables
-    total_duration = 0
-    total_calls = 0
-    total_buy_cost = 0.0
-    total_sell_cost = 0.0
-    country_analytic = dict()
-    hangup_analytic = dict()
-    if list_data:
-        for doc in list_data['result']:
-            # make total of duration, call count, buy/sell cost
-            total_duration += doc['duration_sum']
-            total_calls += int(doc['call_count'])
-            total_buy_cost += float(doc['buy_cost'])
-            total_sell_cost += float(doc['sell_cost'])
+    # Get list of calls/duration for each of the last 24 hours
+    (calls_hour_aggr, total_calls, total_duration, total_billsec, total_buy_cost, total_sell_cost) = custom_sql_matv_voip_cdr_aggr_last24hours(user, switch_id=0)
 
-            # created hangup_analytic
-            hangup_cause_id = int(doc['_id']['hangup_cause_id'])
-            if hangup_cause_id in hangup_analytic:
-                hangup_analytic[hangup_cause_id] += 1
-            else:
-                hangup_analytic[hangup_cause_id] = 1
+    # Get top 5 of country calls for last 24 hours
+    country_data = custom_sql_aggr_top_country_last24hours(user, switch_id=0, limit=5)
 
-            # created country_analytic
-            country_id = int(doc['_id']['country_id'])
-            if country_id in country_analytic:
-                country_analytic[country_id]['call_count'] += int(doc['call_count'])
-                country_analytic[country_id]['duration_sum'] += doc['duration_sum']
-                country_analytic[country_id]['buy_cost'] += float(doc['buy_cost'])
-                country_analytic[country_id]['sell_cost'] += float(doc['sell_cost'])
-            else:
-                country_analytic[country_id] = {
-                    'call_count': int(doc['call_count']),
-                    'duration_sum': doc['duration_sum'],
-                    'buy_cost': float(doc['buy_cost']),
-                    'sell_cost': float(doc['sell_cost'])
-                }
+    # Get top 10 of hangup cause calls for last 24 hours
+    hangup_cause_data = custom_sql_aggr_top_hangup_last24hours(user, switch_id=0)
+
     # Calculate the Average Time of Call
-    act_acd_array = calculate_act_acd(total_calls, total_duration)
-    ACT = act_acd_array['ACT']
-    ACD = act_acd_array['ACD']
-
-    # sorting on country_analytic
-    country_analytic = sorted(country_analytic.items(),
-                              key=lambda k: (k[1]['call_count'],
-                                             k[1]['duration_sum']),
-                              reverse=True)
-
-    # Create Hangup Cause analytic in percentage format
-    hangup_analytic_array = []
-    hangup_analytic = sorted(hangup_analytic.items(), key=lambda k: k[0])
-    if len(hangup_analytic) != 0:
-        total_hangup = sum([int(x[1]) for x in hangup_analytic])
-        for i in hangup_analytic:
-            hangup_analytic_array.append(
-                (get_hangupcause_name(int(i[0])), "{0:.0f}%".format((float(i[1]) / float(total_hangup)) * 100)))
+    metric_aggr = calculate_act_acd(total_calls, total_duration)
 
     mail_data = {
         'yesterday_date': start_date,
-        'rows': mongo_cdr_result,
+        'rows': cdrs,
         'total_duration': total_duration,
         'total_calls': total_calls,
         'total_buy_cost': total_buy_cost,
         'total_sell_cost': total_sell_cost,
-        'ACT': ACT,
-        'ACD': ACD,
-        'country_analytic_array': country_analytic[0:5],
-        'hangup_analytic_array': hangup_analytic_array,
+        'metric_aggr': metric_aggr,
+        'country_data': country_data,
+        'hangup_cause_data': hangup_cause_data,
     }
     return mail_data
 
@@ -665,11 +619,10 @@ def mail_report(request):
 
         * ``template`` - cdr/mail_report.html
         * ``form`` - MailreportForm
-        * ``mongodb_data_set`` - mongodb.cdr_common
 
     **Logic Description**:
 
-        get top 10 calls from mongodb collection & hnagupcause/country analytic
+        get top 10 calls Postgresql & hangup / country analytic
         to generate mail report
     """
     logging.debug('CDR mail report view start')
@@ -679,8 +632,8 @@ def mail_report(request):
         form.save()
         msg = _('email ids are saved successfully.')
 
-    mail_data = get_cdr_mail_report()
-    logging.debug('CDR mail report view end')
+    mail_data = get_cdr_mail_report(request.user)
+
     data = {
         'yesterday_date': mail_data['yesterday_date'],
         'rows': mail_data['rows'],
@@ -689,62 +642,12 @@ def mail_report(request):
         'total_calls': mail_data['total_calls'],
         'total_buy_cost': mail_data['total_buy_cost'],
         'total_sell_cost': mail_data['total_sell_cost'],
-        'ACT': mail_data['ACT'],
-        'ACD': mail_data['ACD'],
-        'country_analytic_array': mail_data['country_analytic_array'],
-        'hangup_analytic_array': mail_data['hangup_analytic_array'],
+        'metric_aggr': mail_data['metric_aggr'],
+        'country_data': mail_data['country_data'],
+        'hangup_cause_data': mail_data['hangup_cause_data'],
         'msg': msg,
     }
     return render_to_response('cdr/mail_report.html', data, context_instance=RequestContext(request))
-
-
-def get_hourly_report_for_date(start_date, end_date, query_var):
-    """Get Hourly report for date"""
-    logging.debug('Aggregate cdr hourly report')
-    pipeline = pipeline_hourly_report(query_var)
-    logging.debug('Before Aggregate')
-    list_data = mongodb.DBCON.command('aggregate',
-                                      settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                      pipeline=pipeline)
-
-    call_total_record = {}
-    min_total_record = {}
-    if list_data:
-        for doc in list_data['result']:
-            called_time = datetime(int(doc['_id'][0:4]),
-                                   int(doc['_id'][4:6]),
-                                   int(doc['_id'][6:8]))
-            # assign 0 to 23 as key hours to day_hours with initial value 0
-            call_day_hours = {}
-            min_day_hours = {}
-            for hr in range(0, 24):
-                call_day_hours[hr] = 0
-                min_day_hours[hr] = 0
-
-            # Calls per hour
-            for dict_in_list in doc['call_per_hour']:
-                # update day_hours via key
-                for key, value in dict_in_list.iteritems():
-                    call_day_hours[int(key)] += int(value)
-
-            call_total_record[str(called_time)[:10]] = [value for key, value in call_day_hours.iteritems()]
-
-            # Min per hour
-            for dict_in_list in doc['duration_per_hour']:
-                # update day_hours via key
-                for key, value in dict_in_list.iteritems():
-                    min_day_hours[int(key)] += float(value) / 60
-
-            min_total_record[str(called_time)[:10]] = \
-                [round_val(value) for key, value in min_day_hours.iteritems()]
-
-    logging.debug('After Aggregate')
-
-    variables = {
-        'call_total_record': call_total_record,
-        'min_total_record': min_total_record,
-    }
-    return variables
 
 
 @permission_required('user_profile.daily_comparison', login_url='/')

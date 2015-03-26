@@ -14,6 +14,7 @@
 
 from django.db import connection
 from datetime import datetime, timedelta
+from cdr.functions_def import get_hangupcause_name
 
 
 def condition_switch_id(switch_id):
@@ -74,7 +75,7 @@ ON (dateday = results.dayhour);
 """
 
 
-def custom_sql_matv_voip_cdr_aggr_last24hour(user, switch_id):
+def custom_sql_matv_voip_cdr_aggr_last24hours(user, switch_id):
     """
     perform query to retrieve last 24 hours of aggregate calls data
     """
@@ -145,7 +146,7 @@ sqlquery_aggr_country = """
     """
 
 
-def custom_sql_aggr_top_country_last24hour(user, switch_id, limit=5):
+def custom_sql_aggr_top_country_last24hours(user, switch_id, limit=5):
     """
     perform query to retrieve last 24 hours of aggregate calls data
     """
@@ -207,11 +208,11 @@ sqlquery_aggr_hangup_cause_last24h = """
     """
 
 
-def custom_sql_aggr_top_hangup_cause(user, switch_id=0, limit=10):
+def custom_sql_aggr_top_hangup_last24hours(user, switch_id=0, limit=10):
     """
     perform query to retrieve last 24 hours of aggregate calls data
     """
-    result = {}
+    result = []
     with connection.cursor() as cursor:
         params = {
             'switch': condition_switch_id(switch_id),
@@ -221,17 +222,16 @@ def custom_sql_aggr_top_hangup_cause(user, switch_id=0, limit=10):
         sqlquery = sqlquery_aggr_hangup_cause_last24h % params
         cursor.execute(sqlquery)
         rows = cursor.fetchall()
-        i = 0
         for row in rows:
-            result[i] = {
+            result.append({
                 "hangup_cause_id": row[0],
                 "duration": row[1],
                 "billsec": row[2],
                 "nbcalls": row[3],
                 "buy_cost": row[4],
                 "sell_cost": row[5],
-            }
-            i = i + 1
+                "hangup_cause_name": get_hangupcause_name(row[0]),
+            })
     return result
 
 

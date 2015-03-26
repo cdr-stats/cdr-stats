@@ -13,7 +13,7 @@
 #
 
 from django.db import connection
-from aggregator.cdr import condition_switch_id, condition_user
+from aggregator.aggregate_cdr import condition_switch_id, condition_user
 import pandas as pd
 from pandas.io import sql
 import time
