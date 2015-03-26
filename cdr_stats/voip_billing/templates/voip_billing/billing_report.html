@@ -1,0 +1,50 @@
+{% extends "frontend/master.html" %}
+{% load i18n common_tags icons nvd3_tags crispy_forms_tags %}
+
+{% block title %}{% trans "billing report"|title %}{% endblock %}
+
+{% block extra_head %}
+    {{ form.media }}
+    <script type="text/javascript">
+        $(function() {
+            $("#id_from_date_picker").on("change.dp",function (e) {
+               $('#id_to_date_picker').data("DateTimePicker").setStartDate(e.date);
+            });
+            $("#id_to_date_picker").on("change.dp",function (e) {
+               $('#id_from_date_picker').data("DateTimePicker").setEndDate(e.date);
+            });
+        });
+    </script>
+    {% load_chart charttype chartdata chartcontainer extra %}
+{% endblock %}
+
+{% block content_header %}
+    <h1>{% trans "CDR Daily Billing" %}<small></small></h1>
+{% endblock %}
+
+{% block content %}
+
+    <div id="form_collapse" class="collapse">
+        {% crispy form form.helper %}
+    </div>
+    {% include "frontend/common_search_toggle_button.html" %}
+
+    <div class="graph_header">
+        {% trans "daily report"|title  %} -
+        <b>
+            {% if start_date  %}
+                {{ start_date|date:"jS N Y" }}
+            {% endif %}
+            {% if end_date  %}
+                {% trans "to" %} {{ end_date|date:"jS N Y" }}
+            {% endif %}
+        </b>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            {% include_container chartcontainer 400 '100%' %}
+        </div>
+    </div>
+
+{% endblock %}
