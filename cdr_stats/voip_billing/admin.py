@@ -37,7 +37,6 @@ from voip_billing.tasks import RebillingTask
 from django_lets_go.common_functions import variable_value, ceil_strdate
 from django_lets_go.app_label_renamer import AppLabelRenamer
 from django_lets_go.admin_custom_actions import export_as_csv_action
-from mongodb_connection import mongodb
 from datetime import datetime
 import tablib
 import csv
