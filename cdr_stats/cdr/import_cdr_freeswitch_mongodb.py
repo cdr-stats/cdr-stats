@@ -18,8 +18,9 @@ from pymongo.errors import ConnectionFailure
 from cdr.models import CDR_SOURCE_TYPE
 from cdr.functions_def import get_hangupcause_id
 from user_profile.models import UserProfile
-from cdr.helpers import chk_ipaddress, calculate_call_cost, print_shell
+from cdr.helpers import chk_ipaddress, print_shell
 from cdr.analytic_handler import generate_global_cdr_record, create_analytic
+from voip_billing.rate_engine import calculate_call_cost
 import datetime
 import sys
 import random

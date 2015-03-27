@@ -14,7 +14,8 @@
 from django.conf import settings
 from cdr.models import CDR_SOURCE_TYPE
 from cdr.import_cdr_freeswitch_mongodb import create_analytic
-from cdr.helpers import chk_ipaddress, set_int_default, calculate_call_cost, print_shell
+from cdr.helpers import chk_ipaddress, set_int_default, print_shell
+from voip_billing.rate_engine import calculate_call_cost
 from cdr.functions_def import get_hangupcause_id
 from cdr_alert.functions_blacklist import chk_destination
 from user_profile.models import UserProfile

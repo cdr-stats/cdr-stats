@@ -13,7 +13,6 @@
 #
 
 from cdr.models import Switch, CDR
-from voip_billing.rate_engine import rate_engine
 from aggregator.aggregate_cdr import custom_sql_aggr_top_hangup_last24hours, \
     custom_sql_matv_voip_cdr_aggr_last24hours
 from aggregator.aggregate_cdr import custom_sql_aggr_top_country_last24hours
@@ -67,30 +66,6 @@ def chk_ipaddress(ipaddress):
     return data
 
 
-def calculate_call_cost(voipplan_id, dest_number, billsec):
-    """
-    Calcultate the cost of the call, based on the voip plan and the destination
-    """
-    rates = rate_engine(voipplan_id=voipplan_id, dest_number=dest_number)
-    buy_rate = 0.0
-    buy_cost = 0.0
-    sell_rate = 0.0
-    sell_cost = 0.0
-    if rates:
-        buy_rate = float(rates[0].carrier_rate)
-        sell_rate = float(rates[0].retail_rate)
-        buy_cost = buy_rate * float(billsec) / 60
-        sell_cost = sell_rate * float(billsec) / 60
-
-    data = {
-        'buy_rate': buy_rate,
-        'buy_cost': round(buy_cost, 4),
-        'sell_rate': sell_rate,
-        'sell_cost': round(sell_cost, 4),
-    }
-    return data
-
-
 def get_cdr_mail_report(user):
     """
     General function to get previous day CDR report
@@ -138,18 +113,3 @@ def get_cdr_mail_report(user):
         'hangup_cause_data': hangup_cause_data,
     }
     return mail_data
-
-
-def get_value_from_uni(j, row, field_name):
-    """Get value from unique dict list
-
-    >>> j = ['abc', 2, 3]
-
-    >>> field_name = 'abc'
-
-    >>> row = [1, 2, 3]
-
-    >>> get_value_from_uni(j, row, field_name)
-    '2'
-    """
-    return row[j[1] - 1] if j[0] == field_name else ''

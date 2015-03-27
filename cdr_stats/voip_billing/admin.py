@@ -33,7 +33,7 @@ from voip_billing.constants import CONFIRMATION_TYPE
 from voip_billing.widgets import AutocompleteModelAdmin
 from voip_billing.function_def import rate_filter_range_field_chk
 from voip_billing.rate_engine import rate_engine
-from voip_billing.tasks import RebillingTask, ReaggregateTask
+from voip_billing.tasks import RebillingTask
 from django_lets_go.common_functions import variable_value, ceil_strdate
 from django_lets_go.app_label_renamer import AppLabelRenamer
 from django_lets_go.admin_custom_actions import export_as_csv_action
@@ -157,6 +157,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
         ctx = RequestContext(request, variables)
         return render_to_response('admin/voip_billing/voipplan/simulator.html', context_instance=ctx)
 
+    # TODO: Replace export with https://django-import-export.readthedocs.org
     def export(self, request):
         """
         Export Carrier Rate into CSV file
@@ -214,7 +215,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
 
     def rebilling(self, request):
         """
-        Re-billing successful voip calls
+        Re-billing successful VoIP Calls
         """
         opts = VoIPPlan._meta
         # default values for form
@@ -254,7 +255,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                     daily_kwargs['metadata.accountcode'] = call_kwargs['accountcode']
 
             # Get total no of calls which are going to rebill
-            call_rebill_count = mongodb.cdr_common.find(call_kwargs).count()
+            # call_rebill_count = mongodb.cdr_common.find(call_kwargs).count()
 
             if "confirmation" in request.POST:
                 confirmation = request.POST.get('confirmation')
@@ -281,9 +282,6 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                     if call_rebill_count != 0:
                         # Rebill all calls
                         RebillingTask.delay(call_kwargs, voipplan_id)
-
-                        # Re-aggregate calls to re-generate daily/monthly analytics
-                        ReaggregateTask.delay(daily_kwargs, monthly_kwargs, call_kwargs)
 
                     msg = _('Re-billing is done')
                     messages.info(request, msg)

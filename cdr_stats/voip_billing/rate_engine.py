@@ -18,6 +18,30 @@ from collections import namedtuple
 from cache_utils.decorators import cached
 
 
+def calculate_call_cost(voipplan_id, dest_number, billsec):
+    """
+    Calcultate the cost of the call, based on the voip plan and the destination
+    """
+    rates = rate_engine(voipplan_id=voipplan_id, dest_number=dest_number)
+    buy_rate = 0.0
+    buy_cost = 0.0
+    sell_rate = 0.0
+    sell_cost = 0.0
+    if rates:
+        buy_rate = float(rates[0].carrier_rate)
+        sell_rate = float(rates[0].retail_rate)
+        buy_cost = buy_rate * float(billsec) / 60
+        sell_cost = sell_rate * float(billsec) / 60
+
+    data = {
+        'buy_rate': buy_rate,
+        'buy_cost': round(buy_cost, 4),
+        'sell_rate': sell_rate,
+        'sell_cost': round(sell_cost, 4),
+    }
+    return data
+
+
 def rate_engine(voipplan_id, dest_number):
     """
     To determine the cost of the voip call and get provider/gateway
