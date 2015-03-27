@@ -21,13 +21,13 @@
             </li>
             {% ifequal model.title 'Switches' %}
                 <li>
-                    <a href="/admin/cdr/switch/cdr_view/">{% trans "CDR view"|capfirst %}</a>
+                    <a href="/admin/switch/switch/cdr_view/">{% trans "CDR view"|capfirst %}</a>
                 </li>
                 <li>
-                    <a href="/admin/cdr/switch/import_cdr/">{% trans "import CDR"|capfirst %}</a>
+                    <a href="/admin/switch/switch/import_cdr/">{% trans "import CDR"|capfirst %}</a>
                 </li>
             {% endifequal %}
-            {% ifequal model.title 'VoIP Plans' %}                
+            {% ifequal model.title 'VoIP plans' %}
                 <li>
                     <a href="/admin/voip_billing/voipplan/rebilling/">{% trans "rebilling"|capfirst %}</a>
                 </li>

@@ -73,7 +73,6 @@ def prefix_qs():
 # TabularInline / StackedInline
 class VoIPPlan_VoIPRetailPlanInline(admin.TabularInline):
     model = VoIPPlan_VoIPRetailPlan
-    #max_num = 1
     extra = 1
     verbose_name = _('VoIP Plan | VoIP Retail Plan')
     verbose_name_plural = _('VoIP Plan | VoIP Retail Plan')
@@ -81,7 +80,6 @@ class VoIPPlan_VoIPRetailPlanInline(admin.TabularInline):
 
 class VoIPPlan_VoIPCarrierPlanInline(admin.TabularInline):
     model = VoIPPlan_VoIPCarrierPlan
-    #max_num = 1
     extra = 1
     verbose_name = _('VoIP Plan | VoIP Carrier Plan')
     verbose_name_plural = _('VoIP Plan | VoIP Carrier Plan')
@@ -89,7 +87,6 @@ class VoIPPlan_VoIPCarrierPlanInline(admin.TabularInline):
 
 class VoIPPlan_BanPlanInline(admin.TabularInline):
     model = VoIPPlan_BanPlan
-    #max_num = 1
     extra = 1
     verbose_name = _('VoIP Plan | Ban Plan')
     verbose_name_plural = _('VoIP Plan | Ban Plan')
@@ -99,7 +96,7 @@ class VoIPPlan_BanPlanInline(admin.TabularInline):
 class VoIPPlanAdmin(admin.ModelAdmin):
     fieldsets = (
         (_('VoIP Plan'), {
-            #'classes':('collapse', ),
+            # 'classes':('collapse', ),
             'fields': ('name', 'pubname', 'lcrtype',),
         }),
     )
@@ -336,7 +333,7 @@ admin.site.register(BanPrefix, BanPrefixAdmin)
 class VoIPRetailPlanAdmin(admin.ModelAdmin):
     fieldsets = (
         (_('VoIP Retail Plan'), {
-            #'classes': ('collapse', ),
+            # 'classes': ('collapse', ),
             'fields': ('name', 'description', 'metric',),
         }),
     )
@@ -355,7 +352,7 @@ admin.site.register(VoIPRetailPlan, VoIPRetailPlanAdmin)
 class VoIPRetailRateAdmin(AutocompleteModelAdmin):
     fieldsets = (
         (_('VoIP Retail Rate'), {
-            #'classes':('collapse', ),
+            # 'classes':('collapse', ),
             'fields': ('voip_retail_plan_id', 'prefix', 'retail_rate'),
         }),
     )
