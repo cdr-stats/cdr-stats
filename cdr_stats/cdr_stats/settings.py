@@ -282,14 +282,6 @@ AUTH_PROFILE_MODULE = 'user_profile.UserProfile'
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/pleaselog/'
 
-# DILLA SETTINGS
-DICTIONARY = "/usr/share/dict/words"
-DILLA_USE_LOREM_IPSUM = False  # set to True ignores dictionary
-DILLA_APPS = ['cdr']
-DILLA_SPAMLIBS = ['cdr.cdr_custom_spamlib']
-# To use Dilla
-# > python manage.py run_dilla --cycles=100
-
 gettext = lambda s: s
 
 LANGUAGES = (
