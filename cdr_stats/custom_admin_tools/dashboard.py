@@ -54,7 +54,7 @@ class CustomIndexDashboard(Dashboard):
 
         # self.children.append(
         #            HistoryDashboardModule()
-        #)
+        # )
 
         self.children.append(modules.Group(
             title="General",
@@ -99,6 +99,11 @@ class CustomIndexDashboard(Dashboard):
         self.children.append(modules.AppList(
             _('Voip billing').title(),
             models=('voip_billing.*', ),
+        ))
+
+        self.children.append(modules.AppList(
+            _('Switch').title(),
+            models=('switch.*', ),
         ))
 
         # append a link list module for "quick links"
@@ -152,7 +157,7 @@ class CustomAppIndexDashboard(AppIndexDashboard):
 
         # append a model list module and a recent actions module
         self.children += [
-            #modules.ModelList(self.app_title, self.models),
+            # modules.ModelList(self.app_title, self.models),
             modules.ModelList(app_title, models),
             modules.RecentActions(
                 _('recent actions').title(),

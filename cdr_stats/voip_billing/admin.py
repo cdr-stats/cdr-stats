@@ -155,7 +155,6 @@ class VoIPPlanAdmin(admin.ModelAdmin):
             'form': form,
             'opts': opts,
             'model_name': opts.object_name.lower(),
-            'app_label': APP_LABEL,
             'data': data,
         }
         ctx = RequestContext(request, variables)
@@ -213,7 +212,6 @@ class VoIPPlanAdmin(admin.ModelAdmin):
             'form': form,
             'opts': opts,
             'model_name': opts.object_name.lower(),
-            'app_label': APP_LABEL,
         })
         return render_to_response('admin/voip_billing/voipplan/export.html', context_instance=ctx)
 
@@ -273,8 +271,7 @@ class VoIPPlanAdmin(admin.ModelAdmin):
                         'end_date': end_date,
                         'opts': opts,
                         'model_name': opts.object_name.lower(),
-                        'app_label': APP_LABEL,
-                        'title': _('Rebill VoPI Call'),
+                        'title': _('Rebill VoIP Call'),
                         'call_rebill_count': call_rebill_count,
                         'CONFIRMATION_TYPE': CONFIRMATION_TYPE,
                     })
@@ -300,7 +297,6 @@ class VoIPPlanAdmin(admin.ModelAdmin):
             'form': form,
             'opts': opts,
             'model_name': opts.object_name.lower(),
-            'app_label': APP_LABEL,
             'title': _('Rebill VoIP Call'),
             'call_rebill_count': call_rebill_count,
         })
@@ -460,7 +456,6 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
             'form': form,
             'opts': opts,
             'model_name': opts.object_name.lower(),
-            'app_label': APP_LABEL,
         })
         return render_to_response('admin/voip_billing/voipretailrate/export_rr.html', context_instance=ctx)
 
@@ -533,7 +528,6 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
             'form': form,
             'opts': opts,
             'model_name': opts.object_name.lower(),
-            'app_label': APP_LABEL,
             'rdr': rdr,
             'msg': msg,
             'success_import_list': success_import_list,
@@ -548,7 +542,7 @@ admin.site.register(VoIPRetailRate, VoIPRetailRateAdmin)
 class VoIPCarrierPlanAdmin(admin.ModelAdmin):
     fieldsets = (
         (_('VoIP Carrier Plan'), {
-            #'classes':('collapse', ),
+            # 'classes':('collapse', ),
             'fields': ('name', 'description', 'metric',
                        'voip_provider_id'),
         }),
@@ -562,7 +556,8 @@ class VoIPCarrierPlanAdmin(admin.ModelAdmin):
     ]
 
     def get_readonly_fields(self, request, obj=None):
-        if obj:  # In edit mode
+        if obj:
+            # In edit mode
             return ('callsent',) + self.readonly_fields
         return self.readonly_fields
 
@@ -573,7 +568,7 @@ admin.site.register(VoIPCarrierPlan, VoIPCarrierPlanAdmin)
 class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
     fieldsets = (
         (_('VoIP Carrier Rate'), {
-            #'classes': ('collapse', ),
+            # 'classes': ('collapse', ),
             'fields': ('voip_carrier_plan_id', 'prefix', 'carrier_rate',),
         }),
     )
@@ -675,7 +670,6 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
             'form': form,
             'opts': opts,
             'model_name': opts.object_name.lower(),
-            'app_label': APP_LABEL,
         })
         return render_to_response('admin/voip_billing/voipcarrierrate/export_cr.html', context_instance=ctx)
 
@@ -791,7 +785,6 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
             'form': form,
             'opts': opts,
             'model_name': opts.object_name.lower(),
-            'app_label': APP_LABEL,
             'rdr': rdr,
             'msg': msg,
             'cr_success_import_list': cr_success_import_list,

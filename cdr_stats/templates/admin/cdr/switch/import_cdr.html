@@ -1,5 +1,5 @@
 {% extends "admin/change_list.html" %}
-{% load i18n admin_modify common_tags %}
+{% load i18n admin_modify admin_urls common_tags %}
 
 {% block breadcrumbs %}
     {% if not is_popup %}
@@ -17,7 +17,7 @@
 <div id="content-main">
 <br/>
 
-<table border=1>
+<table border="1">
 <caption>{% trans "sample file"|title %}</caption>
 <tr>
     <th>{% trans "caller_id_number" %}</th>
@@ -78,7 +78,7 @@
 <br/>
 
 <form method="post" action="" enctype="multipart/form-data">{% csrf_token %}
-    <table border=0>
+    <table border="0">
     {% get_fieldset switch,accountcode_csv,csv_file,import_asterisk as file_fields from form %}
     {% for field in file_fields %}
         <tr>
@@ -149,7 +149,7 @@
 
     <table>
     <tr>
-        <td colspan=2 align=right>
+        <td colspan="2" align="right">
         <input type="submit" class="l-1" name="submit" value="{% trans "submit"|capfirst %}" />&nbsp;
         <input type="reset" name="reset" class="j-2" value="{% trans "reset"|capfirst %}" />
         </td>
@@ -174,7 +174,7 @@
 
 
 {% if success_import_list %}
-    <table border=1>
+    <table border="1">
     <tr>
         <th>{% trans "contact(s) imported"|capfirst %} :</th>
     </tr>
@@ -190,7 +190,7 @@
 
 {% if error_import_list %}
 <br>
-    <table border=1>
+    <table border="1">
     <tr>
         <th>{% trans "contact(s) not imported"|capfirst %} :</th>
     </tr>
@@ -206,7 +206,7 @@
 
 {% if type_error_import_list %}
 <br>
-    <table border=1>
+    <table border="1">
     <tr>
         <th>{% trans "type mismatch"|capfirst %} :</th>
     </tr>

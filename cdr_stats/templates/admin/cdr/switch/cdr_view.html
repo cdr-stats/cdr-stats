@@ -2,12 +2,14 @@
 {% load i18n pagination_tags cdr_tags common_tags %}
 {% load country_dialcode_tags admin_list %}
 {% load cache %}
+
 {% block breadcrumbs %}{% if not is_popup %}
 <div class="breadcrumbs">
-     <a href="../../../">{% trans "home"|capfirst %}</a> &rsaquo;
-     <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
-     <a href="/admin/{{ opts.app_label }}/{{ model_name }}">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
-     {% trans "CDR search"|capfirst %}
+    <a href="{% url 'admin:index' %}">{% trans "home"|capfirst %}</a> &rsaquo;
+    <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_label|capfirst|escape }}</a> &rsaquo;
+    <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
+    {% block breadcrumbs_last %}{% endblock %}
+    {% trans "CDR search"|capfirst %}
 </div>
 {% endif %}{% endblock %}
 

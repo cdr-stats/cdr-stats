@@ -110,7 +110,6 @@ class BlacklistAdmin(admin.ModelAdmin):
             'form': form,
             'opts': opts,
             'model_name': opts.object_name.lower(),
-            'app_label': APP_LABEL,
             'prefix_list': prefix_list,
         })
         return render_to_response('admin/cdr_alert/blacklist/blacklist_by_country.html', context_instance=ctx)
@@ -182,7 +181,6 @@ class WhitelistAdmin(admin.ModelAdmin):
             'form': form,
             'opts': opts,
             'model_name': opts.object_name.lower(),
-            'app_label': APP_LABEL,
             'prefix_list': prefix_list,
         })
         return render_to_response('admin/cdr_alert/whitelist/whitelist_by_country.html', context_instance=ctx)

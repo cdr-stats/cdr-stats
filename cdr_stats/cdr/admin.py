@@ -12,42 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.contrib import admin
-from django.utils.translation import ugettext as _
 from cdr.models import HangupCause, CDR
-
-
-# from django_lets_go.app_label_renamer import AppLabelRenamer
-APP_LABEL = _('CDR')
-# AppLabelRenamer(native_app_label='cdr', app_label=APP_LABEL).main()
-
-
-def get_value_from_uni(j, row, field_name):
-    """Get value from unique dict list
-
-    >>> j = ['abc', 2, 3]
-
-    >>> field_name = 'abc'
-
-    >>> row = [1, 2, 3]
-
-    >>> get_value_from_uni(j, row, field_name)
-    '2'
-    """
-    return row[j[1] - 1] if j[0] == field_name else ''
-
-
-"""
-Asterisk cdr col
-
-accountcode - 1
-caller_id_number - 2
-destination_number - 3
-duration - 13
-billsec - 14
-hangup_cause_id - 15
-uuid - 4
-start_uepoch - 17
-"""
 
 
 # HangupCause

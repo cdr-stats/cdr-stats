@@ -1,43 +1,43 @@
 {% extends "admin/change_list.html" %}
-{% load i18n admin_modify %}
+{% load i18n admin_modify admin_urls %}
 
 {% block breadcrumbs %}
-    {% if not is_popup %}
-    <div class="breadcrumbs">
-        <a href="../../../">{% trans "home"|title %}</a> &rsaquo;
-        <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
-        <a href="/admin/{{ opts.app_label }}/{{ model_name }}">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
-        {{ opts.verbose_name }}
-    </div>
-    {% endif %}
+{% if not is_popup %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans "home"|capfirst %}</a> &rsaquo;
+    <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_label|capfirst|escape }}</a> &rsaquo;
+    <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
+    {{ opts.verbose_name }}
+</div>
+{% endif %}
 
-    <script type="text/javascript">
-        $(function() {
-            $('#id_from_date').datetimepicker({
-                format:'Y-m-d',
-                timepicker:false,
-                onShow:function( ct ){
-                    this.setOptions({
-                        maxDate:$('#id_to_date').val()?$('#id_to_date').val():false
-                    })
-                },
-            });
-            $('#id_to_date').datetimepicker({
-                format:'Y-m-d',
-                timepicker:false,
-                onShow:function( ct ){
-                    this.setOptions({
-                        minDate:$('#id_from_date').val()?$('#id_from_date').val():false
-                    })
-                },
-            });
+<script type="text/javascript">
+    $(function() {
+        $('#id_from_date').datetimepicker({
+            format:'Y-m-d',
+            timepicker:false,
+            onShow:function( ct ){
+                this.setOptions({
+                    maxDate:$('#id_to_date').val()?$('#id_to_date').val():false
+                })
+            },
         });
-        $(function() {
-            $('#id_no').click(function(){
-                document.location.href='/admin/{{ opts.app_label }}/{{ model_name }}/rebilling/';
-            });
+        $('#id_to_date').datetimepicker({
+            format:'Y-m-d',
+            timepicker:false,
+            onShow:function( ct ){
+                this.setOptions({
+                    minDate:$('#id_from_date').val()?$('#id_from_date').val():false
+                })
+            },
         });
-    </script>
+    });
+    $(function() {
+        $('#id_no').click(function(){
+            document.location.href='/admin/{{ opts.app_label }}/{{ model_name }}/rebilling/';
+        });
+    });
+</script>
 {% endblock %}
 
 

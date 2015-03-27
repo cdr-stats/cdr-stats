@@ -1,54 +1,50 @@
 {% extends "admin/change_list.html" %}
-{% load i18n admin_modify %}
+{% load i18n admin_modify admin_urls %}
 
-{% block breadcrumbs %}{% if not is_popup %}
+{% block breadcrumbs %}
+{% if not is_popup %}
 <div class="breadcrumbs">
-     <a href="../../../">{% trans "home"|title %}</a> &rsaquo;
-     <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
-     <a href="/admin/{{ opts.app_label }}/{{ model_name }}">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
-     {% trans "import"|title %} {{ opts.verbose_name }}
+    <a href="{% url 'admin:index' %}">{% trans "home"|capfirst %}</a> &rsaquo;
+    <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_label|capfirst|escape }}</a> &rsaquo;
+    <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
+    {% trans "import"|title %} {{ opts.verbose_name }}
 </div>
-{% endif %}{% endblock %}
+{% endif %}
+{% endblock %}
 
 {% block content %}
 <div id="content-main">
 <br/>
 
-<table border=1>
-<caption>{% trans "sample file"|title %}</caption>
-<tr>
-    <th>{% trans "prefix" %}</th>
-    <th>{% trans "rate" %}</th>
-</tr>
-<tr>
-    <td>36</td>
-    <td>0.082</td>
-</tr>
-<tr>
-    <td>40</td>
-    <td>0.071</td>
-</tr>
+<table border="1">
+    <caption>{% trans "sample file"|title %}</caption>
+    <tr>
+        <th>{% trans "prefix" %}</th><th>{% trans "rate" %}</th>
+    </tr>
+    <tr>
+        <td>36</td><td>0.082</td>
+    </tr>
+    <tr>
+        <td>40</td><td>0.071</td>
+    </tr>
 </table>
 
-<br/>
-<br/>
-
+<br/><br/>
 
 <form method="post" action="" enctype="multipart/form-data" >
-{% csrf_token %}
-<table border=0>
-{{ form.as_table }}
-<tr>
-    <td colspan=2 align=right>
-    <input type="submit" class="l-1" name="submit" value='{% trans "submit"|title %}' />&nbsp;
-    <input type="reset" name="reset" class="j-2" value='{% trans "Reset"|title %}' />
-    </td>
-</tr>
-</table>
+    {% csrf_token %}
+    <table border="0">
+        {{ form.as_table }}
+        <tr>
+            <td colspan="2" align="right">
+                <input type="submit" class="l-1" name="submit" value='{% trans "submit"|title %}' />&nbsp;
+                <input type="reset" name="reset" class="j-2" value='{% trans "Reset"|title %}' />
+            </td>
+        </tr>
+    </table>
 </form>
 
-<br/>
-<br/>
+<br/><br/>
 
 {% block msg %}
     {% if msg %}
@@ -56,58 +52,56 @@
     {% endif %}
 {% endblock %}
 
-<br/>
-<br/>
+<br/><br/>
 
 
 {% if success_import_list %}
-<table border=1>
-    <tr>
-        <th>{% trans "Retail Record(s) Successfully Imported" %} :</th>
-    </tr>
-{% for row in success_import_list %}
-    <tr class="{% cycle 'row1' 'row2' %}">
-        <td>
-            {{ row }}
-        </td>
-    </tr>
-{% endfor %}
-</table>
+    <table border="1">
+        <tr>
+            <th>{% trans "Retail Record(s) Successfully Imported" %} :</th>
+        </tr>
+    {% for row in success_import_list %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+            <td>
+                {{ row }}
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
 {% endif %}
 
 
 {% if error_import_list %}
-<br>
-<table border=1>
-    <tr>
-        <th>{% trans "Retail Record(s) not Imported" %} :</th>
-    </tr>
-{% for row in error_import_list %}
-    <tr class="{% cycle 'row1' 'row2' %}">
-        <td>
-            {{ row }}
-        </td>
-    </tr>
-{% endfor %}
-</table>
+    <br>
+    <table border="1">
+        <tr>
+            <th>{% trans "Retail Record(s) not Imported" %} :</th>
+        </tr>
+    {% for row in error_import_list %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+            <td>
+                {{ row }}
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
 {% endif %}
 
 {% if type_error_import_list %}
-<br>
-<table border=1>
-    <tr>
-        <th>{% trans "Type Miss-match" %} :</th>
-    </tr>
-{% for row in type_error_import_list %}
-    <tr class="{% cycle 'row1' 'row2' %}">
-        <td>
-            {{ row }}
-        </td>
-    </tr>
-{% endfor %}
-</table>
+    <br>
+    <table border="1">
+        <tr>
+            <th>{% trans "Type Miss-match" %} :</th>
+        </tr>
+    {% for row in type_error_import_list %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+            <td>
+                {{ row }}
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
 {% endif %}
-
 
 </div>
 {% endblock %}

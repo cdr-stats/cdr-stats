@@ -138,3 +138,18 @@ def get_cdr_mail_report(user):
         'hangup_cause_data': hangup_cause_data,
     }
     return mail_data
+
+
+def get_value_from_uni(j, row, field_name):
+    """Get value from unique dict list
+
+    >>> j = ['abc', 2, 3]
+
+    >>> field_name = 'abc'
+
+    >>> row = [1, 2, 3]
+
+    >>> get_value_from_uni(j, row, field_name)
+    '2'
+    """
+    return row[j[1] - 1] if j[0] == field_name else ''
