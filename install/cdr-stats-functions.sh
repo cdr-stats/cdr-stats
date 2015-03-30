@@ -366,7 +366,7 @@ func_install_source(){
 
     case $INSTALL_MODE in
         'CLONE')
-            git clone -b $BRANCH git://github.com/Star2Billing/cdr-stats.git
+            git clone -b $BRANCH git://github.com/$USER/cdr-stats.git
 
             #Install Develop / Master
             if echo $BRANCH | grep -i "^develop" > /dev/null ; then
@@ -848,7 +848,7 @@ func_prepare_logger() {
 func_install_mongodb() {
     cd /usr/src/
     rm install-mongodb.sh
-    wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/install-mongodb.sh
+    wget --no-check-certificate https://raw.github.com/$USER/cdr-stats/$BRANCH/install/install-mongodb.sh
     bash install-mongodb.sh
 }
 

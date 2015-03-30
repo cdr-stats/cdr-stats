@@ -18,6 +18,8 @@
 # cd /usr/src/ ; rm install-cdr-stats-asterisk.sh ; wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats-asterisk.sh -O install-cdr-stats-asterisk.sh; bash install-cdr-stats-asterisk.sh
 #
 
+USER=$(sed -rn 's/.*:([^/]+).*/\1/p' <<<$(git remote -v))
+[ -z $USER ] && USER=Star2Billing
 BRANCH='master'
 INSTALL_DIR='/usr/share/cdr_stats'
 
@@ -37,8 +39,8 @@ read TEMP
 
 #Get Scripts dependencies
 cd /usr/src/
-wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/bash-common-functions.sh -O bash-common-functions.sh
-wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
+wget --no-check-certificate https://raw.github.com/$USER/cdr-stats/$BRANCH/install/bash-common-functions.sh -O bash-common-functions.sh
+wget --no-check-certificate https://raw.github.com/$USER/cdr-stats/$BRANCH/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
 
 #Include general functions
 source bash-common-functions.sh
