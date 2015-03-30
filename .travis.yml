@@ -2,9 +2,8 @@ language: python
 python:
   - "2.7"
 env:
-  - DJANGO=1.6.2
+  - DJANGO=1.7.7
 services:
-  - mongodb     # will start riak
   - redis-server
 #  - rabbitmq # will start rabbitmq-server
 #  - memcache # will start memcached
