@@ -22,14 +22,14 @@ git+git://github.com/jbalogh/django-cache-machine.git
 
 django-redis-cache==0.13.0
 git+git://github.com/Star2Billing/django-notification
-django-frontend-notification==0.2.0
+django-frontend-notification==0.3.0
 django-genericadmin==0.6.1
-django-nvd3==0.7.6
+django-nvd3==0.7.8
 
 django-lets-go==2.9.3
 django-extensions==1.5.1
-django-bower==5.0.2
-django-cors-headers==0.13
+django-bower==5.0.3
+django-cors-headers==1.0.0
 #git+git://github.com/hmarr/django-ses.git
 git+git://github.com/pinax/django-mailer
 django-activelink==0.4
@@ -37,5 +37,5 @@ django-bootstrap3-datetimepicker==2.2.3
 djangorestframework==2.4.3
 django-crispy-forms==1.4.0
 
-django-localflavor==1.0
+django-localflavor==1.1
 hg+http://bitbucket.org/schinckel/django-postgres#egg=django-postgres

@@ -7,3 +7,4 @@ pygraphviz
 django-debug-toolbar-template-timings
 tabulate
 fake-factory
+alabaster
