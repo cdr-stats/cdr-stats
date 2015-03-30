@@ -1,4 +1,4 @@
-#
+f#
 # CDR-Stats License
 # http://www.cdr-stats.org
 #
@@ -47,17 +47,6 @@ def hangupcause_name_with_title(id):
         return re.sub("\d([A-Z])", lambda m: m.group(0).lower(), t)
     except:
         return ''
-
-
-@register.filter(name='mongo_id')
-def mongo_id(value, sub_val):
-    """Tag is used to get mongo mapreduce _id.value"""
-    if isinstance(value, dict) and '_id' in value:
-        if sub_val in value['_id']:
-            value = int(value['_id'][sub_val])
-        else:
-            value = value['_id']
-    return value
 
 
 @register.filter(name='get_cost')

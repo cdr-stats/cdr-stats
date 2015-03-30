@@ -25,8 +25,7 @@ from cdr.views import cdr_view, cdr_dashboard, cdr_overview, cdr_daily_compariso
     cdr_detail
 from cdr.functions_def import get_switch_list, get_hangupcause_name,\
     get_hangupcause_id, get_country_id_prefix
-from cdr.templatetags.cdr_tags import hangupcause_name_with_title, mongo_id
-from bson.objectid import ObjectId
+from cdr.templatetags.cdr_tags import hangupcause_name_with_title
 from datetime import datetime
 
 csv_file = open(
@@ -189,7 +188,6 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
         request = self.factory.post('/cdr_detail/')
         request.user = self.user
         request.session = {}
-        #response = cdr_detail(request, ObjectId('503368721d41c818ee000000'), 1)
         #self.assertEqual(response.status_code, 200)
 
     def test_cdr_overview(self):
@@ -377,9 +375,6 @@ class CdrModelTestCase(BaseAuthenticatedClient):
 
         # Template tags
         hangupcause_name_with_title(self.hangupcause.pk)
-        value = {'_id': {'val': 1}}
-        mongo_id(value, 'val')
-
         get_country_id_prefix(['44', '442'])
 
     def test_cdr_search_form(self):

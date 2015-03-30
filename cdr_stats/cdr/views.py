@@ -24,18 +24,20 @@ from django_lets_go.common_functions import get_pagination_vars
 from user_profile.models import UserProfile
 from cdr.functions_def import get_country_name, get_hangupcause_name,\
     get_switch_ip_addr, calculate_act_acd
-from cdr.forms import CdrSearchForm, CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
+from cdr.forms import CdrSearchForm, CountryReportForm, CdrOverviewForm, \
+    CompareCallSearchForm, \
     SwitchForm, WorldForm, EmailReportForm
 # from cdr.forms import ConcurrentCallForm
 from cdr.filters import get_filter_operator_int, get_filter_operator_str
 from cdr.decorators import check_user_detail
 from cdr.constants import CDR_COLUMN_NAME, Export_choice, COMPARE_WITH
 from cdr.models import CDR
-from aggregator.aggregate_cdr import custom_sql_aggr_top_country, custom_sql_aggr_top_hangup_last24hours, \
+from aggregator.aggregate_cdr import custom_sql_aggr_top_country, \
+    custom_sql_aggr_top_hangup_last24hours, \
     custom_sql_matv_voip_cdr_aggr_last24hours, \
     custom_sql_aggr_top_country_last24hours
-from aggregator.pandas_cdr import get_report_cdr_per_switch, get_report_compare_cdr, \
-    get_report_cdr_per_country
+from aggregator.pandas_cdr import get_report_cdr_per_switch, \
+    get_report_compare_cdr, get_report_cdr_per_country
 from common.helpers import trunc_date_start, trunc_date_end
 from cdr.helpers import get_cdr_mail_report
 from datetime import datetime
