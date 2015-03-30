@@ -1,4 +1,4 @@
-f#
+#
 # CDR-Stats License
 # http://www.cdr-stats.org
 #

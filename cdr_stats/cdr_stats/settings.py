@@ -39,6 +39,17 @@ DATABASES = {
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Not used with sqlite3.
         'PORT': '',                      # Not used with sqlite3.
+    },
+    'import_cdr': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'cdr-pusher',
+        'USER': 'postgres',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+        'PORT': '5433',
+        'OPTIONS': {
+            'autocommit': True,
+        }
     }
 }
 
@@ -361,60 +372,6 @@ INTERNAL_CALL = 5
 
 # Realtime Graph : set the Y axis limit
 REALTIME_Y_AXIS_LIMIT = 300
-
-# ASTERISK IMPORT
-# ===============
-ASTERISK_PRIMARY_KEY = 'acctid'  # acctid, _id
-
-# CDR_BACKEND
-# ===========
-# list of CDR Backends to import
-CDR_BACKEND = {
-    # '127.0.0.1': {
-    # 'db_engine': 'mysql',  # mysql, pgsql, mongodb
-    # 'cdr_type': 'asterisk',  # asterisk or freeswitch
-    #     'db_name': 'asteriskcdr',
-    # 'table_name': 'cdr',  # collection if mongodb
-    #     'host': 'localhost',
-    # 'port': 3306,  # 3306 mysql, 5432 pgsql, 27017 mongodb
-    #     'user': 'root',
-    #     'password': 'password',
-    # },
-    '127.0.0.1': {
-        'db_engine': 'mongodb',  # mysql, pgsql, mongodb
-        'cdr_type': 'freeswitch',  # asterisk or freeswitch
-        'db_name': 'freeswitch_cdr',
-        'table_name': 'cdr',  # collection if mongodb
-        'host': 'localhost',
-        'port': 27017,  # 3306 mysql, 5432 pgsql, 27017 mongodb
-        'user': '',
-        'password': '',
-    },
-}
-
-# Define the IP of your local Switch, it needs to exist in the CDR_BACKEND list
-LOCAL_SWITCH_IP = '127.0.0.1'
-
-# Asterisk Manager / Used for Realtime and Concurrent calls
-ASTERISK_MANAGER_HOST = 'localhost'
-ASTERISK_MANAGER_USER = 'cdrstats_user'
-ASTERISK_MANAGER_SECRET = 'cdrstats_secret'
-
-# MONGODB
-# =======
-# Settings of CDR-Stats MongoDB server, this is used to store the analytic data
-MONGO_CDRSTATS = {
-    'DB_NAME': 'cdr-stats',
-    'HOST': 'localhost',
-    'PORT': 27017,
-    'USER': '',
-    'PASSWORD': '',
-    'CDR_COMMON': 'cdr_common',
-    'DAILY_ANALYTIC': 'daily_analytic',
-    'MONTHLY_ANALYTIC': 'monthly_analytic',
-    'CONC_CALL': 'concurrent_call',
-    'CONC_CALL_AGG': 'concurrent_call_aggregate'
-}
 
 # No of records per page
 # ======================

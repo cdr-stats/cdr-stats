@@ -835,15 +835,6 @@ func_prepare_logger() {
     logrotate /etc/logrotate.d/cdr_stats
 }
 
-#Install MongoDB
-func_install_mongodb() {
-    cd /usr/src/
-    rm install-mongodb.sh
-    wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/install-mongodb.sh
-    bash install-mongodb.sh
-}
-
-
 #Menu Section for Script
 show_menu_cdr_stats() {
     clear
@@ -866,7 +857,6 @@ run_menu_cdr_stats_install() {
         show_menu_cdr_stats
         case $OPTION in
             1)
-                func_install_mongodb
                 func_install_frontend
                 func_install_backend
                 echo done
@@ -876,9 +866,6 @@ run_menu_cdr_stats_install() {
             ;;
             3)
                 func_install_backend
-            ;;
-            4)
-                func_install_mongodb
             ;;
             0)
                 ExitFinish=1

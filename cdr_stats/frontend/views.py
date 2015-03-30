@@ -14,16 +14,14 @@
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, permission_required
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
-from pymongo.connection import Connection
 from django_lets_go.common_functions import get_news
 from frontend.forms import LoginForm
-from cdr.import_cdr_freeswitch_mongodb import chk_ipaddress
-from mongodb_connection import mongodb
+from django.db import connections
 
 news_url = settings.NEWS_URL
 
@@ -38,12 +36,6 @@ def index(request):
     """
     errorlogin = ''
     loginform = LoginForm()
-
-    if request.GET.get('db_error'):
-        if request.GET['db_error'] == 'closed':
-            errorlogin = _('mongodb database connection is closed!')
-        if request.GET['db_error'] == 'locked':
-            errorlogin = _('mongodb database is locked!')
 
     if request.GET.get('acc_code_error'):
         if request.GET['acc_code_error'] == 'true':
@@ -61,6 +53,32 @@ def index(request):
     return render_to_response('frontend/index.html', data, context_instance=RequestContext(request))
 
 
+def check_connection_sql():
+    """
+    check the import postgresql database is up and reachable
+    """
+    cursor = connections['import_cdr'].cursor()
+    cursor.execute("SELECT 1")
+    row = cursor.fetchone()
+    return row[0] == 1
+
+
+def get_to_import_cdr_count():
+    """
+    check the import postgresql database is up and reachable
+    """
+    cursor = connections['import_cdr'].cursor()
+    # Get non imported cdrs
+    cursor.execute("SELECT count(*) FROM cdr_import WHERE imported=False")
+    row = cursor.fetchone()
+    not_imported_cdr = row[0]
+    # Get cdrs
+    cursor.execute("SELECT count(*) FROM cdr_import")
+    row = cursor.fetchone()
+    total_cdr = row[0]
+    return (total_cdr, not_imported_cdr)
+
+
 @permission_required('user_profile.diagnostic', login_url='/')
 @login_required
 def diagnostic(request):
@@ -73,86 +91,35 @@ def diagnostic(request):
     """
     error_msg = ''
     info_msg = ''
-    success_ip = []
-    error_ip = []
-    CDR_COUNT = 0
-    backend_cdr_data = []
-    # loop within the Mongo CDR Import List
-    for ipaddress in settings.CDR_BACKEND:
 
-        # Connect to Database
-        db_name = settings.CDR_BACKEND[ipaddress]['db_name']
-        table_name = settings.CDR_BACKEND[ipaddress]['table_name']
-        db_engine = settings.CDR_BACKEND[ipaddress]['db_engine']
-        #cdr_type = settings.CDR_BACKEND[ipaddress]['cdr_type']
-        host = settings.CDR_BACKEND[ipaddress]['host']
-        port = settings.CDR_BACKEND[ipaddress]['port']
-        user = settings.CDR_BACKEND[ipaddress]['user']
-        password = settings.CDR_BACKEND[ipaddress]['password']
+    engine = settings.DATABASES['import_cdr']['ENGINE']
+    hostname = settings.DATABASES['import_cdr']['HOST']
+    port = settings.DATABASES['import_cdr']['PORT']
+    db_name = settings.DATABASES['import_cdr']['NAME']
+    table_name = 'cdr_import'
+    username = 'YYYYYYYYYYYY'
+    password = 'XXXXXXXXXXXX'
 
-        data = chk_ipaddress(ipaddress)
-        ipaddress = data['ipaddress']
-        collection_data = {}
+    conn_status = check_connection_sql()
+    (total_cdr, not_imported_cdr) = get_to_import_cdr_count()
 
-        # Connect on MongoDB Database
-        try:
-            if db_engine == 'mysql':
-                import MySQLdb as Database
-                connection = Database.connect(user=user, passwd=password, db=db_name, host=host, port=port, connect_timeout=4)
-                connection.autocommit(True)
-                cursor = connection.cursor()
-            elif db_engine == 'pgsql':
-                import psycopg2 as Database
-                connection = Database.connect(user=user, password=password, database=db_name, host=host, port=port)
-                connection.autocommit(True)
-                cursor = connection.cursor()
-            elif db_engine == 'mongodb':
-                connection = Connection(host, port)
-                DBCON = connection[db_name]
-                DBCON.authenticate(user, password)
-                CDR = DBCON[table_name]
-                CDR_COUNT = CDR.find().count()
-
-            if db_engine == 'mysql' or db_engine == 'pgsql':
-                cursor.execute("SELECT count(*) FROM %s" % (table_name))
-                row = cursor.fetchone()
-                CDR_COUNT = row[0]
-
-            success_ip.append(ipaddress)
-            if not mongodb.cdr_common:
-                raise Http404
-
-            collection_data = {
-                'CDR_COMMON': mongodb.cdr_common.find().count(),
-                'DAILY_ANALYTIC': mongodb.daily_analytic.find().count(),
-                'MONTHLY_ANALYTIC': mongodb.monthly_analytic.find().count(),
-                'CONC_CALL': mongodb.conc_call.find().count(),
-                'CONC_CALL_AGG': mongodb.conc_call_agg.find().count()
-            }
-        except:
-            CDR_COUNT = _('Error')
-            error_ip.append(ipaddress)
-
-        backend_cdr_data.append({
-            'ip': ipaddress,
-            'cdr_count': CDR_COUNT,
-        })
-
-    if success_ip:
-        info_msg = _("CDR backend %s connected successfully." % (str(success_ip)))
-
-    if error_ip:
-        error_msg = _("please review the 'CDR_BACKEND' Settings in your file /usr/share/cdr-stats/settings_local.py make sure the settings, username, password are correct. Check also that the backend authorize a connection from your server")
-        info_msg = _("after changes in your 'CDR_BACKEND' settings, you will need to restart celery: $ /etc/init.d/cdr-stats-celeryd restart")
+    if not conn_status:
+        error_msg = _("please review the 'DATABASES' Settings in the conf file /usr/share/cdr-stats/settings_local.py make sure the settings, username, password are correct.")
+        info_msg = _("after changes in your 'settings_local.py' conf file, you will need to restart celery: $ /etc/init.d/cdr-stats-celeryd restart")
 
     data = {
-        'backend_cdr_data': backend_cdr_data,
-        'collection_data': collection_data,
-        'settings': settings,
         'info_msg': info_msg,
         'error_msg': error_msg,
-        'success_ip': success_ip,
-        'error_ip': error_ip,
+        'engine': engine,
+        'hostname': hostname,
+        'port': port,
+        'db_name': db_name,
+        'table_name': table_name,
+        'username': username,
+        'password': password,
+        'conn_status': conn_status,
+        'total_cdr': total_cdr,
+        'not_imported_cdr': not_imported_cdr,
     }
     return render_to_response('frontend/diagnostic.html', data, context_instance=RequestContext(request))
 

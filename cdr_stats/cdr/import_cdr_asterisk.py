@@ -20,7 +20,6 @@ from cdr.functions_def import get_hangupcause_id
 from cdr_alert.functions_blacklist import chk_destination
 from user_profile.models import UserProfile
 from datetime import datetime
-from mongodb_connection import mongodb
 import re
 import sys
 import random

@@ -10,84 +10,22 @@
     {% trans "diagnostic"|title %} CDR-Stats
 </div>
 
+<br/><br/>
+
 <div class="row">
     <div class="col-md-12">
-        <div class="row">
-            <div class="col-md-6">
-                <h4>{% trans "CDR BACKEND" %}</h4>
-                {% for ip, values in settings.CDR_BACKEND.items %}
-                <div class="table-responsive">
-                    <table class="table table-striped table-bordered table-condensed">
-                        {% if ip in error_ip %}
-                            <tr class="error">
-                                <td colspan="4">
-                                    <center>
-                                    <h5 class="text-error">{% trans "connection error with"|capfirst %} {{ ip }}</h5>
-                                    </center>
-                                </td>
-                            </tr>
-                        {% else %}
-                            <tr class="success">
-                                <td colspan="4">
-                                    <center>
-                                    <h5 class="text-success">{% trans "connection successful with"|capfirst %} {{ ip }}</h5>
-                                    </center>
-                                </td>
-                            </tr>
-                        {% endif %}
-                        {% for key, value in values.items %}
-                            <tr>
-                            {% if forloop.first %}
-                                <td rowspan="8"><span class="label label-inverse">{{ ip }}</span></td>
-                            {% endif %}
-                            <td><span class="label label-info">{{ key|upper }}</span></td>
-                            <td>
-                                {% if key == 'password' %}
-                                    XXXXXX
-                                {% else %}
-                                    {{ value }}
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% for data in backend_cdr_data %}
-                                    {% if data.ip == ip and key == 'table_name' %}
-                                        {{ data.cdr_count }}
-                                    {% endif %}
-                                {% endfor %}
-                            </td>
-                            </tr>
-                        {% endfor %}
-                    </table>
-                </div>
-                {% endfor %}
-            </div>
-            <div class="col-md-6">
-                <h4>{% trans "MONGODB - CDRSTATS" %}</h4>
-                {% trans "MongoDB server used to store and centralize your CDRs and your reporting"|capfirst %}
-                <div class="table-responsive">
-                    <table class="table table-striped table-bordered table-condensed">
-                    {% for key, value in settings.MONGO_CDRSTATS.items %}
-                        <tr>
-                            <td><span class="label label-info">{{ key }}</span></td>
-                            <td>{{ value }}</td>
-                            <td>
-                                {% if key == 'CDR_COMMON' %}
-                                    {{ collection_data.CDR_COMMON }}
-                                {% elif key == 'DAILY_ANALYTIC'  %}
-                                    {{ collection_data.DAILY_ANALYTIC }}
-                                {% elif key == 'MONTHLY_ANALYTIC'  %}
-                                    {{ collection_data.MONTHLY_ANALYTIC }}
-                                {% elif key == 'CONC_CALL'  %}
-                                    {{ collection_data.CONC_CALL }}
-                                {% elif key == 'CONC_CALL_AGG'  %}
-                                    {{ collection_data.CONC_CALL_AGG }}
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </table>
-                </div>
-            </div>
+        {% trans "PostgreSQL server used to centralize CDRs and the aggregate reporting"|capfirst %}
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-condensed">
+            <tr>
+                <td>
+                    <span class="label label-info">{% trans "Engine"|title %} </span>
+                </td>
+                <td>
+                    {{ engine }}
+                </td>
+            </tr>
+            </table>
         </div>
     </div>
 </div>
