@@ -28,7 +28,7 @@ func_identify_os() {
         fi
     elif [ -f /etc/redhat-release ] ; then
         DIST='CENTOS'
-        if grep -Pq '5\.[0-6]' /etc/redhat-release; then
+        if grep -Pq '6\.[0-6]' /etc/redhat-release; then
             echo "This script is only intended to run on Ubuntu LTS 10.04 / 12.04 or CentOS 6.X"
             exit 255
         fi
