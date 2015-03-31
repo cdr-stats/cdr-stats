@@ -22,6 +22,7 @@ from django.utils.translation import ugettext as _
 from django_lets_go.common_functions import get_news
 from frontend.forms import LoginForm
 from django.db import connections
+from collections import OrderedDict
 
 news_url = settings.NEWS_URL
 
@@ -98,7 +99,7 @@ def diagnostic(request):
     db_name = settings.DATABASES['import_cdr']['NAME']
     table_name = 'cdr_import'
     username = 'YYYYYYYYYYYY'
-    password = 'XXXXXXXXXXXX'
+    # password = 'XXXXXXXXXXXX'
 
     conn_status = check_connection_sql()
     (total_cdr, not_imported_cdr) = get_to_import_cdr_count()
@@ -107,19 +108,22 @@ def diagnostic(request):
         error_msg = _("please review the 'DATABASES' Settings in the conf file /usr/share/cdr-stats/settings_local.py make sure the settings, username, password are correct.")
         info_msg = _("after changes in your 'settings_local.py' conf file, you will need to restart celery: $ /etc/init.d/cdr-stats-celeryd restart")
 
+    conn_report = OrderedDict([
+                              ('engine', engine),
+                              ('hostname', hostname),
+                              ('port', port),
+                              ('database name', db_name),
+                              ('username', username),
+                              ('table name', table_name),
+                              ('connection status', conn_status),
+                              ('total CDR', total_cdr),
+                              ('total not imported CDR', not_imported_cdr),
+                              ])
+
     data = {
         'info_msg': info_msg,
         'error_msg': error_msg,
-        'engine': engine,
-        'hostname': hostname,
-        'port': port,
-        'db_name': db_name,
-        'table_name': table_name,
-        'username': username,
-        'password': password,
-        'conn_status': conn_status,
-        'total_cdr': total_cdr,
-        'not_imported_cdr': not_imported_cdr,
+        'conn_report': conn_report,
     }
     return render_to_response('frontend/diagnostic.html', data, context_instance=RequestContext(request))
 
