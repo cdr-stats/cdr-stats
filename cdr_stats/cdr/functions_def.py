@@ -233,7 +233,7 @@ def chk_date_for_hrs(previous_date, graph_date):
 def calculate_act_acd(total_calls, total_duration):
     """Calculate aggregation on some metrics:
 
-        - ACT: Average Call per Time
+        - ACT: Average Call per Hour
         - ACD: Average Call Duration
 
     TODO:

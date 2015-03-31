@@ -24,9 +24,10 @@ from django.template import Context
 from celery.task import PeriodicTask, task
 from notification import models as notification
 from django_lets_go.only_one_task import only_one
-from cdr.aggregate import pipeline_cdr_alert_task
 from cdr_alert.constants import PERIOD, ALARM_TYPE, ALERT_CONDITION, ALERT_CONDITION_ADD_ON,\
     ALARM_REPROT_STATUS
+from aggregator.pandas_cdr import get_report_cdr_per_switch
+from aggregator.aggregate_cdr import custom_sql_aggr_top_hangup
 from cdr_alert.models import Alarm, AlarmReport
 from cdr.functions_def import get_hangupcause_id
 from cdr.views import get_cdr_mail_report
@@ -34,7 +35,7 @@ from user_profile.models import UserProfile
 from user_profile.constants import NOTICE_TYPE
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-from mongodb_connection import mongodb
+import math
 
 # Lock expires in 30 minutes
 LOCK_EXPIRE = 60 * 30
@@ -49,7 +50,7 @@ def get_start_end_date(alert_condition_add_on):
         * c_start_date
         * c_end_date
     """
-    dt_list = {}
+    date_dict = {}
     # yesterday's date
     end_date = datetime.today() + relativedelta(days=-1)
     if alert_condition_add_on == ALERT_CONDITION_ADD_ON.SAME_DAY:  # Same day
@@ -59,16 +60,16 @@ def get_start_end_date(alert_condition_add_on):
 
     start_date = end_date + relativedelta(days=-int(compare_days))
     # get Previous dates and Current dates
-    dt_list['p_start_date'] = datetime(start_date.year, start_date.month,
+    date_dict['p_start_date'] = datetime(start_date.year, start_date.month,
                                        start_date.day, 0, 0, 0, 0)
-    dt_list['p_end_date'] = datetime(start_date.year, start_date.month,
+    date_dict['p_end_date'] = datetime(start_date.year, start_date.month,
                                      start_date.day, 23, 59, 59, 999999)
-    dt_list['c_start_date'] = datetime(end_date.year, end_date.month,
+    date_dict['c_start_date'] = datetime(end_date.year, end_date.month,
                                        end_date.day, 0, 0, 0, 0)
-    dt_list['c_end_date'] = datetime(end_date.year, end_date.month,
+    date_dict['c_end_date'] = datetime(end_date.year, end_date.month,
                                      end_date.day, 23, 59, 59, 999999)
 
-    return dt_list
+    return date_dict
 
 
 def notify_admin_with_mail(notice_id, email_id):
@@ -184,76 +185,78 @@ def run_alarm(alarm_obj, logger):
         'current_value': None,
         'previous_value': None,
     }
+    user = False
+    switch_id = 0
 
-    if not mongodb.cdr_common:
-        logger.error('Error MongoDB connection')
-        return False
-
-    if alarm_obj.type == ALARM_TYPE.ALOC:  # ALOC (average length of call)
-        logger.debug('ALOC (average length of call)')
+    if alarm_obj.type == ALARM_TYPE.ALOC:
+        # ALOC (average length of call)
+        logger.debug('ALOC (Average Length Of Call)')
 
         # return start and end date of previous/current day
-        dt_list = get_start_end_date(alarm_obj.alert_condition_add_on)
+        date_dict = get_start_end_date(alarm_obj.alert_condition_add_on)
 
         # Previous date data
-        query_var = {}
-        query_var['metadata.date'] = {'$gte': dt_list['p_start_date'],
-                                      '$lte': dt_list['p_end_date']}
+        start_date = date_dict['p_start_date']
+        end_date = date_dict['p_end_date']
 
-        pipeline = pipeline_cdr_alert_task(query_var)
-        pre_total_data = mongodb.DBCON.command('aggregate',
-                                               settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                               pipeline=pipeline)
-        pre_day_data = {}
-        for doc in pre_total_data['result']:
-            pre_date = dt_list['p_start_date']
-            pre_day_data[pre_date.strftime('%Y-%m-%d')] = doc['duration_avg']
-            if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or \
-                    alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN:
-                running_alarm_test_data['previous_value'] = doc['duration_avg']
-                chk_alert_value(alarm_obj, doc['duration_avg'])
-            else:
-                previous_date_duration = doc['duration_avg']
+        daily_data = get_report_cdr_per_switch(user, 'day', start_date, end_date, switch_id)
+
+        total_calls = daily_data["nbcalls"]["total"]
+        total_duration = daily_data["duration"]["total"]
+        ACD = math.floor(total_duration / total_calls)
+
+        if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or \
+                alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN:
+            running_alarm_test_data['previous_value'] = ACD
+            chk_alert_value(alarm_obj, ACD)
+        else:
+            previous_date_duration = ACD
 
         # Current date data
-        query_var = {}
-        query_var['metadata.date'] = {'$gte': dt_list['c_start_date'],
-                                      '$lte': dt_list['c_end_date']}
-        # current date
-        pipeline = pipeline_cdr_alert_task(query_var)
-        cur_total_data = mongodb.DBCON.command('aggregate',
-                                               settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                               pipeline=pipeline)
-        cur_day_data = {}
-        for doc in cur_total_data['result']:
-            cur_date = dt_list['c_start_date']
-            cur_day_data[cur_date.strftime('%Y-%m-%d')] = doc['duration_avg']
-            if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or \
-                    alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN:
-                running_alarm_test_data['current_value'] = doc['duration_avg']
-                chk_alert_value(alarm_obj, doc['duration_avg'])
-            else:
-                current_date_duration = doc['duration_avg']
-                running_alarm_test_data['current_value'] = doc['duration_avg']
-                running_alarm_test_data['previous_value'] = previous_date_duration
-                chk_alert_value(alarm_obj, current_date_duration, previous_date_duration)
+        start_date = date_dict['c_start_date']
+        end_date = date_dict['c_end_date']
 
-    if alarm_obj.type == ALARM_TYPE.ASR:  # ASR (Answer Seize Ratio)
+        daily_data = get_report_cdr_per_switch(user, 'day', start_date, end_date, switch_id)
+
+        total_calls = daily_data["nbcalls"]["total"]
+        total_duration = daily_data["duration"]["total"]
+        ACD = math.floor(total_duration / total_calls)
+
+        if alarm_obj.alert_condition == ALERT_CONDITION.IS_LESS_THAN or \
+                alarm_obj.alert_condition == ALERT_CONDITION.IS_GREATER_THAN:
+            running_alarm_test_data['current_value'] = ACD
+            chk_alert_value(alarm_obj, ACD)
+        else:
+            current_date_duration = ACD
+            running_alarm_test_data['current_value'] = ACD
+            running_alarm_test_data['previous_value'] = previous_date_duration
+            chk_alert_value(alarm_obj, current_date_duration, previous_date_duration)
+
+    elif alarm_obj.type == ALARM_TYPE.ASR:
+        # ASR (Answer Seize Ratio)
         logger.debug('ASR (Answer Seize Ratio)')
         # return start and end date of previous/current day
-        dt_list = get_start_end_date(alarm_obj.alert_condition_add_on)
+        date_dict = get_start_end_date(alarm_obj.alert_condition_add_on)
 
         # hangup_cause_q850 - 16 - NORMAL_CLEARING
         hangup_cause_q850 = 16
 
         # Previous date data
-        query_var = {}
-        query_var['start_uepoch'] = {'$gte': dt_list['p_start_date'],
-                                     '$lte': dt_list['p_end_date']}
+        start_date = date_dict['p_start_date']
+        end_date = date_dict['p_end_date']
 
-        pre_total_record = mongodb.cdr_common.find(query_var).count()
-        query_var['hangup_cause_id'] = get_hangupcause_id(hangup_cause_q850)
-        pre_total_answered_record = mongodb.cdr_common.find(query_var).count()
+        limit = 10
+        hangup_cause_id = False
+        # TODO: Regroup the 2 calls to custom_sql_aggr_top_hangup to get the hangup
+        (hangup_cause_data, total_calls, total_duration, total_billsec, total_buy_cost, total_sell_cost) = \
+            custom_sql_aggr_top_hangup(user, switch_id, hangup_cause_id, limit, start_date, end_date)
+
+        pre_total_record = total_calls
+
+        hangup_cause_id = get_hangupcause_id(hangup_cause_q850)
+        (hangup_cause_data, total_calls, total_duration, total_billsec, total_buy_cost, total_sell_cost) = \
+            custom_sql_aggr_top_hangup(user, switch_id, hangup_cause_id, limit, start_date, end_date)
+        pre_total_answered_record = total_calls
 
         # pre_total_record should not be 0
         pre_total_record = 1 if pre_total_record == 0 else pre_total_record
@@ -266,15 +269,24 @@ def run_alarm(alarm_obj, logger):
         else:
             previous_asr = previous_asr
 
+        # TODO: Regroup the 2 calls to custom_sql_aggr_top_hangup to get the hangup
+
         # Current date data
-        query_var = {}
-        query_var['start_uepoch'] = {'$gte': dt_list['c_start_date'],
-                                     '$lte': dt_list['c_end_date']}
-        cur_total_record = mongodb.cdr_common.find(query_var).count()
+        start_date = date_dict['c_start_date']
+        end_date = date_dict['c_end_date']
 
-        query_var['hangup_cause_id'] = get_hangupcause_id(hangup_cause_q850)
+        limit = 10
+        hangup_cause_id = False
+        # TODO: Regroup the 2 calls to custom_sql_aggr_top_hangup to get the hangup
+        (hangup_cause_data, total_calls, total_duration, total_billsec, total_buy_cost, total_sell_cost) = \
+            custom_sql_aggr_top_hangup(user, switch_id, hangup_cause_id, limit, start_date, end_date)
 
-        cur_total_answered_record = mongodb.cdr_common.find(query_var).count()
+        cur_total_record = total_calls
+
+        hangup_cause_id = get_hangupcause_id(hangup_cause_q850)
+        (hangup_cause_data, total_calls, total_duration, total_billsec, total_buy_cost, total_sell_cost) = \
+            custom_sql_aggr_top_hangup(user, switch_id, hangup_cause_id, limit, start_date, end_date)
+        cur_total_answered_record = total_calls
 
         # cur_total_record should not be 0
         cur_total_record = 1 if cur_total_record == 0 else cur_total_record

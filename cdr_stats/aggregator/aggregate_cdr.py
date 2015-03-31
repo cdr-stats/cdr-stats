@@ -31,11 +31,25 @@ def condition_switch_id(switch_id):
         return ""
 
 
+def condition_hangup_cause_id(hangup_cause_id):
+    """
+    build where condition hangup_cause_id
+    """
+    try:
+        hangup_cause_id = int(hangup_cause_id)
+        if hangup_cause_id > 0:
+            return " AND hangup_cause_id=%d " % (hangup_cause_id)
+        else:
+            return ""
+    except ValueError:
+        return ""
+
+
 def condition_user(user):
     """
     build where condition switch_id
     """
-    if user.is_superuser:
+    if not user or user.is_superuser:
         return ""
     else:
         return " AND user_id=%d " % (user.id)
@@ -185,42 +199,47 @@ def custom_sql_aggr_top_country(user, switch_id, limit, start_date, end_date):
     return result
 
 
-sqlquery_aggr_hangup_cause_last24h = """
+sqlquery_aggr_hangup_cause = """
     SELECT
         hangup_cause_id,
-        SUM(duration) as duration,
-        SUM(billsec) as billsec,
-        SUM(nbcalls) as nbcalls,
-        SUM(buy_cost) as buy_cost,
-        SUM(sell_cost) as sell_cost
+        SUM(duration) AS duration,
+        SUM(billsec) AS billsec,
+        SUM(nbcalls) AS nbcalls,
+        SUM(buy_cost) AS buy_cost,
+        SUM(sell_cost) AS sell_cost
     FROM
         matv_voip_cdr_aggr_hour
     WHERE
-        starting_date > date_trunc('hour', current_timestamp - interval '24' hour) and
-        starting_date <= date_trunc('hour', current_timestamp)
-        %(user)s
-        %(switch)s
+        starting_date > date_trunc('hour', %(start_date)s) AND
+        starting_date <= date_trunc('hour', %(end_date)s)
+        #USER_CONDITION#
+        #SWITCH_CONDITION#
+        #HANGUP_CONDITION#
     GROUP BY
         hangup_cause_id
     ORDER BY
-        nbcalls, duration DESC
+        nbcalls DESC, duration DESC
     LIMIT %(limit)s;
     """
 
 
-def custom_sql_aggr_top_hangup_last24hours(user, switch_id=0, limit=10):
+def custom_sql_aggr_top_hangup(user, switch_id, hangup_cause_id, limit, start_date, end_date):
     """
-    perform query to retrieve last 24 hours of aggregate calls data
+    perform query to retrieve and aggregate calls data by country
     """
     result = []
+    total_calls = total_duration = total_billsec = total_buy_cost = total_sell_cost = 0
     with connection.cursor() as cursor:
+        sqlquery = sqlquery_aggr_hangup_cause
+        sqlquery = sqlquery.replace("#USER_CONDITION#", condition_user(user))
+        sqlquery = sqlquery.replace("#SWITCH_CONDITION#", condition_switch_id(switch_id))
+        sqlquery = sqlquery.replace("#HANGUP_CONDITION#", condition_hangup_cause_id(hangup_cause_id))
         params = {
-            'switch': condition_switch_id(switch_id),
-            'user': condition_user(user),
-            'limit': limit
-        }
-        sqlquery = sqlquery_aggr_hangup_cause_last24h % params
-        cursor.execute(sqlquery)
+            'start_date': start_date,
+            'end_date': end_date,
+            'limit': limit,
+            }
+        cursor.execute(sqlquery, params)
         rows = cursor.fetchall()
         for row in rows:
             result.append({
@@ -232,6 +251,25 @@ def custom_sql_aggr_top_hangup_last24hours(user, switch_id=0, limit=10):
                 "sell_cost": row[5],
                 "hangup_cause_name": get_hangupcause_name(row[0]),
             })
+            total_calls += row[1]
+            total_duration += row[2]
+            total_billsec += row[3]
+            total_buy_cost += row[4]
+            total_sell_cost += row[5]
+    return (result, total_calls, total_duration, total_billsec, total_buy_cost, total_sell_cost)
+
+
+def custom_sql_aggr_top_hangup_last24hours(user, switch_id, limit=10):
+    """
+    perform query to retrieve last 24 hours of aggregate calls data
+    """
+    # build daterange for last 24 hours
+    start_date = datetime.today() - timedelta(hours=24)
+    end_date = datetime.today()
+    hangup_cause_id = False
+
+    (result, total_calls, total_duration, total_billsec, total_buy_cost, total_sell_cost) = \
+        custom_sql_aggr_top_hangup(user, switch_id, hangup_cause_id, limit, start_date, end_date)
     return result
 
 

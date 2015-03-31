@@ -12,38 +12,19 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.contrib.auth.decorators import login_required, permission_required
-from django.http import HttpResponse, Http404
-from django.shortcuts import render_to_response, get_object_or_404
+from django.http import Http404
+from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-from django.utils.translation import gettext as _
 from django.conf import settings
-from mongodb_connection import mongodb
-from pymongo.connection import Connection
-from pymongo.errors import ConnectionFailure
-from django_lets_go.common_functions import variable_value, mongodb_str_filter,\
-    mongodb_int_filter, int_convert_to_minute, validate_days, percentage,\
-    getvar, unset_session_var, ceil_strdate
+from django_lets_go.common_functions import getvar, ceil_strdate
 from switch.models import Switch
-from cdr.functions_def import get_country_name, get_hangupcause_name,\
-    get_switch_ip_addr, convert_to_minute, chk_date_for_hrs, calculate_act_acd
-from cdr.forms import CdrSearchForm, CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
-    ConcurrentCallForm, SwitchForm, WorldForm, EmailReportForm
-from cdr.aggregate import pipeline_cdr_view_daily_report,\
-    pipeline_monthly_overview, pipeline_daily_overview,\
-    pipeline_hourly_overview, pipeline_country_report,\
-    pipeline_hourly_report, pipeline_country_hourly_report,\
-    pipeline_mail_report
+from cdr.functions_def import get_switch_ip_addr
+from cdr.forms import ConcurrentCallForm, SwitchForm
 from cdr.decorators import check_user_detail
-from cdr.constants import CDR_COLUMN_NAME, Export_choice, COMPARE_WITH
-from voip_billing.function_def import round_val
-from bson.objectid import ObjectId
-from datetime import datetime, date, timedelta
-from dateutil.relativedelta import relativedelta
+from datetime import datetime
 from collections import defaultdict
-import tablib
 import time
 import logging
-import itertools
 
 
 @permission_required('user_profile.concurrent_calls', login_url='/')
@@ -95,9 +76,8 @@ def cdr_concurrent_calls(request):
     call_count_res = defaultdict(list)
 
     if query_var:
-        if not mongodb.conc_call_agg:
-            raise Http404
-        calls_in_day = mongodb.conc_call_agg.find(query_var).sort([('date', 1)])
+        # calls_in_day = mongodb.conc_call_agg.find(query_var).sort([('date', 1)])
+        calls_in_day = {}
 
         for d in calls_in_day:
             # convert date into timestamp value
@@ -168,9 +148,8 @@ def cdr_realtime(request):
     if not request.user.is_superuser:  # not superuser
         query_var['value.accountcode'] = request.user.userprofile.accountcode
 
-    if not mongodb.conc_call_agg:
-        raise mongodb.conc_call_agg
-    calls_in_day = mongodb.conc_call_agg.find(query_var).sort([('_id.g_Millisec', -1)])
+    # calls_in_day = mongodb.conc_call_agg.find(query_var).sort([('_id.g_Millisec', -1)])
+    calls_in_day = {}
 
     final_data = []
     for d in calls_in_day:
