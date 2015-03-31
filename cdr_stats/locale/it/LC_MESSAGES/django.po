@@ -1748,34 +1748,6 @@ msgstr "codice account non è stato assegnato!"
 msgid "voip plan is not attached to user!"
 msgstr "piano voip non è attaccato al utente!"
 
-#: frontend/views.py:108
-#, fuzzy
-#| msgid ""
-#| "please review the 'CDR_BACKEND' Settings in your file /usr/share/cdr-"
-#| "stats/settings_local.py make sure the settings, username, password are "
-#| "correct. Check also that the backend authorize a connection from your "
-#| "server"
-msgid ""
-"please review the 'DATABASES' Settings in the conf file /usr/share/cdr-stats/"
-"settings_local.py make sure the settings, username, password are correct."
-msgstr ""
-"Si prega di rivedere le impostazioni &#39;CDR_BACKEND&#39; nel file / usr / "
-"share / cdr-stats / settings_local.py accertarsi che le impostazioni, il "
-"nome utente, la password siano corretti. Verificare inoltre che il backend "
-"autorizzare una connessione verso il server"
-
-#: frontend/views.py:109
-#, fuzzy
-#| msgid ""
-#| "after changes in your 'CDR_BACKEND' settings, you will need to restart "
-#| "celery: $ /etc/init.d/cdr-stats-celeryd restart"
-msgid ""
-"after changes in your 'settings_local.py' conf file, you will need to "
-"restart celery: $ /etc/init.d/cdr-stats-celeryd restart"
-msgstr ""
-"dopo le modifiche nelle impostazioni &#39;CDR_BACKEND&#39;, è necessario "
-"riavviare il sedano: $ / etc / init.d / cdr-stats-celeryd restart"
-
 #: frontend/views.py:174
 msgid "disabled Account"
 msgstr "Account disattivato"
