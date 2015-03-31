@@ -3,37 +3,52 @@
 Configuration for FreeSWITCH
 ============================
 
-Freeswitch settings are under the CDR_BACKEND section, and should look as follows::
+Import configuration for FreeSWITCH
+-----------------------------------
 
-    CDR_BACKEND = {
-        '127.0.0.1': {
-            'db_engine': 'mongodb',  # mysql, pgsql, mongodb
-            'cdr_type': 'freeswitch',  # asterisk or freeswitch
-            'db_name': 'freeswitch_cdr',
-            'table_name': 'cdr',  # collection if mongodb
-            'host': 'localhost',
-            'port': 3306,  # 3306 mysql, 5432 pgsql, 27017 mongodb
-            'user': '',
-            'password': '',
-        },
-        #'192.168.1.15': {
-        #    'db_engine': 'mongodb',  # mysql, pgsql, mongodb
-        #    'cdr_type': 'freeswitch',  # asterisk or freeswitch
-        #    'db_name': 'freeswitch_cdr',
-        #    'table_name': 'cdr',  # collection if mongodb
-        #    'host': 'localhost',
-        #    'port': 3306,  # 3306 mysql, 5432 pgsql, 27017 mongodb
-        #    'user': '',
-        #    'password': '',
-        #},
+Review your database settings and ensure the second database exists and that is configured correctly::
+
+# DATABASE SETTINGS
+# =================
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'cdrstats-billing',
+        'USER': 'postgres',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+        'PORT': '5433',
+        'OPTIONS': {
+            # Needed on Mysql
+            # 'init_command': 'SET storage_engine=INNODB',
+            # Postgresql Autocommit
+            'autocommit': True,
+        }
+    },
+    'import_cdr': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'cdr-pusher',
+        'USER': 'postgres',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+        'PORT': '5433',
+        'OPTIONS': {
+            'autocommit': True,
+        }
     }
+}
+
+You will need to push your CDRs from Asterisk CDR datastore to a friendly CDR-Stats 'import_cdr' database.
+To help on this job we created CDR-Pushed, please visit the website and the instructions there to install and configure CDR-Stats correctly: https://github.com/areski/cdr-pusher
 
 
-To connect a new Freeswitch system to CDR-Stats, ensure that port 27017 TCP is ONLY open to
-the CDR-Stats server on the remote system, then uncomment the settings by removing the #,
-and configure the IP address and db_name to match those in the mod_cdr_mongodb configuration
-as described at :
-http://www.cdr-stats.org/documentation/beginners-guide/howto-installing-on-freeswitch/
+.. _realtime-configuration-freeswitch:
 
+Realtime configuration for FreeSWITCH
+=====================================
 
-CDR-Stats can get CDR from both Freeswitch and Asterisk, or a combination of both.
+The FreeSWITCH Event Socket Library allow CDR-Stats to retrieve Realtime information to show the number of concurrent calls both in realtime and historically.
+
+The collection of realtime information is done via Collectd (https://collectd.org/) and InfluxDB (http://influxdb.com/.
+
+CDR-Stats can get CDR from both Freeswitch and Asterisk, or a combination of both. There is other Telco Switches supported please contact us for further information.

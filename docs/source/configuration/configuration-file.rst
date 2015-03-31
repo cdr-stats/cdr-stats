@@ -39,26 +39,26 @@ Sets up the options required for Django to connect to your database engine::
                 #Postgresql Autocommit
                 'autocommit': True,
             }
+        },
+        'import_cdr': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'cdr-pusher',
+            'USER': 'postgres',
+            'PASSWORD': 'password',
+            'HOST': 'localhost',
+            'PORT': '5433',
+            'OPTIONS': {
+                'autocommit': True,
+            }
         }
     }
 
 
-Sets up the options to connect to MongoDB Server, this server and database will be used to store the analytic data.
-There is usually no need to change these settings, unless if your MongoDB server is on a remote server, or if
-different names are required for the collections::
+As it can be noted, there is 2 database connections, 'default' is the main database of CDR-Stats this is where all the table lives. The second database 'import_cdr' is used to import the CDRs from your switch, this database could live on an other database server but ideally it can live very happily on your CDR-Stats box.
+CDR-Stats doesn't pull CDRs from your switch, it's the job of your switch to push the CDRs to CDR-Stats.
 
-    #MONGODB
-    #=======
-    MONGO_CDRSTATS = {
-        'DB_NAME': 'cdr-stats',
-        'HOST': 'localhost',
-        'PORT': 27017,
-        'CDR_COMMON': 'cdr_common',
-        'DAILY_ANALYTIC': 'daily_analytic',
-        'MONTHLY_ANALYTIC': 'monthly_analytic',
-        'CONC_CALL': 'concurrent_call',
-        'CONC_CALL_AGG': 'concurrent_call_aggregate'
-    }
+You will need a mechanism in place to get your CDRs to the 'import_cdr' database, to help on this we created CDR-pusher project.
+CDR-Pusher will be installed on your switch server, CDR-Pusher is a Go project that can be extended, it could import CDRs from a different CDRs Database (SQlite, PostgreSQL) and/or from CDR logs files. More info please visit https://github.com/areski/cdr-pusher
 
 
 Tells Django where to find your media files such as images that the ``HTML
