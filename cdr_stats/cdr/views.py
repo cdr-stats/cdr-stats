@@ -676,7 +676,6 @@ def cdr_overview(request):
                                     'switch_id': switch_id})
     start_date = trunc_date_start(tday)
     end_date = trunc_date_end(tday)
-
     if form.is_valid():
         from_date = getvar(request, 'from_date')
         to_date = getvar(request, 'to_date')
@@ -685,34 +684,52 @@ def cdr_overview(request):
         switch_id = getvar(request, 'switch_id')
         metric = getvar(request, 'metric')
 
+    # get the number of hour that diff the date
+    delta = end_date - start_date
+    hour_diff = abs(divmod(delta.days * 86400 + delta.seconds, 60)[0]) / 60
+    if hour_diff <= 72:
+        display_chart = 'hourly'
+    else:
+        display_chart = 'daily'
+
     # check metric is valid
     if metric not in ['nbcalls', 'duration', 'billsec', 'buy_cost', 'sell_cost']:
         metric = 'nbcalls'
-
-    hourly_data = get_report_cdr_per_switch(request.user, 'hour', start_date, end_date, switch_id)
-    daily_data = get_report_cdr_per_switch(request.user, 'day', start_date, end_date, switch_id)
 
     extra_serie = {
         "tooltip": {"y_start": "", "y_end": " " + metric},
         "date_format": "%d %b %y %H:%M%p"
     }
-    for switch in hourly_data[metric]["columns"]:
-        hourly_chartdata['x'] = hourly_data[metric]["x_timestamp"]
-        hourly_chartdata['name' + str(switch)] = get_switch_ip_addr(switch)
-        hourly_chartdata['y' + str(switch)] = hourly_data[metric]["values"][str(switch)]
-        hourly_chartdata['extra' + str(switch)] = extra_serie
 
-    for switch in daily_data[metric]["columns"]:
-        daily_chartdata['x'] = daily_data[metric]["x_timestamp"]
-        daily_chartdata['name' + str(switch)] = get_switch_ip_addr(switch)
-        daily_chartdata['y' + str(switch)] = daily_data[metric]["values"][str(switch)]
-        daily_chartdata['extra' + str(switch)] = extra_serie
+    if display_chart == 'hourly':
+        hourly_data = get_report_cdr_per_switch(request.user, 'hour', start_date, end_date, switch_id)
 
-    total_calls = hourly_data["nbcalls"]["total"]
-    total_duration = hourly_data["duration"]["total"]
-    total_billsec = hourly_data["billsec"]["total"]
-    total_buy_cost = hourly_data["buy_cost"]["total"]
-    total_sell_cost = hourly_data["sell_cost"]["total"]
+        for switch in hourly_data[metric]["columns"]:
+            hourly_chartdata['x'] = hourly_data[metric]["x_timestamp"]
+            hourly_chartdata['name' + str(switch)] = get_switch_ip_addr(switch)
+            hourly_chartdata['y' + str(switch)] = hourly_data[metric]["values"][str(switch)]
+            hourly_chartdata['extra' + str(switch)] = extra_serie
+
+        total_calls = hourly_data["nbcalls"]["total"]
+        total_duration = hourly_data["duration"]["total"]
+        total_billsec = hourly_data["billsec"]["total"]
+        total_buy_cost = hourly_data["buy_cost"]["total"]
+        total_sell_cost = hourly_data["sell_cost"]["total"]
+
+    elif display_chart == 'daily':
+        daily_data = get_report_cdr_per_switch(request.user, 'day', start_date, end_date, switch_id)
+
+        for switch in daily_data[metric]["columns"]:
+            daily_chartdata['x'] = daily_data[metric]["x_timestamp"]
+            daily_chartdata['name' + str(switch)] = get_switch_ip_addr(switch)
+            daily_chartdata['y' + str(switch)] = daily_data[metric]["values"][str(switch)]
+            daily_chartdata['extra' + str(switch)] = extra_serie
+
+        total_calls = daily_data["nbcalls"]["total"]
+        total_duration = daily_data["duration"]["total"]
+        total_billsec = daily_data["billsec"]["total"]
+        total_buy_cost = daily_data["buy_cost"]["total"]
+        total_sell_cost = daily_data["sell_cost"]["total"]
 
     # Calculate the Average Time of Call
     metric_aggr = calculate_act_acd(total_calls, total_duration)
@@ -723,6 +740,7 @@ def cdr_overview(request):
     variables = {
         'action': action,
         'form': form,
+        'display_chart': display_chart,
         'start_date': start_date,
         'end_date': end_date,
         'metric': metric,
@@ -733,7 +751,7 @@ def cdr_overview(request):
             'x_is_date': True,
             'x_axis_format': '%d %b %y %H%p',
             'tag_script_js': True,
-            'jquery_on_ready': False,
+            'jquery_on_ready': True,
         },
         'daily_chartdata': daily_chartdata,
         'daily_charttype': daily_charttype,
@@ -741,8 +759,8 @@ def cdr_overview(request):
         'daily_extra': {
             'x_is_date': True,
             'x_axis_format': '%d %b %Y',
-            'tag_script_js': False,
-            'jquery_on_ready': False,
+            'tag_script_js': True,
+            'jquery_on_ready': True,
         },
         'total_calls': total_calls,
         'total_duration': total_duration,

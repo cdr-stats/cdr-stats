@@ -1,18 +1,12 @@
 {% extends "frontend/master.html" %}
 {% load i18n cdr_tags country_dialcode_tags cache nvd3_tags common_tags crispy_forms_tags %}
 
-{% block extra_header %}
-    <script type="text/javascript">
-        $(function () {
-            $('a[data-toggle="tab"]').on('click', function (e) {
-                if (e.target.hash == '#tabs-2') {
-                    {% load_chart daily_charttype daily_chartdata daily_chartcontainer daily_extra %}
-                }
-            });
-        });
-    </script>
-    {{ form.media }}
+{% block extra_head %}
+  {% load_chart hourly_charttype hourly_chartdata hourly_chartcontainer hourly_extra %}
+  {% load_chart daily_charttype daily_chartdata daily_chartcontainer daily_extra %}
+  {{ form.media }}
 {% endblock %}
+
 
 {% block content_header %}
     <h1>{% trans "CDR overview"|capfirst %}<small></small></h1>
@@ -24,46 +18,36 @@
 
 <div class="row">
     <div class="col-md-12 col-xs-12 col-sm-12">
-        <div class="graph_header">
-            <b>
-                {% if start_date  %}
-                    {{ start_date|date:"jS N Y" }}
-                {% endif %}
-                {% if end_date  %}
-                    {% trans "to" %} {{ end_date|date:"jS N Y" }}
-                {% endif %}
-                - {% trans "showing"|capfirst %}: {{ metric|title }}
-            </b>
-        </div>
+        <h3 align="center">{{ display_chart|title }} {% trans "chart"|title %}
+            -
+            {% if start_date  %}
+                {{ start_date|date:"jS N Y" }}
+            {% endif %}
+            {% if end_date  %}
+                {% trans "to" %} {{ end_date|date:"jS N Y" }}
+            {% endif %}
+            -
+            {% trans "showing"|capfirst %}: {{ metric|title }}
+        </h3>
+        <hr/>
     </div>
 </div>
 
-
-<div class="tabbable">
-    <ul class="nav nav-tabs">
-        <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "hourly"|title %}</a></li>
-        <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "daily"|title %}</a></li>
-    </ul>
-    <div class="tab-content">
-        <div id="tabs-1" class="tab-pane {% if action == 'tabs-1' or action == '' %}active{% endif %}">
-            <div class="row">
-                <div class="col-md-12 col-xs-12 col-sm-12">
-                    {% load_chart hourly_charttype hourly_chartdata hourly_chartcontainer hourly_extra %}
-                    {% include_container hourly_chartcontainer 400 '100%' %}
-                </div>
-            </div>
-        </div>
-
-        <div id="tabs-2" class="tab-pane {% if action == 'tabs-3' or action == '' %}active{% endif %}">
-            <div class="row">
-                <div class="col-md-12 col-xs-12 col-sm-12">
-                    {% include_container daily_chartcontainer 400 '100%' %}
-                </div>
-            </div>
-        </div>
-
+{% if display_chart == "hourly" %}
+<div class="row">
+    <div class="col-md-12 col-xs-12 col-sm-12">
+        {% include_container hourly_chartcontainer 400 '100%' %}
     </div>
 </div>
+{% endif %}
+{% if display_chart == "daily" %}
+<div class="row">
+    <div class="col-md-12 col-xs-12 col-sm-12">
+        {% include_container daily_chartcontainer 400 '100%' %}
+    </div>
+</div>
+{% endif %}
+
 
 <br/><br/>
 

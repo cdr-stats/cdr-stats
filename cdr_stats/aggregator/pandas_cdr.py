@@ -101,8 +101,7 @@ def get_report_cdr_per_switch(user, interval, start_date, end_date, switch_id):
     series = {}
     df = get_dataframe_query(sqlquery, user, interval, start_date, end_date, switch_id,
                              country_id_list=[], second_index="switch_id")
-
-    # print connection.queries
+    df.update(df.switch_id.fillna(0))
     table = pd.tools.pivot.pivot_table(df,
         values=['nbcalls', 'duration', 'billsec', 'buy_cost', 'sell_cost'],
         index=['dateday'],
