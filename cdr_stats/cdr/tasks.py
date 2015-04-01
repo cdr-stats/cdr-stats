@@ -15,7 +15,7 @@
 
 from django.db import connection
 from celery.task import PeriodicTask
-from cdr.import_cdr_asterisk import import_cdr_asterisk
+from cdr.cdr_importer import import_cdr
 from django_lets_go.only_one_task import only_one
 from datetime import timedelta
 
@@ -25,19 +25,19 @@ from datetime import timedelta
 LOCK_EXPIRE = 60 * 60 * 1  # Lock expires in 1 hours
 
 
-class sync_cdr_pending(PeriodicTask):
+class run_cdr_import(PeriodicTask):
     """
-    A periodic task that checks for pending CDR to import
+    A periodic task that checks for new CDRs to import
     """
-    run_every = timedelta(seconds=30)
+    run_every = timedelta(seconds=60)
 
-    @only_one(ikey="sync_cdr_pending", timeout=LOCK_EXPIRE)
+    @only_one(ikey="run_cdr_import", timeout=LOCK_EXPIRE)
     def run(self, **kwargs):
         logger = self.get_logger()
-        logger.info('TASK :: sync_cdr_pending')
+        logger.info('TASK :: run_cdr_import')
 
-        # Import from Asterisk
-        import_cdr_asterisk()
+        # Import CDRs from 'import_cdr' database
+        import_cdr()
 
         return True
 
