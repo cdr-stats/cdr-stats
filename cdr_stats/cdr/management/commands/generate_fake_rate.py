@@ -26,9 +26,9 @@ random.seed()
 
 class Command(BaseCommand):
     args = ' number-rate, call-plan '
-    help = "Generate random rates\n"\
-           "---------------------------------\n"\
-           "python manage.py generate_rate --number=100 --call-plan=1"
+    help = "Generate fake Rates\n"\
+           "-------------------\n"\
+           "python manage.py generate_fake_rate --number=100 --call-plan=1"
 
     option_list = BaseCommand.option_list + (
         make_option('--number-rate',

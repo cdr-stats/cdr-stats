@@ -20,9 +20,9 @@ from switch.models import Switch
 
 class Command(BaseCommand):
     args = ' no_of_record, delta_day '
-    help = "Generate random CDRs\n"\
-           "---------------------------------\n"\
-           "python manage.py generate_cdr --number-cdr=100 --delta-day=0 [--duration=10]"
+    help = "Generate fake CDRs\n"\
+           "------------------\n"\
+           "python manage.py generate_fake_cdr --number-cdr=100 --delta-day=0 [--duration=10]"
 
     option_list = BaseCommand.option_list + (
         make_option('--number-cdr', default=None, dest='number-cdr', help=help),
