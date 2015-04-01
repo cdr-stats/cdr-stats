@@ -33,7 +33,7 @@ Contents:
 .. toctree::
     :maxdepth: 3
 
-    mongodb-architecture
+    postgresql-architecture
 
 .. toctree::
     :maxdepth: 1

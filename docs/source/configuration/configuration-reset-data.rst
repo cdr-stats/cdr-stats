@@ -3,8 +3,7 @@
 Resetting CDR Data
 ==================
 
-Sometimes, some experimentation is required to get the optimum settings for country reporting, to achieve this the data is removed
-from MongoDB on CDR-Stats and re-imported from either the Asterisk MySQL CDR store, or the Freeswitch MongoDB CDR-Store.
+Sometimes, some experimentation is required to get the optimum settings for country reporting, to achieve this the data is removed from CDR-Stats and re-imported from the CDR data store.
 
 
 1. Stop Celery
@@ -15,47 +14,41 @@ Stop CDR-Stats celery::
     /etc/init.d/cdr-stats-celeryd stop
 
 
-2. Empty the CDR-Stats MonoDB data store
-----------------------------------------
+2. Empty the CDR-Stats dbshell
+------------------------------
 
-Type mongo to enter the MongoDB database then apply the following commands::
+Enter in the virtualenv and launch dbshell the following commands::
 
-    mongo
-    use cdr-stats;
-    db.monthly_analytic.remove({});
-    db.daily_analytic.remove({});
-    db.aggregate_world_report.remove({});
-    db.aggregate_result_cdr_view.remove({});
-    db.aggregate_hourly_country_report.remove({});
-    db.cdr_common.remove({});
+    $ workon cdr-stats
+    $ cd /usr/share/cdrstats/
+    $ python manage.py dbshell
 
-CTRL-D exits the console.
+Now you are connected on PostgreSQL cli, this is the internal database of CDR-Stats.
+
+The following command will delete all the CDRs, make sure you know what are you doing here and that your CDRs are backed in the upstream CDR data store.
+
+    $ DELETE FROM voip_cdr;
+
+    CTRL-D exits the console.
+
 
 3. Flag the CDR records for reimport
 ------------------------------------
 
-    a) With Asterisk and Mysql.
+Enter in the virtualenv and launch dbshell the following commands::
 
-        Go to the CDR database in Asterisk and change the field 'import_cdr' to 0:
+    $ workon cdr-stats
+    $ cd /usr/share/cdrstats/
+    $ python manage.py dbshell --database=import_cdr
 
-        Enter the MySQL console with the following command, changing the credentials and database name
-        to suit your installation::
+Enter the postgresql password you can find in `settings_local_py` conf file.
 
-            mysql -uasteriskuser -pamp109 asteriskcdrdb
-            update cdr SET import_cdr = 0;
+Now you are connected on PostgreSQL cli, you can flag CDRs for reimport::
 
-        CTRL-C exits the MySQL
+    $ UPDATE cdr_import SET imported=FALSE;
 
+     CTRL-D exits the console.
 
-    b) With FreeSWITCH and MongoDB.
-
-        Go to the CDR FreeSWITCH MongoDB database, update all the records by setting the 'import_cdr' field to 0::
-
-            mongo
-            use freeswitch_cdr;
-            db.cdr.update({"import_cdr" : 1}, { $set : {"import_cdr" : 0}}, { multi: true });
-
-     CTRL-D exits
 
 4. Start Celery
 ---------------
@@ -68,4 +61,4 @@ Start CDR-Stats celery::
 5. Wait while the CDR are re-imported
 -------------------------------------
 
-Go to the diagnostic page to check if the CDR-Backend are correctly configured and if data are being imported.
+Go to the diagnostic page to check if CDR-Stats is correctly configured and if data are being imported.
