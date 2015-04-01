@@ -148,7 +148,7 @@ def prefix_list_string(dest_number):
     # Extra number, this is used in case phonenumber is followed by chars
     # ie 34650123456*234
     dest_number = str(dest_number)
-    if dest_number[0] == '+':
+    if len(dest_number) > 0 and dest_number[0] == '+':
         dest_number = dest_number[1:]
 
     m = re.search('(\d*)', dest_number)

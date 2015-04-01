@@ -29,14 +29,14 @@ class run_cdr_import(PeriodicTask):
     """
     A periodic task that checks for new CDRs to import
     """
-    run_every = timedelta(seconds=30)
+    run_every = timedelta(seconds=15)
 
     @only_one(ikey="run_cdr_import", timeout=LOCK_EXPIRE)
     def run(self, **kwargs):
         logger = self.get_logger()
         logger.info('TASK :: run_cdr_import')
 
-        # Import CDRs
+        # launch the CDRs import
         import_cdr()
 
         return True

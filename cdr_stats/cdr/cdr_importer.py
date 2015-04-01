@@ -14,6 +14,7 @@
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.db import connections
 from cdr.models import CDR, CALL_DIRECTION
 from import_cdr.models import CDRImport
 from cdr.helpers import print_shell, chk_ipaddress
@@ -21,6 +22,19 @@ from cdr.functions_def import get_dialcode
 from voip_billing.rate_engine import calculate_call_cost
 from cdr_alert.functions_blacklist import verify_auth_dest_number
 from user_profile.models import UserProfile
+
+
+def bulk_create_cdrs(list_newcdr, list_cdrid):
+    """
+    bulk_create_cdrs create in bulk the CDRs in the list 'list_newcdr'
+    and it will update 'import_cdr' database with the imported CDRs
+    """
+    # Bulk Insert the new CDRs
+    # CDR.objects.bulk_create(list_newcdr)
+    # Update the imported CDRs
+    update_cdr = "UPDATE cdr_import SET imported=True WHERE id in (%s)" % ", ".join(list_cdrid)
+    cursor = connections['import_cdr'].cursor()
+    cursor.execute(update_cdr)
 
 
 def import_cdr(shell=False):
@@ -33,9 +47,12 @@ def import_cdr(shell=False):
     # This define the max speed of import, this limit could be changed
     new_CDRs = CDRImport.objects.using('import_cdr').filter(imported=False)[:5000]
 
+    (list_newcdr, list_cdrid) = ([], [])
     for call in new_CDRs:
-        # TODO: Store cdr in list to insert by bulk
-        #
+        # Increment counter
+        count_imported = count_imported + 1
+
+        # Get the dialcode
         dialcode = get_dialcode(call.destination_number, call.dialcode)
         switch_info = chk_ipaddress(call.switch)
         cdr_json = call.extradata
@@ -86,7 +103,7 @@ def import_cdr(shell=False):
                     (call.destination_number, str(call.duration), str(call.hangup_cause_id), str(call.sell_cost)))
 
         # Create the new CDR
-        new_cdr = CDR(
+        newCDR = CDR(
                       user=user,
                       switch=switch_info['switch'],
                       cdr_source_type=call.cdr_source_type,
@@ -111,11 +128,16 @@ def import_cdr(shell=False):
                       sell_rate=sell_rate,
                       sell_cost=sell_cost,
                       data=cdr_json)
-        new_cdr.save()
+        list_newcdr.append(newCDR)
 
-        call.imported = True
-        call.save()
+        list_cdrid.append(str(call.id))
+        if (count_imported % 100) == 0:
+            bulk_create_cdrs(list_newcdr, list_cdrid)
+            (list_newcdr, list_cdrid) = ([], [])
 
-        count_imported = count_imported + 1
+    # we exit the loop but we might still have some remaining CDRs to push
+    if len(list_newcdr) > 0:
+        bulk_create_cdrs(list_newcdr, list_cdrid)
+        (list_newcdr, list_cdrid) = ([], [])
 
     return count_imported
