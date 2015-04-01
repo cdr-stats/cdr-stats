@@ -79,9 +79,9 @@ def chk_prefix_in_blacklist(prefix_list):
     return True
 
 
-def chk_destination(destination_number):
+def verify_auth_dest_number(destination_number):
     """
-    >>> chk_destination('1234567890')
+    >>> verify_auth_dest_number('1234567890')
     {
         'authorized': 0,
         'country_id': 0,

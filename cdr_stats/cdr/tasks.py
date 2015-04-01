@@ -36,7 +36,7 @@ class run_cdr_import(PeriodicTask):
         logger = self.get_logger()
         logger.info('TASK :: run_cdr_import')
 
-        # Import CDRs from 'import_cdr' database
+        # Import CDRs
         import_cdr()
 
         return True

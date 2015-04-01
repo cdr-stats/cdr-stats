@@ -346,8 +346,8 @@ class CDR(models.Model):
             # International calls
             destination_number = random.choice(COUNTRY_PREFIX) + destination_number
 
-            from cdr_alert.functions_blacklist import chk_destination
-            destination_data = chk_destination(destination_number)
+            from cdr_alert.functions_blacklist import verify_auth_dest_number
+            destination_data = verify_auth_dest_number(destination_number)
             authorized = destination_data['authorized']
             country_id = destination_data['country_id']
             dialcode = destination_data['prefix_id']

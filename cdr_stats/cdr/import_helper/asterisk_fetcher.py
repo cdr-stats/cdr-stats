@@ -17,7 +17,7 @@ from django.contrib.auth.models import User
 from cdr.models import CDR_SOURCE_TYPE, CDR
 from cdr.helpers import set_int_default, print_shell
 from voip_billing.rate_engine import calculate_call_cost
-from cdr_alert.functions_blacklist import chk_destination
+from cdr_alert.functions_blacklist import verify_auth_dest_number
 from cdr.import_helper.asterisk import translate_disposition
 from user_profile.models import UserProfile
 from datetime import datetime
@@ -94,7 +94,7 @@ def push_asterisk_cdr(shell, table_name, db_engine, cursor, cursor_updated, swit
             authorized = 1
             country_id = 999
         else:
-            destination_data = chk_destination(destination_number)
+            destination_data = verify_auth_dest_number(destination_number)
             authorized = destination_data['authorized']
             country_id = destination_data['country_id']
 

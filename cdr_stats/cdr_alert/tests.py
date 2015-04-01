@@ -18,7 +18,7 @@ from django_lets_go.utils import BaseAuthenticatedClient
 from cdr_alert.models import AlertRemovePrefix, Alarm, AlarmReport, Blacklist, Whitelist
 from cdr_alert.tasks import send_cdr_report, blacklist_whitelist_notification, chk_alarm
 from cdr_alert.forms import BWCountryForm
-from cdr_alert.functions_blacklist import chk_destination
+from cdr_alert.functions_blacklist import verify_auth_dest_number
 from cdr_alert.views import alarm_list, alarm_add, alarm_del, alarm_change,\
     trust_control, alert_report  # , alarm_test
 from user_profile.constants import NOTICE_TYPE
@@ -436,7 +436,7 @@ class CdrAlertModelTestCase(TestCase):
         )
         self.whitelist.save()
         self.assertTrue(self.whitelist.__unicode__())
-        chk_destination('9999787424')
+        verify_auth_dest_number('9999787424')
 
     def test_model_value(self):
         """Create model object value"""
