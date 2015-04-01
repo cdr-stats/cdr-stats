@@ -141,7 +141,7 @@ class CustomAppIndexDashboard(AppIndexDashboard):
     def __init__(self, *args, **kwargs):
         AppIndexDashboard.__init__(self, *args, **kwargs)
 
-        # TODO: Find out better way
+        # TODO: Find a better way for this
         if str(self.app_title) == 'Voip_Gateway':
             app_title = _('voip gateway')
             models = ['voip_gateway.*']

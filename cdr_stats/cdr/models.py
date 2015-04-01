@@ -70,34 +70,6 @@ class CALL_DIRECTION(Choice):
     OUTBOUND = 2, _('OUTBOUND')
 
 
-class CALL_DISPOSITION(Choice):
-
-    """
-    List of call disposition
-    """
-    ANSWER = 1, _('ANSWER')
-    BUSY = 2, _('BUSY')
-    NOANSWER = 3, _('NOANSWER')
-    CANCEL = 4, _('CANCEL')
-    CONGESTION = 5, _('CONGESTION')
-    FAILED = 6, _('FAILED')  # Added to catch all errors
-
-
-# Asterisk disposition
-# TODO: Delete this?
-DISPOSITION = (
-    (1, _('ANSWER')),
-    (2, _('BUSY')),
-    (3, _('NOANSWER')),
-    (4, _('CANCEL')),
-    (5, _('CONGESTION')),
-    (6, _('CHANUNAVAIL')),
-    (7, _('DONTCALL')),
-    (8, _('TORTURE')),
-    (9, _('INVALIDARGS')),
-)
-
-
 class AccountCode(caching.base.CachingMixin, models.Model):
 
     """This defines the Accountcode
@@ -234,14 +206,7 @@ class CDR(models.Model):
     answersec = models.IntegerField(default=0, null=True, blank=True, verbose_name=_("answer sec"))
     waitsec = models.IntegerField(default=0, null=True, blank=True, verbose_name=_("wait sec"))
 
-    # TODO: review if this is not duplicate with hangup cause
-    # disposition = models.IntegerField(choices=CALL_DISPOSITION, null=False, blank=False,
-    #                                   verbose_name=_("disposition"))
-    # hangup_cause = models.CharField(max_length=40, null=True, blank=True,
-    #                                 verbose_name=_("hangup cause"))
-    # hangup_cause_q850 = models.CharField(max_length=10, null=True, blank=True)
-
-    # Disposition / States
+    # Disposition
     hangup_cause = models.ForeignKey(HangupCause, verbose_name=_("hangup cause"),
                                      null=False, blank=False)
     direction = models.IntegerField(choices=CALL_DIRECTION, null=False, blank=False,

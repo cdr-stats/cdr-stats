@@ -214,11 +214,6 @@ def cdr_view(request):
     # user are restricted to their own CDRs
     if not request.user.is_superuser:
         kwargs['user_id'] = request.user.id
-        # TODO: CDR model also have accountcode, see exactly how it makes sense to use it.
-        # we might want on the long term to have several accountcode per users
-        #
-        # daily_report_query_var['metadata.accountcode'] = request.user.userprofile.accountcode
-        # query_var['accountcode'] = daily_report_query_var['metadata.accountcode']
 
     if request.user.is_superuser and accountcode:
         try:

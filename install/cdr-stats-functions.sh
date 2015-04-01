@@ -752,7 +752,6 @@ func_install_standalone_backend(){
     func_install_pip_deps
 
     #Prepare Settings
-    #TODO: Ask distant DATABASE Settings
     func_prepare_settings
 
     #Prepare Backend Settings

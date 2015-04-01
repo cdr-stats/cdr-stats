@@ -269,8 +269,6 @@ def run_alarm(alarm_obj, logger):
         else:
             previous_asr = previous_asr
 
-        # TODO: Regroup the 2 calls to custom_sql_aggr_top_hangup to get the hangup
-
         # Current date data
         start_date = date_dict['c_start_date']
         end_date = date_dict['c_end_date']

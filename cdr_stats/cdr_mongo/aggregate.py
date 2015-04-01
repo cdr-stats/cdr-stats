@@ -354,7 +354,6 @@ def pipeline_mail_report(query_var):
     return pipeline
 
 
-# TODO: Check where this is used
 def pipeline_cdr_alert_task(query_var):
     """
     To get avg duration from daily collection
