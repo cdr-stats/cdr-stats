@@ -13,6 +13,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
+from django.db import connection
 from celery.task import PeriodicTask
 from cdr.import_cdr_asterisk import import_cdr_asterisk
 from django_lets_go.only_one_task import only_one
@@ -25,7 +26,6 @@ LOCK_EXPIRE = 60 * 60 * 1  # Lock expires in 1 hours
 
 
 class sync_cdr_pending(PeriodicTask):
-
     """
     A periodic task that checks for pending CDR to import
     """
@@ -38,5 +38,26 @@ class sync_cdr_pending(PeriodicTask):
 
         # Import from Asterisk
         import_cdr_asterisk()
+
+        return True
+
+
+class refresh_materialized_views(PeriodicTask):
+    """
+    A periodic task that refresh the materialized views
+    """
+    run_every = timedelta(minutes=15)
+
+    def run(self, **kwargs):
+        logger = self.get_logger()
+        logger.info('TASK :: refresh_materialized_views')
+
+        # Refresh matv_voip_cdr_aggr_hour
+        with connection.cursor() as cursor:
+            cursor.execute("REFRESH MATERIALIZED VIEW matv_voip_cdr_aggr_hour;")
+
+        # Refresh matv_voip_cdr_aggr_min
+        with connection.cursor() as cursor:
+            cursor.execute("REFRESH MATERIALIZED VIEW matv_voip_cdr_aggr_min;")
 
         return True
