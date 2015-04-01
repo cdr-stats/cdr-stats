@@ -256,21 +256,16 @@ def chk_date_for_hrs(previous_date, graph_date):
 def calculate_act_acd(total_calls, total_duration):
     """Calculate aggregation on some metrics:
 
-        - ACT: Average Call per Hour
+        - ACH: Average Call per Hour
         - ACD: Average Call Duration
 
-    TODO:
-        - split this function in 2
-        - replace ACT by something more meaningful ACH (Average Call per Hour)
-
-
     >>> calculate_act_acd(5, 100)
-    {'ACD': '00:20', 'ACT': 0.0}
+    {'ACD': '00:20', 'ACH': 0.0}
     """
-    ACT = math.floor(total_calls / 24)
+    ACH = math.floor(total_calls / 24)
     if total_calls == 0:
         ACD = 0
     else:
         ACD = int_convert_to_minute(math.floor(total_duration / total_calls))
 
-    return {'ACT': ACT, 'ACD': ACD}
+    return {'ACH': ACH, 'ACD': ACD}

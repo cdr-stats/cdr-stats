@@ -19,7 +19,6 @@ from pandas.io import sql
 import time
 
 
-# TODO: move sqlquery to aggregator/cdr.py
 sqlquery = """
     SELECT
         #DATEDAY_FORMAT#,

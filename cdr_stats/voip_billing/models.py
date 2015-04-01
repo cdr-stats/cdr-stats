@@ -17,6 +17,7 @@ from country_dialcode.models import Prefix
 from voip_gateway.models import Provider
 from voip_billing.constants import LCR_TYPE
 from django_lets_go.intermediate_model_base_class import Model
+from django.db import connection
 
 
 class VoIPPlan(Model):
@@ -328,3 +329,69 @@ class VoIPPlan_VoIPCarrierPlan(models.Model):
 
     def __unicode__(self):
         return "%s" % (self.voipplan)
+
+
+def find_rates(voipplan_id, dialcode, sort_field, order):
+    """
+    function to retrieve list of rates belonging to a voipplan
+    """
+    cursor = connection.cursor()
+
+    # variables used for sorting
+    extension_query = ''
+
+    if sort_field == 'prefix':
+        sort_field = 'voip_retail_rate.prefix'
+    if sort_field == 'retail_rate':
+        sort_field = 'minrate'
+    if sort_field == 'destination':
+        sort_field = 'dialcode_prefix.destination'
+    if sort_field:
+        extension_query = "ORDER BY " + sort_field + ' ' + order
+
+    cursor = connection.cursor()
+    if dialcode:
+        sqldialcode = str(dialcode) + '%'
+        sql_statement = (
+            "SELECT voip_retail_rate.prefix, "
+            "Min(retail_rate) as minrate, dialcode_prefix.destination "
+            "FROM voip_retail_rate "
+            "INNER JOIN voipplan_voipretailplan "
+            "ON voipplan_voipretailplan.voipretailplan_id = "
+            "voip_retail_rate.voip_retail_plan_id "
+            "LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix = "
+            "voip_retail_rate.prefix "
+            "WHERE voipplan_id=%s "
+            "AND CAST(voip_retail_rate.prefix AS TEXT) LIKE %s "
+            "GROUP BY voip_retail_rate.prefix, dialcode_prefix.destination "
+            + extension_query)
+
+        cursor.execute(sql_statement, [voipplan_id, sqldialcode])
+    else:
+        sql_statement = (
+            "SELECT voip_retail_rate.prefix, "
+            "Min(retail_rate) as minrate, dialcode_prefix.destination "
+            "FROM voip_retail_rate "
+            "INNER JOIN voipplan_voipretailplan "
+            "ON voipplan_voipretailplan.voipretailplan_id = "
+            "voip_retail_rate.voip_retail_plan_id "
+            "LEFT JOIN dialcode_prefix ON dialcode_prefix.prefix = "
+            "voip_retail_rate.prefix "
+            "WHERE voipplan_id=%s "
+            "GROUP BY voip_retail_rate.prefix, dialcode_prefix.destination "
+            + extension_query)
+
+        cursor.execute(sql_statement, [voipplan_id])
+
+    row = cursor.fetchall()
+    result = []
+    for record in row:
+        # Not banned Prefix
+        allowed = prefix_allowed_to_call(record[0], voipplan_id)
+        if allowed:
+            modrecord = {}
+            modrecord['prefix'] = record[0]
+            modrecord['retail_rate'] = record[1]
+            modrecord['prefix__destination'] = record[2]
+            result.append(modrecord)
+    return result

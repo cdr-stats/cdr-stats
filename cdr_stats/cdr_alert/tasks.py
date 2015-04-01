@@ -442,7 +442,7 @@ class send_cdr_report(PeriodicTask):
                     'rows': mail_data['rows'],
                     'total_duration': mail_data['total_duration'],
                     'total_calls': mail_data['total_calls'],
-                    'ACT': mail_data['metric_aggr']['ACT'],
+                    'ACH': mail_data['metric_aggr']['ACH'],
                     'ACD': mail_data['metric_aggr']['ACD'],
                     'country_analytic_array': mail_data['country_analytic_array'],
                     'hangup_analytic_array': mail_data['hangup_analytic_array']
