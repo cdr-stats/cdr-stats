@@ -11,13 +11,14 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
+
 from django.conf import settings
 from cdr.models import CDR_SOURCE_TYPE
 from cdr.import_cdr_freeswitch_mongodb import create_analytic
 from cdr.helpers import chk_ipaddress, set_int_default, print_shell
 from voip_billing.rate_engine import calculate_call_cost
-from cdr.functions_def import get_hangupcause_id
 from cdr_alert.functions_blacklist import chk_destination
+from cdr.import_helper.asterisk import translate_disposition
 from user_profile.models import UserProfile
 from datetime import datetime
 import re
@@ -25,41 +26,6 @@ import sys
 import random
 
 random.seed()
-
-
-DICT_DISPOSITION = {
-    'ANSWER': 1, 'ANSWERED': 1,
-    'BUSY': 2,
-    'NOANSWER': 3, 'NO ANSWER': 3,
-    'CANCEL': 4,
-    'CONGESTION': 5,
-    'CHANUNAVAIL': 6,
-    'DONTCALL': 7,
-    'TORTURE': 8,
-    'INVALIDARGS': 9,
-    'FAIL': 10, 'FAILED': 10
-}
-
-# Try to match the Asterisk Dialstatus against Q.850
-DISPOSITION_TRANSLATION = {
-    0: 0,
-    1: 16,      # ANSWER
-    2: 17,      # BUSY
-    3: 19,      # NOANSWER
-    4: 21,      # CANCEL
-    5: 34,      # CONGESTION
-    6: 47,      # CHANUNAVAIL
-    # DONTCALL: Privacy mode, callee rejected the call
-    # Specific to Asterisk
-    7: 21,       # DONTCALL
-    # TORTURE: Privacy mode, callee chose to send caller to torture menu
-    # Specific to Asterisk
-    8: 21,       # TORTURE
-    # INVALIDARGS: Error parsing Dial command arguments
-    # Specific to Asterisk
-    9: 47,       # INVALIDARGS
-    10: 41,     # FAILED
-}
 
 
 def aggregate_asterisk_cdr(shell, table_name, db_engine, cursor, cursor_updated, switch, ipaddress):
@@ -108,15 +74,8 @@ def aggregate_asterisk_cdr(shell, table_name, db_engine, cursor, cursor_updated,
             channel = ''  # Set empty string for channel in case is None
         duration = set_int_default(row[4], 0)
         billsec = set_int_default(row[5], 0)
-        ast_disposition = row[6]
-        try:
-            id_disposition = DICT_DISPOSITION.get(
-                ast_disposition.encode("utf-8"), 0)
-            transdisposition = DISPOSITION_TRANSLATION[id_disposition]
-        except:
-            transdisposition = 0
+        hangup_cause_id = translate_disposition(row[6])
 
-        hangup_cause_id = get_hangupcause_id(transdisposition)
         accountcode = row[7]
         uniqueid = row[8]
         start_uepoch = datetime.fromtimestamp(int(row[1]))
