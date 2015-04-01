@@ -8,7 +8,7 @@ CDR-Stats is a free and open source call detail record analysis and reporting so
 Asterisk and other types of VoIP Switch. It allows you to interrogate CDR to provide reports
 and statistics via a simple to use powerful web interface.
 
-It is based on the Django Python Framework, Celery, Gevent and MongoDB.
+It is based on the Django Python Framework, Celery, Gevent, PostgreSQL and InfluxDB.
 
 
 Features

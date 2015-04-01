@@ -82,13 +82,6 @@ case $DIST in
     ;;
 esac
 
-
-#Install MongoDB
-cd /usr/src/
-wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/install-mongodb.sh -O install-mongodb.sh
-bash install-mongodb.sh
-
-
 #Install Freeswitch
 cd /usr/src/
 wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/install-freeswitch.sh -O install-freeswitch.sh

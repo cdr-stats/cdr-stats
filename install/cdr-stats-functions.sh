@@ -499,9 +499,8 @@ func_prepare_backend_settings(){
             sed -i "s/MYSQL_IMPORT_CDR_PASSWORD/$MYSQLPASSWORD/g"  $INSTALL_DIR/settings_local.py
         ;;
         'FREESWITCH')
-            echo "You will need to configure your CDR Backends to access your CDRs"
+            echo "You will need to configure your CDR Connectors to access your CDRs"
             echo "After the installation please edit the config file: $INSTALL_DIR/settings_local.py"
-            echo "If you are using MongoDB, there is an example commented."
             read TEMP
         ;;
     esac
@@ -527,9 +526,8 @@ func_configure_selinux(){
                 chcon -Rv --type=httpd_sys_content_t /usr/share/virtualenvs/cdr-stats/
                 chcon -Rv --type=httpd_sys_content_t $INSTALL_DIR/usermedia
                 semanage port -a -t http_port_t -p tcp $HTTP_PORT
-                #Allowing Apache to access Redis and MongoDB port
+                #Allowing Apache to access Redis port
                 semanage port -a -t http_port_t -p tcp 6379
-                semanage port -a -t http_port_t -p tcp 27017
                 setsebool -P httpd_can_network_connect 1
                 setsebool -P httpd_can_network_connect_db 1
             ;;
@@ -843,7 +841,6 @@ show_menu_cdr_stats() {
     echo "  1)  Install All"
     echo "  2)  Install CDR-Stats Web Frontend"
     echo "  3)  Install CDR-Stats Backend / CDR-Stats-Celery"
-    echo "  4)  Install MongoDB"
     echo "  0)  Quit"
     echo -n "(0-4) : "
     read OPTION < /dev/tty

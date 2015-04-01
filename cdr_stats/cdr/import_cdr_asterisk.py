@@ -268,7 +268,7 @@ def import_cdr_asterisk(shell=False):
         print_shell(shell, "The switch is not configured to import Asterisk")
         return False
 
-    # loop within the Mongo CDR Import List
+    # loop within the mongodb CDR Import List
     for ipaddress in settings.CDR_BACKEND:
 
         db_engine = settings.CDR_BACKEND[ipaddress]['db_engine']

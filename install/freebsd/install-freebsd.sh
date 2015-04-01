@@ -13,13 +13,6 @@ APACHE_USER=www
 ESC_INSTALL_DIR=$(echo $INSTALL_DIR | sed 's/\//\\\//g')
 export LC_ALL="en_US.UTF-8"
 
-step_mongodb()
-{
-  pkg install -y mongodb
-  echo 'mongod_enable="YES"' >> /etc/rc.conf
-  /usr/local/etc/rc.d/mongod start
-}
-
 step_mysql()
 {
   pkg install -y mysql55-server

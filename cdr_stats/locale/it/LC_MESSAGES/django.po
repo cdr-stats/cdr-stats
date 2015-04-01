@@ -1597,15 +1597,6 @@ msgstr "diagnostica"
 msgid "open search"
 msgstr "Nascondi ricerca"
 
-#: frontend/templates/frontend/diagnostic.html:18
-#, fuzzy
-#| msgid ""
-#| "MongoDB server used to store and centralize your CDRs and your reporting"
-msgid "PostgreSQL server used to centralize CDRs and the aggregate reporting"
-msgstr ""
-"Server di MongoDB usato per memorizzare e centralizzare i CDR e la tua "
-"segnalazione"
-
 #: frontend/templates/frontend/footer.html:3
 msgid "Powered by CDR-Stats"
 msgstr "Powered by CDR-Stats"

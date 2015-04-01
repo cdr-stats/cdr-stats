@@ -93,7 +93,6 @@ func_install_fs_source() {
         -e "s/#say\/mod_say_hu/say\/mod_say_hu/g" \
         -e "s/#say\/mod_say_th/say\/mod_say_th/g" \
         -e "s/#xml_int\/mod_xml_cdr/xml_int\/mod_xml_cdr/g" \
-        -e "s/#event_handlers\/mod_cdr_mongodb/event_handlers\/mod_cdr_mongodb/g" \
         modules.conf
     make && make install && make sounds-install && make moh-install
 
@@ -139,7 +138,7 @@ case $DIST in
             # install the Freeswitch Repo
             rpm -Uvh http://files.freeswitch.org/yum/freeswitch-release-1-0.noarch.rpm
             # install the freeswitch files
-            yum -y install freeswitch-config-vanilla freeswitch-codec-siren freeswitch-codec-passthru-amr freeswitch-application-conference freeswitch-application-db freeswitch-endpoint-dingaling freeswitch-application-enum freeswitch-application-esf freeswitch-application-expr freeswitch-application-fifo freeswitch-asrtts-flite freeswitch-application-fsv freeswitch-codec-passthru-g723_1 freeswitch-codec-passthru-g729 freeswitch-codec-h26x freeswitch-application-hash freeswitch-application-httapi freeswitch-codec-ilbc freeswitch-format-local-stream freeswitch-lua freeswitch-format-native-file freeswitch-lang-de freeswitch-lang-en freeswitch-lang-fr freeswitch-lang-ru freeswitch-format-mod-shout freeswitch-codec-speex freeswitch-spidermonkey freeswitch-format-tone-stream freeswitch-asrtts-tts-commandline freeswitch-application-valet_parking freeswitch-application-voicemail freeswitch-format-shell-stream freeswitch-event-cdr-mongodb
+            yum -y install freeswitch-config-vanilla freeswitch-codec-siren freeswitch-codec-passthru-amr freeswitch-application-conference freeswitch-application-db freeswitch-endpoint-dingaling freeswitch-application-enum freeswitch-application-esf freeswitch-application-expr freeswitch-application-fifo freeswitch-asrtts-flite freeswitch-application-fsv freeswitch-codec-passthru-g723_1 freeswitch-codec-passthru-g729 freeswitch-codec-h26x freeswitch-application-hash freeswitch-application-httapi freeswitch-codec-ilbc freeswitch-format-local-stream freeswitch-lua freeswitch-format-native-file freeswitch-lang-de freeswitch-lang-en freeswitch-lang-fr freeswitch-lang-ru freeswitch-format-mod-shout freeswitch-codec-speex freeswitch-spidermonkey freeswitch-format-tone-stream freeswitch-asrtts-tts-commandline freeswitch-application-valet_parking freeswitch-application-voicemail freeswitch-format-shell-stream
         else
             echo "installing from source"
             func_install_fs_source
@@ -163,11 +162,8 @@ sed -i -r \
 -e "s/<\!--\s?<load module=\"mod_flite\"\/>\s?-->/<load module=\"mod_flite\"\/>/g" \
 -e "s/<\!--\s?<load module=\"mod_say_ru\"\/>\s?-->/<load module=\"mod_say_ru\"\/>/g" \
 -e "s/<\!--\s?<load module=\"mod_say_zh\"\/>\s?-->/<load module=\"mod_say_zh\"\/>/g" \
--e 's/mod_say_zh.*$/&\n    <load module="mod_say_de"\/>\n    <load module="mod_say_es"\/>\n    <load module="mod_say_fr"\/>\n    <load module="mod_say_it"\/>\n    <load module="mod_say_nl"\/>\n    <load module="mod_say_hu"\/>\n    <load module="mod_say_th"\/>    <load module="mod_cdr_mongodb"\/>/' \
+-e 's/mod_say_zh.*$/&\n    <load module="mod_say_de"\/>\n    <load module="mod_say_es"\/>\n    <load module="mod_say_fr"\/>\n    <load module="mod_say_it"\/>\n    <load module="mod_say_nl"\/>\n    <load module="mod_say_hu"\/>\n    <load module="mod_say_th"\/>/' \
 modules.conf.xml
-
-#Rename default mongodb database
-sed -i "s/test.cdr/freeswitch.cdr/g" cdr_mongodb.conf.xml
 
 #Configure Dialplan
 cd $FS_CONFIG_PATH/conf/dialplan/

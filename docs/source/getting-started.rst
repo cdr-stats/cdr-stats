@@ -16,7 +16,7 @@ CDR-Stats is free and open source call detail record analysis and reporting soft
 Asterisk and other type of VoIP Switch. It allows you to interrogate your CDR to provide reports
 and statistics via a simple to use, yet powerful, web interface.
 
-It is based on the Django Python Framework, Celery, Gevent and MongoDB.
+It is based on the Django Python Framework, Celery, Gevent, PostgreSQL and InfluxDB.
 
 .. _`Freeswitch`: http://www.freeswitch.org/
 .. _`Asterisk`: http://www.asterisk.org/
@@ -49,13 +49,15 @@ Different reporting tools are provided:
 - Threat Control: Detect abnormal call patterns
 - Destination Alerts: Unexpected destination alerts
 
-CDR Stats uses MongoDB, a scalable, high performance database system used to analyse
-large quantities of CDR data. MongoDB is an open source, document-oriented database
-designed with both scalability and developer agility in mind.
+CDR Stats uses PostgreSQL, a scalable, high performance database system used to analyse
+large quantities of CDR data. PostgreSQL provides Materialized views which make it perfect to build
+analytic application which do heavy aggregation and recently PostgreSQL cames with Jsonb field which
+make it easy to store custom data from variety of switch.
 
-CDR-Stats supports Freeswitch and Asterisk using connectors that get the CDR. Connectors
-for other switch systems can be built. Additionally CDR-Stats features a CSV upload facility so that
-CDR from virtually any source can be imported and analysed by CDR-Stats.
+Out of the box, CDR-Stats supports Freeswitch and Asterisk using connectors that get the CDR. Connectors
+for other switch systems can be built.
+
+Other Switch support has been added, please refere to http://www.cdr-stats.org/connectors
 
 
 .. _screenshot_dashboard:
@@ -86,8 +88,9 @@ import CDR in csv format, configure users, switch connections and automatic alar
 Architecture
 ------------
 
-CDR-Stats uses MongoDB as the underlying CDR store. MongoDB allows querying and analysis of many
-millions of records without noticeable loss of performance, and can easily be scaled as demand increases.
+CDR-Stats uses PostgreSQL as the underlying CDR store. PostgreSQL with Materialized view allows querying
+and analysis of many millions of records without noticeable loss of performance, and can easily
+be scaled as demand increases.
 
 Postgresql is used for managing CDR-Stats in terms of users and managing the web framework, Django.
 

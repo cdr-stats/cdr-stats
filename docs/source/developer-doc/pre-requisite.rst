@@ -8,4 +8,4 @@ To fully understand this project, developers will need to have a advanced knowle
     - Celery : http://www.celeryproject.org/
     - Python : http://www.python.org/
     - Freeswitch : http://www.freeswitch.org/
-    - MongoDB : http://www.mongodb.org/
+    - Freeswitch : http://www.asterisk.org/
