@@ -23,9 +23,6 @@ from user_profile.models import UserProfile
 from datetime import datetime
 import re
 import sys
-import random
-
-random.seed()
 
 
 def sanitize_cdr_field(field):

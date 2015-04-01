@@ -216,6 +216,7 @@ INSTALLED_APPS = (
     'voip_billing',
     'switch',
     # 'realtime',
+    'import_cdr',
 
     'dateutil',
     # 'south',
