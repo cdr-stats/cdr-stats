@@ -29,7 +29,7 @@ class run_cdr_import(PeriodicTask):
     """
     A periodic task that checks for new CDRs to import
     """
-    run_every = timedelta(seconds=6)
+    run_every = timedelta(seconds=30)
 
     @only_one(ikey="run_cdr_import", timeout=LOCK_EXPIRE)
     def run(self, **kwargs):

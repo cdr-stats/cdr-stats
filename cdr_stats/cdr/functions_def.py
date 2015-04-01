@@ -179,6 +179,9 @@ def get_country_id_prefix(prefix_list):
     """
     country_id = None
     prefix = None
+    if not prefix_list:
+        return (country_id, prefix)
+
     try:
         # get a list in numeric order (which is also length order)
         prefix_obj = Prefix.objects.filter(prefix__in=eval(prefix_list)).order_by('prefix')
@@ -189,7 +192,6 @@ def get_country_id_prefix(prefix_list):
                 prefix = prefix_obj[i].prefix
         return (country_id, prefix)
     except:
-        raise
         return (country_id, prefix)
 
 

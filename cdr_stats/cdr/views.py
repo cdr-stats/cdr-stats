@@ -955,6 +955,8 @@ def world_map_view(request):
     world_analytic_array = []
     max_nbcalls = 0
     for country in country_data:
+        if not country["country_id"]:
+            continue
         # append data to world_analytic_array with following order
         # country id|country name|call count|call duration|country_id|buy cost|sell cost
         country_data = {}

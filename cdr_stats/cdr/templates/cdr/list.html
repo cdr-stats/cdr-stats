@@ -198,11 +198,11 @@
                         </td>
                         {% if user.is_superuser %}
                             <td>{{ row.user_id }}</td>
-                            <td>{{ row.buy_rate }}</td>
-                            <td>{{ row.buy_cost }}</td>
+                            <td>{{ row.buy_rate|floatformat:2 }}</td>
+                            <td>{{ row.buy_cost|floatformat:2 }}</td>
                         {% endif %}
-                        <td>{{ row.sell_rate }}</td>
-                        <td>{{ row.sell_cost }}</td>
+                        <td>{{ row.sell_rate|floatformat:2 }}</td>
+                        <td>{{ row.sell_cost|floatformat:2 }}</td>
                         <td>
                             <div class="flag_icon">
                                 {% if row.country_id %}
