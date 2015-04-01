@@ -109,7 +109,8 @@ def verify_auth_dest_number(destination_number):
             or sanitized_destination[:1].isalpha()):
         # It might be an extension
         country_id = 0
-    elif (len(sanitized_destination) >= settings.PN_MIN_DIGITS
+    elif (prefix_list
+          and len(sanitized_destination) >= settings.PN_MIN_DIGITS
           and len(sanitized_destination) <= settings.PN_MAX_DIGITS):
         # It might be an local call
         # Need to add coma for get_country_id_prefix to eval correctly

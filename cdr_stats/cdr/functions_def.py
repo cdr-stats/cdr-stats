@@ -193,6 +193,27 @@ def get_country_id_prefix(prefix_list):
         return (country_id, prefix)
 
 
+@cached(3600)
+def get_dialcode(destination_number, dialcode):
+    """
+    Retrieve the correct dialcode for a destination_number
+    """
+    if dialcode and len(dialcode) > 0:
+        return dialcode
+    else:
+        # remove prefix
+        sanitized_destination = remove_prefix(destination_number, settings.PREFIX_TO_IGNORE)
+        prefix_list = prefix_list_string(sanitized_destination)
+
+        if prefix_list and len(sanitized_destination) > settings.PN_MAX_DIGITS and not sanitized_destination[:1].isalpha():
+            # International call
+            (country_id, prefix_id) = get_country_id_prefix(prefix_list)
+            dialcode = prefix_id
+        else:
+            dialcode = ''
+    return dialcode
+
+
 # @cached(3600)
 def get_country_name(id, type=''):
     """Get country name from its id & return iso2 type name (e.g 'fr')
