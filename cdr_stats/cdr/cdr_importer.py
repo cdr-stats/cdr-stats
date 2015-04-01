@@ -13,9 +13,9 @@
 #
 
 from django.conf import settings
-from cdr.models import CDR_SOURCE_TYPE
-from cdr.import_cdr_freeswitch_mongodb import create_analytic
-from cdr.helpers import chk_ipaddress, set_int_default, print_shell
+from django.contrib.auth.models import User
+from cdr.models import CDR_SOURCE_TYPE, CDR
+from cdr.helpers import set_int_default, print_shell
 from voip_billing.rate_engine import calculate_call_cost
 from cdr_alert.functions_blacklist import chk_destination
 from cdr.import_helper.asterisk import translate_disposition
@@ -28,10 +28,23 @@ import random
 random.seed()
 
 
-def aggregate_asterisk_cdr(shell, table_name, db_engine, cursor, cursor_updated, switch, ipaddress):
+def sanitize_cdr_field(field):
+    """
+    Sanitize CDR fields
+    """
+    try:
+        field = field.decode('utf-8', 'ignore')
+    except AttributeError:
+        field = ''
+
+    return field
+
+
+def push_asterisk_cdr(shell, table_name, db_engine, cursor, cursor_updated, switch, ipaddress):
     """
     function to import and aggreagate Asterisk CDR
     """
+    cdr_source_type = CDR_SOURCE_TYPE.ASTERISK
     count_import = 0
 
     # Each time the task is running we will only take 1000 records to import
@@ -49,7 +62,6 @@ def aggregate_asterisk_cdr(shell, table_name, db_engine, cursor, cursor_updated,
     row = cursor.fetchone()
 
     # Store cdr in list to insert by bulk
-    cdr_bulk_record = []
     local_count_import = 0
     batch_count = 0
     acctid_list = ''
@@ -57,8 +69,8 @@ def aggregate_asterisk_cdr(shell, table_name, db_engine, cursor, cursor_updated,
     while row is not None:
         destination_number = row[0]
         if not destination_number:
+            # don't import CDR with no destination number
             continue
-
         acctid = row[9]
         callerid = row[2]
         try:
@@ -98,89 +110,41 @@ def aggregate_asterisk_cdr(shell, table_name, db_engine, cursor, cursor_updated,
             voipplan_id = False
             print_shell(shell, "No VoipPlan created for this user/accountcode")
 
+        try:
+            user = UserProfile.objects.get(accountcode=accountcode).user
+        except:
+            # Cannot assign accountcode to an existing user
+            # we will then assign to admin
+            user = User.objects.filter(is_superuser=True)[0]
+
         call_rate = calculate_call_cost(voipplan_id, destination_number, billsec)
         buy_rate = call_rate['buy_rate']
         buy_cost = call_rate['buy_cost']
         sell_rate = call_rate['sell_rate']
         sell_cost = call_rate['sell_cost']
 
-        # Sanitize callerid_number
-        try:
-            callerid_number = callerid_number.decode('utf-8', 'ignore')
-        except AttributeError:
-            callerid_number = ''
-        # Sanitize callerid_name
-        try:
-            callerid_name = callerid_name.decode('utf-8', 'ignore')
-        except AttributeError:
-            callerid_name = ''
-        # Sanitize destination_number
-        try:
-            destination_number = destination_number.decode('utf-8', 'ignore')
-        except AttributeError:
-            destination_number = ''
-        # Sanitize channel
-        try:
-            channel = channel.decode('utf-8', 'ignore')
-        except AttributeError:
-            channel = ''
+        # Sanitize
+        callerid_number = sanitize_cdr_field(callerid_number)
+        callerid_name = sanitize_cdr_field(callerid_name)
+        destination_number = sanitize_cdr_field(destination_number)
+        channel = sanitize_cdr_field(channel)
 
-        # Prepare global CDR
-        cdr_record = {
-            'switch_id': switch.id,
-            'caller_id_number': callerid_number,
-            'caller_id_name': callerid_name,
-            'destination_number': destination_number,
-            'duration': duration,
-            'billsec': billsec,
-            'hangup_cause_id': hangup_cause_id,
-            'accountcode': accountcode,
-            'direction': direction,
-            'uuid': uniqueid,
-            'remote_media_ip': '',
-            'start_uepoch': start_uepoch,
-            # 'answer_uepoch': answer_uepoch,
-            # 'end_uepoch': end_uepoch,
-            # 'mduration': '',
-            # 'billmsec': '',
-            # 'read_codec': '',
-            # 'write_codec': '',
-            'channel': channel,
-            'cdr_type': CDR_SOURCE_TYPE.ASTERISK,
-            'cdr_object_id': acctid,
-            'country_id': country_id,
-            'authorized': authorized,
+        cdr_json = {'channel': channel}
+        dialcode = ''
 
-            # For billing
-            'buy_rate': buy_rate,
-            'buy_cost': buy_cost,
-            'sell_rate': sell_rate,
-            'sell_cost': sell_cost,
-        }
+        cdr = CDR(user=user, switch=switch, cdr_source_type=cdr_source_type,
+                  callid=uniqueid, caller_id_number=callerid_number, destination_number=destination_number,
+                  dialcode_id=dialcode, starting_date=start_uepoch, duration=duration,
+                  billsec=billsec, hangup_cause=hangup_cause_id, direction=direction,
+                  country_id=country_id, authorized=authorized, accountcode=accountcode,
+                  buy_rate=buy_rate, buy_cost=buy_cost, sell_rate=sell_rate, sell_cost=sell_cost,
+                  data=cdr_json)
+        cdr.save()
 
         # Append cdr to bulk_cdr list
-        cdr_bulk_record.append(cdr_record)
         count_import = count_import + 1
         local_count_import = local_count_import + 1
         batch_count = batch_count + 1
-
-        """
-        print_shell(shell, "Sync CDR (%s:%d, cid:%s, dest:%s, dur:%s, "\
-                            "hg:%s, country:%s, auth:%s, calldate:%s)" % (
-                                settings.ASTERISK_PRIMARY_KEY,
-                                acctid,
-                                callerid_number,
-                                destination_number,
-                                duration,
-                                hangup_cause_id,
-                                country_id,
-                                authorized,
-                                start_uepoch.strftime('%Y-%m-%d %M:%S'),))
-        """
-        date_start_uepoch = str(row[1])
-        create_analytic(date_start_uepoch, start_uepoch, switch.id,
-                        country_id, accountcode, hangup_cause_id, duration,
-                        buy_cost, sell_cost)
 
         acctid_list += "%s, " % str(acctid)
         if batch_count == 100:
@@ -205,94 +169,77 @@ def aggregate_asterisk_cdr(shell, table_name, db_engine, cursor, cursor_updated,
             (table_name, settings.ASTERISK_PRIMARY_KEY, acctid_list)
         cursor_updated.execute(update_cdr)
 
-    if local_count_import > 0:
-        # Bulk cdr list insert into cdr_common
-        mongodb.cdr_common.insert(cdr_bulk_record)
-        # Reset counter to zero
-        local_count_import = 0
-        cdr_bulk_record = []
-
     return count_import
 
 
-# aggregate_asterisk_cdr
+# This function is not used, it's replaced by cdr-pusher
+# import Asterisk CDRs
 def import_cdr_asterisk(shell=False):
-    # Browse settings.CDR_BACKEND and for each IP
-    # check if the IP exist in our Switch objects if it does we will
     # connect to that Database and import the data as we do below
 
-    print_shell(shell, "Starting the synchronization...")
+    # hardcode settings to import Asterisk
+    db_engine = "pgsql"
+    db_name = "cdr"
+    table_name = "cdr"
+    user = "postgres"
+    password = "password"
+    host = "localhost"
+    port = "5432"
 
-    if settings.CDR_BACKEND[settings.LOCAL_SWITCH_IP]['cdr_type'] != 'asterisk':
-        print_shell(shell, "The switch is not configured to import Asterisk")
-        return False
+    if db_engine == 'mysql':
+        import MySQLdb as Database
+    elif db_engine == 'pgsql':
+        import psycopg2 as PgDatabase
+    else:
+        sys.stderr.write("Wrong setting for db_engine: %s" % db_engine)
+        sys.exit(1)
 
-    # loop within the mongodb CDR Import List
-    for ipaddress in settings.CDR_BACKEND:
+    ipaddress = "127.0.0.1"
+    switch = 1  # do a lookup
 
-        db_engine = settings.CDR_BACKEND[ipaddress]['db_engine']
+    # Connect to Database
+    try:
         if db_engine == 'mysql':
-            import MySQLdb as Database
+            connection = Database.connect(user=user, passwd=password,
+                                          db=db_name, host=host, port=port)
+            connection.autocommit(True)
         elif db_engine == 'pgsql':
-            import psycopg2 as PgDatabase
-        else:
-            sys.stderr.write("Wrong setting for db_engine: %s" %
-                             (str(db_engine)))
-            sys.exit(1)
+            connection = PgDatabase.connect(user=user, password=password,
+                                            database=db_name, host=host, port=port)
+            connection.autocommit = True
+        cursor = connection.cursor()
+        # update cursor used as we update at the end and we need
+        # to fetch on 1st cursor
+        cursor_updated = connection.cursor()
+    except Exception, e:
+        sys.stderr.write("Could not connect to Database: %s - %s" %
+                         (e, ipaddress))
+        sys.exit(1)
 
-        data = chk_ipaddress(ipaddress)
-        ipaddress = data['ipaddress']
-        switch = data['switch']
+    try:
+        if db_engine == 'mysql':
+            cursor.execute("SELECT VERSION() from %s WHERE import_cdr "
+                           "IS NOT NULL LIMIT 0,1" % table_name)
+        elif db_engine == 'pgsql':
+            cursor.execute("SELECT VERSION() from %s WHERE import_cdr "
+                           "IS NOT NULL LIMIT 1" % table_name)
+        cursor.fetchone()
+    except Exception, e:
+        # Add missing field to flag import
+        if db_engine == 'mysql':
+            cursor.execute("ALTER TABLE %s ADD import_cdr TINYINT NOT NULL "
+                           "DEFAULT '0'" % table_name)
+        elif db_engine == 'pgsql':
+            cursor.execute("ALTER TABLE %s ADD import_cdr SMALLINT NOT NULL "
+                           "DEFAULT '0'" % table_name)
+        cursor.execute("ALTER TABLE %s ADD INDEX (import_cdr)" %
+                       table_name)
 
-        # Connect to Database
-        db_name = settings.CDR_BACKEND[ipaddress]['db_name']
-        table_name = settings.CDR_BACKEND[ipaddress]['table_name']
-        user = settings.CDR_BACKEND[ipaddress]['user']
-        password = settings.CDR_BACKEND[ipaddress]['password']
-        host = settings.CDR_BACKEND[ipaddress]['host']
-        port = settings.CDR_BACKEND[ipaddress]['port']
-        try:
-            if db_engine == 'mysql':
-                connection = Database.connect(user=user, passwd=password,
-                                              db=db_name, host=host, port=port)
-                connection.autocommit(True)
-            elif db_engine == 'pgsql':
-                connection = PgDatabase.connect(user=user, password=password,
-                                                database=db_name, host=host, port=port)
-                connection.autocommit = True
-            cursor = connection.cursor()
-            # update cursor used as we update at the end and we need
-            # to fetch on 1st cursor
-            cursor_updated = connection.cursor()
-        except Exception, e:
-            sys.stderr.write("Could not connect to Database: %s - %s" %
-                             (e, ipaddress))
-            sys.exit(1)
+    count_import = push_asterisk_cdr(shell, table_name, db_engine, cursor, cursor_updated, switch, ipaddress)
 
-        try:
-            if db_engine == 'mysql':
-                cursor.execute("SELECT VERSION() from %s WHERE import_cdr "
-                               "IS NOT NULL LIMIT 0,1" % table_name)
-            elif db_engine == 'pgsql':
-                cursor.execute("SELECT VERSION() from %s WHERE import_cdr "
-                               "IS NOT NULL LIMIT 1" % table_name)
-            cursor.fetchone()
-        except Exception, e:
-            # Add missing field to flag import
-            if db_engine == 'mysql':
-                cursor.execute("ALTER TABLE %s ADD import_cdr TINYINT NOT NULL "
-                               "DEFAULT '0'" % table_name)
-            elif db_engine == 'pgsql':
-                cursor.execute("ALTER TABLE %s ADD import_cdr SMALLINT NOT NULL "
-                               "DEFAULT '0'" % table_name)
-            cursor.execute("ALTER TABLE %s ADD INDEX (import_cdr)" %
-                           table_name)
+    cursor_updated.close()
+    cursor.close()
+    connection.close()
 
-        count_import = aggregate_asterisk_cdr(shell, table_name, db_engine, cursor, cursor_updated, switch, ipaddress)
-
-        cursor_updated.close()
-        cursor.close()
-        connection.close()
-
-        print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" %
-                    (ipaddress, count_import))
+    print_shell(shell, "Import on Switch(%s) - Record(s) imported:%d" %
+                (ipaddress, count_import))

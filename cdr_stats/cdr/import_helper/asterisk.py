@@ -64,3 +64,15 @@ def translate_disposition(disposition):
     hangup_cause_id = get_hangupcause_id(transdisposition)
 
     return hangup_cause_id
+
+
+def sanitize_cdr_field(field):
+    """
+    Sanitize CDR fields
+    """
+    try:
+        field = field.decode('utf-8', 'ignore')
+    except AttributeError:
+        field = ''
+
+    return field
