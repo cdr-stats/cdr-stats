@@ -12,8 +12,8 @@
 ### END INIT INFO
 
 
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/local/bin/redis-server
+PATH=/opt/redis/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=`which redis-server`
 DAEMON_ARGS=/etc/redis.conf
 NAME=redis-server
 DESC=redis-server
