@@ -45,38 +45,34 @@ func_identify_os
 
 #Function install the landing page
 func_install_landing_page() {
-    mkdir -p $INSTALL_DIR_WELCOME
+    mkdir -p $WELCOME_DIR
     # Copy files
-    cp -r /usr/src/cdr-stats/install/landing-page/* $INSTALL_DIR_WELCOME
-
+    cp -r /usr/src/cdr-stats/install/landing-page/* $WELCOME_DIR
     echo ""
-    echo "Add Apache configuration for Welcome page..."
-    echo '
-    <VirtualHost *:80>
-        DocumentRoot '$INSTALL_DIR_WELCOME'/
-        DirectoryIndex index.html index.htm index.php index.php4 index.php5
-
-        <Directory '$INSTALL_DIR_WELCOME'>
-            Options Indexes IncludesNOEXEC FollowSymLinks
-            allow from all
-            AllowOverride All
-            allow from all
-        </Directory>
-
-    </VirtualHost>
-
-    ' > $APACHE_CONF_DIR/welcome-cdr-stats.conf
-
+    echo "Add Nginx configuration for Welcome page..."
+    cp -rf /usr/src/cdr-stats/install/nginx/global /etc/nginx/
     case $DIST in
         'DEBIAN')
-            mv /etc/apache2/sites-enabled/000-default /tmp/
+            cp /usr/src/cdr-stats/install/nginx/sites-available/cdr_stats.conf /etc/nginx/sites-available/
+            ln -s /etc/nginx/sites-available/cdr_stats.conf /etc/nginx/sites-enabled/cdr_stats.conf
+            #Remove default NGINX landing page
+            rm /etc/nginx/sites-enabled/default
+        ;;
+        'CENTOS')
+            cp /usr/src/cdr-stats/install/nginx/sites-available/cdr_stats.conf /etc/nginx/conf.d/
+            rm /etc/nginx/conf.d/default.conf
         ;;
     esac
-    service $APACHE_SERVICE restart
+
+    cp -rf /usr/src/cdr-stats/install/nginx/global /etc/nginx/
+
+    #Restart Nginx
+    service nginx restart
 
     #Update Welcome page IP
-    sed -i "s/LOCALHOST/$IPADDR:$HTTP_PORT/g" $INSTALL_DIR_WELCOME/index.html
+    sed -i "s/LOCALHOST/$IPADDR:$HTTP_PORT/g" $WELCOME_DIR/index.html
 }
+
 
 func_check_dependencies() {
     echo ""
@@ -317,18 +313,10 @@ func_backup_prev_install(){
         mv $INSTALL_DIR /tmp/old-cdr-stats_$DATETIME
         echo "Files from $INSTALL_DIR has been moved to /tmp/old-cdr-stats_$DATETIME"
 
-        if echo $DB_BACKEND | grep -i "^POSTGRESQL" > /dev/null ; then
-            if [ `sudo -u postgres psql -qAt --list | egrep '^$DATABASENAME\|' | wc -l` -eq 1 ]; then
-                echo "Run backup with postgresql..."
-                sudo -u postgres pg_dump $DATABASENAME > /tmp/old-cdr-stats_$DATETIME.pgsqldump.sql
-                echo "PostgreSQL Dump of database $DATABASENAME added in /tmp/old-cdr-stats_$DATETIME.pgsqldump.sql"
-                echo "Press Enter to continue"
-                read TEMP
-            fi
-        elif echo $DB_BACKEND | grep -i "^MYSQL" > /dev/null ; then
-            echo "Run backup with mysqldump..."
-            mysqldump -u $MYSQLUSER --password=$MYSQLPASSWORD $DATABASENAME > /tmp/old-cdr-stats_$DATETIME.mysqldump.sql
-            echo "Mysql Dump of database $DATABASENAME added in /tmp/old-cdr-stats_$DATETIME.mysqldump.sql"
+        if [ `sudo -u postgres psql -qAt --list | egrep '^$DATABASENAME\|' | wc -l` -eq 1 ]; then
+            echo "Run backup with postgresql..."
+            sudo -u postgres pg_dump $DATABASENAME > /tmp/old-cdr-stats_$DATETIME.pgsqldump.sql
+            echo "PostgreSQL Dump of database $DATABASENAME added in /tmp/old-cdr-stats_$DATETIME.pgsqldump.sql"
             echo "Press Enter to continue"
             read TEMP
         fi
@@ -344,32 +332,30 @@ func_install_source(){
     rm -rf cdr-stats
     mkdir /var/log/cdr-stats
 
-    case $INSTALL_MODE in
-        'CLONE')
-            git clone -b $BRANCH git://github.com/Star2Billing/cdr-stats.git
+    git clone -b $BRANCH git://github.com/Star2Billing/cdr-stats.git
+    cd cdr-stats
 
-            #Install Develop / Master
-            if echo $BRANCH | grep -i "^develop" > /dev/null ; then
-                cd cdr-stats
-                git checkout -b develop --track origin/develop
-            fi
-        ;;
-    esac
+    #Install Develop / Master
+    if echo $BRANCH | grep -i "^develop" > /dev/null ; then
+        git checkout -b develop --track origin/develop
+    fi
 
     # Copy files
     cp -r /usr/src/cdr-stats/cdr_stats $INSTALL_DIR
 }
 
+
 #Function to install Python dependencies
 func_install_pip_deps(){
 
-    #Create and enable virtualenv
-    #We moved this here cause func_setup_virtualenv also active the virtualenv
-    func_setup_virtualenv
+    echo "func_install_pip_deps..."
 
-    #Install CDR-Stats depencencies
-    easy_install -U distribute
-    pip install MySQL-python
+    #Upgrade pip to latest (1.5)
+    pip install pip --upgrade
+
+    #For python 2.6 only
+    pip install importlib
+
     case $DIST in
         'DEBIAN')
             #pip now only installs stable versions by default, so we need to use --pre option
@@ -624,6 +610,9 @@ func_install_frontend(){
 
     #Install Code Source
     func_install_source
+
+    #Create and enable virtualenv
+    func_setup_virtualenv
 
     #Install Pip Dependencies
     func_install_pip_deps
