@@ -174,5 +174,5 @@ The current database schema is shown below:
     :width: 700
 
 
-Follow this link for more details : https://github.com/Star2Billing/cdr-stats/raw/master/docs/source/_static/images/model_cdr-stats.png
+Follow this link for more details : https://github.com/areski/cdr-stats/raw/master/docs/source/_static/images/model_cdr-stats.png
 

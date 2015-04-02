@@ -28,7 +28,7 @@ CELERYD_USER="celery"
 CELERYD_GROUP="celery"
 CDRSTATS_ENV="cdr-stats"
 HTTP_PORT="8008"
-BRANCH='master'
+BRANCH='develop'
 DB_BACKEND="POSTGRESQL"
 DATETIME=$(date +"%Y%m%d%H%M%S")
 KERNELARCH=$(uname -p)
@@ -472,7 +472,7 @@ func_install_source(){
     rm -rf cdr-stats
     mkdir /var/log/cdr-stats
 
-    git clone -b $BRANCH git://github.com/Star2Billing/cdr-stats.git
+    git clone -b $BRANCH git://github.com/areski/cdr-stats.git
     cd cdr-stats
 
     #Install Develop / Master

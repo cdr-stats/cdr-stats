@@ -7,7 +7,7 @@ Before commencing, a back up of FreePBX, in particular asteriskcdrdb is recommen
 
 Run the following commands at the console::
 
-    $ wget –no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats-asterisk.sh -O install-cdr-stats-asterisk.sh
+    $ wget –no-check-certificate https://raw.github.com/areski/cdr-stats/master/install/install-cdr-stats-asterisk.sh -O install-cdr-stats-asterisk.sh
     $ bash install-cdr-stats-asterisk.sh
 
 The install routine will ask a number of questions, all of which are self explanatory. Select “Install all” which is option 1 in the CDR-Stats Installation Menu.

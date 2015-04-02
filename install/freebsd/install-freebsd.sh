@@ -62,7 +62,7 @@ step_github()
 {
   mkdir -p /usr/local/src $INSTALL_DIR
   cd /usr/local/src
-  git clone git://github.com/Star2Billing/cdr-stats.git
+  git clone git://github.com/areski/cdr-stats.git
   cp -r /usr/local/src/cdr-stats/cdr_stats/* $INSTALL_DIR/
 }
 

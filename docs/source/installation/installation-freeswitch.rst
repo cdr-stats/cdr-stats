@@ -30,7 +30,7 @@ Then reload the Freeswitch configuration.
 
 **Now run the following commands at the console**::
 
-    $ wget –no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-cdr-stats.sh -O install-cdr-stats.sh
+    $ wget –no-check-certificate https://raw.github.com/areski/cdr-stats/master/install/install-cdr-stats.sh -O install-cdr-stats.sh
     $
     $ bash install-cdr-stats.sh
 
@@ -47,7 +47,7 @@ Installation on New Server
 Another script is available to install Freeswitch along with CDR-Stats.
 This script is intended to be run on a fresh Debian 7.X or CentOS 6.X installation::
 
-    $ wget –no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/master/install/install-all-cdr-stats-freeswitch.sh -O install-all-cdr-stats-freeswitch.sh
+    $ wget –no-check-certificate https://raw.github.com/areski/cdr-stats/master/install/install-all-cdr-stats-freeswitch.sh -O install-all-cdr-stats-freeswitch.sh
     $
     $ bash install-all-cdr-stats-freeswitch.sh
 

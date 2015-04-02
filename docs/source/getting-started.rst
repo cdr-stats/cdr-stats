@@ -6,7 +6,7 @@ Getting Started
 
 :Web: http://www.cdr-stats.org/
 :Download: http://www.cdr-stats.org/download/
-:Source: https://github.com/Star2Billing/cdr-stats/
+:Source: https://github.com/areski/cdr-stats/
 :Keywords: VoIP, Freeswitch, Asterisk, Django, Python, Call, Reporting, CDR
 
 --
