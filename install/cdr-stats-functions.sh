@@ -280,9 +280,7 @@ func_prepare_system_common(){
             apt-get -y install libpq-dev
         ;;
         'CENTOS')
-            if [ "$INSTALLMODE" = "FULL" ]; then
-                yum -y update
-            fi
+            yum -y update
             yum -y install autoconf automake bzip2 cpio curl curl-devel curl-devel expat-devel fileutils gcc-c++ gettext-devel gnutls-devel libjpeg-devel libogg-devel libtiff-devel libtool libvorbis-devel make ncurses-devel nmap openssl openssl-devel openssl-devel perl patch unzip wget zip zlib zlib-devel policycoreutils-python sudo
             yum -y install git
 
@@ -349,9 +347,7 @@ func_prepare_system_frontend(){
                 #Start Mysql
                 /etc/init.d/mysqld start
                 #Configure MySQL
-                if [ "$INSTALLMODE" = "FULL" ]; then
-                    /usr/bin/mysql_secure_installation
-                fi
+                /usr/bin/mysql_secure_installation
                 until mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST -e ";" ; do
                     clear
                     echo "Enter your database settings"
@@ -607,31 +603,29 @@ func_prepare_backend_settings(){
 
 #function to configure SELinux
 func_configure_selinux(){
-    if [ "$INSTALLMODE" = "FULL" ]; then
-        #Setup Firewall / SELINUX
-        case $DIST in
-            'CENTOS')
-                echo ""
-                echo "We will now add port $HTTP_PORT  and port 80 to your Firewall"
-                echo "Press Enter to continue or CTRL-C to exit"
-                read TEMP
+    #Setup Firewall / SELINUX
+    case $DIST in
+        'CENTOS')
+            echo ""
+            echo "We will now add port $HTTP_PORT  and port 80 to your Firewall"
+            echo "Press Enter to continue or CTRL-C to exit"
+            read TEMP
 
-                #add HTTP port
-                iptables -I INPUT 2 -p tcp -m state --state NEW -m tcp --dport $HTTP_PORT -j ACCEPT
-                iptables -I INPUT 3 -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
-                service iptables save
+            #add HTTP port
+            iptables -I INPUT 2 -p tcp -m state --state NEW -m tcp --dport $HTTP_PORT -j ACCEPT
+            iptables -I INPUT 3 -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
+            service iptables save
 
-                #Selinux to allow apache to access this directory
-                chcon -Rv --type=httpd_sys_content_t /usr/share/virtualenvs/cdr-stats/
-                chcon -Rv --type=httpd_sys_content_t $INSTALL_DIR/usermedia
-                semanage port -a -t http_port_t -p tcp $HTTP_PORT
-                #Allowing Apache to access Redis port
-                semanage port -a -t http_port_t -p tcp 6379
-                setsebool -P httpd_can_network_connect 1
-                setsebool -P httpd_can_network_connect_db 1
-            ;;
-        esac
-    fi
+            #Selinux to allow apache to access this directory
+            chcon -Rv --type=httpd_sys_content_t /usr/share/virtualenvs/cdr-stats/
+            chcon -Rv --type=httpd_sys_content_t $INSTALL_DIR/usermedia
+            semanage port -a -t http_port_t -p tcp $HTTP_PORT
+            #Allowing Apache to access Redis port
+            semanage port -a -t http_port_t -p tcp 6379
+            setsebool -P httpd_can_network_connect 1
+            setsebool -P httpd_can_network_connect_db 1
+        ;;
+    esac
 }
 
 #Function to configure Apache
@@ -932,43 +926,4 @@ func_prepare_logger() {
 '  > /etc/logrotate.d/cdr_stats
 
     logrotate /etc/logrotate.d/cdr_stats
-}
-
-#Menu Section for Script
-show_menu_cdr_stats() {
-    clear
-    echo " > CDR-Stats Installation Menu"
-    echo "====================================="
-    echo "  1)  Install All"
-    echo "  2)  Install CDR-Stats Web Frontend"
-    echo "  3)  Install CDR-Stats Backend / CDR-Stats-Celery"
-    echo "  0)  Quit"
-    echo -n "(0-4) : "
-    read OPTION < /dev/tty
-}
-
-
-run_menu_cdr_stats_install() {
-    ExitFinish=0
-    while [ $ExitFinish -eq 0 ]; do
-        # Show menu with Installation items
-        show_menu_cdr_stats
-        case $OPTION in
-            1)
-                func_install_frontend
-                func_install_backend
-                echo done
-            ;;
-            2)
-                func_install_frontend
-            ;;
-            3)
-                func_install_backend
-            ;;
-            0)
-                ExitFinish=1
-            ;;
-            *)
-        esac
-    done
 }

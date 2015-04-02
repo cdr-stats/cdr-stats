@@ -23,46 +23,14 @@
 #
 
 BRANCH='master'
-INSTALLMODE='FULL' # Set to FULL to update Selinux / Firewall / etc...
-
 
 #Get Scripts dependencies
 cd /usr/src/
 wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
 
-
-#Menu Section for Script
-show_menu_switch() {
-    clear
-    echo " > Do you want to install CDR-Stats for FreeSWITCH or Asterisk ?"
-    echo "================================================================"
-    echo "  1)  FreeSWITCH"
-    echo "  2)  Asterisk"
-    echo -n "(1-2) : "
-    read OPTION < /dev/tty
-}
-
-
-ExitFinish=0
-while [ $ExitFinish -eq 0 ]; do
-    show_menu_switch
-    case $OPTION in
-    1)
-        INSTALL_TYPE='FREESWITCH'
-        echo "We will make some pre-configuration on CDR-Stats for FreeSWITCH..."
-        ExitFinish=1
-    ;;
-    2)
-        INSTALL_TYPE='ASTERISK'
-        echo "We will make some pre-configuration on CDR-Stats for Asterisk..."
-        ExitFinish=1
-    ;;
-    *)
-    esac
-done
-
 #Include cdr-stats install functions
 source cdr-stats-functions.sh
+
 
 #Identify the OS
 func_identify_os
@@ -70,8 +38,61 @@ func_identify_os
 #Request the user to accept the license
 func_accept_license
 
-#run install menu
-run_menu_cdr_stats_install
+
+echo "========================================================================="
+echo ""
+echo "CDR-Stats installation will start now!"
+echo ""
+echo "Press Enter to continue or CTRL-C to exit"
+echo ""
+read INPUT
+
+func_install_frontend
+func_install_landing_page
+func_install_backend
+
+
+# #Menu Section for Script
+# show_menu_cdr_stats() {
+#     clear
+#     echo " > CDR-Stats Installation Menu"
+#     echo "====================================="
+#     echo "  1)  Install All"
+#     echo "  2)  Install CDR-Stats Web Frontend"
+#     echo "  3)  Install CDR-Stats Backend"
+#     echo "  0)  Quit"
+#     echo -n "(0-2) : "
+#     read OPTION < /dev/tty
+# }
+
+
+# run_menu_cdr_stats_install() {
+#     ExitFinish=0
+#     while [ $ExitFinish -eq 0 ]; do
+#         # Show menu with Installation items
+#         show_menu_cdr_stats
+#         case $OPTION in
+#             1)
+#                 func_install_frontend
+#                 func_install_backend
+#                 echo done
+#             ;;
+#             2)
+#                 func_install_frontend
+#             ;;
+#             3)
+#                 func_install_backend
+#             ;;
+#             0)
+#                 ExitFinish=1
+#             ;;
+#             *)
+#         esac
+#     done
+# }
+#
+# #run install menu
+# run_menu_cdr_stats_install
 
 
 # Clean the system on MySQL
