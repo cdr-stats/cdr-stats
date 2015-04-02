@@ -19,7 +19,7 @@
 #
 
 BRANCH='master'
-INSTALL_DIR='/usr/share/cdr_stats'
+INSTALL_DIR='/usr/share/cdrstats'
 
 #INSTALL TYPE (ASTERISK or FREESWITCH)
 INSTALL_TYPE='ASTERISK'

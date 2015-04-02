@@ -90,7 +90,7 @@ How to debug mail connectivity?
 
 **Answer:** Use mail_debug to test the mail connectivity::
 
-    $ cd /usr/share/cdr_stats
+    $ cd /usr/share/cdrstats
     $ workon cdr-stats
     $ python manage.py mail_debug
 

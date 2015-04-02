@@ -1,6 +1,6 @@
 #
-# Newfies-Dialer License
-# http://www.newfies-dialer.org
+# CDR-Stats License
+# http://www.cdr-stats.org
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -11,6 +11,7 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
+
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.forms import SetPasswordForm

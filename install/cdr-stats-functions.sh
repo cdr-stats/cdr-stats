@@ -15,7 +15,7 @@
 
 #Install mode can me either CLONE or DOWNLOAD
 INSTALL_MODE='CLONE'
-INSTALL_DIR='/usr/share/cdr_stats'
+INSTALL_DIR='/usr/share/cdrstats'
 INSTALL_DIR_WELCOME='/var/www/cdr-stats'
 DATABASENAME='cdrstats_db'
 DB_USERSALT=`</dev/urandom tr -dc 0-9| (head -c $1 > /dev/null 2>&1 || head -c 5)`

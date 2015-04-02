@@ -4,7 +4,7 @@ CELERYD_NODES="cdr-stats-node1"
 #CELERYD_NODES="w1 w2 w3"
 
 # Where the Django project is.
-CELERYD_CHDIR="/usr/share/cdr_stats"
+CELERYD_CHDIR="/usr/share/cdrstats"
 
 # How to call "manage.py celeryd_multi"
 CELERYD_MULTI="/usr/share/virtualenvs/cdr-stats/bin/python $CELERYD_CHDIR/manage.py celeryd_multi"

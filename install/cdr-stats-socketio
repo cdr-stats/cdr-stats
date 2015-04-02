@@ -6,7 +6,7 @@
 #
 
 #####################################################
-PREFIX=/usr/share/cdr_stats
+PREFIX=/usr/share/cdrstats
 PID_PREFIX=/var/run
 
 VENV_ON=/usr/share/virtualenvs/cdr-stats/bin/activate

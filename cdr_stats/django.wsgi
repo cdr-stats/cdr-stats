@@ -26,7 +26,7 @@ site_package_dirs = '/usr/share/virtualenvs/cdr-stats/lib/python2.6/site-package
 if site_package_dirs not in sys.path and os.path.isdir(site_package_dirs):
     sys.path.append(site_package_dirs)
 
-sys.path.append('/usr/share/cdr_stats')
+sys.path.append('/usr/share/cdrstats')
 
 import settings
 import django.core.management
