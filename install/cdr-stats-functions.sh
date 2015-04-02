@@ -110,7 +110,7 @@ func_check_dependencies() {
 #Fuction to create the virtual env
 func_setup_virtualenv() {
     echo "This will install virtualenv & virtualenvwrapper"
-    echo "and create a new virtualenv : $NEWFIES_ENV"
+    echo "and create a new virtualenv : $CDRSTATS_ENV"
 
     pip install virtualenv
     pip install virtualenvwrapper

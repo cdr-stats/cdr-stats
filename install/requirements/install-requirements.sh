@@ -19,11 +19,11 @@ do
     pip install $line --use-mirrors
 done
 
-echo "Install Mysql requirements..."
-for line in $(cat install/requirements/mysql-requirements.txt | grep -v \#)
-do
-    pip install $line --use-mirrors
-done
+# echo "Install Mysql requirements..."
+# for line in $(cat install/requirements/mysql-requirements.txt | grep -v \#)
+# do
+#     pip install $line --use-mirrors
+# done
 
 echo "Install Django requirements..."
 for line in $(cat install/requirements/django-requirements.txt | grep -v \#)
