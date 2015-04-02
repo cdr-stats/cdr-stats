@@ -27,12 +27,9 @@ INSTALLMODE='FULL' # Set to FULL to update Selinux / Firewall / etc...
 KERNELARCH=$(uname -p)
 
 #Get Scripts dependencies
-cd /usr/src/
-wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/bash-common-functions.sh -O bash-common-functions.sh
 wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
 
-#Include general functions
-source bash-common-functions.sh
+source cdr-stats-functions.sh
 
 #Identify the OS
 func_identify_os
@@ -85,22 +82,10 @@ esac
 #Install Freeswitch
 cd /usr/src/
 wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/install-freeswitch.sh -O install-freeswitch.sh
+
 bash install-freeswitch.sh
 /etc/init.d/freeswitch start
 
-#Install CDR-Stats
-cd /usr/src/
-wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/bash-common-functions.sh -O bash-common-functions.sh
-wget --no-check-certificate https://raw.github.com/Star2Billing/cdr-stats/$BRANCH/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
-
-
-#Include general functions
-source bash-common-functions.sh
-source cdr-stats-functions.sh
-
-
-#Identify the OS
-func_identify_os
 
 #Request the user to accept the license
 func_accept_license
