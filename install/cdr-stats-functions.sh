@@ -346,40 +346,6 @@ func_setup_virtualenv() {
 }
 
 
-#Function to prepare the system, add user, install dependencies, etc...
-func_prepare_system_frontend(){
-
-
-    # Create the Database
-    echo "We will remove existing Database"
-    echo "Press Enter to continue"
-    echo ""
-    echo "sudo -u postgres dropdb $DATABASENAME"
-    echo "Remove Existing Database if exists..."
-    echo "Press Enter to continue"
-    read TEMP
-    sudo -u postgres dropdb $DATABASENAME
-    # if [ `sudo -u postgres psql -qAt --list | egrep $DATABASENAME | wc -l` -eq 1 ]; then
-    #     echo "sudo -u postgres dropdb $DATABASENAME"
-    #     sudo -u postgres dropdb $DATABASENAME
-    # fi
-    echo "Create Database..."
-    echo "sudo -u postgres createdb $DATABASENAME"
-    sudo -u postgres createdb $DATABASENAME
-
-    #CREATE ROLE / USER
-    echo "Create Postgresql user $DB_USERNAME"
-    #echo "sudo -u postgres createuser --no-createdb --no-createrole --no-superuser $DB_USERNAME"
-    #sudo -u postgres createuser --no-createdb --no-createrole --no-superuser $DB_USERNAME
-    echo "sudo -u postgres psql --command=\"create user $DB_USERNAME with password 'XXXXXXXXXX';\""
-    sudo -u postgres psql --command="CREATE USER $DB_USERNAME with password '$DB_PASSWORD';"
-
-    echo "Grant all privileges to user..."
-    echo "sudo -u postgres psql --command=\"GRANT ALL PRIVILEGES on database $DATABASENAME to $DB_USERNAME;\""
-    sudo -u postgres psql --command="GRANT ALL PRIVILEGES on database $DATABASENAME to $DB_USERNAME;"
-}
-
-
 #Function to backup the data from the previous installation
 func_backup_prev_install(){
 
