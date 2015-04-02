@@ -216,48 +216,11 @@ func_check_dependencies() {
 }
 
 
-#Fuction to create the virtual env
-func_setup_virtualenv() {
-    echo "This will install virtualenv & virtualenvwrapper"
-    echo "and create a new virtualenv : $CDRSTATS_ENV"
+#Function to install Dependencies
+func_install_dependencies(){
 
-    pip install virtualenv
-    pip install virtualenvwrapper
-
-    #Prepare settings for installation
-    case $DIST in
-        'DEBIAN')
-            SCRIPT_VIRTUALENVWRAPPER="/usr/local/bin/virtualenvwrapper.sh"
-        ;;
-        'CENTOS')
-            SCRIPT_VIRTUALENVWRAPPER="/usr/bin/virtualenvwrapper.sh"
-        ;;
-    esac
-
-    # Enable virtualenvwrapper
-    chk=`grep "virtualenvwrapper" ~/.bashrc|wc -l`
-    if [ $chk -lt 1 ] ; then
-        echo "Set Virtualenvwrapper into bash"
-        echo "export WORKON_HOME=/usr/share/virtualenvs" >> ~/.bashrc
-        echo "source $SCRIPT_VIRTUALENVWRAPPER" >> ~/.bashrc
-    fi
-
-    # Setup virtualenv
-    export WORKON_HOME=/usr/share/virtualenvs
-    source $SCRIPT_VIRTUALENVWRAPPER
-
-    mkvirtualenv $CDRSTATS_ENV
-    workon $CDRSTATS_ENV
-
-    echo "Virtualenv $CDRSTATS_ENV created and activated"
-}
-
-
-# Prepare system
-func_prepare_system_common(){
-    #Create CDRStats User
-    echo "Create CDRStats User/Group : $CDRSTATS_USER"
-    useradd $CDRSTATS_USER --user-group --system --no-create-home
+    #python setup tools
+    echo "Install Dependencies and python modules..."
 
     case $DIST in
         'DEBIAN')
@@ -278,6 +241,9 @@ func_prepare_system_common(){
 
             # dpkg-reconfigure locales
             # apt-get -y install --reinstall language-pack-en
+
+            apt-get -y remove apache2.2-common apache2
+            apt-get -y install sudo curl
 
             #Install Postgresql
             apt-get -y install libpq-dev
@@ -328,49 +294,61 @@ func_prepare_system_common(){
             service postgresql-9.1 restart
         ;;
     esac
+
+
+    echo ""
+    echo "easy_install -U setuptools pip distribute"
+    easy_install -U setuptools pip distribute
+
+    # install Bower
+    npm install -g bower
+
+    #Create CDRStats User
+    echo "Create CDRStats User/Group : $CDRSTATS_USER"
+    useradd $CDRSTATS_USER --user-group --system --no-create-home
 }
+
+
+#Fuction to create the virtual env
+func_setup_virtualenv() {
+    echo "This will install virtualenv & virtualenvwrapper"
+    echo "and create a new virtualenv : $CDRSTATS_ENV"
+
+    pip install virtualenv
+    pip install virtualenvwrapper
+
+    #Prepare settings for installation
+    case $DIST in
+        'DEBIAN')
+            SCRIPT_VIRTUALENVWRAPPER="/usr/local/bin/virtualenvwrapper.sh"
+        ;;
+        'CENTOS')
+            SCRIPT_VIRTUALENVWRAPPER="/usr/bin/virtualenvwrapper.sh"
+        ;;
+    esac
+
+    # Enable virtualenvwrapper
+    chk=`grep "virtualenvwrapper" ~/.bashrc|wc -l`
+    if [ $chk -lt 1 ] ; then
+        echo "Set Virtualenvwrapper into bash"
+        echo "export WORKON_HOME=/usr/share/virtualenvs" >> ~/.bashrc
+        echo "source $SCRIPT_VIRTUALENVWRAPPER" >> ~/.bashrc
+    fi
+
+    # Setup virtualenv
+    export WORKON_HOME=/usr/share/virtualenvs
+    source $SCRIPT_VIRTUALENVWRAPPER
+
+    mkvirtualenv $CDRSTATS_ENV
+    workon $CDRSTATS_ENV
+
+    echo "Virtualenv $CDRSTATS_ENV created and activated"
+}
+
 
 #Function to prepare the system, add user, install dependencies, etc...
 func_prepare_system_frontend(){
 
-    func_prepare_system_common
-
-    case $DIST in
-        'DEBIAN')
-            apt-get -y install libapache2-mod-python libapache2-mod-wsgi
-            #PostgreSQL
-            apt-get -y install postgresql
-            #Start PostgreSQL
-            /etc/init.d/postgresql start
-        ;;
-        'CENTOS')
-            yum -y install mysql mysql-devel mysql-server
-            yum -y --enablerepo=epel install mod_wsgi
-
-            #start http after reboot
-            chkconfig --levels 235 httpd on
-
-            #Configure PostgreSQL
-            echo "Configure PostgreSQL pg_hba.conf"
-            yum -y install postgresql-server postgresql-devel
-            chkconfig --levels 235 postgresql on
-            echo "service postgresql initdb"
-            echo "/etc/init.d/postgresql initdb"
-            /etc/init.d/postgresql initdb
-            /etc/init.d/postgresql start
-
-            mv /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf.bak
-            sed -e '/^local/ d' -e '/^host / d' /var/lib/pgsql/data/pg_hba.conf.bak > /var/lib/pgsql/data/pg_hba.conf
-            echo 'local   all         postgres                          trust' >> /var/lib/pgsql/data/pg_hba.conf
-            echo 'local   all         all                               md5' >> /var/lib/pgsql/data/pg_hba.conf
-            echo 'host    all         postgres    127.0.0.1/32          trust' >> /var/lib/pgsql/data/pg_hba.conf
-            echo 'host    all         all         127.0.0.1/32          md5' >> /var/lib/pgsql/data/pg_hba.conf
-            echo 'host    all         postgres    ::1/128               trust' >> /var/lib/pgsql/data/pg_hba.conf
-            echo 'host    all         all         ::1/128               md5' >> /var/lib/pgsql/data/pg_hba.conf
-            #Restart PostgreSQL
-            service postgresql restart
-        ;;
-    esac
 
     # Create the Database
     echo "We will remove existing Database"
@@ -525,11 +503,33 @@ func_prepare_settings(){
         'CENTOS')
             #Get TZ
             . /etc/sysconfig/clock
+            echo ""
+            echo "We will now add port $HTTP_PORT  and port 80 to your Firewall"
+            echo "Press Enter to continue or CTRL-C to exit"
+            read TEMP
         ;;
     esac
 
     #Set Timezone in settings_local.py
     sed -i "s@Europe/Madrid@$ZONE@g" $CONFIG_DIR/settings_local.py
+
+    #Fix Iptables
+    case $DIST in
+        'CENTOS')
+            #Add http port
+            iptables -I INPUT 2 -p tcp -m state --state NEW -m tcp --dport $HTTP_PORT -j ACCEPT
+            iptables -I INPUT 3 -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
+
+            service iptables save
+
+            #Selinux to allow apache to access this directory
+            chcon -Rv --type=httpd_sys_content_t /usr/share/virtualenvs/cdr-stats/
+            chcon -Rv --type=httpd_sys_content_t $INSTALL_DIR/usermedia
+            semanage port -a -t http_port_t -p tcp $HTTP_PORT
+            #Allowing Apache to access Redis port
+            semanage port -a -t http_port_t -p tcp 6379
+        ;;
+    esac
 
     IFCONFIG=`which ifconfig 2>/dev/null||echo /sbin/ifconfig`
     IPADDR=`$IFCONFIG eth0|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'`
@@ -544,359 +544,15 @@ func_prepare_settings(){
     sed -i "s/SERVER_IP/$IPADDR/g" $CONFIG_DIR/settings_local.py
 }
 
-#Function Prepare Settings for the CDR backend
-func_prepare_backend_settings(){
-
-    #Configure Backend Asterisk / Freeswitch etc...
-    case $INSTALL_TYPE in
-        'ASTERISK')
-            DATABASENAME='asteriskcdr'
-            MYSQLUSER='root'
-            MYSQLPASSWORD='password'
-            MYHOST='127.0.0.1'
-            MYHOSTPORT='3306'
-
-            echo ""
-            echo "Enter database settings for Asterisk..."
-            echo ""
-            func_get_mysql_database_setting_asteriskcdrdb
-
-            #Update Mysql schema
-            echo "We will now add a Primary Key to your CDR database"
-            echo "We advice you to first backup your database prior continuing"
-            echo ""
-            echo "Press Enter to continue or CTRL-C to exit"
-            read TEMP
-            mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST $DATABASENAME -e "ALTER TABLE cdr ADD acctid BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST;"
-
-            #Enable CDR-Stats for Asterisk
-            sed -i "s/'freeswitch'/'asterisk'/g"  $INSTALL_DIR/settings_local.py
-
-            #Configure CDR Import
-            sed -i "s/MYSQL_IMPORT_CDR_DBNAME/$DATABASENAME/g"  $INSTALL_DIR/settings_local.py
-            sed -i "s/MYSQL_IMPORT_CDR_TABLENAME/cdr/g"  $INSTALL_DIR/settings_local.py
-            sed -i "s/MYSQL_IMPORT_CDR_HOST/$MYHOST/g"  $INSTALL_DIR/settings_local.py
-            sed -i "s/MYSQL_IMPORT_CDR_USER/$MYSQLUSER/g"  $INSTALL_DIR/settings_local.py
-            sed -i "s/MYSQL_IMPORT_CDR_PASSWORD/$MYSQLPASSWORD/g"  $INSTALL_DIR/settings_local.py
-        ;;
-        'FREESWITCH')
-            echo "You will need to configure your CDR Connectors to access your CDRs"
-            echo "After the installation please edit the config file: $INSTALL_DIR/settings_local.py"
-            read TEMP
-        ;;
-    esac
-}
-
-#function to configure SELinux
-func_configure_selinux(){
-    #Setup Firewall / SELINUX
-    case $DIST in
-        'CENTOS')
-            echo ""
-            echo "We will now add port $HTTP_PORT  and port 80 to your Firewall"
-            echo "Press Enter to continue or CTRL-C to exit"
-            read TEMP
-
-            #add HTTP port
-            iptables -I INPUT 2 -p tcp -m state --state NEW -m tcp --dport $HTTP_PORT -j ACCEPT
-            iptables -I INPUT 3 -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
-            service iptables save
-
-            #Selinux to allow apache to access this directory
-            chcon -Rv --type=httpd_sys_content_t /usr/share/virtualenvs/cdr-stats/
-            chcon -Rv --type=httpd_sys_content_t $INSTALL_DIR/usermedia
-            semanage port -a -t http_port_t -p tcp $HTTP_PORT
-            #Allowing Apache to access Redis port
-            semanage port -a -t http_port_t -p tcp 6379
-            setsebool -P httpd_can_network_connect 1
-            setsebool -P httpd_can_network_connect_db 1
-        ;;
-    esac
-}
-
-#Function to configure Apache
-func_configure_http_server(){
-    # prepare Apache
-    echo "Prepare Apache configuration..."
-    echo '
-    '$WSGI_ADDITIONAL'
-
-    Listen *:'$HTTP_PORT'
-
-    <VirtualHost *:'$HTTP_PORT'>
-        DocumentRoot '$INSTALL_DIR'/
-        ErrorLog /var/log/cdr-stats/err-apache-cdr-stats.log
-        LogLevel warn
-
-        Alias /static/ "'$INSTALL_DIR'/static/"
-
-        <Location "/static/">
-            SetHandler None
-        </Location>
-
-        WSGIPassAuthorization On
-        WSGIDaemonProcess cdr-stats user='$APACHE_USER' user='$APACHE_USER' threads=25
-        WSGIProcessGroup cdr-stats
-        WSGIScriptAlias / '$INSTALL_DIR'/django.wsgi
-
-        <Directory '$INSTALL_DIR'>
-            AllowOverride all
-            Order deny,allow
-            Allow from all
-            '$WSGIApplicationGroup'
-        </Directory>
-
-    </VirtualHost>
-    ' > $APACHE_CONF_DIR/cdr-stats.conf
-    #correct the above file
-    sed -i "s/@/'/g"  $APACHE_CONF_DIR/cdr-stats.conf
-
-    #Restart HTTP Server
-    service $APACHE_SERVICE restart
-}
-
-#Install Django CDR-stats
-func_django_cdrstats_install(){
-    cd $INSTALL_DIR/
-    #Fix permission on python-egg
-    mkdir $INSTALL_DIR/.python-eggs
-    chown $APACHE_USER:$APACHE_USER $INSTALL_DIR/.python-eggs
-
-    #upload audio files
-    mkdir -p $INSTALL_DIR/usermedia/upload/audiofiles
-    chown -R $APACHE_USER:$APACHE_USER $INSTALL_DIR/usermedia
-
-    python manage.py syncdb --noinput
-    python manage.py migrate
-    echo "Create a super admin user..."
-    python manage.py createsuperuser
-
-    echo "Install Bower deps"
-    python manage.py bower_install -- --allow-root
-
-    #Collect static files from apps and other locations in a single location.
-    python manage.py collectstatic --noinput
-
-    #Install Celery & redis-server
-    echo "Install Redis-server ..."
-    func_install_redis_server
-    #Redis is needed to load countries
-
-    #Load Countries Dialcode
-    python manage.py load_country_dialcode
-}
-
-#Function to install Frontend
-func_install_frontend(){
-
-    echo ""
-    echo "We will now install CDR-Stats..."
-    echo ""
-
-    #Prepare
-    func_prepare_system_frontend
-
-    #Backup
-    func_backup_prev_install
-
-    #Install Code Source
-    func_install_source
-
-    #Create and enable virtualenv
-    func_setup_virtualenv
-
-    #Install Pip Dependencies
-    func_install_pip_deps
-
-    #Prepare Settings
-    func_prepare_settings
-
-    #Prepare Backend Settings
-    func_prepare_backend_settings
-
-    #Configure Logs files and logrotate
-    func_prepare_logger
-
-    #Install Django cdr-stats
-    func_django_cdrstats_install
-
-    #Configure SELinux
-    func_configure_selinux
-
-    #Configure Apache
-    func_configure_http_server
-
-    echo ""
-    echo "**************************************************************"
-    echo "Congratulations, CDR-Stats Web Application is now installed!"
-    echo "**************************************************************"
-    echo ""
-    echo "Please log on to CDR-Stats at "
-    echo "http://$IPADDR:$HTTP_PORT"
-    echo "the username and password are the ones you entered during this installation."
-    echo ""
-    echo "Thank you for installing CDR-Stats"
-    echo "Yours,"
-    echo "The Star2Billing Team"
-    echo "http://www.star2billing.com and http://www.cdr-stats.org/"
-    echo ""
-    echo ""
-}
-
-
-#Function to install backend
-func_install_backend() {
-    echo ""
-    echo "This will install CDR-Stats Backend, Celery & Redis on your server"
-    echo "Press Enter to continue or CTRL-C to exit"
-    read TEMP
-
-    #Configure Logs files and logrotate
-    func_prepare_logger
-
-    #Create directory for pid file
-    mkdir -p /var/run/celery
-
-    #Install Celery & redis-server
-    echo "Install Redis-server ..."
-    func_install_redis_server
-
-    case $DIST in
-        'DEBIAN')
-            # Add init-scripts
-            cp /usr/src/cdr-stats/install/celery-init/debian/etc/default/cdr-stats-celeryd /etc/default/
-            cp /usr/src/cdr-stats/install/celery-init/debian/etc/init.d/cdr-stats-celeryd /etc/init.d/
-            # Configure init-scripts
-            sed -i "s/CELERYD_USER='celery'/CELERYD_USER='$CELERYD_USER'/g"  /etc/default/cdr-stats-celeryd
-            sed -i "s/CELERYD_GROUP='celery'/CELERYD_GROUP='$CELERYD_GROUP'/g"  /etc/default/cdr-stats-celeryd
-            chmod +x /etc/default/cdr-stats-celeryd
-            chmod +x /etc/init.d/cdr-stats-celeryd
-            /etc/init.d/cdr-stats-celeryd restart
-            cd /etc/init.d; update-rc.d cdr-stats-celeryd defaults 99
-
-            #Check permissions on /dev/shm to ensure that celery can start and run for openVZ.
-            DIR="/dev/shm"
-            echo "Checking the permissions for $dir"
-            stat $DIR
-            if [ `stat -c "%a" $DIR` -ge 777 ] ; then
-                echo "$DIR has read write permissions."
-            else
-                echo "$DIR has no read write permissions."
-                chmod -R 777 /dev/shm
-                if [ `grep -i /dev/shm /etc/fstab | wc -l` -eq 0 ]; then
-                    echo "Adding fstab entry to set permissions /dev/shm"
-                    echo "none /dev/shm tmpfs rw,nosuid,nodev,noexec 0 0" >> /etc/fstab
-                fi
-            fi
-        ;;
-        'CENTOS')
-            # Add init-scripts
-            cp /usr/src/cdr-stats/install/celery-init/centos/etc/default/cdr-stats-celeryd /etc/default/
-            cp /usr/src/cdr-stats/install/celery-init/centos/etc/init.d/cdr-stats-celeryd /etc/init.d/
-            # Configure init-scripts
-            sed -i "s/CELERYD_USER='celery'/CELERYD_USER='$CELERYD_USER'/g"  /etc/default/cdr-stats-celeryd
-            sed -i "s/CELERYD_GROUP='celery'/CELERYD_GROUP='$CELERYD_GROUP'/g"  /etc/default/cdr-stats-celeryd
-            chmod +x /etc/init.d/cdr-stats-celeryd
-            /etc/init.d/cdr-stats-celeryd restart
-            chkconfig --add cdr-stats-celeryd
-            chkconfig --level 2345 cdr-stats-celeryd on
-        ;;
-    esac
-
-    echo ""
-    echo ""
-    echo "**************************************************************"
-    echo "Congratulations, CDR-Stats Backend is now installed"
-    echo "**************************************************************"
-    echo ""
-    echo "Yours,"
-    echo "The Star2Billing Team"
-    echo "http://www.star2billing.com and http://www.cdr-stats.org/"
-    echo ""
-    echo ""
-}
-
-#Function to install Standalone Backend
-func_install_standalone_backend(){
-
-    echo ""
-    echo "This will install the CDR-backend without configuring Apache, etc..."
-    read TEMP
-
-    func_prepare_system_common
-
-    #Install Code Source
-    func_install_source
-
-    #Install Pip Dependencies
-    func_install_pip_deps
-
-    #Prepare Settings
-    func_prepare_settings
-
-    #Prepare Backend Settings
-    func_prepare_backend_settings
-
-    #Configure Logs files and logrotate
-    func_prepare_logger
-
-    #Install CDR-Stats Backend
-    func_install_backend
-}
-
-
-#Install recent version of redis-server
-func_install_redis_server() {
-    case $DIST in
-        'DEBIAN')
-            if [ "$(lsb_release -cs)" == "precise" ]; then
-                #Ubuntu 12.04 TLS
-                apt-get -y install redis-server
-                /etc/init.d/redis-server.dpkg-dist start
-            else
-                #Ubuntu 10.04 TLS
-                cd /usr/src
-                wget https://redis.googlecode.com/files/redis-2.6.4.tar.gz
-                tar -zxf redis-2.6.4.tar.gz
-                cd redis-2.6.4
-                make
-                make install
-
-                cp /usr/src/cdr-stats/install/redis/debian/etc/redis.conf /etc/redis.conf
-                cp /usr/src/cdr-stats/install/redis/debian/etc/init.d/redis-server /etc/init.d/redis-server
-                chmod +x /etc/init.d/redis-server
-                useradd redis
-                mkdir -p /var/lib/redis
-                mkdir -p /var/log/redis
-                chown redis.redis /var/lib/redis
-                chown redis.redis /var/log/redis
-
-                cd /etc/init.d/
-                update-rc.d -f redis-server defaults
-
-                #Start redis-server
-                /etc/init.d/redis-server start
-            fi
-        ;;
-        'CENTOS')
-            #install redis
-            yum -y --enablerepo=epel install redis
-
-            chkconfig --add redis
-            chkconfig --level 2345 redis on
-
-            /etc/init.d/redis start
-        ;;
-    esac
-}
 
 #Configure Logs files and logrotate
 func_prepare_logger() {
     touch /var/log/cdr-stats/cdr-stats.log
     touch /var/log/cdr-stats/cdr-stats-db.log
-    touch /var/log/cdr-stats/err-apache-cdr-stats.log
-    chown -R $APACHE_USER:$APACHE_USER /var/log/cdr-stats
+    chown -R $CDRSTATS_USER:$CDRSTATS_USER /var/log/cdr-stats
 
+    echo "Install Logrotate..."
+    # First delete to avoid error when running the script several times.
     rm /etc/logrotate.d/cdr_stats
     touch /etc/logrotate.d/cdr_stats
     echo '
@@ -910,4 +566,247 @@ func_prepare_logger() {
 '  > /etc/logrotate.d/cdr_stats
 
     logrotate /etc/logrotate.d/cdr_stats
+}
+
+
+#Create PGSQL
+func_create_pgsql_database(){
+
+    # Create the Database
+    echo "We will remove existing Database"
+    echo "Press Enter to continue"
+    read TEMP
+    echo "sudo -u postgres dropdb $DATABASENAME"
+    sudo -u postgres dropdb $DATABASENAME
+    # echo "Remove Existing Database if exists..."
+    #if [ `sudo -u postgres psql -qAt --list | egrep $DATABASENAME | wc -l` -eq 1 ]; then
+    #     echo "sudo -u postgres dropdb $DATABASENAME"
+    #     sudo -u postgres dropdb $DATABASENAME
+    # fi
+    echo "Create Database..."
+    echo "sudo -u postgres createdb $DATABASENAME"
+    sudo -u postgres createdb $DATABASENAME
+
+    #CREATE ROLE / USER
+    echo "Create Postgresql user $DB_USERNAME"
+    #echo "sudo -u postgres createuser --no-createdb --no-createrole --no-superuser $DB_USERNAME"
+    #sudo -u postgres createuser --no-createdb --no-createrole --no-superuser $DB_USERNAME
+    echo "sudo -u postgres psql --command=\"create user $DB_USERNAME with password 'XXXXXXXXXXXX';\""
+    sudo -u postgres psql --command="CREATE USER $DB_USERNAME with password '$DB_PASSWORD';"
+
+    echo "Grant all privileges to user..."
+    sudo -u postgres psql --command="GRANT ALL PRIVILEGES on database $DATABASENAME to $DB_USERNAME;"
+}
+
+#NGINX / SUPERVISOR
+func_nginx_supervisor(){
+
+    #Leave virtualenv
+    deactivate
+    #Install Supervisor
+    pip install supervisor
+
+    #Configure and Start supervisor
+    case $DIST in
+        'DEBIAN')
+            cp /usr/src/cdr-stats/install/supervisor/gunicorn_cdrstats.conf /etc/supervisor/conf.d/
+            cp /usr/src/cdr-stats/install/supervisor/debian/supervisord /etc/init.d/supervisor
+            chmod +x /etc/init.d/supervisor
+        ;;
+        'CENTOS')
+            cp /usr/src/cdr-stats/install/supervisor/centos/supervisord /etc/init.d/supervisor
+            chmod +x /etc/init.d/supervisor
+            chkconfig --levels 235 supervisor on
+            cp /usr/src/cdr-stats/install/supervisor/centos/supervisord.conf /etc/supervisord.conf
+            mkdir -p /etc/supervisor/conf.d
+            cp /usr/src/cdr-stats/install/supervisor/gunicorn_cdr_stats.conf /etc/supervisor/conf.d/
+            mkdir /var/log/supervisor/
+        ;;
+    esac
+    /etc/init.d/supervisor stop
+    sleep 2
+    /etc/init.d/supervisor start
+}
+
+#CELERY SUPERVISOR
+func_celery_supervisor(){
+
+    #Leave virtualenv
+    deactivate
+    #Install Supervisor
+    pip install supervisor
+
+    #Configure and Start supervisor
+    case $DIST in
+        'DEBIAN')
+            cp /usr/src/cdr-stats/install/supervisor/celery_cdrstats.conf /etc/supervisor/conf.d/
+            cp /usr/src/cdr-stats/install/supervisor/debian/supervisord /etc/init.d/supervisor
+            chmod +x /etc/init.d/supervisor
+        ;;
+        'CENTOS')
+            cp /usr/src/cdr-stats/install/supervisor/centos/supervisord /etc/init.d/supervisor
+            chmod +x /etc/init.d/supervisor
+            chkconfig --levels 235 supervisor on
+            cp /usr/src/cdr-stats/install/supervisor/centos/supervisord.conf /etc/supervisord.conf
+            mkdir -p /etc/supervisor/conf.d
+            cp /usr/src/cdr-stats/install/supervisor/celery_cdrstats.conf /etc/supervisor/conf.d/
+            mkdir /var/log/supervisor/
+        ;;
+    esac
+    /etc/init.d/supervisor stop
+    sleep 2
+    /etc/init.d/supervisor start
+}
+
+
+#Install Django CDR-stats
+func_django_cdrstats_install(){
+    cd $INSTALL_DIR/
+    python manage.py syncdb --noinput
+    python manage.py migrate
+
+    clear
+    echo ""
+    echo "Create a super admin user..."
+    python manage.py createsuperuser
+
+    echo "Install Bower deps"
+    python manage.py bower_install -- --allow-root
+
+    echo "Collects the static files"
+    python manage.py collectstatic --noinput
+
+    #Load Countries Dialcode
+    python manage.py load_country_dialcode
+}
+
+
+#Function to install Frontend
+func_install_frontend(){
+
+    echo ""
+    echo "We will now install CDR-Stats..."
+    echo ""
+
+    #Install Depedencies
+    func_install_dependencies
+
+    #Install Redis
+    func_install_redis
+
+    #Create and enable virtualenv
+    func_setup_virtualenv
+
+    #Backup
+    func_backup_prev_install
+
+    #Install Code Source
+    func_install_source
+
+    #Install Pip Dependencies
+    func_install_pip_deps
+
+    #Prepare Settings
+    func_prepare_settings
+
+    #Create PostgreSQL Database
+    func_create_pgsql_database
+
+    #Install Django cdr-stats
+    func_django_cdrstats_install
+
+    #Install Nginx / Supervisor
+    func_nginx_supervisor
+
+    #Configure Logs files and logrotate
+    func_prepare_logger
+
+    echo ""
+    echo "************************************************************"
+    echo "Congratulations, CDR-Stats Web Application is now installed!"
+    echo "************************************************************"
+    echo ""
+    echo "Please log on to CDR-Stats at "
+    echo "http://$IPADDR:$HTTP_PORT"
+    echo "the username and password are the ones you entered during this installation."
+    echo ""
+    echo "Thank you for installing CDR-Stats"
+    echo "Yours,"
+    echo "The Star2Billing Team"
+    echo "http://www.star2billing.com and http://www.cdr-stats.org/"
+    echo ""
+    echo "************************************************************"
+    echo ""
+}
+
+
+#Function to install backend
+func_install_backend() {
+    echo ""
+    echo "This will install CDR-Stats Backend, Celery & Redis on your server"
+    echo "Press Enter to continue or CTRL-C to exit"
+    read TEMP
+
+    #Create directory for pid file
+    mkdir -p /var/run/celery
+
+    #Install Celery & redis-server
+    func_install_redis
+
+    echo "Install Celery via supervisor..."
+    func_celery_supervisor
+
+    case $DIST in
+        'DEBIAN')
+            #Check permissions on /dev/shm to ensure that celery can start and run for openVZ.
+            DIR="/dev/shm"
+            echo "Checking the permissions for $dir"
+            stat $DIR
+            if [ `stat -c "%a" $DIR` -ge 777 ] ; then
+                echo "$DIR has Read Write permissions."
+            else
+                echo "$DIR has no read write permissions."
+                chmod -R 777 /dev/shm
+                if [ `grep -i /dev/shm /etc/fstab | wc -l` -eq 0 ]; then
+                    echo "Adding fstab entry to set permissions /dev/shm"
+                    echo "none /dev/shm tmpfs rw,nosuid,nodev,noexec 0 0" >> /etc/fstab
+                fi
+            fi
+        ;;
+    esac
+
+    echo ""
+    echo "**********************************************************"
+    echo "Congratulations, CDR-Stats Backend is now installed!"
+    echo "**********************************************************"
+    echo ""
+    echo "Thank you for installing CDR-Stats"
+    echo "Yours"
+    echo "The Star2Billing Team"
+    echo "http://www.star2billing.com and http://www.cdr-stats.org/"
+    echo ""
+    echo "*********************************************************"
+    echo ""
+}
+
+
+#Install Redis
+func_install_redis() {
+    echo "Install Redis-server ..."
+    case $DIST in
+        'DEBIAN')
+            echo "deb http://packages.dotdeb.org wheezy all" > /etc/apt/sources.list.d/dotdeb.list
+            echo "deb-src http://packages.dotdeb.org wheezy all" >> /etc/apt/sources.list.d/dotdeb.list
+            wget --no-check-certificate --quiet -O - http://www.dotdeb.org/dotdeb.gpg | apt-key add -
+            apt-get update
+            apt-get -y install redis-server
+            /etc/init.d/redis-server restart
+        ;;
+        'CENTOS')
+            yum -y --enablerepo=epel install redis
+            chkconfig --add redis
+            chkconfig --level 2345 redis on
+            /etc/init.d/redis start
+        ;;
+    esac
 }
