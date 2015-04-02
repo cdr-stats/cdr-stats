@@ -260,40 +260,71 @@ func_prepare_system_common(){
 
     case $DIST in
         'DEBIAN')
+            chk=`grep "backports" /etc/apt/sources.list|wc -l`
+            if [ $chk -lt 1 ] ; then
+                echo "Setup new sources.list entries"
+                #Used by Node.js
+                echo "deb http://ftp.us.debian.org/debian wheezy-backports main" >> /etc/apt/sources.list
+                #Used by PostgreSQL
+                echo 'deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main' >> /etc/apt/sources.list.d/pgdg.list
+                wget --no-check-certificate --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+            fi
             apt-get update
-
             export LANGUAGE=en_US.UTF-8
             export LANG=en_US.UTF-8
             export LC_ALL=en_US.UTF-8
             locale-gen en_US.UTF-8
-            dpkg-reconfigure locales
-            apt-get -y install --reinstall language-pack-en
 
-            apt-get -y install postgresql postgresql-contrib
-            pg_createcluster 9.1 main --start
+            # dpkg-reconfigure locales
+            # apt-get -y install --reinstall language-pack-en
 
-            apt-get -y install python-setuptools python-dev build-essential libevent-dev python-pip
-            #We need both Postgresql and Mysql for the Connectors
-            apt-get -y install libmysqlclient-dev mysql-client-core-5.5
-            apt-get -y install git-core mercurial gawk
-            #PostgreSQL
+            #Install Postgresql
             apt-get -y install libpq-dev
+            apt-get -y install postgresql-9.4 postgresql-contrib-9.4
+            pg_createcluster 9.4 main --start
+            /etc/init.d/postgresql start
+
+            apt-get -y install python-software-properties
+            apt-get -y install python-setuptools python-dev build-essential
+            apt-get -y install nginx supervisor
+            apt-get -y install git-core mercurial gawk cmake
+            apt-get -y install python-pip
+            #Install Node.js & NPM
+            apt-get -y install nodejs-legacy
+            curl -sL https://deb.nodesource.com/setup | bash -
+            apt-get install -y nodejs
+            #Memcached
+            apt-get -y install memcached
         ;;
         'CENTOS')
-            yum -y update
-            yum -y install autoconf automake bzip2 cpio curl curl-devel curl-devel expat-devel fileutils gcc-c++ gettext-devel gnutls-devel libjpeg-devel libogg-devel libtiff-devel libtool libvorbis-devel make ncurses-devel nmap openssl openssl-devel openssl-devel perl patch unzip wget zip zlib zlib-devel policycoreutils-python sudo
-            yum -y install git
+            yum -y groupinstall "Development Tools"
+            yum -y install git sudo cmake
+            yum -y install python-setuptools python-tools python-devel mercurial memcached
+            yum -y install mlocate vim git wget
+            yum -y install policycoreutils-python
 
-            #Install epel repo for pip and mod_python
-            if [ $KERNELARCH = "x86_64" ]; then
-                rpm -ivh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
-            else
-                rpm -ivh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
-            fi
-            # disable epel repository since by default it is enabled.
-            sed -i "s/enabled=1/enable=0/" /etc/yum.repos.d/epel.repo
+            # install Node & npm
+            yum -y --enablerepo=epel install npm
 
-            yum -y --enablerepo=epel install python-pip mod_python python-setuptools python-tools python-devel mercurial libevent libevent-devel
+            #Install, configure and start nginx
+            yum -y install --enablerepo=epel nginx
+            chkconfig --levels 235 nginx on
+            service nginx start
+
+            #Install & Start PostgreSQL 9.1
+            #CentOs
+            rpm -ivh http://yum.pgrpms.org/9.1/redhat/rhel-6-x86_64/pgdg-centos91-9.1-4.noarch.rpm
+            #Redhad
+            #rpm -ivh http://yum.pgrpms.org/9.1/redhat/rhel-6-x86_64/pgdg-redhat91-9.1-5.noarch.rpm
+            yum -y install postgresql91-server postgresql91-devel
+            chkconfig --levels 235 postgresql-9.1 on
+            service postgresql-9.1 initdb
+            ln -s /usr/pgsql-9.1/bin/pg_config /usr/bin
+            ln -s /var/lib/pgsql/9.1/data /var/lib/pgsql
+            ln -s /var/lib/pgsql/9.1/backups /var/lib/pgsql
+            sed -i "s/ident/md5/g" /var/lib/pgsql/data/pg_hba.conf
+            sed -i "s/ident/md5/g" /var/lib/pgsql/9.1/data/pg_hba.conf
+            service postgresql-9.1 restart
         ;;
     esac
 }
