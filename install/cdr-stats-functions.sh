@@ -16,8 +16,10 @@
 #Install mode can me either CLONE or DOWNLOAD
 INSTALL_MODE='CLONE'
 INSTALL_DIR='/usr/share/cdrstats'
+CONFIG_DIR='/usr/share/cdrstats/cdr_stats'
 INSTALL_DIR_WELCOME='/var/www/cdr-stats'
 DATABASENAME='cdrstats_db'
+CDRPUSHER_DBNAME="cdr-pusher"
 DB_USERSALT=`</dev/urandom tr -dc 0-9| (head -c $1 > /dev/null 2>&1 || head -c 5)`
 DB_USERNAME="cdr_stats_$DB_USERSALT"
 DB_PASSWORD=`</dev/urandom tr -dc A-Za-z0-9| (head -c $1 > /dev/null 2>&1 || head -c 20)`
@@ -29,7 +31,6 @@ CELERYD_GROUP="celery"
 CDRSTATS_ENV="cdr-stats"
 HTTP_PORT="8008"
 BRANCH='develop'
-DB_BACKEND="POSTGRESQL"
 DATETIME=$(date +"%Y%m%d%H%M%S")
 KERNELARCH=$(uname -p)
 SCRIPT_NOTICE="This install script is only intended to run on Debian 7.X"
@@ -349,91 +350,55 @@ func_prepare_system_frontend(){
             #start http after reboot
             chkconfig --levels 235 httpd on
 
-            if echo $DB_BACKEND | grep -i "^SQLITE" > /dev/null ; then
-                yum -y install sqlite
-            elif echo $DB_BACKEND | grep -i "^POSTGRESQL" > /dev/null ; then
-                #Configure PostgreSQL
-                echo "Configure PostgreSQL pg_hba.conf"
-                yum -y install postgresql-server postgresql-devel
-                chkconfig --levels 235 postgresql on
-                echo "service postgresql initdb"
-                echo "/etc/init.d/postgresql initdb"
-                /etc/init.d/postgresql initdb
-                /etc/init.d/postgresql start
+            #Configure PostgreSQL
+            echo "Configure PostgreSQL pg_hba.conf"
+            yum -y install postgresql-server postgresql-devel
+            chkconfig --levels 235 postgresql on
+            echo "service postgresql initdb"
+            echo "/etc/init.d/postgresql initdb"
+            /etc/init.d/postgresql initdb
+            /etc/init.d/postgresql start
 
-                mv /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf.bak
-                sed -e '/^local/ d' -e '/^host / d' /var/lib/pgsql/data/pg_hba.conf.bak > /var/lib/pgsql/data/pg_hba.conf
-                echo 'local   all         postgres                          trust' >> /var/lib/pgsql/data/pg_hba.conf
-                echo 'local   all         all                               md5' >> /var/lib/pgsql/data/pg_hba.conf
-                echo 'host    all         postgres    127.0.0.1/32          trust' >> /var/lib/pgsql/data/pg_hba.conf
-                echo 'host    all         all         127.0.0.1/32          md5' >> /var/lib/pgsql/data/pg_hba.conf
-                echo 'host    all         postgres    ::1/128               trust' >> /var/lib/pgsql/data/pg_hba.conf
-                echo 'host    all         all         ::1/128               md5' >> /var/lib/pgsql/data/pg_hba.conf
-                #Restart PostgreSQL
-                service postgresql restart
-            else
-                #Install & Start MySQL
-                yum -y install mysql-server mysql-devel
-                chkconfig --levels 235 mysqld on
-                #Start Mysql
-                /etc/init.d/mysqld start
-                #Configure MySQL
-                /usr/bin/mysql_secure_installation
-                until mysql -u$MYSQLUSER -p$MYSQLPASSWORD -P$MYHOSTPORT -h$MYHOST -e ";" ; do
-                    clear
-                    echo "Enter your database settings"
-                    func_get_mysql_database_setting
-                done
-            fi
+            mv /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf.bak
+            sed -e '/^local/ d' -e '/^host / d' /var/lib/pgsql/data/pg_hba.conf.bak > /var/lib/pgsql/data/pg_hba.conf
+            echo 'local   all         postgres                          trust' >> /var/lib/pgsql/data/pg_hba.conf
+            echo 'local   all         all                               md5' >> /var/lib/pgsql/data/pg_hba.conf
+            echo 'host    all         postgres    127.0.0.1/32          trust' >> /var/lib/pgsql/data/pg_hba.conf
+            echo 'host    all         all         127.0.0.1/32          md5' >> /var/lib/pgsql/data/pg_hba.conf
+            echo 'host    all         postgres    ::1/128               trust' >> /var/lib/pgsql/data/pg_hba.conf
+            echo 'host    all         all         ::1/128               md5' >> /var/lib/pgsql/data/pg_hba.conf
+            #Restart PostgreSQL
+            service postgresql restart
         ;;
     esac
 
-    #Prepare Database
-    echo "Prepare Database"
-    if echo $DB_BACKEND | grep -i "^SQLITE" > /dev/null ; then
-        #Permission on database folder if we use SQLite
-        mkdir $INSTALL_DIR/database
-        chown -R $APACHE_USER:$APACHE_USER $INSTALL_DIR/database/
+    # Create the Database
+    echo "We will remove existing Database"
+    echo "Press Enter to continue"
+    echo ""
+    echo "sudo -u postgres dropdb $DATABASENAME"
+    echo "Remove Existing Database if exists..."
+    echo "Press Enter to continue"
+    read TEMP
+    sudo -u postgres dropdb $DATABASENAME
+    # if [ `sudo -u postgres psql -qAt --list | egrep $DATABASENAME | wc -l` -eq 1 ]; then
+    #     echo "sudo -u postgres dropdb $DATABASENAME"
+    #     sudo -u postgres dropdb $DATABASENAME
+    # fi
+    echo "Create Database..."
+    echo "sudo -u postgres createdb $DATABASENAME"
+    sudo -u postgres createdb $DATABASENAME
 
-    elif echo $DB_BACKEND | grep -i "^POSTGRESQL" > /dev/null ; then
-        # Create the Database
-        echo "We will remove existing Database"
-        echo "Press Enter to continue"
-        echo ""
-        echo "sudo -u postgres dropdb $DATABASENAME"
-        echo "Remove Existing Database if exists..."
-        echo "Press Enter to continue"
-        read TEMP
-        sudo -u postgres dropdb $DATABASENAME
-        # if [ `sudo -u postgres psql -qAt --list | egrep $DATABASENAME | wc -l` -eq 1 ]; then
-        #     echo "sudo -u postgres dropdb $DATABASENAME"
-        #     sudo -u postgres dropdb $DATABASENAME
-        # fi
-        echo "Create Database..."
-        echo "sudo -u postgres createdb $DATABASENAME"
-        sudo -u postgres createdb $DATABASENAME
+    #CREATE ROLE / USER
+    echo "Create Postgresql user $DB_USERNAME"
+    #echo "sudo -u postgres createuser --no-createdb --no-createrole --no-superuser $DB_USERNAME"
+    #sudo -u postgres createuser --no-createdb --no-createrole --no-superuser $DB_USERNAME
+    echo "sudo -u postgres psql --command=\"create user $DB_USERNAME with password 'XXXXXXXXXX';\""
+    sudo -u postgres psql --command="CREATE USER $DB_USERNAME with password '$DB_PASSWORD';"
 
-        #CREATE ROLE / USER
-        echo "Create Postgresql user $DB_USERNAME"
-        #echo "sudo -u postgres createuser --no-createdb --no-createrole --no-superuser $DB_USERNAME"
-        #sudo -u postgres createuser --no-createdb --no-createrole --no-superuser $DB_USERNAME
-        echo "sudo -u postgres psql --command=\"create user $DB_USERNAME with password 'XXXXXXXXXX';\""
-        sudo -u postgres psql --command="CREATE USER $DB_USERNAME with password '$DB_PASSWORD';"
-
-        echo "Grant all privileges to user..."
-        echo "sudo -u postgres psql --command=\"GRANT ALL PRIVILEGES on database $DATABASENAME to $DB_USERNAME;\""
-        sudo -u postgres psql --command="GRANT ALL PRIVILEGES on database $DATABASENAME to $DB_USERNAME;"
-    else
-        # Create the Database
-        echo "Remove Existing Database if exists..."
-        if [ -d "/var/lib/mysql/$DATABASENAME" ]; then
-            echo "mysql --user=$DB_USERNAME --password=$DB_PASSWORD -e 'DROP DATABASE $DATABASENAME;'"
-            mysql --user=$DB_USERNAME --password=$DB_PASSWORD -e "DROP DATABASE $DATABASENAME;"
-        fi
-        echo "Create Database..."
-        echo "mysql --user=$DB_USERNAME --password=$DB_PASSWORD -e 'CREATE DATABASE $DATABASENAME CHARACTER SET UTF8;'"
-        mysql --user=$DB_USERNAME --password=$DB_PASSWORD -e "CREATE DATABASE $DATABASENAME CHARACTER SET UTF8;"
-    fi
+    echo "Grant all privileges to user..."
+    echo "sudo -u postgres psql --command=\"GRANT ALL PRIVILEGES on database $DATABASENAME to $DB_USERNAME;\""
+    sudo -u postgres psql --command="GRANT ALL PRIVILEGES on database $DATABASENAME to $DB_USERNAME;"
 }
 
 
@@ -529,37 +494,27 @@ func_install_pip_deps(){
 #Function to prepare settings_local.py
 func_prepare_settings(){
     #Copy settings_local.py into cdr-stats dir
-    cp /usr/src/cdr-stats/install/conf/settings_local.py $INSTALL_DIR
+    cp /usr/src/cdr-stats/install/conf/settings_local.py $CONFIG_DIR
 
     #Update Secret Key
     echo "Update Secret Key..."
     RANDPASSW=`</dev/urandom tr -dc A-Za-z0-9| (head -c $1 > /dev/null 2>&1 || head -c 50)`
-    sed -i "s/^SECRET_KEY.*/SECRET_KEY = \'$RANDPASSW\'/g"  $INSTALL_DIR/settings.py
+    sed -i "s/^SECRET_KEY.*/SECRET_KEY = \'$RANDPASSW\'/g"  $CONFIG_DIR/settings.py
     echo ""
 
     #Disable Debug
-    sed -i "s/DEBUG = True/DEBUG = False/g"  $INSTALL_DIR/settings_local.py
-    sed -i "s/TEMPLATE_DEBUG = DEBUG/TEMPLATE_DEBUG = False/g"  $INSTALL_DIR/settings_local.py
+    sed -i "s/DEBUG = True/DEBUG = False/g"  $CONFIG_DIR/settings_local.py
+    sed -i "s/TEMPLATE_DEBUG = DEBUG/TEMPLATE_DEBUG = False/g"  $CONFIG_DIR/settings_local.py
 
-    if echo $DB_BACKEND | grep -i "^SQLITE" > /dev/null ; then
-        # Setup settings_local.py for SQLite
-        sed -i "s/'init_command/#'init_command/g"  $INSTALL_DIR/settings_local.py
-    elif echo $DB_BACKEND | grep -i "^POSTGRESQL" > /dev/null ; then
-        #Setup settings_local.py for POSTGRESQL
-        sed -i "s/DATABASENAME/$DATABASENAME/"  $INSTALL_DIR/settings_local.py
-        sed -i "s/DB_USERNAME/$DB_USERNAME/" $INSTALL_DIR/settings_local.py
-        sed -i "s/DB_PASSWORD/$DB_PASSWORD/" $INSTALL_DIR/settings_local.py
-        sed -i "s/DB_HOSTNAME/$DB_HOSTNAME/" $INSTALL_DIR/settings_local.py
-        sed -i "s/DB_PORT/$DB_PORT/" $INSTALL_DIR/settings_local.py
-    else
-        # Setup settings_local.py for MySQL
-        sed -i "s/'django.db.backends.postgresql_psycopg2'/'django.db.backends.mysql'/"  $INSTALL_DIR/settings_local.py
-        sed -i "s/DATABASENAME/$DATABASENAME/"  $INSTALL_DIR/settings_local.py
-        sed -i "s/DB_USERNAME/$DB_USERNAME/" $INSTALL_DIR/settings_local.py
-        sed -i "s/DB_PASSWORD/$DB_PASSWORD/" $INSTALL_DIR/settings_local.py
-        sed -i "s/DB_HOSTNAME/$DB_HOSTNAME/" $INSTALL_DIR/settings_local.py
-        sed -i "s/DB_PORT/$DB_PORT/" $INSTALL_DIR/settings_local.py
-    fi
+    #Setup settings_local.py for POSTGRESQL
+    sed -i "s/DATABASENAME/$DATABASENAME/"  $CONFIG_DIR/settings_local.py
+    sed -i "s/DB_USERNAME/$DB_USERNAME/" $CONFIG_DIR/settings_local.py
+    sed -i "s/DB_PASSWORD/$DB_PASSWORD/" $CONFIG_DIR/settings_local.py
+    sed -i "s/DB_HOSTNAME/$DB_HOSTNAME/" $CONFIG_DIR/settings_local.py
+    sed -i "s/DB_PORT/$DB_PORT/" $CONFIG_DIR/settings_local.py
+
+    # settings for CDRPUSHER_DBNAME
+    sed -i "s/CDRPUSHER_DBNAME/$CDRPUSHER_DBNAME/"  $CONFIG_DIR/settings_local.py
 
     #Setup Timezone
     case $DIST in
@@ -574,7 +529,7 @@ func_prepare_settings(){
     esac
 
     #Set Timezone in settings_local.py
-    sed -i "s@Europe/Madrid@$ZONE@g" $INSTALL_DIR/settings_local.py
+    sed -i "s@Europe/Madrid@$ZONE@g" $CONFIG_DIR/settings_local.py
 
     IFCONFIG=`which ifconfig 2>/dev/null||echo /sbin/ifconfig`
     IPADDR=`$IFCONFIG eth0|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'`
@@ -584,9 +539,9 @@ func_prepare_settings(){
         read IPADDR
     fi
     #Update Authorize local IP
-    sed -i "s/SERVER_IP_PORT/$IPADDR:$HTTP_PORT/g" $INSTALL_DIR/settings_local.py
-    sed -i "s/#'SERVER_IP',/'$IPADDR',/g" $INSTALL_DIR/settings_local.py
-    sed -i "s/SERVER_IP/$IPADDR/g" $INSTALL_DIR/settings_local.py
+    sed -i "s/SERVER_IP_PORT/$IPADDR:$HTTP_PORT/g" $CONFIG_DIR/settings_local.py
+    sed -i "s/#'SERVER_IP',/'$IPADDR',/g" $CONFIG_DIR/settings_local.py
+    sed -i "s/SERVER_IP/$IPADDR/g" $CONFIG_DIR/settings_local.py
 }
 
 #Function Prepare Settings for the CDR backend
@@ -735,9 +690,7 @@ func_django_cdrstats_install(){
 func_install_frontend(){
 
     echo ""
-    echo ""
-    echo "We will now install CDR-Stats on your server"
-    echo "============================================"
+    echo "We will now install CDR-Stats..."
     echo ""
 
     #Prepare
