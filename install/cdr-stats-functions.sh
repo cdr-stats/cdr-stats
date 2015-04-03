@@ -511,12 +511,18 @@ func_prepare_settings(){
     IFCONFIG=`which ifconfig 2>/dev/null||echo /sbin/ifconfig`
     IPADDR=`$IFCONFIG eth0|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'`
     if [ -z "$IPADDR" ]; then
-        clear
-        echo "we have not detected your IP address automatically!"
-        echo "Please enter your IP address manually:"
-        read IPADDR
-        echo ""
+        #the following work on Docker container
+        IPADDR=`ip -4 -o addr show eth0 | cut -d ' ' -f 7 | cut -d '/' -f 1`
+        if [ -z "$IPADDR" ]; then
+            clear
+            echo "we have not detected your IP address automatically!"
+            echo "Please enter your IP address manually:"
+            read IPADDR
+            echo ""
+        fi
     fi
+    echo "IP Address Detected :> $IPADDR"
+
     #Update Authorize local IP
     sed -i "s/SERVER_IP_PORT/$IPADDR:$HTTP_PORT/g" $CONFIG_DIR/settings_local.py
     sed -i "s/#'SERVER_IP',/'$IPADDR',/g" $CONFIG_DIR/settings_local.py
