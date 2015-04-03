@@ -11,8 +11,9 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
+
 from django import forms
-#from django.forms import ModelForm
+# from django.forms import ModelForm
 from django.utils.translation import gettext_lazy as _
 from cdr_alert.models import Alarm
 from cdr.functions_def import get_country_list
@@ -24,10 +25,11 @@ from crispy_forms.layout import Layout, Div, HTML
 class BWCountryForm(forms.Form):
 
     """Blacklist/Whitelist by country form"""
-    country = forms.ChoiceField(label=_('country'), required=True, choices=get_country_list())
+    country = forms.ChoiceField(label=_('country'), required=True)
 
     def __init__(self, form_type, *args, **kwargs):
         super(BWCountryForm, self).__init__(*args, **kwargs)
+        self.fields['country_id'].choices = get_country_list()
 
         self.helper = FormHelper()
         if form_type == 'blacklist':

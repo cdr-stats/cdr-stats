@@ -19,6 +19,12 @@ from postgres.fields import json_field
 
 
 class CDRImport(models.Model):
+    """
+    CDRImport table live on Database 'import_cdr'
+
+    Manually selecting a database for a QuerySet:
+    CDRImport.objects.using('import_cdr').all()
+    """
     id = models.AutoField(primary_key=True)
     switch = models.CharField(max_length=80)
     cdr_source_type = models.IntegerField(blank=True, null=True)
@@ -44,7 +50,7 @@ class CDRImport(models.Model):
     buy_cost = models.DecimalField(max_digits=12, decimal_places=5, blank=True, null=True)
     sell_rate = models.DecimalField(max_digits=10, decimal_places=5, blank=True, null=True)
     sell_cost = models.DecimalField(max_digits=12, decimal_places=5, blank=True, null=True)
-    imported = models.BooleanField()
+    imported = models.BooleanField(default=False)
 
     # Postgresql >= 9.4 Json field
     extradata = json_field.JSONField(blank=True)
@@ -59,7 +65,3 @@ class CDRImport(models.Model):
         verbose_name = "CDR Import"
         verbose_name_plural = "CDRs Import"
         db_table = 'cdr_import'
-
-
-# Manually selecting a database for a QuerySet
-# CDRImport.objects.using('import_cdr').all()

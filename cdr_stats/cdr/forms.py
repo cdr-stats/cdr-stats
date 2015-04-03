@@ -96,13 +96,13 @@ class SearchForm(forms.Form):
                                       choices=COMPARE_LIST)
     hangup_cause_id = forms.ChoiceField(label=_('hangup cause').capitalize(), required=False)
     switch_id = forms.ChoiceField(label=_('switch').capitalize(), required=False)
-    country_id = forms.MultipleChoiceField(label=_('country').capitalize(), required=False,
-                                           choices=country_list_with_all())
+    country_id = forms.MultipleChoiceField(label=_('country').capitalize(), required=False)
 
     def __init__(self, *args, **kwargs):
         super(SearchForm, self).__init__(*args, **kwargs)
         self.fields['hangup_cause_id'].choices = hc_list_with_all()
         self.fields['switch_id'].choices = sw_list_with_all()
+        self.fields['country_id'].choices = country_list_with_all()
 
     def clean_duration(self):
         """Retrieve valid duration & it should be integer
