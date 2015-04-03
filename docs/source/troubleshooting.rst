@@ -14,7 +14,7 @@ Troubleshooting
 Where to find the log files
 ===========================
 
-All the logs are centralized into one single directory **/var/log/cdrstats/**
+All the logs are centralized into one single directory **/var/log/cdr-stats/**
 
 
 **cdrstats-django-db.log** : This contains all the Database queries performed by the UI
