@@ -237,6 +237,14 @@ INSTALLED_APPS = (
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
+# gunicorn
+try:
+    import gunicorn
+except ImportError:
+    pass
+else:
+    INSTALLED_APPS = INSTALLED_APPS + ('gunicorn',)
+
 # Debug Toolbar
 try:
     import debug_toolbar
