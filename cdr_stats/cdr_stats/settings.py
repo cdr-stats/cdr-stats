@@ -420,6 +420,11 @@ EMAIL_SUBJECT_PREFIX = '[CDR-Stats] '
 # This setting avoid getting span with loads of alarms
 DELAY_BETWEEN_MAIL_NOTIFICATION = 10
 
+# Demo mode
+# =========
+# This will disable certain save, to avoid changing password
+DEMO_MODE = False
+
 # IPYTHON
 # =======
 IPYTHON_ARGUMENTS = [
