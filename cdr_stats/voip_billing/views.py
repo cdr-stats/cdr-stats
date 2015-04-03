@@ -74,7 +74,6 @@ def voip_rates(request):
         with pagination & sorting column
     """
     form = PrefixRetailRateForm(request.POST or None)
-    voipplan_id = request.user.userprofile.voipplan_id
     final_rate_list = []
     # Get pagination data
 
@@ -100,10 +99,14 @@ def voip_rates(request):
             # Reset variables
             request.session['dialcode'] = ''
             dialcode = ''
-    if dialcode:
-        final_rate_list = find_rates(voipplan_id, dialcode=dialcode, sort_field=sort_order, order=order)
+    if hasattr(request.user, 'userprofile'):
+        voipplan_id = request.user.userprofile.voipplan_id
+        if dialcode:
+            final_rate_list = find_rates(voipplan_id, dialcode=dialcode, sort_field=sort_order, order=order)
+        else:
+            final_rate_list = find_rates(voipplan_id, dialcode=None, sort_field=sort_order, order=order)
     else:
-        final_rate_list = find_rates(voipplan_id, dialcode=None, sort_field=sort_order, order=order)
+        final_rate_list = []
 
     variables = {
         'form': form,
@@ -175,19 +178,21 @@ def simulator(request):
     data = []
     form = SimulatorForm(request.user, request.POST or None)
     # Get Voip Plan ID according to USER
-    voipplan_id = request.user.userprofile.voipplan_id
+
     if form.is_valid():
         # IS recipient_phone_no/destination no is valid prefix
         # (Not banned Prefix) ?
         destination_no = request.POST.get("destination_no")
-        allowed = prefix_allowed_to_call(destination_no, voipplan_id)
-        if allowed:
-            rates = rate_engine(voipplan_id=voipplan_id, dest_number=destination_no)
-            for rate in rates:
-                r_r_plan = VoIPRetailRate.objects.get(id=rate.rrid)
-                data.append((voipplan_id,
-                             r_r_plan.voip_retail_plan_id.name,
-                             rate.retail_rate))
+        if hasattr(request.user, 'userprofile'):
+            voipplan_id = request.user.userprofile.voipplan_id
+            allowed = prefix_allowed_to_call(destination_no, voipplan_id)
+            if allowed:
+                rates = rate_engine(voipplan_id=voipplan_id, dest_number=destination_no)
+                for rate in rates:
+                    r_r_plan = VoIPRetailRate.objects.get(id=rate.rrid)
+                    data.append((voipplan_id,
+                                 r_r_plan.voip_retail_plan_id.name,
+                                 rate.retail_rate))
     data = {
         'form': form,
         'data': data,

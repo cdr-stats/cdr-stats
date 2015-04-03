@@ -519,7 +519,7 @@ def mail_report(request):
     logging.debug('CDR mail report view start')
 
     msg = ''
-    if not request.user.userprofile:
+    if not hasattr(request.user, 'userprofile'):
         form = None
     else:
         form = EmailReportForm(request.user, request.POST or None, instance=request.user.userprofile)
