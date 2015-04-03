@@ -8,10 +8,10 @@ django-jsonfield==0.9.12
 django-countries==2.1.2
 linaro-django-pagination==2.0.2
 django-admin-tools==0.5.1
-django-dajax==0.9.2
 #django-dajaxice doesn't support Django 1.6
-git+git://github.com/ifanrx/django-dajaxice.git
-django-dajaxice-ng==0.6.0
+#django-dajax==0.9.2
+django-dajax-ng==0.9.4
+django-dajaxice-ng==0.6.0.0
 django-country-dialcode==0.5.1
 django-admin-tools-stats==0.6.1
 # django-filter==0.9.2

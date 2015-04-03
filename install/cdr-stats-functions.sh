@@ -210,6 +210,15 @@ func_check_dependencies() {
         exit 1
     fi
 
+    #Check django-postgres
+    grep_pip=`pip freeze| grep django-postgres`
+    if echo $grep_pip | grep -i "django-postgres" > /dev/null ; then
+        echo "OK : django-postgres installed..."
+    else
+        echo "Error : django-postgres not installed..."
+        exit 1
+    fi
+
     echo ""
     echo "Python dependencies successfully installed!"
     echo ""
@@ -501,8 +510,10 @@ func_prepare_settings(){
     IPADDR=`$IFCONFIG eth0|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'`
     if [ -z "$IPADDR" ]; then
         clear
-        echo "we have not detected your IP address automatically, please enter it manually"
+        echo "we have not detected your IP address automatically!"
+        echo "Please enter your IP address manually:"
         read IPADDR
+        echo ""
     fi
     #Update Authorize local IP
     sed -i "s/SERVER_IP_PORT/$IPADDR:$HTTP_PORT/g" $CONFIG_DIR/settings_local.py
