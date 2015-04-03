@@ -375,7 +375,7 @@ class WorldForm(CdrSearchForm):
 class EmailReportForm(forms.ModelForm):
 
     """
-    Form used to change the detail of a user in the Customer UI.
+    Form used to set the email to get Report
     """
     multiple_email = forms.CharField(max_length=300, required=False,
                                      label=_('Email to send the report'))

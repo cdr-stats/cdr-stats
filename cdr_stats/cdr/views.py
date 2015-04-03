@@ -517,11 +517,15 @@ def mail_report(request):
         to generate mail report
     """
     logging.debug('CDR mail report view start')
+
     msg = ''
-    form = EmailReportForm(request.user, request.POST or None, instance=request.user.userprofile)
-    if form.is_valid():
-        form.save()
-        msg = _('email ids are saved successfully.')
+    if not request.user.userprofile:
+        form = None
+    else:
+        form = EmailReportForm(request.user, request.POST or None, instance=request.user.userprofile)
+        if form.is_valid():
+            form.save()
+            msg = _('email ids are saved successfully.')
 
     mail_data = get_cdr_mail_report(request.user)
 
@@ -900,6 +904,8 @@ def generate_crate(max_num):
     """
     helper function to generate well distributed grates
     """
+    if not max_num:
+        max_num = 100
     increment = max_num / 7
     base = max_num / 10
     grades = []

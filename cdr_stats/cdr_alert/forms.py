@@ -29,7 +29,7 @@ class BWCountryForm(forms.Form):
 
     def __init__(self, form_type, *args, **kwargs):
         super(BWCountryForm, self).__init__(*args, **kwargs)
-        self.fields['country_id'].choices = get_country_list()
+        self.fields['country'].choices = get_country_list()
 
         self.helper = FormHelper()
         if form_type == 'blacklist':

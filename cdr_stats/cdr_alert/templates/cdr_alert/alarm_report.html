@@ -26,11 +26,7 @@
         <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "report by day"|title %}</a></li>
     </ul>
 
-    <div id="form_collapse" class="collapse">
-        {% crispy form form.helper %}
-    </div>
-    {% include "frontend/common_search_toggle_button.html" %}
-    <div>&nbsp;</div>
+    {% crispy form form.helper %}
     <div class="tab-content">
         <div id="tabs-1" class="tab-pane {% if action == 'tabs-1' or action == '' %}active{% endif %}">
             <form method="POST" action="del/0/" enctype="multipart/form-data" id="ListForm">{% csrf_token %}
