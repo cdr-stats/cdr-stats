@@ -12,7 +12,7 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-#from django.test import TestCase
+# from django.test import TestCase
 from django_lets_go.utils import BaseAuthenticatedClient
 from frontend.views import login_view, logout_view, diagnostic
 

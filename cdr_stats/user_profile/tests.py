@@ -20,7 +20,7 @@ from user_profile.forms import UserChangeDetailForm, UserChangeDetailExtendForm
 from user_profile.views import customer_detail_change
 from django_lets_go.utils import BaseAuthenticatedClient
 
-#from django.contrib import admin
+# from django.contrib import admin
 # admin.site.register(User)
 
 

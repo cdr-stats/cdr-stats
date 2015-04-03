@@ -13,10 +13,10 @@
 #
 from rest_framework import viewsets
 from apirest.switch_serializers import SwitchSerializer
-#from rest_framework.permissions import IsAuthenticated
+# from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from cdr.models import Switch
-#from permissions import CustomObjectPermissions
+# from permissions import CustomObjectPermissions
 
 
 class SwitchViewSet(viewsets.ReadOnlyModelViewSet):

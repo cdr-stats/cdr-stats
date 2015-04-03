@@ -16,7 +16,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework import viewsets
 from apirest.user_serializers import UserSerializer
-#from permissions import CustomObjectPermissions
+# from permissions import CustomObjectPermissions
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
