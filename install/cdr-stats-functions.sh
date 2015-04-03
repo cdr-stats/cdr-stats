@@ -521,7 +521,7 @@ func_prepare_settings(){
             echo ""
         fi
     fi
-    echo "IP Address Detected :> $IPADDR"
+    echo "The local IP-Address used for installation is $IPADDR"
 
     #Update Authorize local IP
     sed -i "s/SERVER_IP_PORT/$IPADDR:$HTTP_PORT/g" $CONFIG_DIR/settings_local.py

@@ -209,7 +209,7 @@ INSTALLED_APPS = (
     'notification',
     'country_dialcode',
     # 'geordi',
-    'gunicorn',
+    # 'gunicorn',
     'frontend_notification',
     'mod_utils',
     'voip_gateway',
