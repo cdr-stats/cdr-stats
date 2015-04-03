@@ -279,14 +279,17 @@ except ImportError:
 else:
     INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
 
+# Default Test Runner
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
 # Nose
-try:
-    import nose
-except ImportError:
-    pass
-else:
-    INSTALLED_APPS = INSTALLED_APPS + ('django_nose',)
-    TEST_RUNNER = 'django_nose.run_tests'
+# TODO: Re-Enable Nose as it s actually broken
+# try:
+#     import nose
+#     INSTALLED_APPS = INSTALLED_APPS + ('django_nose',)
+#     TEST_RUNNER = 'utils.test_runner.MyRunner'
+# except ImportError:
+#     pass
 
 
 # AUTH MODULE SETTINGS
