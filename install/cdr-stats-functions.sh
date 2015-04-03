@@ -581,6 +581,13 @@ func_create_pgsql_database(){
 
     echo "Grant all privileges to user..."
     sudo -u postgres psql --command="GRANT ALL PRIVILEGES on database $DATABASENAME to $DB_USERNAME;"
+
+    #Create CDR-Pusher Database (we don't touch this DB if it exists)
+    if [ `sudo -u postgres psql -qAt --list | egrep $CDRPUSHER_DBNAME | wc -l` -eq 1 ]; then
+        echo "Create Database..."
+        echo "sudo -u postgres createdb $CDRPUSHER_DBNAME"
+        sudo -u postgres createdb $CDRPUSHER_DBNAME
+    fi
 }
 
 #NGINX / SUPERVISOR
