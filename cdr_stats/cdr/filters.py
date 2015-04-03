@@ -12,10 +12,10 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-from django.db import models
-import django_filters
-from django_filters.filters import RangeFilter, DateTimeFilter, DateRangeFilter
-from cdr.models import CDR
+# from django.db import models
+# import django_filters
+# from django_filters.filters import RangeFilter, DateTimeFilter, DateRangeFilter
+# from cdr.models import CDR
 from cdr.forms import COMPARE_DICT
 
 #
@@ -38,22 +38,22 @@ from cdr.forms import COMPARE_DICT
 #     {% endfor %}
 
 
-class CDRFilter(django_filters.FilterSet):
-    filter_overrides = {
-        models.CharField: {
-            'filter_class': django_filters.CharFilter,
-            'extra': lambda f: {
-                'lookup_type': 'icontains',
-            }
-        }
-    }
-    duration = RangeFilter()
-    billsec = RangeFilter()
-    starting_date = DateRangeFilter()
+# class CDRFilter(django_filters.FilterSet):
+#     filter_overrides = {
+#         models.CharField: {
+#             'filter_class': django_filters.CharFilter,
+#             'extra': lambda f: {
+#                 'lookup_type': 'icontains',
+#             }
+#         }
+#     }
+#     duration = RangeFilter()
+#     billsec = RangeFilter()
+#     starting_date = DateRangeFilter()
 
-    class Meta:
-        model = CDR
-        fields = ['switch', 'caller_id_number', 'starting_date', 'duration', 'billsec']
+#     class Meta:
+#         model = CDR
+#         fields = ['switch', 'caller_id_number', 'starting_date', 'duration', 'billsec']
 
 
 def get_filter_operator_int(base_field, operator):
