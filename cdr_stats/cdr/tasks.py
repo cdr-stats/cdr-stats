@@ -37,7 +37,9 @@ class run_cdr_import(PeriodicTask):
         logger.info('TASK :: run_cdr_import')
 
         # launch the CDRs import
-        import_cdr()
+        (status, msg) = import_cdr()
+        if not status:
+            logger.error('TASK :: call function import_cdr (%s)' % str(msg))
 
         return True
 

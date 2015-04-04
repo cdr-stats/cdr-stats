@@ -22,6 +22,41 @@ from cdr.functions_def import get_dialcode
 from voip_billing.rate_engine import calculate_call_cost
 from cdr_alert.functions_blacklist import verify_auth_dest_number
 from user_profile.models import UserProfile
+from django.db.utils import OperationalError
+from django.db import ProgrammingError
+
+
+def check_connection_sql():
+    """
+    check the import postgresql database is up and reachable
+    """
+    try:
+        cursor = connections['import_cdr'].cursor()
+        cursor.execute("SELECT 1 FROM cdr_import")
+        row = cursor.fetchone()
+        return row[0] == 1
+    except OperationalError:
+        # Error Connection to CDR-Pusher
+        return False
+    except ProgrammingError:
+        # Error Running SQL on CDR-Pusher
+        return False
+
+
+def get_to_import_cdr_count():
+    """
+    check the import postgresql database is up and reachable
+    """
+    cursor = connections['import_cdr'].cursor()
+    # Get non imported cdrs
+    cursor.execute("SELECT count(*) FROM cdr_import WHERE imported=False")
+    row = cursor.fetchone()
+    not_imported_cdr = row[0]
+    # Get cdrs
+    cursor.execute("SELECT count(*) FROM cdr_import")
+    row = cursor.fetchone()
+    total_cdr = row[0]
+    return (total_cdr, not_imported_cdr)
 
 
 def bulk_create_cdrs(list_newcdr, list_cdrid):
@@ -42,6 +77,9 @@ def import_cdr(shell=False):
     Connect to the `import_cdr` Database and import the new CDRs
     """
     count_imported = 0
+
+    if not check_connection_sql():
+        return (False, "Error Connection")
 
     # Each time the task is running we will only take 5000 records to import
     # This define the max speed of import, this limit could be changed
@@ -140,4 +178,4 @@ def import_cdr(shell=False):
         bulk_create_cdrs(list_newcdr, list_cdrid)
         (list_newcdr, list_cdrid) = ([], [])
 
-    return count_imported
+    return (True, count_imported)

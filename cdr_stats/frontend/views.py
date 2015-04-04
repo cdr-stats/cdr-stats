@@ -21,8 +21,8 @@ from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 from django_lets_go.common_functions import get_news
 from frontend.forms import LoginForm
-from django.db import connections
 from collections import OrderedDict
+from cdr.cdr_importer import check_connection_sql, get_to_import_cdr_count
 
 news_url = settings.NEWS_URL
 
@@ -54,32 +54,6 @@ def index(request):
     return render_to_response('frontend/index.html', data, context_instance=RequestContext(request))
 
 
-def check_connection_sql():
-    """
-    check the import postgresql database is up and reachable
-    """
-    cursor = connections['import_cdr'].cursor()
-    cursor.execute("SELECT 1")
-    row = cursor.fetchone()
-    return row[0] == 1
-
-
-def get_to_import_cdr_count():
-    """
-    check the import postgresql database is up and reachable
-    """
-    cursor = connections['import_cdr'].cursor()
-    # Get non imported cdrs
-    cursor.execute("SELECT count(*) FROM cdr_import WHERE imported=False")
-    row = cursor.fetchone()
-    not_imported_cdr = row[0]
-    # Get cdrs
-    cursor.execute("SELECT count(*) FROM cdr_import")
-    row = cursor.fetchone()
-    total_cdr = row[0]
-    return (total_cdr, not_imported_cdr)
-
-
 @permission_required('user_profile.diagnostic', login_url='/')
 @login_required
 def diagnostic(request):
@@ -102,11 +76,14 @@ def diagnostic(request):
     # password = 'XXXXXXXXXXXX'
 
     conn_status = check_connection_sql()
-    (total_cdr, not_imported_cdr) = get_to_import_cdr_count()
+    if conn_status:
+        (total_cdr, not_imported_cdr) = get_to_import_cdr_count()
+    else:
+        (total_cdr, not_imported_cdr) = (0, 0)
 
     if not conn_status:
-        error_msg = _("please review the 'DATABASES' Settings in the conf file /usr/share/cdr-stats/settings_local.py make sure the settings, username, password are correct.")
-        info_msg = _("after changes in your 'settings_local.py' conf file, you will need to restart celery: $ /etc/init.d/cdr-stats-celeryd restart")
+        error_msg = _("Please review the 'DATABASES' settings in the config file (/usr/share/cdr-stats/settings_local.py). Make sure that the Database `CDR-Pusher` is created.")
+        info_msg = _("After changes in your 'settings_local.py' conf file, you will need to restart celery: $ /etc/init.d/cdr-stats-celeryd restart")
 
     conn_report = OrderedDict([
                               ('engine', engine),
