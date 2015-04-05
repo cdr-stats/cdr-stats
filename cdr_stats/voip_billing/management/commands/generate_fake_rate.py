@@ -51,7 +51,7 @@ class Command(BaseCommand):
 
         voip_plan_id = 1  # default
         if options.get('call-plan'):
-            voip_plan_id = int(options.get('call-plan'), 1)
+            voip_plan_id = int(options.get('call-plan', 1))
 
         try:
             voip_plan = VoIPPlan.objects.get(pk=int(voip_plan_id))

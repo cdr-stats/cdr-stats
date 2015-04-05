@@ -8,7 +8,9 @@ import os
 
 class Command(BaseCommand):
     args = ' '
-    help = "Load Sample VoIP Billing\n"
+    help = "Load sample data for VoIP Billing\n"\
+           "---------------------------------\n"\
+           "python manage.py load_sample_voip_billing"
 
     option_list = BaseCommand.option_list
 

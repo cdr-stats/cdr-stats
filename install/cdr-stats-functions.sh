@@ -668,6 +668,9 @@ func_django_cdrstats_install(){
 
     #Load Countries Dialcode
     python manage.py load_country_dialcode
+
+    #Load default billing data
+    python manage.py load_sample_voip_billing
 }
 
 
