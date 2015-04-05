@@ -14,7 +14,7 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from django_lets_go.common_functions import isint
-from voip_billing.function_def import rate_range
+from voip_billing.function_def import get_list_rate_filter
 from voip_billing.models import VoIPPlan, VoIPRetailPlan, VoIPCarrierPlan
 from voip_billing.constants import CONFIRMATION_TYPE
 from cdr.forms import sw_list_with_all, CdrSearchForm
@@ -234,7 +234,7 @@ class CustomRateFilterForm(forms.Form):
     """
     Admin Form : Custom Rate Filter
     """
-    rate_range = forms.ChoiceField(label=_(" "), choices=rate_range(), required=False)
+    rate_range = forms.ChoiceField(label=_(" "), choices=get_list_rate_filter(), required=False)
     rate = forms.CharField(label=_(" "), widget=forms.TextInput(attrs={'size': 10}),
                            required=False)
 

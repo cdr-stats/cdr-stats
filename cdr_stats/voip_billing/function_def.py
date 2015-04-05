@@ -43,7 +43,7 @@ def rate_filter_range_field_chk(rate, rate_range, field_name):
     return kwargs
 
 
-def rate_range():
+def get_list_rate_filter():
     """
     Return list of filter for the rate symbol
     """

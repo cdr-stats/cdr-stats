@@ -35,14 +35,10 @@ from voip_billing.function_def import rate_filter_range_field_chk
 from voip_billing.rate_engine import rate_engine
 from voip_billing.tasks import RebillingTask
 from django_lets_go.common_functions import variable_value, ceil_strdate
-from django_lets_go.app_label_renamer import AppLabelRenamer
 from django_lets_go.admin_custom_actions import export_as_csv_action
 from datetime import datetime
 import tablib
 import csv
-
-APP_LABEL = _('VoIP Billing')
-AppLabelRenamer(native_app_label=u'voip_billing', app_label=APP_LABEL).main()
 
 
 def prefix_qs():
@@ -346,23 +342,23 @@ admin.site.register(VoIPRetailPlan, VoIPRetailPlanAdmin)
 
 
 # VoIPRetailRate
-class VoIPRetailRateAdmin(AutocompleteModelAdmin):
+class VoIPRetailRateAdmin(admin.ModelAdmin):
     fieldsets = (
         (_('VoIP Retail Rate'), {
-            # 'classes':('collapse', ),
             'fields': ('voip_retail_plan_id', 'prefix', 'retail_rate'),
         }),
     )
-    list_display = ('id', 'voip_retail_plan_name', 'prefix_with_name',
-                    'retail_rate', 'updated_date',)
+    list_display = ('id', 'voip_retail_plan_name', 'prefix_with_name', 'retail_rate', 'updated_date',)
     list_display_links = ('id',)
     list_editable = ['retail_rate']
-    list_filter = ['updated_date', 'voip_retail_plan_id', 'prefix']
-    search_fields = ('retail_rate',)
-    valid_lookups = ('updated_date', 'voip_retail_plan_id', 'prefix')
-    related_search_fields = {
-        'prefix': ('prefix', 'destination'),
-    }
+    # if list of prefix is long adding prefix to list_filter will slow it down
+    # list_filter = ['updated_date', 'voip_retail_plan_id', 'prefix']
+    list_filter = ['updated_date', 'voip_retail_plan_id']
+    search_fields = ('^prefix__prefix',)
+    # valid_lookups = ('updated_date', 'voip_retail_plan_id', 'prefix')
+    # related_search_fields = {
+    #     'prefix': ('prefix', 'destination'),
+    # }
     actions = [export_as_csv_action("Export selected retail rates as CSV file",
                                     fields=['voip_retail_plan_id', 'prefix', 'retail_rate'],
                                     header=False)]
@@ -381,7 +377,7 @@ class VoIPRetailRateAdmin(AutocompleteModelAdmin):
                            (r'^$', self.admin_site.admin_view(self.changelist_view)),
                            (r'^import_rr/$', self.admin_site.admin_view(self.import_rr)),
                            (r'^export_rr/$', self.admin_site.admin_view(self.export_rr)),
-                           (r'^search/$', self.admin_site.admin_view(self.search)),
+                           # (r'^search/$', self.admin_site.admin_view(self.search)),
                            )
         return my_urls + urls
 
@@ -559,23 +555,24 @@ admin.site.register(VoIPCarrierPlan, VoIPCarrierPlanAdmin)
 
 
 # VoIPCarrierRate
-class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
+class VoIPCarrierRateAdmin(admin.ModelAdmin):
     fieldsets = (
         (_('VoIP Carrier Rate'), {
-            # 'classes': ('collapse', ),
             'fields': ('voip_carrier_plan_id', 'prefix', 'carrier_rate',),
         }),
     )
     list_display = ('id', 'voip_carrier_plan_name', 'prefix_with_name',
                     'carrier_rate', 'updated_date',)
     list_display_links = ('id', )
-    list_filter = ['updated_date', 'voip_carrier_plan_id', 'prefix']
     list_editable = ['carrier_rate']
-    search_fields = ('carrier_rate',)
-    valid_lookups = ('updated_date', 'voip_carrier_plan_id', 'prefix')
-    related_search_fields = {
-        'prefix': ('prefix', 'destination'),
-    }
+    # if list of prefix is long adding prefix to list_filter will slow it down
+    # list_filter = ['updated_date', 'voip_carrier_plan_id', 'prefix']
+    list_filter = ['updated_date', 'voip_carrier_plan_id']
+    search_fields = ('^prefix__prefix',)
+    # valid_lookups = ('updated_date', 'voip_carrier_plan_id', 'prefix')
+    # related_search_fields = {
+    #     'prefix': ('prefix', 'destination'),
+    # }
     actions = [export_as_csv_action("Export selected carrier rates as CSV file",
                                     fields=['voip_carrier_plan_id', 'prefix', 'carrier_rate'],
                                     header=False)]
@@ -594,7 +591,7 @@ class VoIPCarrierRateAdmin(AutocompleteModelAdmin):
                            (r'^$', self.admin_site.admin_view(self.changelist_view)),
                            (r'^import_cr/$', self.admin_site.admin_view(self.import_cr)),
                            (r'^export_cr/$', self.admin_site.admin_view(self.export_cr)),
-                           (r'^search/$', self.admin_site.admin_view(self.search)),
+                           # (r'^search/$', self.admin_site.admin_view(self.search)),
                            )
         return my_urls + urls
 

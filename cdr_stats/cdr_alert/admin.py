@@ -23,10 +23,6 @@ from django.shortcuts import render_to_response
 from country_dialcode.models import Country, Prefix
 from cdr_alert.models import AlertRemovePrefix, Alarm, AlarmReport, Blacklist, Whitelist
 from cdr_alert.forms import BWCountryForm
-from django_lets_go.app_label_renamer import AppLabelRenamer
-
-APP_LABEL = _('CDR Alert')
-AppLabelRenamer(native_app_label='cdr_alert', app_label=APP_LABEL).main()
 
 
 # AlertRemovePrefix

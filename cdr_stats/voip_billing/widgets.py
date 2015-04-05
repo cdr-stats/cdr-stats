@@ -251,9 +251,9 @@ class AutocompleteModelAdmin(admin.ModelAdmin):
 
     def search(self, request):
 
-        #	Searches in the fields of the given related model and returns the
-        #	result as a simple string to be used by
-        #   the jQuery Autocomplete plugin
+        # Searches in the fields of the given related model and returns the
+        # result as a simple string to be used by
+        # the jQuery Autocomplete plugin
         query = request.GET.get('q', None)
 
         app_label = request.GET.get('app_label', None)
@@ -292,7 +292,7 @@ class AutocompleteModelAdmin(admin.ModelAdmin):
 
             data = ''.join([u'%s|%s\n' % (getattr(f, rel_name), f.pk) for f in qs])
             # print data
-    #			data = ''.join([u'%s|%s\n' % (f.__unicode__(), f.pk) for f in qs])
+            # data = ''.join([u'%s|%s\n' % (f.__unicode__(), f.pk) for f in qs])
             return HttpResponse(data)
         return HttpResponseNotFound()
 
@@ -310,7 +310,7 @@ class AutocompleteModelAdmin(admin.ModelAdmin):
             formfield = db_field.formfield(**kwargs)
             # Don't wrap raw_id fields.
             # Their add function is in the popup window.
-            if not db_field.name in self.raw_id_fields:
+            if db_field.name not in self.raw_id_fields:
                 # formfield can be None if it came from a OneToOneField with
                 # parent_link=True
                 if formfield is not None:
@@ -333,7 +333,7 @@ class AutocompleteModelAdmin(admin.ModelAdmin):
             formfield = db_field.formfield(**kwargs)
             # Don't wrap raw_id fields.
             # Their add function is in the popup window.
-            if not db_field.name in self.raw_id_fields:
+            if db_field.name not in self.raw_id_fields:
                 # formfield can be None if it came from a OneToOneField with
                 # parent_link=True
                 if formfield is not None:

@@ -11,12 +11,10 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
+
 from django.contrib import admin
-from django.conf.urls import patterns
 from django.utils.translation import ugettext as _
 from voip_gateway.models import Gateway, Provider
-from django_lets_go.app_label_renamer import AppLabelRenamer
-AppLabelRenamer(native_app_label=u'voip_gateway', app_label=_('Voip Gateway')).main()
 
 
 class GatewayAdmin(admin.ModelAdmin):
@@ -40,7 +38,7 @@ admin.site.register(Gateway, GatewayAdmin)
 class ProviderAdmin(admin.ModelAdmin):
     fieldsets = (
         (_('Provider Detail'), {
-            #'classes':('collapse', ),
+            # 'classes':('collapse', ),
             'fields': ('name', 'description', 'gateway', 'metric'),
         }),
     )
