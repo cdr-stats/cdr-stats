@@ -25,7 +25,7 @@ admin.site.register(HangupCause, HangupCauseAdmin)
 
 # CDR
 class CDRAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'switch', 'destination_number', 'dialcode', 'caller_id_number',
+    list_display = ('id', 'user', 'starting_date', 'switch', 'destination_number', 'dialcode', 'caller_id_number',
                     'duration', 'hangup_cause', 'direction', 'country', 'sell_cost',)
     search_fields = ('destination_number', 'caller_id_number',)
 

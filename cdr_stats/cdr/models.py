@@ -198,8 +198,7 @@ class CDR(models.Model):
     channel = models.CharField(max_length=80, verbose_name=_("channel"), null=True, blank=True)
 
     # Date & Duration
-    starting_date = models.DateTimeField(auto_now_add=True, verbose_name=_("starting date"),
-                                         db_index=True)
+    starting_date = models.DateTimeField(verbose_name=_("starting date"), db_index=True)
     duration = models.IntegerField(default=0, verbose_name=_("duration"))
     billsec = models.IntegerField(default=0, verbose_name=_("bill sec"))
     progresssec = models.IntegerField(default=0, null=True, blank=True, verbose_name=_("progress sec"))
@@ -290,6 +289,7 @@ class CDR(models.Model):
 
         delta_days = random.randint(0, day_delta_int)
         delta_minutes = random.randint(1, 1440)
+
         answer_stamp = datetime.datetime.now() \
             - datetime.timedelta(minutes=delta_minutes) \
             - datetime.timedelta(days=delta_days)
