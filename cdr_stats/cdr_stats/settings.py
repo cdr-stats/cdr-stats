@@ -494,6 +494,7 @@ BOWER_INSTALLED_APPS = (
     'typeahead.js#0.10.2',
     'bower-jvectormap',
     'datetimepicker',
+    'leaflet#0.7.3',
 )
 
 # REST FRAMEWORK

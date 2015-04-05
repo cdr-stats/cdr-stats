@@ -38,3 +38,5 @@ djangorestframework==2.4.3
 django-crispy-forms==1.4.0
 django-localflavor==1.1
 hg+http://bitbucket.org/schinckel/django-postgres#egg=django-postgres
+# keep django-debug-toolbar is main django package
+django-debug-toolbar
