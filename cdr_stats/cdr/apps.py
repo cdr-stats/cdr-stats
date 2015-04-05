@@ -12,8 +12,9 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
+from django.apps import AppConfig
 
-# We cannot use this at the moment due to
-# https://bitbucket.org/izi/django-admin-tools/issue/147/add-support-for-django-17
-#
-# default_app_config = 'cdr.apps.CDRConfig'
+
+class CDRConfig(AppConfig):
+    name = 'cdr'
+    verbose_name = 'CDR'

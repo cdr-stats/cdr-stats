@@ -147,8 +147,8 @@ class HangupCause(caching.base.CachingMixin, models.Model):
         return result
 
     class Meta:
-        verbose_name = _("hangupcause")
-        verbose_name_plural = _("hangupcauses")
+        verbose_name = _("hangup cause")
+        verbose_name_plural = _("hangup causes")
         db_table = "hangup_cause"
 
 
@@ -336,8 +336,8 @@ class CDR(models.Model):
 
     class Meta:
         db_table = 'voip_cdr'
-        verbose_name = _("VoIP call")
-        verbose_name_plural = _("VoIP calls")
+        verbose_name = _("Call")
+        verbose_name_plural = _("Calls")
 
     def __unicode__(self):
         return u"id:%d - dst:%s - %s" % (self.id, self.destination_number, str(self.starting_date)[0:16])
