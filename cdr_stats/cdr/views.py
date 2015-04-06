@@ -473,6 +473,7 @@ def cdr_dashboard(request):
     final_extra = {
         'x_is_date': True,
         'x_axis_format': '%H:%M',
+        # 'x_axis_format': '%d %b %Y',
         'tag_script_js': True,
         'jquery_on_ready': True,
         'focus_enable': True,
