@@ -24,7 +24,7 @@ django-redis-cache==0.13.0
 git+git://github.com/Star2Billing/django-notification
 django-frontend-notification==0.3.0
 django-genericadmin==0.6.1
-django-nvd3==0.7.8
+django-nvd3==0.8.1
 
 django-lets-go==2.9.3
 django-extensions==1.5.1
@@ -38,5 +38,6 @@ djangorestframework==2.4.3
 django-crispy-forms==1.4.0
 django-localflavor==1.1
 hg+http://bitbucket.org/schinckel/django-postgres#egg=django-postgres
+
 # keep django-debug-toolbar is main django package
 django-debug-toolbar

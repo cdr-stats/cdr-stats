@@ -31,9 +31,10 @@
 
     <!-- nvd3 -->
     {% block nvd3_header %}
-    <link href="{{ STATIC_URL }}nvd3/build/nv.d3.css" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{{ STATIC_URL }}nvd3/build/nv.d3.min.css" rel="stylesheet" type="text/css" media="screen" />
     <script src="{{ STATIC_URL }}d3/d3.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}nvd3/build/nv.d3.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}nvd3/build/nv.d3.min.js" type="text/javascript"></script>
+
     {% endblock %}
 
     <!-- javascript -->
