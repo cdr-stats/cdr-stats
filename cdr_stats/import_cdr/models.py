@@ -61,7 +61,7 @@ class CDRImport(models.Model):
     class Meta:
         # Remove `managed = False` lines if you wish to allow Django to create, modify,
         # and delete the table
-        managed = False
+        # managed = False
         verbose_name = "CDR Import"
         verbose_name_plural = "CDRs Import"
         db_table = 'cdr_import'

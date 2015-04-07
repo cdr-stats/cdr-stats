@@ -41,7 +41,7 @@ DATABASES = {
     },
     'import_cdr': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'CDRPUSHER_DBNAME',
+        'NAME': 'DATABASENAME',
         'USER': 'DB_USERNAME',
         'PASSWORD': 'DB_PASSWORD',
         'HOST': 'DB_HOSTNAME',
