@@ -46,7 +46,7 @@ DATABASES = {
         'NAME': 'cdr-pusher',
         'USER': 'postgres',
         'PASSWORD': 'password',
-        'HOST': 'localhost1',
+        'HOST': 'localhost',
         'PORT': '5433',
         'OPTIONS': {
             'autocommit': True,

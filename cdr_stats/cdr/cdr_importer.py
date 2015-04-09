@@ -41,6 +41,8 @@ def check_connection_sql():
     except ProgrammingError:
         # Error Running SQL on CDR-Pusher
         return False
+    except:
+        raise
 
 
 def get_to_import_cdr_count():
@@ -65,14 +67,14 @@ def bulk_create_cdrs(list_newcdr, list_cdrid):
     and it will update 'import_cdr' database with the imported CDRs
     """
     # Bulk Insert the new CDRs
-    # CDR.objects.bulk_create(list_newcdr)
+    CDR.objects.bulk_create(list_newcdr)
     # Update the imported CDRs
     update_cdr = "UPDATE cdr_import SET imported=True WHERE id in (%s)" % ", ".join(list_cdrid)
     cursor = connections['import_cdr'].cursor()
     cursor.execute(update_cdr)
 
 
-def import_cdr(shell=False):
+def import_cdr(shell=False, logger=False):
     """
     Connect to the `import_cdr` Database and import the new CDRs
     """
@@ -137,8 +139,13 @@ def import_cdr(shell=False):
             sell_rate = call_rate['sell_rate']
             sell_cost = call_rate['sell_cost']
 
+        if call.hangup_cause_id:
+            hangup_cause_id = call.hangup_cause_id
+        else:
+            hangup_cause_id = 0
+
         print_shell(shell, "Create new CDR -> dst:%s - duration:%s - hangup_cause:%s - sell_cost:%s" %
-                    (call.destination_number, str(call.duration), str(call.hangup_cause_id), str(call.sell_cost)))
+                    (call.destination_number, str(call.duration), str(hangup_cause_id), str(call.sell_cost)))
 
         # Create the new CDR
         newCDR = CDR(
@@ -156,7 +163,7 @@ def import_cdr(shell=False):
                       progresssec=call.progresssec,
                       answersec=call.answersec,
                       waitsec=call.waitsec,
-                      hangup_cause_id=call.hangup_cause_id,
+                      hangup_cause_id=hangup_cause_id,
                       direction=direction,
                       country_id=country_id,
                       authorized=authorized,
@@ -178,4 +185,6 @@ def import_cdr(shell=False):
         bulk_create_cdrs(list_newcdr, list_cdrid)
         (list_newcdr, list_cdrid) = ([], [])
 
+    if logger:
+        logger.info('TASK :: run_cdr_import -> func import_cdr count_imported:%d' % count_imported)
     return (True, count_imported)
