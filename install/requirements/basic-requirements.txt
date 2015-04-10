@@ -16,6 +16,6 @@ tablib==0.10.0
 python-memcached==1.54
 influxdb==1.0.0
 
-pandas==0.16.0
-jsonschema==2.4.0
-SQLAlchemy==0.9.9
+#pandas==0.16.0
+#jsonschema==2.4.0
+#SQLAlchemy==0.9.9

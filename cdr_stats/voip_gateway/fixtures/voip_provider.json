@@ -3,8 +3,8 @@
       "pk":1,
       "model":"voip_gateway.provider",
       "fields":{
-         "updated_date":"2010-12-10 10:34:08",
-         "created_date":"2010-12-10 06:58:45",
+         "updated_date":"2015-03-10 10:34:08",
+         "created_date":"2015-03-10 06:58:45",
          "metric":10,
          "gateway":1,
          "name":"Provider Default",

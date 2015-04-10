@@ -3,7 +3,7 @@
       "pk":1,
       "model":"voip_gateway.gateway",
       "fields":{
-         "updated_date":"2011-03-31 03:35:12",
+         "updated_date":"2015-03-31 03:35:12",
          "status":0,
          "protocol":"SIP",
          "name":"Gateway Default",
@@ -14,7 +14,7 @@
          "removeprefix":"",
          "addparameter":"",
          "secondused":null,
-         "created_date":"2011-03-31 03:35:12",
+         "created_date":"2015-03-31 03:35:12",
          "addprefix":"",
          "description":"Gateway Default"
       }

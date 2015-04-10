@@ -219,6 +219,15 @@ func_check_dependencies() {
         exit 1
     fi
 
+    #Check pandas
+    grep_pip=`pip freeze| grep pandas`
+    if echo $grep_pip | grep -i "pandas" > /dev/null ; then
+        echo "OK : pandas installed..."
+    else
+        echo "Error : pandas not installed..."
+        exit 1
+    fi
+
     echo ""
     echo "Python dependencies successfully installed!"
     echo ""
@@ -261,6 +270,7 @@ func_install_dependencies(){
             /etc/init.d/postgresql start
 
             apt-get -y install python-software-properties
+            apt-get -y install python-pandas
             apt-get -y install python-setuptools python-dev build-essential
             apt-get -y install nginx supervisor
             apt-get -y install git-core mercurial gawk cmake
@@ -669,7 +679,9 @@ func_django_cdrstats_install(){
     #Load Countries Dialcode
     python manage.py load_country_dialcode
 
-    #Load default billing data
+    #Load default gateways & billing data
+    python manage.py loaddata voip_gateway/fixtures/voip_gateway.json
+    python manage.py loaddata voip_gateway/fixtures/voip_provider.json
     python manage.py load_sample_voip_billing
 }
 
