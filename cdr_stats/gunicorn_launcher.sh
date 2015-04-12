@@ -13,8 +13,9 @@ NUM_WORKERS=1
 USER=cdr_stats
 GROUP=cdr_stats
 
-cd /usr/share/virtualenvs/cdr-stats
-source bin/activate
+# cd /usr/share/virtualenvs/cdr-stats
+# source bin/activate
+source /opt/miniconda/envs/cdr-stats/bin/activate /opt/miniconda/envs/cdr-stats
 cd /usr/share/cdrstats
 
 test -d $LOGDIR || mkdir -p $LOGDIR

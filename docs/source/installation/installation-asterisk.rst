@@ -20,7 +20,7 @@ this will be required during the installation of CDR-Stats.
 
 Run the following commands at the console::
 
-    $ wget –no-check-certificate https://raw.github.com/areski/cdr-stats/master/install/install-cdr-stats-asterisk.sh -O install-cdr-stats-asterisk.sh
+    $ wget --no-check-certificate https://raw.github.com/areski/cdr-stats/master/install/install-cdr-stats-asterisk.sh -O install-cdr-stats-asterisk.sh
     $
     $ bash ./install-cdr-stats-asterisk.sh
 

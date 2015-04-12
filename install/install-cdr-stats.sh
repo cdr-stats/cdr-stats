@@ -98,7 +98,7 @@ func_install_backend
 
 # Clean the system on MySQL
 #==========================
-# deactivate ; rm -rf /usr/share/cdr-stats ; rm -rf /var/log/cdr-stats ; rmvirtualenv cdr-stats ; rm -rf /etc/init.d/cdr-stats-celer* ; rm -rf /etc/default/cdr-stats-celeryd ; rm /etc/apache2/sites-enabled/cdr-stats.conf ; mysqladmin drop cdr-stats --password=password
+# deactivate ; rm -rf /usr/share/cdrstats ; rm -rf /var/log/cdr-stats ; rmvirtualenv cdr-stats ; rm -rf /etc/init.d/cdr-stats-celer* ; rm -rf /etc/default/cdr-stats-celeryd ; rm /etc/apache2/sites-enabled/cdr-stats.conf ; mysqladmin drop cdr-stats --password=password
 
 # Create Database on MySQL
 #=========================

@@ -16,7 +16,7 @@ prefixed with the international dial code.
 
 There is a facility for manipulating the dialled digits reported in the call
 detail records, as well as identifying calls as internal calls. This is done
-in the "general" section of /usr/share/cdr-stats/settings_local.py.
+in the "general" section of /usr/share/cdrstats/settings_local.py.
 
 1. Prefix Limits
 ----------------

@@ -324,7 +324,40 @@ func_install_dependencies(){
 
     #Create CDRStats User
     echo "Create CDRStats User/Group : $CDRSTATS_USER"
-    useradd $CDRSTATS_USER --user-group --system --no-create-home
+    groupadd -r -f $CDRSTATS_USER
+    useradd -r -c "$CDRSTATS_USER" -s /bin/bash -g $CDRSTATS_USER $CDRSTATS_USER
+    # useradd $CDRSTATS_USER --user-group --system --no-create-home
+}
+
+
+#Fuction to create the virtual env
+func_setup_conda() {
+    mkdir -p /opt/miniconda/envs
+    if [ $KERNELARCH = "x86_64" ]; then
+        wget --no-check-certificate  http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O Miniconda.sh
+    else
+        wget --no-check-certificate  http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86.sh -O Miniconda.sh
+    fi
+    bash Miniconda.sh
+    conda info
+    conda update conda
+    # conda create -y -n $CDRSTATS_ENV python
+    # not sure we need to use $CDRSTATS_ENV as the env refer by /opt/miniconda/envs/cdr-stats
+    conda create -p /opt/miniconda/envs/cdr-stats python --yes
+    source /opt/miniconda/envs/cdr-stats/bin/activate /opt/miniconda/envs/cdr-stats
+
+    #Install Pandas with Conda
+    conda install -y pandas
+    conda install -y pip
+
+    #Check what we installed in env
+    conda list -p /opt/miniconda/envs/cdr-stats
+
+    #Install Pip Dependencies
+    func_install_pip_deps
+
+    #Check what we installed in env (after pip)
+    conda list -p /opt/miniconda/envs/cdr-stats
 }
 
 
@@ -416,7 +449,8 @@ func_install_source(){
 #Function to install Python dependencies
 func_install_pip_deps(){
 
-    echo "func_install_pip_deps..."
+    echo "Install Pip Dependencies"
+    echo "========================"
 
     #Upgrade pip to latest (1.5)
     pip install pip --upgrade
@@ -702,14 +736,14 @@ func_install_frontend(){
     #Create and enable virtualenv
     func_setup_virtualenv
 
+    #Setup Conda & Env
+    func_setup_conda
+
     #Backup
     func_backup_prev_install
 
     #Install Code Source
     func_install_source
-
-    #Install Pip Dependencies
-    func_install_pip_deps
 
     #Prepare Settings
     func_prepare_settings

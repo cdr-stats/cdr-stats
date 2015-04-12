@@ -64,7 +64,7 @@ Start celery with the --events option on, so celery sends events for celerymon t
 Run the monitor server::
 
     $ workon cdr-stats
-    $ cd /usr/share/cdr-stats/
+    $ cd /usr/share/cdrstats/
     $ python manage.py celerymon
 
 

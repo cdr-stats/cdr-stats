@@ -1829,7 +1829,7 @@ msgstr ""
 
 #: frontend/views.py:108
 msgid ""
-"please review the 'DATABASES' Settings in the conf file /usr/share/cdr-stats/"
+"please review the 'DATABASES' Settings in the conf file /usr/share/cdrstats/"
 "settings_local.py make sure the settings, username, password are correct."
 msgstr ""
 

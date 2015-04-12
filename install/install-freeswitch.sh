@@ -19,29 +19,34 @@
 
 BRANCH='develop'
 KERNELARCH=$(uname -p)
-
-#Get Scripts dependencies
-cd /usr/src/
-wget --no-check-certificate https://raw.github.com/areski/cdr-stats/$BRANCH/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
-
-#Include general functions
-source cdr-stats-functions.sh
-
-#Identify the OS
-func_identify_os
-
-
-FS_CONF_PATH=https://raw.github.com/areski/cdr-stats/$BRANCH/install/freeswitch-conf
 FS_INIT_PATH=https://raw.github.com/areski/cdr-stats/$BRANCH/install/freeswitch-init
 FS_GIT_REPO=git://git.freeswitch.org/freeswitch.git
 FS_INSTALLED_PATH=/usr/local/freeswitch
 FS_CONFIG_PATH=/etc/freeswitch
-
-#####################################################
+SCRIPT_NOTICE="This install script is only intended to run on Debian 7.X"
+FS_CONF_PATH=https://raw.github.com/areski/cdr-stats/$BRANCH/install/freeswitch-conf
 FS_BASE_PATH=/usr/src/
-#####################################################
-
 CURRENT_PATH=$PWD
+
+
+# Identify Linux Distribution
+if [ -f /etc/debian_version ] ; then
+    DIST='DEBIAN'
+    if [ "$(lsb_release -cs)" != "wheezy" ]; then
+        echo $SCRIPT_NOTICE
+        exit 255
+    fi
+elif [ -f /etc/redhat-release ] ; then
+    DIST='CENTOS'
+    if [ "$(awk '{print $3}' /etc/redhat-release)" != "6.2" ] && [ "$(awk '{print $3}' /etc/redhat-release)" != "6.3" ] && [ "$(awk '{print $3}' /etc/redhat-release)" != "6.4" ] && [ "$(awk '{print $3}' /etc/redhat-release)" != "6.5" ]; then
+        echo $SCRIPT_NOTICE
+        exit 255
+    fi
+else
+    echo $SCRIPT_NOTICE
+    exit 1
+fi
+
 
 clear
 echo ""

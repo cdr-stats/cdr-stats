@@ -97,7 +97,7 @@ Mail server
 -----------
 
 To configure the SMTP client so that reports and alerts are sent via email, edit
-/usr/share/cdr-stats/settings_local.py, and identify the email section::
+/usr/share/cdrstats/settings_local.py, and identify the email section::
 
     #EMAIL BACKEND
     #=============

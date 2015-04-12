@@ -3,7 +3,7 @@
 CELERYBEAT_CHDIR='/usr/share/cdrstats'
 
 # Path to celeryd
-CELERYBEAT='/usr/share/virtualenvs/cdr-stats/bin/python $CELERYBEAT_CHDIR/manage.py celerybeat'
+CELERYBEAT='/opt/miniconda/envs/cdr-stats/bin/python $CELERYBEAT_CHDIR/manage.py celerybeat'
 
 # celeryd options
 CELERYBEAT_OPTS='--schedule=/var/run/celerybeat-schedule'
