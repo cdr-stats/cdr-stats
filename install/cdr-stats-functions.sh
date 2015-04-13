@@ -32,7 +32,7 @@ CDRSTATS_ENV="cdr-stats"
 HTTP_PORT="8008"
 BRANCH='develop'
 DATETIME=$(date +"%Y%m%d%H%M%S")
-KERNELARCH=$(uname -p)
+KERNELARCH=$(uname -m)
 SCRIPT_NOTICE="This install script is only intended to run on Debian 7.X"
 
 #Django bug https://code.djangoproject.com/ticket/16017
@@ -334,11 +334,12 @@ func_install_dependencies(){
 func_setup_conda() {
     mkdir -p /opt/miniconda/envs
     if [ $KERNELARCH = "x86_64" ]; then
-        wget --no-check-certificate  http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O Miniconda.sh
+        wget --no-check-certificate  http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O Miniconda-latest-Linux-x86_64.sh
+        bash Miniconda-latest-Linux-x86_64.sh
     else
-        wget --no-check-certificate  http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86.sh -O Miniconda.sh
+        wget --no-check-certificate  http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86.sh -O Miniconda-latest-Linux-x86.sh
+        bash Miniconda-latest-Linux-x86.sh
     fi
-    bash Miniconda.sh
     conda info
     conda update conda
     # conda create -y -n $CDRSTATS_ENV python
