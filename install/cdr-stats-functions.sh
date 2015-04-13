@@ -341,7 +341,7 @@ func_setup_conda() {
         bash Miniconda-latest-Linux-x86.sh
     fi
     #this may not work if the user decided to install miniconda in diff directory
-    # export PATH="/root/miniconda/bin:$PATH"
+    export PATH="/root/miniconda/bin:$PATH"
     bash ~/.bashrc
 
     conda info
