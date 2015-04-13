@@ -340,6 +340,10 @@ func_setup_conda() {
         wget --no-check-certificate  http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86.sh -O Miniconda-latest-Linux-x86.sh
         bash Miniconda-latest-Linux-x86.sh
     fi
+    #this may not work if the user decided to install miniconda in diff directory
+    # export PATH="/root/miniconda/bin:$PATH"
+    bash ~/.bashrc
+
     conda info
     conda update conda
     # conda create -y -n $CDRSTATS_ENV python
