@@ -69,8 +69,10 @@ def customer_detail_change(request):
             user_detail_extened_form = UserChangeDetailExtendForm(request.user, request.POST, instance=user_detail_extened)
             action = 'tabs-1'
             if user_detail_form.is_valid() and user_detail_extened_form.is_valid():
-                user_detail_form.save()
-                user_detail_extened_form.save()
+                # DEMO / Disable
+                if not settings.DEMO_MODE:
+                    user_detail_form.save()
+                    user_detail_extened_form.save()
                 msg_detail = _('detail has been changed.')
             else:
                 error_detail = _('please correct the errors below.')
@@ -79,7 +81,9 @@ def customer_detail_change(request):
             user_password_form = UserPasswordChangeForm(user=request.user, data=request.POST)
             action = 'tabs-2'
             if user_password_form.is_valid():
-                user_password_form.save()
+                # DEMO / Disable
+                if not settings.DEMO_MODE:
+                    user_password_form.save()
                 msg_pass = _('your password has been changed.')
             else:
                 error_pass = _('please correct the errors below.')
