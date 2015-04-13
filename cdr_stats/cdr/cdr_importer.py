@@ -34,7 +34,10 @@ def check_connection_sql():
         cursor = connections['import_cdr'].cursor()
         cursor.execute("SELECT 1 FROM cdr_import")
         row = cursor.fetchone()
-        return row[0] == 1
+        if row:
+            return row[0] == 1
+        else:
+            return True
     except OperationalError:
         # Error Connection to CDR-Pusher
         return False

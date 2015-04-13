@@ -340,10 +340,9 @@ func_setup_conda() {
     bash Miniconda.sh -b -p /opt/miniconda
     #this may not work if the user decided to install miniconda in diff directory
     export PATH="/opt/miniconda/bin:$PATH"
-    mkdir -p /opt/miniconda/envs
 
     conda info
-    conda update conda
+    conda update -y conda
     # conda create -y -n $CDRSTATS_ENV python
     # not sure we need to use $CDRSTATS_ENV as the env refer by /opt/miniconda/envs/cdr-stats
     conda create -p /opt/miniconda/envs/cdr-stats python --yes
