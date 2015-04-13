@@ -332,17 +332,15 @@ func_install_dependencies(){
 
 #Fuction to create the virtual env
 func_setup_conda() {
-    mkdir -p /opt/miniconda/envs
     if [ $KERNELARCH = "x86_64" ]; then
-        wget --no-check-certificate  http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O Miniconda-latest-Linux-x86_64.sh
-        bash Miniconda-latest-Linux-x86_64.sh
+        wget --no-check-certificate http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O Miniconda.sh
     else
-        wget --no-check-certificate  http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86.sh -O Miniconda-latest-Linux-x86.sh
-        bash Miniconda-latest-Linux-x86.sh
+        wget --no-check-certificate http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86.sh -O Miniconda.sh
     fi
+    bash Miniconda.sh -b -p /opt/miniconda
     #this may not work if the user decided to install miniconda in diff directory
-    export PATH="/root/miniconda/bin:$PATH"
-    bash ~/.bashrc
+    export PATH="/opt/miniconda/bin:$PATH"
+    mkdir -p /opt/miniconda/envs
 
     conda info
     conda update conda
