@@ -404,9 +404,8 @@ func_setup_virtualenv() {
 func_backup_prev_install(){
 
     if [ -d "$INSTALL_DIR" ]; then
-        # CDR-Stats is already installed
         echo ""
-        echo "We detect an existing CDR-Stats Installation"
+        echo "We detected an existing installation of CDR-Stats"
         echo "if you continue the existing installation will be removed!"
         echo ""
         echo "Press Enter to continue or CTRL-C to exit"
