@@ -737,14 +737,14 @@ func_install_frontend(){
     #Create and enable virtualenv
     func_setup_virtualenv
 
-    #Setup Conda & Env
-    func_setup_conda
-
     #Backup
     func_backup_prev_install
 
     #Install Code Source
     func_install_source
+
+    #Setup Conda & Env
+    func_setup_conda
 
     #Prepare Settings
     func_prepare_settings
