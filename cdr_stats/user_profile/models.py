@@ -20,6 +20,38 @@ from django_lets_go.language_field import LanguageField
 from django_countries.fields import CountryField
 
 
+class AccountCode(models.Model):
+
+    """This defines the Accountcode
+
+    **Attributes**:
+
+        * ``user`` - user owning this accountcode
+        * ``accountcode`` - use for CDR identification
+        * ``description`` - description
+
+    **Name of DB table**: user_accountcode
+
+    Accountcode will be used during the import to determine to which users
+    the imported CDRs need to attach.
+    """
+    user = models.ForeignKey(User)
+    accountcode = models.CharField(max_length=50, blank=False,
+                                   null=True, unique=True)
+    description = models.CharField(max_length=200, blank=True,
+                                   null=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return '[%s] %s' % (self.id, self.accountcode)
+
+    class Meta:
+        verbose_name = _("accountcode")
+        verbose_name_plural = _("accountcodes")
+        db_table = "user_accountcode"
+
+
 class UserProfile(models.Model):
 
     """This defines extra features for the user
@@ -54,8 +86,6 @@ class UserProfile(models.Model):
     voipplan = models.ForeignKey(VoIPPlan, verbose_name=_('VoIP plan'),
                                  blank=True, null=True,
                                  help_text=_("select VoIP Plan"))
-    accountcode = models.CharField(max_length=50, verbose_name=_('account code'),
-                                   unique=True)
     address = models.CharField(blank=True, null=True, max_length=200,
                                verbose_name=_('address'))
     city = models.CharField(max_length=120, blank=True, null=True,

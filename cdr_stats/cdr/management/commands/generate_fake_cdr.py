@@ -12,7 +12,8 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.core.management.base import BaseCommand
-from cdr.models import CDR, AccountCode
+from cdr.models import CDR
+from user_profile.models import AccountCode
 from optparse import make_option
 from django.contrib.auth.models import User
 from switch.models import Switch
@@ -48,7 +49,8 @@ class Command(BaseCommand):
         user = list_user[0]
         list_switch = Switch.objects.all()
         switch = list_switch[0]
-        list_acc = AccountCode.objects.all()
+        # Pull a random accountcode
+        list_acc = AccountCode.objects.all().order_by('?')[:1]
         if list_acc:
             acc = list_acc[0]
         else:

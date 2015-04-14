@@ -70,32 +70,6 @@ class CALL_DIRECTION(Choice):
     OUTBOUND = 2, _('OUTBOUND')
 
 
-class AccountCode(caching.base.CachingMixin, models.Model):
-
-    """This defines the Accountcode
-
-    **Attributes**:
-
-        * ``accountcode`` - use for CDR identification
-        * ``description`` - description
-
-    **Name of DB table**: voip_switch
-    """
-    accountcode = models.CharField(max_length=100, blank=False,
-                                   null=True, unique=True)
-    description = models.CharField(max_length=100, blank=False,
-                                   null=False, unique=True)
-    objects = caching.base.CachingManager()
-
-    def __unicode__(self):
-        return '[%s] %s' % (self.id, self.accountcode)
-
-    class Meta:
-        verbose_name = _("accountcode")
-        verbose_name_plural = _("accountcodes")
-        db_table = "voip_accountcode"
-
-
 class HangupCauseManager(models.Manager):
 
     """HangupCause Manager"""
@@ -182,19 +156,19 @@ class CDR(models.Model):
         * ``switch_id`` - Foreign key relationship to Switch
 
     """
-    user = models.ForeignKey(User, related_name='Call Owner')
+    user = models.ForeignKey(User, related_name="Call Owner")
     switch = models.ForeignKey(Switch, verbose_name=_("Switch"), null=False)
     cdr_source_type = models.IntegerField(choices=CDR_SOURCE_TYPE, default=CDR_SOURCE_TYPE.FREESWITCH,
                                           null=True, blank=True)
     # CID & Destination
     callid = models.CharField(max_length=80, help_text=_("VoIP call-ID"))
-    caller_id_number = models.CharField(max_length=80, verbose_name=_('CallerID Number'), blank=True)
-    caller_id_name = models.CharField(max_length=80, verbose_name=_('CallerID Name'), blank=True)
+    caller_id_number = models.CharField(max_length=80, verbose_name=_("CallerID Number"), blank=True)
+    caller_id_name = models.CharField(max_length=80, verbose_name=_("CallerID Name"), blank=True)
     destination_number = models.CharField(max_length=80, verbose_name=_("destination number"),
                                           help_text=_("the international number of the recipient, without the leading +"),
                                           db_index=True)
     dialcode = models.ForeignKey(Prefix, verbose_name=_("dialcode"), null=True, blank=True)
-    state = models.CharField(max_length=5, verbose_name=_('State/Region'), null=True, blank=True)
+    state = models.CharField(max_length=5, verbose_name=_("State/Region"), null=True, blank=True)
     channel = models.CharField(max_length=80, verbose_name=_("channel"), null=True, blank=True)
 
     # Date & Duration
@@ -212,11 +186,10 @@ class CDR(models.Model):
                                     default=CALL_DIRECTION.INBOUND, verbose_name=_("direction"),
                                     db_index=True)
     country = models.ForeignKey(Country, null=True, blank=True, verbose_name=_("country"))
-    authorized = models.BooleanField(default=False, verbose_name=_('authorized'))
+    authorized = models.BooleanField(default=False, verbose_name=_("authorized"))
 
     # Billing
-    accountcode = models.ForeignKey(AccountCode, verbose_name=_("account code"),
-                                    null=True, blank=True)
+    accountcode = models.CharField(max_length=80, verbose_name=_("account code"), blank=True)
     buy_rate = models.DecimalField(default=0, verbose_name=_("Buy Rate"),
                                    max_digits=10, decimal_places=5)
     buy_cost = models.DecimalField(default=0, verbose_name=_("Buy Cost"),
@@ -228,6 +201,14 @@ class CDR(models.Model):
 
     # Postgresql >= 9.4 Json field
     data = json_field.JSONField()
+
+    class Meta:
+        db_table = 'voip_cdr'
+        verbose_name = _("Call")
+        verbose_name_plural = _("Calls")
+
+    def __unicode__(self):
+        return u"id:%d - dst:%s - %s" % (self.id, self.destination_number, str(self.starting_date)[0:16])
 
     def destination_name(self):
         """Return Recipient dialcode"""
@@ -333,11 +314,3 @@ class CDR(models.Model):
             cdr_source_type, authorized, country_id, direction,
             # accountcode, buy_rate, buy_cost, sell_rate, sell_cost
         )
-
-    class Meta:
-        db_table = 'voip_cdr'
-        verbose_name = _("Call")
-        verbose_name_plural = _("Calls")
-
-    def __unicode__(self):
-        return u"id:%d - dst:%s - %s" % (self.id, self.destination_number, str(self.starting_date)[0:16])

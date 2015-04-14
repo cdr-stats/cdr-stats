@@ -21,7 +21,7 @@ from cdr.helpers import print_shell, chk_ipaddress
 from cdr.functions_def import get_dialcode
 from voip_billing.rate_engine import calculate_call_cost
 from cdr_alert.functions_blacklist import verify_auth_dest_number
-from user_profile.models import UserProfile
+from user_profile.models import AccountCode
 from django.db.utils import OperationalError
 from django.db import ProgrammingError
 
@@ -88,7 +88,7 @@ def import_cdr(shell=False, logger=False):
 
     # Each time the task is running we will only take 5000 records to import
     # This define the max speed of import, this limit could be changed
-    new_CDRs = CDRImport.objects.using('import_cdr').filter(imported=False)[:5000]
+    new_CDRs = CDRImport.objects.using('import_cdr').filter(imported=False)[:2]
 
     (list_newcdr, list_cdrid) = ([], [])
     for call in new_CDRs:
@@ -116,31 +116,36 @@ def import_cdr(shell=False, logger=False):
         else:
             direction = CALL_DIRECTION.NOTDEFINED
 
-        # Retrieve VoipPlan
+        # Find the user for given accountcode
         try:
-            voipplan_id = UserProfile.objects.get(accountcode=call.accountcode).voipplan_id
+            acc = AccountCode.objects.get(accountcode=call.accountcode)
+            user = acc.user
+            user_profile = acc.user.userprofile
         except:
+            # Cannot assign accountcode to an existing user, therefore we will assign to an Admin
+            user = User.objects.filter(is_superuser=True)[0]
+            user_profile = user.userprofile
+
+        # Retrieve VoipPlan
+        if user_profile:
+            voipplan_id = user_profile.voipplan_id
+        else:
             voipplan_id = False
             print_shell(shell, "VoipPlan doesn't exist for this user/accountcode (%s)" % call.accountcode)
-
-        try:
-            user = UserProfile.objects.get(accountcode=call.accountcode).user
-        except:
-            # Cannot assign accountcode to an existing user
-            # we will then assign to admin
-            user = User.objects.filter(is_superuser=True)[0]
 
         if call.buy_rate or call.buy_cost or call.sell_rate or call.sell_cost:
             buy_rate = call.buy_rate
             buy_cost = call.buy_cost
             sell_rate = call.sell_rate
             sell_cost = call.sell_cost
-        else:
+        elif voipplan_id:
             call_rate = calculate_call_cost(voipplan_id, call.destination_number, call.billsec)
             buy_rate = call_rate['buy_rate']
             buy_cost = call_rate['buy_cost']
             sell_rate = call_rate['sell_rate']
             sell_cost = call_rate['sell_cost']
+        else:
+            buy_rate = buy_cost = sell_rate = sell_cost = 0
 
         if call.hangup_cause_id:
             hangup_cause_id = call.hangup_cause_id
@@ -152,30 +157,30 @@ def import_cdr(shell=False, logger=False):
 
         # Create the new CDR
         newCDR = CDR(
-                      user=user,
-                      switch=switch_info['switch'],
-                      cdr_source_type=call.cdr_source_type,
-                      callid=call.callid,
-                      caller_id_number=call.caller_id_number,
-                      caller_id_name=call.caller_id_name,
-                      destination_number=call.destination_number,
-                      dialcode_id=dialcode,
-                      starting_date=call.starting_date,
-                      duration=call.duration,
-                      billsec=call.billsec,
-                      progresssec=call.progresssec,
-                      answersec=call.answersec,
-                      waitsec=call.waitsec,
-                      hangup_cause_id=hangup_cause_id,
-                      direction=direction,
-                      country_id=country_id,
-                      authorized=authorized,
-                      accountcode=call.accountcode,
-                      buy_rate=buy_rate,
-                      buy_cost=buy_cost,
-                      sell_rate=sell_rate,
-                      sell_cost=sell_cost,
-                      data=cdr_json)
+                     user=user,
+                     switch=switch_info['switch'],
+                     cdr_source_type=call.cdr_source_type,
+                     callid=call.callid,
+                     caller_id_number=call.caller_id_number,
+                     caller_id_name=call.caller_id_name,
+                     destination_number=call.destination_number,
+                     dialcode_id=dialcode,
+                     starting_date=call.starting_date,
+                     duration=call.duration,
+                     billsec=call.billsec,
+                     progresssec=call.progresssec,
+                     answersec=call.answersec,
+                     waitsec=call.waitsec,
+                     hangup_cause_id=hangup_cause_id,
+                     direction=direction,
+                     country_id=country_id,
+                     authorized=authorized,
+                     accountcode=call.accountcode,
+                     buy_rate=buy_rate,
+                     buy_cost=buy_cost,
+                     sell_rate=sell_rate,
+                     sell_cost=sell_cost,
+                     data=cdr_json)
         list_newcdr.append(newCDR)
 
         list_cdrid.append(str(call.id))

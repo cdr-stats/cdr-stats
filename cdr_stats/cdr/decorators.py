@@ -13,6 +13,7 @@
 #
 from django.http import HttpResponseRedirect
 from functools import wraps
+from user_profile.models import AccountCode
 
 
 def check_user_detail(extra_value=None):
@@ -24,8 +25,9 @@ def check_user_detail(extra_value=None):
             if not request.user.is_superuser:
                 try:
                     request.user.userprofile
-                    if 'accountcode' in extra_value and not request.user.userprofile.accountcode:
-                        return HttpResponseRedirect('/?acc_code_error=true')
+                    if 'accountcode' in extra_value:
+                        if not AccountCode.objects.filter(user=request.user):
+                            return HttpResponseRedirect('/?acc_code_error=true')
                     elif 'voipplan' in extra_value and not request.user.userprofile.voipplan_id:
                         return HttpResponseRedirect('/?voipplan_error=true')
                     else:

@@ -18,7 +18,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
-from user_profile.models import UserProfile, Customer, Staff
+from user_profile.models import UserProfile, Customer, Staff, AccountCode
 from notification.models import Notice
 from notification.admin import NoticeAdmin
 
@@ -32,12 +32,23 @@ class UserProfileInline(admin.StackedInline):
     model = UserProfile
 
 
+class AccountCodeInline(admin.TabularInline):
+    """
+    Inlines edition of AccountCode
+    """
+    model = AccountCode
+    extra = 1
+
+
 class StaffAdmin(UserAdmin):
 
     """
     To differentiate staff from all system users
     """
-    inlines = [UserProfileInline]
+    inlines = [
+        UserProfileInline,
+        AccountCodeInline,
+    ]
 
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff',
                     'is_active', 'is_superuser', 'last_login')
@@ -57,7 +68,7 @@ class CustomerAdmin(StaffAdmin):
             'fields': ('username', 'password', ),
         }),
         (_('Personal info'), {
-            #'classes': ('collapse',),
+            # 'classes': ('collapse',),
             'fields': ('first_name', 'last_name', 'email', )
         }),
         (_('Permission'), {
@@ -70,6 +81,7 @@ class CustomerAdmin(StaffAdmin):
 
     inlines = [
         UserProfileInline,
+        AccountCodeInline,
     ]
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff',
                     'is_active', 'is_superuser', 'last_login')
@@ -102,3 +114,9 @@ class NoticeAdmin(NoticeAdmin):
 
 admin.site.unregister(Notice)
 admin.site.register(Notice, NoticeAdmin)
+
+
+class AccountCodeAdmin(admin.ModelAdmin):
+    list_display = ('user', 'accountcode', 'description', 'created_date', )
+
+admin.site.register(AccountCode, AccountCodeAdmin)
