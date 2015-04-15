@@ -56,7 +56,8 @@ class CDRImport(models.Model):
     extradata = json_field.JSONField(blank=True)
 
     def __unicode__(self):
-        return '[%s] %s - dur:%d' % (self.id, self.destination_number, self.duration)
+        return '[%s] %s - dur:%d - hangup:%d' % \
+            (self.id, self.destination_number, self.duration, self.hangup_cause_id)
 
     class Meta:
         # Remove `managed = False` lines if you wish to allow Django to create, modify,

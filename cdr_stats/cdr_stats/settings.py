@@ -385,6 +385,9 @@ INTERNAL_CALL = 5
 # Realtime Graph : set the Y axis limit
 REALTIME_Y_AXIS_LIMIT = 300
 
+# Limit to fetch per import_cdr task
+CDR_IMPORT_LIMIT = 5000
+
 # No of records per page
 # ======================
 PAGE_SIZE = 10

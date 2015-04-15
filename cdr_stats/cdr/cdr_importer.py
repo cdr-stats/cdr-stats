@@ -18,7 +18,7 @@ from django.db import connections
 from cdr.models import CDR, CALL_DIRECTION
 from import_cdr.models import CDRImport
 from cdr.helpers import print_shell, chk_ipaddress
-from cdr.functions_def import get_dialcode
+from cdr.functions_def import get_dialcode, get_hangupcause_id
 from voip_billing.rate_engine import calculate_call_cost
 from cdr_alert.functions_blacklist import verify_auth_dest_number
 from user_profile.models import AccountCode
@@ -86,9 +86,9 @@ def import_cdr(shell=False, logger=False):
     if not check_connection_sql():
         return (False, "Error Connection")
 
-    # Each time the task is running we will only take 5000 records to import
+    # Each time the task is running we will only take CDR_IMPORT_LIMIT records to import
     # This define the max speed of import, this limit could be changed
-    new_CDRs = CDRImport.objects.using('import_cdr').filter(imported=False)[:5000]
+    new_CDRs = CDRImport.objects.using('import_cdr').filter(imported=False)[:settings.CDR_IMPORT_LIMIT]
 
     (list_newcdr, list_cdrid) = ([], [])
     for call in new_CDRs:
@@ -98,7 +98,6 @@ def import_cdr(shell=False, logger=False):
         # Get the dialcode
         dialcode = get_dialcode(call.destination_number, call.dialcode)
         switch_info = chk_ipaddress(call.switch)
-        cdr_json = call.extradata
 
         # Check Destination number
         if len(call.destination_number) <= settings.INTERNAL_CALL or call.destination_number[:1].isalpha():
@@ -147,13 +146,11 @@ def import_cdr(shell=False, logger=False):
         else:
             buy_rate = buy_cost = sell_rate = sell_cost = 0
 
-        if call.hangup_cause_id:
-            hangup_cause_id = call.hangup_cause_id
-        else:
-            hangup_cause_id = 0
+        hangup_cause_id = get_hangupcause_id(call.hangup_cause_id)
 
-        print_shell(shell, "Create new CDR -> dst:%s - duration:%s - hangup_cause:%s - sell_cost:%s" %
-                    (call.destination_number, str(call.duration), str(hangup_cause_id), str(call.sell_cost)))
+        print_shell(shell, "Create new CDR -> date:%s - dst:%s - duration:%s - hangup_cause:%s - sell_cost:%s" %
+                    (call.starting_date, call.destination_number, str(call.duration), str(hangup_cause_id),
+                    str(call.sell_cost)))
 
         # Create the new CDR
         newCDR = CDR(
@@ -175,12 +172,12 @@ def import_cdr(shell=False, logger=False):
                      direction=direction,
                      country_id=country_id,
                      authorized=authorized,
-                     accountcode=call.accountcode,
+                     accountcode='' if call.accountcode is None else call.accountcode,
                      buy_rate=buy_rate,
                      buy_cost=buy_cost,
                      sell_rate=sell_rate,
                      sell_cost=sell_cost,
-                     data=cdr_json)
+                     data='' if call.extradata is None else call.extradata)
         list_newcdr.append(newCDR)
 
         list_cdrid.append(str(call.id))
@@ -195,4 +192,7 @@ def import_cdr(shell=False, logger=False):
 
     if logger:
         logger.info('TASK :: run_cdr_import -> func import_cdr count_imported:%d' % count_imported)
+    else:
+        print_shell(shell, 'TASK :: run_cdr_import -> func import_cdr count_imported:%d' % count_imported)
+
     return (True, count_imported)
