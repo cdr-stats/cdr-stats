@@ -88,7 +88,7 @@ def import_cdr(shell=False, logger=False):
 
     # Each time the task is running we will only take 5000 records to import
     # This define the max speed of import, this limit could be changed
-    new_CDRs = CDRImport.objects.using('import_cdr').filter(imported=False)[:2]
+    new_CDRs = CDRImport.objects.using('import_cdr').filter(imported=False)[:5000]
 
     (list_newcdr, list_cdrid) = ([], [])
     for call in new_CDRs:
