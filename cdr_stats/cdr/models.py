@@ -51,13 +51,17 @@ class CDR_SOURCE_TYPE(Choice):
     """
     List of call source type
     """
+    UNKNOWN = 0, _('UNKNOWN')
     CSV = 1, _('CSV UPLOAD')
     API = 2, _('API')
-    ASTERISK = 3, _('ASTERISK')
-    FREESWITCH = 4, _('FREESWITCH')
-    KAMAILIO = 5, _('KAMAILIO')
-    YATE = 6, _('YATE')
+    FREESWITCH = 3, _('FREESWITCH')
+    ASTERISK = 4, _('ASTERISK')
+    YATE = 5, _('YATE')
+    KAMAILIO = 6, _('KAMAILIO')
     OPENSIPS = 7, _('OPENSIPS')
+    SIPWISE = 8, _('SIPWISE')
+    VERAZ = 9, _('VERAZ')
+    # change also switch.models.SWITCH_TYPE
 
 
 class CALL_DIRECTION(Choice):

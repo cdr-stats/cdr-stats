@@ -95,15 +95,11 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
     #        '--number-cdr=10', '--delta-day=0', '--duration=0')
     #    call_command('generate_cdr', '--number-cdr=10', '--delta-day=0')
     #    call_command('generate_cdr', '--number-cdr=10')
-    #    call_command('sync_cdr_freeswitch', '--apply-index')
-    #    call_command('sync_cdr_freeswitch')
-    # call_command('sync_cdr_asterisk', '--apply-index')
-    # call_command('sync_cdr_asterisk')
 
     def test_dashboard(self):
         """Test Function to check customer dashboard"""
         response = self.client.get('/dashboard/')
-        #self.assertTemplateUsed(response, 'cdr/dashboard.html')
+        # self.assertTemplateUsed(response, 'cdr/dashboard.html')
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.get('/dashboard/')
@@ -114,8 +110,8 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
 
         data = {'switch_id': 1}
         response = self.client.post('/dashboard/', data)
-        #self.assertTrue(response.context['form'], SwitchForm(data))
-        #self.assertTrue('total_calls' in response.context)
+        # self.assertTrue(response.context['form'], SwitchForm(data))
+        # self.assertTrue('total_calls' in response.context)
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.post('/dashboard/', data)
@@ -127,8 +123,8 @@ class CdrStatsCustomerInterfaceTestCase(BaseAuthenticatedClient):
     def test_cdr_view(self):
         """Test Function to check cdr_view"""
         response = self.client.get('/cdr_view/')
-        #self.assertTrue(response.context['form'], CdrSearchForm())
-        #self.assertTemplateUsed(response, 'cdr/list.html')
+        # self.assertTrue(response.context['form'], CdrSearchForm())
+        # self.assertTemplateUsed(response, 'cdr/list.html')
         self.assertEqual(response.status_code, 200)
 
         request = self.factory.get('/cdr_view/')
