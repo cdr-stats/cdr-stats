@@ -73,7 +73,6 @@ def country_list_with_all():
     """
     list_ct = []
     list_ct.append((0, _('all').capitalize()))
-    list_ct.append((999, _('internal call').capitalize()))
     for i in get_country_list():
         list_ct.append((i[0], i[1]))
     return list_ct

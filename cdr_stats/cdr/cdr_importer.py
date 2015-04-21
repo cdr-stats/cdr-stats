@@ -15,7 +15,7 @@
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import connections
-from cdr.models import CDR, CALL_DIRECTION
+from cdr.models import CDR, CALL_DIRECTION, CALL_TYPE
 from import_cdr.models import CDRImport
 from cdr.helpers import print_shell, chk_ipaddress
 from cdr.functions_def import get_dialcode, get_hangupcause_id
@@ -102,12 +102,14 @@ def import_cdr(shell=False, logger=False):
         # Check Destination number
         if len(call.destination_number) <= settings.INTERNAL_CALL or call.destination_number[:1].isalpha():
             authorized = 1
-            country_id = 999
+            country_id = None
+            call_type = CALL_TYPE.INTERNAL
         else:
             # TODO: rename verify_auth_dest_number verify_auth_dest_number
             destination_data = verify_auth_dest_number(call.destination_number)
             authorized = destination_data['authorized']
             country_id = destination_data['country_id']
+            call_type = CALL_TYPE.INTERNATIONAL
 
         # Sanitize direction
         if call.direction:
@@ -177,6 +179,7 @@ def import_cdr(shell=False, logger=False):
                      buy_cost=buy_cost,
                      sell_rate=sell_rate,
                      sell_cost=sell_cost,
+                     call_type=call_type,
                      data='' if call.extradata is None else call.extradata)
         list_newcdr.append(newCDR)
 

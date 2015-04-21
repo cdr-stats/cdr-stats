@@ -46,6 +46,16 @@ COUNTRY_PREFIX = ['0034', '011346', '+3465',  # Spain
                   ]
 
 
+class CALL_TYPE(Choice):
+
+    """
+    List of call type
+    """
+    INTERNATIONAL = 0, _('INTERNATIONAL')
+    NATIONAL = 1, _('INTERNATIONAL')
+    INTERNAL = 2, _('INTERNAL')
+
+
 class CDR_SOURCE_TYPE(Choice):
 
     """
@@ -191,6 +201,9 @@ class CDR(models.Model):
                                     db_index=True)
     country = models.ForeignKey(Country, null=True, blank=True, verbose_name=_("country"))
     authorized = models.BooleanField(default=False, verbose_name=_("authorized"))
+
+    call_type = models.IntegerField(choices=CALL_TYPE, default=CALL_TYPE.INTERNATIONAL,
+                                    null=True, blank=True)
 
     # Billing
     accountcode = models.CharField(max_length=80, verbose_name=_("account code"), blank=True)
