@@ -77,13 +77,22 @@ def bulk_create_cdrs(list_newcdr, list_cdrid):
     cursor.execute(update_cdr)
 
 
+def log_print(logger, shell, msg):
+    if logger:
+        logger.info(msg)
+    else:
+        print_shell(shell, msg)
+
+
 def import_cdr(shell=False, logger=False):
     """
     Connect to the `import_cdr` Database and import the new CDRs
     """
     count_imported = 0
+    log_print(logger, shell, "in func import_cdr...")
 
     if not check_connection_sql():
+        log_print(logger, shell, "check_connection_sql - Error Connection")
         return (False, "Error Connection")
 
     # Each time the task is running we will only take CDR_IMPORT_LIMIT records to import
@@ -150,9 +159,8 @@ def import_cdr(shell=False, logger=False):
 
         hangup_cause_id = get_hangupcause_id(call.hangup_cause_id)
 
-        print_shell(shell, "Create new CDR -> date:%s - dst:%s - duration:%s - hangup_cause:%s - sell_cost:%s" %
-                    (call.starting_date, call.destination_number, str(call.duration), str(hangup_cause_id),
-                    str(call.sell_cost)))
+        log_print(logger, shell, "Create new CDR -> date:%s - dst:%s - duration:%s - hangup_cause:%s - sell_cost:%s" %
+                  (call.starting_date, call.destination_number, str(call.duration), str(hangup_cause_id), str(call.sell_cost)))
 
         # Create the new CDR
         newCDR = CDR(
@@ -193,9 +201,6 @@ def import_cdr(shell=False, logger=False):
         bulk_create_cdrs(list_newcdr, list_cdrid)
         (list_newcdr, list_cdrid) = ([], [])
 
-    if logger:
-        logger.info('TASK :: run_cdr_import -> func import_cdr count_imported:%d' % count_imported)
-    else:
-        print_shell(shell, 'TASK :: run_cdr_import -> func import_cdr count_imported:%d' % count_imported)
+    log_print(logger, shell, 'TASK :: run_cdr_import -> func import_cdr count_imported:%d' % count_imported)
 
     return (True, count_imported)

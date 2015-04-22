@@ -22,7 +22,7 @@ from datetime import timedelta
 # Note: if you import a lot of CDRs the first time you can have an issue here
 # we need to make sure the user import their CDR before starting Celery
 # for now we will increase the lock limit to 1 hours
-LOCK_EXPIRE = 60 * 60 * 1  # Lock expires in 1 hours
+LOCK_EXPIRE = 60 * 5 * 1  # Lock expires in 5 minutes
 
 
 class run_cdr_import(PeriodicTask):
@@ -38,8 +38,7 @@ class run_cdr_import(PeriodicTask):
 
         # launch the CDRs import
         (status, msg) = import_cdr(shell=False, logger=logger)
-        if not status:
-            logger.error('TASK :: call function import_cdr (%s)' % str(msg))
+        logger.info('TASK RESULT :: call function import_cdr (%s)' % str(msg))
 
         return True
 
