@@ -102,7 +102,7 @@ def cdr_view(request):
         duration = getvar(request, 'duration', setsession=True)
         duration_type = getvar(request, 'duration_type', setsession=True)
         direction = getvar(request, 'direction', setsession=True)
-        if direction and direction != 'all':
+        if direction and direction != 'all' and direction != '0':
             request.session['session_direction'] = str(direction)
 
         switch_id = getvar(request, 'switch_id', setsession=True)
@@ -187,7 +187,7 @@ def cdr_view(request):
     if switch_id and switch_id != '0':
         kwargs['switch_id'] = int(switch_id)
 
-    if direction and direction != 'all':
+    if direction and direction != 'all' and direction != "0":
         kwargs['direction'] = direction
 
     if len(country_id) >= 1 and country_id[0] != 0:

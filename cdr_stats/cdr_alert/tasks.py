@@ -358,7 +358,6 @@ def notify_admin_without_mail(notice_id, email_id):
     all_admin_user = User.objects.filter(is_superuser=True)
     for user in all_admin_user:
         recipient = user
-
         # send notification
         if notification:
             note_label = notification.NoticeType.objects.get(default=notice_id).label
