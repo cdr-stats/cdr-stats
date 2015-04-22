@@ -17,16 +17,20 @@ Where to find the log files
 All the logs are centralized into one single directory **/var/log/cdr-stats/**
 
 
-**cdrstats-django-db.log** : This contains all the Database queries performed by the UI
+**cdr-stats.log** : All the logger events from Django
 
 
-**cdrstats-django.log** : All the logger events from Django
+**cdr-stats-db.log** : This contains all the Database queries performed by the UI
 
 
-**err-apache-cdrstats.log** : Any apache errors pertaining to CDR-Stats
+**gunicorn_cdr_stats.log** : All the logger events from Gunicorn
 
 
-**celery-cdrstats-node1.log** : This contains celery activity
+**djcelery_error.log** : This contains celery activity
+
+
+**djcelerybeat_error.log** : This contains celerybeat activity
+
 
 .. _run-debug-mode:
 
