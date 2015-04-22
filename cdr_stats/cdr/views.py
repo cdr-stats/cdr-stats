@@ -821,6 +821,9 @@ def cdr_country_report(request):
         country_id = form.cleaned_data['country_id']
         # convert list value in int
         country_id_list = [int(row) for row in country_id]
+        # handle 0 (All) selection
+        if 0 in country_id_list:
+            country_id_list = []
 
     # check metric is valid
     if metric not in ['nbcalls', 'duration', 'billsec', 'buy_cost', 'sell_cost']:

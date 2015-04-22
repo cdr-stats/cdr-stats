@@ -167,7 +167,9 @@
                             {% for obj in row %}
                                 {% if obj %}
                                     <td>
-                                        <input type="checkbox" name="select_blacklist" class="checkbox" value="{{ obj.id }}"/>{{ obj.phonenumber_prefix }} | {{ obj.country.countryname }}
+                                        <div class="checkbox">
+                                        <label><input type="checkbox" name="select_blacklist" class="checkbox" value="{{ obj.id }}">{{ obj.phonenumber_prefix }} | {{ obj.country.countryname }}</label>
+                                        </div>
                                     </td>
                                 {% else %}
                                     <td></td>
@@ -218,7 +220,10 @@
                             {% for obj in row %}
                                 {% if obj %}
                                     <td>
-                                        <input type="checkbox" name="select_whitelist" class="checkbox" value="{{ obj.id }}" />{{ obj.phonenumber_prefix }} | {{ obj.country.countryname }}
+                                        <div class="checkbox">
+                                        <label><input type="checkbox" name="select_whitelist" class="checkbox" value="{{ obj.id }}" />{{ obj.phonenumber_prefix }} | {{ obj.country.countryname }}</label>
+                                        </div>
+
                                     </td>
                                 {% else %}
                                     <td></td>

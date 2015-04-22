@@ -31,8 +31,8 @@ whitelist_word = _('whitelist')
 success_msg = _('has been successfully added in')
 delete_success_msg = _('has been successfully deleted from')
 delete_all_success_msg = _('All dialcode are successfully deleted from')
-info_msg = _('is already added in')
-error_msg = _('has not been added in')
+info_msg = _('is already added to the')
+error_msg = _('has not been added to the')
 delete_error_msg = _('has not been deleted from')
 
 blacklist_success = '<div class="alert alert-success">' + alert + ' : (%s) ' + success_msg + ' ' + blacklist_word + '</div>'

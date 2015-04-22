@@ -18,4 +18,5 @@ influxdb==1.0.0
 
 #pandas==0.16.0
 #jsonschema==2.4.0
-#SQLAlchemy==0.9.9
+# SQLAlchemy used by connectors
+SQLAlchemy==1.0.0
