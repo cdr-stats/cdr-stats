@@ -557,6 +557,7 @@ func_prepare_settings(){
     IPADDR=`$IFCONFIG eth0|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'`
     if [ -z "$IPADDR" ]; then
         #the following work on Docker container
+        # ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/'
         IPADDR=`ip -4 -o addr show eth0 | cut -d ' ' -f 7 | cut -d '/' -f 1`
         if [ -z "$IPADDR" ]; then
             clear
