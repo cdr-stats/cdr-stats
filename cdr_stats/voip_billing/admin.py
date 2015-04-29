@@ -18,7 +18,6 @@ from django.utils.translation import ugettext as _
 from django.template import RequestContext
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
-from django.conf import settings
 from django.contrib import messages
 
 from country_dialcode.models import Prefix
@@ -45,21 +44,12 @@ def prefix_qs():
     """
     Function To get Prefix Query Set with ASCII Order
     """
-    if settings.DATABASES['default']['ENGINE'] == 'mysql':
-        q = Prefix.objects.extra(
-            select={
-                'prefix': 'prefix',
-                'destination': 'destination',
-                'ascii_prefix': 'ASCII(prefix)',
-            },
-            tables=['dialcode_prefix'])
-    else:
-        q = Prefix.objects.extra(
-            select={
-                'prefix': 'prefix',
-                'destination': 'destination',
-                'ascii_prefix': 'lower(prefix)',
-            }, tables=['dialcode_prefix'])
+    q = Prefix.objects.extra(
+        select={
+            'prefix': 'prefix',
+            'destination': 'destination',
+            'ascii_prefix': 'lower(prefix)',
+        }, tables=['dialcode_prefix'])
     q.group_by = ['prefix']
     q = q.extra(order_by=['ascii_prefix', 'prefix', 'destination'])
     return q

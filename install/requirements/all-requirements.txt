@@ -1,5 +1,4 @@
 -r basic-requirements.txt
--r mysql-requirements.txt
 -r django-requirements.txt
 -r dev-requirements.txt
 -r test-requirements.txt

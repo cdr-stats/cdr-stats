@@ -34,8 +34,6 @@ Sets up the options required for Django to connect to your database engine::
             'HOST': 'DB_HOSTNAME',
             'PORT': 'DB_PORT',
             'OPTIONS': {
-                #Needed on Mysql
-                # 'init_command': 'SET storage_engine=INNODB',
                 #Postgresql Autocommit
                 'autocommit': True,
             }

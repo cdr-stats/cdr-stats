@@ -15,7 +15,7 @@ Requirements
 ------------
 
 - Django (Python based web-framework):
-  
+
   .. warning::
     You must use Django version 1.3 VoIP2Bill.
 
@@ -23,10 +23,6 @@ Requirements
 
   - `Django-extensions`_
 
-
-    2. Sqlite3 / Mysql
-    3. Apache
-    4. Python 2.6
 
 
 -----------
@@ -88,7 +84,7 @@ Rate
 ~~~~
 
 Rate is most basic entity in the billing engine. Rates are associated with
-with every Rate Plan(s) & destination prefiexes (e.g. 34, 346, 32 etc).
+with every Rate Plan(s) and destination prefiexes (e.g. 34, 346, 32 etc).
 If the destination digits do not match an entry in the rate attached to the customer,
 then the VoIP Call cannot be made.
 
@@ -102,7 +98,7 @@ Ban Plan
 ~~~~~~~~
 
 Ban Plan contains banned destinations/prefixes where user's VoIP Call should not be made
-& Ban Plans are associated with VoIP Plan(s).
+and Ban Plans are associated with VoIP Plan(s).
 
 
 ----------------

@@ -35,9 +35,6 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '5433',
         'OPTIONS': {
-            # Needed on Mysql
-            # 'init_command': 'SET storage_engine=INNODB',
-            # Postgresql Autocommit
             'autocommit': True,
         }
     },
