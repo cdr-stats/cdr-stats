@@ -171,6 +171,9 @@ func_install_dependencies(){
                 wget --no-check-certificate --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
             fi
             apt-get update
+            apt-get -y install lsb-release
+            apt-get -y install locales-all
+
             export LANGUAGE=en_US.UTF-8
             export LANG=en_US.UTF-8
             export LC_ALL=en_US.UTF-8
