@@ -52,6 +52,23 @@ func_install_frontend
 func_install_landing_page
 func_install_backend
 
+clear
+echo ""
+echo "Congratulations, CDR-Stats is now installed!"
+echo "--------------------------------------------"
+echo ""
+echo "Please log on to CDR-Stats at "
+echo "http://$IPADDR:$HTTP_PORT"
+echo "the username and password are the ones you entered during this installation."
+echo ""
+echo "Thank you for installing CDR-Stats"
+echo "Yours,"
+echo "The Star2Billing Team"
+echo "http://www.star2billing.com and http://www.cdr-stats.org/"
+echo ""
+echo "========================================================================="
+echo ""
+
 
 # #Menu Section for Script
 # show_menu_cdr_stats() {

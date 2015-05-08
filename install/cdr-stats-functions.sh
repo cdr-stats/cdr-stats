@@ -684,23 +684,6 @@ func_install_frontend(){
 
     #Configure Logs files and logrotate
     func_prepare_logger
-
-    echo ""
-    echo "************************************************************"
-    echo "Congratulations, CDR-Stats Web Application is now installed!"
-    echo "************************************************************"
-    echo ""
-    echo "Please log on to CDR-Stats at "
-    echo "http://$IPADDR:$HTTP_PORT"
-    echo "the username and password are the ones you entered during this installation."
-    echo ""
-    echo "Thank you for installing CDR-Stats"
-    echo "Yours,"
-    echo "The Star2Billing Team"
-    echo "http://www.star2billing.com and http://www.cdr-stats.org/"
-    echo ""
-    echo "************************************************************"
-    echo ""
 }
 
 
@@ -738,19 +721,6 @@ func_install_backend() {
             fi
         ;;
     esac
-
-    echo ""
-    echo "**********************************************************"
-    echo "Congratulations, CDR-Stats Backend is now installed!"
-    echo "**********************************************************"
-    echo ""
-    echo "Thank you for installing CDR-Stats"
-    echo "Yours"
-    echo "The Star2Billing Team"
-    echo "http://www.star2billing.com and http://www.cdr-stats.org/"
-    echo ""
-    echo "*********************************************************"
-    echo ""
 }
 
 
