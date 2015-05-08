@@ -43,10 +43,11 @@ export LANG="en_US.UTF-8"
 func_identify_os() {
     if [ -f /etc/debian_version ] ; then
         DIST='DEBIAN'
-        if [ "$(lsb_release -cs)" != "wheezy" ]; then
+        if [ "$(lsb_release -cs)" != "wheezy" ] && [ "$(lsb_release -cs)" != "jessie" ]; then
             echo $SCRIPT_NOTICE
             exit 255
         fi
+        DEBIANCODE=$(lsb_release -cs)
     elif [ -f /etc/redhat-release ] ; then
         DIST='CENTOS'
         if [ "$(awk '{print $3}' /etc/redhat-release)" != "6.2" ] && [ "$(awk '{print $3}' /etc/redhat-release)" != "6.3" ] && [ "$(awk '{print $3}' /etc/redhat-release)" != "6.4" ] && [ "$(awk '{print $3}' /etc/redhat-release)" != "6.5" ]; then
@@ -165,9 +166,9 @@ func_install_dependencies(){
             if [ $chk -lt 1 ] ; then
                 echo "Setup new sources.list entries"
                 #Used by Node.js
-                echo "deb http://ftp.us.debian.org/debian wheezy-backports main" >> /etc/apt/sources.list
+                echo "deb http://ftp.us.debian.org/debian $DEBIANCODE-backports main" >> /etc/apt/sources.list
                 #Used by PostgreSQL
-                echo 'deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main' >> /etc/apt/sources.list.d/pgdg.list
+                echo "deb http://apt.postgresql.org/pub/repos/apt/ $DEBIANCODE-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
                 wget --no-check-certificate --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
             fi
             apt-get update
@@ -758,8 +759,8 @@ func_install_redis() {
     echo "Install Redis-server ..."
     case $DIST in
         'DEBIAN')
-            echo "deb http://packages.dotdeb.org wheezy all" > /etc/apt/sources.list.d/dotdeb.list
-            echo "deb-src http://packages.dotdeb.org wheezy all" >> /etc/apt/sources.list.d/dotdeb.list
+            echo "deb http://packages.dotdeb.org $DEBIANCODE all" > /etc/apt/sources.list.d/dotdeb.list
+            echo "deb-src http://packages.dotdeb.org $DEBIANCODE all" >> /etc/apt/sources.list.d/dotdeb.list
             wget --no-check-certificate --quiet -O - http://www.dotdeb.org/dotdeb.gpg | apt-key add -
             apt-get update
             apt-get -y install redis-server

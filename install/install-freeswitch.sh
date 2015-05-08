@@ -32,7 +32,7 @@ CURRENT_PATH=$PWD
 # Identify Linux Distribution
 if [ -f /etc/debian_version ] ; then
     DIST='DEBIAN'
-    if [ "$(lsb_release -cs)" != "wheezy" ]; then
+    if [ "$(lsb_release -cs)" != "wheezy" ] && [ "$(lsb_release -cs)" != "jessie" ]; then
         echo $SCRIPT_NOTICE
         exit 255
     fi
