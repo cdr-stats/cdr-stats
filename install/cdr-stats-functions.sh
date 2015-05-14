@@ -185,6 +185,8 @@ func_install_dependencies(){
 
             apt-get -y remove apache2.2-common apache2
             apt-get -y install sudo curl
+            apt-get -y install hdparm htop vim
+            update-alternatives --set editor /usr/bin/vim.tiny
 
             #Install Postgresql
             apt-get -y install libpq-dev
