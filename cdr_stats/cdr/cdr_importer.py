@@ -22,6 +22,7 @@ from cdr.functions_def import get_dialcode, get_hangupcause_id
 from voip_billing.rate_engine import calculate_call_cost
 from cdr_alert.functions_blacklist import verify_auth_dest_number
 from user_profile.models import AccountCode
+from user_profile.models import UserProfile
 from django.db.utils import OperationalError
 from django.db import ProgrammingError
 
@@ -128,13 +129,16 @@ def import_cdr(shell=False, logger=False):
 
         # Find the user for given accountcode
         try:
-            acc = AccountCode.objects.get(accountcode=call.accountcode)
-            user = acc.user
-            user_profile = acc.user.userprofile
+            user = AccountCode.objects.get(accountcode=call.accountcode).user
         except:
             # Cannot assign accountcode to an existing user, therefore we will assign to an Admin
             user = User.objects.filter(is_superuser=True)[0]
+
+        try:
             user_profile = user.userprofile
+        except:
+            user_profile = UserProfile(user=user)
+            user_profile.save()
 
         # Retrieve VoipPlan
         if user_profile:
