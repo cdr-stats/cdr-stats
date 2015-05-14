@@ -561,20 +561,20 @@ func_create_pgsql_database(){
 
 #NGINX / SUPERVISOR
 func_nginx_supervisor(){
-
     #Leave virtualenv
     deactivate
-    #Install Supervisor
-    pip install supervisor
 
     #Configure and Start supervisor
     case $DIST in
         'DEBIAN')
             cp /usr/src/cdr-stats/install/supervisor/gunicorn_cdrstats.conf /etc/supervisor/conf.d/
-            cp /usr/src/cdr-stats/install/supervisor/debian/supervisord /etc/init.d/supervisor
-            chmod +x /etc/init.d/supervisor
+            # cp /usr/src/cdr-stats/install/supervisor/debian/supervisord /etc/init.d/supervisor
+            # chmod +x /etc/init.d/supervisor
         ;;
         'CENTOS')
+            #Install Supervisor
+            pip install supervisor
+
             cp /usr/src/cdr-stats/install/supervisor/centos/supervisord /etc/init.d/supervisor
             chmod +x /etc/init.d/supervisor
             chkconfig --levels 235 supervisor on
@@ -591,20 +591,20 @@ func_nginx_supervisor(){
 
 #CELERY SUPERVISOR
 func_celery_supervisor(){
-
     #Leave virtualenv
     deactivate
-    #Install Supervisor
-    pip install supervisor
 
     #Configure and Start supervisor
     case $DIST in
         'DEBIAN')
             cp /usr/src/cdr-stats/install/supervisor/celery_cdrstats.conf /etc/supervisor/conf.d/
-            cp /usr/src/cdr-stats/install/supervisor/debian/supervisord /etc/init.d/supervisor
-            chmod +x /etc/init.d/supervisor
+            # cp /usr/src/cdr-stats/install/supervisor/debian/supervisord /etc/init.d/supervisor
+            # chmod +x /etc/init.d/supervisor
         ;;
         'CENTOS')
+            #Install Supervisor
+            pip install supervisor
+
             cp /usr/src/cdr-stats/install/supervisor/centos/supervisord /etc/init.d/supervisor
             chmod +x /etc/init.d/supervisor
             chkconfig --levels 235 supervisor on
