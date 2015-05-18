@@ -48,7 +48,7 @@ def prefix_qs():
         select={
             'prefix': 'prefix',
             'destination': 'destination',
-            'ascii_prefix': 'lower(prefix)',
+            'ascii_prefix': 'prefix',
         }, tables=['dialcode_prefix'])
     q.group_by = ['prefix']
     q = q.extra(order_by=['ascii_prefix', 'prefix', 'destination'])
