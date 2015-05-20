@@ -16,9 +16,9 @@
 
 # :copyright: (c) 2011-2015 by Arezqui Belaid.
 # :license: MPL 2.0, see COPYING for more details.
+VERSION = '3.0.0-Beta'
 
-VERSION = (3, 0, 0, "-beta")
-__version__ = ".".join(map(str, VERSION[0:3])) + "".join(VERSION[3:])
+__version__ = VERSION
 __author__ = "Arezqui Belaid"
 __contact__ = "info@star2billing.com"
 __homepage__ = "http://www.cdr-stats.org"

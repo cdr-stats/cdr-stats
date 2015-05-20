@@ -62,7 +62,7 @@ copyright = u'2011-2015, Arezqui Belaid <info@star2billing.com>'
 # built documents.
 #
 # The short X.Y version.
-version = ".".join(map(str, cdr_stats.VERSION[0:2]))
+version = ".".join(cdr_stats.__version__.split('.')[0:2])
 # The full version, including alpha/beta/rc tags.
 release = cdr_stats.__version__
 
