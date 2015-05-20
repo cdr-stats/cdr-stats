@@ -13,6 +13,8 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
+BRANCH='master'
+
 #Install mode can me either CLONE or DOWNLOAD
 INSTALL_MODE='CLONE'
 INSTALL_DIR='/usr/share/cdrstats'
@@ -30,7 +32,6 @@ CELERYD_USER="celery"
 CELERYD_GROUP="celery"
 CDRSTATS_ENV="cdr-stats"
 HTTP_PORT="8008"
-BRANCH='develop'
 DATETIME=$(date +"%Y%m%d%H%M%S")
 KERNELARCH=$(uname -m)
 SCRIPT_NOTICE="This install script is only intended to run on Debian 7.X"
