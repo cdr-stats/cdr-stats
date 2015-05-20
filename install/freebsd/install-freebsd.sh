@@ -13,6 +13,7 @@ APACHE_USER=www
 ESC_INSTALL_DIR=$(echo $INSTALL_DIR | sed 's/\//\\\//g')
 export LC_ALL="en_US.UTF-8"
 
+
 step_mysql()
 {
   pkg install -y mysql55-server
