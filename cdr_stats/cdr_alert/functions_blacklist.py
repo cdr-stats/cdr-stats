@@ -6,15 +6,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2015 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.conf import settings
-from cdr.functions_def import remove_prefix, \
-    prefix_list_string, get_country_id
-from cdr_alert.models import Blacklist, Whitelist, Alarm
+from cdr.functions_def import remove_prefix, prefix_list_string, get_country_id_prefix
+from cdr_alert.models import Blacklist, Whitelist
 from cdr_alert.tasks import blacklist_whitelist_notification
 
 
@@ -80,17 +79,17 @@ def chk_prefix_in_blacklist(prefix_list):
     return True
 
 
-def chk_destination(destination_number):
+def verify_auth_dest_number(destination_number):
     """
-    >>> chk_destination('1234567890')
+    >>> verify_auth_dest_number('1234567890')
     {
         'authorized': 0,
         'country_id': 0,
+        'prefix_id': 0,
     }
     """
-    #remove prefix
-    sanitized_destination = remove_prefix(destination_number,
-        settings.PREFIX_TO_IGNORE)
+    # remove prefix
+    sanitized_destination = remove_prefix(destination_number, settings.PREFIX_TO_IGNORE)
 
     prefix_list = prefix_list_string(sanitized_destination)
 
@@ -107,20 +106,23 @@ def chk_destination(destination_number):
             authorized = 0
 
     if (len(sanitized_destination) < settings.PN_MIN_DIGITS
-       or sanitized_destination[:1].isalpha()):
+            or sanitized_destination[:1].isalpha()):
         # It might be an extension
         country_id = 0
-    elif (len(sanitized_destination) >= settings.PN_MIN_DIGITS
-         and len(sanitized_destination) <= settings.PN_MAX_DIGITS):
+    elif (prefix_list
+          and len(sanitized_destination) >= settings.PN_MIN_DIGITS
+          and len(sanitized_destination) <= settings.PN_MAX_DIGITS):
         # It might be an local call
-        # Need to add coma for get_country_id to eval correctly
-        country_id = get_country_id(str(settings.LOCAL_DIALCODE) + ',')
+        # Need to add coma for get_country_id_prefix to eval correctly
+        prefix_list = prefix_list_string(str(settings.LOCAL_DIALCODE) + sanitized_destination)
+        (country_id, prefix_id) = get_country_id_prefix(prefix_list)
     else:
         # International call
-        country_id = get_country_id(prefix_list)
+        (country_id, prefix_id) = get_country_id_prefix(prefix_list)
 
     destination_data = {
         'authorized': authorized,
         'country_id': country_id,
+        'prefix_id': prefix_id,
     }
     return destination_data

@@ -1,0 +1,38 @@
+{% extends "frontend/master.html" %}
+{% load i18n cdr_tags nvd3_tags crispy_forms_tags %}
+
+{% block extra_header %}
+    {{ form.media }}
+{% endblock %}
+
+{% block content_header %}
+    <h1>{% trans "Daily comparaison"|capfirst %}<small></small></h1>
+{% endblock %}
+
+{% block content %}
+
+    {% crispy form form.helper %}
+
+    <div class="row">
+        <div class="col-md-12 col-xs-12 col-sm-12">
+            <div class="graph_header">
+                {% trans "Call Statistics" %} -
+                <b>
+                    {% if from_date  %}
+                        {{ from_date|date:"jS N Y" }} {% trans "with previous" %} {{ comp_days|cut:"-" }} {% trans "days" %}
+                    {% endif %}
+                    - {% trans "showing"|capfirst %}: {{ metric|title }}
+                </b>
+            </div>
+        </div>
+    </div>
+
+    <br/><br/>
+
+    <div class="row">
+        <div class="col-md-12 col-xs-12 col-sm-12">
+            {% load_chart hourly_charttype hourly_chartdata hourly_chartcontainer hourly_extra %}
+            {% include_container hourly_chartcontainer 400 '100%' %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,145 @@
+{% load i18n cdr_tags frontend_notification_tags activelink common_tags %}
+
+<!-- Static navbar -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand cornerlogo" href="/"><img src="{{STATIC_URL}}cdr-stats/images/cdr-stats.png"/></a>
+    </div>
+
+    <div class="navbar-collapse collapse">
+        {% if user.is_authenticated %}
+            <ul class="nav navbar-nav">
+              {% if perms.user_profile.dashboard %}
+                <li {% ifactive '/dashboard/' %}class="active"{% endifactive %}><a href="/dashboard/">{% trans "dashboard"|title %}</a></li>
+              {% endif %}
+            </ul>
+            <ul class="nav navbar-nav">
+              <li class="">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "analytics"|title %}<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  {% if perms.user_profile.overview %}
+                    <li {% ifactive '/overview/' %}class="active"{% endifactive %}><a href="/overview/">{% trans "overview"|title %}</a></li>
+                  {% endif %}
+                  {% if perms.user_profile.search %}
+                    <li {% ifactive '/cdr_view/' %}class="active"{% endifactive %}><a href="/cdr_view/">{% trans "search"|title %}</a></li>
+                  {% endif %}
+                  {% if perms.user_profile.daily_comparison %}
+                    <li {% ifactive '/daily_comparison/' %}class="active"{% endifactive %}><a href="/daily_comparison/">{% trans "daily comparison"|title %}</a></li>
+                  {% endif %}
+                 </ul>
+              </li>
+            </ul>
+
+            <!--
+            <ul class="nav navbar-nav">
+              <li class="">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "real-time"|title %}<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  {% if perms.user_profile.real_time_calls %}
+                    <li {% ifactive '/realtime/' %}class="active"{% endifactive %}><a href="/realtime/">{% trans "real-time calls"|title %}</a></li>
+                  {% endif %}
+                  {% if perms.user_profile.concurrent_calls %}
+                    <li  {% ifactive '/concurrent_calls/' %}class="active"{% endifactive %}><a href="/concurrent_calls/">{% trans "concurrent calls"|title %}</a></li>
+                  {% endif %}
+                 </ul>
+              </li>
+            </ul>
+            -->
+            <ul class="nav navbar-nav">
+              <li class="">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "reports"|title %}<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  {% if perms.user_profile.by_country %}
+                    <li {% ifactive '/country_report/' %}class="active"{% endifactive %}><a href="/country_report/">{% trans "by country"|title %}</a></li>
+                  {% endif %}
+                  {% if perms.user_profile.world_map %}
+                    <li {% ifactive '/world_map/' %}class="active"{% endifactive %}><a href="/world_map/">{% trans "world map"|title %}</a></li>
+                  {% endif %}
+                  {% if perms.user_profile.mail_report %}
+                    <li {% ifactive '/mail_report/' %}class="active"{% endifactive %}><a href="/mail_report/">{% trans "mail report"|title %}</a></li>
+                  {% endif %}
+                </ul>
+              </li>
+            </ul>
+            <ul class="nav navbar-nav">
+              <li class="">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "alert"|title %}<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  {% if perms.cdr_alert.alarm_settings %}
+                    <li {% ifactive '/alert/' %}class="active"{% endifactive %}><a href="/alert/">{% trans "alert settings"|title %}</a></li>
+                  {% endif %}
+                  {% if perms.cdr_alert.alarm_report %}
+                    <li {% ifactive '/alert_report/' %}class="active"{% endifactive %}><a href="/alert_report/">{% trans "alert report"|title %}</a></li>
+                  {% endif %}
+                  {% if perms.cdr_alert.view_blacklist and perms.cdr_alert.view_whitelist%}
+                    <li {% ifactive '/trust_control/' %}class="active"{% endifactive %}><a href="/trust_control/">{% trans "destination control"|title %}</a></li>
+                  {% endif %}
+                </ul>
+              </li>
+            </ul>
+
+              <ul class="nav navbar-nav">
+                  <li class="">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "billing"|title %}<b class="caret"></b></a>
+                      <ul class="dropdown-menu">
+                          {% if perms.user_profile.call_rate %}
+                          <li {% ifactive '/rates/' %}class="active"{% endifactive %}><a href="/rates/"> {% trans "rates"|title %}</a></li>
+                          {% endif %}
+                          {% if perms.user_profile.sumulator %}
+                          <li {% ifactive '/simulator/' %}class="active"{% endifactive %}><a href="/simulator/"> {% trans "call simulator"|title %}</a></li>
+                          {% endif %}
+                          {% if perms.user_profile.billing_report %}
+                            <li {% ifactive '/billing_report/' %}class="active"{% endifactive %}><a href="/billing_report/"> {% trans "billing report"|title %}</a></li>
+                          {% endif %}
+                      </ul>
+                  </li>
+              </ul>
+          {% endif %}
+
+          {% if user.is_authenticated %}
+            <ul class="nav navbar-nav navbar-right">
+              <li class="">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }}
+                    <span class="badge">{{ notice_unseen_count }}</span>
+                    <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                  <li {% ifactive '/user_detail_change/?action=tabs-1' %}class="active"{% endifactive %}><a href="/user_detail_change/?action=tabs-1">
+                        {% trans "account settings"|capfirst %}</a>
+                  </li>
+                  <li {% ifactive '/user_notification/' %}class="active"{% endifactive %}>
+                    <a href="/user_notification/">{% trans "notifications"|title %}
+                      <span class="label label-warning">{{ notice_unseen_count }}</span>
+                    </a>
+                  </li>
+                  <li {% ifactive '/user_detail_change/?action=tabs-3' %}class="active"{% endifactive %}><a href="/user_detail_change/?action=tabs-3">
+                    {% trans "change language"|title %}</a>
+                  </li>
+                  <li class="divider"></li>
+                  {% if perms.user_profile.view_api_explorer %}
+                    <li><a href="/rest-api/"> {% trans "API explorer"|capfirst %}</a></li>
+                  {% endif %}
+                  {% if user.is_superuser %}
+                    <li {% ifactive '/diagnostic/' %}class="active"{% endifactive %}><a href="/diagnostic/"> {% trans "diagnostic"|title %}</a></li>
+                  {% endif %}
+                  <li class="divider"></li>
+                  {% if user.is_superuser %}
+                    <li><a href="/admin/"> {% trans "administration"|title %}</a></li>
+                    <li class="divider"></li>
+                  {% endif %}
+                  <li><a href="/logout/">{% trans "log out"|title %}</a></li>
+                </ul>
+              </li>
+            </ul>
+          {% endif %}
+
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>

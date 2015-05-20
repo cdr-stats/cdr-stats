@@ -10,30 +10,30 @@ img {
     margin-right: auto;
 }
 
-.fg-button { 
-   outline: 0; 
-   margin:0 4px 0 0; 
-   padding: .8em 1.5em; 
-   text-decoration:none !important; 
-   cursor:pointer; 
-   position: relative; 
-   text-align: center; 
+.fg-button {
+   outline: 0;
+   margin:0 4px 0 0;
+   padding: .8em 1.5em;
+   text-decoration:none !important;
+   cursor:pointer;
+   position: relative;
+   text-align: center;
    zoom: 1;
 }
 
-#accordeon-container{ 
+#accordeon-container{
     width: 700px;
     margin-left: auto;
     margin-right: auto;
 }
 
-#graph-container{ 
+#graph-container{
     width: 800px;
     margin-left: auto;
     margin-right: auto;
 }
 
-#export-container{ 
+#export-container{
     width: 300px;
     margin-left: auto;
     margin-right: auto;
@@ -42,13 +42,13 @@ img {
     border : 1px;
 }
 
-.search-form{ 
+.search-form{
     width: 600px;
     margin-left: auto;
     margin-right: auto;
 }
 
-.info-icon{ 
+.info-icon{
     margin-left: 40%;
     border: 0;
 }
@@ -57,7 +57,7 @@ img {
     margin:10px 0 0 30px;
 }
 
-.dashboard_summary_header{ 
+.dashboard_summary_header{
     height: 20px;
     width: 90%;
     color: #1b5582;
@@ -66,7 +66,7 @@ img {
     background-color: #d7ebf9;
 }
 
-.dashboard_summary_info{ 
+.dashboard_summary_info{
     height: 20px;
     font-size: 16px;
     font-weight: bold;
@@ -96,10 +96,10 @@ img {
     font-size: 10px;
 }
 
-.ui-priority-secondary { 
+.ui-priority-secondary {
     border: 1px solid #77d5f7;
     background: #0078ae url(images/ui-bg_glass_45_0078ae_1x400.png) 50% 50% repeat-x;
-    
+
 }
 
 .ui-state-secondary-highlight {
@@ -682,7 +682,7 @@ textarea {
 
 td {
   font-size: 90%;
- 
+
 }
 
 /* customize the survey edition, this is for the sortable question header */

@@ -6,35 +6,38 @@ Configuration for Asterisk
 Import configuration for Asterisk
 ---------------------------------
 
+Review your database settings and ensure the second database exists and that is configured correctly::
 
-The asterisk settings may be as follows::
-
-    #list of CDR Backends to import
-    CDR_BACKEND = {
-        '127.0.0.1': {
-            'db_engine': 'mysql',
-            'cdr_type': 'asterisk',
-            'db_name': 'asteriskcdrdb',
-            'table_name': 'cdr',
-            'host': 'localhost',
-            'port': '',
-            'user': 'root',
-            'password': 'password',
-        },
-        #'192.168.1.200': {
-            #'db_engine': 'mysql',
-            #'cdr_type': 'asterisk',
-            #'db_name': 'asteriskcdrdb',
-            #'table_name': 'cdr',
-            #'host': 'localhost',
-            #'port': '',
-            #'user': 'root',
-            #'password': 'password',
-        #},
+# DATABASE SETTINGS
+# =================
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'cdrstats-billing',
+        'USER': 'postgres',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+        'PORT': '5433',
+        'OPTIONS': {
+            # Postgresql Autocommit
+            'autocommit': True,
+        }
+    },
+    'import_cdr': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'cdr-pusher',
+        'USER': 'postgres',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+        'PORT': '5433',
+        'OPTIONS': {
+            'autocommit': True,
+        }
     }
+}
 
-To add a new remote Asterisk MySQL CDR store,  ensure that there is a connection to the remote MySQL database, then uncomment the new server settings by removing the # and configuring the credentials to connect to the remote Asterisk CDR store.
-
+You will need to push your CDRs from Asterisk CDR datastore to a friendly CDR-Stats 'import_cdr' database.
+To help on this job we created CDR-Pushed, please visit the website and the instructions there to install and configure CDR-Stats correctly: https://github.com/areski/cdr-pusher
 
 
 .. _realtime-configuration-asterisk:
@@ -44,12 +47,6 @@ Realtime configuration for Asterisk
 
 The Asterisk Manager settings allow CDR-Stats to retrieve Realtime information to show the number of concurrent calls both in realtime and historically.
 
-The settings to configure are::
-
-    #Asterisk Manager / Used for Realtime and Concurrent calls
-    ASTERISK_MANAGER_HOST = 'localhost'
-    ASTERISK_MANAGER_USER = 'cdrstats_user'
-    ASTERISK_MANAGER_SECRET = 'cdrstats_secret'
-
-
 In Asterisk, add a new user in manager.conf, or one of its #include's for CDR-Stats. Further information about Asterisk Manager can be found here : http://www.voip-info.org/wiki/view/Asterisk+config+manager.conf
+
+The collection of realtime information is done via Collectd (https://collectd.org/) and InfluxDB (http://influxdb.com/.

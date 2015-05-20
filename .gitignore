@@ -1,5 +1,4 @@
 *.pyc
-*dilla*
 *.db
 *nbproject*
 *devserver*
@@ -11,4 +10,7 @@ cdr_stats/settings_local.py
 *sublime*
 *.log
 build
+_build
 output.html
+.ipynb_checkpoints
+bower_components

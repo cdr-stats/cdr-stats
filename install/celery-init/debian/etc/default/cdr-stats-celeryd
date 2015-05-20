@@ -4,13 +4,13 @@ CELERYD_NODES="cdr-stats-node1"
 #CELERYD_NODES="w1 w2 w3"
 
 # Where the Django project is.
-CELERYD_CHDIR='/usr/share/cdr_stats'
+CELERYD_CHDIR='/usr/share/cdrstats'
 
 # How to call "manage.py celeryd_multi"
-CELERYD_MULTI="/usr/share/virtualenvs/cdr-stats/bin/python $CELERYD_CHDIR/manage.py celeryd_multi"
+CELERYD_MULTI="/opt/miniconda/envs/cdr-stats/bin/python $CELERYD_CHDIR/manage.py celeryd_multi"
 
 # How to call "manage.py celeryctl"
-CELERYD_CTL="/usr/share/virtualenvs/cdr-stats/bin/python $CELERYD_CHDIR/manage.py celeryctl"
+CELERYD_CTL="/opt/miniconda/envs/cdr-stats/bin/python $CELERYD_CHDIR/manage.py celeryctl"
 
 # Extra arguments to celeryd
 #CELERYD_OPTS="--time-limit=300 --concurrency=8"
@@ -21,7 +21,7 @@ CELERYD_CTL="/usr/share/virtualenvs/cdr-stats/bin/python $CELERYD_CHDIR/manage.p
 #note : on a single machine we can easily run celerybeat over celeryd
 
 # Path to celeryd
-CELERYD='/usr/share/virtualenvs/cdr-stats/bin/python $CELERYD_CHDIR/manage.py celeryd_detach'
+CELERYD='/opt/miniconda/envs/cdr-stats/bin/python $CELERYD_CHDIR/manage.py celeryd_detach'
 
 # celeryd options
 CELERYD_OPTS='-EB -l info'

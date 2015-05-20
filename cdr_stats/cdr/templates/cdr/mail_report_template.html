@@ -1,0 +1,185 @@
+{% load i18n cache cdr_tags country_dialcode_tags common_tags %}
+
+<div class="text-center"><h3>{% trans "CDR-Stats report of" %} {{ yesterday_date|date:"jS F Y" }}</h3></div>
+
+<div class="dashboard_summary_header text-left">{% trans "last 10 calls"|title %}</div>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-condensed">
+        <thead>
+        <tr>
+            <th>{% trans "date"|capfirst %}</th>
+            <th>{% trans "clid"|capfirst %}</th>
+            <th>{% trans "destination"|capfirst %}</th>
+            <th>{% trans "duration"|capfirst %}</th>
+            <th>{% trans "bill sec"|capfirst %}</th>
+            <th>{% trans "hangup cause"|capfirst %}</th>
+            <th>{% trans "account"|capfirst %}</th>
+            {% if user.is_superuser %}
+            <th>{% trans "buy cost"|capfirst %}</th>
+            {% endif %}
+            <th>{% trans "sell cost"|capfirst %}</th>
+            <th>&nbsp;</th>
+        </tr>
+        </thead>
+
+        {% if rows %}
+        {% for row in rows %}
+        <tr>
+            <td>{{ row.starting_date }}</td>
+            <td>
+                {{ row.caller_id_number }}
+                {% if row.caller_id_number and row.caller_id_name %}
+                    -
+                {% endif %}
+                {{ row.caller_id_name }}
+            </td>
+            <td>{{ row.destination_number }}</td>
+            <td>{{ row.duration|conv_min }}</td>
+            <td>{{ row.billsec|conv_min }}</td>
+            <td>
+              {% cache 1800 hangupcause_name row.hangup_cause_id %}
+                {{ row.hangup_cause_id|hangupcause_name }}
+              {% endcache %}
+            </td>
+            {% if user.is_superuser %}
+                <td>{{ row.user_id }}</td>
+                <td>{{ row.buy_cost }}</td>
+            {% endif %}
+            <td>{{ row.sell_cost }}</td>
+            <td>
+                <div class="flag_icon">
+                    {% if row.country_id %}
+                        {% cache 1800 hcountry_flag row.country_id %}
+                            <img src="{{ STATIC_URL }}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name }}">
+                        {% endcache %}
+                    {% else %}
+                        <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans 'world'|capfirst %}">
+                    {% endif %}
+                    {% if row.authorized == 1  %}
+                        <img src="{{ STATIC_URL }}cdr-stats/icons/flag_green.png" class="elemtooltip" title="{% trans 'authorized call'|capfirst %}"/>
+                    {% else %}
+                        <img src="{{ STATIC_URL }}cdr-stats/icons/flag_red.png" class="elemtooltip" title="{% trans 'unauthorized call'|capfirst %}"/>
+                    {% endif %}
+
+                    {% if row.direction == 1 %}
+                        <img src="{{ STATIC_URL }}cdr-stats/icons/door_in.png" title="{{ row.get_direction_display|lower|capfirst }} {% trans 'call' %}" class="elemtooltip"/>
+                    {% elif row.direction == 2 %}
+                        <img src="{{ STATIC_URL }}cdr-stats/icons/door_out.png" title="{{ row.get_direction_display|lower|capfirst }}  {% trans 'call' %}" class="elemtooltip"/>
+                    {% else %}
+                        <img src="{{ STATIC_URL }}cdr-stats/icons/door.png" title="{{ row.get_direction_display|lower|capfirst }}  {% trans 'call' %}" class="elemtooltip"/>
+                    {% endif %}
+                <div>
+            </td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+        </tr>
+        {% else %}
+          <tr><td colspan="10">{% trans "no record found"|title %}</td></tr>
+        {% endif %}
+    </table>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <h4>{% trans "total calls"|title %}</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <tbody>
+                <tr>
+                    <th>{{ total_calls }}</th>
+                    <td>{% trans "number of calls"|title %}</td>
+                </tr>
+                <tr>
+                    <th>{{ metric_aggr.ACH }}</th>
+                    <td>{% trans "average calls per hour"|title %}</td>
+                </tr>
+                <tr>
+                    <th>{{ total_duration }}</th>
+                    <td>{% trans "total duration"|title %}</td>
+                </tr>
+                <tr>
+                    <th>{{ metric_aggr.ACD }}</th>
+                    <td>{% trans "average call duration"|title %}</td>
+                </tr>
+                {% if user.is_superuser %}
+                <tr>
+                    <th>{{ total_buy_cost }}</th>
+                    <td>{% trans "buy cost"|title %}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <th>{{ total_sell_cost }}</th>
+                    <td>{% trans "sell cost"|title %}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <h4>{% trans "5 most called countries"|title %}</h4>
+        {% if country_data %}
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <tbody>
+                    {% for country in country_data %}
+                    <tr>
+                        <td>
+                            {% if country.country_id %}
+                                {% cache 1800 country country.country_id %}
+                                    <img src="{{ STATIC_URL }}cdr-stats/{{ country.country_id|iso_flag }}" class="elemtooltip" title="{{ country.country_id|country_name|title }}">
+                                {% endcache %}
+                            {% else %}
+                                <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans 'World' %}">
+                            {% endif %}
+                        </td>
+                        <!-- <td>
+                            {{ country.country_id|country_name|title }}
+                        </td> -->
+                        <td>{{ country.nbcalls }} {% trans "calls"|title %}</td>
+                        <td>{{ country.duration|conv_min }} {% trans "min"|title  %}</td>
+                        {% if user.is_superuser %}
+                            <td>{{ country.buy_cost|floatformat:2 }} <abbr title="{% trans 'buy cost'|title %}">{% trans "BC" %}</abbr></td>
+                        {% endif %}
+                        <td>{{ country.sell_cost|floatformat:2 }} <abbr title="{% trans 'sell cost'|title %}">{% trans "SC" %}</abbr></td>
+                    </tr>
+                {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            {% trans "no record found"|title %}
+        {% endif %}
+    </div>
+    <div class="col-md-4">
+        <h4>{% trans "calls status"|title %}</h4>
+        {% if hangup_cause_data %}
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <tbody>
+                    {% for hangup in hangup_cause_data %}
+                        <tr>
+                            <td>{{ hangup.nbcalls }} {% trans "calls"|title %}</td>
+                            <td>{{ hangup.duration|conv_min }} {% trans "min"|title %}</td>
+                            <td>{{ hangup.hangup_cause_name|title }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            {% trans "no record found"|title %}
+        {% endif %}
+    </div>
+</div>

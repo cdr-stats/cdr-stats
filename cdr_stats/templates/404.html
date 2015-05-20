@@ -1,0 +1,9 @@
+{% load i18n %}
+
+<h1>404 Error</h1>
+
+<p>{% trans "This page cannot be found!" %}</p>
+
+{% if request.sentry.id %}
+    <p>{% trans "if you need assistance, you may reference this error as"|capfirst %} <strong>{{ request.sentry.id }}</strong>.</p>
+{% endif %}

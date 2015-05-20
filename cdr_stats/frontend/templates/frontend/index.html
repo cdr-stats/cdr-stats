@@ -1,0 +1,53 @@
+{% extends "frontend/master.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="jumbotron">
+
+	<img src="{{ STATIC_URL }}cdr-stats/images/cdr-stats_600.png" alt="CDR-Stats" width="400px"/>
+
+  <p><br/><a href="http://www.cdr-stats.org/" target="_blank" >CDR-Stats</a> {% trans "is a multi-tenant application to browse, analyse and graph CDR (Call Detail Records) with automated threat alerts for multiple switches and PBX systems." %}</p>
+
+  <p><b>{% trans "Call Traffic Analysis and Alert Tools include :"|capfirst %}</b></p>
+  <div class="row">
+    <div class="col-6 col-sm-6 col-lg-6">
+      <ul>
+        <li>{% trans "Dashboard: Overview of call activity" %}</li>
+        <li>{% trans "Search CDR: Search, filter, display and export CDR" %}</li>
+        <li>{% trans "Daily Comparison: Compare call traffic day on day" %}</li>
+        <li>{% trans "Real-Time Statistics and Concurrent Calls through the day" %}</li>
+      </ul>
+    </div>
+    <div class="col-6 col-sm-6 col-lg-6">
+      <ul>
+        <li>{% trans "Call Country Report and World Map report" %}</li>
+        <li>{% trans "Mail daily aggregated reports" %}</li>
+        <li>{% trans "Threat Control: Detect abnormal call patterns" %}</li>
+        <li>{% trans "Destination Alerts: Unexpected destination alerts" %}</li>
+      </ul>
+    </div>
+    <p><a class="btn btn-default" href="http://www.cdr-stats.org/">{% trans "learn more"|capfirst %} &raquo;</a></p>
+  </div>
+</div>
+
+
+
+
+<div class="row">
+    <div class="col-6 col-sm-6 col-lg-6">
+    <h2>{% trans "support"|title %}</h2>
+    <p>{% trans "Star2Billing S.L. offers consultancy including installation, training and customisation on CDR-Stats." %}
+    {% trans "contact us at"|capfirst %} <a href="mailto:cdr-stats@star2billing.com">cdr-stats@star2billing.com</a> {% trans "for more information" %}<p>
+    <p><a class="btn btn-default" href="http://www.cdr-stats.org/support/">{% trans "get support"|title %} &raquo;</a></p>
+  </div>
+
+  <div class="col-6 col-sm-6 col-lg-6">
+    <h2>{% trans "licensing"|capfirst %}</h2>
+     <p>{% trans "CDR-Stats is licensed under" %} <a href="http://www.mozilla.org/MPL/2.0/" target="_blank">MPL V2</a>,
+        {% trans "however an alternative license can be purchased if the MPL V2 license is not suitable for your requirements." %}</p>
+    <p><a class="btn btn-default" href="http://www.cdr-stats.org/support/licensing/">{% trans "View Licensing details" %} &raquo;</a></p>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "frontend/master.html" %}
+{% load i18n %}
+
+{% block extra_header %}
+{% endblock %}
+
+{% block content_header %}
+    <h1>{% trans "settings"|capfirst %} <small>{% trans "user detail, Password and notifications"|capfirst %}</small></h1>
+{% endblock %}
+
+{% block content %}
+
+<div class="tabbable">
+<ul class="nav nav-tabs">
+    <li {% if action == "tabs-1" %}class="active"{% endif %}><a href="#tabs-1" data-toggle="tab">{% trans "account"|capfirst %}</a></li>
+    <li {% if action == "tabs-2" %}class="active"{% endif %}><a href="#tabs-2" data-toggle="tab">{% trans "password"|capfirst %}</a></li>
+    <li {% if action == "tabs-3" %}class="active"{% endif %}><a href="#tabs-3" data-toggle="tab">{% trans "change language"|capfirst %}</a></li>
+</ul>
+
+<div class="tab-content">
+	<div id="tabs-1" class="tab-pane {% if action == "tabs-1" or action == "" %}active{% endif %}">
+        {% include "user_profile/user_account.html" %}
+    </div>
+
+    <div id="tabs-2" class="tab-pane {% if action == "tabs-2" %}active{% endif %}">
+        {% include "user_profile/user_change_password.html" %}
+    </div>
+
+    <div id="tabs-3" align="left" class="tab-pane {% if action == "tabs-3" %}active{% endif %}">
+        <form class="well" role="form" action="/i18n/setlang/" method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-md-4 col-xs-8">
+                        <label>{% trans "change the language"|capfirst %}</label>
+                        <select name="language" id="language-container" class="form-control" onchange="this.form.submit()">
+                            {% for lang in LANGUAGES %}
+                            <option value="{{ lang.0 }}" {% ifequal lang.0 LANGUAGE_CODE %}selected{% endifequal %}>{{ lang.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    jQuery(document).ready(function ($) {
+        $(".tabs").tabs();
+    });
+
+  $(function () {
+    $('.tabs a:last').tab('show');
+  })
+</script>
+
+{% endblock %}

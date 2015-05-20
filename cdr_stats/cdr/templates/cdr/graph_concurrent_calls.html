@@ -1,0 +1,31 @@
+{% extends "frontend/master.html" %}
+{% load i18n cdr_tags nvd3_tags crispy_forms_tags %}
+
+{% block extra_header %}
+    {{ form.media }}
+{% endblock %}
+
+{% block content_header %}
+    <h1>{% trans "concurrent calls"|capfirst %}<small></small></h1>
+{% endblock %}
+
+{% block content %}
+
+{% crispy form form.helper %}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="graph_header">
+            {% trans "concurrent calls"|title %} -
+            <b>
+            {% if start_date  %}
+                {{ start_date|date:"jS N Y" }}
+            {% endif %}
+            </b>
+        </div>
+        {% load_chart charttype chartdata chartcontainer chart_extra %}
+        {% include_container chartcontainer 400 '100%' %}
+    </div>
+</div>
+
+{% endblock %}

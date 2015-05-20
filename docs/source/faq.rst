@@ -34,20 +34,53 @@ alerts on detection of unusual activity, as well as send daily reports on traffi
 How to start over, delete CDRs and relaunch the import ?
 --------------------------------------------------------
 
-**Answer:** First, stop celery and drop your current mongoDB, you can do this with this command::
+**Answer:** First, stop celery and remove the aggregate data, connect on postgresql and enter the following::
 
-    $ mongo cdr-stats --eval 'db.dropDatabase();'
+    $ DROP MATERIALIZED VIEW matv_voip_cdr_aggr_hour;
+    $ DROP MATERIALIZED VIEW matv_voip_cdr_aggr_min;
 
-Update all your CDRs to be reimported as we flag them after import. This next step is dependant on your CDR store,
+Then recreate the Materialized View as follow::
 
-Mysql with Asterisk: run this command on the CDR Database::
+    $ CREATE MATERIALIZED VIEW matv_voip_cdr_aggr_hour AS
+        SELECT
+            date_trunc('hour', starting_date) as starting_date,
+            country_id,
+            switch_id,
+            cdr_source_type,
+            hangup_cause_id,
+            user_id,
+            count(*) AS nbcalls,
+            sum(duration) AS duration,
+            sum(billsec) AS billsec,
+            sum(buy_cost) AS buy_cost,
+            sum(sell_cost) AS sell_cost
+        FROM
+            voip_cdr
+        GROUP BY
+            date_trunc('hour', starting_date), country_id, switch_id, cdr_source_type, hangup_cause_id, user_id;
 
-    $ UPDATE  cdr SET  import_cdr =  '0';
+    $ CREATE MATERIALIZED VIEW matv_voip_cdr_aggr_min AS
+        SELECT
+            date_trunc('minute', starting_date) as starting_date,
+            country_id,
+            switch_id,
+            cdr_source_type,
+            hangup_cause_id,
+            user_id,
+            count(*) AS nbcalls,
+            sum(duration) AS duration,
+            sum(billsec) AS billsec,
+            sum(buy_cost) AS buy_cost,
+            sum(sell_cost) AS sell_cost
+        FROM
+            voip_cdr
+        GROUP BY
+            date_trunc('minute', starting_date), country_id, switch_id, cdr_source_type, hangup_cause_id, user_id;
 
-MongoDB with Freeswitch: Run this command in MongoDB
 
-    $ use freeswitch_cdr;
-    db.cdr.update({"import_cdr" : 1}, { $set : {"import_cdr" : 0}}, { multi: true });
+Then, update all your CDRs from 'import_cdr' PostgreSQL database to be reimported as we flag them after import:
+
+    $ UPDATE cdr_import SET imported=FALSE;
 
 Start Celery, and check CDR are being imported correctly.
 
@@ -57,7 +90,7 @@ How to debug mail connectivity?
 
 **Answer:** Use mail_debug to test the mail connectivity::
 
-    $ cd /usr/share/cdr_stats
+    $ cd /usr/share/cdrstats
     $ workon cdr-stats
     $ python manage.py mail_debug
 

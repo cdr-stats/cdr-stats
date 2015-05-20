@@ -1,0 +1,88 @@
+{% extends "frontend/master.html" %}
+{% load i18n pagination_tags cache common_tags crispy_forms_tags %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block content %}
+
+{% crispy form form.helper %}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            {% trans "action"|capfirst %} <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                {% if perms.user_profile.export_call_rate %}
+                    <li><a href="/export_rate/?format=csv">{% trans "export to CSV"|capfirst %}</a></li>
+                    <li><a href="/export_rate/?format=xls">{% trans "export to XLS"|capfirst %}</a></li>
+                    <li><a href="/export_rate/?format=json">{% trans "export to JSON"|capfirst %}</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+<div>&nbsp;</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-condensed">
+                <thead>
+                <tr>
+                    <th>
+                        {% ifequal sort_order 'prefix' %}
+                          {% sort_link up_icon|safe "prefix"  %}
+                            {{ RATE_COLUMN_NAME.prefix|capfirst }}
+                          {% sort_link down_icon|safe "-prefix"  %}
+                        {% else %}
+                          {% sort_link RATE_COLUMN_NAME.prefix|capfirst "-prefix" %}
+                        {% endifequal %}
+                    </th>
+                    <th>
+                        {% ifequal sort_order 'destination' %}
+                          {% sort_link up_icon|safe "destination"  %}
+                            {{ RATE_COLUMN_NAME.destination|capfirst }}
+                          {% sort_link down_icon|safe "-destination"  %}
+                        {% else %}
+                          {% sort_link RATE_COLUMN_NAME.destination|capfirst "-destination" %}
+                        {% endifequal %}
+                    </th>
+                    <th>
+                        {% ifequal sort_order 'retail_rate' %}
+                          {% sort_link up_icon|safe "retail_rate"  %}
+                            {{ RATE_COLUMN_NAME.rate|capfirst }}
+                          {% sort_link down_icon|safe "-retail_rate"  %}
+                        {% else %}
+                          {% sort_link RATE_COLUMN_NAME.rate|capfirst "-retail_rate" %}
+                        {% endifequal %}
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if rate_list %}
+                    {% autopaginate rate_list cdr_stats_page_size %}
+                    {% for item in rate_list %}
+                        <tr>
+                          <td>{{ item.prefix }}</td>
+                          <td>{{ item.prefix__destination }}</td>
+                          <td>{{ item.retail_rate }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td colspan="3">{% trans "no record found!!"|capfirst %}</td></tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+        <div class="text-right">
+            {% trans "total records"|title %} : {{ rate_list_count }}
+        </div>
+
+        {% if rate_list %}
+            {% paginate %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends "frontend/master.html" %}
+{% load i18n country_dialcode_tags common_tags nvd3_tags crispy_forms_tags %}
+{% load cache %}
+
+{% block extra_head %}
+
+    {% load_chart country_analytic_charttype country_analytic_chartdata country_chartcontainer country_extra %}
+
+    <script type="text/javascript">
+        $(function () {
+            $('a[data-toggle="tab"]').on('click', function (e) {
+                if (e.target.hash == '#tabs-2') {
+                    {% load_chart final_duration_charttype final_duration_chartdata final_duration_chartcontainer final_duration_extra %}
+                }
+            });
+        });
+    </script>
+    {{ form.media }}
+{% endblock %}
+
+{% block content_header %}
+    <h1>{% trans "country report"|capfirst %}<small></small></h1>
+{% endblock %}
+
+{% block content %}
+<div id="form_collapse" class="collapse">
+    {% crispy form form.helper %}
+</div>
+{% include "frontend/common_search_toggle_button.html" %}
+
+<p>&nbsp;</p>
+
+<div class="row">
+    <div class="col-md-12 col-xs-12 col-sm-12">
+        <div class="graph_header">
+            <b>
+                {% if start_date  %}
+                    {{ start_date|date:"jS N Y" }}
+                {% endif %}
+                {% if end_date  %}
+                    {% trans "to" %} {{ end_date|date:"jS N Y" }}
+                {% endif %}
+                - {% trans "showing"|capfirst %}: {{ metric|title }}
+            </b>
+        </div>
+    </div>
+</div>
+
+<div class="tabbable">
+    <div class="tab-content">
+        <div class="row">
+            <div class="col-md-12 col-xs-12 col-sm-12">
+                {% load_chart hourly_charttype hourly_chartdata hourly_chartcontainer hourly_extra %}
+                {% include_container hourly_chartcontainer 400 '100%' %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<br/><br/>
+
+<div class="row">
+    <div class="col-md-4 col-md-offset-1">
+        <h4 class="text-center">{% trans "total calls"|title %}</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <tbody>
+                <tr>
+                    <th>{{ total_calls }}</th>
+                    <td>{% trans "number of calls"|title %}</td>
+                </tr>
+                <tr>
+                    <th>{{ metric_aggr.ACH }}</th>
+                    <td>{% trans "average calls per hour"|title %}</td>
+                </tr>
+                <tr>
+                    <th>{{ total_duration }}</th>
+                    <td>{% trans "total duration"|title %}</td>
+                </tr>
+                <tr>
+                    <th>{{ total_billsec }}</th>
+                    <td>{% trans "total billsec"|title %}</td>
+                </tr>
+                <tr>
+                    <th>{{ metric_aggr.ACD }}</th>
+                    <td>{% trans "average call duration"|title %}</td>
+                </tr>
+                {% if user.is_superuser %}
+                <tr>
+                    <th>{{ total_buy_cost|floatformat:2 }}</th>
+                    <td>{% trans "total buy cost"|title %}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <th>{{ total_sell_cost|floatformat:2 }}</th>
+                    <td>{% trans "total sell cost"|title %}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <hr/>
+        <h4 align="center">{{ top_country }} {% trans " top countries"|title %}</h4>
+        {% if country_data %}
+            {% include_container country_chartcontainer 450 500 %}
+        {% endif %}
+
+
+    </div>
+    <div class="col-md-5 col-md-offset-1">
+        <h4 class="text-center">{{ top_country }} {% trans "most called countries"|title %}</h4>
+        {% if country_data %}
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <tbody>
+                {% for country in country_data %}
+                    <tr>
+                        <td>
+                            {% if country.country_id %}
+                                {% cache 1800 country country.country_id %}
+                                    <img src="{{ STATIC_URL }}cdr-stats/{{ country.country_id|iso_flag }}" class="elemtooltip" title="{{ country.country_id|country_name|title }}">
+                                {% endcache %}
+                            {% else %}
+                                <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans 'World' %}">
+                            {% endif %}
+                        </td>
+                        <!-- <td>
+                            {{ country.country_id|country_name|title }}
+                        </td> -->
+                        <td>{{ country.nbcalls }} {% trans "calls"|title %}</td>
+                        <td>{{ country.duration|conv_min }} {% trans "minutes" %}</td>
+                        {% if user.is_superuser %}
+                            <td>{{ country.buy_cost|floatformat:2 }} <abbr title="{% trans 'buy cost'|title %}">{% trans "BC" %}</abbr></td>
+                        {% endif %}
+                        <td>{{ country.sell_cost|floatformat:2 }} <abbr title="{% trans 'sell cost'|title %}">{% trans "SC" %}</abbr></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <div class="">{% trans "No record found" %}</div>
+        {% endif %}
+    <div>
+</div>
+
+{% endblock %}

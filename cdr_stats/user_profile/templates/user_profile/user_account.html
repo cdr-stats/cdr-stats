@@ -1,0 +1,27 @@
+{% load i18n common_tags crispy_forms_tags %}
+
+{% if msg_detail %}
+    <div class="alert alert-success">
+        <strong>{% trans "alert"|capfirst %} : </strong>  {{ msg_detail|capfirst }}
+    </div>
+{% endif %}
+
+{% if error_detail %}
+    <div class="alert alert-error">
+        <strong>{% trans "alert"|capfirst %} : </strong>  {{ error_detail|capfirst }}
+    </div>
+{% endif %}
+
+<form class="well" role="form" action="." method="post">
+    {% csrf_token %}
+    {% crispy user_detail_form user_detail_form.helper %}
+    {% crispy user_detail_extened_form user_detail_extened_form.helper %}
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <input type="hidden" name="action" value="tabs-1"/>
+            <input type="hidden" name="form-type" value="change-detail"/>
+            <input type="submit" class="btn btn-primary" value="{% trans 'change detail'|title %}"/>
+        </div>
+    </div>
+</form>
+

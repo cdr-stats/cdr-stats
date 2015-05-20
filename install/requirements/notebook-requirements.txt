@@ -1,0 +1,7 @@
+ipython
+pyzmq
+tornado
+jsonschema
+sqlalchemy
+pandas
+matplotlib

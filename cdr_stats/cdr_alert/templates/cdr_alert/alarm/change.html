@@ -1,0 +1,10 @@
+{% extends "frontend/master.html" %}
+{% load i18n crispy_forms_tags %}
+
+{% block content_header %}
+	<h1>{{ action|title }} {% trans "alarm"|capfirst %}<small></small></h1>
+{% endblock %}
+
+{% block content %}
+    {% crispy form form.helper %}
+{% endblock %}

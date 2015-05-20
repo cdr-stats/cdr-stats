@@ -74,15 +74,15 @@ $ cd install/celery-init/etc/default/
 
    Init script: `celeryd`_.
 
-   .. _celeryd: https://github.com/Star2Billing/newfies-dialer/raw/master/install/celery-init/etc/init.d/celeryd
+   .. _celeryd: https://github.com/areski/cdr-stats/raw/master/install/celery-init/etc/init.d/celeryd
 
    Usage : /etc/init.d/celeryd {start|stop|force-reload|restart|try-restart|status}::
 
     # Where to chdir at start
-    CELERYD_CHDIR="/path/to/newfies/"
+    CELERYD_CHDIR="/path/to/cdr-stats/"
 
     # Path to celeryd
-    CELERYD="/path/to/newfies/manage.py celeryd"
+    CELERYD="/path/to/cdr-stats/manage.py celeryd"
 
     # Extra arguments to celeryd
     CELERYD_OPTS="--time-limit=300"
@@ -110,12 +110,12 @@ $ cd install/celery-init/etc/default/
 
    Init script: `celerybeat`_
 
-   .. _celerybeat: https://github.com/Star2Billing/newfies-dialer/raw/master/install/celery-init/etc/init.d/celerybeat
+   .. _celerybeat: https://github.com/areski/cdr-stats/raw/master/install/celery-init/etc/init.d/celerybeat
 
    Usage:	/etc/init.d/celerybeat {start|stop|force-reload|restart|try-restart|status}::
 
     # Path to celerybeat
-    CELERYBEAT="/path/to/newfies/manage.py celerybeat"
+    CELERYBEAT="/path/to/cdr-stats/manage.py celerybeat"
 
     # Extra arguments to celerybeat
     CELERYBEAT_OPTS="--schedule=/var/run/celerybeat-schedule"

@@ -1,0 +1,164 @@
+===========
+Rate Engine
+===========
+
+How does it works
+-----------------
+Customers are associated with their VoIPPlan
+So when message is sent we know which VoIPPlan to use
+
+
+What data do we have
+--------------------
+
+    1. VoIPPlan ID : 1
+    2. MT_phonenumber : 346507843555, phonenumber to delivery the message
+    3. From VoIPPlan we know the LCR/LCD Type
+
+        IF LCR (Least Cost Routing)
+            The last statement in the ORDER BY will be : carrier_rate ASC
+        IF LCD (Least Cost Dialer)
+            The last statement in the ORDER BY will be : retail_rate ASC
+
+Build Query
+-----------
+
+The following query will determine the cost of the text message and also tell us which provider to use to deliver the message.
+
+*You will see :*
+
+voip_retail_rate.prefix IN (34650, 3465, 346, 34)
+This string is built based on the phonenumber by taking the first 5 digits down the the last 2 digits.
+
+** OLD SQL Query**
+::
+
+    -- Final query (outmost): sort the results (carrier rates + retails rates)
+    SELECT rpid, cr_prefix, prefix as rt_prefix, rrid, carrier_rate, retail_rate, crid, provider_id, gateway_id, sum_metric
+    FROM (
+    -- Outer query: Find matching trunk and buy rates for selling rate found in inner query
+        SELECT DISTINCT allsellrates.*,
+                voip_carrier_rate.id AS crid,
+                voip_carrier_rate.prefix AS cr_prefix,
+                provider.id AS provider_id,
+                provider.gateway_id AS gateway_id,
+                voip_carrier_rate.carrier_rate, (voip_carrier_plan.metric + allsellrates.metric + provider.metric) AS sum_metric
+        FROM (
+        -- Inner query: match the destination against a retail rate
+        SELECT DISTINCT voip_retail_plan.id AS rpid,
+                voip_retail_rate.prefix,
+                voip_retail_rate.id AS rrid,
+                voip_retail_rate.retail_rate AS retail_rate,
+                voip_retail_plan.metric AS metric
+                FROM voip_retail_rate, voip_retail_plan, voipplan_voipretailplan
+                WHERE voip_retail_rate.prefix IN (34650, 3465, 346, 34)
+                AND voip_retail_plan.id = voip_retail_rate.voip_retail_plan_id
+                AND voipplan_voipretailplan.voipplan_id = 1
+                AND voipplan_voipretailplan.voipretailplan_id = voip_retail_plan.id
+                ORDER BY voip_retail_plan.id, length(prefix) DESC
+        )  AS allsellrates,
+                voip_carrier_rate, provider_prefix, voipretailplan_voipcarrierplan, voip_carrier_plan, provider
+        WHERE voipretailplan_voipcarrierplan.voipretailplan_id = allsellrates.rpid
+                AND voipretailplan_voipcarrierplan.voipcarrierplan_id = voip_carrier_plan.id
+                AND voip_carrier_rate.voip_carrier_plan_id = voip_carrier_plan.id
+                AND voip_carrier_rate.prefix IN (34650, 3465, 346, 34)
+                AND voip_carrier_plan.voip_provider_id = provider.id
+                ORDER BY voip_carrier_plan.id, length(cr_prefix) DESC, length(allsellrates.prefix) DESC
+    ) AS bothrates
+    ORDER BY length(cr_prefix) DESC, length(rt_prefix) DESC, sum_metric ASC, carrier_rate ASC
+    LIMIT 0,1;
+
+
+
+** NEW SQL Query**
+::
+
+    -- Final query (outmost): sort the results (carrier rates + retails rates)
+    SELECT cpid, rpid, cr_prefix, prefix as rt_prefix, rrid, carrier_rate, retail_rate, crid, provider_id, gateway_id, sum_metric
+    FROM (
+    -- Outer query: Find matching trunk and buy rates for selling rate found in inner query
+        SELECT DISTINCT allsellrates.*,
+                voip_carrier_rate.id AS crid,
+                voip_carrier_rate.prefix AS cr_prefix,
+                provider.id AS provider_id,
+                provider.gateway_id AS gateway_id,
+                voip_carrier_rate.carrier_rate, (voip_carrier_plan.metric + allsellrates.metric + provider.metric) AS sum_metric,
+                voip_carrier_plan.id AS cpid
+        FROM (
+        -- Inner query: match the destination against a retail rate
+        SELECT DISTINCT voip_retail_plan.id AS rpid,
+                voip_retail_rate.prefix,
+                voip_retail_rate.id AS rrid,
+                voip_retail_rate.retail_rate AS retail_rate,
+                voip_retail_plan.metric AS metric
+                FROM voip_retail_rate, voip_retail_plan, voipplan_voipretailplan
+                WHERE voip_retail_rate.prefix IN (34650, 3465, 346, 34)
+                AND voip_retail_plan.id = voip_retail_rate.voip_retail_plan_id
+                AND voipplan_voipretailplan.voipplan_id = 1
+                AND voipplan_voipretailplan.voipretailplan_id = voip_retail_plan.id
+                ORDER BY length(prefix) DESC, retail_rate ASC
+        )  AS allsellrates,
+                voip_carrier_rate, simu_prefix, voipplan_voipcarrierplan, voip_carrier_plan, provider
+        WHERE voipplan_voipcarrierplan.voipplan_id = 1
+                AND voipplan_voipcarrierplan.voipcarrierplan_id = voip_carrier_plan.id
+                AND voip_carrier_rate.voip_carrier_plan_id = voip_carrier_plan.id
+                AND voip_carrier_rate.prefix IN (34650, 3465, 346, 34)
+                AND voip_carrier_plan.voip_provider_id = provider.id
+                ORDER BY voip_carrier_plan.id, length(cr_prefix) DESC, length(allsellrates.prefix) DESC
+    ) AS bothrates
+    ORDER BY length(cr_prefix) DESC, length(rt_prefix) DESC, sum_metric ASC, carrier_rate ASC, retail_rate ASC
+    LIMIT 0,1;
+
+**Django Query**
+::
+
+    query = VoIPRetailPlan.objects.raw('SELECT rpid as id, cpid, cr_prefix, prefix as rt_prefix, rrid, carrier_rate, retail_rate, crid, provider_id, gateway_id, sum_metric \
+    FROM ( \
+        SELECT DISTINCT allsellrates.*, \
+                voip_carrier_rate.id AS crid, \
+                voip_carrier_rate.prefix AS cr_prefix, \
+                provider.id AS provider_id, \
+                provider.gateway_id AS gateway_id, \
+                voip_carrier_rate.carrier_rate, (voip_carrier_plan.metric + allsellrates.metric + provider.metric) AS sum_metric, \,
+                voip_carrier_plan.id AS cpid \
+        FROM ( \
+        SELECT DISTINCT voip_retail_plan.id AS rpid, \
+                voip_retail_rate.prefix, \
+                voip_retail_rate.id AS rrid, \
+                voip_retail_rate.retail_rate AS retail_rate, \
+                voip_retail_plan.metric AS metric \
+                FROM voip_retail_rate, voip_retail_plan, voipplan_voipretailplan \
+                WHERE voip_retail_rate.prefix IN (34650, 3465, 346, 34) \
+                AND voip_retail_plan.id = voip_retail_rate.voip_retail_plan_id \
+                AND voipplan_voipretailplan.voipplan_id = 1 \
+                AND voipplan_voipretailplan.voipretailplan_id = voip_retail_plan.id \
+                ORDER BY length(prefix) DESC, retail_rate ASC \
+        )  AS allsellrates, \
+                voip_carrier_rate, simu_prefix, voipplan_voipcarrierplan, voip_carrier_plan, provider \
+        WHERE voipplan_voipcarrierplan.voipplan_id = 1 \
+                AND voipplan_voipcarrierplan.voipcarrierplan_id = voip_carrier_plan.id \
+                AND voip_carrier_rate.voip_carrier_plan_id = voip_carrier_plan.id \
+                AND voip_carrier_rate.prefix IN (34650, 3465, 346, 34) \
+                AND voip_carrier_plan.voip_provider_id = provider.id \
+                ORDER BY voip_carrier_plan.id, length(cr_prefix) DESC, length(allsellrates.prefix) DESC \
+    ) AS bothrates \
+    ORDER BY length(cr_prefix) DESC, length(rt_prefix) DESC, sum_metric ASC, carrier_rate ASC, retail_rate ASC LIMIT 0, 1');
+
+
+-----------------------------------------------------------------
+Export the cheapest rates
+
+
+    SELECT voip_retail_rate.prefix, Min(retail_rate) as Minrate, simu_prefix.destination
+    FROM voip_retail_rate
+
+    INNER JOIN voipplan_voipretailplan
+        ON voipplan_voipretailplan.voipretailplan_id = voip_retail_rate.voip_retail_plan_id
+
+    LEFT JOIN simu_prefix ON simu_prefix.prefix = voip_retail_rate.prefix
+
+    WHERE voipplan_id=1
+
+    GROUP BY voip_retail_rate.prefix
+
+

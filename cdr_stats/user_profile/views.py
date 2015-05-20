@@ -6,58 +6,53 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2015 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render_to_response, get_object_or_404
-from django.http import HttpResponseRedirect
+# from django.http import HttpResponseRedirect
 from django.template.context import RequestContext
 from django.utils.translation import ugettext_lazy as _
-from cdr.functions_def import chk_account_code
 from user_profile.models import UserProfile
-from user_profile.forms import UserChangeDetailForm, \
-    UserChangeDetailExtendForm
-from frontend_notification.views import notice_count
-from common.common_functions import current_view
+from user_profile.forms import UserChangeDetailForm, UserChangeDetailExtendForm, UserPasswordChangeForm
+from cdr.decorators import check_user_detail
 
 
 @login_required
+@check_user_detail('accountcode')
 def customer_detail_change(request):
     """User Detail change on Customer UI
 
     **Attributes**:
 
-        * ``form`` - UserChangeDetailForm, UserChangeDetailExtendForm, PasswordChangeForm
-        * ``template`` - 'frontend/registration/user_detail_change.html'
+        * ``form`` - UserChangeDetailForm, UserChangeDetailExtendForm, UserPasswordChangeForm
+        * ``template`` - 'user_profile/user_detail_change.html'
 
     **Logic Description**:
 
         * User is able to change their details.
     """
-    if not request.user.is_superuser:  # not superuser
-        if not chk_account_code(request):
-            return HttpResponseRedirect('/?acc_code_error=true')
-
     user_detail = get_object_or_404(User, username=request.user)
+
     try:
         user_detail_extened = UserProfile.objects.get(user=user_detail)
     except UserProfile.DoesNotExist:
-        #create UserProfile
+        # create UserProfile
         user_detail_extened = UserProfile(user=user_detail)
-        user_detail_extened.save()
+        # DEMO / Disable
+        if not settings.DEMO_MODE:
+            user_detail_extened.save()
 
-    user_detail_form = UserChangeDetailForm(request.user,
-                                            instance=user_detail)
-    user_detail_extened_form = UserChangeDetailExtendForm(
-        request.user, instance=user_detail_extened)
+    user_detail_form = UserChangeDetailForm(request.user, instance=user_detail)
+    user_detail_extened_form = UserChangeDetailExtendForm(request.user, instance=user_detail_extened)
 
-    user_password_form = PasswordChangeForm(user=request.user)
+    user_password_form = UserPasswordChangeForm(user=request.user)
 
     msg_detail = ''
     msg_pass = ''
@@ -70,31 +65,29 @@ def customer_detail_change(request):
 
     if request.method == 'POST':
         if request.POST['form-type'] == "change-detail":
-            user_detail_form = UserChangeDetailForm(
-                request.user, request.POST, instance=user_detail)
-            user_detail_extened_form = UserChangeDetailExtendForm(
-                request.user, request.POST, instance=user_detail_extened)
+            user_detail_form = UserChangeDetailForm(request.user, request.POST, instance=user_detail)
+            user_detail_extened_form = UserChangeDetailExtendForm(request.user, request.POST, instance=user_detail_extened)
             action = 'tabs-1'
             if user_detail_form.is_valid() and user_detail_extened_form.is_valid():
-                user_detail_form.save()
-                user_detail_extened_form.save()
-                msg_detail = _('Detail has been changed.')
+                # DEMO / Disable
+                if not settings.DEMO_MODE:
+                    user_detail_form.save()
+                    user_detail_extened_form.save()
+                msg_detail = _('detail has been changed.')
             else:
-                error_detail = _('Please correct the errors below.')
+                error_detail = _('please correct the errors below.')
         else:
             # change-password
-            user_password_form = PasswordChangeForm(user=request.user,
-                                                    data=request.POST)
+            user_password_form = UserPasswordChangeForm(user=request.user, data=request.POST)
             action = 'tabs-2'
             if user_password_form.is_valid():
-                user_password_form.save()
-                msg_pass = _('Your password has been changed.')
+                # DEMO / Disable
+                if not settings.DEMO_MODE:
+                    user_password_form.save()
+                msg_pass = _('your password has been changed.')
             else:
-                error_pass = _('Please correct the errors below.')
-
-    template = 'frontend/registration/user_detail_change.html'
+                error_pass = _('please correct the errors below.')
     data = {
-        'module': current_view(request),
         'user_detail_form': user_detail_form,
         'user_detail_extened_form': user_detail_extened_form,
         'user_password_form': user_password_form,
@@ -102,8 +95,6 @@ def customer_detail_change(request):
         'msg_pass': msg_pass,
         'error_detail': error_detail,
         'error_pass': error_pass,
-        'notice_count': notice_count(request),
         'action': action,
     }
-    return render_to_response(template, data,
-           context_instance=RequestContext(request))
+    return render_to_response('user_profile/user_detail_change.html', data, context_instance=RequestContext(request))

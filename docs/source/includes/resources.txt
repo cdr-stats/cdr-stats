@@ -19,7 +19,7 @@ Bug tracker
 ===========
 
 If you have any suggestions, bug reports or annoyances please report them
-to our issue tracker at https://github.com/Star2Billing/cdr-stats/issues/
+to our issue tracker at https://github.com/areski/cdr-stats/issues/
 
 .. _documentation:
 

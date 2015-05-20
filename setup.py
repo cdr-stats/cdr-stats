@@ -6,7 +6,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2013 Star2Billing S.L.
+# Copyright (C) 2011-2015 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -49,7 +49,7 @@ def parse_dependency_links(file_name):
 
 setup(
     name='cdr-stats',
-    version=cdr_stats.__version__,
+    version=cdr_stats.VERSION,
     description='CDR-Stats is a CDR viewer for Asterisk/Freeswitch Call Data Records. It allows you to interrogate your CDR to provide reports and statistics via a simple to use, yet powerful, web interface.',
     long_description=read('README.rst'),
     author='Belaid Arezqui',
@@ -60,8 +60,8 @@ setup(
     package_dir={'cdr_stats': 'cdr_stats'},
     packages=find_packages(),
     package_data={},
-    install_requires=parse_requirements('install/requirements/rtd-requirements.txt'),
-    dependency_links=parse_dependency_links('install/requirements/rtd-requirements.txt'),
+    # install_requires=parse_requirements('install/requirements/rtd-requirements.txt'),
+    # dependency_links=parse_dependency_links('install/requirements/rtd-requirements.txt'),
     license='MPL 2.0 License',
     classifiers=[
         'Development Status :: 5 - Production/Stable',

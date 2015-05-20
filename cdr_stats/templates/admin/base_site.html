@@ -1,57 +1,92 @@
 {% extends "admin/base.html" %}
-{% load i18n admin_tools_menu_tags cdr_extras frontend_notification_tags %}
+{% load i18n admin_tools_menu_tags cdr_tags %}
 
 {% block title %}{% trans 'CDR-Stats Admin' %}{% endblock %}
 
 {% block extrahead %}
-<link rel="shortcut icon" type="image/x-icon" href="{{STATIC_URL}}cdr-stats/images/favicon.ico">
+<link rel="shortcut icon" type="image/x-icon" href="{{ STATIC_URL }}cdr-stats/images/favicon.ico">
+<!-- Javascript -->
+<script src="{{ STATIC_URL }}jquery/jquery.min.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}datetimepicker/jquery.datetimepicker.js" type="text/javascript"></script>
 
-<style>
+<!--CSS-->
+<link href="{{ STATIC_URL }}components-font-awesome/css/font-awesome.min.css" type="text/css" rel="stylesheet" media="all"/>
+<link href="{{ STATIC_URL }}datetimepicker/jquery.datetimepicker.css" rel="stylesheet">
+<script type="text/javascript">
 
-#header #bookmark-button {
-right:380px;!important;
-}
-#header  {
-color:#555555;
-}
-#header a:link, #header a:visited {
-color:#555555;
-}
-a:link, a:visited {
-color:#5B80B2;
-text-decoration:none;
-}
-</style>
-<script type="text/javascript" language="JavaScript">
+    $(function() {
+        $('#id_from_date').datetimepicker({
+            format:'Y-m-d H:i',
+            onShow:function( ct ){
+                this.setOptions({
+                    maxDate:$('#id_to_date').val()?$('#id_to_date').val():false
+                })
+            },
+        });
+        $('#id_to_date').datetimepicker({
+            format:'Y-m-d H:i',
+            onShow:function( ct ){
+                this.setOptions({
+                    minDate:$('#id_from_date').val()?$('#id_from_date').val():false
+                })
+            },
+        });
+    });
     function toggleChecked(status) {
         $(".checkbox").each( function() {
             $(this).attr("checked", status);
         })
     }
 </script>
+<style>
+
+#header #bookmark-button {
+/* right: 280px; */
+}
+#header  {
+    color:#555555;
+}
+#header a:link, #header a:visited {
+    color:#555555;
+}
+a:link, a:visited {
+    color:#5B80B2;
+    text-decoration:none;
+}
+#user-tools {
+    position: absolute;
+    right: 0;
+    padding: 1.2em 50px;
+    font-size: 11px;
+    text-align: right;
+}
+
+
+</style>
+
 {% endblock %}
 
 {% block extrastyle %}
-{{ block.super }}
-{% if user.is_active and user.is_staff %}
-{% if not is_popup %}
-{% admin_tools_render_menu_css %}
-{% endif %}
-{% endif %}
+    {{ block.super }}
+    {% if user.is_active and user.is_staff %}
+        {% if not is_popup %}
+            {% admin_tools_render_menu_css %}
+        {% endif %}
+    {% endif %}
 {% endblock %}
 
 
 {% block nav-global %}
-{% if user.is_active and user.is_staff %}
-{% if not is_popup %}
-{% admin_tools_render_menu %}
-{% endif %}
-{% endif %}
+    {% if user.is_active and user.is_staff %}
+        {% if not is_popup %}
+            {% admin_tools_render_menu %}
+        {% endif %}
+    {% endif %}
 {% endblock %}
 
 {% block userlinks %}
     {% if user.is_active and user.is_staff %}
-        <a href="/admin/notification/notice/">({% get_notice_count request %})</a> /
+        <a href="/admin/notification/notice/">({{ notice_unseen_count }})</a> /
     {% endif %}
     {{ block.super }}
 {% endblock %}

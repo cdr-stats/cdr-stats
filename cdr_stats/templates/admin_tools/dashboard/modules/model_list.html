@@ -8,8 +8,8 @@
                 {% if child.change_url %}<a href="{{ child.change_url }}">{{ child.title }}</a>{% else %}{{ child.title }}{% endif %}
                 {% if child.add_url or child.change_url %}
                 <ul>
-                    {% if child.add_url %}<li><a class="addlink" href="{{ child.add_url }}"><span class="icon">{% trans "Add" %}</span></a></li>{% endif %}
-                    {% if child.change_url %}<li><a class="changelink" href="{{ child.change_url }}"><span class="icon">{% trans "Change" %}</span></a></li>{% endif %}
+                    {% if child.add_url %}<li><a class="addlink" href="{{ child.add_url }}"><span class="icon">{% trans "add"|capfirst %}</span></a></li>{% endif %}
+                    {% if child.change_url %}<li><a class="changelink" href="{{ child.change_url }}"><span class="icon">{% trans "change"|capfirst %}</span></a></li>{% endif %}
                 </ul>
                 {% endif %}
             </li>
@@ -17,7 +17,11 @@
             <li>
                 {% if child.change_url %}
                     {% if child.title == "Switches" %}
-                        <a class="" href="/admin/cdr/switch/import_cdr/">{% trans "Import CDR" %}</a>
+                        <a href="/admin/cdr/switch/cdr_view/">{% trans "CDR view"|capfirst %}</a><br>
+                        <a class="" href="/admin/cdr/switch/import_cdr/">{% trans "import CDR"|capfirst %}</a>
+                    {% endif %}
+                    {% if child.title == "VoIP Plans" %}
+                        <a href="/admin/voip_billing/voipplan/rebilling/">{% trans "rebilling"|capfirst %}</a>
                     {% endif %}
                 {% endif %}
             </li>

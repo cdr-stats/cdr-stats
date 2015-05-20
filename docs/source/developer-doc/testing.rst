@@ -27,10 +27,6 @@ How to Run Tests
 
     $ python manage.py test --verbosity=2
 
-**2. Run CDRStatsTastypieApiTestCase**::
-
-    $ python manage.py test cdr.CDRStatsTastypieApiTestCase --verbosity=2
-
 **3. Run CDRStatsAdminInterfaceTestCase**::
 
     $ python manage.py test cdr.CDRStatsAdminInterfaceTestCase --verbosity=2

@@ -1,0 +1,41 @@
+{% extends "frontend/master.html" %}
+{% load i18n crispy_forms_tags pagination_tags %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block content_header %}
+    <h1>{% trans "call simulator"|title %}<small></small></h1>
+{% endblock %}
+
+{% block content %}
+
+{% crispy form form.helper %}
+<p>&nbsp;</p>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-condensed">
+                <tr>
+                    <th>{% trans "call cost"|title %}</th>
+                    <th>{% trans "retail plan"|title %}</th>
+                    <th>{% trans "retail rate"|title %}</th>
+                </tr>
+                {% if data %}
+                    {% for d in data %}
+                    <tr>
+                        <td>{{ d.0 }}</td>
+                        <td>{{ d.1 }}</td>
+                        <td>{{ d.2 }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td colspan="3" class="text-center">{% trans "no record(s) found."|capfirst %}</td></tr>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

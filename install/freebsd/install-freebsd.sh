@@ -13,12 +13,6 @@ APACHE_USER=www
 ESC_INSTALL_DIR=$(echo $INSTALL_DIR | sed 's/\//\\\//g')
 export LC_ALL="en_US.UTF-8"
 
-step_mongodb()
-{
-  pkg install -y mongodb
-  echo 'mongod_enable="YES"' >> /etc/rc.conf
-  /usr/local/etc/rc.d/mongod start
-}
 
 step_mysql()
 {
@@ -69,7 +63,7 @@ step_github()
 {
   mkdir -p /usr/local/src $INSTALL_DIR
   cd /usr/local/src
-  git clone git://github.com/Star2Billing/cdr-stats.git
+  git clone git://github.com/areski/cdr-stats.git
   cp -r /usr/local/src/cdr-stats/cdr_stats/* $INSTALL_DIR/
 }
 

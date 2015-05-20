@@ -1,0 +1,9 @@
+
+
+1) Materialized View per User
+-----------------------------
+
+In order to go quickly on development, we decided to add FK user_id as `group_by` in the materialized view.
+
+A much better technique would be to implement a different Materialized View (MV) for each users,
+having backend tasks that will create those MV.

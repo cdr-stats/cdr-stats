@@ -1,0 +1,40 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_static admin_list %}
+{% load admin_urls %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=cl.opts.app_label %}">{% trans "VoIP Billing" %}</a>
+&rsaquo; {{ cl.opts.verbose_name_plural|capfirst }}
+</div>
+{% endblock %}
+
+{% block object-tools-items %}
+  {% if has_add_permission %}
+    <ul class="object-tools">
+      <li><a href="import_cr/" class="addlink">{% trans "import carrier rate"|title %}</a></li>
+      <li><a href="export_cr/" class="addlink">{% trans "export carrier rate"|title %}</a></li>
+      <li>
+        <a href="add/{% if is_popup %}?_popup=1{% endif %}" class="addlink">
+          {% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}
+        </a>
+      </li>
+    </ul>
+  {% endif %}
+{% endblock %}
+
+{% block filters %}
+    {% if cl.has_filters %}
+      <div id="changelist-filter">
+        <h2>{% trans 'filter'|capfirst %}</h2>
+        {% for spec in cl.filter_specs %}{% admin_list_filter cl spec %}{% endfor %}
+        <h3>{% trans "by rate"|title %}</h3>
+        <div align="right">
+        <form action="" method="POST" name="rate_filter" id="id_rate_filter">{% csrf_token %}
+        {{ form.rate_range }}&nbsp;{{ form.rate }}
+        </form>
+        </div>
+      </div>
+    {% endif %}
+  {% endblock %}

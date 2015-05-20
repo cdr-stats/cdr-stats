@@ -1,0 +1,24 @@
+[
+    {
+        "pk":1,
+        "model":"user_profile.userprofile",
+        "fields":{
+            "updated_date":"2012-08-01T02:09:53",
+            "city":"",
+            "fax":"",
+            "note":"",
+            "language":null,
+            "company_name":"",
+            "country":"",
+            "accountcode":"123456",
+            "phone_no":"",
+            "company_website":"",
+            "state":"",
+            "user":1,
+            "address":"",
+            "created_date":"2012-08-01T02:09:53",
+            "voipplan":1,
+            "zip_code":""
+        }
+    }
+]

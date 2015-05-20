@@ -1,8 +1,8 @@
-.. automodule:: api.switch_api
+.. automodule:: apirest.switch_serializers
 
 .. _switch-model-resource:
 
-:class:`SwitchResource`
------------------------
+:class:`SwitchSerializer`
+-------------------------
 
-.. autoclass:: SwitchResource
+.. autoclass:: SwitchSerializer

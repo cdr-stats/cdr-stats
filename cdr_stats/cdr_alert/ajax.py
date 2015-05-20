@@ -7,13 +7,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2015 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
 
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import gettext as _
 
@@ -21,12 +20,10 @@ from dajaxice.decorators import dajaxice_register
 from dajax.core import Dajax
 
 from cdr_alert.models import Whitelist, Blacklist
-from cdr.functions_def import remove_prefix,\
-    prefix_list_string, get_country_id
 from country_dialcode.models import Country, Prefix
 
 
-alert = _('Alert')
+alert = _('alert').capitalize()
 
 blacklist_word = _('blacklist')
 whitelist_word = _('whitelist')
@@ -34,40 +31,38 @@ whitelist_word = _('whitelist')
 success_msg = _('has been successfully added in')
 delete_success_msg = _('has been successfully deleted from')
 delete_all_success_msg = _('All dialcode are successfully deleted from')
-info_msg = _('is already added in')
-error_msg = _('has not been added in')
+info_msg = _('is already added to the')
+error_msg = _('has not been added to the')
 delete_error_msg = _('has not been deleted from')
 
-blacklist_success = '<div class="alert alert-success">' + alert +' : (%s) ' + success_msg + ' ' + blacklist_word + '</div>'
-blacklist_delete_success = '<div class="alert alert-success">' + alert +' : (%s) ' + delete_success_msg + ' ' + blacklist_word + '</div>'
-blacklist_delete_all_success = '<div class="alert alert-success">' + alert +' :  ' + delete_all_success_msg + ' ' + blacklist_word + '</div>'
+blacklist_success = '<div class="alert alert-success">' + alert + ' : (%s) ' + success_msg + ' ' + blacklist_word + '</div>'
+blacklist_delete_success = '<div class="alert alert-success">' + alert + ' : (%s) ' + delete_success_msg + ' ' + blacklist_word + '</div>'
+blacklist_delete_all_success = '<div class="alert alert-success">' + alert + ' :  ' + delete_all_success_msg + ' ' + blacklist_word + '</div>'
 blacklist_info = '<div class="alert alert-info">' + alert + ' : (%s) ' + info_msg + ' ' + blacklist_word + '</div>'
-blacklist_error = '<div class="alert alert-error">' + alert + ' : (%s) ' + error_msg + ' ' + blacklist_word + '</div>'
-blacklist_delete_error = '<div class="alert alert-error">' + alert + ' : (%s) ' + delete_error_msg + ' ' + blacklist_word + '</div>'
+blacklist_error = '<div class="alert alert-danger">' + alert + ' : (%s) ' + error_msg + ' ' + blacklist_word + '</div>'
+blacklist_delete_error = '<div class="alert alert-danger">' + alert + ' : (%s) ' + delete_error_msg + ' ' + blacklist_word + '</div>'
 
 
 whitelist_success = '<div class="alert alert-success">' + alert + ' : (%s) ' + success_msg + ' ' + whitelist_word + '</div>'
-whitelist_delete_success = '<div class="alert alert-success">' + alert +' : (%s) ' + delete_success_msg + ' ' + whitelist_word + '</div>'
-whitelist_delete_all_success = '<div class="alert alert-success">' + alert +' :  ' + delete_all_success_msg + ' ' + whitelist_word + '</div>'
+whitelist_delete_success = '<div class="alert alert-success">' + alert + ' : (%s) ' + delete_success_msg + ' ' + whitelist_word + '</div>'
+whitelist_delete_all_success = '<div class="alert alert-success">' + alert + ' :  ' + delete_all_success_msg + ' ' + whitelist_word + '</div>'
 whitelist_info = '<div class="alert alert-info">' + alert + ' : (%s) ' + info_msg + ' ' + whitelist_word + '</div>'
-whitelist_error = '<div class="alert alert-error">' + alert + ' : (%s) ' + error_msg + ' ' + whitelist_word + '</div>'
-whitelist_delete_error = '<div class="alert alert-error">' + alert + ' : (%s) ' + delete_error_msg + ' ' + whitelist_word + '</div>'
+whitelist_error = '<div class="alert alert-danger">' + alert + ' : (%s) ' + error_msg + ' ' + whitelist_word + '</div>'
+whitelist_delete_error = '<div class="alert alert-danger">' + alert + ' : (%s) ' + delete_error_msg + ' ' + whitelist_word + '</div>'
 
 
 def get_html_table(request, default_name='blacklist'):
-    col = 5 # group by columns
-    html_table = '<table class="table table-striped table-bordered table-condensed">'
+    col = 5  # group by columns
+    html_table = '<div class="table-responsive"><table class="table table-striped table-bordered table-condensed">'
     if default_name == 'blacklist':
         prefix_list = Blacklist.objects.filter(user=request.user).order_by('id')
         prefix_list_count = prefix_list.count()
-        html_table += '<tr><td>\
-            <input type="checkbox" onclick="toggleChecked_blacklist(this.checked);"></td></tr>'
+        html_table += '<tr><td><input type="checkbox" onclick="toggleChecked_blacklist(this.checked);"></td></tr>'
 
     if default_name == 'whitelist':
         prefix_list = Whitelist.objects.filter(user=request.user).order_by('id')
         prefix_list_count = prefix_list.count()
-        html_table += '<tr><td>\
-            <input type="checkbox" onclick="toggleChecked_whitelist(this.checked);"></td></tr>'
+        html_table += '<tr><td><input type="checkbox" onclick="toggleChecked_whitelist(this.checked);"></td></tr>'
 
     if prefix_list_count != 0:
         # Logic of groupby_columns template tag
@@ -81,16 +76,16 @@ def get_html_table(request, default_name='blacklist'):
             for obj in obj_list:
                 if obj:
                     if default_name == 'blacklist':
-                        obj_string = '<input type="checkbox" name="select_blacklist" class="checkbox" value="'+str(obj.id)+'" />&nbsp;'
+                        obj_string = '<input type="checkbox" name="select_blacklist" class="checkbox" value="' + str(obj.id) + '" />&nbsp;'
                     if default_name == 'whitelist':
-                        obj_string = '<input type="checkbox" name="select_whitelist" class="checkbox" value="'+str(obj.id)+'" />&nbsp;'
+                        obj_string = '<input type="checkbox" name="select_whitelist" class="checkbox" value="' + str(obj.id) + '" />&nbsp;'
 
                     obj_string += str(obj.phonenumber_prefix) + ' | ' + str(obj.country.countryname)
                     html_table += '<td>' + str(obj_string) + '</td>'
                 else:
                     html_table += '<td>&nbsp;</td>'
             html_table += '</tr>'
-        html_table += '</table>'
+        html_table += '</table></div>'
     else:
         html_table = ''
 
@@ -104,8 +99,7 @@ def add_blacklist_country(request, country_id):
     try:
         country = Country.objects.get(id=int(country_id))
         country_id = country.id
-        prefix_list =\
-            Prefix.objects.values_list('prefix', flat=True).filter(country_id=country_id)
+        prefix_list = Prefix.objects.values_list('prefix', flat=True).filter(country_id=country_id)
 
         add_flag = False
         for prefix in prefix_list:
@@ -192,7 +186,6 @@ def delete_blacklist(request, id_list):
     dajax.assign('#id_alert_message', 'innerHTML', str(message))
     return dajax.json()
 
-## whitelist
 
 @login_required
 @dajaxice_register
@@ -201,8 +194,7 @@ def add_whitelist_country(request, country_id):
     try:
         country = Country.objects.get(id=int(country_id))
         country_id = country.id
-        prefix_list =\
-            Prefix.objects.values_list('prefix', flat=True).filter(country_id=country_id)
+        prefix_list = Prefix.objects.values_list('prefix', flat=True).filter(country_id=country_id)
 
         add_flag = False
         for prefix in prefix_list:

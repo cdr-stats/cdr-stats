@@ -8,7 +8,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2015 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
@@ -32,13 +32,13 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
         make_option('--delta-day', '-d',
-            default=None,
-            dest='delta-day',
-            help=help),
+                    default=None,
+                    dest='delta-day',
+                    help=help),
         make_option('--alert-no', '-a',
-            default=None,
-            dest='alert-no',
-            help=help),
+                    default=None,
+                    dest='alert-no',
+                    help=help),
     )
 
     def handle(self, *args, **options):
@@ -84,11 +84,13 @@ class Command(BaseCommand):
             delta_call = random.randint(-2, 2)
             calculatedvalue = calculatedvalue + delta_call
 
-            AlarmReport.objects.create(
+            currentalert = AlarmReport.objects.create(
                 alarm=alarm[0],
                 calculatedvalue=calculatedvalue,
-                status=random.randint(1, 2),
-                daterun=daterun)
+                status=random.randint(1, 2))
+            # daterun is auto_now=True, so we need to overwrite the daterun
+            currentalert.daterun = daterun
+            currentalert.save()
             print "alarm_report -> alarm:%s, daterun=%s, calculatedvalue=%d" % \
                 (alarm[0], daterun, calculatedvalue)
 

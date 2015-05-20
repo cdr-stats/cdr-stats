@@ -1,0 +1,30 @@
+{% extends "frontend/master.html" %}
+{% load i18n cdr_tags common_tags crispy_forms_tags %}
+
+{% block title %}{% trans "CDR" %} {% trans "mail report"|title %}{% endblock %}
+
+{% block content_header %}
+    <h1>{% trans "mail report"|capfirst %}<small></small></h1>
+{% endblock %}
+
+{% block content %}
+    {% if msg %}
+        <div class="alert alert-success">
+            <strong>{% trans "alert"|title %} : </strong>  {{ msg|capfirst }}
+        </div>
+    {% endif %}
+
+    {% if form %}
+        {% crispy form form.helper %}
+    {% else %}
+        <div class="alert alert-danger">
+            {% trans "The administrator needs to create an UserProfile for your account to enable this feature!" %}
+        </div>
+    {% endif %}
+
+    <h2>{% trans "preview of the mail report"|capfirst %} :</h2>
+    <hr/>
+
+    {% include 'cdr/mail_report_template.html' %}
+
+{% endblock %}

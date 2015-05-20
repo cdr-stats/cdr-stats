@@ -6,123 +6,45 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (C) 2011-2012 Star2Billing S.L.
+# Copyright (C) 2011-2015 Star2Billing S.L.
 #
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required,\
-    permission_required
-from django.http import HttpResponseRedirect, HttpResponse, Http404
-from django.shortcuts import render_to_response, get_object_or_404
+
+from django.contrib.auth.decorators import login_required, permission_required
+from django.http import HttpResponse, Http404
+from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.utils.translation import gettext as _
 from django.conf import settings
-from pymongo.connection import Connection
-from pymongo.errors import ConnectionFailure
-from notification import models as notification
-from common.common_functions import current_view, get_news, \
-    variable_value, mongodb_str_filter, mongodb_int_filter, \
-    int_convert_to_minute, validate_days, ceil_strdate
-from cdr.models import Switch
-from cdr.functions_def import get_country_name, \
-    chk_account_code, get_hangupcause_name
-from cdr.forms import CdrSearchForm, \
-    CountryReportForm, CdrOverviewForm, CompareCallSearchForm, \
-    ConcurrentCallForm, SwitchForm, WorldForm, EmailReportForm
-from frontend.forms import LoginForm
+from django_lets_go.common_functions import int_convert_to_minute,\
+    percentage, getvar, unset_session_var, ceil_strdate
+from django_lets_go.common_functions import get_pagination_vars
 from user_profile.models import UserProfile
-from cdr.aggregate import pipeline_cdr_view_daily_report,\
-    pipeline_monthly_overview, pipeline_daily_overview,\
-    pipeline_hourly_overview, pipeline_country_report,\
-    pipeline_hourly_report, pipeline_country_hourly_report,\
-    pipeline_mail_report
-from cdr.constants import CDR_COLUMN_NAME
-from frontend_notification.views import notice_count
-from bson.objectid import ObjectId
-from datetime import datetime, date, timedelta
+from cdr.functions_def import get_country_name, get_hangupcause_name,\
+    get_switch_ip_addr, calculate_act_acd
+from cdr.forms import CdrSearchForm, CountryReportForm, CdrOverviewForm, \
+    CompareCallSearchForm, \
+    SwitchForm, WorldForm, EmailReportForm
+# from cdr.forms import ConcurrentCallForm
+from cdr.filters import get_filter_operator_int, get_filter_operator_str
+from cdr.decorators import check_user_detail
+from cdr.constants import CDR_COLUMN_NAME, Export_choice, COMPARE_WITH
+from cdr.models import CDR
+from aggregator.aggregate_cdr import custom_sql_aggr_top_country, \
+    custom_sql_aggr_top_hangup_last24hours, \
+    custom_sql_matv_voip_cdr_aggr_last24hours, \
+    custom_sql_aggr_top_country_last24hours
+from aggregator.pandas_cdr import get_report_cdr_per_switch, \
+    get_report_compare_cdr, get_report_cdr_per_country
+from common.helpers import trunc_date_start, trunc_date_end
+from cdr.helpers import get_cdr_mail_report
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
-import math
-import csv
+import tablib
 import time
 import logging
-
-
-cdr_data = settings.DBCON[settings.MONGO_CDRSTATS['CDR_COMMON']]
-#db.cdr.ensureIndex({"variables.answer_stamp":1}, {background:true});
-
-
-def index(request):
-    """Index Page of CDR-Stats
-
-    **Attributes**:
-
-        * ``template`` - frontend/index.html
-        * ``form`` - loginForm
-    """
-    template = 'frontend/index.html'
-    errorlogin = ''
-    loginform = LoginForm()
-
-    if request.GET.get('db_error'):
-        if request.GET['db_error'] == 'closed':
-            errorlogin = _('Mongodb Database connection is closed!')
-        if request.GET['db_error'] == 'locked':
-            errorlogin = _('Mongodb Database is locked!')
-
-    code_error = _('Account code is not assigned!')
-    if request.GET.get('acc_code_error'):
-        if request.GET['acc_code_error'] == 'true':
-            errorlogin = code_error
-
-    data = {
-        'module': current_view(request),
-        'loginform': loginform,
-        'errorlogin': errorlogin,
-        'news': get_news(settings.NEWS_URL),
-    }
-    return render_to_response(template, data,
-        context_instance=RequestContext(request))
-
-
-def check_cdr_exists(function=None):
-    """
-    decorator check if cdr exists if not go to error page
-    """
-    def _dec(run_func):
-        """Decorator"""
-        def _caller(request, *args, **kwargs):
-            """Caller."""
-            doc = cdr_data.find_one()
-            if not doc:
-                return render_to_response(
-                    'frontend/error_import.html',
-                    context_instance=RequestContext(request))
-            else:
-                return run_func(request, *args, **kwargs)
-        return _caller
-    return _dec(function) if function is not None else _dec
-
-
-def check_user_accountcode(function=None):
-    """
-    decorator check if account code exists for user
-    if not go to error page
-    """
-    def _dec(run_func):
-        """Decorator"""
-        def _caller(request, *args, **kwargs):
-            """Caller."""
-            if not request.user.is_superuser:
-                if not chk_account_code(request):
-                    return HttpResponseRedirect('/?acc_code_error=true')
-                else:
-                    return run_func(request, *args, **kwargs)
-            else:
-                return run_func(request, *args, **kwargs)
-        return _caller
-    return _dec(function) if function is not None else _dec
 
 
 def show_menu(request):
@@ -133,353 +55,188 @@ def show_menu(request):
         return 'on'
 
 
-def cdr_view_daily_report(query_var):
-    logging.debug('Aggregate cdr analytic')
-    pipeline = pipeline_cdr_view_daily_report(query_var)
-
-    logging.debug('Before Aggregate')
-    list_data = settings.DBCON.command('aggregate',
-                                       settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                       pipeline=pipeline)
-    logging.debug('After Aggregate')
-
-    total_data = []
-    total_duration = 0
-    total_calls = 0
-    duration__avg = 0.0
-    count_days = 0
-    for doc in list_data['result']:
-        count_days = count_days + 1
-        total_data.append(
-            {
-                'calldate': datetime(int(doc['_id'][0:4]),
-                                     int(doc['_id'][4:6]),
-                                     int(doc['_id'][6:8])),
-                'duration__sum': int(doc['duration_per_day']),
-                'calldate__count': int(doc['call_per_day']),
-                'duration__avg': doc['avg_duration_per_day'],
-            })
-
-        total_duration += int(doc['duration_per_day'])
-        total_calls += int(doc['call_per_day'])
-        duration__avg += float(doc['avg_duration_per_day'])
-
-    if count_days != 0:
-        max_duration = max([int(x['duration__sum']) for x in total_data])
-        total_avg_duration = (float(duration__avg)) / count_days
-    else:
-        max_duration = 0
-        total_avg_duration = 0
-
-    cdr_view_daily_data = {
-        'total_data': total_data,
-        'total_duration': total_duration,
-        'total_calls': total_calls,
-        'total_avg_duration': total_avg_duration,
-        'max_duration': max_duration,
-    }
-    return cdr_view_daily_data
-
-
-def get_pagination_vars(request, default_sort_field='start_uepoch'):
-    try:
-        PAGE_NUMBER = int(request.GET['page'])
-    except:
-        PAGE_NUMBER = 1
-
-    col_name_with_order = {}
-    sort_field = variable_value(request, 'sort_by')
-    if not sort_field:
-        sort_field = default_sort_field  # default sort field
-        default_order = -1  # desc
-    else:
-        if '-' in sort_field:
-            default_order = -1
-            sort_field = sort_field[1:]
-            col_name_with_order[sort_field] = sort_field
-        else:
-            default_order = 1
-            col_name_with_order[sort_field] = '-' + sort_field
-
-    col_name_with_order['sort_field'] = sort_field
-
-    data = {
-        'PAGE_NUMBER': PAGE_NUMBER,
-        'col_name_with_order': col_name_with_order,
-        'sort_field': sort_field,
-        'default_order': default_order,
-    }
-    return data
-
-
-def unset_session_var(request, field_list):
-    for field in field_list:
-        request.session['session_' + field] = ''
-    return True
-
-
 @permission_required('user_profile.search', login_url='/')
-@check_cdr_exists
-@check_user_accountcode
+@check_user_detail('accountcode,voipplan')
 @login_required
 def cdr_view(request):
     """List of CDRs
 
     **Attributes**:
 
-        * ``template`` - frontend/cdr_view.html
+        * ``template`` - cdr/list.html
         * ``form`` - CdrSearchForm
-        * ``mongodb_data_set`` - MONGO_CDRSTATS['CDR_COMMON']
 
     **Logic Description**:
 
-        get the call records as well as daily call analytics
-        from mongodb collection according to search parameters
+        * get the call records as well as daily call analytics
+          from postgresql according to search parameters
     """
-    template_name = 'frontend/cdr_view.html'
     logging.debug('CDR View Start')
-    query_var = {}
     result = 1  # default min
     switch_id = 0  # default all
     hangup_cause_id = 0  # default all
-    destination = ''
-    destination_type = ''
-    dst = ''
-    accountcode = ''
-    accountcode_type = ''
-    acc = ''
-    direction = ''
-    duration = ''
-    duration_type = ''
-    due = ''
-    caller = ''
-    caller_type = ''
-    cli = ''
-    search_tag = 0
+    destination, destination_type, accountcode = '', '', ''
+    direction, duration, duration_type = '', '', ''
+    caller_id_number, caller_id_number_type, country_id = '', '', ''
     action = 'tabs-1'
     menu = 'on'
-    cdr_view_daily_data = {}
-    if request.method == 'POST':
+    records_per_page = settings.PAGE_SIZE
+
+    form = CdrSearchForm(request.POST or None)
+    if form.is_valid():
         logging.debug('CDR Search View')
-        search_tag = 1
-        request.session['session_search_tag'] = search_tag
-        form = CdrSearchForm(request.POST)
-        if form.is_valid():
-            # set session var value
-            field_list = ['destination', 'result', 'destination_type', 'accountcode',
-                          'accountcode_type', 'caller', 'caller_type', 'duration',
-                          'duration_type', 'hangup_cause_id', 'switch_id', 'direction',
-                          'country_id']
-            unset_session_var(request, field_list)
+        # set session var value
+        field_list = ['destination', 'result', 'destination_type', 'accountcode',
+                      'caller_id_number', 'caller_id_number_type', 'duration',
+                      'duration_type', 'hangup_cause_id', 'switch_id', 'direction',
+                      'country_id', 'export_query_var']
+        unset_session_var(request, field_list)
+        from_date = getvar(request, 'from_date', setsession=False)
+        to_date = getvar(request, 'to_date', setsession=False)
+        result = getvar(request, 'result', setsession=True)
+        destination = getvar(request, 'destination', setsession=True)
+        destination_type = getvar(request, 'destination_type', setsession=True)
+        accountcode = getvar(request, 'accountcode', setsession=True)
+        caller_id_number = getvar(request, 'caller_id_number', setsession=True)
+        caller_id_number_type = getvar(request, 'caller_id_number_type', setsession=True)
+        duration = getvar(request, 'duration', setsession=True)
+        duration_type = getvar(request, 'duration_type', setsession=True)
+        direction = getvar(request, 'direction', setsession=True)
+        if direction and direction != 'all' and direction != '0':
+            request.session['session_direction'] = str(direction)
 
-            request.session['session_cdr_view_daily_data'] = {}
+        switch_id = getvar(request, 'switch_id', setsession=True)
+        hangup_cause_id = getvar(request, 'hangup_cause_id', setsession=True)
+        records_per_page = getvar(request, 'records_per_page', setsession=True)
 
-            if "from_date" in request.POST:
-                # From
-                from_date = request.POST['from_date']
-                start_date = ceil_strdate(from_date, 'start')
-                request.session['session_from_date'] = from_date
+        country_id = form.cleaned_data.get('country_id')
+        # convert list value in int
+        country_id = [int(row) for row in country_id]
+        if len(country_id) >= 1:
+            request.session['session_country_id'] = country_id
 
-            if "to_date" in request.POST:
-                # To
-                to_date = request.POST['to_date']
-                end_date = ceil_strdate(to_date, 'end')
-                request.session['session_to_date'] = to_date
-
-            result = request.POST['result']
-            if result:
-                request.session['session_result'] = int(result)
-
-            destination = variable_value(request, 'destination')
-            destination_type = variable_value(request, 'destination_type')
-            if destination:
-                request.session['session_destination'] = destination
-                request.session['session_destination_type'] = destination_type
-
-            accountcode = variable_value(request, 'accountcode')
-            accountcode_type = variable_value(request, 'accountcode_type')
-            if accountcode:
-                request.session['session_accountcode'] = accountcode
-                request.session['session_accountcode_type'] = accountcode_type
-
-            caller = variable_value(request, 'caller')
-            caller_type = variable_value(request, 'caller_type')
-            if caller:
-                request.session['session_caller'] = caller
-                request.session['session_accountcode_type'] = caller_type
-
-            duration = variable_value(request, 'duration')
-            duration_type = variable_value(request, 'duration_type')
-            if duration:
-                request.session['session_duration'] = duration
-                request.session['session_duration_type'] = duration_type
-
-            direction = variable_value(request, 'direction')
-            if direction and direction != 'all':
-                request.session['session_direction'] = str(direction)
-
-            switch_id = variable_value(request, 'switch')
-            if switch_id:
-                request.session['session_switch_id'] = switch_id
-
-            hangup_cause_id = variable_value(request, 'hangup_cause')
-            if hangup_cause_id:
-                request.session['session_hangup_cause_id'] = hangup_cause_id
-
-            records_per_page = variable_value(request, 'records_per_page')
-            if records_per_page:
-                request.session['session_records_per_page'] = records_per_page
-
-            country_id = form.cleaned_data.get('country_id')
-            # convert list value in int
-            country_id = [int(row) for row in country_id]
-            if len(country_id) >= 1:
-                request.session['session_country_id'] = country_id
-        else:
-            # form is not valid
-            logging.debug('Error : CDR search form')
-            tday = datetime.today()
-            start_date = datetime(tday.year, tday.month, 1)
-            last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999)
-                + relativedelta(months=1))
-                - relativedelta(days=1)).strftime('%d')
-            end_date = datetime(tday.year, tday.month, int(last_day))
-            cdr_view_daily_data = {
-                'total_data': [],
-                'total_duration': 0,
-                'total_calls': 0,
-                'total_avg_duration': 0,
-                'max_duration': 0,
-            }
-            template_data = {
-                'module': current_view(request),
-                'rows': [],
-                'form': form,
-                'PAGE_SIZE': settings.PAGE_SIZE,
-                'cdr_daily_data': cdr_view_daily_data,
-                'search_tag': search_tag,
-                'col_name_with_order': [],
-                'menu': menu,
-                'start_date': start_date,
-                'end_date': end_date,
-                'action': action,
-                'result': result,
-                'notice_count': notice_count(request),
-                'CDR_COLUMN_NAME': CDR_COLUMN_NAME,
-            }
-            logging.debug('CDR View End')
-            return render_to_response(template_name, template_data,
-                context_instance=RequestContext(request))
+        start_date = ceil_strdate(str(from_date), 'start', True)
+        end_date = ceil_strdate(str(to_date), 'end', True)
+        converted_start_date = start_date.strftime('%Y-%m-%d %H:%M')
+        converted_end_date = end_date.strftime('%Y-%m-%d %H:%M')
+        request.session['session_start_date'] = converted_start_date
+        request.session['session_end_date'] = converted_end_date
 
     menu = show_menu(request)
 
-    try:
-        if request.GET.get('page') or request.GET.get('sort_by'):
-            from_date = request.session.get('session_from_date')
-            to_date = request.session.get('session_to_date')
-            destination = request.session.get('session_destination')
-            destination_type = request.session.get('session_destination_type')
-            accountcode = request.session.get('session_accountcode')
-            accountcode_type = request.session.get('session_accountcode_type')
-            caller = request.session.get('session_caller')
-            caller_type = request.session.get('session_caller_type')
-            duration = request.session.get('session_duration')
-            duration_type = request.session.get('session_duration_type')
-            direction = request.session.get('session_direction')
-            switch_id = request.session.get('session_switch_id')
-            hangup_cause_id = request.session.get('session_hangup_cause_id')
-            result = int(request.session.get('session_result'))
-            search_tag = request.session.get('session_search_tag')
-            records_per_page = request.session.get('session_records_per_page')
-            country_id = request.session['session_country_id']
-            cdr_view_daily_data = request.session.get('session_cdr_view_daily_data')
-        else:
-            from_date
-    except NameError:
+    using_session = False
+    # Display a specific page or sort
+    if request.GET.get('page') or request.GET.get('sort_by'):
+        using_session = True
+        from_date = start_date = request.session.get('session_start_date')
+        to_date = end_date = request.session.get('session_end_date')
+        start_date = ceil_strdate(start_date, 'start', True)
+        end_date = ceil_strdate(end_date, 'end', True)
+
+        destination = request.session.get('session_destination')
+        destination_type = request.session.get('session_destination_type')
+        accountcode = request.session.get('session_accountcode')
+        caller_id_number = request.session.get('session_caller_id_number')
+        caller_id_number_type = request.session.get('session_caller_id_number_type')
+        duration = request.session.get('session_duration')
+        duration_type = request.session.get('session_duration_type')
+        direction = request.session.get('session_direction')
+        switch_id = request.session.get('session_switch_id')
+        hangup_cause_id = request.session.get('session_hangup_cause_id')
+        result = request.session.get('session_result')
+        records_per_page = request.session.get('session_records_per_page')
+        country_id = request.session['session_country_id']
+
+    # Set default cause we display page for the first time
+    if request.method == 'GET' and not using_session:
         tday = datetime.today()
-        from_date = tday.strftime('%Y-%m-01')
+        from_date = datetime(tday.year, tday.month, 1, 0, 0, 0, 0)
         last_day = ((datetime(tday.year, tday.month, 1, 23, 59, 59, 999999) +
-                    relativedelta(months=1)) -
+                     relativedelta(months=1)) -
                     relativedelta(days=1)).strftime('%d')
-        to_date = tday.strftime('%Y-%m-' + last_day)
-        search_tag = 0
-        country_id = ''
-        records_per_page = settings.PAGE_SIZE
-        # unset session var value
+        # to_date = tday.strftime('%Y-%m-' + last_day + ' 23:59')
+        to_date = datetime(tday.year, tday.month, int(last_day), 23, 59, 59, 999999)
+        start_date = ceil_strdate(str(from_date), 'start', True)
+        end_date = ceil_strdate(str(to_date), 'end', True)
+
+        converted_start_date = start_date.strftime('%Y-%m-%d %H:%M')
+        converted_end_date = end_date.strftime('%Y-%m-%d %H:%M')
+        request.session['session_start_date'] = converted_start_date
+        request.session['session_end_date'] = converted_end_date
         request.session['session_result'] = 1
-        request.session['session_from_date'] = from_date
-        request.session['session_to_date'] = to_date
-
-        field_list = ['destination', 'destination_type', 'accountcode',
-                      'accountcode_type', 'caller', 'caller_type', 'duration',
-                      'duration_type', 'hangup_cause_id', 'switch_id', 'direction',
-                      'country_id']
+        field_list = [
+            'destination', 'destination_type', 'accountcode',
+            'caller_id_number', 'caller_id_number_type', 'duration',
+            'duration_type', 'hangup_cause_id',
+            'switch_id', 'direction', 'country_id']
         unset_session_var(request, field_list)
-
-        request.session['session_search_tag'] = search_tag
         request.session['session_records_per_page'] = records_per_page
         request.session['session_country_id'] = ''
-        request.session['session_cdr_view_daily_data'] = {}
 
-    start_date = ceil_strdate(from_date, 'start')
-    end_date = ceil_strdate(to_date, 'end')
+    # Define no of records per page
+    records_per_page = int(records_per_page)
 
-    query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
+    sort_col_field_list = ['id', 'caller_id_number', 'destination_number', 'starting_date']
+    page_vars = get_pagination_vars(request, sort_col_field_list, default_sort_field='id')
 
-    # aggregate query variable
-    daily_report_query_var = {}
-    daily_report_query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+    # Build filter for CDR.object
+    kwargs = {}
+    if hangup_cause_id and hangup_cause_id != '0':
+        kwargs['hangup_cause_id'] = int(hangup_cause_id)
 
-    dst = mongodb_str_filter(destination, destination_type)
-    if dst:
-        query_var['destination_number'] = dst
+    if switch_id and switch_id != '0':
+        kwargs['switch_id'] = int(switch_id)
 
-    if request.user.is_superuser:
-        # superuser can see everything
-        acc = mongodb_str_filter(accountcode, accountcode_type)
-        if acc:
-            daily_report_query_var['metadata.accountcode'] = acc
-            query_var['accountcode'] = acc
-
-    if not request.user.is_superuser:
-        daily_report_query_var['metadata.accountcode'] = chk_account_code(request)
-        query_var['accountcode'] = daily_report_query_var['metadata.accountcode']
-
-    cli = mongodb_str_filter(caller, caller_type)
-    if cli:
-        query_var['caller_id_number'] = cli
-
-    due = mongodb_int_filter(duration, duration_type)
-    if due:
-        query_var['duration'] = daily_report_query_var['duration_daily'] = due
-
-    if switch_id and int(switch_id) != 0:
-        daily_report_query_var['metadata.switch_id'] = int(switch_id)
-        query_var['switch_id'] = int(switch_id)
-
-    if hangup_cause_id and int(hangup_cause_id) != 0:
-        daily_report_query_var['metadata.hangup_cause_id'] = int(hangup_cause_id)
-        query_var['hangup_cause_id'] = int(hangup_cause_id)
-
-    if direction and direction != 'all':
-        query_var['direction'] = str(direction)
+    if direction and direction != 'all' and direction != "0":
+        kwargs['direction'] = direction
 
     if len(country_id) >= 1 and country_id[0] != 0:
-        daily_report_query_var['metadata.country_id'] = {'$in': country_id}
-        query_var['country_id'] = {'$in': country_id}
+        kwargs['country_id__in'] = country_id
 
-    final_result = cdr_data.find(query_var,
-        {
-            "uuid": 0,
-            "answer_uepoch": 0,
-            "end_uepoch": 0,
-            "mduration": 0,
-            "billmsec": 0,
-            "read_codec": 0,
-            "write_codec": 0,
-            "remote_media_ip": 0,
-        }
-    )
+    if start_date:
+        kwargs['starting_date__gte'] = start_date
+
+    if end_date:
+        kwargs['starting_date__lte'] = end_date
+
+    if destination:
+        operator_query = get_filter_operator_str('destination_number', destination_type)
+        kwargs[operator_query] = destination
+
+    if duration:
+        operator_query = get_filter_operator_int('duration', duration_type)
+        kwargs[operator_query] = duration
+
+    if caller_id_number:
+        operator_query = get_filter_operator_str('caller_id_number', caller_id_number_type)
+        kwargs[operator_query] = caller_id_number
+
+    # user are restricted to their own CDRs
+    if not request.user.is_superuser:
+        kwargs['user_id'] = request.user.id
+
+    if request.user.is_superuser and accountcode:
+        try:
+            user_prof = UserProfile.objects.get(accountcode=accountcode)
+            kwargs['user_id'] = user_prof.user.id
+        except UserProfile.DoesNotExist:
+            # cannot find a user for this accountcode
+            pass
+
+    cdrs = CDR.objects.filter(**kwargs).order_by(page_vars['sort_order'])
+    page_cdr_list = cdrs[page_vars['start_page']:page_vars['end_page']]
+    cdr_count = cdrs.count()
+
+    logging.debug('Create cdr result')
+
+    # store query_var in session without date
+    export_kwargs = kwargs.copy()
+    if 'starting_date__gte' in export_kwargs:
+        export_kwargs['starting_date__gte'] = export_kwargs['starting_date__gte'].strftime('%Y-%m-%dT%H:%M:%S')
+    if 'starting_date__lte' in export_kwargs:
+        export_kwargs['starting_date__lte'] = export_kwargs['starting_date__lte'].strftime('%Y-%m-%dT%H:%M:%S')
+
+    request.session['session_export_kwargs'] = export_kwargs
 
     form = CdrSearchForm(
         initial={
@@ -488,65 +245,38 @@ def cdr_view(request):
             'destination': destination,
             'destination_type': destination_type,
             'accountcode': accountcode,
-            'accountcode_type': accountcode_type,
-            'caller': caller,
-            'caller_type': caller_type,
+            'caller_id_number': caller_id_number,
+            'caller_id_number_type': caller_id_number_type,
             'duration': duration,
             'duration_type': duration_type,
             'result': result,
             'direction': direction,
-            'hangup_cause': hangup_cause_id,
-            'switch': switch_id,
+            'hangup_cause_id': hangup_cause_id,
+            'switch_id': switch_id,
             'country_id': country_id,
             'records_per_page': records_per_page
         }
     )
 
-    request.session['query_var'] = query_var
-
-    # Define no of records per page
-    PAGE_SIZE = int(records_per_page)
-    pagination_data = get_pagination_vars(request)
-
-    PAGE_NUMBER = pagination_data['PAGE_NUMBER']
-    col_name_with_order = pagination_data['col_name_with_order']
-    sort_field = pagination_data['sort_field']
-    default_order = pagination_data['default_order']
-
-    logging.debug('Create cdr result')
-    SKIP_NO = PAGE_SIZE * (PAGE_NUMBER - 1)
-    record_count = final_result.count()
-    rows = final_result.skip(SKIP_NO).limit(PAGE_SIZE)\
-        .sort([(sort_field, default_order)])
-
-    # Get daily report from session while using pagination & sorting
-    if request.GET.get('page') or request.GET.get('sort_by'):
-        cdr_view_daily_data = request.session['session_cdr_view_daily_data']
-    else:
-        # pass aggregate query to cdr_view_daily_report
-        cdr_view_daily_data = cdr_view_daily_report(daily_report_query_var)
-        request.session['session_cdr_view_daily_data'] = cdr_view_daily_data
-
     template_data = {
-        'module': current_view(request),
-        'rows': rows,
+        'page_cdr_list': page_cdr_list,
+        'cdrs': cdrs,
         'form': form,
-        'record_count': record_count,
-        'PAGE_SIZE': PAGE_SIZE,
-        'cdr_daily_data': cdr_view_daily_data,
-        'search_tag': search_tag,
-        'col_name_with_order': col_name_with_order,
+        'cdr_count': cdr_count,
+        'cdr_daily_data': {},
+        'col_name_with_order': page_vars['col_name_with_order'],
         'menu': menu,
         'start_date': start_date,
         'end_date': end_date,
         'action': action,
-        'result': int(result),
-        'notice_count': notice_count(request),
+        'result': result,
         'CDR_COLUMN_NAME': CDR_COLUMN_NAME,
+        'records_per_page': records_per_page,
+        'up_icon': '<i class="glyphicon glyphicon-chevron-up"></i>',
+        'down_icon': '<i class="glyphicon glyphicon-chevron-down"></i>'
     }
     logging.debug('CDR View End')
-    return render_to_response(template_name, template_data,
-                              context_instance=RequestContext(request))
+    return render_to_response('cdr/list.html', template_data, context_instance=RequestContext(request))
 
 
 @login_required
@@ -554,1339 +284,715 @@ def cdr_export_to_csv(request):
     """
     **Logic Description**:
 
-        get the call records  from mongodb collection
-        according to search parameters & store into csv file
+        Retrieve calls records from Postgresql according to search
+        parameters, then export the result into CSV/XLS/JSON file
     """
+    format_type = request.GET['format']
     # get the response object, this can be used as a stream
-    response = HttpResponse(mimetype='text/csv')
+    response = HttpResponse(content_type='text/%s' % format_type)
     # force download
-    response['Content-Disposition'] = 'attachment;filename=export.csv'
-    # the csv writer
+    response['Content-Disposition'] = 'attachment;filename=export.%s' % format_type
 
-    query_var = request.session['query_var']
+    # get query_var from request.session
+    start_date = request.session.get('session_start_date')
+    end_date = request.session.get('session_end_date')
+    start_date = ceil_strdate(start_date, 'start', True)
+    end_date = ceil_strdate(end_date, 'end', True)
 
-    final_result = cdr_data.find(query_var,
-        {
-            "uuid": 0,
-            "answer_uepoch": 0,
-            "end_uepoch": 0,
-            "mduration": 0,
-            "billmsec": 0,
-            "read_codec": 0,
-            "write_codec": 0,
-            "remote_media_ip": 0
-        }
-    )
+    if request.session.get('session_export_kwargs'):
+        kwargs = request.session.get('session_export_kwargs')
 
-    writer = csv.writer(response, dialect=csv.excel_tab)
-    writer.writerow(['Call-date', 'CLID', 'Destination', 'Duration',
-                     'Bill sec', 'Hangup cause', 'AccountCode', 'Direction'])
+    if start_date:
+        kwargs['starting_date__gte'] = start_date
+    if end_date:
+        kwargs['starting_date__lte'] = end_date
 
-    for cdr in final_result:
-        writer.writerow([
-            cdr['start_uepoch'],
-            cdr['caller_id_number'] + '-' + cdr['caller_id_name'],
-            cdr['destination_number'],
-            cdr['duration'],
-            cdr['billsec'],
-            get_hangupcause_name(cdr['hangup_cause_id']),
-            cdr['accountcode'],
-            cdr['direction']
-        ])
+    cdrs = CDR.objects.filter(**kwargs)
+
+    headers = ('Call-date', 'CLID', 'Destination', 'Duration', 'Bill sec', 'Hangup cause',
+               'AccountCode', 'Direction')
+
+    list_val = []
+    for cdr in cdrs:
+        starting_date = str(cdr.starting_date)
+
+        list_val.append((
+            starting_date,
+            cdr.caller_id_number + '-' + cdr.caller_id_name,
+            cdr.destination_number,
+            cdr.duration,
+            cdr.billsec,
+            get_hangupcause_name(cdr.hangup_cause_id),
+            cdr.accountcode,
+            cdr.direction,
+        ))
+
+    data = tablib.Dataset(*list_val, headers=headers)
+    if format_type == Export_choice.XLS:
+        response.write(data.xls)
+    elif format_type == Export_choice.CSV:
+        response.write(data.csv)
+    elif format_type == Export_choice.JSON:
+        response.write(data.json)
+
     return response
 
 
 @permission_required('user_profile.cdr_detail', login_url='/')
 @login_required
-def cdr_detail(request, id, switch_id):
+def cdr_detail(request, cdr_id):
     """Detail of Call
 
     **Attributes**:
 
-        * ``template`` - frontend/cdr_detail.html
+        * ``template`` - cdr/cdr_detail.html
 
     **Logic Description**:
 
-        get the single call record in detail from mongodb collection
+        Get details from CDR through the jsonb data field
     """
-    c_switch = get_object_or_404(Switch, id=switch_id)
-    ipaddress = c_switch.ipaddress
     menu = show_menu(request)
 
-    if settings.CDR_BACKEND[settings.LOCAL_SWITCH_IP]['cdr_type'] == 'freeswitch':
-        #Connect on MongoDB Database
-        host = settings.CDR_BACKEND[ipaddress]['host']
-        port = settings.CDR_BACKEND[ipaddress]['port']
-        db_name = settings.CDR_BACKEND[ipaddress]['db_name']
-        table_name = settings.CDR_BACKEND[ipaddress]['table_name']
-        try:
-            connection = Connection(host, port)
-            DBCON = connection[db_name]
-        except ConnectionFailure:
-            raise Http404
+    try:
+        cdr = CDR.objects.get(id=cdr_id)
+    except CDR.DoesNotExist:
+        raise Http404
 
-        doc = DBCON[table_name].find({'_id': ObjectId(id)})
-        return render_to_response(
-            'frontend/cdr_detail_freeswitch.html',
-            {'row': list(doc), 'menu': menu},
-            context_instance=RequestContext(request))
-
-    elif settings.CDR_BACKEND[settings.LOCAL_SWITCH_IP]['cdr_type'] == 'asterisk':
-        #Connect on Mysql Database
-        #TODO: support other DBMS
-        #TODO: Support postgresql
-        import MySQLdb as Database
-        db_name = settings.CDR_BACKEND[ipaddress]['db_name']
-        table_name = settings.CDR_BACKEND[ipaddress]['table_name']
-        user = settings.CDR_BACKEND[ipaddress]['user']
-        password = settings.CDR_BACKEND[ipaddress]['password']
-        host = settings.CDR_BACKEND[ipaddress]['host']
-        try:
-            connection = Database.connect(user=user, passwd=password,
-                                          db=db_name, host=host)
-            cursor = connection.cursor()
-        except:
-            raise Http404
-
-        cursor.execute(
-            "SELECT dst, calldate, clid, src, dst, dcontext, channel, dstchannel "
-            "lastapp, duration, billsec, disposition, amaflags, accountcode, "
-            "uniqueid, userfield, %s FROM %s WHERE %s=%s" %
-            (settings.ASTERISK_PRIMARY_KEY, table_name,
-            settings.ASTERISK_PRIMARY_KEY, id))
-        row = cursor.fetchone()
-        if not row:
-            raise Http404
-
-        return render_to_response(
-            'frontend/cdr_detail_asterisk.html',
-            {'row': list(row), 'menu': menu},
-            context_instance=RequestContext(request))
-
-
-def chk_date_for_hrs(previous_date, graph_date):
-    """Check given graph_date is in last 24 hours range
-
-    >>> graph_date = datetime(2012, 8, 20)
-
-    >>> chk_date_for_hrs(graph_date)
-    False
-    """
-    if graph_date > previous_date:
-        return True
-    return False
-
-
-def calculate_act_and_acd(total_calls, total_duration):
-    """Calculate the Average Time of Call
-
-    >>> calculate_act_and_acd(5, 100)
-    {'ACD': '00:20', 'ACT': 0.0}
-    """
-    ACT = math.floor(total_calls / 24)
-    if total_calls == 0:
-        ACD = 0
-    else:
-        ACD = int_convert_to_minute(math.floor(total_duration / total_calls))
-
-    return {'ACT': ACT, 'ACD': ACD}
+    data = {
+        'cdr': cdr,
+        'cdr_data': cdr.data,
+        'menu': menu
+    }
+    return render_to_response('cdr/cdr_detail.html',
+                              data, context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.dashboard', login_url='/')
-@check_cdr_exists
-@check_user_accountcode
+@check_user_detail('accountcode,voipplan')
 @login_required
 def cdr_dashboard(request):
-    """CDR dashboard for a current day
+    """CDR dashboard on the last 24 hours
 
     **Attributes**:
 
-        * ``template`` - frontend/cdr_dashboard.html
+        * ``template`` - cdr/dashboard.html
         * ``form`` - SwitchForm
-        * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
 
     **Logic Description**:
 
-        get all call records from mongodb collection for current day
-        to create hourly report as well as hangup cause/country analytics
+        Display calls aggregated information for the last 24hours, several report will be
+        created and displayed such as hourly call report and hangup cause/country analytics.
     """
     logging.debug('CDR dashboard view start')
-    now = datetime.now()
-    form = SwitchForm()
-    switch_id = 0
-    query_var = {}
-    search_tag = 0
-    if request.method == 'POST':
+    form = SwitchForm(request.POST or None)
+
+    if form.is_valid():
         logging.debug('CDR dashboard view with search option')
-        search_tag = 1
-        form = SwitchForm(request.POST)
-        if form.is_valid():
-            switch_id = form.cleaned_data.get('switch')
-            if switch_id and int(switch_id) != 0:
-                query_var['metadata.switch_id'] = int(switch_id)
+        switch_id = int(getvar(request, 'switch_id'))
+    else:
+        switch_id = 0
 
-    end_date = datetime(now.year, now.month, now.day,
-                        now.hour, now.minute, now.second, now.microsecond)
-    # -2 cause the collection metadata.date only contains year-month-day
-    start_date = end_date + relativedelta(days=-2)
+    # Get list of calls/duration for each of the last 24 hours
+    (calls_hour_aggr, total_calls, total_duration, total_billsec, total_buy_cost, total_sell_cost) = custom_sql_matv_voip_cdr_aggr_last24hours(request.user, switch_id)
 
-    query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+    # Build chart data for last 24h calls
+    (xdata, ydata, ydata2, ydata3, ydata4, ydata5) = ([], [], [], [], [], [])
+    for i in calls_hour_aggr:
+        start_time = (time.mktime(calls_hour_aggr[i]['calltime'].timetuple()) * 1000)
+        xdata.append(start_time)
+        ydata.append(int(calls_hour_aggr[i]['nbcalls']))
+        ydata2.append(int(calls_hour_aggr[i]['duration']/60))
+        ydata3.append(int(calls_hour_aggr[i]['billsec']/60))
+        ydata4.append(int(calls_hour_aggr[i]['buy_cost']))
+        ydata5.append(int(calls_hour_aggr[i]['sell_cost']))
 
-    if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = chk_account_code(request)
+    tooltip_date = "%d %b %y %H:%M %p"
+    extra_serie1 = {"tooltip": {"y_start": "", "y_end": " calls"}, "date_format": tooltip_date}
+    extra_serie2 = {"tooltip": {"y_start": "", "y_end": " min"}, "date_format": tooltip_date}
+    extra_serie3 = {"tooltip": {"y_start": "", "y_end": " min"}, "date_format": tooltip_date}
+    extra_serie4 = {"tooltip": {"y_start": "", "y_end": ""}, "date_format": tooltip_date}
+    extra_serie5 = {"tooltip": {"y_start": "", "y_end": ""}, "date_format": tooltip_date}
 
-    logging.debug('cdr dashboard analytic')
+    kwargs1 = {}
+    kwargs1['bar'] = True
 
-    daily_data = settings.DBCON[settings.MONGO_CDRSTATS['DAILY_ANALYTIC']]
-    not_require_field = {'call_daily': 0,
-                         'call_hourly': 0,
-                         'duration_daily': 0,
-                         'duration_hourly': 0}
-    logging.debug('Before daily_data.find')
-    daily_data = daily_data.find(query_var, not_require_field)\
-        .sort([('metadata.date', 1),
-               ('metadata.country_id', 1),
-               ('metadata.hangup_cause_id', 1)])
-    logging.debug('After daily_data.find')
-    total_calls = 0
-    total_duration = 0
-    previous_date = datetime.now() - relativedelta(days=1)
+    final_chartdata = {
+        'x': xdata,
+        'name1': 'Calls', 'y1': ydata, 'extra1': extra_serie1, 'kwargs1': kwargs1,
+        'name2': 'Duration', 'y2': ydata2, 'extra2': extra_serie2,
+        'name3': 'Billsec', 'y3': ydata3, 'extra3': extra_serie3,
+        'name4': 'Buy cost', 'y4': ydata4, 'extra4': extra_serie4,
+        'name5': 'Sell cost', 'y5': ydata5, 'extra5': extra_serie5,
+    }
+    final_charttype = "linePlusBarChart"
 
-    hangup_analytic = dict()
-    country_all_data = dict()
-    final_record = dict()
+    # Get top 5 of country calls for last 24 hours
+    country_data = custom_sql_aggr_top_country_last24hours(request.user, switch_id, limit=5)
 
-    for i in daily_data:
-        calldate_dict = i['call_minute']
-        duration_dict = i['duration_minute']
-        a_Year = int(i['metadata']['date'].strftime('%Y'))
-        b_Month = int(i['metadata']['date'].strftime('%m'))
-        c_Day = int(i['metadata']['date'].strftime('%d'))
-        country_id = int(i['metadata']['country_id'])
-        hc = int(i['metadata']['hangup_cause_id'])
+    # Build pie chart data for last 24h calls per country
+    (xdata, ydata) = ([], [])
+    for country in country_data:
+        xdata.append(get_country_name(country["country_id"]))
+        ydata.append(percentage(country["nbcalls"], total_calls))
 
-        if len(calldate_dict) > 0:
-            for call_hour, min_dict in calldate_dict.iteritems():
-                for min, count_val in min_dict.iteritems():
-                    calldate__count = int(calldate_dict[call_hour][min])
-                    if calldate__count > 0:
-                        graph_day = datetime(a_Year, b_Month, c_Day,
-                                             int(call_hour), int(min))
-                        dt = int(1000 * time.mktime(graph_day.timetuple()))
-                        # check graph date
-                        if chk_date_for_hrs(previous_date, graph_day):
-                            duration__sum = int(duration_dict[call_hour][min])
+    color_list = ['#FFC36C', '#FFFF9D', '#BEEB9F', '#79BD8F', '#FFB391']
+    extra_serie = {"tooltip": {"y_start": "", "y_end": " %"}, "color_list": color_list}
+    country_analytic_chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
+    country_analytic_charttype = "pieChart"
 
-                            if dt in final_record:
-                                final_record[dt]['duration_sum'] += duration__sum
-                                final_record[dt]['count_call'] += calldate__count
-                            else:
-                                final_record[dt] = {
-                                    'duration_sum': duration__sum,
-                                    'count_call': calldate__count
-                                }
-                            total_calls += calldate__count
-                            total_duration += duration__sum
+    country_extra = {
+        'x_is_date': False,
+        'x_axis_format': '',
+        'tag_script_js': True,
+        'jquery_on_ready': True,
+    }
 
-                            # created hangup_analytic
-                            if hc in hangup_analytic:
-                                hangup_analytic[hc] += calldate__count
-                            else:
-                                hangup_analytic[hc] = calldate__count
+    # Get top 10 of hangup cause calls for last 24 hours
+    hangup_cause_data = custom_sql_aggr_top_hangup_last24hours(request.user, switch_id)
 
-                            if country_id in country_all_data:
-                                country_all_data[country_id]['call_count'] += calldate__count
-                                country_all_data[country_id]['duration_sum'] += duration__sum
-                            else:
-                                country_all_data[country_id] = {
-                                    'call_count': calldate__count,
-                                    'duration_sum': duration__sum
-                                }
-    logging.debug('*** After loop to handle data ***')
+    # hangup analytic pie chart data
+    (xdata, ydata) = ([], [])
+    for hangup_cause in hangup_cause_data:
+        xdata.append(str(get_hangupcause_name(hangup_cause["hangup_cause_id"])))
+        ydata.append(str(percentage(hangup_cause["nbcalls"], total_calls)))
 
-    # sorting on date col
-    final_record = final_record.items()
-    final_record = sorted(final_record, key=lambda k: k[0])
+    color_list = ['#2A343F', '#7E8282', '#EA9664', '#30998F', '#449935']
+    extra_serie = {"tooltip": {"y_start": "", "y_end": " %"}, "color_list": color_list}
+    hangup_analytic_chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
+    hangup_analytic_charttype = "pieChart"
 
-    hangup_analytic = hangup_analytic.items()
+    hangup_extra = country_extra
 
-    total_country_data = country_all_data.items()
-    total_country_data = sorted(total_country_data,
-                                key=lambda k: (k[1]['call_count'],
-                                               k[1]['duration_sum']),
-                                reverse=True)
+    logging.debug("Result calls_hour_aggr %d" % len(calls_hour_aggr))
+    logging.debug("Result hangup_cause_data %d" % len(hangup_cause_data))
+    logging.debug("Result country_data %d" % len(country_data))
 
-    logging.debug("Result total_record_final %d" % len(final_record))
-    logging.debug("Result hangup_analytic %d" % len(hangup_analytic))
-    logging.debug("Result country_call_count %d" % len(total_country_data))
+    # Calculate the Average Time of Call
+    metric_aggr = calculate_act_acd(total_calls, total_duration)
 
-    #Calculate the Average Time of Call
-    act_acd_array = calculate_act_and_acd(total_calls, total_duration)
-    ACT = act_acd_array['ACT']
-    ACD = act_acd_array['ACD']
+    final_extra = {
+        'x_is_date': True,
+        'x_axis_format': '%H:%M',
+        # 'x_axis_format': '%d %b %Y',
+        'tag_script_js': True,
+        'jquery_on_ready': True,
+        'focus_enable': True,
+    }
 
     logging.debug('CDR dashboard view end')
     variables = {
-        'module': current_view(request),
         'total_calls': total_calls,
         'total_duration': int_convert_to_minute(total_duration),
-        'ACT': ACT,
-        'ACD': ACD,
-        'total_record': final_record,
-        'hangup_analytic': hangup_analytic,
+        'total_buy_cost': total_buy_cost,
+        'total_sell_cost': total_sell_cost,
+        'metric_aggr': metric_aggr,
+        'country_data': country_data,
+        'hangup_analytic': hangup_cause_data,
         'form': form,
-        'search_tag': search_tag,
-        'notice_count': notice_count(request),
-        'total_country_data': total_country_data[0:5],
+        'final_chartdata': final_chartdata,
+        'final_charttype': final_charttype,
+        'final_chartcontainer': 'final_container',
+        'final_extra': final_extra,
+        'hangup_analytic_charttype': hangup_analytic_charttype,
+        'hangup_analytic_chartdata': hangup_analytic_chartdata,
+        'hangup_chartcontainer': 'hangup_piechart_container',
+        'hangup_extra': hangup_extra,
+        'country_analytic_charttype': country_analytic_charttype,
+        'country_analytic_chartdata': country_analytic_chartdata,
+        'country_chartcontainer': 'country_piechart_container',
+        'country_extra': country_extra,
     }
-
-    return render_to_response('frontend/cdr_dashboard.html', variables,
-           context_instance=RequestContext(request))
-
-
-@permission_required('user_profile.concurrent_calls', login_url='/')
-@check_cdr_exists
-@check_user_accountcode
-@login_required
-def cdr_concurrent_calls(request):
-    """CDR view of concurrent calls
-
-    **Attributes**:
-
-        * ``template`` - frontend/cdr_graph_concurrent_calls.html
-        * ``form`` - ConcurrentCallForm
-        * ``mongodb_data_set`` - MONGO_CDRSTATS['CONC_CALL_AGG'] (map-reduce collection)
-
-    **Logic Description**:
-
-        get all concurrent call records from mongodb map-reduce collection for
-        current date
-    """
-    logging.debug('CDR concurrent view start')
-    query_var = {}
-    switch_id = 0
-    if request.method == 'POST':
-        logging.debug('CDR concurrent view with search option')
-        form = ConcurrentCallForm(request.POST)
-        if form.is_valid():
-            if "from_date" in request.POST and request.POST['from_date'] != '':
-                from_date = request.POST['from_date']
-                start_date = ceil_strdate(from_date, 'start')
-                end_date = ceil_strdate(from_date, 'end')
-
-            switch_id = form.cleaned_data.get('switch')
-            if switch_id and int(switch_id) != 0:
-                query_var['switch_id'] = int(switch_id)
-    else:
-        now = datetime.today()
-        from_date = now.strftime('%Y-%m-%d')
-        start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
-        end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 0)
-        form = ConcurrentCallForm(initial={'from_date': from_date})
-
-    query_var['date'] = {'$gte': start_date, '$lt': end_date}
-
-    if not request.user.is_superuser:  # not superuser
-        query_var['accountcode'] = chk_account_code(request)
-
-    final_data = []
-    if query_var:
-        CONC_CALL_AGG = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL_AGG']]
-        calls_in_day = CONC_CALL_AGG.find(query_var).sort([('date', 1)])
-
-        for d in calls_in_day:
-            ts = time.mktime(d['date'].timetuple())
-            tsint = int(ts * 1000)
-            final_data.append({'today_minute': tsint,
-                               'call__count': int(d['numbercall']),
-                               'switch_id': int(d['switch_id'])})
-        logging.debug('CDR concurrent view end')
-        variables = {
-            'module': current_view(request),
-            'form': form,
-            'final_data': final_data,
-            'start_date': start_date,
-            'notice_count': notice_count(request),
-        }
-
-    return render_to_response('frontend/cdr_graph_concurrent_calls.html', variables,
-           context_instance=RequestContext(request))
-
-
-@permission_required('user_profile.real_time_calls', login_url='/')
-@check_user_accountcode
-@login_required
-def cdr_realtime(request):
-    """Call realtime view
-
-    **Attributes**:
-
-        * ``template`` - frontend/cdr_realtime.html
-        * ``form`` - SwitchForm
-        * ``mongodb_collection`` - MONGO_CDRSTATS['CONC_CALL_AGG'] (map-reduce collection)
-
-    **Logic Description**:
-
-        get all call records from mongodb collection for
-        concurrent analytics
-    """
-    logging.debug('CDR realtime view start')
-    query_var = {}
-    switch_id = 0
-    if request.method == 'POST':
-        logging.debug('CDR realtime view with search option')
-        form = SwitchForm(request.POST)
-        if form.is_valid():
-            switch_id = form.cleaned_data.get('switch')
-            if switch_id and int(switch_id) != 0:
-                query_var['value.switch_id'] = int(switch_id)
-    else:
-        form = SwitchForm()
-    now = datetime.now()
-    start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
-    end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
-
-    query_var['value.call_date'] = {'$gte': start_date, '$lt': end_date}
-
-    if not request.user.is_superuser:  # not superuser
-        query_var['value.accountcode'] = chk_account_code(request)
-
-    if query_var:
-        calls_in_day = settings.DBCON[settings.MONGO_CDRSTATS['CONC_CALL_AGG']]
-        calls_in_day = calls_in_day.find(query_var).\
-            sort([('_id.g_Millisec', -1)])
-
-        final_data = []
-        for d in calls_in_day:
-            dt = int(d['_id']['g_Millisec'])
-            final_data.append((dt, int(d['value']['numbercall__max'])))
-
-        logging.debug('Realtime view end')
-        list_switch = Switch.objects.all()
-        variables = {
-            'module': current_view(request),
-            'form': form,
-            'final_data': final_data,
-            'list_switch': list_switch,
-            'user_id': request.user.id,
-            'colorgraph1': '180, 0, 0',
-            'colorgraph2': '0, 180, 0',
-            'colorgraph3': '0, 0, 180',
-            'realtime_graph_maxcall': settings.REALTIME_Y_AXIS_LIMIT,
-            'notice_count': notice_count(request),
-        }
-
-    return render_to_response('frontend/cdr_graph_realtime.html', variables,
-           context_instance=RequestContext(request))
-
-
-def get_cdr_mail_report():
-    """General function to get previous day CDR report"""
-    # Get yesterday's CDR-Stats Mail Report
-    query_var = {}
-    yesterday = date.today() - timedelta(1)
-    start_date = datetime(yesterday.year, yesterday.month,
-                          yesterday.day, 0, 0, 0, 0)
-    end_date = datetime(yesterday.year, yesterday.month,
-                        yesterday.day, 23, 59, 59, 999999)
-
-    query_var['start_uepoch'] = {'$gte': start_date, '$lt': end_date}
-
-    # result set
-    final_result =\
-        cdr_data.find(query_var).sort([('start_uepoch', -1)]).limit(10)
-
-    # Collect analytics
-    logging.debug('Aggregate cdr mail report')
-    pipeline = pipeline_mail_report(query_var)
-
-    logging.debug('Before Aggregate')
-    list_data = settings.DBCON.command('aggregate',
-                                       settings.MONGO_CDRSTATS['CDR_COMMON'],
-                                       pipeline=pipeline)
-    logging.debug('After Aggregate')
-
-    total_duration = 0
-    total_calls = 0
-    country_analytic = dict()
-    hangup_analytic = dict()
-    if list_data:
-        for doc in list_data['result']:
-            total_duration += doc['duration_sum']
-            total_calls += int(doc['call_count'])
-
-            # created cdr_hangup_analytic
-            hangup_cause_id = int(doc['_id']['hangup_cause_id'])
-            if hangup_cause_id in hangup_analytic:
-                hangup_analytic[hangup_cause_id] += 1
-            else:
-                hangup_analytic[hangup_cause_id] = 1
-
-            country_id = int(doc['_id']['country_id'])
-            if country_id in country_analytic:
-                country_analytic[country_id]['call_count'] +=\
-                    int(doc['call_count'])
-                country_analytic[country_id]['duration_sum'] +=\
-                    doc['duration_sum']
-            else:
-                country_analytic[country_id] = {
-                    'call_count': int(doc['call_count']),
-                    'duration_sum': doc['duration_sum']
-                }
-
-    #Calculate the Average Time of Call
-    act_acd_array = calculate_act_and_acd(total_calls, total_duration)
-    ACT = act_acd_array['ACT']
-    ACD = act_acd_array['ACD']
-
-    country_analytic = country_analytic.items()
-    country_analytic = sorted(country_analytic,
-                              key=lambda k: (k[1]['call_count'],
-                                             k[1]['duration_sum']),
-                              reverse=True)
-
-    # Hangup Cause analytic end
-    hangup_analytic_array = []
-    hangup_analytic = hangup_analytic.items()
-    hangup_analytic = sorted(hangup_analytic, key=lambda k: k[0])
-    if len(hangup_analytic) != 0:
-        total_hangup = sum([int(x[1]) for x in hangup_analytic])
-        for i in hangup_analytic:
-            hangup_analytic_array.append(
-                (get_hangupcause_name(int(i[0])),
-                "{0:.0f}%".format((float(i[1]) / float(total_hangup)) * 100)))
-
-    mail_data = {
-        'yesterday_date': start_date,
-        'rows': final_result,
-        'total_duration': total_duration,
-        'total_calls': total_calls,
-        'ACT': ACT,
-        'ACD': ACD,
-        'country_analytic_array': country_analytic[0:5],
-        'hangup_analytic_array': hangup_analytic_array,
-    }
-    return mail_data
-
-
-def get_userprofile(request):
-    """
-    Get user profile instance of logged in user if not available
-    create new user profile instance
-    """
-    user_obj = User.objects.get(username=request.user)
-    try:
-        user_profile = UserProfile.objects.get(user=user_obj)
-    except UserProfile.DoesNotExist:
-        #create UserProfile
-        user_profile = UserProfile(user=user_obj)
-        user_profile.save()
-    return user_profile
+    return render_to_response('cdr/dashboard.html', variables, context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.mail_report', login_url='/')
-@check_cdr_exists
+@check_user_detail('accountcode,voipplan')
 @login_required
 def mail_report(request):
     """Mail Report Template
 
     **Attributes**:
 
-        * ``template`` - frontend/cdr_mail_report.html
+        * ``template`` - cdr/mail_report.html
         * ``form`` - MailreportForm
-        * ``mongodb_data_set`` - MONGO_CDRSTATS['CDR_COMMON']
 
     **Logic Description**:
 
-        get top 10 calls from mongodb collection & hnagupcause/country analytic
+        get top 10 calls Postgresql & hangup / country analytic
         to generate mail report
     """
     logging.debug('CDR mail report view start')
-    template = 'frontend/cdr_mail_report.html'
+
     msg = ''
-
-    user_profile = get_userprofile(request)
-
-    form = EmailReportForm(request.user, instance=user_profile)
-    if request.method == 'POST':
-        form = EmailReportForm(request.user, request.POST,
-                               instance=user_profile)
+    if not hasattr(request.user, 'userprofile'):
+        form = None
+    else:
+        form = EmailReportForm(request.user, request.POST or None, instance=request.user.userprofile)
         if form.is_valid():
             form.save()
-            msg = _('Email ids are saved successfully.')
+            msg = _('email ids are saved successfully.')
 
-    mail_data = get_cdr_mail_report()
-    logging.debug('CDR mail report view end')
+    mail_data = get_cdr_mail_report(request.user)
+
     data = {
-        'module': current_view(request),
         'yesterday_date': mail_data['yesterday_date'],
         'rows': mail_data['rows'],
         'form': form,
         'total_duration': mail_data['total_duration'],
         'total_calls': mail_data['total_calls'],
-        'ACT': mail_data['ACT'],
-        'ACD': mail_data['ACD'],
-        'country_analytic_array': mail_data['country_analytic_array'],
-        'hangup_analytic_array': mail_data['hangup_analytic_array'],
+        'total_buy_cost': mail_data['total_buy_cost'],
+        'total_sell_cost': mail_data['total_sell_cost'],
+        'metric_aggr': mail_data['metric_aggr'],
+        'country_data': mail_data['country_data'],
+        'hangup_cause_data': mail_data['hangup_cause_data'],
         'msg': msg,
-        'notice_count': notice_count(request),
     }
-    return render_to_response(template, data,
-           context_instance=RequestContext(request))
-
-
-def get_hourly_report_for_date(start_date, end_date, query_var, graph_view):
-    """Get Hourly report for date"""
-    logging.debug('Aggregate cdr hourly report')
-    pipeline = pipeline_hourly_report(query_var)
-    logging.debug('Before Aggregate')
-    list_data = settings.DBCON.command('aggregate',
-                                       settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                       pipeline=pipeline)
-
-    total_record = {}
-    if list_data:
-        for doc in list_data['result']:
-            called_time = datetime(int(doc['_id'][0:4]),
-                                   int(doc['_id'][4:6]),
-                                   int(doc['_id'][6:8]))
-            day_hours = {}
-            for hr in range(0, 24):
-                day_hours[hr] = 0
-
-            if graph_view == 1:  # Calls per hour
-                for dict_in_list in doc['call_per_hour']:
-                    for key, value in dict_in_list.iteritems():
-                        day_hours[int(key)] += int(value)
-
-                total_record[str(called_time)[:10]] = day_hours
-
-            if graph_view == 2:  # Min per hour
-                for dict_in_list in doc['duration_per_hour']:
-                    for key, value in dict_in_list.iteritems():
-                        day_hours[int(key)] += float(value) / 60
-
-                total_record[str(called_time)[:10]] = day_hours
-
-    logging.debug('After Aggregate')
-
-    variables = {
-        'total_record': total_record,
-    }
-    return variables
+    return render_to_response('cdr/mail_report.html', data, context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.daily_comparison', login_url='/')
-@check_cdr_exists
-@check_user_accountcode
+@check_user_detail('accountcode')
 @login_required
-def cdr_report_by_hour(request):
-    """CDR graph by hourly basis
+def cdr_daily_comparison(request):
+    """
+    Hourly CDR graph that compare with previous dates
 
     **Attributes**:
 
-        * ``template`` - frontend/cdr_report_by_hour.html
+        * ``template`` - cdr/daily_comparison.html
         * ``form`` - CompareCallSearchForm
-        * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
-        * ``map_reduce`` - mapreduce_cdr_hourly_analytic()
 
     **Logic Description**:
 
-        get all call records from mongodb collection for
-        hourly analytics for given date
+        get the call records aggregated from the CDR table
+        using the materialized view and compare with other date records
+
+
+    # hourly_charttype = "lineWithFocusChart"
+    # daily_charttype = "lineWithFocusChart"
+    # hourly_chartdata = {'x': []}
+    # daily_chartdata = {'x': []}
+    # metric = 'nbcalls'  # Default metric
+
     """
-    logging.debug('CDR hourly view start')
-    template_name = 'frontend/cdr_report_by_hour.html'
-    query_var = {}
-    total_record = []
-    #default
-    comp_days = 2
-    graph_view = 1
-    check_days = 1
-    search_tag = 0
-    tday = datetime.today()
-    from_date = tday.strftime('%Y-%m-%d')
-    form = CompareCallSearchForm(initial={'from_date': from_date,
-                                          'comp_days': comp_days,
-                                          'check_days': check_days,
-                                          'switch': 0,
-                                          'graph_view': graph_view})
-    if request.method == 'POST':
-        logging.debug('CDR hourly view with search option')
-        search_tag = 1
-        form = CompareCallSearchForm(request.POST)
-        if form.is_valid():
-            if "from_date" in request.POST:
-                from_date = request.POST['from_date']
-                select_date = datetime(int(from_date[0:4]),
-                                       int(from_date[5:7]),
-                                       int(from_date[8:10]), 0, 0, 0, 0)
-            else:
-                from_date = tday.strftime('%Y-%m-%d')
-                select_date = tday
+    # Default
+    metric = 'nbcalls'
+    switch_id = 0
+    hourly_charttype = "multiBarChart"
+    hourly_chartdata = {'x': []}
+    compare_days = 2
+    compare_type = COMPARE_WITH.previous_days
+    today_date = datetime.today()
+    form = CompareCallSearchForm(request.POST or None,
+                                 initial={'from_date': today_date.strftime('%Y-%m-%d'),
+                                          'compare_days': compare_days,
+                                          'compare_type': compare_type,
+                                          'switch_id': 0})
 
-            comp_days = int(variable_value(request, 'comp_days'))
-            graph_view = int(variable_value(request, 'graph_view'))
-            check_days = int(variable_value(request, 'check_days'))
-            # check previous days
-            if check_days == 2:
-                compare_date_list = []
-                compare_date_list.append(select_date)
+    today_date = datetime(today_date.year, today_date.month, today_date.day)
+    current_date = today_date
 
-                for i in range(1, int(comp_days) + 1):
-                    #select_date+relativedelta(weeks=-i)
-                    interval_date = select_date + relativedelta(weeks=-i)
-                    compare_date_list.append(interval_date)
+    if form.is_valid():
+        from_date = getvar(request, 'from_date')
+        current_date = ceil_strdate(str(from_date), 'start')
+        # current_date = trunc_date_start(from_date)
+        switch_id = getvar(request, 'switch_id')
+        compare_days = int(getvar(request, 'compare_days'))
+        metric = getvar(request, 'metric')
 
-            switch_id = form.cleaned_data.get('switch')
-            if switch_id and int(switch_id) != 0:
-                query_var['metadata.switch_id'] = int(switch_id)
+    kwargs = {}
 
-            if from_date != '':
-                end_date = from_date = select_date
-                start_date = end_date + \
-                    relativedelta(days=-int(comp_days))
-                start_date = datetime(start_date.year, start_date.month,
-                                      start_date.day, 0, 0, 0, 0)
-                end_date = datetime(end_date.year, end_date.month,
-                                    end_date.day, 23, 59, 59, 999999)
-                if check_days == 1:
-                    query_var['metadata.date'] = {
-                        '$gte': start_date,
-                        '$lt': end_date
-                    }
-        else:
-            # form is not valid
-            logging.debug('Error : CDR hourly search form')
-            total_record = []
-            variables = {
-                'module': current_view(request),
-                'form': form,
-                'result': 'min',
-                'graph_view': graph_view,
-                'search_tag': search_tag,
-                'from_date': from_date,
-                'comp_days': comp_days,
-                'total_record': total_record,
-                'notice_count': notice_count(request),
-            }
+    if switch_id and switch_id != '0':
+        kwargs['switch_id'] = int(switch_id)
 
-            return render_to_response(template_name, variables,
-                            context_instance=RequestContext(request))
+    xdata = [i for i in range(0, 24)]
+    hourly_chartdata = {'x': xdata}
 
-    if len(query_var) == 0:
-        from_date = datetime.today()
-        from_day = validate_days(from_date.year,
-                                 from_date.month,
-                                 from_date.day)
-        from_year = from_date.year
-        from_month = from_date.month
-        end_date = datetime(from_year, from_month, from_day)
-        start_date = end_date + relativedelta(days=-comp_days)
-        start_date = datetime(start_date.year, start_date.month,
-                              start_date.day, 0, 0, 0, 0)
-        end_date = datetime(end_date.year, end_date.month,
-                            end_date.day, 23, 59, 59, 999999)
-        query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+    y_count = 1
+    for nday in range(1, compare_days + 1):
+        start_date = current_date + relativedelta(days=-int(nday-1))
+        start_date = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, 0)
+        end_date = current_date + relativedelta(days=-int(nday-1))
+        end_date = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, 999999)
+        # Get hourly Data
+        hourly_data = get_report_compare_cdr(request.user, 'hour', start_date, end_date, switch_id)
 
-    if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = chk_account_code(request)
-
-    if query_var:
-        # Previous days
-        if check_days == 2:
-            for i in compare_date_list:
-                s_date = datetime(i.year, i.month, i.day, 0, 0, 0, 0)
-                e_date = datetime(i.year, i.month, i.day, 23, 59, 59, 999999)
-                query_var['metadata.date'] = {'$gte': s_date, '$lt': e_date}
-                result_data = \
-                    get_hourly_report_for_date(s_date, e_date,
-                                               query_var, graph_view)
-                total_record.append((result_data['total_record']))
-
-        # Same day of the week
-        if check_days == 1:
-            result_data = \
-                get_hourly_report_for_date(start_date, end_date,
-                                           query_var, graph_view)
-            total_record.append((result_data['total_record']))
-
-        logging.debug('CDR hourly view end')
-        variables = {
-            'module': current_view(request),
-            'form': form,
-            'result': 'min',
-            'graph_view': graph_view,
-            'search_tag': search_tag,
-            'from_date': from_date,
-            'comp_days': comp_days,
-            'total_record': total_record,
-            'notice_count': notice_count(request),
+        extra_serie = {
+            "tooltip": {"y_start": "", "y_end": " " + metric}
         }
+        # We only need to set x axis once, so let's do it for nbcalls
+        # hourly_chartdata['x'] = hourly_data["nbcalls"]["x_timestamp"]
+        for switch in hourly_data[metric]["columns"]:
+            serie = get_switch_ip_addr(switch) + "_day_" + str(nday)
+            hourly_chartdata['name' + str(y_count)] = serie
+            hourly_chartdata['y' + str(y_count)] = hourly_data[metric]["values"][str(switch)]
+            hourly_chartdata['extra' + str(y_count)] = extra_serie
+            y_count += 1
 
-        return render_to_response(template_name, variables,
-                                context_instance=RequestContext(request))
+    variables = {
+        'form': form,
+        'from_date': current_date,
+        'metric': metric,
+        'compare_days': compare_days,
+        'hourly_charttype': hourly_charttype,
+        'hourly_chartdata': hourly_chartdata,
+        'hourly_chartcontainer': 'hourly_chartcontainer',
+        'hourly_extra': {
+            'x_is_date': False,
+            'x_axis_format': '',
+            'tag_script_js': True,
+            'jquery_on_ready': True,
+        },
+    }
+    return render_to_response('cdr/daily_comparison.html', variables, context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.overview', login_url='/')
-@check_cdr_exists
-@check_user_accountcode
+@check_user_detail('accountcode')
 @login_required
 def cdr_overview(request):
     """CDR graph by hourly/daily/monthly basis
 
     **Attributes**:
 
-        * ``template`` - frontend/cdr_overview.html.html
+        * ``template`` - cdr/overview.html
         * ``form`` - CdrOverviewForm
-        * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
 
     **Logic Description**:
 
-        get all call records from mongodb collection for
+        Get Call records from Postgresql table and build
         all monthly, daily, hourly analytics
     """
-    template_name = 'frontend/cdr_overview.html'
-    logging.debug('CDR overview start')
-    query_var = {}
+    # initialize variables
+    hourly_charttype = "lineWithFocusChart"
+    daily_charttype = "lineWithFocusChart"
+    hourly_chartdata = {'x': []}
+    daily_chartdata = {'x': []}
+    metric = 'nbcalls'  # Default metric
+
+    action = 'tabs-1'
     tday = datetime.today()
-    search_tag = 0
-    if request.method == 'POST':
-        logging.debug('CDR overview with search option')
-        search_tag = 1
-        form = CdrOverviewForm(request.POST)
-        if form.is_valid():
-            if "from_date" in request.POST:
-                from_date = request.POST['from_date']
-                start_date = ceil_strdate(from_date, 'start')
-            else:
-                from_date = tday.strftime('%Y-%m-%d')
+    switch_id = 0
+    # assign initial value in form fields
+    form = CdrOverviewForm(request.POST or None,
+                           initial={'from_date': tday.strftime('%Y-%m-%d 00:00'),
+                                    'to_date': tday.strftime('%Y-%m-%d 23:55'),
+                                    'switch_id': switch_id})
+    start_date = trunc_date_start(tday)
+    end_date = trunc_date_end(tday)
+    if form.is_valid():
+        from_date = getvar(request, 'from_date')
+        to_date = getvar(request, 'to_date')
+        start_date = trunc_date_start(from_date)
+        end_date = trunc_date_end(to_date)
+        switch_id = getvar(request, 'switch_id')
+        metric = getvar(request, 'metric')
 
-            if "to_date" in request.POST:
-                to_date = request.POST['to_date']
-                end_date = ceil_strdate(to_date, 'end')
-            else:
-                to_date = tday.strftime('%Y-%m-%d')
+    # get the number of hour that diff the date
+    delta = end_date - start_date
+    hour_diff = abs(divmod(delta.days * 86400 + delta.seconds, 60)[0]) / 60
+    if hour_diff <= 72:
+        display_chart = 'hourly'
+    else:
+        display_chart = 'daily'
 
-            switch_id = form.cleaned_data.get('switch')
-            if switch_id and int(switch_id) != 0:
-                query_var['metadata.switch_id'] = int(switch_id)
+    # check metric is valid
+    if metric not in ['nbcalls', 'duration', 'billsec', 'buy_cost', 'sell_cost']:
+        metric = 'nbcalls'
 
-            if from_date != '' and to_date != '':
-                start_date = ceil_strdate(from_date, 'start')
-                end_date = ceil_strdate(to_date, 'end')
-                query_var['metadata.date'] = {
-                    '$gte': start_date,
-                    '$lt': end_date
-                }
+    extra_serie = {
+        "tooltip": {"y_start": "", "y_end": " " + metric},
+        "date_format": "%d %b %y %H:%M%p"
+    }
 
-                month_start_date = datetime(start_date.year, start_date.month,
-                    1, 0, 0, 0, 0)
-                month_end_date = datetime(end_date.year, end_date.month,
-                    end_date.day, 23, 59, 59, 999999)
-        else:
-            # form is not valid
-            logging.debug('Error : CDR overview search form')
-            total_hour_record = []
-            total_hour_data = []
-            total_day_record = []
-            total_day_data = []
-            total_month_record = []
-            total_month_data = []
+    if display_chart == 'hourly':
+        hourly_data = get_report_cdr_per_switch(request.user, 'hour', start_date, end_date, switch_id)
 
-            tday = datetime.today()
-            start_date = datetime(tday.year, tday.month,
-                tday.day, 0, 0, 0, 0)
-            end_date = datetime(tday.year, tday.month,
-                tday.day, 23, 59, 59, 999999)
+        for switch in hourly_data[metric]["columns"]:
+            hourly_chartdata['x'] = hourly_data[metric]["x_timestamp"]
+            hourly_chartdata['name' + str(switch)] = get_switch_ip_addr(switch)
+            hourly_chartdata['y' + str(switch)] = hourly_data[metric]["values"][str(switch)]
+            hourly_chartdata['extra' + str(switch)] = extra_serie
 
-            variables = {
-                'module': current_view(request),
-                'form': form,
-                'search_tag': search_tag,
-                'total_hour_record': total_hour_record,
-                'total_hour_data': total_hour_data,
-                'total_day_record': total_day_record,
-                'total_day_data': total_day_data,
-                'total_month_record': total_month_record,
-                'total_month_data': total_month_data,
-                'start_date': start_date,
-                'end_date': end_date,
-                'TOTAL_GRAPH_COLOR': settings.TOTAL_GRAPH_COLOR,
-                'notice_count': notice_count(request),
-            }
+        total_calls = hourly_data["nbcalls"]["total"]
+        total_duration = hourly_data["duration"]["total"]
+        total_billsec = hourly_data["billsec"]["total"]
+        total_buy_cost = hourly_data["buy_cost"]["total"]
+        total_sell_cost = hourly_data["sell_cost"]["total"]
 
-            return render_to_response(
-                template_name, variables,
-                context_instance=RequestContext(request)
-            )
+    elif display_chart == 'daily':
+        daily_data = get_report_cdr_per_switch(request.user, 'day', start_date, end_date, switch_id)
 
-    if len(query_var) == 0:
-        tday = datetime.today()
-        switch_id = 0
-        form = CdrOverviewForm(initial={'from_date': tday.strftime('%Y-%m-%d'),
-                                        'to_date': tday.strftime('%Y-%m-%d'),
-                                        'switch': switch_id})
+        for switch in daily_data[metric]["columns"]:
+            daily_chartdata['x'] = daily_data[metric]["x_timestamp"]
+            daily_chartdata['name' + str(switch)] = get_switch_ip_addr(switch)
+            daily_chartdata['y' + str(switch)] = daily_data[metric]["values"][str(switch)]
+            daily_chartdata['extra' + str(switch)] = extra_serie
 
-        start_date = datetime(tday.year, tday.month, tday.day, 0, 0, 0, 0)
-        end_date = datetime(tday.year, tday.month,
-                            tday.day, 23, 59, 59, 999999)
-        month_start_date = datetime(start_date.year,
-                                    start_date.month, 1, 0, 0, 0, 0)
-        month_end_date = datetime(end_date.year, end_date.month,
-                                  end_date.day, 23, 59, 59, 999999)
+        total_calls = daily_data["nbcalls"]["total"]
+        total_duration = daily_data["duration"]["total"]
+        total_billsec = daily_data["billsec"]["total"]
+        total_buy_cost = daily_data["buy_cost"]["total"]
+        total_sell_cost = daily_data["sell_cost"]["total"]
 
-        query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+    # Calculate the Average Time of Call
+    metric_aggr = calculate_act_acd(total_calls, total_duration)
 
-    if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = chk_account_code(request)
+    # Get top 10 of country calls
+    country_data = custom_sql_aggr_top_country(request.user, switch_id, 10, start_date, end_date)
 
-    if query_var:
-        logging.debug('Map-reduce cdr overview analytic')
-        # Collect Hourly data
-        logging.debug('Aggregate cdr hourly overview')
-        pipeline = pipeline_hourly_overview(query_var)
-
-        logging.debug('Before Aggregate')
-        list_data = settings.DBCON.command('aggregate',
-                                           settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                           pipeline=pipeline)
-        logging.debug('After Aggregate')
-
-        total_hour_record = []
-        total_hour_data = []
-        hour_data = dict()
-        if list_data:
-            for doc in list_data['result']:
-                a_Year = int(doc['_id'][0:4])
-                b_Month = int(doc['_id'][4:6])
-                c_Day = int(doc['_id'][6:8])
-                day_hours = dict()
-
-                for dict_in_list in doc['call_per_hour']:
-                    for key, value in dict_in_list.iteritems():
-                        key = int(key)
-                        graph_day = datetime(a_Year, b_Month, c_Day, key)
-                        dt = int(1000 * time.mktime(graph_day.timetuple()))
-
-                        if key in day_hours:
-                            day_hours[key]['calldate__count'] += int(value)
-                        else:
-                            day_hours[key] = {
-                                'dt': dt,
-                                'calldate__count': int(value),
-                                'duration__sum': 0,
-                                'switch_id': int(doc['switch_id'])
-                            }
-
-                for dict_in_list in doc['duration_per_hour']:
-                    for key, value in dict_in_list.iteritems():
-                        day_hours[int(key)]['duration__sum'] += int(value)
-
-                for hr in day_hours:
-                    total_hour_record.append(day_hours[hr])
-
-                    # All switches hourly data
-                    temp_dt = day_hours[hr]['dt']
-                    temp_call_count = int(day_hours[hr]['calldate__count'])
-                    temp_duration_sum = day_hours[hr]['duration__sum']
-                    if temp_dt in hour_data:
-                        hour_data[temp_dt]['call_count'] += temp_call_count
-                        hour_data[temp_dt]['duration_sum'] += temp_duration_sum
-                    else:
-                        hour_data[temp_dt] = {
-                            'call_count': temp_call_count,
-                            'duration_sum': temp_duration_sum
-                        }
-
-        total_hour_record = sorted(total_hour_record, key=lambda k: k['dt'])
-
-        total_hour_data = hour_data.items()
-        total_hour_data = sorted(total_hour_data, key=lambda k: k[0])
-
-        # Collect daily data
-        logging.debug('Aggregate cdr daily analytic')
-        pipeline = pipeline_daily_overview(query_var)
-
-        logging.debug('Before Aggregate')
-        list_data = settings.DBCON.command('aggregate',
-                                           settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                           pipeline=pipeline)
-        logging.debug('After Aggregate')
-
-        total_day_record = []
-        total_day_data = []
-        if list_data:
-            day_data = dict()
-            for doc in list_data['result']:
-                graph_day = datetime(int(doc['_id'][0:4]),
-                                     int(doc['_id'][4:6]),
-                                     int(doc['_id'][6:8]),
-                                     0, 0, 0, 0)
-                dt = int(1000 * time.mktime(graph_day.timetuple()))
-
-                total_day_record.append({
-                    'dt': dt,
-                    'calldate__count': int(doc['call_per_day']),
-                    'duration__sum': int(doc['duration_per_day']),
-                    'switch_id': int(doc['switch_id'])
-                })
-
-                if dt in day_data:
-                    day_data[dt]['call_count'] += int(doc['call_per_day'])
-                    day_data[dt]['duration_sum'] += int(doc['duration_per_day'])
-                else:
-                    day_data[dt] = {
-                        'call_count': int(doc['call_per_day']),
-                        'duration_sum': int(doc['duration_per_day']),
-                    }
-
-            total_day_data = day_data.items()
-            total_day_data = sorted(total_day_data, key=lambda k: k[0])
-
-        # Collect monthly data
-        logging.debug('Aggregate cdr monthly analytic')
-        query_var['metadata.date'] = {
-            '$gte': month_start_date,
-            '$lt': month_end_date
-        }
-        pipeline = pipeline_monthly_overview(query_var)
-
-        logging.debug('Before Aggregate')
-        list_data = settings.DBCON.command('aggregate',
-                                           settings.MONGO_CDRSTATS['MONTHLY_ANALYTIC'],
-                                           pipeline=pipeline)
-        logging.debug('After Aggregate')
-
-        total_month_record = []
-        total_month_data = []
-        if list_data:
-            month_data = dict()
-            for doc in list_data['result']:
-                graph_month = datetime(int(doc['_id'][0:4]),
-                                       int(doc['_id'][4:6]),
-                                       1, 0, 0, 0, 0)
-                dt = int(1000 * time.mktime(graph_month.timetuple()))
-
-                total_month_record.append({
-                    'dt': dt,
-                    'calldate__count': int(doc['call_per_month']),
-                    'duration__sum': int(doc['duration_per_month']),
-                    'switch_id': int(doc['switch_id'])
-                })
-
-                if dt in month_data:
-                    month_data[dt]['call_count'] +=\
-                        int(doc['call_per_month'])
-                    month_data[dt]['duration_sum'] +=\
-                        int(doc['duration_per_month'])
-                else:
-                    month_data[dt] = {
-                        'call_count': int(doc['call_per_month']),
-                        'duration_sum': int(doc['duration_per_month'])
-                    }
-
-            total_month_data = month_data.items()
-            total_month_data = sorted(total_month_data, key=lambda k: k[0])
-
-        logging.debug('CDR daily view end')
-        variables = {
-            'module': current_view(request),
-            'form': form,
-            'search_tag': search_tag,
-            'total_hour_record': total_hour_record,
-            'total_hour_data': total_hour_data,
-            'total_day_record': total_day_record,
-            'total_day_data': total_day_data,
-            'total_month_record': total_month_record,
-            'total_month_data': total_month_data,
-            'start_date': start_date,
-            'end_date': end_date,
-            'TOTAL_GRAPH_COLOR': settings.TOTAL_GRAPH_COLOR,
-            'notice_count': notice_count(request),
-        }
-        return render_to_response(template_name, variables,
-            context_instance=RequestContext(request))
+    variables = {
+        'action': action,
+        'form': form,
+        'display_chart': display_chart,
+        'start_date': start_date,
+        'end_date': end_date,
+        'metric': metric,
+        'hourly_chartdata': hourly_chartdata,
+        'hourly_charttype': hourly_charttype,
+        'hourly_chartcontainer': 'hourly_container',
+        'hourly_extra': {
+            'x_is_date': True,
+            'x_axis_format': '%d %b %y %H%p',
+            'tag_script_js': True,
+            'jquery_on_ready': True,
+        },
+        'daily_chartdata': daily_chartdata,
+        'daily_charttype': daily_charttype,
+        'daily_chartcontainer': 'daily_container',
+        'daily_extra': {
+            'x_is_date': True,
+            'x_axis_format': '%d %b %Y',
+            'tag_script_js': True,
+            'jquery_on_ready': True,
+        },
+        'total_calls': total_calls,
+        'total_duration': total_duration,
+        'total_billsec': total_billsec,
+        'total_buy_cost': total_buy_cost,
+        'total_sell_cost': total_sell_cost,
+        'metric_aggr': metric_aggr,
+        'country_data': country_data,
+    }
+    return render_to_response('cdr/overview.html', variables, context_instance=RequestContext(request))
 
 
 @permission_required('user_profile.by_country', login_url='/')
-@check_cdr_exists
-@check_user_accountcode
+@check_user_detail('accountcode')
 @login_required
 def cdr_country_report(request):
     """CDR country report
 
     **Attributes**:
 
-        * ``template`` - frontend/cdr_country_report.html
+        * ``template`` - cdr/country_report.html
         * ``form`` - CountryReportForm
-        * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
 
     **Logic Description**:
 
-        get all call records from mongodb collection for all countries
-        to create country call
+        Retrieve call records from Postgresql for all countries
+        and create reporting information for those countries
     """
-    logging.debug('CDR country report view start')
-    template_name = 'frontend/cdr_country_report.html'
-    form = CountryReportForm()
+    metric = 'nbcalls'
+    tday = datetime.today()
 
     switch_id = 0
-    query_var = {}
-    search_tag = 0
-    now = datetime.now()
-    start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
-    end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
-    from_date = start_date.strftime("%Y-%m-%d")
-    to_date = end_date.strftime("%Y-%m-%d")
-    form = CountryReportForm(initial={'from_date': from_date,
-                                      'to_date': to_date})
-    total_calls = 0
-    total_duration = 0
-    total_record_final = []
+    hourly_charttype = "lineWithFocusChart"
+    hourly_chartdata = {'x': []}
+    country_id_list = []
+    total_metric = 0
 
-    if request.method == 'POST':
-        logging.debug('CDR country report view with search option')
-        search_tag = 1
-        form = CountryReportForm(request.POST)
-        if form.is_valid():
-            if "from_date" in request.POST:
-                # From
-                from_date = form.cleaned_data.get('from_date')
-                start_date = ceil_strdate(from_date, 'start')
+    # assign initial value in form fields
+    form = CountryReportForm(request.POST or None,
+                             initial={'from_date': tday.strftime('%Y-%m-%d 00:00'),
+                                    'to_date': tday.strftime('%Y-%m-%d 23:55'),
+                                    'switch_id': switch_id})
 
-            if "to_date" in request.POST:
-                # To
-                to_date = form.cleaned_data.get('to_date')
-                end_date = ceil_strdate(to_date, 'end')
+    start_date = trunc_date_start(tday)
+    end_date = trunc_date_end(tday)
 
-            country_id = form.cleaned_data.get('country_id')
-            # convert list value in int
-            country_id = [int(row) for row in country_id]
-            if len(country_id) >= 1 and country_id[0] != 0:
-                query_var['metadata.country_id'] = {'$in': country_id}
+    if form.is_valid():
+        from_date = getvar(request, 'from_date')
+        to_date = getvar(request, 'to_date')
+        start_date = trunc_date_start(from_date)
+        end_date = trunc_date_end(to_date)
+        switch_id = getvar(request, 'switch_id')
+        metric = getvar(request, 'metric')
+        country_id = form.cleaned_data['country_id']
+        # convert list value in int
+        country_id_list = [int(row) for row in country_id]
+        # handle 0 (All) selection
+        if 0 in country_id_list:
+            country_id_list = []
 
-            switch_id = form.cleaned_data.get('switch')
-            if switch_id and int(switch_id) != 0:
-                query_var['metadata.switch_id'] = int(switch_id)
+    # check metric is valid
+    if metric not in ['nbcalls', 'duration', 'billsec', 'buy_cost', 'sell_cost']:
+        metric = 'nbcalls'
 
-            duration = form.cleaned_data.get('duration')
-            duration_type = form.cleaned_data.get('duration_type')
-            if duration:
-                due = mongodb_int_filter(duration, duration_type)
-                temp = []
-                if due:
-                    for i in range(0, 24):
-                        temp.append({'duration_hourly.%d' % (i): due})
-                    query_var['$or'] = temp
-        else:
-            country_analytic_array = []
-            logging.debug('Error : CDR country report form')
-            variables = {
-                'module': current_view(request),
-                'total_calls': total_calls,
-                'total_duration': total_duration,
-                'total_record': total_record_final,
-                'country_final': country_analytic_array,
-                'form': form,
-                'search_tag': search_tag,
-                'NUM_COUNTRY': settings.NUM_COUNTRY,
-            }
+    hourly_data = get_report_cdr_per_country(request.user, 'hour', start_date, end_date, switch_id, country_id_list)
 
-            return render_to_response(template_name, variables,
-                context_instance=RequestContext(request))
+    extra_serie = {
+        "tooltip": {"y_start": "", "y_end": " " + metric},
+        "date_format": "%d %b %y %H:%M%p"
+    }
+    for country in hourly_data[metric]["columns"]:
+        hourly_chartdata['x'] = hourly_data[metric]["x_timestamp"]
+        country_name = get_country_name(int(country)).encode('utf-8')
+        hourly_chartdata['name' + str(country)] = country_name.decode('ascii', 'ignore').replace("'", " ")
+        hourly_chartdata['y' + str(country)] = hourly_data[metric]["values"][str(country)]
+        hourly_chartdata['extra' + str(country)] = extra_serie
 
-    query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
+    total_calls = hourly_data["nbcalls"]["total"]
+    total_duration = hourly_data["duration"]["total"]
+    total_billsec = hourly_data["billsec"]["total"]
+    total_buy_cost = hourly_data["buy_cost"]["total"]
+    total_sell_cost = hourly_data["sell_cost"]["total"]
 
-    if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = chk_account_code(request)
+    # Calculate the Average Time of Call
+    metric_aggr = calculate_act_acd(total_calls, total_duration)
 
-    # Country daily data
-    pipeline = pipeline_country_hourly_report(query_var)
+    # Get top 10 of country calls
+    top_country = 10
+    country_data = custom_sql_aggr_top_country(request.user, switch_id, top_country, start_date, end_date)
 
-    logging.debug('Before Aggregate')
-    list_data = settings.DBCON.command('aggregate',
-                                       settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                       pipeline=pipeline)
-    total_record_final = []
+    # Build pie chart data for last 24h calls per country
+    (xdata, ydata) = ([], [])
+    for country in country_data:
+        xdata.append(get_country_name(country["country_id"]))
+        ydata.append(percentage(country["nbcalls"], total_calls))
 
-    if list_data:
-        for doc in list_data['result']:
-            a_Year = int(doc['_id']['date'][0:4])
-            b_Month = int(doc['_id']['date'][5:7])
-            c_Day = int(doc['_id']['date'][8:10])
+    color_list = ['#FFC36C', '#FFFF9D', '#BEEB9F', '#79BD8F', '#FFB391',
+        '#58A6A6', '#86BF30', '#F2D022', '#D9AA1E', '#D98236']
 
-            day_hours = dict()
+    extra_serie = {"tooltip": {"y_start": "", "y_end": " %"}, "color_list": color_list}
+    country_analytic_chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
+    country_analytic_charttype = "pieChart"
 
-            for dict_in_list in doc['call_per_hour']:
-                for key, value in dict_in_list.iteritems():
-                    key = int(key)
-                    graph_day = datetime(a_Year, b_Month, c_Day, key)
-                    dt = int(1000 * time.mktime(graph_day.timetuple()))
+    country_extra = {
+        'x_is_date': False,
+        'x_axis_format': '',
+        'tag_script_js': True,
+        'jquery_on_ready': True,
+    }
 
-                    if key in day_hours:
-                        day_hours[key]['calldate__count'] += int(value)
-                    else:
-                        day_hours[key] = {
-                            'dt': dt,
-                            'calldate__count': int(value),
-                            'duration__sum': 0,
-                            'country_id': doc['_id']['country_id']
-                        }
-
-            for dict_in_list in doc['duration_per_hour']:
-                for key, value in dict_in_list.iteritems():
-                    key = int(key)
-                    if key in day_hours:
-                        day_hours[key]['duration__sum'] += int(value)
-
-            for hr in day_hours:
-                total_record_final.append(day_hours[hr])
-
-        total_record_final = sorted(total_record_final, key=lambda k: k['dt'])
-
-    # World report
-    logging.debug('Aggregate world report')
-    pipeline = pipeline_country_report(query_var)
-
-    logging.debug('Before Aggregate')
-    list_data = settings.DBCON.command('aggregate',
-                                       settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                       pipeline=pipeline)
-    logging.debug('After Aggregate')
-    country_analytic_array = []
-    if list_data:
-        for doc in list_data['result']:
-            #country id - country name - call count - call duration - country_id
-            # _id = country id
-            country_analytic_array.append(
-                (get_country_name(int(doc['_id'])),
-                 int(doc['call_per_day']),
-                 int(doc['duration_per_day']),
-                 int(doc['_id'])))
-
-            total_calls += int(doc['call_per_day'])
-            total_duration += int(doc['duration_per_day'])
-
-    logging.debug('CDR country report view end')
-    variables = {
-        'module': current_view(request),
+    data = {
+        'action': 'tabs-1',
+        'total_metric': total_metric,
+        'start_date': start_date,
+        'end_date': end_date,
+        'metric': metric,
+        'form': form,
+        'NUM_COUNTRY': settings.NUM_COUNTRY,
+        'hourly_charttype': hourly_charttype,
+        'hourly_chartdata': hourly_chartdata,
+        'hourly_chartcontainer': 'hourly_container',
+        'hourly_extra': {
+            'x_is_date': True,
+            'x_axis_format': '%d %b %Y',
+            'tag_script_js': True,
+            'jquery_on_ready': False,
+        },
         'total_calls': total_calls,
         'total_duration': total_duration,
-        'total_record': total_record_final,
-        'country_analytic': country_analytic_array,
-        'form': form,
-        'search_tag': search_tag,
-        'NUM_COUNTRY': settings.NUM_COUNTRY,
-        'notice_count': notice_count(request),
+        'total_billsec': total_billsec,
+        'total_buy_cost': total_buy_cost,
+        'total_sell_cost': total_sell_cost,
+        'metric_aggr': metric_aggr,
+        'country_data': country_data,
+
+        'country_analytic_charttype': country_analytic_charttype,
+        'country_analytic_chartdata': country_analytic_chartdata,
+        'country_chartcontainer': 'country_piechart_container',
+        'country_extra': country_extra,
+        'top_country': top_country,
     }
-    return render_to_response(template_name, variables,
-        context_instance=RequestContext(request))
+    return render_to_response('cdr/country_report.html', data, context_instance=RequestContext(request))
+
+
+def generate_crate(max_num):
+    """
+    helper function to generate well distributed grates
+    """
+    if not max_num:
+        max_num = 100
+    increment = max_num / 7
+    base = max_num / 10
+    grades = []
+    for i in range(0, 7):
+        x = i * increment
+        grades.append(int(base * round(float(x) / base)))
+
+    # Add the max too
+    grades.append(max_num)
+    return grades
 
 
 @permission_required('user_profile.world_map', login_url='/')
-@check_cdr_exists
-@check_user_accountcode
+@check_user_detail('accountcode,voipplan')
 @login_required
 def world_map_view(request):
     """CDR world report
 
     **Attributes**:
 
-        * ``template`` - frontend/world_map.html
+        * ``template`` - cdr/world_map.html
         * ``form`` - WorldForm
-        * ``mongodb_data_set`` - MONGO_CDRSTATS['DAILY_ANALYTIC']
-
-    **Logic Description**:
-
-        get all call records from mongodb collection for all countries
-        to create country call
     """
     logging.debug('CDR world report view start')
-    template_name = 'frontend/world_map.html'
-
-    switch_id = 0
-    query_var = {}
-    search_tag = 0
-    now = datetime.now()
-    start_date = datetime(now.year, now.month, now.day, 0, 0, 0, 0)
-    end_date = datetime(now.year, now.month, now.day, 23, 59, 59, 999999)
-    from_date = start_date.strftime("%Y-%m-%d")
-    to_date = end_date.strftime("%Y-%m-%d")
-    form = WorldForm(initial={'from_date': from_date, 'to_date': to_date})
     action = 'tabs-1'
+    switch_id = 0
+    tday = datetime.today()
+    # Assign initial value in form fields
+    form = WorldForm(request.POST or None,
+                     initial={'from_date': tday.strftime('%Y-%m-%d 00:00'),
+                              'to_date': tday.strftime('%Y-%m-%d 23:55'),
+                              'switch_id': switch_id})
 
-    if request.method == 'POST':
-        logging.debug('CDR world report view with search option')
-        search_tag = 1
-        form = WorldForm(request.POST)
-        if form.is_valid():
-            if "from_date" in request.POST:
-                # From
-                from_date = form.cleaned_data.get('from_date')
-                start_date = ceil_strdate(from_date, 'start')
+    start_date = trunc_date_start(tday)
+    end_date = trunc_date_end(tday)
 
-            if "to_date" in request.POST:
-                # To
-                to_date = form.cleaned_data.get('to_date')
-                end_date = ceil_strdate(to_date, 'end')
+    if form.is_valid():
+        from_date = getvar(request, 'from_date')
+        to_date = getvar(request, 'to_date')
+        start_date = trunc_date_start(from_date)
+        end_date = trunc_date_end(to_date)
+        switch_id = getvar(request, 'switch_id')
 
-            switch_id = form.cleaned_data.get('switch')
-            if switch_id and int(switch_id) != 0:
-                query_var['metadata.switch_id'] = int(switch_id)
+    # Get top 10 of country calls
+    top_country = 300
+    country_data = custom_sql_aggr_top_country(request.user, switch_id, top_country, start_date, end_date)
 
-        else:
-            world_analytic_array = []
-            logging.debug('Error : CDR world report form')
-            variables = {
-                'module': current_view(request),
-                'form': form,
-                'search_tag': search_tag,
-                'start_date': start_date,
-                'end_date': end_date,
-                'world_analytic_array': world_analytic_array,
-                'action': action,
-                'notice_count': notice_count(request),
-            }
-
-            return render_to_response(template_name, variables,
-                context_instance=RequestContext(request))
-
-    query_var['metadata.date'] = {'$gte': start_date, '$lt': end_date}
-
-    if not request.user.is_superuser:  # not superuser
-        query_var['metadata.accountcode'] = chk_account_code(request)
-
-    logging.debug('Aggregate world report')
-    pipeline = pipeline_country_report(query_var)
-
-    logging.debug('Before Aggregate')
-    list_data = settings.DBCON.command('aggregate',
-                                       settings.MONGO_CDRSTATS['DAILY_ANALYTIC'],
-                                       pipeline=pipeline)
-    logging.debug('After Aggregate')
     world_analytic_array = []
-    if list_data:
-        for doc in list_data['result']:
-            #country id - country name - call count - call duration - country_id
-            # _id = country id
-            world_analytic_array.append((int(doc['_id']),
-                                         get_country_name(int(doc['_id']), type='iso2'),
-                                         int(doc['call_per_day']),
-                                         doc['duration_per_day'],
-                                         get_country_name(int(doc['_id']))))
+    max_nbcalls = 0
+    for country in country_data:
+        if not country["country_id"]:
+            continue
+        # append data to world_analytic_array with following order
+        # country id|country name|call count|call duration|country_id|buy cost|sell cost
+        country_data = {}
+        country_data["country_id"] = int(country["country_id"])
+        country_data["country_iso3"] = get_country_name(int(country["country_id"]), type='iso3').upper()
+        country_data["country_name"] = get_country_name(int(country["country_id"]))
+        country_data["nbcalls"] = int(country["nbcalls"])
+        if country_data["nbcalls"] > max_nbcalls:
+            max_nbcalls = country_data["nbcalls"]
+        country_data["duration"] = int(country["duration"])
+        country_data["billsec"] = int(country["billsec"])
+        country_data["buy_cost"] = float(country["buy_cost"])
+        country_data["sell_cost"] = float(country["sell_cost"])
+        world_analytic_array.append(country_data)
 
-    logging.debug('CDR world report view end')
+    max_nbcalls = int(round(max_nbcalls, -3))
+
+    call_crates = generate_crate(max_nbcalls)
 
     variables = {
-        'module': current_view(request),
         'form': form,
-        'search_tag': search_tag,
         'start_date': start_date,
         'end_date': end_date,
         'world_analytic_array': world_analytic_array,
         'action': action,
-        'notice_count': notice_count(request),
+        'call_crates': call_crates,
     }
-    return render_to_response(template_name, variables,
-        context_instance=RequestContext(request))
+    return render_to_response('cdr/world_map.html',
+                              variables, context_instance=RequestContext(request))

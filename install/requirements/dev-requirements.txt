@@ -1,7 +1,9 @@
-Sphinx==1.1.3
-Werkzeug==0.8.3
-django-debug-toolbar==0.9.4
-ipython==0.13.1
-pip-tools==0.2.1
-pygraphviz==1.1
-git+git://github.com/hmarr/django-debug-toolbar-mongo.git
+Sphinx
+Werkzeug
+ipython
+pip-tools
+pygraphviz
+django-debug-toolbar-template-timings
+tabulate
+fake-factory
+alabaster

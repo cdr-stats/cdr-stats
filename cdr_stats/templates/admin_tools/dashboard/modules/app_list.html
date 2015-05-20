@@ -2,14 +2,7 @@
 {% load i18n %}
 {% block module_content %}
         {% for child in module.children %}
-        <h3><a href="{{ child.url }}">
-            {% if child.title == "Cdr_Alert" %}
-                {% trans "CDR Alert" %}
-            {% else %}
-                {{ child.title }}
-            {% endif %}
-
-            </a></h3>
+        <h3><a href="{{ child.url }}">{{ child.title }}</a></h3>
         <ul>
             {% for model in child.models %}
             {% spaceless %}
@@ -26,9 +19,9 @@
                 </ul>
                 {% endif %}
             </li>
-            {% ifequal model.title 'Switches' %}
+            {% ifequal model.title 'VoIP plans' %}
                 <li>
-                    <a href="/admin/cdr/switch/import_cdr/">{% trans "Import CDR" %}</a>
+                    <a href="/admin/voip_billing/voipplan/rebilling/">{% trans "rebilling"|capfirst %}</a>
                 </li>
             {% endifequal %}
             {% endspaceless %}

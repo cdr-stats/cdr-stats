@@ -1,0 +1,38 @@
+<script type="text/javascript">
+
+$(function() {
+    var today = new Date();
+    var last_day_of_month = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
+
+    var fromDate = new Date(today.getFullYear(), today.getMonth(), 1, 0, 0);
+    var toDate = new Date(today.getFullYear(), today.getMonth(), last_day_of_month, 23, 59);
+
+    $('#id_from_date').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        autoclose: true,
+        todayBtn: true,
+        pickerPosition: "bottom-left",
+        forceParse: true,
+    }).on('changeDate', function(selectedDate){
+        if (selectedDate.date.valueOf() > toDate.valueOf()){
+            $('#id_from_date').datetimepicker('update', fromDate);
+        } else {
+            fromDate = new Date(selectedDate.date);
+        }
+    });
+
+    $('#id_to_date').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        autoclose: true,
+        todayBtn: true,
+        pickerPosition: "bottom-left",
+        forceParse: true,
+    }).on('changeDate', function(selectedDate){
+        if (selectedDate.date.valueOf() < fromDate.valueOf()){
+            $('#id_to_date').datetimepicker('update', toDate);
+        } else {
+            toDate = new Date(selectedDate.date);
+        }
+    });
+});
+</script>

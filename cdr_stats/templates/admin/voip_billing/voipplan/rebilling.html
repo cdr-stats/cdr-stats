@@ -1,0 +1,112 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_modify admin_urls %}
+
+{% block breadcrumbs %}
+{% if not is_popup %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans "home"|capfirst %}</a> &rsaquo;
+    <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_label|capfirst|escape }}</a> &rsaquo;
+    <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
+    {{ opts.verbose_name }}
+</div>
+{% endif %}
+
+<script type="text/javascript">
+    $(function() {
+        $('#id_from_date').datetimepicker({
+            format:'Y-m-d',
+            timepicker:false,
+            onShow:function( ct ){
+                this.setOptions({
+                    maxDate:$('#id_to_date').val()?$('#id_to_date').val():false
+                })
+            },
+        });
+        $('#id_to_date').datetimepicker({
+            format:'Y-m-d',
+            timepicker:false,
+            onShow:function( ct ){
+                this.setOptions({
+                    minDate:$('#id_from_date').val()?$('#id_from_date').val():false
+                })
+            },
+        });
+    });
+    $(function() {
+        $('#id_no').click(function(){
+            document.location.href='/admin/{{ opts.app_label }}/{{ model_name }}/rebilling/';
+        });
+    });
+</script>
+{% endblock %}
+
+
+{% block content %}
+  <div id="content-main">
+
+    {% if cl.formset.errors %}
+        <p class="errornote">
+        {% blocktrans count cl.formset.errors|length as counter %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+        </p>
+        {{ cl.formset.non_form_errors }}
+    {% endif %}
+
+    {% block custom-search %}
+
+    {% if form.confirmation.value == CONFIRMATION_TYPE.YES %}
+        <p>
+            <h3>
+                {% trans "there are"|capfirst %} {{ call_rebill_count }} {% trans "calls selected" %}
+                {% trans "from" %} {{ start_date|date:"jS N Y" }}
+                {% trans "to" %} {{ end_date|date:"jS N Y" }}
+            </h3>
+        </p>
+    {% endif %}
+
+    {% if call_rebill_count != 0 %}
+        <h3>
+            {% trans "do you wish to proceed with the rebilling?"|capfirst %}
+        </h3>
+    {% endif %}
+
+    <form method="POST" action="." enctype="multipart/form-data">
+        {% csrf_token %}
+        <table class="actions">
+            {% for field in form.hidden_fields %}
+                {{ field }}
+            {% endfor %}
+            {% for field in form.visible_fields %}
+            <tr>
+                <th>
+                    <label class="control-label" for="{{ field.auto_id }}">
+                        {{ field.label }}
+                    </label>
+                </th>
+                <td>{{ field }}
+                    {% if field.errors %}
+                        <span>{{ field.errors|removetags:"ul li"|safe }}</span>
+                    {% endif %}
+                    <span>{{ field.help_text }} </span>
+                </td>
+            </tr>
+            {% endfor %}
+
+            <tr>
+                <td>
+                    {% if form.confirmation.value == CONFIRMATION_TYPE.YES %}
+                        {% if call_rebill_count != 0 %}
+                            <input type="submit" value="{{ CONFIRMATION_TYPE.YES }}" class="l-1"/>
+                            <input type="button" id="id_no" value="{{ CONFIRMATION_TYPE.NO }}" class="l-1"/>
+                        {% else %}
+                            <input type="button" id="id_no" value="{% trans 'go back'|title %}" class="l-1"/>
+                        {% endif %}
+                    {% else %}
+                        <input type="submit" value="{% trans "rebill calls"|title %}" class="l-1"/>
+                    {% endif %}
+                <td>
+            </tr>
+        </table>
+    </form>
+    {% endblock %}
+  </div>
+{% endblock %}
