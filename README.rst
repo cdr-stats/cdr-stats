@@ -38,14 +38,14 @@ Applications
     This application provide Reports, CDR Viewing, CDR reporting, Dashboard.
     Users can login and see their CDR only.
 
-.. image:: https://github.com/areski/cdr-stats/raw/master/screenshot/cdr-stats-user.png
+.. image:: https://github.com/areski/cdr-stats/raw/develop/screenshot/cdr-stats-user.png
 
 * Admin UI:
     http://localhost:8008/admin/
     This interface provides user (ACL) management, assignation of accountcode,
     also basic CRUD functions on the CDR
 
-.. image:: https://github.com/areski/cdr-stats/raw/master/screenshot/cdr-stats-admin.png
+.. image:: https://github.com/areski/cdr-stats/raw/develop/screenshot/cdr-stats-admin.png
 
 
 Documentation
