@@ -668,7 +668,7 @@ msgstr ""
 
 #: cdr/templates/cdr/daily_comparison.html:9
 #, fuzzy
-msgid "Daily comparaison"
+msgid "Daily comparison"
 msgstr "Minuten gesamte Dauer"
 
 #: cdr/templates/cdr/daily_comparison.html:19

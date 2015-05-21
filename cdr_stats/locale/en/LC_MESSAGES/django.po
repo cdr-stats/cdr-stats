@@ -609,7 +609,7 @@ msgid "No record found"
 msgstr ""
 
 #: cdr/templates/cdr/daily_comparison.html:9
-msgid "Daily comparaison"
+msgid "Daily comparison"
 msgstr ""
 
 #: cdr/templates/cdr/daily_comparison.html:19

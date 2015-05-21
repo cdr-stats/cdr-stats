@@ -683,7 +683,7 @@ msgstr "Nenhum registro encontrado"
 
 #: cdr/templates/cdr/daily_comparison.html:9
 #, fuzzy
-msgid "Daily comparaison"
+msgid "Daily comparison"
 msgstr "Duração Total"
 
 #: cdr/templates/cdr/daily_comparison.html:19

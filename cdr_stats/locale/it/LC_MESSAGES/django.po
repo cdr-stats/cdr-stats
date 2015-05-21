@@ -668,7 +668,7 @@ msgstr "Nessun record trovato"
 #: cdr/templates/cdr/daily_comparison.html:9
 #, fuzzy
 #| msgid "daily comparison"
-msgid "Daily comparaison"
+msgid "Daily comparison"
 msgstr "confronto giornaliero"
 
 #: cdr/templates/cdr/daily_comparison.html:19
