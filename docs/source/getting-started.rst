@@ -12,8 +12,8 @@ Getting Started
 --
 
 
-CDR-Stats is free and open source CDR_ (Call Detail Record) analysis and
-reporting software for Freeswitch, Asterisk and other type of VoIP Switch.
+CDR-Stats is free and open source CDR_ (Call Detail Record) mediation, rating, analysis
+and reporting application for Freeswitch, Asterisk and other type of VoIP Switch.
 It allows you to interrogate your CDR_ to provide reports and statistics via a
 simple to use, yet powerful, web interface.
 
@@ -28,7 +28,7 @@ It is based on the Django_ Python Framework, Celery_, Gevent_, PostgreSQL_ and I
 Overview
 --------
 
-CDR-Stats is an application that allows browsing and analysing CDR_.
+CDR-Stats is an application that allows rating, browsing and analysing CDR_.
 
 Different reporting tools are provided:
 
@@ -36,10 +36,9 @@ Different reporting tools are provided:
 - Search CDR: Search, filter, display and export CDR
 - Overview: Analyse call traffic by hour, day and month
 - Daily Comparison: Compare call traffic day on day
-- Real-Time Statistics: Show concurrent calls in realtime by switch
-- Concurrent Calls: Concurrent Calls through the day updated in real-time
 - Country Report: Call statistics by country
 - World Map: Call statistics overlaid on a world map
+- Call Cost and Carrier Costs
 - Mail daily aggregated reports
 - Threat Control: Detect abnormal call patterns
 - Destination Alerts: Unexpected destination alerts
@@ -105,11 +104,11 @@ average length of calls, or calls to unusual destinations.
 .. image:: ./_static/images/CDR-Stats-Architecture.png
     :width: 600
 
-CDR-Stats works hand to hand with `CDR-Pusher`_, `CDR-Pusher`_ has been built to
+CDR-Stats works hand in hand with `CDR-Pusher`_ which has been built to
 create an totally independent, easy to install, high performance CDRs
-Collector. CDR-Pusher aims to be installed on your local Telco Switchs
-(i.e. Asterisk), the application will harvest CDRs in Realtime and push them
-to the centralized CDR-Stats Database.
+Collector. CDR-Pusher is installed on your local Telcoms Switch
+(e.g. Asterisk), the application will harvest CDRs in Realtime and push them
+to a central CDR-Stats Database.
 
 
 .. _features:
@@ -118,8 +117,8 @@ Features
 --------
 
 Many features are provided on CDR-Stats, from browsing millions of CDRs,
-providing efficient search facilities to build reporting such as monthly
-reports, concurrent calls view, and comparing call traffic with previous days.
+call rating, providing efficient search facilities to build reporting such as
+monthly reports and comparing call traffic with previous days.
 
     +-----------------------+----------------------------------------------------+
     | Telephony Reporting   | Leading open source switches Freeswitch, Asterisk, |
@@ -158,7 +157,7 @@ reports, concurrent calls view, and comparing call traffic with previous days.
     +-----------------------+----------------------------------------------------+
     | Geographic alerts     | Set alert if calls go to disallowed countries      |
     +-----------------------+----------------------------------------------------+
-    | Concurrent calls      | Realtime reporting of concurrent calls             |
+    | Call Rating           | Each call individually rated                       |
     +-----------------------+----------------------------------------------------+
 
 
@@ -167,9 +166,9 @@ reports, concurrent calls view, and comparing call traffic with previous days.
 Utility
 -------
 
-CDR-Stats is a simple-to-use tool to provide easy analysis of calls. It is a
-recommended addition to telephony servers, whether it be a simple in-house PBX or
-large capacity VoIP switch. It shows in in near realtime what calls are going
+CDR-Stats is a simple-to-use tool to provide easy  rating and analysis of calls.
+It is a recommended addition to telephony servers, whether it be a simple in-house
+PBX or large capacity VoIP switch. It shows in in near realtime what calls are going
 through, can detect errors and failures, and alert the systems administrator is
 unexpected traffic is noted.
 
