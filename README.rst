@@ -4,16 +4,23 @@
 .. image:: https://secure.travis-ci.org/Star2Billing/cdr-stats.png?branch=develop
 
 
-CDR-Stats is free and open source CDR_ (Call Detail Record) analysis and
-reporting software for Freeswitch, Asterisk and other type of VoIP Switch.
-It allows you to interrogate your CDR_ to provide reports and statistics via a
-simple to use, yet powerful, web interface.
+CDR-Stats is an open source CDR_ (Call Detail Record) mediation rating, analysis
+and reporting application for Freeswitch, Asterisk, Kamailio and other types of
+proprietary VoIP Switch including Sipwise and Veraz. Other types of switch could
+be added in the future such as Cisco and Alcatel-Lucent.
+
+It allows you to mediate, rate and interrogate your CDR_ to provide reports and
+statistics via a simple to use, yet powerful, web interface.
 
 It is based on the Django_ Python Framework, Celery_, Gevent_, PostgreSQL_ and InfluxDB_.
 
 
 Features
 --------
+
+* Telecommunications CDR Mediation to normalise CDR into the same format for rating.
+
+* Telecoms call rating to put a cost against each call.
 
 * Highly scalable design to maintain high performance when analysing large quantities of data.
 
