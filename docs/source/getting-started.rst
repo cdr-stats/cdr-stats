@@ -12,17 +12,12 @@ Getting Started
 --
 
 
-CDR-Stats is free and open source call detail record analysis and reporting software for Freeswitch,
-Asterisk and other type of VoIP Switch. It allows you to interrogate your CDR to provide reports
-and statistics via a simple to use, yet powerful, web interface.
+CDR-Stats is free and open source CDR_ (Call Detail Record) analysis and
+reporting software for Freeswitch, Asterisk and other type of VoIP Switch.
+It allows you to interrogate your CDR_ to provide reports and statistics via a
+simple to use, yet powerful, web interface.
 
-It is based on the Django Python Framework, Celery, Gevent, PostgreSQL and InfluxDB.
-
-.. _`Freeswitch`: http://www.freeswitch.org/
-.. _`Asterisk`: http://www.asterisk.org/
-.. _`Django`: http://djangoproject.com/
-.. _`CDR`: http://en.wikipedia.org/wiki/Call_detail_record
-
+It is based on the Django_ Python Framework, Celery_, Gevent_, PostgreSQL_ and InfluxDB_.
 
 .. contents::
     :local:
@@ -33,7 +28,7 @@ It is based on the Django Python Framework, Celery, Gevent, PostgreSQL and Influ
 Overview
 --------
 
-CDR-Stats is an application that allows browsing and analysing CDR (Call Detail Records).
+CDR-Stats is an application that allows browsing and analysing CDR_.
 
 Different reporting tools are provided:
 
@@ -49,15 +44,18 @@ Different reporting tools are provided:
 - Threat Control: Detect abnormal call patterns
 - Destination Alerts: Unexpected destination alerts
 
-CDR Stats uses PostgreSQL, a scalable, high performance database system used to analyse
-large quantities of CDR data. PostgreSQL provides Materialized views which make it perfect to build
-analytic application which do heavy aggregation and recently PostgreSQL cames with Jsonb field which
-make it easy to store custom data from variety of switch.
+CDR Stats uses PostgreSQL, a scalable, high performance database system used to
+analyse large quantities of CDR data. PostgreSQL provides Materialized views
+which make it perfect to build analytic application which do heavy aggregation
+and recently PostgreSQL cames with Jsonb field which make it easy to store
+custom data from variety of switch.
 
-Out of the box, CDR-Stats supports Freeswitch and Asterisk using connectors that get the CDR. Connectors
-for other switch systems can be built.
+Out of the box, CDR-Stats supports Freeswitch, Asterisk, Kamailio, SipWise,
+Veraz using connectors that get the CDRs and push them to centralized database.
+Connectors any switch systems can be built.
 
-Other Switch support has been added, please refere to http://www.cdr-stats.org/connectors
+For list of the last supported Switches, please refere to
+http://www.cdr-stats.org/pricing/switch-connectors/
 
 
 .. _screenshot_dashboard:
@@ -65,7 +63,8 @@ Other Switch support has been added, please refere to http://www.cdr-stats.org/c
 Dashboard
 ---------
 
-User Dashboard provides realtime monitoring of the most relevant metrics of connected switches.
+User Dashboard provides realtime monitoring of the most relevant metrics of
+connected switches.
 
 .. image:: ./_static/images/customer/dashboard.png
     :width: 650
@@ -75,8 +74,9 @@ User Dashboard provides realtime monitoring of the most relevant metrics of conn
 Admin Panel
 -----------
 
-The Admin Panel allows the administrators to configure the entire reporting platform,
-import CDR in csv format, configure users, switch connections and automatic alarms.
+The Admin Panel allows the administrators to configure the entire reporting
+platform, import CDR in CSV format, configure users, switch connections and
+automatic alarms.
 
 .. image:: ./_static/images/admin/admin_dashboard.png
     :width: 750
@@ -88,24 +88,28 @@ import CDR in csv format, configure users, switch connections and automatic alar
 Architecture
 ------------
 
-CDR-Stats uses PostgreSQL as the underlying CDR store. PostgreSQL with Materialized view allows querying
-and analysis of many millions of records without noticeable loss of performance, and can easily
-be scaled as demand increases.
+CDR-Stats uses PostgreSQL as the underlying CDR store. PostgreSQL with
+Materialized view allows querying and analysis of many millions of records
+without noticeable loss of performance, and can easily be scaled as
+demand increases.
 
-Postgresql is used for managing CDR-Stats in terms of users and managing the web framework, Django.
+Postgresql is used for managing CDR-Stats in terms of users and managing
+the web framework, Django.
 
-Celery, a task manager runs in the background, and monitors the CDR coming into the system, and alerts
-the systems administrator when unusual behaviour is discovered. What is determined as unusual
-behaviour is determined by the administrator who can configure alerts for increases in dropped calls,
+Celery, a task manager runs in the background, and monitors the CDR coming
+into the system, and alerts the systems administrator when unusual behaviour
+is discovered. What is determined as unusual behaviour is determined by the
+administrator who can configure alerts for increases in dropped calls,
 average length of calls, or calls to unusual destinations.
-
-At the moment Freeswitch and Asterisk are supported, for other switches such as OpenSIPs or Kamailio,
-connectors can be built to connect to the CDR database store and import them in realtime to CDR-Stats.
-
 
 .. image:: ./_static/images/CDR-Stats-Architecture.png
     :width: 600
 
+CDR-Stats works hand to hand with `CDR-Pusher`_, `CDR-Pusher`_ has been built to
+create an totally independent, easy to install, high performance CDRs
+Collector. CDR-Pusher aims to be installed on your local Telco Switchs
+(i.e. Asterisk), the application will harvest CDRs in Realtime and push them
+to the centralized CDR-Stats Database.
 
 
 .. _features:
@@ -113,17 +117,17 @@ connectors can be built to connect to the CDR database store and import them in 
 Features
 --------
 
-Many features are provided on CDR-Stats, from browsing millions of CDRs, providing
-efficient search facilities to build reporting such as monthly reports, concurrent calls
-view, and comparing call traffic with previous days.
+Many features are provided on CDR-Stats, from browsing millions of CDRs,
+providing efficient search facilities to build reporting such as monthly
+reports, concurrent calls view, and comparing call traffic with previous days.
 
     +-----------------------+----------------------------------------------------+
     | Telephony Reporting   | Leading open source switches Freeswitch, Asterisk, |
     |                       | supported as standard.                             |
     +-----------------------+----------------------------------------------------+
-    | Multi-switch          | monitor traffic from many switches in one location |
+    | Multi-switch          | Monitor traffic from many switches in one location |
     +-----------------------+----------------------------------------------------+
-    | Multi-tenant          | allowing many customers to monitor their own CDR   |
+    | Multi-tenant          | Sllowing many customers to monitor their own CDR   |
     |                       | on one instance of CDR-Stats.                      |
     +-----------------------+----------------------------------------------------+
     | Distributed           | Runs on one or more machines. Supports             |
@@ -141,10 +145,10 @@ view, and comparing call traffic with previous days.
     +-----------------------+----------------------------------------------------+
     | Import CDR            | Import CDR files in custom format                  |
     +-----------------------+----------------------------------------------------+
-    | World Map view        | see where the traffic originates and terminates on |
+    | World Map view        | See where the traffic originates and terminates on |
     |                       | a Map                                              |
     +-----------------------+----------------------------------------------------+
-    | Compare traffic       | see how your traffic evolves, and patterns change. |
+    | Compare traffic       | See how your traffic evolves, and patterns change. |
     +-----------------------+----------------------------------------------------+
     | Mail Reporting        | Send daily mail reports of telecoms traffic        |
     +-----------------------+----------------------------------------------------+
@@ -163,8 +167,18 @@ view, and comparing call traffic with previous days.
 Utility
 -------
 
-CDR-Stats is a simple-to-use tool to provide easy analysis of calls. It is a recommended addition to
-telephony servers, whether it be a simple in-house PBX or large capacity VoIP switch. It shows in
-in near realtime what calls are going through, can detect errors and failures, and alert the systems
-administrator is unexpected traffic is noted.
+CDR-Stats is a simple-to-use tool to provide easy analysis of calls. It is a
+recommended addition to telephony servers, whether it be a simple in-house PBX or
+large capacity VoIP switch. It shows in in near realtime what calls are going
+through, can detect errors and failures, and alert the systems administrator is
+unexpected traffic is noted.
 
+.. _`CDR`: http://en.wikipedia.org/wiki/Call_detail_record
+.. _`Freeswitch`: http://www.freeswitch.org/
+.. _`Asterisk`: http://www.asterisk.org/
+.. _`Django`: http://djangoproject.com/
+.. _`Celery`: http://www.celeryproject.org/
+.. _`Gevent`: http://www.gevent.org/
+.. _`PostgreSQL`: http://www.postgresql.org/
+.. _`InfluxDB`: http://influxdb.com/
+.. _`CDR-Pusher`_: https://github.com/areski/cdr-pusher

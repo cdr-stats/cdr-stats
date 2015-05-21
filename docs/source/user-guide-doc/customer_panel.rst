@@ -56,11 +56,8 @@ The Report by Day shows a graphical illustration of the calls, minutes and avera
 
     * http://localhost:8000/cdr_view/
 
-.. image:: ../_static/images/customer/cdr_view_I.png
+.. image:: ../_static/images/customer/cdr_view.png
 
-
-
-.. image:: ../_static/images/customer/cdr_view_II.png
 
 
 CDR-Overview
@@ -87,7 +84,7 @@ You can compare different dates
 
     * http://localhost:8000/hourly_report/
 
-.. image:: ../_static/images/customer/call_compare.png
+.. image:: ../_static/images/customer/daily_compare_report.png
 
 
 
@@ -251,4 +248,4 @@ Daily report of Billed call.
 
     * http://localhost:8000/billing_report/
 
-.. image:: ../_static/images/customer/billing_report.png
+.. image:: ../_static/images/customer/cdr_billing_report.png

@@ -4,11 +4,12 @@
 .. image:: https://secure.travis-ci.org/Star2Billing/cdr-stats.png?branch=develop
 
 
-CDR-Stats is a free and open source call detail record analysis and reporting software for Freeswitch,
-Asterisk and other types of VoIP Switch. It allows you to interrogate CDR to provide reports
-and statistics via a simple to use powerful web interface.
+CDR-Stats is free and open source CDR_ (Call Detail Record) analysis and
+reporting software for Freeswitch, Asterisk and other type of VoIP Switch.
+It allows you to interrogate your CDR_ to provide reports and statistics via a
+simple to use, yet powerful, web interface.
 
-It is based on the Django Python Framework, Celery, Gevent, PostgreSQL and InfluxDB.
+It is based on the Django_ Python Framework, Celery_, Gevent_, PostgreSQL_ and InfluxDB_.
 
 
 Features
@@ -32,14 +33,14 @@ Features
 Applications
 ------------
 
-* User UI :
+* User UI:
     http://localhost:8008/
     This application provide Reports, CDR Viewing, CDR reporting, Dashboard.
     Users can login and see their CDR only.
 
 .. image:: https://github.com/areski/cdr-stats/raw/master/screenshot/cdr-stats-user.png
 
-* Admin UI :
+* Admin UI:
     http://localhost:8008/admin/
     This interface provides user (ACL) management, assignation of accountcode,
     also basic CRUD functions on the CDR
@@ -50,13 +51,13 @@ Applications
 Documentation
 -------------
 
-Project documentation is hosted on CDR-Stats website :
+The full Documentation is hosted on ReadtheDocs:
 
-    - http://www.cdr-stats.org/documentation/
+- http://docs.cdr-stats.org/
 
-Beginner's Guide :
+A Beginner's Guide can be found at:
 
-    - http://www.cdr-stats.org/documentation/beginners-guide/
+- http://www.cdr-stats.org/documentation/beginners-guide/
 
 
 Translation
@@ -80,18 +81,28 @@ Conventions :
 Additional information
 -----------------------
 
-Fork the project on GitHub : https://github.com/areski/cdr-stats
+Fork the project on GitHub: https://github.com/areski/cdr-stats
 
-License : MPL 2.0 (https://raw.github.com/areski/cdr-stats/master/COPYING)
+License: MPL 2.0 (https://raw.github.com/areski/cdr-stats/master/COPYING)
 
-Website : http://www.cdr-stats.org
+Website: http://www.cdr-stats.org
 
 
 Support
 -------
 
-Star2Billing S.L. (http://www.star2billing.com) offers consultancy including
-installation, training and customization
+Star2Billing_ (http://www.star2billing.com) offers consultancy including
+installation, training and customization.
 
-Please email us at cdr-stats@star2billing.com for more information
+Please email us at cdr-stats@star2billing.com for more information.
 
+
+.. _`CDR`: http://en.wikipedia.org/wiki/Call_detail_record
+.. _`Freeswitch`: http://www.freeswitch.org/
+.. _`Asterisk`: http://www.asterisk.org/
+.. _`Django`: http://djangoproject.com/
+.. _`Celery`: http://www.celeryproject.org/
+.. _`Gevent`: http://www.gevent.org/
+.. _`PostgreSQL`: http://www.postgresql.org/
+.. _`InfluxDB`: http://influxdb.com/
+.. _`Star2Billing`: http://www.star2billing.com/

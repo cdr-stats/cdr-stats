@@ -14,10 +14,10 @@ the optional dependencies needed for the Project/Application are installed.
 
 To get started with CDR-Stats the following must be installed:
 
-- python >= 2.5 (programming language)
-- Apache / http server with WSGI modules
-- Django Framework >= 1.4 (Python based Web framework)
-- Celery >= 3.0 (Asynchronous task queue/job queue based on distributed message passing)
+- python >= 2.7 (programming language)
+- nginx - Http Server
+- django Framework >= 1.7 (Python based Web framework)
+- celery >= 3.0 (Asynchronous task queue/job queue based on distributed message passing)
 - django-celery >= 3.0 (Celery integration for Django)
 - linaro_django_pagination (Utilities for creating robust pagination tools throughout a django application)
 - django-uuidfield >= 0.2 (Provides a UUIDField for your Django models)
@@ -34,9 +34,13 @@ To get started with CDR-Stats the following must be installed:
 - django-countries - List of world countries
 
 
-The requirements are installed into a virtual environement so that the dependencies of the application do not interfere with other applications on the server. More information can be found about virtualenv at : http://pypi.python.org/pypi/virtualenv
+The requirements are installed into a virtual environement so that the
+dependencies of the application do not interfere with other applications on the
+server. More information can be found about virtualenv at:
+http://pypi.python.org/pypi/virtualenv
 
-PIP is a tool for installing and managing Python packages, more information about PIP : http://www.pip-installer.org/en/latest/index.html.
+PIP is a tool for installing and managing Python packages, more information
+about PIP : http://www.pip-installer.org/en/latest/index.html
 
 With PIP you can easily install all the requirements::
 
