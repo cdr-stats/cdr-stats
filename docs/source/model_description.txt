@@ -1,18 +1,19 @@
+.. _installation:
+
 ==============================================
 Description of the Object used in VoIP Billing
 ==============================================
 
 
-------
 Prefix
 ------
 These are the prefixes and destinations
-For instance : 44 ; United Kingdom
+For instance, 44 ; United Kingdom
 
 
----------
+--------
 Provider
----------
+--------
 This defines the VoIP Provider you want to use to deliver your VoIP calls.
 Each provider will be associated to a Gateway which will link to the API of the Service Provider.
 
