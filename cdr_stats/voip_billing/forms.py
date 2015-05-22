@@ -16,13 +16,18 @@ from django.utils.translation import gettext_lazy as _
 from django_lets_go.common_functions import isint
 from voip_billing.function_def import get_list_rate_filter
 from voip_billing.models import VoIPPlan, VoIPRetailPlan, VoIPCarrierPlan
-from voip_billing.constants import CONFIRMATION_TYPE
 from cdr.forms import sw_list_with_all, CdrSearchForm
 from mod_utils.forms import Exportfile, common_submit_buttons
 from bootstrap3_datetime.widgets import DateTimePicker
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, HTML
 from crispy_forms.bootstrap import FormActions
+
+
+CONFIRMATION_TYPE = (
+    ('YES', _('Yes')),
+    ('NO', _('No')),
+)
 
 
 def voip_plan_list():

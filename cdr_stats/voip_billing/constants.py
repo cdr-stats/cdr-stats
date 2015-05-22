@@ -12,18 +12,13 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django_lets_go.utils import Choice
 
 
-class LCR_TYPE(Choice):
-    LCR = 0, _('lcr').upper()
-    LCD = 1, _('lcd').upper()
-
-
 class CONFIRMATION_TYPE(Choice):
-    YES = 'YES', _('yes').capitalize()
-    NO = 'NO', _('no').capitalize()
+    YES = 'YES', _('Yes')
+    NO = 'NO', _('No')
 
 
 class RATE_COLUMN_NAME(Choice):

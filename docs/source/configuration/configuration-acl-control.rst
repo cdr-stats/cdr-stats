@@ -7,6 +7,7 @@ One of the benefits of CDR-Stats is ACL access, allowing numerous people to
 access CDR-Stats each viewing their own CDR with permissions assigned to allow
 viewing different parts of the interface.
 
+
 Add Customer
 ------------
 
@@ -21,6 +22,7 @@ Permissions can be added individually by selecting the permission and then
 pressing the right arrow to  move the permission from the left field to the
 right field. When done, click save. The permissions to assign to the user are
 those beginning with user_profile and cdr_alert.
+
 
 Group Permissions
 -----------------

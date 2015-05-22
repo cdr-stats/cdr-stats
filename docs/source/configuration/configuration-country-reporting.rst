@@ -18,6 +18,7 @@ There is a facility for manipulating the dialled digits reported in the call
 detail records, as well as identifying calls as internal calls. This is done
 in the "general" section of /usr/share/cdrstats/settings_local.py.
 
+
 1. Prefix Limits
 ----------------
 
@@ -26,6 +27,7 @@ used to match against the dialcode prefix database, e.g::
 
     PREFIX_LIMIT_MIN = 2
     PREFIX_LIMIT_MAX = 5
+
 
 2. Phone Number Length
 ----------------------
@@ -40,8 +42,10 @@ considered an extension::
 international dialing codes (00 or 011), or where 9 is pressed for an outside
 line.*
 
+
 3. Adding Country Code
 ----------------------
+
 If a phone number has more digits than PN_DIGITS_MIN but less than
 PN_DIGITS_MAX then the phone number will be considered as local or national
 call and the LOCAL_DIALCODE will be added::
@@ -49,6 +53,7 @@ call and the LOCAL_DIALCODE will be added::
     LOCAL_DIALCODE = 1
 
 Set the dialcode of your country e.g. 44 for UK, 1 for US
+
 
 4. Prefixes to Ignore
 ---------------------
@@ -58,6 +63,7 @@ prior to analysis. In cases where customers dial 9 for an outside line, 9,
 90 or 900 may need to be removed as well to ensure accurate reporting::
 
     PREFIX_TO_IGNORE = "+,0,00,000,0000,00000,011,55555,99999"
+
 
 Examples
 --------

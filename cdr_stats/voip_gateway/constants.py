@@ -12,10 +12,10 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django_lets_go.utils import Choice
 
 
 class GATEWAY_STATUS(Choice):
-    ACTIVE = 0, _('active').upper()
-    INACTIVE = 1, _('inactive').upper()
+    ACTIVE = 0, _('ACTIVE')
+    INACTIVE = 1, _('INACTIVE')
