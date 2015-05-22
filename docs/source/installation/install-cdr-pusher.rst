@@ -33,7 +33,7 @@ To install and run the cdr-pusher application, follow these steps::
 
     $ mkdir /opt/app
     $ cd /opt/app
-    $ git clone https://github.com/areski/cdr-pusher.git
+    $ git clone https://github.com/cdr-stats/cdr-stats.git
     $ cd cdr-pusher
     $ export GOPATH=`pwd`
     $ make build

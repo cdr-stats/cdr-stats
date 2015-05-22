@@ -1,5 +1,5 @@
 
-.. image:: https://github.com/areski/cdr-stats/raw/master/docs/source/_static/images/cdr-stats_600.png
+.. image:: https://github.com/cdr-stats/cdr-stats/raw/master/docs/source/_static/images/cdr-stats_600.png
 
 .. image:: https://secure.travis-ci.org/Star2Billing/cdr-stats.png?branch=develop
 
@@ -45,14 +45,14 @@ Applications
     This application provide Reports, CDR Viewing, CDR reporting, Dashboard.
     Users can login and see their CDR only.
 
-.. image:: https://github.com/areski/cdr-stats/raw/develop/screenshot/cdr-stats-user.png
+.. image:: https://github.com/cdr-stats/cdr-stats/raw/develop/screenshot/cdr-stats-user.png
 
 * Admin UI:
     http://localhost:8008/admin/
     This interface provides user (ACL) management, assignation of accountcode,
     also basic CRUD functions on the CDR
 
-.. image:: https://github.com/areski/cdr-stats/raw/develop/screenshot/cdr-stats-admin.png
+.. image:: https://github.com/cdr-stats/cdr-stats/raw/develop/screenshot/cdr-stats-admin.png
 
 
 Documentation
@@ -88,9 +88,9 @@ Conventions :
 Additional information
 -----------------------
 
-Fork the project on GitHub: https://github.com/areski/cdr-stats
+Fork the project on GitHub: https://github.com/cdr-stats/cdr-stats
 
-License: MPL 2.0 (https://raw.github.com/areski/cdr-stats/master/COPYING)
+License: MPL 2.0 (https://raw.github.com/cdr-stats/cdr-stats/master/COPYING)
 
 Website: http://www.cdr-stats.org
 

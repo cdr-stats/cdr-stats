@@ -16,7 +16,7 @@ Install CDR-Stats *Master* branch:
 
 This will copy and un the `master` install script::
 
-    cd /usr/src/ ; rm install-cdr-stats.sh ; wget --no-check-certificate https://raw.github.com/areski/cdr-stats/master/install/install-cdr-stats.sh -O install-cdr-stats.sh ; bash install-cdr-stats.sh
+    cd /usr/src/ ; rm install-cdr-stats.sh ; wget --no-check-certificate https://raw.github.com/cdr-stats/cdr-stats/master/install/install-cdr-stats.sh -O install-cdr-stats.sh ; bash install-cdr-stats.sh
 
 
 During the installation, a number of self explanatory questions will be asked, including the root username and password.

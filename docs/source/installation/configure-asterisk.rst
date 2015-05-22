@@ -68,7 +68,7 @@ Configure CDR-pusher to collect CDRs
 
 Once your CDRs will be stored to a SQLite Database, you will have to install
 CDR-Pusher on your Asterisk server. You can find instruction how to install
-CDR-Pusher here: https://github.com/areski/cdr-pusher
+CDR-Pusher here: https://github.com/cdr-stats/cdr-stats
 
 To install Supervisor on CentOS 6 or RHEL6, the procedure is more complex,
 here it's how we do it::
@@ -77,9 +77,9 @@ here it's how we do it::
 
     $ easy_install supervisor
 
-    $ wget https://raw.githubusercontent.com/areski/cdr-stats/develop/install/supervisor/centos/supervisord.conf -O /etc/supervisord.conf
+    $ wget https://raw.githubusercontent.com/cdr-stats/cdr-stats/develop/install/supervisor/centos/supervisord.conf -O /etc/supervisord.conf
 
-    $ wget https://raw.githubusercontent.com/areski/cdr-stats/develop/install/supervisor/centos/supervisord -O /etc/init.d/supervisor
+    $ wget https://raw.githubusercontent.com/cdr-stats/cdr-stats/develop/install/supervisor/centos/supervisord -O /etc/init.d/supervisor
 
     $ chmod +x /etc/init.d/supervisor
 

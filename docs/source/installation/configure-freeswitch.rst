@@ -16,7 +16,7 @@ https://wiki.freeswitch.org/wiki/Mod_cdr_sqlite
 
 Once your CDRs will be stored to a SQLite Database, you will have to install
 CDR-Pusher on your FreeSWITCH server. You can find instruction how to install
-CDR-Pusher here: https://github.com/areski/cdr-pusher
+CDR-Pusher here: https://github.com/cdr-stats/cdr-stats
 
 After installation of CDR-Pusher you can find the configuration file at
 '/etc/cdr-pusher.yaml'. You will need to configure properly some settings in

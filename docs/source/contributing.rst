@@ -153,7 +153,7 @@ Issue Trackers
 Bugs for a package in the CDR-Stats ecosystem should be reported to the relevant
 issue tracker.
 
-* CDR-Stats: http://github.com/areski/cdr-stats/issues/
+* CDR-Stats: http://github.com/cdr-stats/cdr-stats/issues/
 * Celery: https://github.com/ask/celery/issues/
 * Freeswitch: http://jira.freeswitch.org/secure/Dashboard.jspa
 * Asterisk: http://issues.asterisk.org/jira/
