@@ -41,10 +41,18 @@ Contents:
     developer-doc
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     api-reference
+
+.. toctree::
+    :maxdepth: 1
+
     contributing
+
+.. toctree::
+    :maxdepth: 2
+
     resources
 
 .. toctree::
