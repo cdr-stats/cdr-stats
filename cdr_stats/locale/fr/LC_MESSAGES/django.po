@@ -681,7 +681,7 @@ msgstr "Aucun enregistrement trouvé"
 
 #: cdr/templates/cdr/daily_comparison.html:9
 #, fuzzy
-msgid "Daily comparaison"
+msgid "Daily comparison"
 msgstr "Durée Totale"
 
 #: cdr/templates/cdr/daily_comparison.html:19

@@ -682,7 +682,7 @@ msgstr "Не найдены записи"
 
 #: cdr/templates/cdr/daily_comparison.html:9
 #, fuzzy
-msgid "Daily comparaison"
+msgid "Daily comparison"
 msgstr "Продолжительность всего"
 
 #: cdr/templates/cdr/daily_comparison.html:19
