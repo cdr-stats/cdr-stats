@@ -11,6 +11,7 @@ Contents:
 
     ./developer-doc/pre-requisite
     ./developer-doc/coding-structure
+    ./developer-doc/database-design
     ./developer-doc/objects-description
     ./developer-doc/objects-voipbilling
     ./developer-doc/views
