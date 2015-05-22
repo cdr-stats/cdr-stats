@@ -1,8 +1,8 @@
 .. _object-description:
 
-==============================================
-Description of the Object used in VoIP Billing
-==============================================
+=======================================
+Objects used by the VoIP Billing module
+=======================================
 
 .. _object-prefix:
 
