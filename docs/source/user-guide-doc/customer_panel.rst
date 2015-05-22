@@ -1,25 +1,20 @@
-.. _customer-panel:
+.. _user-panel:
 
-==============
-Customer Panel
-==============
+==========
+User Panel
+==========
 
-User Interface :
+The User Interface is the core part of CDR-Stats, this is the one that the
+users will use to get reporting and take advantage of CDR-Stats capabilities
+and features.
 
-This application provides a user interface...
-
-http://localhost:8000/
-
+The User UI is located at http://localhost:8000/
 
 
 .. contents::
     :local:
     :depth: 1
 
-.. _customer-screenshot-features:
-
-Screenshot with Features
-========================
 
 Index
 ~~~~~

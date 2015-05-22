@@ -1,8 +1,8 @@
 .. _cdr-stats-overview:
 
-========
+
 Overview
-========
+--------
 
 CDR-Stats is a web based application built on top of the Django Web framework, which uses PostgreSQL as the CDR
 data store.
