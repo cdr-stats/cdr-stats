@@ -39,7 +39,7 @@ Run in debug mode
 
 Make sure services are stopped first::
 
-    $ /etc/init.d/cdrstats-celeryd stop
+    $ /etc/init.d/supervisor stop
 
 
 Then run in debug mode::
