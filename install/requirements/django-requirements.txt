@@ -4,15 +4,15 @@ django-pagination==1.0.7
 django-urlauth==0.1.8
 django-uuidfield==0.5.0
 django-cache-utils==0.7.2
-django-jsonfield==0.9.12
+django-jsonfield==0.9.13
 django-countries==2.1.2
 linaro-django-pagination==2.0.2
-django-admin-tools==0.5.1
+django-admin-tools==0.5.2
 #django-dajaxice doesn't support Django 1.6
 #django-dajax==0.9.2
 django-dajax-ng==0.9.4
-django-dajaxice-ng==0.6.0.0
-django-country-dialcode==0.5.1
+django-dajaxice-ng==0.7.0.1
+django-country-dialcode==0.6.3
 django-admin-tools-stats==0.6.1
 # django-filter==0.9.2
 
@@ -20,15 +20,15 @@ django-admin-tools-stats==0.6.1
 #django-cache-machine==0.8
 git+git://github.com/jbalogh/django-cache-machine.git
 
-django-redis-cache==0.13.0
+django-redis-cache==0.13.1
 git+git://github.com/Star2Billing/django-notification
 django-frontend-notification==0.3.0
 django-genericadmin==0.6.1
 django-nvd3==0.8.2
 
 django-lets-go==2.9.3
-django-extensions==1.5.1
-django-bower==5.0.3
+django-extensions==1.5.5
+django-bower==5.0.4
 django-cors-headers==1.0.0
 #git+git://github.com/hmarr/django-ses.git
 git+git://github.com/pinax/django-mailer
