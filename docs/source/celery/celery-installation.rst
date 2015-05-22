@@ -25,7 +25,6 @@ To Download the latest version `click here`_.
 .. _click here: http://pypi.python.org/pypi/celery/
 
 
-
 You can install it by doing the following::
 
     $ tar xvfz celery-X.X.X.tar.gz

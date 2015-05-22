@@ -1,15 +1,14 @@
-.. _cdr-stats-overview:
+.. _user-guide-overview:
 
 
 Overview
---------
+========
 
 CDR-Stats is a web based application built on top of the Django Web framework, which uses PostgreSQL as the CDR
 data store.
 
 Celery (http://celeryproject.org/) is an asynchronous task queue/job queue based on distributed message.
 It is used to build our backend system to monitor CDR, detect unusual activity, and react by sending alert email.
-
 
 
 **CDR Stats Management Features**

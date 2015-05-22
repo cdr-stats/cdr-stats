@@ -180,4 +180,4 @@ unexpected traffic is noted.
 .. _`Gevent`: http://www.gevent.org/
 .. _`PostgreSQL`: http://www.postgresql.org/
 .. _`InfluxDB`: http://influxdb.com/
-.. _`CDR-Pusher`_: https://github.com/areski/cdr-pusher
+.. _`CDR-Pusher`: https://github.com/areski/cdr-pusher

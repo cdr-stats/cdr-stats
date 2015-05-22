@@ -1,4 +1,4 @@
-.. _user-guide:
+.. _root-user-guide:
 
 ==========
 User Guide

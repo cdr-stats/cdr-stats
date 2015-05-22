@@ -10,7 +10,6 @@ and features.
 
 The User UI is located at http://localhost:8000/
 
-
 .. contents::
     :local:
     :depth: 1

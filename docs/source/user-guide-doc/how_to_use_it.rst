@@ -1,4 +1,4 @@
-.. _how-to-use-it:
+.. _userguide-how-to-use-it:
 
 How to use CDR-Stats
 --------------------
