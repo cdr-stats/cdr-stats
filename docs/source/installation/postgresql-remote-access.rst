@@ -26,7 +26,7 @@ Configure PostgreSQL to listen for remote connections::
 2.3 Enable client authentication
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Configure PostgreSQL to accept remote connections (from any host)::
+Configure PostgreSQL to accept remote connections (from any host on your network)::
 
     cat >> /etc/postgresql/9.4/main/pg_hba.conf <<EOF
     # Accept all IPv4 connections
@@ -34,6 +34,8 @@ Configure PostgreSQL to accept remote connections (from any host)::
     EOF
 
 Make sure you replace <SWITCH_IP>/24 with your actual network IP address range.
+
+If you want to accept CDR from only from one IP address, then enter the IP in switch, followed by /32, e.g. <SWITCH_IP>/32
 
 
 2.4 Restart PostgreSQL Server
@@ -64,6 +66,9 @@ In order to test, you will need to install PostgreSQL client, on Debian you can 
 
     apt-get install postgresql-client
 
+For CentOS::
+
+    yum install postgresql
 
 Use psql command from client system. Connect to remote server using IP address and login using vivek username and sales database, enter::
 

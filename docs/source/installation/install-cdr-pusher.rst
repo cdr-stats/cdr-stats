@@ -171,7 +171,7 @@ Some Linux distributions offer a version of Supervisor that is installable throu
 
 Create an Supervisor conf file for cdr-pusher::
 
-    $ vim /etc/supervisord.conf.d/cdr-pusher-prog.conf
+    $ vim /etc/supervisor/conf.d/cdr-pusher-prog.conf
 
 
 A supervisor configuration could look as follow::
@@ -276,7 +276,7 @@ you can do so with gently with::
 3.7 Troubleshooting
 ~~~~~~~~~~~~~~~~~~~
 
-An easy way to verify that CDR-Stats is running smoothly, it's by looking at the logs.
+An easy way to verify that CDR-Stats is running smoothly is to look at the logs.
 
 Find the import log activity on CDR-Stats at::
 

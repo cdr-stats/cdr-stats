@@ -185,4 +185,4 @@ After changes in '/etc/cdr-pusher.yaml' CDR-pusher will need to be restarted,
 do this with the following command::
 
     $ /etc/init.d/supervisor stop
-    $ /etc/init.d/supervisor star
+    $ /etc/init.d/supervisor start
