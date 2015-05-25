@@ -36,8 +36,7 @@ Review your database settings and ensure the second database exists and that is 
         }
     }
 
-You will need to push your CDRs from Asterisk CDR datastore to a friendly CDR-Stats 'import_cdr' database.
-To help on this job we created CDR-Pushed, please visit the website and the instructions there to install and configure CDR-Stats correctly: https://github.com/cdr-stats/cdr-stats
+You will need to push CDRs from the Asterisk CDR datastore to a CDR-Stats 'import_cdr' database. To help on this job we created CDR-Pusher, please visit the website and the instructions there to install and configure CDR-Stats correctly: https://github.com/cdr-stats/cdr-stats
 
 
 .. _realtime-configuration-asterisk:

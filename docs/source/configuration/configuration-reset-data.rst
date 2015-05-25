@@ -4,8 +4,8 @@ Resetting CDR Data
 ==================
 
 Sometimes, some experimentation is required to get the optimum settings for
-country reporting, to achieve this the data is removed from CDR-Stats and
-re-imported from the CDR data store.
+country reporting, to achieve this the data can be removed from CDR-Stats and
+re-imported from the CDR data store correctly.
 
 
 1. Stop Celery
@@ -45,7 +45,7 @@ Enter in the virtualenv and launch dbshell the following commands::
     $ cd /usr/share/cdrstats/
     $ python manage.py dbshell --database=import_cdr
 
-Enter the postgresql password you can find in `settings_local_py` conf file.
+Enter the postgresql password found in `settings_local_py` conf file.
 
 Now you are connected on PostgreSQL cli, you can flag CDRs for reimport::
 
@@ -66,4 +66,4 @@ Start CDR-Stats celery::
 -------------------------------------
 
 Go to the diagnostic page to check if CDR-Stats is correctly configured and if
-data are being imported.
+data is being imported.

@@ -52,11 +52,12 @@ Sets up the options required for Django to connect to your database engine::
     }
 
 
-As it can be noted, there is 2 database connections, 'default' is the main database of CDR-Stats this is where all the table lives. The second database 'import_cdr' is used to import the CDRs from your switch, this database could live on an other database server but ideally it can live very happily on your CDR-Stats box.
-CDR-Stats doesn't pull CDRs from your switch, it's the job of your switch to push the CDRs to CDR-Stats.
+There are 2 database connections, 'default' is the main database of CDR-Stats this contains all the tables. The second database 'import_cdr' is used to import the CDRs from your switch. This database could be on another database server but putting it on the CDR-Stats server is ideal.
 
-You will need a mechanism in place to get your CDRs to the 'import_cdr' database, to help on this we created CDR-pusher project.
-CDR-Pusher will be installed on your switch server, CDR-Pusher is a Go project that can be extended, it could import CDRs from a different CDRs Database (SQlite, PostgreSQL) and/or from CDR logs files. More info please visit https://github.com/cdr-stats/cdr-stats
+CDR-Stats doesn't pull CDRs from your switch, it's the job of the switch to push the CDRs to CDR-Stats.
+
+A mechanism is required to get your CDRs to the 'import_cdr' database, to assist with this, we created CDR-pusher project.
+CDR-Pusher will usually be installed on your switch server, CDR-Pusher is a Go project that can be extended, it could import CDRs from a different CDRs Database (SQlite, PostgreSQL) and/or from CDR logs files. For more info please visit https://github.com/cdr-stats/cdr-stats
 
 
 Tells Django where to find your media files such as images that the ``HTML

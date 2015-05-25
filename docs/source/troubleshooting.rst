@@ -60,6 +60,7 @@ Celerymon
 Running the monitor :
 
 Start celery with the --events option on, so celery sends events for celerymon to capture::
+
     $ workon cdr-stats
     $ cd /usr/share/cdrstats/
     $ python manage.py celeryd -E
