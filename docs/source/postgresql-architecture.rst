@@ -10,17 +10,17 @@ PostgreSQL
 PostgreSQL is an object-relational database management system (ORDBMS) with an
 emphasis on extensibility and standards-compliance.
 
-PostgreSQL provides few interesting features that make a perfect pick for
+PostgreSQL provides few interesting features that make it a perfect choice for
 CDR-Stats:
 
 - Materialized view (http://www.postgresql.org/docs/9.4/static/rules-materializedviews.html),
-  those views contains the results of queries, it's very ideal for aggregation
-  view, they also can be refreshed since PG 9.4 without locking.
+  these views contains the results of queries, it's ideal for aggregation
+  views, they also can be refreshed since PG 9.4 without locking.
 
 - Json Types (http://www.postgresql.org/docs/9.4/static/datatype-json.html),
   are for storing JSON (JavaScript Object Notation) data, this field is ideal to
-  store none structured data. CDR-Stats aggregate data from several type of telco
-  switches in which the type of data received can vary drastically.
+  store non-structured data. CDR-Stats aggregate data from several types of telco
+  switches where the type of data received can vary.
 
 .. contents::
     :local:
@@ -32,7 +32,7 @@ CDR-Stats:
 Materialized views
 ------------------
 
-We created 2 Materizlied views to help on our reporting job, here is the schema
+We created 2 Materialized views to help on our reporting, here is the schema
 structure of those 2 views::
 
     -- Materialized View
@@ -91,7 +91,7 @@ You can drop those views with::
     DROP MATERIALIZED VIEW matv_voip_cdr_aggr_min;
 
 
-You can refresh the view as follow, using concurrently we ensure to not lock the view::
+You can refresh the view as follows, using "CONCURRENTLY" to ensure we do not lock the view::
 
     # Refresh without lock
     REFRESH MATERIALIZED VIEW CONCURRENTLY matv_voip_cdr_aggr_hour;
