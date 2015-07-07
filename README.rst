@@ -70,8 +70,7 @@ A Beginner's Guide can be found at:
 Translation
 -----------
 
-We are using myGengo to ease the translation :
-    - http://mygengo.com/string/p/cdr-stats-1/
+Help us translate CDR-Stats, we use Transifex: https://www.transifex.com/projects/p/cdr-stats/
 
 
 Coding Conventions
