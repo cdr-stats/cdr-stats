@@ -66,12 +66,12 @@
                     <thead>
                     <tr>
                         <th>
-                            {% ifequal col_name_with_order.sort_field 'start_uepoch' %}
-                              {% sort_link up_icon|safe "start_uepoch"  %}
+                            {% ifequal col_name_with_order.sort_field 'starting_date' %}
+                              {% sort_link up_icon|safe "starting_date"  %}
                                 {{ CDR_COLUMN_NAME.call_date|capfirst }}
-                              {% sort_link down_icon|safe "-start_uepoch"  %}
+                              {% sort_link down_icon|safe "-starting_date"  %}
                             {% else %}
-                              {% sort_link CDR_COLUMN_NAME.call_date|capfirst "-start_uepoch"  %}
+                              {% sort_link CDR_COLUMN_NAME.call_date|capfirst "-starting_date"  %}
                             {% endifequal %}
                         </th>
                         <th>
@@ -104,10 +104,10 @@
                         <th>
                             {% ifequal col_name_with_order.sort_field 'billsec' %}
                               {% sort_link up_icon|safe "billsec"  %}
-                              <abbr title='{% trans "bill seconds"|title %}'>{{ CDR_COLUMN_NAME.bill|capfirst }}</abbr>
+                              <abbr title='{% trans "billable seconds"|title %}'>{{ CDR_COLUMN_NAME.bill|capfirst }}</abbr>
                               {% sort_link down_icon|safe "-billsec"  %}
                             {% else %}
-                                <abbr title="{% trans 'bill seconds'|title %}">
+                                <abbr title="{% trans 'billable seconds'|title %}">
                                 {% sort_link CDR_COLUMN_NAME.bill|capfirst "-billsec"  %}
                                 </abbr>
                             {% endifequal %}

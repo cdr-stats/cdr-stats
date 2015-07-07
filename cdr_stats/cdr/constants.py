@@ -28,7 +28,7 @@ class CDR_COLUMN_NAME(Choice):
     clid = _('CLID')
     destination = _('destination')
     duration = _('duration')
-    bill = _('bill')
+    bill = _('billsec')
     hangup_cause = _('hangup cause')
     account = _('account')
     buy_rate = _('buy rate')
