@@ -6,7 +6,7 @@ Admin Panel
 The Admin section allows you to create administrators who have access the admin screens. Levels of
 access can be set.
 
-The Admin UI is located at http://localhost:8000/
+The Admin UI is located at http://localhost:8000/admin/
 
 .. contents::
     :local:
