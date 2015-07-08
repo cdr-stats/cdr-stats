@@ -10,8 +10,26 @@ Contents:
     :maxdepth: 2
 
     ./installation/installation-overview
-    ./installation/installation-asterisk
-    ./installation/installation-freepbx
-    ./installation/installation-freeswitch
-    ./broker/broker-installation
-    ./celery/celery-installation
+    ./installation/install-cdr-stats
+    ./installation/postgresql-remote-access
+    ./installation/install-cdr-pusher
+
+
+Specific configuration per switch:
+
+.. toctree::
+    :maxdepth: 1
+
+    ./installation/configure-asterisk
+
+
+.. toctree::
+    :maxdepth: 1
+
+    ./installation/configure-freeswitch
+
+
+.. toctree::
+    :maxdepth: 1
+
+    ./installation/configure-kamailio

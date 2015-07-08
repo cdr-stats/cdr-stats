@@ -33,7 +33,7 @@ DATABASES = {
         'USER': 'postgres',
         'PASSWORD': 'password',
         'HOST': 'localhost',
-        'PORT': '5433',
+        'PORT': '5432',
         'OPTIONS': {
             'autocommit': True,
         }
@@ -44,7 +44,7 @@ DATABASES = {
         'USER': 'postgres',
         'PASSWORD': 'password',
         'HOST': 'localhost',
-        'PORT': '5433',
+        'PORT': '5432',
         'OPTIONS': {
             'autocommit': True,
         }

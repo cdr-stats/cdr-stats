@@ -15,16 +15,16 @@
 
 #
 # To download and run the script on your server :
-# cd /usr/src/ ; wget --no-check-certificate https://raw.github.com/areski/cdr-stats/master/install/install-freeswitch.sh -O install-freeswitch.sh ; bash install-freeswitch.sh
+# cd /usr/src/ ; wget --no-check-certificate https://raw.github.com/cdr-stats/cdr-stats/master/install/install-freeswitch.sh -O install-freeswitch.sh ; bash install-freeswitch.sh
 
 BRANCH='master'
 KERNELARCH=$(uname -m)
-FS_INIT_PATH=https://raw.github.com/areski/cdr-stats/$BRANCH/install/freeswitch-init
+FS_INIT_PATH=https://raw.github.com/cdr-stats/cdr-stats/$BRANCH/install/freeswitch-init
 FS_GIT_REPO=git://git.freeswitch.org/freeswitch.git
 FS_INSTALLED_PATH=/usr/local/freeswitch
 FS_CONFIG_PATH=/etc/freeswitch
 SCRIPT_NOTICE="This install script is only intended to run on Debian 7.X"
-FS_CONF_PATH=https://raw.github.com/areski/cdr-stats/$BRANCH/install/freeswitch-conf
+FS_CONF_PATH=https://raw.github.com/cdr-stats/cdr-stats/$BRANCH/install/freeswitch-conf
 FS_BASE_PATH=/usr/src/
 CURRENT_PATH=$PWD
 

@@ -146,6 +146,7 @@ class CdrSearchForm(SearchForm):
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.form_class = 'well'
+        self.helper.form_id = 'search-form-page'
         css_class = 'col-md-4'
         self.fields['result'].initial = 1
 
@@ -466,6 +467,4 @@ class CDR_FileImport(FileImport):
 
     def __init__(self, user, *args, **kwargs):
         super(CDR_FileImport, self).__init__(*args, **kwargs)
-
         self.fields['switch_id'].choices = get_switch_list()
-#

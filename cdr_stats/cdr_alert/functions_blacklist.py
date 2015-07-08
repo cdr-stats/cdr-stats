@@ -108,7 +108,8 @@ def verify_auth_dest_number(destination_number):
     if (len(sanitized_destination) < settings.PN_MIN_DIGITS
             or sanitized_destination[:1].isalpha()):
         # It might be an extension
-        country_id = 0
+        country_id = None
+        prefix_id = None
     elif (prefix_list
           and len(sanitized_destination) >= settings.PN_MIN_DIGITS
           and len(sanitized_destination) <= settings.PN_MAX_DIGITS):

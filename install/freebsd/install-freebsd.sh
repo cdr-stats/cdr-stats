@@ -63,7 +63,7 @@ step_github()
 {
   mkdir -p /usr/local/src $INSTALL_DIR
   cd /usr/local/src
-  git clone git://github.com/areski/cdr-stats.git
+  git clone git://github.com/cdr-stats/cdr-stats.git
   cp -r /usr/local/src/cdr-stats/cdr_stats/* $INSTALL_DIR/
 }
 

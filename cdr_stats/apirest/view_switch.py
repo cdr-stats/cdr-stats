@@ -11,12 +11,11 @@
 # The Initial Developer of the Original Code is
 # Arezqui Belaid <info@star2billing.com>
 #
+
 from rest_framework import viewsets
 from apirest.switch_serializers import SwitchSerializer
-# from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from cdr.models import Switch
-# from permissions import CustomObjectPermissions
 
 
 class SwitchViewSet(viewsets.ReadOnlyModelViewSet):
@@ -28,4 +27,4 @@ class SwitchViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Switch.objects.all()
     serializer_class = SwitchSerializer
     authentication = (BasicAuthentication, SessionAuthentication)
-    #permission_classes = (IsAuthenticated)
+    # permission_classes = (IsAuthenticated)

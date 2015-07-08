@@ -25,13 +25,22 @@ Contents:
     configuration
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
+
+    celery
+
+.. toctree::
+    :maxdepth: 1
 
     troubleshooting
+
+.. toctree::
+    :maxdepth: 1
+
     user-guide
 
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 1
 
     postgresql-architecture
 
@@ -41,10 +50,18 @@ Contents:
     developer-doc
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     api-reference
+
+.. toctree::
+    :maxdepth: 1
+
     contributing
+
+.. toctree::
+    :maxdepth: 2
+
     resources
 
 .. toctree::

@@ -23,7 +23,7 @@ from crispy_forms.bootstrap import FormActions
 class ForgotForm(forms.Form):
 
     """Forgot password Form"""
-    email = forms.EmailField(max_length=60, label=_('email').capitalize(), required=True)
+    email = forms.EmailField(max_length=60, label=_('Email'), required=True)
     email.widget.attrs['class'] = 'form-control'
 
     def __init__(self, *args, **kwargs):
@@ -35,7 +35,7 @@ class ForgotForm(forms.Form):
                 Div('email', css_class='col-md-4'),
                 css_class='row'
             ),
-            FormActions(Submit('submit', _('reset my password').capitalize()))
+            FormActions(Submit('submit', _('Reset my password')))
         )
 
 
@@ -51,7 +51,7 @@ class CustomSetPasswordForm(SetPasswordForm):
                 Div(
                     Field('new_password1'),
                     Field('new_password2'),
-                    Submit('submit', _('change my password').capitalize()),
+                    Submit('submit', _('Change my password')),
                     css_class='col-md-4'
                 ),
                 css_class='well col-md-12'

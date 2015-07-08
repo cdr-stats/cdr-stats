@@ -4,50 +4,63 @@
 Overview
 ========
 
+CDR-Stats is a web-based telecoms application for analysing, reporting and rating on CDR (Call Detail Records) for multiple tenants delivered from Asterisk, Freeswitch and other supported telecoms switches.
+
+.. image:: ../_static/images/customer/daily_compare_report.png
+
+CDR-Stats is built on Open Source Software where the core components are Django, PostgreSQL, Celery, Redis, Socket.IO, Bower and Bootstrap Framework. There are many more Python and Django dependencies needed but if you are not a developer, you might want to skip those details as CDR-Stats can simply be installed using a script which installs transparently and seamlessly, CDR-Stats and the stack for you.
+
+
 .. _install-requirements:
 
 Install requirements
 ====================
 
-A Requirements file provides a way to create an environment where all
-the optional dependencies needed for the Project/Application are installed.
+The `requirements` files provides a way to create an environment where all
+the dependencies needed for the CDR-Stats are installed.
 
 To get started with CDR-Stats the following must be installed:
 
-- python >= 2.5 (programming language)
-- Apache / http server with WSGI modules
-- Django Framework >= 1.4 (Python based Web framework)
-- Celery >= 3.0 (Asynchronous task queue/job queue based on distributed message passing)
-- django-celery >= 3.0 (Celery integration for Django)
+- python >= 2.7 (programming language)
+- nginx - Http Server
+- django Framework >= 1.7 (Python based Web framework)
+- celery >= 3.0 (Asynchronous task queue/job queue based on distributed message passing)
 - linaro_django_pagination (Utilities for creating robust pagination tools throughout a django application)
 - django-uuidfield >= 0.2 (Provides a UUIDField for your Django models)
-- django-reusableapps >= 0.1.1 (Python module to enable Django to load reusable, pluggable and egg-based applications)
-- docutils >= 0.7 (Text processing system for processing plaintext documentation into useful formats)
 - kombu >= 1.0.2 (An AMQP - Advanced Message Queuing Protocol messaging framework for Python)
-- pyparsing >= 1.5.5 (A general parsing module for Python)
 - python-dateutil >= 1.5 (Extensions to the standard datetime module)
 - redis >= 2.2.2 (Redis Python Client)
-- uuid >= 1.30 (UUID object and generation functions )
-- wsgiref >= 0.1.2 (Validation support for WSGI )
 - django-notification >= 0.1.3 (User notification management for the Django web framework)
-- switch2bill-common - Common libs reused in different projects
 - django-country-dialcode - Django reusable application to manage Dial code of Countries
-- django-countries - List of world countries
+
+and many more, please find a full list of our requirements to our requirements files:
+
+- https://github.com/cdr-stats/cdr-stats/blob/develop/install/requirements/basic-requirements.txt
+- https://github.com/cdr-stats/cdr-stats/blob/develop/install/requirements/django-requirements.txt
+
+There is also 2 extra requirements files for developers and to run our tests:
+
+- https://github.com/cdr-stats/cdr-stats/blob/develop/install/requirements/dev-requirements.txt
+- https://github.com/cdr-stats/cdr-stats/blob/develop/install/requirements/test-requirements.txt
 
 
-The requirements are installed into a virtual environement so that the dependencies of the application do not interfere with other applications on the server. More information can be found about virtualenv at : http://pypi.python.org/pypi/virtualenv
+The requirements must be installed into a virtual environement so that the
+dependencies of the application do not interfere with other applications on the
+server. More information can be found about virtualenv at:
+http://pypi.python.org/pypi/virtualenv
 
-PIP is a tool for installing and managing Python packages, more information about PIP : http://www.pip-installer.org/en/latest/index.html.
+PIP is a tool for installing and managing Python packages, more information
+about PIP : http://www.pip-installer.org/en/latest/index.html
 
-With PIP you can easily install all the requirements::
+Using PIP, you can easily install all the requirements::
 
     $ pip install -r install/requirements/all-requirements.txt
 
 
 .. _running-cdrstats:
 
-Running CDR-Stats
-=================
+Running CDR-Stats manually
+==========================
 
 Inside CDR-Stats directory you should run, the following::
 
@@ -77,3 +90,5 @@ is  more information about this in the Django documentation.
 ``runserver`` runs an embedded webserver to test the site.
 By default it will run on http://localhost:8000. This is configurable and more
 information about ``runserver`` is in Django documentation.
+
+

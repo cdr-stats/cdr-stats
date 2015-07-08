@@ -1,6 +1,6 @@
 Django==1.7.7
 gunicorn==19.3.0
-docutils==0.11
+docutils==0.12
 ordereddict==1.1
 psycopg2==2.6
 amqplib==1.0.2
@@ -8,10 +8,10 @@ anyjson==0.3.3
 python-dateutil==2.4.2
 yolk==0.4.3
 feedparser==5.1.3
-celery==3.1.17
-redis==2.7.2
+celery==3.1.18
+redis==2.10.3
 kombu==3.0.24
-requests==2.4.1
+requests==2.7.0
 tablib==0.10.0
 python-memcached==1.54
 influxdb==1.0.0
@@ -19,4 +19,4 @@ influxdb==1.0.0
 #pandas==0.16.0
 #jsonschema==2.4.0
 # SQLAlchemy used by connectors
-SQLAlchemy==1.0.0
+SQLAlchemy==1.0.4

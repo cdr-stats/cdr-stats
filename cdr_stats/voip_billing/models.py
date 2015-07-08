@@ -12,13 +12,18 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 from django.db import models
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from country_dialcode.models import Prefix
 from voip_gateway.models import Provider
-from voip_billing.constants import LCR_TYPE
 from voip_billing.function_def import prefix_allowed_to_call
 from django_lets_go.intermediate_model_base_class import Model
 from django.db import connection
+
+
+LCR_TYPE = (
+    (0, 'LCR'),
+    (1, 'LCD'),
+)
 
 
 class VoIPPlan(Model):
@@ -28,7 +33,7 @@ class VoIPPlan(Model):
 
     VoIPPlans are associated to your clients, this defines the rate at which
     the VoIP calls are sold to your clients.
-    An VoIPPlan is a collection of VoIPRetailPlans, you can have 1 or more
+    A VoIPPlan is a collection of VoIPRetailPlans, you can have 1 or more
     VoIPRetailPlans associated to the VoIPPlan
 
     A client has a single VoIPPlan,

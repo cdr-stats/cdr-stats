@@ -19,7 +19,7 @@ Bug tracker
 ===========
 
 If you have any suggestions, bug reports or annoyances please report them
-to our issue tracker at https://github.com/areski/cdr-stats/issues/
+to our issue tracker at https://github.com/cdr-stats/cdr-stats/issues/
 
 .. _documentation:
 

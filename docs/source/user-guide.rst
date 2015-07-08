@@ -1,15 +1,16 @@
-.. _user-guide:
+.. _root-user-guide:
 
 ==========
 User Guide
 ==========
 
-Contents:
+.. include:: ./user-guide-doc/overview.rst
+
+.. include:: ./user-guide-doc/how_to_use_it.rst
+
 
 .. toctree::
     :maxdepth: 2
 
-    ./user-guide-doc/overview
-    ./user-guide-doc/how_to_use_it
     ./user-guide-doc/admin_panel
     ./user-guide-doc/customer_panel
