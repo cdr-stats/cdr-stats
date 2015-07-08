@@ -88,19 +88,22 @@ def get_hangupcause_id(hangupcause_code):
     1
 
     >>> get_hangupcause_id(900)
-    0
+    1
+
+    >>> get_hangupcause_id(16)
+    7
     """
     try:
         return HangupCause.objects.get(code=hangupcause_code).id
     except:
-        return 0
+        return 1
 
 
 def get_hangupcause_id_from_name(hangupcause_name):
     """Get hangupcause id from its code
 
-    >>> get_hangupcause_id_from_name('UNSPECIFIEDD')
-    0
+    >>> get_hangupcause_id_from_name('UNSPECIFIED')
+    1
 
     >>> get_hangupcause_id_from_name('NORMAL_CLEARING')
     7
