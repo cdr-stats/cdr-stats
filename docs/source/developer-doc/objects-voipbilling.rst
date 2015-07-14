@@ -36,7 +36,7 @@ VoIPPlan.
 * A VoIPPlan has many VoIPRetailPlans
 * A VoIPRetailPlan has VoIPRetailRates
 
-The LCR system will route the VoIP via the lowest cost carrier.
+LCR rules will bill the call based on the lowest cost carrier.
 
 
 .. _object-voipretailplan:
@@ -68,7 +68,7 @@ Help to setup the `ManytoMany` relationship between VoIPPlan & VoIPRetailPlan.
 VoIPRetailRate
 --------------
 
-A single VoIPRetailRate consist of a retail rate and prefix at which you want
+A single VoIPRetailRate consists of a retail rate and prefix at which you want
 to use to sell a VoIP to a particular destination.
 VoIPRetailRates are grouped by VoIPRetailPlan, which will be then in turn be
 associated to a VoIPPlan.
@@ -81,10 +81,9 @@ VoIPCarrierPlan
 
 Once the retail price is defined by the VoIPRetailPlan, we also need to know
 which is the best route to send the call, what will be our cost, and which
-Gateway/Provider will be used.
+Gateway/Provider will be used. 
 
-VoIPCarrierPlan is linked to the VoIPRetailPlan, so once we found how to sell the
-service to the client we need to look at which carrier (Provider) we want to use.
+VoIPCarrierPlan is linked to the VoIPRetailPlan, so once we have determined the destination, we need to look at which carrier (Provider) we want to use.
 The VoIPCarrierPlan defines exactly this.
 
 The system can have several VoIPCarrierPlans, but only the one associated to the

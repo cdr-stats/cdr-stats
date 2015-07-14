@@ -10,7 +10,7 @@ Install CDR-Stats
 Download and Install CDR-Stats
 ------------------------------
 
-Our install script support Debian 7.x and Debian 8.x, we recommend the latest version of Debian.
+Our install script supports Debian 7.x and Debian 8.x 64 bit version, we recommend the latest version of Debian.
 
 Install CDR-Stats *Master* branch:
 

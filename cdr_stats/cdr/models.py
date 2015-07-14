@@ -32,20 +32,6 @@ import string
 random.seed()
 
 
-# list of exit code : http://www.howtocallabroad.com/codes.html
-COUNTRY_PREFIX = ['0034', '011346', '+3465',  # Spain
-                  '3912', '39', '+3928',  # Italy
-                  '15', '17',  # US
-                  '16', '1640',  # Canada
-                  '44', '441', '00442',  # UK
-                  '45', '451', '00452',  # Denmark
-                  '32', '321', '0322',  # Belgium
-                  '91', '919', '0911',  # India
-                  '53', '531', '00532',  # Cuba
-                  '55', '551', '552',  # Brazil
-                  ]
-
-
 class CALL_TYPE(Choice):
 
     """
@@ -246,6 +232,20 @@ class CDR(models.Model):
     @classmethod
     def generate_fake_cdr(cls, day_delta_int):
         """return tuples of fake CDR data"""
+
+        # list of exit code : http://www.howtocallabroad.com/codes.html
+        COUNTRY_PREFIX = [
+            '0034', '011346', '+3465',  # Spain
+            '3912', '39', '+3928',  # Italy
+            '15', '17',  # US
+            '16', '1640',  # Canada
+            '44', '441', '00442',  # UK
+            '45', '451', '00452',  # Denmark
+            '32', '321', '0322',  # Belgium
+            '91', '919', '0911',  # India
+            '53', '531', '00532',  # Cuba
+            '55', '551', '552',  # Brazil
+        ]
 
         # HANGUP_CAUSE = ['NORMAL_CLEARING', 'USER_BUSY', 'NO_ANSWER', 'CALL_REJECTED', 'INVALID_NUMBER_FORMAT']
         # HANGUP_CAUSE_Q850 = ['16', '17', '19', '21', '28']

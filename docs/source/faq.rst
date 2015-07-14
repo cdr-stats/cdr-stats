@@ -25,10 +25,7 @@ What is CDR-Stats?
 Why should I use CDR-Stats?
 ---------------------------
 
-**Answer:** If you have call detail records from an office PBX, telecoms switch(s), or carrier CDR to analyse
-then CDR-Stats is a useful tool to analyse the data and look for patterns in the traffic that
-may indicate problems or potential fraud. Furthermore, CDR-Stats can be configured to send email
-alerts on detection of unusual activity, as well as send daily reports on traffic.
+**Answer:** We foresee two main areas where CDR-Stats would be useful. For telecoms companies who wish to mediate and rate call data records, ultimately to create invoices for their customers, as well as do carrier reconciliation, and for organisations that wish to analyse call patterns. For instance: if you have call detail records from an office PBX, telecoms switch(s), or carrier CDR to analyse then CDR-Stats is a useful tool to analyse the data and look for patterns in the traffic that may indicate problems or potential fraud. Furthermore, CDR-Stats can be configured to send email alerts on detection of unusual activity, as well as send daily reports on traffic.
 
 
 .. _faq-cdr-import:
