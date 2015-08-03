@@ -102,12 +102,16 @@ def push_asterisk_cdr(shell, table_name, db_engine, cursor, cursor_updated, swit
         direction = "unknown"
 
         try:
+            # TODO: Code not valide as accountcode moved to his own model AccountCode
+            # FYI, asterisk_fetcher.py is not used
             voipplan_id = UserProfile.objects.get(accountcode=accountcode).voipplan_id
         except:
             voipplan_id = False
             print_shell(shell, "No VoipPlan created for this user/accountcode")
 
         try:
+            # TODO: Code not valide as accountcode moved to his own model AccountCode
+            # FYI, asterisk_fetcher.py is not used
             user = UserProfile.objects.get(accountcode=accountcode).user
         except:
             # Cannot assign accountcode to an existing user

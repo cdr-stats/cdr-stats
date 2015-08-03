@@ -245,11 +245,6 @@
             </div>
             <div class="row">
                 <div class="col-md-11 text-left">{% trans "total calls"|title %} : {{ cdr_count }}</div>
-                <div class="col-md-1 text-right">
-                    <div class="form-group">
-                        <div class="controls">{{ form.records_per_page }}</div>
-                    </div>
-                </div>
             </div>
         </form><!-- complete search form tag-->
             {% if page_cdr_list %}
@@ -335,6 +330,7 @@
         $("#" + modal_id).load(url);
     });
 </script>
+
 <!-- modal content-->
 <div id="cdr-detail" class="modal fade" role="dialog" aria-labelledby="cdr_detail"></div>
 {% endblock %}
