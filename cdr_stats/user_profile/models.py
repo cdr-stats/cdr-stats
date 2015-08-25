@@ -107,8 +107,8 @@ class UserProfile(models.Model):
     note = models.CharField(max_length=250, blank=True, null=True,
                             verbose_name=_('note'))
     multiple_email = models.TextField(blank=True, null=True,
-                                      verbose_name=_('report mail list'),
-                                      help_text=_('enter a valid e-mail address separated by commas.'))
+                                      verbose_name=_('report email list'),
+                                      help_text=_('enter valid e-mail addresses separated by commas.'))
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

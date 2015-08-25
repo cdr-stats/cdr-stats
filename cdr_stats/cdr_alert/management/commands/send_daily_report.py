@@ -16,7 +16,6 @@
 
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from django.utils.translation import ugettext_lazy as _
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.template import Context
@@ -29,10 +28,7 @@ random.seed()
 
 
 class Command(BaseCommand):
-    help = "Send daily report\n"\
-           "---------------------------------\n"\
-           "python manage.py send_daily_report\n"\
-
+    help = "Send daily report, make sure to have an admin user with email and multiple_email.\n"
 
     def handle(self, *args, **options):
         """to send daily mail report via command line"""
@@ -42,16 +38,22 @@ class Command(BaseCommand):
             if not c_user.email:
                 print "User (%s) -> This user doesn't have an email." % c_user.username
                 continue
-            from_email = c_user.email
+            else:
+                print "Send Report from User (%s - %s)." % (c_user.username, c_user.email)
+
             try:
-                to = UserProfile.objects.get(user=c_user).multiple_email
+                to_email = UserProfile.objects.get(user=c_user).multiple_email
             except UserProfile.DoesNotExist:
                 print 'Error: UserProfile not found (user_id:' + str(c_user.id) + ')'
                 continue
 
-            mail_data = get_cdr_mail_report(c_user)
+            if not to_email:
+                print 'Error: UserProfile multiple_email not set (user_id:' + str(c_user.id) + ')'
+                continue
 
-            subject = _('CDR Report')
+            from_email = c_user.email
+            mail_data = get_cdr_mail_report(c_user)
+            subject = 'CDR Report'
 
             html_content = get_template('cdr/mail_report_template.html')\
                 .render(Context({
@@ -59,17 +61,15 @@ class Command(BaseCommand):
                     'rows': mail_data['rows'],
                     'total_duration': mail_data['total_duration'],
                     'total_calls': mail_data['total_calls'],
-                    'ACH': mail_data['ACH'],
-                    'ACD': mail_data['ACD'],
-                    'country_analytic_array': mail_data['country_analytic_array'],
-                    'hangup_analytic_array': mail_data['hangup_analytic_array']
+                    'total_buy_cost': mail_data['total_buy_cost'],
+                    'total_sell_cost': mail_data['total_sell_cost'],
+                    'metric_aggr': mail_data['metric_aggr'],
+                    'country_data': mail_data['country_data'],
+                    'hangup_cause_data': mail_data['hangup_cause_data']
                 }))
 
-            if to:
-                msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
-                print '\nEmail sent to ' + str(to)
-                print '-' * 80
-                msg.content_subtype = 'html'
-                msg.send()
-            else:
-                print "Error: email not sent"
+            msg = EmailMultiAlternatives(subject, html_content, from_email, [to_email])
+            print '\nEmail sent to ' + str(to_email)
+            print '-' * 80
+            msg.content_subtype = 'html'
+            msg.send()
