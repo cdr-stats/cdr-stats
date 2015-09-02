@@ -404,7 +404,6 @@ def blacklist_whitelist_notification(notice_type):
 
 
 # Email previous day's CDR Report
-
 class send_cdr_report(PeriodicTask):
 
     """A periodic task to send previous day's CDR Report as mail
@@ -421,17 +420,28 @@ class send_cdr_report(PeriodicTask):
         logger = self.get_logger()
         logger.info('TASK :: send_cdr_report')
 
-        for c_user in User.objects.filter(is_staff=True, is_active=True):
-            from_email = c_user.email
+        list_users = User.objects.filter(is_staff=True, is_active=True)
+        for c_user in list_users:
+
+            if not c_user.email:
+                logger.error("User (%s) -> This user doesn't have an email." % c_user.username)
+                continue
+            else:
+                logger.error("Send Report from User (%s - %s)." % (c_user.username, c_user.email))
+
             try:
-                to = UserProfile.objects.get(user=c_user).multiple_email
+                to_email = UserProfile.objects.get(user=c_user).multiple_email
             except UserProfile.DoesNotExist:
-                to = ''
                 logger.error('Error : UserProfile notfound (user_id:%d)' % c_user.id)
+                continue
 
+            if not to_email:
+                logger.error('Error: UserProfile multiple_email not set (user_id:' + str(c_user.id) + ')')
+                continue
+
+            from_email = c_user.email
             mail_data = get_cdr_mail_report(c_user)
-
-            subject = _('CDR Report')
+            subject = 'CDR Report'
 
             html_content = get_template('cdr/mail_report_template.html')\
                 .render(Context({
@@ -439,15 +449,15 @@ class send_cdr_report(PeriodicTask):
                     'rows': mail_data['rows'],
                     'total_duration': mail_data['total_duration'],
                     'total_calls': mail_data['total_calls'],
-                    'ACH': mail_data['metric_aggr']['ACH'],
-                    'ACD': mail_data['metric_aggr']['ACD'],
-                    'country_analytic_array': mail_data['country_analytic_array'],
-                    'hangup_analytic_array': mail_data['hangup_analytic_array']
-                }
-                ))
+                    'total_buy_cost': mail_data['total_buy_cost'],
+                    'total_sell_cost': mail_data['total_sell_cost'],
+                    'metric_aggr': mail_data['metric_aggr'],
+                    'country_data': mail_data['country_data'],
+                    'hangup_cause_data': mail_data['hangup_cause_data']
+                }))
 
-            msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
-            logger.info('Email sent to %s' % to)
+            msg = EmailMultiAlternatives(subject, html_content, from_email, [to_email])
+            logger.info('Email sent to %s' % str(to_email))
             msg.content_subtype = 'html'
             msg.send()
 

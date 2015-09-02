@@ -183,11 +183,11 @@ class CdrSearchForm(SearchForm):
             ),
             Div(
                 Div('country_id', css_class=css_class),
+                Div('records_per_page', css_class=css_class),
                 css_class='row'
             ),
         )
         common_submit_buttons(self.helper.layout, 'search')
-        self.fields['records_per_page'].widget.attrs['class'] = 'select form-control'
 
 
 class CountryReportForm(CdrSearchForm):

@@ -143,6 +143,9 @@ edit '/etc/cdr-pusher.yaml'::
         - orig_field: "datetime(calldate)"
           dest_field: starting_date
           type_field: date
+        - orig_field: accountcode
+          dest_field: accountcode
+          type_field: string
         - orig_field: channel
           dest_field: extradata
           type_field: jsonb

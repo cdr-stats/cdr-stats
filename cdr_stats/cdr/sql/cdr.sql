@@ -20,7 +20,7 @@ CREATE MATERIALIZED VIEW matv_voip_cdr_aggr_hour AS
 
 -- Create index on Materialized view
 CREATE UNIQUE INDEX matv_voip_cdr_aggr_hour_date
-  ON matv_voip_cdr_aggr_hour (starting_date, country_id, switch_id, cdr_source_type, hangup_cause_id);
+  ON matv_voip_cdr_aggr_hour (starting_date, country_id, switch_id, cdr_source_type, hangup_cause_id, user_id);
 
 -- Materialized View
 CREATE MATERIALIZED VIEW matv_voip_cdr_aggr_min AS
@@ -43,4 +43,4 @@ CREATE MATERIALIZED VIEW matv_voip_cdr_aggr_min AS
 
 -- Create index on Materialized view
 CREATE UNIQUE INDEX matv_voip_cdr_aggr_min_date
-  ON matv_voip_cdr_aggr_min (starting_date, country_id, switch_id, cdr_source_type, hangup_cause_id);
+  ON matv_voip_cdr_aggr_min (starting_date, country_id, switch_id, cdr_source_type, hangup_cause_id, user_id);
