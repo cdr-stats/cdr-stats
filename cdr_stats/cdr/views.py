@@ -217,8 +217,10 @@ def cdr_view(request):
 
     if request.user.is_superuser and accountcode:
         try:
-            user = AccountCode.objects.get(accountcode=accountcode)
-            kwargs['user_id'] = user.id
+            acc = AccountCode.objects.get(accountcode=accountcode)
+            kwargs['user_id'] = acc.user.id
+            # on specific accountcode filter let only display that one
+            kwargs['accountcode'] = accountcode
         except AccountCode.DoesNotExist:
             # cannot find a user for this accountcode
             pass
