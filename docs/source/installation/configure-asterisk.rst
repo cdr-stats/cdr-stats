@@ -295,7 +295,7 @@ edit '/etc/cdr-pusher.yaml'::
           type_field: jsonb
 
 
-CDR-Pusher always needs a Primary Key to import CDRs,Therefore if you use
+CDR-Pusher always needs a Primary Key to import CDRs, therefore if you use
 MySQL, please ensure that you have a Primary Key in your `cdr` table as it
 might not be the default case.
 
