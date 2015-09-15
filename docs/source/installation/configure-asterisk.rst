@@ -4,16 +4,17 @@
 Configure Asterisk with CDR-Stats and CDR-Pusher
 ================================================
 
-Asterisk supports many backends to store CDRs: SQLite3, PostgreSQL, Mysql and
+Asterisk supports many backends to store CDRs: SQLite3, PostgreSQL, MySQL and
 many more.
 
 In this document, we will explain how to configure Asterisk to store CDRs to
-SQLite3, as this is the easiest to setup, and how to install CDR-Pusher on
-your Asterisk server to push CDRs to the CDR-Stats server.
+SQLite3 or Mysql. Sqlite3 is the one we will recommend as this is by far the
+easiest to setup). Finally we will explain how to install CDR-Pusher on your
+Asterisk server to push CDRs to the CDR-Stats server.
 
 
-Collect CDRs from SQLITE3
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Store Asterisk CDRs to SQLITE3
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The cdr_sqlite module was deprecated and has been removed. Users of this
 module should use the cdr_sqlite3_custom module instead.
@@ -63,6 +64,73 @@ The result will be::
     CTRL-D exits the SQLite console
 
 
+Store Asterisk CDRs to MySQL
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There is only one config file for the `cdr_mysql.so` module, this is
+configured at `/etc/asterisk/cdr_mysql.conf` and the default settings
+are as follows::
+
+
+    ;
+    ; Note - if the database server is hosted on the same machine as the
+    ; asterisk server, you can achieve a local Unix socket connection by
+    ; setting hostname=localhost
+    ;
+    ; port and sock are both optional parameters. If hostname is specified
+    ; and is not "localhost", then cdr_mysql will attempt to connect to the
+    ; port specified or use the default port. If hostname is not specified
+    ; or if hostname is "localhost", then cdr_mysql will attempt to connect
+    ; to the socket file specified by sock or otherwise use the default socket
+    ; file.
+    ;
+    [global]
+    hostname=localhost
+    dbname=asteriskcdrdb
+    password=password
+    user=asteriskcdruser
+    table=cdr
+    ;port=3306
+    ;sock=/tmp/mysql.sock
+    ;userfield=1
+
+
+Enable the last option `userfield` if you wish to use SetCDRUserField.
+
+Configure with your hostname, dbname, password, user and table.
+
+After installation, restart asterisk.
+
+To check that CDR are being written to the MySQL DB with the following::
+
+    $ mysql -uasteriskcdruser -pasteriskcdrdb asteriskcdrdb
+    $ SELECT * FROM cdr LIMIT 10;
+
+
+The result will be::
+
+    Reading table information for completion of table and column names
+    You can turn off this feature to get a quicker startup with -A
+
+    Welcome to the MySQL monitor.  Commands end with ; or \g.
+    Your MySQL connection id is 4862
+    Server version: 5.5.44-0ubuntu0.12.04.1 (Ubuntu)
+
+    Copyright (c) 2000, 2015, Oracle and/or its affiliates. All rights reserved.
+
+    Oracle is a registered trademark of Oracle Corporation and/or its
+    affiliates. Other names may be trademarks of their respective
+    owners.
+
+    Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+    mysql> select * from cdr LIMIT 10;
+    ...
+    ...
+
+    CTRL-D exits the MySQL console
+
+
 Configure CDR-pusher to collect CDRs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -101,10 +169,14 @@ here: http://tecadmin.net/how-to-upgrade-git-version-1-7-10-on-centos-6/
 
 After installation of CDR-Pusher you can find the configuration file at
 '/etc/cdr-pusher.yaml'. You will need to configure properly some settings in
-order to connect CDR-pusher to your SQLite CDR backend and to your CDR-Stats
-server.
+order to connect CDR-pusher to your SQLite or MySQL CDR backend and to your
+CDR-Stats server.
 
-Here some of the settings you need to change to fetch CDR form Asterisk,
+
+Configure CDR-Pusher for SQLite3
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Here some of the settings you need to change to fetch SQLite CDR form Asterisk,
 edit '/etc/cdr-pusher.yaml'::
 
     # storage_source_type: type to CDRs to push
@@ -155,6 +227,81 @@ edit '/etc/cdr-pusher.yaml'::
         - orig_field: dcontext
           dest_field: extradata
           type_field: jsonb
+
+
+Configure CDR-Pusher for MySQL
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Here some of the settings you need to change to fetch MySQL CDR form Asterisk,
+edit '/etc/cdr-pusher.yaml'::
+
+    # storage_source_type: type to CDRs to push
+    storage_source: "mysql"
+
+    # db_file: specify the database path and name
+    db_file: ""
+
+    # Database DNS
+    # Use this with MySQL
+    db_dns: "username:password@/database"
+
+    # db_table: the DB table name
+    db_table: "cdr"
+
+    # cdr_fields is list of fields that will be fetched and pushed (to PostgreSQL)
+    # - if dest_field is callid, it will be used in riak as key to insert
+    cdr_fields:
+        - orig_field: uniqueid
+          dest_field: callid
+          type_field: string
+        - orig_field: clid
+          dest_field: caller_id_name
+          type_field: string
+        - orig_field: "'' AS cidnum"
+          dest_field: caller_id_number
+          type_field: string
+        - orig_field: dst
+          dest_field: destination_number
+          type_field: string
+        - orig_field: "CASE disposition WHEN 'ANSWER' THEN 16 WHEN 'ANSWERED' THEN 16 WHEN 'BUSY' THEN 17 WHEN 'NOANSWER' THEN 19 WHEN 'NO ANSWER' THEN 19 WHEN 'CANCEL' THEN 21 WHEN 'CANCELED' THEN 21 WHEN 'CONGESTION' THEN 34 WHEN 'CHANUNAVAIL' THEN 47 WHEN 'DONTCALL' THEN 21 WHEN 'TORTURE' THEN 21 WHEN 'INVALIDARGS' THEN 47 WHEN 'FAIL' THEN 41 WHEN 'FAILED' THEN 41 ELSE 41 END"
+          dest_field: hangup_cause_id
+          type_field: int
+        - orig_field: duration
+          dest_field: duration
+          type_field: int
+        - orig_field: billsec
+          dest_field: billsec
+          type_field: int
+        - orig_field: accountcode
+          dest_field: accountcode
+          type_field: string
+        - orig_field: calldate
+          dest_field: starting_date
+          type_field: date
+        - orig_field: userfield
+          dest_field: extradata
+          type_field: jsonb
+        - orig_field: dcontext
+          dest_field: extradata
+          type_field: jsonb
+        - orig_field: channel
+          dest_field: extradata
+          type_field: jsonb
+        - orig_field: lastapp
+          dest_field: extradata
+          type_field: jsonb
+        - orig_field: lastdata
+          dest_field: extradata
+          type_field: jsonb
+
+
+CDR-Pusher always needs a Primary Key to import CDRs,Therefore if you use
+MySQL, please ensure that you have a Primary Key in your `cdr` table as it
+might not be the default case.
+
+You can create a Primary Key with::
+
+    ALTER TABLE cdr ADD COLUMN id int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT FIRST;
 
 
 Send CDRs from backend to the CDR-Stats Core DB
