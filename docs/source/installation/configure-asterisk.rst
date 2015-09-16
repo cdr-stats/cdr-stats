@@ -7,10 +7,9 @@ Configure Asterisk with CDR-Stats and CDR-Pusher
 Asterisk supports many backends to store CDRs: SQLite3, PostgreSQL, MySQL and
 many more.
 
-In this document, we will explain how to configure Asterisk to store CDRs to
-SQLite3 or Mysql. Sqlite3 is the one we will recommend as this is by far the
-easiest to setup). Finally we will explain how to install CDR-Pusher on your
-Asterisk server to push CDRs to the CDR-Stats server.
+In this document, we will explain how to configure Asterisk to store CDRs in
+SQLite3 or Mysql then configure CDR-Pusher to send the CDR to CDR-Stats. Sqlite3 
+is the one we will recommend as this is by far the easiest to setup). 
 
 
 Store Asterisk CDRs to SQLITE3
@@ -135,7 +134,7 @@ Configure CDR-pusher to collect CDRs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Once your CDRs will be stored to a SQLite Database, you will have to install
-CDR-Pusher on your Asterisk server. You can find instruction how to install
+CDR-Pusher on your Asterisk server. You can find instructions how to install
 CDR-Pusher here: https://github.com/cdr-stats/cdr-stats
 
 To install Supervisor on CentOS 6 or RHEL6, the procedure is more complex,
@@ -232,7 +231,7 @@ edit '/etc/cdr-pusher.yaml'::
 Configure CDR-Pusher for MySQL
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Here some of the settings you need to change to fetch MySQL CDR form Asterisk,
+Here some of the settings you need to change to fetch MySQL CDR from Asterisk,
 edit '/etc/cdr-pusher.yaml'::
 
     # storage_source_type: type to CDRs to push
@@ -297,7 +296,7 @@ edit '/etc/cdr-pusher.yaml'::
 
 CDR-Pusher always needs a Primary Key to import CDRs, therefore if you use
 MySQL, please ensure that you have a Primary Key in your `cdr` table as it
-might not be the default case.
+will not be there by default.
 
 You can create a Primary Key with::
 
@@ -318,7 +317,7 @@ Replace 'postgres', 'password' and 'localhost' by your CDR-Stats server
 settings and make sure you configured Remote Access to PostgreSQL, this is
 described in our documentation here :ref:`configure-postgresql-remote-access`.
 
-You may want to properly configure these 2 settings also::
+You may need to configure these settings as well::
 
     # switch_ip: leave this empty to default to your external IP (accepted value: ""|"your IP")
     switch_ip: ""
