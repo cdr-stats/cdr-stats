@@ -8,8 +8,8 @@ Asterisk supports many backends to store CDRs: SQLite3, PostgreSQL, MySQL and
 many more.
 
 In this document, we will explain how to configure Asterisk to store CDRs in
-SQLite3 or Mysql then configure CDR-Pusher to send the CDR to CDR-Stats. Sqlite3 
-is the one we will recommend as this is by far the easiest to setup). 
+SQLite3 or Mysql then configure CDR-Pusher to send the CDR to CDR-Stats. Sqlite3
+is the one we will recommend as this is by far the easiest to setup.
 
 
 Store Asterisk CDRs to SQLITE3
