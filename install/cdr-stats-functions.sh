@@ -140,15 +140,6 @@ func_check_dependencies() {
         exit 1
     fi
 
-    #Check pandas
-    grep_pip=`pip freeze| grep pandas`
-    if echo $grep_pip | grep -i "pandas" > /dev/null ; then
-        echo "OK : pandas installed..."
-    else
-        echo "Error : pandas not installed..."
-        exit 1
-    fi
-
     echo ""
     echo "Python dependencies successfully installed!"
     echo ""
