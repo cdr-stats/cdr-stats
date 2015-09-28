@@ -35,13 +35,13 @@ To get started with CDR-Stats the following must be installed:
 
 and many more, please find a full list of our requirements to our requirements files:
 
-- https://github.com/cdr-stats/cdr-stats/blob/develop/install/requirements/basic-requirements.txt
-- https://github.com/cdr-stats/cdr-stats/blob/develop/install/requirements/django-requirements.txt
+- https://github.com/cdr-stats/cdr-stats/blob/develop/requirements/basic.txt
+- https://github.com/cdr-stats/cdr-stats/blob/develop/requirements/django.txt
 
 There is also 2 extra requirements files for developers and to run our tests:
 
-- https://github.com/cdr-stats/cdr-stats/blob/develop/install/requirements/dev-requirements.txt
-- https://github.com/cdr-stats/cdr-stats/blob/develop/install/requirements/test-requirements.txt
+- https://github.com/cdr-stats/cdr-stats/blob/develop/requirements/dev.txt
+- https://github.com/cdr-stats/cdr-stats/blob/develop/requirements/test.txt
 
 
 The requirements must be installed into a virtual environement so that the
@@ -54,7 +54,7 @@ about PIP : http://www.pip-installer.org/en/latest/index.html
 
 Using PIP, you can easily install all the requirements::
 
-    $ pip install -r install/requirements/all-requirements.txt
+    $ pip install -r requirements/all.txt
 
 
 .. _running-cdrstats:

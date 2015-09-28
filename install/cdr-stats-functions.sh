@@ -387,13 +387,13 @@ func_install_pip_deps(){
     esac
 
     echo "Install basic requirements..."
-    for line in $(cat /usr/src/cdr-stats/install/requirements/basic-requirements.txt | grep -v '^#' | grep -v '^$')
+    for line in $(cat /usr/src/cdr-stats/requirements/basic.txt | grep -v '^#' | grep -v '^$')
     do
         echo "pip install $line"
         pip install $line
     done
     echo "Install Django requirements..."
-    for line in $(cat /usr/src/cdr-stats/install/requirements/django-requirements.txt | grep -v '^#' | grep -v '^$')
+    for line in $(cat /usr/src/cdr-stats/requirements/django.txt | grep -v '^#' | grep -v '^$')
     do
         echo "pip install $line --allow-all-external --allow-unverified django-admin-tools"
         pip install $line --allow-all-external --allow-unverified django-admin-tools

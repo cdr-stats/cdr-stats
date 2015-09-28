@@ -9,7 +9,7 @@ services:
 #  - memcache # will start memcached
 install:
   # - pip install -q Django==$DJANGO --use-mirrors
-  - bash install/requirements/install-requirements.sh
+  - bash requirements/install.sh
   # - pip install pep8 --use-mirrors
   # - pip install https://github.com/dcramer/pyflakes/tarball/master
 before_script:
