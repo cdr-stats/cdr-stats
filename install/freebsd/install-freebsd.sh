@@ -69,11 +69,11 @@ step_github()
 
 step_requirements()
 {
-  for line in $(cat /usr/local/src/cdr-stats/install/requirements/basic-requirements.txt | grep -v \#) ; do
+  for line in $(cat /usr/local/src/cdr-stats/requirements/basic.txt | grep -v \#) ; do
     pip install $line
   done
 
-  for line in $(cat /usr/local/src/cdr-stats/install/requirements/django-requirements.txt | grep -v \#) ; do
+  for line in $(cat /usr/local/src/cdr-stats/requirements/django.txt | grep -v \#) ; do
     pip install $line
   done
 }

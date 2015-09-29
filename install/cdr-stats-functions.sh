@@ -339,6 +339,13 @@ func_backup_prev_install(){
             echo "Press Enter to continue"
             read TEMP
         fi
+        if [ `sudo -u postgres psql -qAt --list | egrep '^$CDRPUSHER_DBNAME\|' | wc -l` -eq 1 ]; then
+            echo "Run backup with postgresql..."
+            sudo -u postgres pg_dump $CDRPUSHER_DBNAME > /tmp/old-cdr-pusher_$DATETIME.pgsqldump.sql
+            echo "PostgreSQL Dump of database $CDRPUSHER_DBNAME added in /tmp/old-cdr-pusher_$DATETIME.pgsqldump.sql"
+            echo "Press Enter to continue"
+            read TEMP
+        fi
     fi
 }
 
@@ -387,13 +394,13 @@ func_install_pip_deps(){
     esac
 
     echo "Install basic requirements..."
-    for line in $(cat /usr/src/cdr-stats/install/requirements/basic-requirements.txt | grep -v '^#' | grep -v '^$')
+    for line in $(cat /usr/src/cdr-stats/requirements/basic.txt | grep -v '^#' | grep -v '^$')
     do
         echo "pip install $line"
         pip install $line
     done
     echo "Install Django requirements..."
-    for line in $(cat /usr/src/cdr-stats/install/requirements/django-requirements.txt | grep -v '^#' | grep -v '^$')
+    for line in $(cat /usr/src/cdr-stats/requirements/django.txt | grep -v '^#' | grep -v '^$')
     do
         echo "pip install $line --allow-all-external --allow-unverified django-admin-tools"
         pip install $line --allow-all-external --allow-unverified django-admin-tools
@@ -526,12 +533,14 @@ func_create_pgsql_database(){
     read TEMP
     echo "sudo -u postgres dropdb $DATABASENAME"
     sudo -u postgres dropdb $DATABASENAME
+    echo "sudo -u postgres dropdb $CDRPUSHER_DBNAME"
+    sudo -u postgres dropdb $CDRPUSHER_DBNAME
     # echo "Remove Existing Database if exists..."
     #if [ `sudo -u postgres psql -qAt --list | egrep $DATABASENAME | wc -l` -eq 1 ]; then
     #     echo "sudo -u postgres dropdb $DATABASENAME"
     #     sudo -u postgres dropdb $DATABASENAME
     # fi
-    echo "Create CDR-Stats Database..."
+    echo "Create CDR-Stats database..."
     echo "sudo -u postgres createdb $DATABASENAME"
     sudo -u postgres createdb $DATABASENAME
 
@@ -542,13 +551,14 @@ func_create_pgsql_database(){
     echo "sudo -u postgres psql --command=\"create user $DB_USERNAME with password 'XXXXXXXXXXXX';\""
     sudo -u postgres psql --command="CREATE USER $DB_USERNAME with password '$DB_PASSWORD';"
 
-    echo "Grant all privileges to user..."
-    sudo -u postgres psql --command="GRANT ALL PRIVILEGES on database $DATABASENAME to $DB_USERNAME;"
-
     #Create CDR-Pusher Database (we don't touch this DB if it exists)
-    echo "Create CDR-Pusher Database..."
+    echo "Create CDR-Pusher database..."
     echo "sudo -u postgres createdb $CDRPUSHER_DBNAME"
     sudo -u postgres createdb $CDRPUSHER_DBNAME
+
+    echo "Grant all privileges to user..."
+    sudo -u postgres psql --command="GRANT ALL PRIVILEGES on database $DATABASENAME to $DB_USERNAME;"
+    sudo -u postgres psql --command="GRANT ALL PRIVILEGES on database $CDRPUSHER_DBNAME to $DB_USERNAME;"
 }
 
 #NGINX / SUPERVISOR
