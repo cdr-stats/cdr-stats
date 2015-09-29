@@ -557,8 +557,8 @@ func_create_pgsql_database(){
     sudo -u postgres createdb $CDRPUSHER_DBNAME
 
     echo "Grant all privileges to user..."
-    sudo -u postgres psql --command="GRANT ALL PRIVILEGES on database $DATABASENAME to $DB_USERNAME;"
-    sudo -u postgres psql --command="GRANT ALL PRIVILEGES on database $CDRPUSHER_DBNAME to $DB_USERNAME;"
+    sudo -u postgres psql --command="GRANT ALL PRIVILEGES on database \"$DATABASENAME\" to \"$DB_USERNAME\";"
+    sudo -u postgres psql --command="GRANT ALL PRIVILEGES on database \"$CDRPUSHER_DBNAME\" to \"$DB_USERNAME\";"
 }
 
 #NGINX / SUPERVISOR

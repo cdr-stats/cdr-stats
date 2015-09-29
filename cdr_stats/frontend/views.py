@@ -82,7 +82,7 @@ def diagnostic(request):
         (total_cdr, not_imported_cdr) = (0, 0)
 
     if not conn_status:
-        error_msg = _("Please review the 'DATABASES' settings in the config file (/usr/share/cdrstats/settings_local.py). Make sure that the Database `CDR-Pusher` is created.")
+        error_msg = _("Please review the 'DATABASES' settings in the config file (/usr/share/cdrstats/cdr_stats/settings_local.py). Make sure that the Database `CDR-Pusher` is created.")
         info_msg = _("After changes in your 'settings_local.py' conf file, you will need to restart celery: $ /etc/init.d/cdr-stats-celeryd restart")
 
     conn_report = OrderedDict([
