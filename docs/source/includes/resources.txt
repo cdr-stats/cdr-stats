@@ -13,6 +13,16 @@ please join the `CDR-Stats`_ mailing list.
 
 .. _`CDR-Stats`: http://groups.google.com/group/cdr-stats
 
+.. _irc-channel:
+
+IRC
+---
+
+Come chat with us on IRC. The **#cdr-stats** channel is located at the `Freenode`_
+network.
+
+.. _`Freenode`: http://freenode.net
+
 .. _bug-tracker:
 
 Bug tracker
