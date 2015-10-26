@@ -1,0 +1,6 @@
+switch,cdr_source_type,callid,caller_id_number,caller_id_name,destination_number,dialcode,state,channel,starting_date,duration,billsec,progresssec,answersec,waitsec,hangup_cause_id,hangup_cause,direction,country_code,accountcode,buy_rate,buy_cost,sell_rate,sell_cost,extradata
+127.0.0.1,1,96aa82fe-7bd1-11e5-a230-5c514f6a0f72,904151440,CallerIDName,+34798400122,34,,,2015-10-21 12:13:10,55,50,,,,16,,1,,1000,,,,,{}
+127.0.0.1,1,c9135e4a-7bd1-11e5-a230-5c514f6a0f72,904234320,CallerIDName,+34798401111,34,,,2015-10-21 12:33:15,15,10,,,,16,,1,,1000,,,,,{}
+127.0.0.1,1,cfaf8b56-7bd1-11e5-a230-5c514f6a0f72,901110380,CallerIDName,+34650104877,34,,,2015-10-21 12:53:16,41,34,,,,16,,1,,1000,,,,,{}
+127.0.0.1,1,3c64a168-7bd2-11e5-a230-5c514f6a0f72,904234320,CallerIDName,+34798401111,34,,,2015-10-21 12:53:16,16,11,,,,16,,1,,1000,,,,,{}
+127.0.0.1,1,41b20dd9-7bd2-11e5-a230-5c514f6a0f72,904231111,CallerIDName,+34650104877,34,,,2015-10-21 12:53:16,8,5,,,,16,,1,,1000,,,,,{}

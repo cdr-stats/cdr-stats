@@ -14,6 +14,18 @@
 
 from django.contrib import admin
 from import_cdr.models import CDRImport
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
+
+
+class CDRImportResource(resources.ModelResource):
+
+    class Meta:
+        model = CDRImport
+        using = 'import_cdr'
+        # fields = ('switch', 'cdr_source_type', 'callid', 'caller_id_number', 'caller_id_name', 'destination_number', 'dialcode', 'state', 'channel', 'starting_date', 'duration', 'billsec', 'progresssec', 'answersec', 'waitsec', 'hangup_cause_id', 'hangup_cause', 'direction', 'country_code', 'accountcode', 'buy_rate', 'buy_cost', 'sell_rate', 'sell_cost',)
+        import_id_fields = ('callid',)
+        exclude = ('id', 'imported', )
 
 
 class MultiDBModelAdmin(admin.ModelAdmin):
@@ -44,10 +56,12 @@ class MultiDBModelAdmin(admin.ModelAdmin):
 
 
 # CDRImport
-class CDRImportAdmin(MultiDBModelAdmin):
+# class CDRImportAdmin(MultiDBModelAdmin, ImportExportModelAdmin):
+class CDRImportAdmin(MultiDBModelAdmin, ImportExportModelAdmin):
     list_display = ('id', 'cdr_source_type', 'callid', 'switch', 'destination_number', 'dialcode', 'caller_id_number',
                     'duration', 'hangup_cause', 'direction', 'starting_date', 'hangup_cause_id', 'hangup_cause',
                     'accountcode', 'imported', )
     search_fields = ('destination_number', 'caller_id_number',)
+    resource_class = CDRImportResource
 
-admin.site.register(CDRImport, MultiDBModelAdmin)
+admin.site.register(CDRImport, CDRImportAdmin)

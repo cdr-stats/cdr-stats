@@ -24,6 +24,8 @@ class CDRImport(models.Model):
 
     Manually selecting a database for a QuerySet:
     CDRImport.objects.using('import_cdr').all()
+
+    TODO: add documentation to explain all the fields
     """
     id = models.AutoField(primary_key=True)
     switch = models.CharField(max_length=80)
@@ -56,8 +58,8 @@ class CDRImport(models.Model):
     extradata = json_field.JSONField(blank=True)
 
     def __unicode__(self):
-        return '[%s] %s - dur:%d - hangup:%d' % \
-            (self.id, self.destination_number, self.duration, self.hangup_cause_id)
+        return '[%s] %s - dur:%d - hangup:%s' % \
+            (self.id, self.destination_number, self.duration, str(self.hangup_cause_id))
 
     class Meta:
         # Remove `managed = False` lines if you wish to allow Django to create, modify,
