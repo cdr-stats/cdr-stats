@@ -53,6 +53,8 @@ DATABASES = {
     }
 }
 
+DATABASE_ROUTERS = ['import_cdr.router.CDRImportRouter']
+
 # CACHES = {
 #     'default': {
 #         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
@@ -184,6 +186,8 @@ DAJAXICE_MEDIA_PREFIX = "dajaxice"
 # DAJAXICE_MEDIA_PREFIX = "dajax"  # http://domain.com/dajax/
 # DAJAXICE_CACHE_CONTROL = 10 * 24 * 60 * 60
 
+ALLOWED_HOSTS = ['127.0.0.1']
+
 INSTALLED_APPS = (
     # admin tool apps
     # 'admintools_bootstrap',  # https://bitbucket.org/salvator/django-admintools-bootstrap
@@ -233,6 +237,7 @@ INSTALLED_APPS = (
     'bootstrap3_datetime',
     'crispy_forms',
     'call_analytic',
+    'import_export',
 )
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
