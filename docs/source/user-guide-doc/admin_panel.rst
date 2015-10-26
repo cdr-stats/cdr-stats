@@ -28,8 +28,8 @@ Dashboard page for the admin interface after successful login with superuser cre
 CDR Manual Import / Export
 --------------------------
 
-CDR-Stats have a tool to import manually CDRs from CSV, Json, Excel & Yaml.
-The first lines of the import file should contain the following header names "switch,cdr_source_type,callid,caller_id_number,caller_id_name,destination_number,dialcode,state,channel,starting_date,duration,billsec,progresssec,answersec,waitsec,hangup_cause_id,hangup_cause,direction,country_code,accountcode,buy_rate,buy_cost,sell_rate,sell_cost,extradata".
+There is a tool in CDR-Stats to manually import CDRs from CSV, JSON, Excel & YAML.
+The first line of the import file should contain the following header names "switch,cdr_source_type,callid,caller_id_number,caller_id_name,destination_number,dialcode,state,channel,starting_date,duration,billsec,progresssec,answersec,waitsec,hangup_cause_id,hangup_cause,direction,country_code,accountcode,buy_rate,buy_cost,sell_rate,sell_cost,extradata".
 
 Example of a CDR csv file to import:
 ::
@@ -47,10 +47,10 @@ Note:
 
     - cdr_source_type is an integer to define from where the CDR comes from (UNKNOWN = 0, CSV = 1, API = 2, FREESWITCH = 3, ASTERISK = 4, YATE = 5, KAMAILIO = 6, OPENSIPS = 7, SIPWISE = 8, VERAZ = 9)
 
-    - extradata is a Json field, if empty you have to set it as `{}`
+    - extradata is a JSON field, if empty you have to set it as `{}`
 
 
-From CDR Import admin page, you will also be able to export your CDRs to CSV, Json, HTML, Ods, Excel & Yaml.
+From CDR Import admin page, you will also be able to export your CDRs to CSV, JSON, HTML, ODS, Excel & YAML.
 
 
 **URL**:
