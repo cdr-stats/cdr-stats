@@ -16,7 +16,7 @@
 
 # :copyright: (c) 2011-2015 by Arezqui Belaid.
 # :license: MPL 2.0, see COPYING for more details.
-VERSION = '3.1.0'
+VERSION = '3.1.1'
 
 __version__ = VERSION
 __author__ = "Arezqui Belaid"
