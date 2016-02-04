@@ -209,6 +209,8 @@
                                     {% cache 1800 hcountry_flag row.country_id %}
                                         <img src="{{ STATIC_URL }}cdr-stats/{{ row.country_id|iso_flag }}" class="elemtooltip" title="{{ row.country_id|country_name }}">
                                     {% endcache %}
+                                {% elif row.call_type == 2 %}
+                                    <img src="{{ STATIC_URL }}cdr-stats/flags/telephone.png" class="elemtooltip" title="{% trans 'internal'|capfirst %}">
                                 {% else %}
                                     <img src="{{ STATIC_URL }}cdr-stats/icons/world.png" class="elemtooltip" title="{% trans 'world'|capfirst %}">
                                 {% endif %}
