@@ -8,8 +8,8 @@ django-jsonfield==0.9.13
 django-countries==2.1.2
 git+http://github.com/cdr-stats/django-pagination.git
 django-admin-tools==0.7.2
+django-dajaxice-ng==0.5.6.4
 django-dajax-ng==0.9.4
-django-dajaxice-ng==0.7.0.1
 django-country-dialcode==0.6.3
 django-import-export==0.2.8
 django-cache-machine==0.9.1
