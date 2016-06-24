@@ -22,7 +22,11 @@
 # cd /usr/src/ ; rm install-cdr-stats.sh ; wget --no-check-certificate https://raw.github.com/cdr-stats/cdr-stats/develop/install/install-cdr-stats.sh -O install-cdr-stats.sh ; bash install-cdr-stats.sh
 #
 
-BRANCH='master'
+# Set branch to install develop / default: master
+if [ -z "${BRANCH}" ]; then
+    BRANCH='master'
+fi
+
 
 #Get Scripts dependencies
 cd /usr/src/

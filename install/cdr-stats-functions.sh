@@ -13,7 +13,10 @@
 # Arezqui Belaid <info@star2billing.com>
 #
 
-BRANCH='master'
+# Set branch to install develop / default: master
+if [ -z "${BRANCH}" ]; then
+    BRANCH='master'
+fi
 
 #Install mode can me either CLONE or DOWNLOAD
 INSTALL_MODE='CLONE'
