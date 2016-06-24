@@ -249,6 +249,9 @@ func_install_dependencies(){
 
 #Fuction to create the virtual env
 func_setup_conda() {
+    echo ""
+    echo "Setup conda"
+    echo ""
     if [ $KERNELARCH = "x86_64" ]; then
         wget --no-check-certificate http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O Miniconda.sh
     else
@@ -279,8 +282,46 @@ func_setup_conda() {
     conda list -p /opt/miniconda/envs/cdr-stats
 }
 
+#Function to install Python dependencies
+func_install_pip_deps(){
 
-#Fuction to create the virtual env
+    echo "Install Pip Dependencies"
+    echo "========================"
+
+    case $DIST in
+        'DEBIAN')
+            #pip now only installs stable versions by default, so we need to use --pre option
+            pip install --pre pytz
+        ;;
+        'CENTOS')
+            pip install pytz
+        ;;
+    esac
+
+    echo "Install basic requirements..."
+    for line in $(cat /usr/src/cdr-stats/requirements/basic.txt | grep -v '^#' | grep -v '^$')
+    do
+        echo "pip install $line"
+        pip install $line
+    done
+    echo "Install Django requirements..."
+    for line in $(cat /usr/src/cdr-stats/requirements/django.txt | grep -v '^#' | grep -v '^$')
+    do
+        echo "pip install $line --allow-all-external --allow-unverified django-admin-tools"
+        pip install $line --allow-all-external --allow-unverified django-admin-tools
+    done
+
+    #Check Python dependencies
+    func_check_dependencies
+
+    echo "**********"
+    echo "PIP Freeze"
+    echo "**********"
+    pip freeze
+}
+
+# Fuction to create the virtual env
+# Disabled: as we are using conda
 func_setup_virtualenv() {
     echo "This will install virtualenv & virtualenvwrapper"
     echo "and create a new virtualenv : $CDRSTATS_ENV"
@@ -370,50 +411,6 @@ func_install_source(){
     cp -r /usr/src/cdr-stats/cdr_stats $INSTALL_DIR
 }
 
-
-#Function to install Python dependencies
-func_install_pip_deps(){
-
-    echo "Install Pip Dependencies"
-    echo "========================"
-
-    #Upgrade pip to latest (1.5)
-    pip install pip --upgrade
-
-    #For python 2.6 only
-    pip install importlib
-
-    case $DIST in
-        'DEBIAN')
-            #pip now only installs stable versions by default, so we need to use --pre option
-            pip install --pre pytz
-        ;;
-        'CENTOS')
-            pip install pytz
-        ;;
-    esac
-
-    echo "Install basic requirements..."
-    for line in $(cat /usr/src/cdr-stats/requirements/basic.txt | grep -v '^#' | grep -v '^$')
-    do
-        echo "pip install $line"
-        pip install $line
-    done
-    echo "Install Django requirements..."
-    for line in $(cat /usr/src/cdr-stats/requirements/django.txt | grep -v '^#' | grep -v '^$')
-    do
-        echo "pip install $line --allow-all-external --allow-unverified django-admin-tools"
-        pip install $line --allow-all-external --allow-unverified django-admin-tools
-    done
-
-    #Check Python dependencies
-    func_check_dependencies
-
-    echo "**********"
-    echo "PIP Freeze"
-    echo "**********"
-    pip freeze
-}
 
 #Function to prepare settings_local.py
 func_prepare_settings(){
@@ -663,7 +660,7 @@ func_install_frontend(){
     func_install_redis
 
     #Create and enable virtualenv
-    func_setup_virtualenv
+    # func_setup_virtualenv
 
     #Backup
     func_backup_prev_install

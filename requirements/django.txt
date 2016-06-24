@@ -7,11 +7,10 @@ django-cache-utils==0.7.2
 django-jsonfield==0.9.13
 django-countries==2.1.2
 git+http://github.com/cdr-stats/django-pagination.git
-django-admin-tools==0.5.2
+django-admin-tools==0.7.2
 django-dajax-ng==0.9.4
 django-dajaxice-ng==0.7.0.1
 django-country-dialcode==0.6.3
-django-admin-tools-stats==0.6.1
 django-import-export==0.2.8
 django-cache-machine==0.9.1
 django-redis-cache==0.13.1
@@ -21,7 +20,7 @@ django-genericadmin==0.6.1
 django-nvd3==0.8.2
 django-debug-toolbar
 django-lets-go==2.9.3
-django-extensions==1.5.5
+django-extensions==1.6.7
 django-bower==5.0.4
 django-cors-headers==1.0.0
 git+http://github.com/pinax/django-mailer
