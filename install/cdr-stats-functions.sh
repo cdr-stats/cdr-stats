@@ -233,8 +233,12 @@ func_install_dependencies(){
             service postgresql-9.1 restart
         ;;
     esac
-
-
+    if which paxctl >/dev/null; then
+            echo "Deactivating memory protection on nodejs and python ( prevent segfault )"
+            paxctl -cm /usr/bin/nodejs
+            paxctl -cm /usr/bin/node
+            paxctl -cm /usr/bin/python2.7
+    fi
     echo ""
     echo "easy_install -U setuptools pip distribute"
     easy_install -U setuptools pip distribute
@@ -269,7 +273,7 @@ func_setup_conda() {
     # conda create -y -n $CDRSTATS_ENV python
     # not sure we need to use $CDRSTATS_ENV as the env refer by /opt/miniconda/envs/cdr-stats
     conda create -p /opt/miniconda/envs/cdr-stats python --yes
-    source /opt/miniconda/envs/cdr-stats/bin/activate /opt/miniconda/envs/cdr-stats
+    source /opt/miniconda/bin/activate  /opt/miniconda/envs/cdr-stats
 
     #Install Pandas with Conda
     conda install -y pandas
@@ -400,7 +404,7 @@ func_install_source(){
     echo "Install CDR-Stats..."
     cd /usr/src/
     rm -rf cdr-stats
-    mkdir /var/log/cdr-stats
+    mkdir -p /var/log/cdr-stats
 
     git clone -b $BRANCH git://github.com/cdr-stats/cdr-stats.git
     cd cdr-stats
@@ -564,7 +568,7 @@ func_create_pgsql_database(){
 #NGINX / SUPERVISOR
 func_nginx_supervisor(){
     #Leave virtualenv
-    deactivate
+    source /opt/miniconda/bin/deactivate
 
     #Configure and Start supervisor
     case $DIST in
@@ -594,7 +598,7 @@ func_nginx_supervisor(){
 #CELERY SUPERVISOR
 func_celery_supervisor(){
     #Leave virtualenv
-    deactivate
+    source /opt/miniconda/bin/deactivate
 
     #Configure and Start supervisor
     case $DIST in
