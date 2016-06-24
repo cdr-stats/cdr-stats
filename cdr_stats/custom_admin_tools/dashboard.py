@@ -68,10 +68,6 @@ class CustomIndexDashboard(Dashboard):
                     _('task manager').title(),
                     models=('djcelery.*', ),
                 ),
-                modules.AppList(
-                    _('dashboard stats').title(),
-                    models=('admin_tools_stats.*', ),
-                ),
                 modules.RecentActions(_('Recent Actions'), 5),
             ]
         ))

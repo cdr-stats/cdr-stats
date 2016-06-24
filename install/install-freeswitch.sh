@@ -17,7 +17,11 @@
 # To download and run the script on your server :
 # cd /usr/src/ ; wget --no-check-certificate https://raw.github.com/cdr-stats/cdr-stats/master/install/install-freeswitch.sh -O install-freeswitch.sh ; bash install-freeswitch.sh
 
-BRANCH='master'
+# Set branch to install develop / default: master
+if [ -z "${BRANCH}" ]; then
+    BRANCH='master'
+fi
+
 KERNELARCH=$(uname -m)
 FS_INIT_PATH=https://raw.github.com/cdr-stats/cdr-stats/$BRANCH/install/freeswitch-init
 FS_GIT_REPO=git://git.freeswitch.org/freeswitch.git

@@ -141,6 +141,8 @@ SECRET_KEY = ')ey%^d=pk^jxgam92tdqb0z+0bbhk=7dub_0$ttw#u8yj)rgo$'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
+    'django.template.loaders.eggs.Loader',
+    'admin_tools.template_loaders.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -189,19 +191,19 @@ DAJAXICE_MEDIA_PREFIX = "dajaxice"
 ALLOWED_HOSTS = ['127.0.0.1']
 
 INSTALLED_APPS = (
+    'django.contrib.auth',
+    'django.contrib.sites',
     # admin tool apps
     # 'admintools_bootstrap',  # https://bitbucket.org/salvator/django-admintools-bootstrap
     'admin_tools',
     'admin_tools.theming',
     'admin_tools.menu',
     'admin_tools.dashboard',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.sites',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
     'django.contrib.admin',
+    'django.contrib.contenttypes',
+    'django.contrib.staticfiles',
+    'django.contrib.sessions',
+    'django.contrib.messages',
     # 'django.contrib.markup',
     'apirest',
     'cdr',

@@ -21,7 +21,7 @@ from django.conf import settings
 from django_lets_go.common_functions import int_convert_to_minute,\
     percentage, getvar, unset_session_var, ceil_strdate
 from django_lets_go.common_functions import get_pagination_vars
-from user_profile.models import UserProfile, AccountCode
+from user_profile.models import AccountCode
 from cdr.functions_def import get_country_name, get_hangupcause_name,\
     get_switch_ip_addr, calculate_act_acd
 from cdr.forms import CdrSearchForm, CountryReportForm, CdrOverviewForm, \

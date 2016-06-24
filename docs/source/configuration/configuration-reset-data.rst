@@ -21,7 +21,7 @@ Stop CDR-Stats celery::
 
 Enter in the virtualenv and launch dbshell the following commands::
 
-    $ workon cdr-stats
+    $ source /opt/miniconda/envs/cdr-stats/bin/activate /opt/miniconda/envs/cdr-stats
     $ cd /usr/share/cdrstats/
     $ python manage.py dbshell
 
@@ -41,7 +41,7 @@ doing here and that your CDRs are backed in the upstream CDR data store.
 
 Enter in the virtualenv and launch dbshell the following commands::
 
-    $ workon cdr-stats
+    $ source /opt/miniconda/envs/cdr-stats/bin/activate /opt/miniconda/envs/cdr-stats
     $ cd /usr/share/cdrstats/
     $ python manage.py dbshell --database=import_cdr
 
