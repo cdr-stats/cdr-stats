@@ -18,7 +18,7 @@ git+http://github.com/Star2Billing/django-notification
 django-frontend-notification==0.3.2
 django-genericadmin==0.6.1
 django-nvd3==0.8.2
-django-debug-toolbar
+django-debug-toolbar==1.4
 django-lets-go==2.9.3
 django-extensions==1.6.7
 django-bower==5.0.4
