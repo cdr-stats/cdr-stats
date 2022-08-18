@@ -24,7 +24,7 @@ fi
 
 KERNELARCH=$(uname -m)
 FS_INIT_PATH=https://raw.githubusercontent.com/fakhrihuseynov/cdr-stats/$BRANCH/install-freeswitch.sh
-FS_GIT_REPO=git://git.freeswitch.org/freeswitch.git
+FS_GIT_REPO=https://github.com/signalwire/freeswitch.git
 FS_INSTALLED_PATH=/usr/local/freeswitch
 FS_CONFIG_PATH=/etc/freeswitch
 SCRIPT_NOTICE="This install script is only intended to run on Debian 7.X"
