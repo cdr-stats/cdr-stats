@@ -31,7 +31,7 @@ fi
 #Get Scripts dependencies
 cd /usr/src/
 rm cdr-stats-functions.sh
-wget --no-check-certificate https://raw.github.com/cdr-stats/cdr-stats/$BRANCH/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
+wget --no-check-certificate https://raw.githubusercontent.com/fakhrihuseynov/cdr-stats/master/install/cdr-stats-functions.sh -O cdr-stats-functions.sh
 
 #Include cdr-stats install functions
 source cdr-stats-functions.sh
