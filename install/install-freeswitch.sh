@@ -23,12 +23,12 @@ if [ -z "${BRANCH}" ]; then
 fi
 
 KERNELARCH=$(uname -m)
-FS_INIT_PATH=https://raw.github.com/cdr-stats/cdr-stats/$BRANCH/install/freeswitch-init
+FS_INIT_PATH=https://raw.githubusercontent.com/fakhrihuseynov/cdr-stats/$BRANCH/install-freeswitch.sh
 FS_GIT_REPO=git://git.freeswitch.org/freeswitch.git
 FS_INSTALLED_PATH=/usr/local/freeswitch
 FS_CONFIG_PATH=/etc/freeswitch
 SCRIPT_NOTICE="This install script is only intended to run on Debian 7.X"
-FS_CONF_PATH=https://raw.github.com/cdr-stats/cdr-stats/$BRANCH/install/freeswitch-conf
+FS_CONF_PATH=https://github.com/fakhrihuseynov/cdr-stats/tree/$BRANCH/install/freeswitch-conf
 FS_BASE_PATH=/usr/src/
 CURRENT_PATH=$PWD
 
