@@ -37,32 +37,32 @@ CDRSTATS_ENV="cdr-stats"
 HTTP_PORT="8008"
 DATETIME=$(date +"%Y%m%d%H%M%S")
 KERNELARCH=$(uname -m)
-SCRIPT_NOTICE="This install script is only intended to run on Debian 7.X"
+# SCRIPT_NOTICE="This install script is only intended to run on Debian 7.X"
 
 #Django bug https://code.djangoproject.com/ticket/16017
 export LANG="en_US.UTF-8"
 
 
 # Identify Linux Distribution
-func_identify_os() {
-    if [ -f /etc/debian_version ] ; then
-        DIST='DEBIAN'
-        if [ "$(lsb_release -cs)" != "wheezy" ] && [ "$(lsb_release -cs)" != "jessie" ]; then
-            echo $SCRIPT_NOTICE
-            exit 255
-        fi
-        DEBIANCODE=$(lsb_release -cs)
-    elif [ -f /etc/redhat-release ] ; then
-        DIST='CENTOS'
-        if [ "$(awk '{print $3}' /etc/redhat-release)" != "6.2" ] && [ "$(awk '{print $3}' /etc/redhat-release)" != "6.3" ] && [ "$(awk '{print $3}' /etc/redhat-release)" != "6.4" ] && [ "$(awk '{print $3}' /etc/redhat-release)" != "6.5" ]; then
-            echo $SCRIPT_NOTICE
-            exit 255
-        fi
-    else
-        echo $SCRIPT_NOTICE
-        exit 1
-    fi
-}
+# func_identify_os() {
+#     if [ -f /etc/debian_version ] ; then
+#         DIST='DEBIAN'
+#         if [ "$(lsb_release -cs)" != "wheezy" ] && [ "$(lsb_release -cs)" != "jessie" ]; then
+#             echo $SCRIPT_NOTICE
+#             exit 255
+#         fi
+#         DEBIANCODE=$(lsb_release -cs)
+#     elif [ -f /etc/redhat-release ] ; then
+#         DIST='CENTOS'
+#         if [ "$(awk '{print $3}' /etc/redhat-release)" != "6.2" ] && [ "$(awk '{print $3}' /etc/redhat-release)" != "6.3" ] && [ "$(awk '{print $3}' /etc/redhat-release)" != "6.4" ] && [ "$(awk '{print $3}' /etc/redhat-release)" != "6.5" ]; then
+#             echo $SCRIPT_NOTICE
+#             exit 255
+#         fi
+#     else
+#         echo $SCRIPT_NOTICE
+#         exit 1
+#     fi
+# }
 
 #Function accept license
 func_accept_license() {
