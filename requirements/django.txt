@@ -30,3 +30,4 @@ djangorestframework==2.4.3
 django-crispy-forms==1.4.0
 django-localflavor==1.1
 git+https://github.com/Lomotif/django-postgres.git
+postgres==3.0.0

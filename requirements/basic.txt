@@ -2,7 +2,7 @@ Django==1.7.7
 gunicorn==19.3.0
 docutils==0.12
 ordereddict==1.1
-psycopg2==2.6
+psycopg2==2.7
 amqplib==1.0.2
 anyjson==0.3.3
 # python-dateutil==2.4.2
